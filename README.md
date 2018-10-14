@@ -5,7 +5,7 @@ Inclusion of a single C++11 header file is all that is needed.
 
 Wide-Integer has been tested on numerous compilers and is specifically designed for efficiency in small to medium bit counts such as 128 or 256. Portability of the code has been another point of focus. Special care has been taken to test in certain high-performance embedded real-time programming environments.
 
-When working with even tiny microcontroller systems, I/O streaming can be disabled with the WIDE_INTEGER_DISABLE_IOSTREAM compiler switch.
+When working with even tiny microcontroller systems, I/O streaming can be disabled with the WIDE_INTEGER_DISABLE_IOSTREAM compiler switch. See the examples directory as more use cases are being created.
 
 Easy application follows via a typedef or alias. The defined type can be used very much like a built-in unsinged integral type.
 
@@ -39,5 +39,3 @@ int main()
   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
 }
 ```
-
-See the examples directory as more use cases are being created.
