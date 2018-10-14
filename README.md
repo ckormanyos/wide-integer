@@ -3,7 +3,7 @@ Wide-Integer implements a generic C++ template for uint128_t, uint256_t, uint512
 
 Inclusion of a single C++11 header file is all that is needed.
 
-Wide-Integer has been tested on numerous compilers and is specifically designed for efficiency and portability. Special care has been taken to test in certain high-performance embedded real-time programming environments.
+Wide-Integer has been tested on numerous compilers and is specifically designed for efficiency in small to medium bit counts such as 128 or 256. Portability of the code has been another point of focus. Special care has been taken to test in certain high-performance embedded real-time programming environments.
 
 Easy application follows via a typedef or alias. The defined type can be used very much like a built-in unsinged integral type.
 
