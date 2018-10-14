@@ -8,14 +8,14 @@ Wide-Integer has been tested on numerous compilers and is specifically designed 
 Easy application follows via a typedef or alias. The defined type can be used very much like a built-in unsinged integral type.
 
 ```C
-#include <wide_integer/generic_template_uintwide_t.h>
+#include "generic_template_uintwide_t.h"
 
 namespace local
 {
   using uint256_t = wide_integer::generic_template::uint256_t;
 }
 
-void test()
+int main()
 {
   // Construction from string. Other constructors are available from built-in types.
   const local::uint256_t a("0xF4DF741DE58BCB2F37F18372026EF9CBCFC456CB80AF54D53BDEED78410065DE");
@@ -33,6 +33,7 @@ void test()
   std::cout << std::hex << std::uppercase << c << std::endl;
   std::cout << std::hex << std::uppercase << d << std::endl;
 
+  // Visualize the result.
   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
 }
 ```
