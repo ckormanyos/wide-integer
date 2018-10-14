@@ -3,7 +3,7 @@ Wide-Integer implements a generic C++ template for uint128_t, uint256_t, uint512
 
 Inclusion of a single C++11 header file is all that is needed.
 
-Wide-Integer has been tested on numerous compilers and is specifically designed for efficiency in small to medium bit counts such as 128 or 256. Portability of the code has been another point of focus. Special care has been taken to test in certain high-performance embedded real-time programming environments. But tested functionality on the PC or workstation is also present.
+Wide-Integer has been tested on numerous compilers and is specifically designed for efficiency in small to medium bit counts such as 128 or 256. Portability of the code has been another point of focus. Special care has been taken to test in certain high-performance embedded real-time programming environments. Tested high-performance functionality on the PC and workstation is also present.
 
 When working with even tiny microcontroller systems, I/O streaming can be disabled with the WIDE_INTEGER_DISABLE_IOSTREAM compiler switch. See the examples directory as more use cases are being created.
 
