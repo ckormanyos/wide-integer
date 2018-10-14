@@ -5,9 +5,16 @@ Inclusion of a single C++11 header file is all that is needed.
 
 Wide-Integer has been tested on numerous compilers and is specifically designed for use with all systems. Special care has been taken to achieve usage for high-performance embedded real-time programming environments.
 
-Usage is making a typedef or alias and subsequently using the type very much like a built-in unsinged integral type:
+Easy application follows via a typedef or alias. The type can be used very much like a built-in unsinged integral type:
 ```C
+
+
+#include <wide_integer/generic_template_uintwide_t.h>
+
+void test()
+{
   using wide_integer_type = wide_integer::generic_template::uint256_t;
+
 
   const wide_integer_type a("0xF4DF741DE58BCB2F37F18372026EF9CBCFC456CB80AF54D53BDEED78410065DE");
   const wide_integer_type b("0x166D63E0202B3D90ECCEAA046341AB504658F55B974A7FD63733ECF89DD0DF75");
@@ -22,6 +29,7 @@ Usage is making a typedef or alias and subsequently using the type very much lik
   std::cout << std::hex << std::uppercase << d << std::endl;
 
   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
+}
 ```
 
-See the examples directory for more use cases.
+See the examples directory as more use cases are being created.
