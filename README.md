@@ -26,7 +26,7 @@ void test()
   const bool result_is_ok = (   (c == "0xE491A360C57EB4306C61F9A04F7F7D99BE3676AAD2D71C5592D5AE70F84AF076")
                              && (d == "0xA"));
 
-  // Strin output.
+  // String output.
   std::cout << std::hex << std::uppercase << c << std::endl;
   std::cout << std::hex << std::uppercase << d << std::endl;
 
