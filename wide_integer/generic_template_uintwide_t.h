@@ -16,7 +16,7 @@
   #include <limits>
   #include <type_traits>
 
-  #if !defined(WIDE_INTEGER_DISABLE_IOSTREAM)
+  #if defined(__STDC_HOSTED__) && !defined(WIDE_INTEGER_DISABLE_IOSTREAM)
   #include <iomanip>
   #include <istream>
   #include <ostream>
@@ -187,7 +187,7 @@
                            && (std::is_integral   <IntegralType>::value == true)), bool>::type
   operator<=(const IntegralType& u, const uintwide_t<Digits2, ST, LT>& v);
 
-  #if !defined(WIDE_INTEGER_DISABLE_IOSTREAM)
+  #if defined(__STDC_HOSTED__) && !defined(WIDE_INTEGER_DISABLE_IOSTREAM)
 
   // Forward declarations of I/O streaming functions.
   template<typename char_type,
@@ -1702,7 +1702,7 @@
                            && (std::is_integral   <IntegralType>::value == true)), bool>::type
   operator<=(const IntegralType& u, const uintwide_t<Digits2, ST, LT>& v) { return uintwide_t<Digits2, ST, LT>(u).operator<=(v); }
 
-  #if !defined(WIDE_INTEGER_DISABLE_IOSTREAM)
+  #if defined(__STDC_HOSTED__) && !defined(WIDE_INTEGER_DISABLE_IOSTREAM)
 
   // Forward declarations of I/O streaming functions.
   template<typename char_type,
