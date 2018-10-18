@@ -1,9 +1,14 @@
 ///////////////////////////////////////////////////////////////////
-//  Copyright Christopher Kormanyos 2018.                        //
+//  Copyright Christopher Kormanyos 1999 - 2018.                 //
 //  Distributed under the Boost Software License,                //
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt          //
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)             //
 ///////////////////////////////////////////////////////////////////
+
+// This Miller-Rabin primality test is loosely based on
+// an adaptation of some code from Boost.Multiprecision.
+// The Boost.Multiprecision code can be found here:
+// https://www.boost.org/doc/libs/1_68_0/libs/multiprecision/doc/html/boost_multiprecision/tut/primetest.html
 
 #include <algorithm>
 #include <chrono>
@@ -36,12 +41,12 @@
 
 namespace
 {
-  #if !defined(USE_FIXED_RANDOM_SEEDS)
+  #if !defined(TEST_UINTWIDE_T_USE_FIXED_RANDOM_SEEDS)
 
   template<typename UnsignedIntegralType,
            const UnsignedIntegralType Polynomial,
-           const UnsignedIntegralType InitialValue,
-           const UnsignedIntegralType FinalXorValue>
+           const UnsignedIntegralType InitialValue  = (std::numeric_limits<UnsignedIntegralType>::max)(),
+           const UnsignedIntegralType FinalXorValue = (std::numeric_limits<UnsignedIntegralType>::max)()>
   UnsignedIntegralType crc_bitwise_template(const std::uint8_t* message, const std::size_t count)
   {
     using value_type = UnsignedIntegralType;
@@ -104,7 +109,7 @@ namespace
     // Extract the data bytes of current now...
     std::array<std::uint8_t, std::numeric_limits<std::uintmax_t>::digits / 8U> current_now_data;
 
-    for(std::uint_fast8_t i = 0U; i < std::uint_fast8_t(std::numeric_limits<std::uintmax_t>::digits / 8U); ++ i)
+    for(std::uint_fast8_t i = 0U; i < current_now_data.size(); ++ i)
     {
       current_now_data[i] = std::uint8_t(current_now >> (i * 8U));
     }
@@ -112,14 +117,12 @@ namespace
     // ... and... Finally, run a CRC64-WE checksum over the data bytes of current_now.
     const std::uint64_t current_now_crc64_we_result =
       crc_bitwise_template<std::uint64_t,
-                           std::uint64_t(0x42F0E1EBA9EA3693ULL),
-                           std::uint64_t(0xFFFFFFFFFFFFFFFFULL),
-                           std::uint64_t(0xFFFFFFFFFFFFFFFFULL)>(current_now_data.data(), current_now_data.size());
+                           UINT64_C(0x42F0E1EBA9EA3693)>(current_now_data.data(), current_now_data.size());
 
     return current_now_crc64_we_result;
   }
 
-  #endif // not USE_FIXED_RANDOM_SEEDS
+  #endif // not TEST_UINTWIDE_T_USE_FIXED_RANDOM_SEEDS
 
   template<typename UnsignedIntegralType>
   class random_unsigned_generator final
@@ -145,7 +148,7 @@ namespace
         {
           next_rand <<= 32U;
 
-          next_rand |= my_gen();
+          next_rand |= std::uint32_t(my_gen());
         }
 
         if((next_rand >= lo_range) && (next_rand <= hi_range))
@@ -163,7 +166,7 @@ namespace
 
   bool is_small_prime(const std::uint8_t n)
   {
-    static const std::array<std::uint8_t, 48U> p = 
+    static const std::array<std::uint8_t, 48U> small_primes = 
     {{
         3U,   5U,   7U,  11U,  13U,  17U,  19U,  23U,  29U,  31U,
        37U,  41U,  43U,  47U,  53U,  59U,  61U,  67U,  71U,  73U,
@@ -172,116 +175,125 @@ namespace
       181U, 191U, 193U, 197U, 199U, 211U, 223U, 227U
     }};
 
-    const bool is_small_prime_is_found = (std::find(p.cbegin(), p.cend(), n) != p.cend());
-
-    return is_small_prime_is_found;
+    return (std::find(small_primes.cbegin(),
+                      small_primes.cend(), n) != small_primes.cend());
   }
 
   template<typename UnsignedIntegralType>
   bool check_small_factors(const UnsignedIntegralType& n)
   {
-    // TBD: Can we eliminate some of the numerous return statements
-    // in this subroutine?
+    // TBD: Can we eliminate some of the numerous
+    // return statements in this subroutine?
+    // Should we use lambda functions or other
+    // small subroutines?
 
-    // TBD: Use standard macros such as UINT32_C(...).
-
-    static const std::array<std::uint32_t, 8U> small_factors1 =
+    static const std::array<std::uint32_t, 4U> ppn =
     {{
-      3U, 5U, 7U, 11U, 13U, 17U, 19U, 23U
+      UINT32_C( 223092870),
+      UINT32_C(2756205443),
+      UINT32_C( 907383479),
+      UINT32_C(4132280413)
     }};
 
-    static const std::uint32_t pp1 = UINT32_C(223092870);
-
-    std::uint32_t m1 = n % pp1;
-
-    for(std::size_t i = 0U; i < small_factors1.size(); ++i)
     {
-      if((m1 % small_factors1[i]) == 0U)
+      const std::uint32_t m = n % ppn[0U];
+
+      static const std::array<std::uint32_t, 8U> small_factors0 =
+      {{
+        3U, 5U, 7U, 11U, 13U, 17U, 19U, 23U
+      }};
+
+      for(std::size_t i = 0U; i < small_factors0.size(); ++i)
       {
-        return false;
-      }
-    }
-
-    static const std::array<std::uint32_t, 6U> small_factors2 =
-    {{
-      29U, 31U, 37U, 41U, 43U, 47U
-    }};
-
-    static const std::uint32_t pp2 = UINT32_C(2756205443);
-
-    m1 = n % pp2;
-
-    for(std::size_t i = 0U; i < small_factors2.size(); ++i)
-    {
-      if((m1 % small_factors2[i]) == 0U)
-      {
-        return false;
-      }
-    }
-
-    static const std::array<std::uint32_t, 5U> small_factors3 =
-    {{
-      53U, 59U, 61U, 67U, 71U
-    }};
-
-    static const std::uint32_t pp3 = UINT32_C(907383479);
-
-    m1 = n % pp3;
-
-    for(std::size_t i = 0U; i < small_factors3.size(); ++i)
-    {
-      if((m1 % small_factors3[i]) == 0U)
-      {
-        return false;
-      }
-    }
-
-    static const std::array<std::uint32_t, 5U> small_factors4 =
-    {{
-      73U, 79U, 83U, 89U, 97U
-    }};
-
-    static const std::uint32_t pp4 = UINT32_C(4132280413);
-
-    m1 = n % pp4;
-
-    for(std::size_t i = 0U; i < small_factors4.size(); ++i)
-    {
-      if((m1 % small_factors4[i]) == 0U)
-      {
-        return false;
-      }
-    }
-
-    static const std::array<std::array<std::uint32_t, 4U>, 6U> small_factors5 =
-    {{
-      {{ 101U, 103U, 107U, 109U }},
-      {{ 113U, 127U, 131U, 137U }},
-      {{ 139U, 149U, 151U, 157U }},
-      {{ 163U, 167U, 173U, 179U }},
-      {{ 181U, 191U, 193U, 197U }},
-      {{ 199U, 211U, 223U, 227U }}
-    }};
-
-    static const std::array<std::uint32_t, 6U> pp5 =
-    {{
-      121330189U,
-      113U * 127U * 131U * 137U,
-      139U * 149U * 151U * 157U,
-      163U * 167U * 173U * 179U,
-      181U * 191U * 193U * 197U,
-      199U * 211U * 223U * 227U
-    }};
-
-    for(std::size_t k = 0U; k < pp5.size(); ++k)
-    {
-      m1 = n % pp5[k];
-
-      for(std::size_t i = 0U; i < 4U; ++i)
-      {
-        if((m1 % small_factors5[k][i]) == 0U)
+        if((m % small_factors0[i]) == 0U)
         {
           return false;
+        }
+      }
+    }
+
+    {
+      static const std::array<std::uint32_t, 6U> small_factors1 =
+      {{
+        29U, 31U, 37U, 41U, 43U, 47U
+      }};
+
+      const std::uint32_t m = n % ppn[1U];
+
+      for(std::size_t i = 0U; i < small_factors1.size(); ++i)
+      {
+        if((m % small_factors1[i]) == 0U)
+        {
+          return false;
+        }
+      }
+    }
+
+    {
+      static const std::array<std::uint32_t, 5U> small_factors2 =
+      {{
+        53U, 59U, 61U, 67U, 71U
+      }};
+
+      const std::uint32_t m = n % ppn[2U];
+
+      for(std::size_t i = 0U; i < small_factors2.size(); ++i)
+      {
+        if((m % small_factors2[i]) == 0U)
+        {
+          return false;
+        }
+      }
+    }
+
+    {
+      static const std::array<std::uint32_t, 5U> small_factors3 =
+      {{
+        73U, 79U, 83U, 89U, 97U
+      }};
+
+      const std::uint32_t m = n % ppn[3U];
+
+      for(std::size_t i = 0U; i < small_factors3.size(); ++i)
+      {
+        if((m % small_factors3[i]) == 0U)
+        {
+          return false;
+        }
+      }
+    }
+
+    {
+      static const std::array<std::array<std::uint32_t, 4U>, 6U> small_factors4 =
+      {{
+        {{ 101U, 103U, 107U, 109U }},
+        {{ 113U, 127U, 131U, 137U }},
+        {{ 139U, 149U, 151U, 157U }},
+        {{ 163U, 167U, 173U, 179U }},
+        {{ 181U, 191U, 193U, 197U }},
+        {{ 199U, 211U, 223U, 227U }}
+      }};
+
+      static const std::array<std::uint32_t, 6U> pp4 =
+      {{
+        121330189U,
+        113U * 127U * 131U * 137U,
+        139U * 149U * 151U * 157U,
+        163U * 167U * 173U * 179U,
+        181U * 191U * 193U * 197U,
+        199U * 211U * 223U * 227U
+      }};
+
+      for(std::size_t k = 0U; k < pp4.size(); ++k)
+      {
+        const std::uint32_t m = n % pp4[k];
+
+        for(std::size_t i = 0U; i < 4U; ++i)
+        {
+          if((m % small_factors4[k][i]) == 0U)
+          {
+            return false;
+          }
         }
       }
     }
@@ -292,9 +304,9 @@ namespace
   template<typename UnsignedIntegralType>
   std::size_t lsb(const UnsignedIntegralType& x)
   {
-    std::size_t   i;
-    std::size_t   j;
-    std::size_t   bpos = 0U;
+    std::size_t i;
+    std::size_t j;
+    std::size_t bpos = 0U;
 
     UnsignedIntegralType x_tmp(x);
 
@@ -330,7 +342,7 @@ namespace
                                    UnsignedIntegralType2  b,
                              const UnsignedIntegralType1& c)
   {
-    // Calculate (b^p) % m.
+    // Calculate (b ^ p) % m.
 
     // TBD: Can deduction of the double-width type be made more generic?
     using local_double_width_type = typename UnsignedIntegralType1::double_width_type;
@@ -354,9 +366,9 @@ namespace
       result = y * y;
       y = result % c_local;
       b >>= 1;
-   }
+    }
 
-   return (local_normal_width_type(x) % local_normal_width_type(c_local));
+    return (local_normal_width_type(x) % c);
   }
 
   template<typename UnsignedIntegralType,
@@ -410,7 +422,7 @@ namespace
       return false;
     }
 
-    q = n - 1;
+    q = n - 1U;
     const std::size_t k = lsb(q);
     q >>= k;
 
@@ -455,7 +467,7 @@ namespace
   }
 }
 
-int main()
+bool miller_rabin_result()
 {
   #if defined(TEST_UINTWIDE_T_USE_NUMBER_OF_DIGITS)
   using wide_integer_type = wide_integer::generic_template::uintwide_t<TEST_UINTWIDE_T_USE_NUMBER_OF_DIGITS>;
@@ -463,9 +475,9 @@ int main()
   using wide_integer_type = wide_integer::generic_template::uintwide_t<256U>;
   #endif
 
-  #if defined(USE_FIXED_RANDOM_SEEDS)
-  random_unsigned_generator<wide_integer_type> gen1(UINT32_C(0x22222221));
-  random_unsigned_generator<wide_integer_type> gen2(UINT32_C(0x5A5A5A5A));
+  #if defined(TEST_UINTWIDE_T_USE_FIXED_RANDOM_SEEDS)
+  random_unsigned_generator<wide_integer_type> gen1(UINT32_C(0x22222223));
+  random_unsigned_generator<wide_integer_type> gen2(UINT32_C(0x5555AAAA));
   #else
   const std::uint64_t seed1 = high_resolution_now_with_crc64();
   const std::uint64_t seed2 = high_resolution_now_with_crc64();
@@ -488,29 +500,29 @@ int main()
   #endif
 
         std::uint_fast32_t i;
-  const std::size_t        number_of_trials = std::size_t(1000000ULL);
+  const std::uint_fast32_t number_of_trials = std::size_t(10000000ULL);
 
-  bool miller_rabine_test_result = false;
+  bool miller_rabin_test_result = false;
 
-  for(i = 0U; (i < number_of_trials) && (miller_rabine_test_result == false); ++i)
+  for(i = 0U; (i < number_of_trials) && (miller_rabin_test_result == false); ++i)
   {
     wide_integer_type n = gen1();
 
-    miller_rabine_test_result = my_miller_rabin_test(n, 25U, gen2);
+    miller_rabin_test_result = my_miller_rabin_test(n, 25U, gen2);
 
-    if(miller_rabine_test_result)
+    if(miller_rabin_test_result)
     {
-      // The value of n is probably prime.
-      // We will now find out if [(n - 1) / 2] is also prime.
+      // The value of n might probably be prime.
       std::cout << "We have a probable prime with value: 0x"
                 << std::hex
                 << std::uppercase
                 << n
                 << std::endl;
 
-      miller_rabine_test_result = my_miller_rabin_test((n - 1U) / 2U, 25U, gen2);
+      // We will now find out if [(n - 1) / 2] is also prime.
+      miller_rabin_test_result = my_miller_rabin_test((n - 1U) / 2U, 25U, gen2);
 
-      if(miller_rabine_test_result)
+      if(miller_rabin_test_result)
       {
         std::cout << std::endl
                   << "We have a safe prime with value: 0x"
@@ -522,18 +534,19 @@ int main()
     }
   }
 
-  int return_value;
+  const bool did_not_find_a_safe_prime = (i == number_of_trials);
 
-  if(i == number_of_trials)
+  if(did_not_find_a_safe_prime)
   {
-    std::cout << "Error: No safe primes were found" << std::endl;
-
-    return_value = -1;
-  }
-  else
-  {
-    return_value = 0;
+    std::cout << "Information: No safe primes were found" << std::endl;
   }
 
-  return return_value;
+  return (did_not_find_a_safe_prime == false);
+}
+
+int main()
+{
+  const bool miller_rabin_test_is_ok = miller_rabin_result();
+
+  static_cast<void>(miller_rabin_test_is_ok);
 }
