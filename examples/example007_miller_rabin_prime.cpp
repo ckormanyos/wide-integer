@@ -20,7 +20,7 @@
 
 #define TEST_UINTWIDE_T_USE_NUMBER_OF_DIGITS std::size_t(256U)
 
-#include "generic_template_uintwide_t.h"
+#include <generic_template_uintwide_t.h>
 
 // Some examples:
 // 256-Bit
