@@ -10,11 +10,12 @@
 // The Boost.Multiprecision code can be found here:
 // https://www.boost.org/doc/libs/1_68_0/libs/multiprecision/doc/html/boost_multiprecision/tut/primetest.html
 
+#include <array>
 #include <algorithm>
 #include <chrono>
+#include <cstdint>
 #include <iomanip>
 #include <iostream>
-#include <random>
 
 //#define TEST_UINTWIDE_T_USE_FIXED_RANDOM_SEEDS
 
@@ -45,8 +46,8 @@ namespace
 
   template<typename UnsignedIntegralType,
            const UnsignedIntegralType Polynomial,
-           const UnsignedIntegralType InitialValue  = (std::numeric_limits<UnsignedIntegralType>::max)(),
-           const UnsignedIntegralType FinalXorValue = (std::numeric_limits<UnsignedIntegralType>::max)()>
+           const UnsignedIntegralType InitialValue,
+           const UnsignedIntegralType FinalXorValue>
   UnsignedIntegralType crc_bitwise_template(const std::uint8_t* message, const std::size_t count)
   {
     using value_type = UnsignedIntegralType;
@@ -60,7 +61,7 @@ namespace
       crc ^= (value_type(message[byte]) << (std::numeric_limits<value_type>::digits - 8U));
 
       // Perform a modulo-2 division, one bit at a time.
-      for(std::int_fast8_t bit = 8U; bit > 0; --bit)
+      for(std::int_fast8_t bit = 8; bit > 0; --bit)
       {
         // Divide the current data bit.
         if((crc & (std::uintmax_t(1U) << (std::numeric_limits<value_type>::digits - 1U))) != 0U)
@@ -117,7 +118,9 @@ namespace
     // ... and... Finally, run a CRC64-WE checksum over the data bytes of current_now.
     const std::uint64_t current_now_crc64_we_result =
       crc_bitwise_template<std::uint64_t,
-                           UINT64_C(0x42F0E1EBA9EA3693)>(current_now_data.data(),
+                           UINT64_C(0x42F0E1EBA9EA3693),
+                           UINT64_C(0xFFFFFFFFFFFFFFFF),
+                           UINT64_C(0xFFFFFFFFFFFFFFFF)>(current_now_data.data(),
                                                          current_now_data.size());
 
     // Return the 64-bit pseudo-random seed.
@@ -125,6 +128,64 @@ namespace
   }
 
   #endif // not TEST_UINTWIDE_T_USE_FIXED_RANDOM_SEEDS
+
+  class pcg_random_fast32 final
+  {
+  public:
+    pcg_random_fast32(const std::uint64_t& initial_state,
+                      const std::uint64_t& initial_seq) : my_state(0U),
+                                                          my_inc  ((initial_seq << 1U) | 1U)
+    {
+      step();
+
+      my_state += initial_state;
+
+      step();
+    }
+
+    pcg_random_fast32(const pcg_random_fast32& other) : my_state(other.my_state),
+                                                        my_inc  (other.my_inc) { }
+
+    ~pcg_random_fast32() = default;
+
+    pcg_random_fast32& operator=(const pcg_random_fast32& other)
+    {
+      if(this != &other)
+      {
+        my_state = other.my_state;
+        my_inc   = other.my_inc;
+      }
+
+      return *this;
+    }
+
+    std::uint32_t operator()()
+    {
+      const std::uint64_t previous_state = my_state;
+
+      step();
+
+      return rotr(std::uint32_t(((previous_state >> 18U) ^ previous_state) >> 27U), std::int32_t(previous_state >> 59U));
+    }
+
+  private:
+    std::uint64_t my_state;
+    std::uint64_t my_inc;
+
+    static const std::uint64_t default_multiplier = UINT64_C(6364136223846793005);
+
+    pcg_random_fast32() = default;
+
+    void step()
+    {
+      my_state = std::uint64_t(std::uint64_t(my_state * default_multiplier) + my_inc);
+    }
+
+    static std::uint32_t rotr(std::uint32_t value, std::int32_t rot)
+    {
+      return (value >> rot) | (value << std::int32_t(std::uint32_t(-rot) & 31U));
+    }
+  };
 
   template<typename UnsignedIntegralType>
   class random_unsigned_generator final
@@ -135,7 +196,8 @@ namespace
     static_assert((std::numeric_limits<value_type>::digits % std::numeric_limits<std::uint32_t>::digits) == 0,
                   "Error: The width of UnsignedIntegralType must be a multiple of the digits in uint32_t.");
 
-    random_unsigned_generator(const std::uint32_t seed) : my_gen(seed) { }
+    random_unsigned_generator(const std::uint64_t seed0,
+                              const std::uint64_t seed1 = UINT64_C(0)) : my_gen(seed0, seed1) { }
 
     random_unsigned_generator() : my_gen() { }
 
@@ -163,7 +225,7 @@ namespace
     }
 
   private:
-    std::mt19937 my_gen;
+    pcg_random_fast32 my_gen;
   };
 
   bool is_small_prime(const std::uint_fast8_t n)
@@ -483,27 +545,24 @@ bool miller_rabin_result()
   #endif
 
   #if defined(TEST_UINTWIDE_T_USE_FIXED_RANDOM_SEEDS)
-  random_unsigned_generator<wide_integer_type> gen1(UINT32_C(0x22222223));
-  random_unsigned_generator<wide_integer_type> gen2(UINT32_C(0x5555AAAA));
+  const std::uint64_t seed0 = UINT64_C(0xDAD6177428754C69);
+  const std::uint64_t seed1 = UINT64_C(0x73DD1E70A590026C);
+  const std::uint64_t seed2 = UINT64_C(0xD04437538D54D2F1);
+  const std::uint64_t seed3 = UINT64_C(0xB81364AE3D6B7C96);
   #else
+  const std::uint64_t seed0 = high_resolution_now_with_crc64();
   const std::uint64_t seed1 = high_resolution_now_with_crc64();
   const std::uint64_t seed2 = high_resolution_now_with_crc64();
-
-  random_unsigned_generator<wide_integer_type> gen1(static_cast<std::uint32_t>(seed1));
-  random_unsigned_generator<wide_integer_type> gen2(static_cast<std::uint32_t>(seed2));
-
-  std::cout << std::hex
-            << std::uppercase
-            << "Random seed1: 0x"
-            << seed1
-            << std::endl;
-
-  std::cout << std::hex
-            << std::uppercase
-            << "Random seed2: 0x"
-            << seed2
-            << std::endl;
+  const std::uint64_t seed3 = high_resolution_now_with_crc64();
   #endif
+
+  random_unsigned_generator<wide_integer_type> gen1(seed0, seed1);
+  random_unsigned_generator<wide_integer_type> gen2(seed2, seed3);
+
+  std::cout << std::hex << std::uppercase << "Random seed0: 0x" << seed0 << std::endl;
+  std::cout << std::hex << std::uppercase << "Random seed1: 0x" << seed1 << std::endl;
+  std::cout << std::hex << std::uppercase << "Random seed2: 0x" << seed2 << std::endl;
+  std::cout << std::hex << std::uppercase << "Random seed3: 0x" << seed3 << std::endl;
 
         std::uint_fast32_t i;
   const std::uint_fast32_t number_of_trials = UINT32_C(10000000);
