@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////
-//  Copyright Christopher Kormanyos 1999 - 2018.                 //
+//  Copyright Christopher Kormanyos 2018.                        //
 //  Distributed under the Boost Software License,                //
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt          //
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)             //
@@ -20,7 +20,7 @@
 
 #define TEST_UINTWIDE_T_USE_NUMBER_OF_DIGITS std::size_t(256U)
 
-#include "generic_template_uintwide_t.h"
+#include <generic_template_uintwide_t.h>
 
 // Some examples:
 // 256-Bit
@@ -106,7 +106,7 @@ namespace
     // Perform a logical xor of current_now with the maximum value of its type.
     current_now ^= (std::numeric_limits<std::uintmax_t>::max)();
 
-    // Extract the data bytes of current now...
+    // Extract the data bytes of current now into an array...
     std::array<std::uint8_t, std::numeric_limits<std::uintmax_t>::digits / 8U> current_now_data;
 
     for(std::uint_fast8_t i = 0U; i < current_now_data.size(); ++ i)
@@ -117,8 +117,10 @@ namespace
     // ... and... Finally, run a CRC64-WE checksum over the data bytes of current_now.
     const std::uint64_t current_now_crc64_we_result =
       crc_bitwise_template<std::uint64_t,
-                           UINT64_C(0x42F0E1EBA9EA3693)>(current_now_data.data(), current_now_data.size());
+                           UINT64_C(0x42F0E1EBA9EA3693)>(current_now_data.data(),
+                                                         current_now_data.size());
 
+    // Return the 64-bit pseudo-random seed.
     return current_now_crc64_we_result;
   }
 
@@ -164,15 +166,16 @@ namespace
     std::mt19937 my_gen;
   };
 
-  bool is_small_prime(const std::uint8_t n)
+  bool is_small_prime(const std::uint_fast8_t n)
   {
-    static const std::array<std::uint8_t, 48U> small_primes = 
+    static const std::array<std::uint_fast8_t, 48U> small_primes = 
     {{
-        3U,   5U,   7U,  11U,  13U,  17U,  19U,  23U,  29U,  31U,
-       37U,  41U,  43U,  47U,  53U,  59U,  61U,  67U,  71U,  73U,
-       79U,  83U,  89U,  97U, 101U, 103U, 107U, 109U, 113U, 127U,
-      131U, 137U, 139U, 149U, 151U, 157U, 163U, 167U, 173U, 179U,
-      181U, 191U, 193U, 197U, 199U, 211U, 223U, 227U
+      UINT8_C(  3), UINT8_C(  5), UINT8_C(  7), UINT8_C( 11), UINT8_C( 13), UINT8_C( 17), UINT8_C( 19), UINT8_C( 23),
+      UINT8_C( 29), UINT8_C( 31), UINT8_C( 37), UINT8_C( 41), UINT8_C( 43), UINT8_C( 47), UINT8_C( 53), UINT8_C( 59),
+      UINT8_C( 61), UINT8_C( 67), UINT8_C( 71), UINT8_C( 73), UINT8_C( 79), UINT8_C( 83), UINT8_C( 89), UINT8_C( 97),
+      UINT8_C(101), UINT8_C(103), UINT8_C(107), UINT8_C(109), UINT8_C(113), UINT8_C(127), UINT8_C(131), UINT8_C(137),
+      UINT8_C(139), UINT8_C(149), UINT8_C(151), UINT8_C(157), UINT8_C(163), UINT8_C(167), UINT8_C(173), UINT8_C(179),
+      UINT8_C(181), UINT8_C(191), UINT8_C(193), UINT8_C(197), UINT8_C(199), UINT8_C(211), UINT8_C(223), UINT8_C(227)
     }};
 
     return (std::find(small_primes.cbegin(),
@@ -187,25 +190,20 @@ namespace
     // Should we use lambda functions or other
     // small subroutines?
 
-    static const std::array<std::uint32_t, 4U> ppn =
-    {{
-      UINT32_C( 223092870),
-      UINT32_C(2756205443),
-      UINT32_C( 907383479),
-      UINT32_C(4132280413)
-    }};
-
     {
-      const std::uint32_t m = n % ppn[0U];
-
-      static const std::array<std::uint32_t, 8U> small_factors0 =
+      static const std::array<std::uint_fast8_t, 8U> small_factors0 =
       {{
-        3U, 5U, 7U, 11U, 13U, 17U, 19U, 23U
+        UINT8_C( 3), UINT8_C( 5), UINT8_C( 7), UINT8_C(11),
+        UINT8_C(13), UINT8_C(17), UINT8_C(19), UINT8_C(23)
       }};
+
+      static const std::uint32_t pp0 = UINT32_C(223092870);
+
+      const std::uint32_t m = n % pp0;
 
       for(std::size_t i = 0U; i < small_factors0.size(); ++i)
       {
-        if((m % small_factors0[i]) == 0U)
+        if((m % std::uint32_t(small_factors0[i])) == 0U)
         {
           return false;
         }
@@ -213,16 +211,19 @@ namespace
     }
 
     {
-      static const std::array<std::uint32_t, 6U> small_factors1 =
+      static const std::array<std::uint_fast8_t, 6U> small_factors1 =
       {{
-        29U, 31U, 37U, 41U, 43U, 47U
+        UINT8_C(29), UINT8_C(31), UINT8_C(37), UINT8_C(41),
+        UINT8_C(43), UINT8_C(47)
       }};
 
-      const std::uint32_t m = n % ppn[1U];
+      static const std::uint32_t pp1 = UINT32_C(2756205443);
+
+      const std::uint32_t m = n % pp1;
 
       for(std::size_t i = 0U; i < small_factors1.size(); ++i)
       {
-        if((m % small_factors1[i]) == 0U)
+        if((m % std::uint32_t(small_factors1[i])) == 0U)
         {
           return false;
         }
@@ -230,16 +231,19 @@ namespace
     }
 
     {
-      static const std::array<std::uint32_t, 5U> small_factors2 =
+      static const std::array<std::uint_fast8_t, 5U> small_factors2 =
       {{
-        53U, 59U, 61U, 67U, 71U
+        UINT8_C(53), UINT8_C(59), UINT8_C(61), UINT8_C(67),
+        UINT8_C(71)
       }};
 
-      const std::uint32_t m = n % ppn[2U];
+      static const std::uint32_t pp2 = UINT32_C(907383479);
+
+      const std::uint32_t m = n % pp2;
 
       for(std::size_t i = 0U; i < small_factors2.size(); ++i)
       {
-        if((m % small_factors2[i]) == 0U)
+        if((m % std::uint32_t(small_factors2[i])) == 0U)
         {
           return false;
         }
@@ -247,16 +251,19 @@ namespace
     }
 
     {
-      static const std::array<std::uint32_t, 5U> small_factors3 =
+      static const std::array<std::uint_fast8_t, 5U> small_factors3 =
       {{
-        73U, 79U, 83U, 89U, 97U
+        UINT8_C(73), UINT8_C(79), UINT8_C(83), UINT8_C(89),
+        UINT8_C(97)
       }};
 
-      const std::uint32_t m = n % ppn[3U];
+      static const std::uint32_t pp3 = UINT32_C(4132280413);
+
+      const std::uint32_t m = n % pp3;
 
       for(std::size_t i = 0U; i < small_factors3.size(); ++i)
       {
-        if((m % small_factors3[i]) == 0U)
+        if((m % std::uint32_t(small_factors3[i])) == 0U)
         {
           return false;
         }
@@ -264,33 +271,33 @@ namespace
     }
 
     {
-      static const std::array<std::array<std::uint32_t, 4U>, 6U> small_factors4 =
+      static const std::array<std::array<std::uint_fast8_t, 4U>, 6U> small_factors4 =
       {{
-        {{ 101U, 103U, 107U, 109U }},
-        {{ 113U, 127U, 131U, 137U }},
-        {{ 139U, 149U, 151U, 157U }},
-        {{ 163U, 167U, 173U, 179U }},
-        {{ 181U, 191U, 193U, 197U }},
-        {{ 199U, 211U, 223U, 227U }}
+        {{ UINT8_C(101), UINT8_C(103), UINT8_C(107), UINT8_C(109) }},
+        {{ UINT8_C(113), UINT8_C(127), UINT8_C(131), UINT8_C(137) }},
+        {{ UINT8_C(139), UINT8_C(149), UINT8_C(151), UINT8_C(157) }},
+        {{ UINT8_C(163), UINT8_C(167), UINT8_C(173), UINT8_C(179) }},
+        {{ UINT8_C(181), UINT8_C(191), UINT8_C(193), UINT8_C(197) }},
+        {{ UINT8_C(199), UINT8_C(211), UINT8_C(223), UINT8_C(227) }}
       }};
 
       static const std::array<std::uint32_t, 6U> pp4 =
       {{
-        121330189U,
-        113U * 127U * 131U * 137U,
-        139U * 149U * 151U * 157U,
-        163U * 167U * 173U * 179U,
-        181U * 191U * 193U * 197U,
-        199U * 211U * 223U * 227U
+        UINT32_C(121330189),
+        UINT32_C(113) * UINT32_C(127) * UINT32_C(131) * UINT32_C(137),
+        UINT32_C(139) * UINT32_C(149) * UINT32_C(151) * UINT32_C(157),
+        UINT32_C(163) * UINT32_C(167) * UINT32_C(173) * UINT32_C(179),
+        UINT32_C(181) * UINT32_C(191) * UINT32_C(193) * UINT32_C(197),
+        UINT32_C(199) * UINT32_C(211) * UINT32_C(223) * UINT32_C(227)
       }};
 
       for(std::size_t k = 0U; k < pp4.size(); ++k)
       {
         const std::uint32_t m = n % pp4[k];
 
-        for(std::size_t i = 0U; i < 4U; ++i)
+        for(std::size_t i = 0U; i < small_factors4[0U].size(); ++i)
         {
-          if((m % small_factors4[k][i]) == 0U)
+          if((m % std::uint32_t(small_factors4[k][i])) == 0U)
           {
             return false;
           }
@@ -410,7 +417,7 @@ namespace
 
     // We know n is greater than 227 because we have already
     // excluded all small factors up to and including 227.
-    wide_integer_type q = 228U;
+    wide_integer_type q(std::uint_fast8_t(228U));
 
     wide_integer_type x;
     wide_integer_type y;
@@ -496,11 +503,10 @@ bool miller_rabin_result()
             << "Random seed2: 0x"
             << seed2
             << std::endl;
-
   #endif
 
         std::uint_fast32_t i;
-  const std::uint_fast32_t number_of_trials = std::size_t(10000000ULL);
+  const std::uint_fast32_t number_of_trials = UINT32_C(10000000);
 
   bool miller_rabin_test_result = false;
 
@@ -512,11 +518,10 @@ bool miller_rabin_result()
 
     if(miller_rabin_test_result)
     {
-      // The value of n might probably be prime.
-      std::cout << "We have a probable prime with value: 0x"
-                << std::hex
-                << std::uppercase
-                << n
+      // The value of n (at index i) is a probably prime.
+      std::cout << "We have a probable prime at index: "
+                << std::dec
+                << i
                 << std::endl;
 
       // We will now find out if [(n - 1) / 2] is also prime.
