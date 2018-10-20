@@ -77,7 +77,7 @@ namespace
     return value_type(crc ^ FinalXorValue);
   }
 
-  std::uint64_t high_resolution_now_with_crc64()
+  inline std::uint64_t high_resolution_now_with_crc64()
   {
     using clock_type = std::chrono::high_resolution_clock;
 
@@ -133,7 +133,7 @@ namespace
     using value_type = UnsignedIntegralType;
 
     static_assert((std::numeric_limits<value_type>::digits % std::numeric_limits<std::uint32_t>::digits) == 0,
-                  "Error: The width of UnsignedIntegralType must be a multiple of 32.");
+                  "Error: The width of UnsignedIntegralType must be a multiple of the digits in uint32_t.");
 
     random_unsigned_generator(const std::uint32_t seed) : my_gen(seed) { }
 
