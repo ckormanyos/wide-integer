@@ -12,7 +12,6 @@
   #include <array>
   #include <cstddef>
   #include <cstdint>
-  #include <cstring>
   #include <limits>
   #include <type_traits>
 
@@ -218,6 +217,22 @@
   }
 
   namespace wide_integer { namespace generic_template { namespace detail {
+
+  // A local implementation of strcpy.
+  inline void strcpy(char* dst, const char* src)
+  {
+    while((*dst++ = *src++) != char('\0')) { ; }
+  }
+
+  // A local implementation of strlen.
+  inline std::size_t strlen(const char* p_str)
+  {
+    const char* p_str_copy;
+
+    for(p_str_copy = p_str; (*p_str_copy != char('\0')); ++p_str_copy) { ; }
+
+    return std::size_t(p_str_copy - p_str);
+  }
 
   // From an unsigned integral input parameter of type LT,
   // extract the low part of it. The type of the extracted
@@ -897,7 +912,7 @@
 
         str_temp[std::size_t(sizeof(str_temp) - 1U)] = char('\0');
 
-        std::strcpy(str_result, str_temp + pos);
+        detail::strcpy(str_result, str_temp + pos);
       }
       else if(base_rep == 10U)
       {
@@ -952,7 +967,7 @@
 
         str_temp[std::size_t(sizeof(str_temp) - 1U)] = char('\0');
 
-        std::strcpy(str_result, str_temp + pos);
+        detail::strcpy(str_result, str_temp + pos);
       }
       else if(base_rep == 16U)
       {
@@ -1017,7 +1032,7 @@
 
         str_temp[std::size_t(sizeof(str_temp) - 1U)] = char('\0');
 
-        std::strcpy(str_result, str_temp + pos);
+        detail::strcpy(str_result, str_temp + pos);
       }
       else
       {
@@ -1034,7 +1049,7 @@
     {
       std::fill(values.begin(), values.end(), ushort_type(0U));
 
-      const std::size_t str_length = strlen(str_input);
+      const std::size_t str_length = detail::strlen(str_input);
 
       std::uint_fast8_t base = 10U;
 

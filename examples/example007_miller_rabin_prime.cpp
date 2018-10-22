@@ -18,7 +18,7 @@
 #include <iostream>
 
 //#define TEST_UINTWIDE_T_USE_FIXED_RANDOM_SEEDS
-
+//#define TEST_UINTWIDE_T_USE_ENDLESS_NUMBER_OF_PRIMES
 #define TEST_UINTWIDE_T_USE_NUMBER_OF_DIGITS std::size_t(256U)
 
 #include <generic_template_uintwide_t.h>
@@ -165,7 +165,8 @@ namespace
 
       step();
 
-      return rotr(std::uint32_t(((previous_state >> 18U) ^ previous_state) >> 27U), std::int32_t(previous_state >> 59U));
+      return rotate(std::uint32_t   (((previous_state >> 18U) ^ previous_state) >> 27U),
+                    std::int_fast8_t  (previous_state >> 59U));
     }
 
   private:
@@ -181,9 +182,9 @@ namespace
       my_state = std::uint64_t(std::uint64_t(my_state * default_multiplier) + my_inc);
     }
 
-    static std::uint32_t rotr(std::uint32_t value, std::int32_t rot)
+    static std::uint32_t rotate(std::uint32_t value, std::int_fast8_t rot)
     {
-      return (value >> rot) | (value << std::int32_t(std::uint32_t(-rot) & 31U));
+      return (value >> rot) | (value << std::int_fast8_t(std::uint32_t(-rot) & 31U));
     }
   };
 
@@ -197,7 +198,9 @@ namespace
                   "Error: The width of UnsignedIntegralType must be a multiple of the digits in uint32_t.");
 
     random_unsigned_generator(const std::uint64_t seed0,
-                              const std::uint64_t seed1 = UINT64_C(0)) : my_gen(seed0, seed1) { }
+                              const std::uint64_t seed1) : my_gen(seed0, seed1) { }
+
+    random_unsigned_generator(const std::uint64_t seed0) : my_gen(seed0) { }
 
     random_unsigned_generator() : my_gen() { }
 
@@ -532,7 +535,7 @@ namespace
       }
     }
 
-    return true;  // Yeheh! probably prime.
+    return true;  // Probably prime.
   }
 }
 
@@ -545,24 +548,22 @@ bool miller_rabin_result()
   #endif
 
   #if defined(TEST_UINTWIDE_T_USE_FIXED_RANDOM_SEEDS)
-  const std::uint64_t seed0 = UINT64_C(0xDAD6177428754C69);
-  const std::uint64_t seed1 = UINT64_C(0x73DD1E70A590026C);
-  const std::uint64_t seed2 = UINT64_C(0xD04437538D54D2F1);
-  const std::uint64_t seed3 = UINT64_C(0xB81364AE3D6B7C96);
+  static const std::uint64_t seed0 = UINT64_C(0xDAD6177428754C69);
+  static const std::uint64_t seed1 = UINT64_C(0x73DD1E70A590026C);
+  static const std::uint64_t seed2 = UINT64_C(0xD04437538D54D2F1);
+  static const std::uint64_t seed3 = UINT64_C(0xB81364AE3D6B7C96);
   #else
-  const std::uint64_t seed0 = high_resolution_now_with_crc64();
-  const std::uint64_t seed1 = high_resolution_now_with_crc64();
-  const std::uint64_t seed2 = high_resolution_now_with_crc64();
-  const std::uint64_t seed3 = high_resolution_now_with_crc64();
+  static const std::uint64_t seed0 = high_resolution_now_with_crc64();
+  static const std::uint64_t seed1 = high_resolution_now_with_crc64();
+  static const std::uint64_t seed2 = high_resolution_now_with_crc64();
+  static const std::uint64_t seed3 = high_resolution_now_with_crc64();
   #endif
 
-  random_unsigned_generator<wide_integer_type> gen1(seed0, seed1);
-  random_unsigned_generator<wide_integer_type> gen2(seed2, seed3);
+  static random_unsigned_generator<wide_integer_type> gen1(seed0, seed1);
+  static random_unsigned_generator<wide_integer_type> gen2(seed2, seed3);
 
-  std::cout << std::hex << std::uppercase << "Random seed0: 0x" << seed0 << std::endl;
-  std::cout << std::hex << std::uppercase << "Random seed1: 0x" << seed1 << std::endl;
-  std::cout << std::hex << std::uppercase << "Random seed2: 0x" << seed2 << std::endl;
-  std::cout << std::hex << std::uppercase << "Random seed3: 0x" << seed3 << std::endl;
+  static std::uintmax_t total_number_of_trials;
+  static std::uintmax_t total_number_of_primes;
 
         std::uint_fast32_t i;
   const std::uint_fast32_t number_of_trials = UINT32_C(10000000);
@@ -577,22 +578,33 @@ bool miller_rabin_result()
 
     if(miller_rabin_test_result)
     {
-      // The value of n (at index i) is a probably prime.
-      std::cout << "We have a probable prime at index: "
-                << std::dec
-                << i
-                << std::endl;
-
       // We will now find out if [(n - 1) / 2] is also prime.
       miller_rabin_test_result = my_miller_rabin_test((n - 1U) / 2U, 25U, gen2);
 
       if(miller_rabin_test_result)
       {
-        std::cout << std::endl
-                  << "We have a safe prime with value: 0x"
+        total_number_of_trials += i;
+
+        ++total_number_of_primes;
+
+        std::cout << "We have a safe prime at index "
+                  << std::dec
+                  << std::setw(8)
+                  << std::setfill(char(' '))
+                  << i
+                  << " with value: 0x"
                   << std::hex
                   << std::uppercase
+                  << std::setw(std::numeric_limits<wide_integer_type>::digits / 4)
+                  << std::setfill(char('0'))
                   << n
+                  << std::dec
+                  << std::setw(8)
+                  << std::setfill(char(' '))
+                  << ", no. primes = "
+                  << total_number_of_primes
+                  << ", avg. trials = "
+                  << total_number_of_trials / total_number_of_primes
                   << std::endl;
       }
     }
@@ -610,7 +622,16 @@ bool miller_rabin_result()
 
 int main()
 {
-  const bool miller_rabin_test_is_ok = miller_rabin_result();
+  std::cout << "Calculating prime(s)... Please have patience." << std::endl;
 
-  static_cast<void>(miller_rabin_test_is_ok);
+  #if defined(TEST_UINTWIDE_T_USE_ENDLESS_NUMBER_OF_PRIMES)
+  for(;;)
+  {
+  #endif
+    const bool miller_rabin_test_is_ok = miller_rabin_result();
+
+    static_cast<void>(miller_rabin_test_is_ok);
+  #if defined(TEST_UINTWIDE_T_USE_ENDLESS_NUMBER_OF_PRIMES)
+  }
+  #endif
 }
