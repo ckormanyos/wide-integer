@@ -18,12 +18,13 @@
 #include <iostream>
 
 //#define TEST_UINTWIDE_T_USE_FIXED_RANDOM_SEEDS
-//#define TEST_UINTWIDE_T_USE_ENDLESS_NUMBER_OF_PRIMES
+#define TEST_UINTWIDE_T_USE_ENDLESS_NUMBER_OF_PRIMES
 #define TEST_UINTWIDE_T_USE_NUMBER_OF_DIGITS std::size_t(256U)
 
 #include <generic_template_uintwide_t.h>
 
-// Some examples:
+// Note: Some of the following comments use the Wolfram Language(R).
+//
 // 256-Bit
 // BaseForm[16^^391A52D30A8E2992C873DFCACCFD1C0A41223B270A89B68F5D80D1B79EB9F7FB, 10]
 //   25828342025791210859166436130183142623644908596914722479104004883234718087163
@@ -579,7 +580,7 @@ bool miller_rabin_result()
     if(miller_rabin_test_result)
     {
       // We will now find out if [(n - 1) / 2] is also prime.
-      miller_rabin_test_result = my_miller_rabin_test((n - 1U) / 2U, 25U, gen2);
+      miller_rabin_test_result = my_miller_rabin_test((n - 1U) >> 1U, 25U, gen2);
 
       if(miller_rabin_test_result)
       {
