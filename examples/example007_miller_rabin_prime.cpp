@@ -19,11 +19,11 @@
 
 //#define TEST_UINTWIDE_T_USE_FIXED_RANDOM_SEEDS
 #define TEST_UINTWIDE_T_USE_ENDLESS_NUMBER_OF_PRIMES
-#define TEST_UINTWIDE_T_USE_NUMBER_OF_DIGITS std::size_t(256U)
+//#define TEST_UINTWIDE_T_USE_NUMBER_OF_DIGITS std::size_t(256U)
 
 #include <generic_template_uintwide_t.h>
 
-// Note: Some of the following comments use the Wolfram Language(R).
+// Note: Some of the following comments use the Wolfram Language(TM).
 //
 // 256-Bit
 // BaseForm[16^^391A52D30A8E2992C873DFCACCFD1C0A41223B270A89B68F5D80D1B79EB9F7FB, 10]
@@ -195,15 +195,13 @@ namespace
   public:
     using value_type = UnsignedIntegralType;
 
-    static_assert((std::numeric_limits<value_type>::digits % std::numeric_limits<std::uint32_t>::digits) == 0,
+    static_assert(((std::numeric_limits<value_type>::digits % std::numeric_limits<std::uint32_t>::digits) == 0),
                   "Error: The width of UnsignedIntegralType must be a multiple of the digits in uint32_t.");
+
+    random_unsigned_generator() : my_gen() { }
 
     random_unsigned_generator(const std::uint64_t seed0,
                               const std::uint64_t seed1) : my_gen(seed0, seed1) { }
-
-    random_unsigned_generator(const std::uint64_t seed0) : my_gen(seed0) { }
-
-    random_unsigned_generator() : my_gen() { }
 
     value_type operator()(const value_type& lo_range = value_type(0U),
                           const value_type& hi_range = (std::numeric_limits<value_type>::max)())
@@ -265,7 +263,7 @@ namespace
 
       static const std::uint32_t pp0 = UINT32_C(223092870);
 
-      const std::uint32_t m = n % pp0;
+      const std::uint32_t m(n % pp0);
 
       for(std::size_t i = 0U; i < small_factors0.size(); ++i)
       {
@@ -285,7 +283,7 @@ namespace
 
       static const std::uint32_t pp1 = UINT32_C(2756205443);
 
-      const std::uint32_t m = n % pp1;
+      const std::uint32_t m(n % pp1);
 
       for(std::size_t i = 0U; i < small_factors1.size(); ++i)
       {
@@ -305,7 +303,7 @@ namespace
 
       static const std::uint32_t pp2 = UINT32_C(907383479);
 
-      const std::uint32_t m = n % pp2;
+      const std::uint32_t m(n % pp2);
 
       for(std::size_t i = 0U; i < small_factors2.size(); ++i)
       {
@@ -325,7 +323,7 @@ namespace
 
       static const std::uint32_t pp3 = UINT32_C(4132280413);
 
-      const std::uint32_t m = n % pp3;
+      const std::uint32_t m(n % pp3);
 
       for(std::size_t i = 0U; i < small_factors3.size(); ++i)
       {
@@ -359,7 +357,7 @@ namespace
 
       for(std::size_t k = 0U; k < pp4.size(); ++k)
       {
-        const std::uint32_t m = n % pp4[k];
+        const std::uint32_t m(n % pp4[k]);
 
         for(std::size_t i = 0U; i < small_factors4[0U].size(); ++i)
         {
@@ -423,7 +421,6 @@ namespace
 
           local_double_width_type x(std::uint8_t(1U));
           local_double_width_type y(a);
-          local_double_width_type result;
     const local_double_width_type c_local(c);
 
     const UnsignedIntegralType2 zero(std::uint8_t(0U));
@@ -432,12 +429,11 @@ namespace
     {
       if(std::uint32_t(b) & 1U)
       {
-        result = x * y;
-        x = result % c_local;
+        x = (x * y) % c_local;
       }
 
-      result = y * y;
-      y = result % c_local;
+      y = (y * y) % c_local;
+
       b >>= 1;
     }
 
@@ -468,7 +464,7 @@ namespace
 
     if(n <= 227U)
     {
-      return is_small_prime(n);
+      return is_small_prime(std::uint_fast8_t(n));
     }
 
     if(check_small_factors(n) == false)
@@ -524,19 +520,22 @@ namespace
             break;
           }
 
-          return false; // test failed
+          return false;
         }
 
-        if(++j == k)
+        ++j;
+
+        if(j == k)
         {
-          return false; // failed
+          return false;
         }
 
         y = powm(y, 2U, n);
       }
     }
 
-    return true;  // Probably prime.
+    // Probably prime.
+    return true;
   }
 }
 
