@@ -12,6 +12,7 @@
   #include <array>
   #include <cstddef>
   #include <cstdint>
+  #include <iterator>
   #include <limits>
   #include <type_traits>
 
@@ -317,6 +318,49 @@
   template<>                              struct sint_type_helper<std::uint32_t> { using exact_signed_type   = std::int32_t; };
   template<>                              struct sint_type_helper<std::uint64_t> { using exact_signed_type   = std::int64_t; };
 
+  template<typename UnsignedIntegralType>
+  std::size_t msb_helper(const UnsignedIntegralType&) { return 0U; }
+
+  template<>
+  inline std::size_t msb_helper<std::uint16_t>(const std::uint16_t& x)
+  {
+    std::uint_fast8_t r(0U);
+    std::uint16_t     u(x);
+
+    // Use O(log2[N]) binary-halving in an unrolled loop to find the msb.
+    if((u & UINT16_C(0x0000FF00)) != UINT16_C(0)) { u >>=  8; r |= UINT8_C( 8); }
+    if((u & UINT16_C(0x000000F0)) != UINT16_C(0)) { u >>=  4; r |= UINT8_C( 4); }
+    if((u & UINT16_C(0x0000000C)) != UINT16_C(0)) { u >>=  2; r |= UINT8_C( 2); }
+    if((u & UINT16_C(0x00000002)) != UINT16_C(0)) { u >>=  1; r |= UINT8_C( 1); }
+
+    return std::size_t(r);
+  }
+
+  template<>
+  inline std::size_t msb_helper<std::uint32_t>(const std::uint32_t& x)
+  {
+    std::uint_fast8_t r(0U);
+    std::uint32_t     u(x);
+
+    // Use O(log2[N]) binary-halving in an unrolled loop to find the msb.
+    if((u & UINT32_C(0xFFFF0000)) != UINT32_C(0)) { u >>= 16; r |= UINT8_C(16); }
+    if((u & UINT32_C(0x0000FF00)) != UINT32_C(0)) { u >>=  8; r |= UINT8_C( 8); }
+    if((u & UINT32_C(0x000000F0)) != UINT32_C(0)) { u >>=  4; r |= UINT8_C( 4); }
+    if((u & UINT32_C(0x0000000C)) != UINT32_C(0)) { u >>=  2; r |= UINT8_C( 2); }
+    if((u & UINT32_C(0x00000002)) != UINT32_C(0)) { u >>=  1; r |= UINT8_C( 1); }
+
+    return std::size_t(r);
+  }
+
+  template<>
+  inline std::size_t msb_helper<std::uint64_t>(const std::uint64_t& x)
+  {
+    const std::uint32_t hi_part = make_hi<std::uint32_t, std::uint64_t>(x);
+
+    return ((hi_part == 0U) ?        msb_helper(make_lo<std::uint32_t, std::uint64_t>(x))
+                            : (32U + msb_helper(hi_part)));
+  }
+
   } } } // namespace wide_integer::generic_template::detail
 
   namespace wide_integer { namespace generic_template {
@@ -353,6 +397,15 @@
 
     // The type of the internal data representation.
     using representation_type = std::array<ushort_type, number_of_limbs>;
+
+    // The value type of the internal data representation.
+    using value_type = typename representation_type::value_type;
+
+    // The iterator types of the internal data representation.
+    using iterator               = typename std::array<ushort_type, number_of_limbs>::iterator;
+    using const_iterator         = typename std::array<ushort_type, number_of_limbs>::const_iterator;
+    using reverse_iterator       = typename std::array<ushort_type, number_of_limbs>::reverse_iterator;
+    using const_reverse_iterator = typename std::array<ushort_type, number_of_limbs>::const_reverse_iterator;
 
     // Types that have half or double the width of *this.
     using half_width_type   = uintwide_t<my_digits / 2U, ST, LT>;
@@ -430,9 +483,9 @@
     }
 
     // Constructor from the internal data representation.
-    uintwide_t(const representation_type& rep)
+    uintwide_t(const representation_type& other_rep)
     {
-      std::copy(rep.cbegin(), rep.cend(), values.begin());
+      std::copy(other_rep.cbegin(), other_rep.cend(), values.begin());
     }
 
     // Constructor from a C-style array.
@@ -1817,6 +1870,140 @@
   }
 
   #endif
+
+  } } // namespace wide_integer::generic_template
+
+  // Implement a variety of number-theoretical tools.
+
+  namespace wide_integer { namespace generic_template {
+
+  template<const std::size_t Digits2,
+           typename ST,
+           typename LT>
+  std::size_t lsb(const uintwide_t<Digits2, ST, LT>& x)
+  {
+    // Calculate the position of the least-significant bit.
+
+    // TBD: Implement lsb.
+    static_cast<void>(x.crepresentation().size());
+
+    return 0U;
+  }
+
+  template<const std::size_t Digits2,
+           typename ST,
+           typename LT>
+  std::size_t msb(const uintwide_t<Digits2, ST, LT>& x)
+  {
+    // Calculate the position of the most-significant bit.
+    using local_const_reverse_iterator_type = typename uintwide_t<Digits2, ST, LT>::const_reverse_iterator;
+    using local_value_type                  = typename uintwide_t<Digits2, ST, LT>::value_type;
+
+    std::size_t bpos = 0U;
+
+    for(local_const_reverse_iterator_type ri = x.crepresentation().crbegin(); ri != x.crepresentation().crend(); ++ri)
+    {
+      if((*ri & (std::numeric_limits<local_value_type>::max)()) != 0U)
+      {
+        bpos =    detail::msb_helper(*ri)
+               + (std::size_t(std::numeric_limits<local_value_type>::digits) * std::size_t(x.crepresentation().crend() - (ri + 1U)));
+
+        break;
+      }
+    }
+
+    return bpos;
+  }
+
+  template<const std::size_t Digits2,
+           typename ST,
+           typename LT>
+  uintwide_t<Digits2, ST, LT> sqrt(const uintwide_t<Digits2, ST, LT>& m)
+  {
+    // Calculate the square root.
+
+    using local_wide_integer_type = uintwide_t<Digits2, ST, LT>;
+    using local_value_type        = typename local_wide_integer_type::value_type;
+
+    const bool argument_is_zero = std::all_of(m.crepresentation().cbegin(),
+                                              m.crepresentation().cend(),
+                                              [](const local_value_type& a) -> bool
+                                              {
+                                                return (a == 0U);
+                                              });
+
+    local_wide_integer_type s;
+
+    if(argument_is_zero)
+    {
+      s = local_wide_integer_type(std::uint_fast8_t(0U));
+    }
+    else
+    {
+      // Obtain the initial guess via algorithms
+      // involving the position of the msb.
+      const std::size_t msb_pos = msb(m);
+
+      // Obtain the initial value.
+      const std::size_t right_shift_amount =
+          std::size_t( std::numeric_limits<local_wide_integer_type>::digits - 1)
+        - std::size_t(msb_pos / 2U);
+
+      local_wide_integer_type u((std::numeric_limits<local_wide_integer_type>::max)() >> right_shift_amount);
+
+      // Perform the iteration for square root.
+      for(std::size_t i = 0U; i < 64U; ++i)
+      {
+        s = u;
+
+        const local_wide_integer_type t = s + (m / s);
+
+        u = t >> 1;
+
+        if(u >= s)
+        {
+          break;
+        }
+      }
+    }
+
+    return s;
+  }
+
+  template<typename UnsignedIntegralType1,
+           typename UnsignedIntegralType2 = UnsignedIntegralType1>
+  UnsignedIntegralType1 powm(const UnsignedIntegralType1& b,
+                             const UnsignedIntegralType2& p,
+                             const UnsignedIntegralType1& m)
+  {
+    // Calculate (b ^ p) % m.
+
+    using local_double_width_type = typename UnsignedIntegralType1::double_width_type;
+    using local_normal_width_type = UnsignedIntegralType1;
+
+          local_double_width_type x(std::uint8_t(1U));
+          local_double_width_type y(b);
+          UnsignedIntegralType2   p_local(p);
+    const local_double_width_type m_local(m);
+
+    const UnsignedIntegralType2 zero(std::uint8_t(0U));
+
+    while(p_local > zero)
+    {
+      if(std::uint32_t(p_local) & 1U)
+      {
+        x = (x * y) % m_local;
+      }
+
+      y = (y * y) % m_local;
+
+      p_local >>= 1;
+    }
+
+    return (local_normal_width_type(x) % m);
+  }
+
+  // TBD: Implement a GCD function.
 
   } } // namespace wide_integer::generic_template
 

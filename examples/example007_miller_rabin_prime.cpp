@@ -407,39 +407,6 @@ namespace
     return bpos;
   }
 
-  template<typename UnsignedIntegralType1,
-           typename UnsignedIntegralType2 = UnsignedIntegralType1>
-  UnsignedIntegralType1 powm(const UnsignedIntegralType1& a,
-                                   UnsignedIntegralType2  b,
-                             const UnsignedIntegralType1& c)
-  {
-    // Calculate (b ^ p) % m.
-
-    // TBD: Can deduction of the double-width type be made more generic?
-    using local_double_width_type = typename UnsignedIntegralType1::double_width_type;
-    using local_normal_width_type = UnsignedIntegralType1;
-
-          local_double_width_type x(std::uint8_t(1U));
-          local_double_width_type y(a);
-    const local_double_width_type c_local(c);
-
-    const UnsignedIntegralType2 zero(std::uint8_t(0U));
-
-    while(b > zero)
-    {
-      if(std::uint32_t(b) & 1U)
-      {
-        x = (x * y) % c_local;
-      }
-
-      y = (y * y) % c_local;
-
-      b >>= 1;
-    }
-
-    return (local_normal_width_type(x) % c);
-  }
-
   template<typename UnsignedIntegralType,
            typename RandomGenerator>
   bool my_miller_rabin_test(const UnsignedIntegralType& n,
