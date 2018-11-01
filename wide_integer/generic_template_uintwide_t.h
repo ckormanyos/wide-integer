@@ -446,10 +446,7 @@
     }
 
     // Copy constructor.
-    uintwide_t(const uintwide_t& other)
-    {
-      std::copy(other.values.cbegin(), other.values.cend(), values.begin());
-    }
+    uintwide_t(const uintwide_t& other) : values(other.values) { }
 
     // Constructor from the double-width type.
     // This constructor is explicit because it
@@ -544,9 +541,10 @@
       return local_double_width_instance;
     }
 
-    // Purposely delete the cast operator that casts to the half-width type.
-    // This cast is deleted because it is a narrowing conversion.
-    // There is an explicit constructor above for this conversion.
+    // Intentionally delete the cast operator that casts
+    // to the half-width type. This cast is deleted because
+    // it is a narrowing conversion. There is an explicit
+    // constructor above for this conversion.
     template<typename UnknownUnsignedWideIntegralType = half_width_type,
              typename = typename std::enable_if<std::is_same<UnknownUnsignedWideIntegralType, half_width_type>::value == true>::type>
     operator half_width_type() const = delete;
@@ -618,7 +616,7 @@
                                      w.data(),
                                      w.size());
 
-      std::copy(w.cbegin(), w.cend(), values.begin());
+      values = w;
 
       return *this;
     }
@@ -810,7 +808,7 @@
       return uintwide_t(std::uint8_t(0U));
     }
 
-    // String write function.
+    // Write string function.
     bool wr_string(      char*             str_result,
                    const std::uint_fast8_t base_rep     = 0x10U,
                    const bool              show_base    = true,
@@ -819,8 +817,7 @@
                          std::size_t       field_width  = 0U,
                    const char              fill_char    = char('0')) const
     {
-            uintwide_t t   (*this);
-      const uintwide_t zero(std::uint8_t(0U));
+      uintwide_t t(*this);
 
       bool wr_string_is_ok = true;
 
@@ -832,7 +829,7 @@
 
         std::size_t pos = (sizeof(str_temp) - 1U);
 
-        if(t == zero)
+        if(t.is_zero())
         {
           --pos;
 
@@ -840,7 +837,7 @@
         }
         else
         {
-          while(t != zero)
+          while(t.is_zero() == false)
           {
             char c = char(t.values[0U] & mask);
 
@@ -890,7 +887,7 @@
 
         std::size_t pos = (sizeof(str_temp) - 1U);
 
-        if(t == zero)
+        if(t.is_zero() == true)
         {
           --pos;
 
@@ -900,7 +897,7 @@
         {
           const uintwide_t ten(std::uint8_t(10U));
 
-          while(t != zero)
+          while(t.is_zero() == false)
           {
             const uintwide_t t_temp(t);
 
@@ -947,7 +944,7 @@
 
         std::size_t pos = (sizeof(str_temp) - 1U);
 
-        if(t == zero)
+        if(t.is_zero() == true)
         {
           --pos;
 
@@ -955,7 +952,7 @@
         }
         else
         {
-          while(t != zero)
+          while(t.is_zero() == false)
           {
             char c(t.values[0U] & mask);
 
@@ -1015,7 +1012,7 @@
   private:
     representation_type values;
 
-    // String read function.
+    // Read string function.
     bool rd_string(const char* str_input)
     {
       std::fill(values.begin(), values.end(), ushort_type(0U));
@@ -1415,7 +1412,7 @@
                 carry = 0U;
                 ul    = uj - n;
 
-                for(i = local_uint_index_type(0U); i <= n; ++i, ++ul)
+                for(i = local_uint_index_type(0U); i < n; ++i, ++ul)
                 {
                   t      = ularge_type(ularge_type(uu[ul]) + vv[i]) + carry;
                   uu[ul] = detail::make_lo<ushort_type, ularge_type>(t);
@@ -1548,14 +1545,14 @@
   class numeric_limits_base : public std::numeric_limits<unsigned int>
   {
   private:
-    using uintwide_type = WideUnsignedIntegerType;
+    using local_uintwide_type = WideUnsignedIntegerType;
 
   public:
-    static const int digits   = static_cast<int>(uintwide_type::my_digits);
-    static const int digits10 = static_cast<int>(uintwide_type::my_digits10);
+    static const int digits   = static_cast<int>(local_uintwide_type::my_digits);
+    static const int digits10 = static_cast<int>(local_uintwide_type::my_digits10);
 
-    static uintwide_type (max)() { return uintwide_type::limits_helper_max(); }
-    static uintwide_type (min)() { return uintwide_type::limits_helper_min(); }
+    static local_uintwide_type (max)() { return local_uintwide_type::limits_helper_max(); }
+    static local_uintwide_type (min)() { return local_uintwide_type::limits_helper_min(); }
   };
 
   } } // namespace wide_integer::generic_template
