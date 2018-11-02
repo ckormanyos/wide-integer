@@ -5,7 +5,6 @@
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)             //
 ///////////////////////////////////////////////////////////////////
 
-#include <cstdint>
 #include <iomanip>
 #include <iostream>
 
@@ -19,15 +18,7 @@ int main()
 
   const uint256_t s = sqrt(a);
 
-  const bool result_is_ok =
-    (s == "0xFA5FE7853F1D4AD92BDF244179CA178B");
+  const bool result_is_ok = (s == "0xFA5FE7853F1D4AD92BDF244179CA178B");
 
-  std::cout << "result_is_ok: "
-            << std::boolalpha
-            << result_is_ok
-            << std::endl
-            << "sqrt(" << std::hex << "0x" << std::uppercase << a << ") is:"
-            << std::endl
-            << std::hex << "0x" << std::uppercase << s
-            << std::endl;
+  std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
 }

@@ -1,0 +1,27 @@
+///////////////////////////////////////////////////////////////////
+//  Copyright Christopher Kormanyos 2018.                        //
+//  Distributed under the Boost Software License,                //
+//  Version 1.0. (See accompanying file LICENSE_1_0.txt          //
+//  or copy at http://www.boost.org/LICENSE_1_0.txt)             //
+///////////////////////////////////////////////////////////////////
+
+#include <iomanip>
+#include <iostream>
+
+#include <wide_integer/generic_template_uintwide_t.h>
+
+int main()
+{
+  using uint256_t = wide_integer::generic_template::uint256_t;
+
+  const uint256_t b("0xDA4033C9B1B0675C20B7879EA63FFFBEEBEC3F89F78D22C393FAD98E7AE9BF69");
+  const uint256_t p("0xA4748AD2DAFEED29C73927BD0945EF45EFEC9DAA95CC59390D406FC27236A174");
+  const uint256_t m("0xB6EC4DAB21E2856D488D669C210DC1FAD00366F92D602B1D42B88E24531F907E");
+
+  const uint256_t c = powm(b, p, m);
+
+  const bool result_is_ok =
+    (c == "0x5231F0EF6BBB3E78B9D7B1FA5F86EFA932E71BABD8A1CFF2C9EE5C396284ED07");
+
+  std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
+}
