@@ -12,124 +12,14 @@
 
 #include <array>
 #include <algorithm>
-#include <chrono>
 #include <cstdint>
 #include <iomanip>
 #include <iostream>
 
-//#define TEST_UINTWIDE_T_USE_FIXED_RANDOM_SEEDS
-#define TEST_UINTWIDE_T_USE_ENDLESS_NUMBER_OF_PRIMES
-//#define TEST_UINTWIDE_T_USE_NUMBER_OF_DIGITS std::size_t(256U)
-
-#include <generic_template_uintwide_t.h>
-
-// Note: Some of the following comments use the Wolfram Language(TM).
-//
-// 256-Bit
-// BaseForm[16^^391A52D30A8E2992C873DFCACCFD1C0A41223B270A89B68F5D80D1B79EB9F7FB, 10]
-//   25828342025791210859166436130183142623644908596914722479104004883234718087163
-//
-// Obtain another primality check of this number.
-// PrimeQ[25828342025791210859166436130183142623644908596914722479104004883234718087163]
-//   True
-
-// 512-Bit
-// BaseForm[16^^66DCFC5C356041F18BDE1E24967F927792676430ECD2CA793B5470B22B25135DD8C5BF30B99ED6FE77323AD64D1A8E797A9F61B16D6A62916E1ABDAE172CD347, 10]
-//   5387384271039304745508551812951241747064418070116709491801209017199450051016259069177713089714034058888601640767987406861497345836726393193223080052052807
-
-// 1024-Bit
-// BaseForm[16^^4C13F2300C50C0A568F013964C38E991837064DD762FCF647E22F325EA749126EA71B5CF412BD40BAFA90E73DF9832F5C74319FD5952FC9D72AE45B424EA2D168F718D2858A539E03CC6F15AF52101E4D6EFA03A2F446694AC64715653355C6607492B4A4B0B7B250AF964D878CA9F5B8ADA7CED003E2B146D73EFD048F6DB33, 10]
-//   53423728181800137777827534817849948240183071720626548882339419582232495498871453045181774681728102488652942801395668402659115038117498862739489336673095967905611982718105156696703887027839599655773268311858451581630696642930238875596347814493959817488606142483475257336546018770999866807302647786275819936563
+#include <wide_integer/generic_template_uintwide_t.h>
 
 namespace
 {
-  #if !defined(TEST_UINTWIDE_T_USE_FIXED_RANDOM_SEEDS)
-
-  template<typename UnsignedIntegralType,
-           const UnsignedIntegralType Polynomial,
-           const UnsignedIntegralType InitialValue,
-           const UnsignedIntegralType FinalXorValue>
-  UnsignedIntegralType crc_bitwise_template(const std::uint8_t* message, const std::size_t count)
-  {
-    using value_type = UnsignedIntegralType;
-
-    value_type crc = InitialValue;
-
-    // Perform modulo-2 division, one byte at a time.
-    for(std::size_t byte = 0U; byte < count; ++byte)
-    {
-      // Bring the next byte into the result.
-      crc ^= (value_type(message[byte]) << (std::numeric_limits<value_type>::digits - 8U));
-
-      // Perform a modulo-2 division, one bit at a time.
-      for(std::int_fast8_t bit = 8; bit > 0; --bit)
-      {
-        // Divide the current data bit.
-        if((crc & (std::uintmax_t(1U) << (std::numeric_limits<value_type>::digits - 1U))) != 0U)
-        {
-          crc = value_type(crc << 1) ^ Polynomial;
-        }
-        else
-        {
-          crc <<= 1;
-        }
-      }
-    }
-
-    return value_type(crc ^ FinalXorValue);
-  }
-
-  inline std::uint64_t high_resolution_now_with_crc64()
-  {
-    using clock_type = std::chrono::high_resolution_clock;
-
-    // Obtain an initial value of std::chrono::high_resolution_clock::now().
-    const std::uintmax_t initial_now = 
-      static_cast<std::uintmax_t>(std::chrono::duration_cast<std::chrono::nanoseconds>
-                                    (clock_type::now().time_since_epoch()).count());
-
-    std::uintmax_t current_now = initial_now;
-
-    while(current_now == initial_now)
-    {
-      // Wait for std::chrono::high_resolution_clock::now()
-      // to differ from the initial value previously obtained.
-
-      current_now =
-        static_cast<std::uintmax_t>(std::chrono::duration_cast<std::chrono::nanoseconds>
-          (clock_type::now().time_since_epoch()).count());
-
-      if(current_now != initial_now)
-      {
-        break;
-      }
-    }
-
-    // Perform a logical xor of current_now with the maximum value of its type.
-    current_now ^= (std::numeric_limits<std::uintmax_t>::max)();
-
-    // Extract the data bytes of current now into an array...
-    std::array<std::uint8_t, std::numeric_limits<std::uintmax_t>::digits / 8U> current_now_data;
-
-    for(std::uint_fast8_t i = 0U; i < current_now_data.size(); ++ i)
-    {
-      current_now_data[i] = std::uint8_t(current_now >> (i * 8U));
-    }
-
-    // ... and... Finally, run a CRC64-WE checksum over the data bytes of current_now.
-    const std::uint64_t current_now_crc64_we_result =
-      crc_bitwise_template<std::uint64_t,
-                           UINT64_C(0x42F0E1EBA9EA3693),
-                           UINT64_C(0xFFFFFFFFFFFFFFFF),
-                           UINT64_C(0xFFFFFFFFFFFFFFFF)>(current_now_data.data(),
-                                                         current_now_data.size());
-
-    // Return the 64-bit pseudo-random seed.
-    return current_now_crc64_we_result;
-  }
-
-  #endif // not TEST_UINTWIDE_T_USE_FIXED_RANDOM_SEEDS
-
   class pcg_random_fast32 final
   {
   public:
@@ -372,41 +262,6 @@ namespace
     return true;
   }
 
-  template<typename UnsignedIntegralType>
-  std::size_t lsb(const UnsignedIntegralType& x)
-  {
-    std::size_t i;
-    std::size_t j;
-    std::size_t bpos = 0U;
-
-    UnsignedIntegralType x_tmp(x);
-
-    // This loop assumes that at least one bit is set in x.
-    for(i = 0U; ((x_tmp != 0U) && (bpos == 0U)); ++i)
-    {
-      std::uint32_t a = std::uint32_t(x_tmp);
-
-      for(j = 0U; j < std::size_t(std::numeric_limits<std::uint32_t>::digits); ++j)
-      {
-        if((a & 1U) != 0U)
-        {
-          bpos = std::size_t(std::size_t(i * std::size_t(std::numeric_limits<std::uint32_t>::digits)) + j);
-
-          break;
-        }
-
-        a >>= 1;
-      }
-
-      if(bpos == 0U)
-      {
-        x_tmp >>= std::size_t(std::numeric_limits<std::uint32_t>::digits);
-      }
-    }
-
-    return bpos;
-  }
-
   template<typename UnsignedIntegralType,
            typename RandomGenerator>
   bool my_miller_rabin_test(const UnsignedIntegralType& n,
@@ -506,99 +361,39 @@ namespace
   }
 }
 
-bool miller_rabin_result()
+int main()
 {
-  #if defined(TEST_UINTWIDE_T_USE_NUMBER_OF_DIGITS)
-  using wide_integer_type = wide_integer::generic_template::uintwide_t<TEST_UINTWIDE_T_USE_NUMBER_OF_DIGITS>;
-  #else
   using wide_integer_type = wide_integer::generic_template::uintwide_t<256U>;
-  #endif
 
-  #if defined(TEST_UINTWIDE_T_USE_FIXED_RANDOM_SEEDS)
-  static const std::uint64_t seed0 = UINT64_C(0xDAD6177428754C69);
-  static const std::uint64_t seed1 = UINT64_C(0x73DD1E70A590026C);
-  static const std::uint64_t seed2 = UINT64_C(0xD04437538D54D2F1);
-  static const std::uint64_t seed3 = UINT64_C(0xB81364AE3D6B7C96);
-  #else
-  static const std::uint64_t seed0 = high_resolution_now_with_crc64();
-  static const std::uint64_t seed1 = high_resolution_now_with_crc64();
-  static const std::uint64_t seed2 = high_resolution_now_with_crc64();
-  static const std::uint64_t seed3 = high_resolution_now_with_crc64();
-  #endif
+  // Use fixed seeds in order to obtain deterministic
+  // and reproducible results for this test.
 
-  static random_unsigned_generator<wide_integer_type> gen1(seed0, seed1);
-  static random_unsigned_generator<wide_integer_type> gen2(seed2, seed3);
+  const std::uint64_t seed0 = UINT64_C(0xDAD6177428754C69);
+  const std::uint64_t seed1 = UINT64_C(0x73DD1E70A590026C);
+  const std::uint64_t seed2 = UINT64_C(0xD04437538D54D2F1);
+  const std::uint64_t seed3 = UINT64_C(0xB81364AE3D6B7C96);
 
-  static std::uintmax_t total_number_of_trials;
-  static std::uintmax_t total_number_of_primes;
+  random_unsigned_generator<wide_integer_type> gen1(seed0, seed1);
+  random_unsigned_generator<wide_integer_type> gen2(seed2, seed3);
 
         std::uint_fast32_t i;
-  const std::uint_fast32_t number_of_trials = UINT32_C(10000000);
+  const std::uint_fast32_t number_of_trials = UINT32_C(1000000);
 
-  bool miller_rabin_test_result = false;
+  bool result_is_ok = false;
 
-  for(i = 0U; (i < number_of_trials) && (miller_rabin_test_result == false); ++i)
+  for(i = 0U; (i < number_of_trials) && (result_is_ok == false); ++i)
   {
     wide_integer_type n = gen1();
 
-    miller_rabin_test_result = my_miller_rabin_test(n, 25U, gen2);
-
-    if(miller_rabin_test_result)
+    if(my_miller_rabin_test(n, 25U, gen2))
     {
       // We will now find out if [(n - 1) / 2] is also prime.
-      miller_rabin_test_result = my_miller_rabin_test((n - 1U) >> 1U, 25U, gen2);
 
-      if(miller_rabin_test_result)
-      {
-        total_number_of_trials += i;
-
-        ++total_number_of_primes;
-
-        std::cout << "We have a safe prime at index "
-                  << std::dec
-                  << std::setw(8)
-                  << std::setfill(char(' '))
-                  << i
-                  << " with value: 0x"
-                  << std::hex
-                  << std::uppercase
-                  << std::setw(std::numeric_limits<wide_integer_type>::digits / 4)
-                  << std::setfill(char('0'))
-                  << n
-                  << std::dec
-                  << std::setw(8)
-                  << std::setfill(char(' '))
-                  << ", no. primes = "
-                  << total_number_of_primes
-                  << ", avg. trials = "
-                  << total_number_of_trials / total_number_of_primes
-                  << std::endl;
-      }
+      result_is_ok = (   (my_miller_rabin_test((n - 1U) >> 1U, 25U, gen2) == true)
+                      && (i == 18197U)
+                      && (n == "0x807517654FB99B7EE275416CF4D9987E810B5E06753536531B0F1443A6145B87"));
     }
   }
 
-  const bool did_not_find_a_safe_prime = (i == number_of_trials);
-
-  if(did_not_find_a_safe_prime)
-  {
-    std::cout << "Information: No safe primes were found" << std::endl;
-  }
-
-  return (did_not_find_a_safe_prime == false);
-}
-
-int main()
-{
-  std::cout << "Calculating prime(s)... Please have patience." << std::endl;
-
-  #if defined(TEST_UINTWIDE_T_USE_ENDLESS_NUMBER_OF_PRIMES)
-  for(;;)
-  {
-  #endif
-    const bool miller_rabin_test_is_ok = miller_rabin_result();
-
-    static_cast<void>(miller_rabin_test_is_ok);
-  #if defined(TEST_UINTWIDE_T_USE_ENDLESS_NUMBER_OF_PRIMES)
-  }
-  #endif
+  std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
 }
