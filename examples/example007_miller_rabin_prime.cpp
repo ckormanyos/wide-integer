@@ -120,30 +120,47 @@ namespace
     pcg_random_fast32 my_gen;
   };
 
-  bool is_small_prime(const std::uint_fast8_t n)
+  template<typename UnsignedIntegralType,
+           typename RandomGenerator>
+  bool miller_rabin_test(const UnsignedIntegralType& n,
+                         const std::size_t           number_of_trials,
+                               RandomGenerator&      random_distribution)
   {
-    static const std::array<std::uint_fast8_t, 48U> small_primes = 
-    {{
-      UINT8_C(  3), UINT8_C(  5), UINT8_C(  7), UINT8_C( 11), UINT8_C( 13), UINT8_C( 17), UINT8_C( 19), UINT8_C( 23),
-      UINT8_C( 29), UINT8_C( 31), UINT8_C( 37), UINT8_C( 41), UINT8_C( 43), UINT8_C( 47), UINT8_C( 53), UINT8_C( 59),
-      UINT8_C( 61), UINT8_C( 67), UINT8_C( 71), UINT8_C( 73), UINT8_C( 79), UINT8_C( 83), UINT8_C( 89), UINT8_C( 97),
-      UINT8_C(101), UINT8_C(103), UINT8_C(107), UINT8_C(109), UINT8_C(113), UINT8_C(127), UINT8_C(131), UINT8_C(137),
-      UINT8_C(139), UINT8_C(149), UINT8_C(151), UINT8_C(157), UINT8_C(163), UINT8_C(167), UINT8_C(173), UINT8_C(179),
-      UINT8_C(181), UINT8_C(191), UINT8_C(193), UINT8_C(197), UINT8_C(199), UINT8_C(211), UINT8_C(223), UINT8_C(227)
-    }};
+    // TBD: Clean up the multiple return statements in this subroutine.
 
-    return (std::find(small_primes.cbegin(),
-                      small_primes.cend(), n) != small_primes.cend());
-  }
+    using local_wide_integer_type = UnsignedIntegralType;
 
-  template<typename UnsignedIntegralType>
-  bool check_small_factors(const UnsignedIntegralType& n)
-  {
-    // TBD: Can we eliminate some of the numerous
-    // return statements in this subroutine?
-    // Should we use lambda functions or other
-    // small subroutines?
+    if(n == 2U)
+    {
+      // Trivial special case.
+      return true;
+    }
 
+    const std::uint32_t n32(n);
+
+    if((std::uint_fast8_t(n32) & 1U) == 0U)
+    {
+      // n is even.
+      return false;
+    }
+
+    if(n <= 227U)
+    {
+      static const std::array<std::uint_fast8_t, 48U> small_primes = 
+      {{
+        UINT8_C(  3), UINT8_C(  5), UINT8_C(  7), UINT8_C( 11), UINT8_C( 13), UINT8_C( 17), UINT8_C( 19), UINT8_C( 23),
+        UINT8_C( 29), UINT8_C( 31), UINT8_C( 37), UINT8_C( 41), UINT8_C( 43), UINT8_C( 47), UINT8_C( 53), UINT8_C( 59),
+        UINT8_C( 61), UINT8_C( 67), UINT8_C( 71), UINT8_C( 73), UINT8_C( 79), UINT8_C( 83), UINT8_C( 89), UINT8_C( 97),
+        UINT8_C(101), UINT8_C(103), UINT8_C(107), UINT8_C(109), UINT8_C(113), UINT8_C(127), UINT8_C(131), UINT8_C(137),
+        UINT8_C(139), UINT8_C(149), UINT8_C(151), UINT8_C(157), UINT8_C(163), UINT8_C(167), UINT8_C(173), UINT8_C(179),
+        UINT8_C(181), UINT8_C(191), UINT8_C(193), UINT8_C(197), UINT8_C(199), UINT8_C(211), UINT8_C(223), UINT8_C(227)
+      }};
+
+      return (std::find(small_primes.cbegin(),
+                        small_primes.cend(), std::uint_fast8_t(n32)) != small_primes.cend());
+    }
+
+    // Check small factors.
     {
       static const std::array<std::uint_fast8_t, 8U> small_factors0 =
       {{
@@ -259,69 +276,32 @@ namespace
       }
     }
 
-    return true;
-  }
-
-  template<typename UnsignedIntegralType,
-           typename RandomGenerator>
-  bool my_miller_rabin_test(const UnsignedIntegralType& n,
-                            const std::size_t           trials,
-                                  RandomGenerator&      dist)
-  {
-    // TBD: Clean up the multiple return statements in this subroutine.
-
-    using wide_integer_type = UnsignedIntegralType;
-
-    if(n == 2U)
-    {
-      // Trivial special case.
-      return true;
-    }
-
-    if((std::uint32_t(n) & 1U) == 0U)
-    {
-      // n is even.
-      return false;
-    }
-
-    if(n <= 227U)
-    {
-      return is_small_prime(std::uint_fast8_t(n));
-    }
-
-    if(check_small_factors(n) == false)
-    {
-      return false;
-    }
-
-    wide_integer_type nm1 = n - 1U;
+    const local_wide_integer_type nm1(n - 1U);
 
     // Perform a single Fermat test which will
     // exclude many non-prime candidates.
 
     // We know n is greater than 227 because we have already
     // excluded all small factors up to and including 227.
-    wide_integer_type q(std::uint_fast8_t(228U));
+    local_wide_integer_type q(std::uint_fast8_t(228U));
 
-    wide_integer_type x;
-    wide_integer_type y;
-
-    x = powm(q, nm1, n);
+    local_wide_integer_type x = powm(q, nm1, n);
 
     if(x != 1U)
     {
       return false;
     }
 
-    q = n - 1U;
+    q = nm1;
     const std::size_t k = lsb(q);
     q >>= k;
 
-    // Execute the trials.
-    for(std::size_t i = 0U; i < trials; ++i)
+    // Execute the random trials.
+    for(std::size_t i = 0U; i < number_of_trials; ++i)
     {
-      x = dist(2U, n - 2U);
-      y = powm(x, q, n);
+      x = random_distribution(2U, n - 2U);
+
+      local_wide_integer_type y = powm(x, q, n);
 
       std::size_t j = 0U;
 
@@ -385,11 +365,11 @@ int main()
   {
     wide_integer_type n = gen1();
 
-    if(my_miller_rabin_test(n, 25U, gen2))
+    if(miller_rabin_test(n, 25U, gen2))
     {
       // We will now find out if [(n - 1) / 2] is also prime.
 
-      result_is_ok = (   (my_miller_rabin_test((n - 1U) >> 1U, 25U, gen2) == true)
+      result_is_ok = (   (miller_rabin_test((n - 1U) >> 1U, 25U, gen2) == true)
                       && (i == 18197U)
                       && (n == "0x807517654FB99B7EE275416CF4D9987E810B5E06753536531B0F1443A6145B87"));
     }
