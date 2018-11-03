@@ -75,7 +75,7 @@ namespace
 
     static std::uint32_t rotate(std::uint32_t value, std::int_fast8_t rot)
     {
-      return (value >> rot) | (value << std::int_fast8_t(std::uint32_t(-rot) & 31U));
+      return (value >> rot) | (value << std::int_fast8_t(std::uint_fast8_t(-rot) & 31U));
     }
   };
 
@@ -285,9 +285,7 @@ namespace
     // excluded all small factors up to and including 227.
     local_wide_integer_type q(std::uint_fast8_t(228U));
 
-    local_wide_integer_type x = powm(q, nm1, n);
-
-    if(x != 1U)
+    if(powm(q, nm1, n) != 1U)
     {
       return false;
     }
@@ -299,7 +297,7 @@ namespace
     // Execute the random trials.
     for(std::size_t i = 0U; i < number_of_trials; ++i)
     {
-      x = random_distribution(2U, n - 2U);
+      const local_wide_integer_type x = random_distribution(2U, n - 2U);
 
       local_wide_integer_type y = powm(x, q, n);
 
