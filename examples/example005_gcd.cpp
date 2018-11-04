@@ -14,12 +14,12 @@ int main()
 {
   using uint256_t = wide_integer::generic_template::uint256_t;
 
-  const uint256_t a("0x4B89A8873F158D0C7200E4182789A5D011C6E47A56F982A6BC326770ECE7ED36");
-  const uint256_t b("0x0797EF9AA44F66C632B2020F83C0DC30BC4E1C996782CFDC3931E36ED9DCB0B6");
+  const uint256_t a("65817543385799202331129824632578810170261660210697994406969361012031085400920");
+  const uint256_t b("42832132932758279435945349456906220232760184148171721872947071577727211231630");
 
   const uint256_t c = gcd(a, b);
 
-  const bool result_is_ok = (c == 6U);
+  const bool result_is_ok = (std::uint16_t(c) == 2010U);
 
   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
 }

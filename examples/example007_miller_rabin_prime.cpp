@@ -359,7 +359,7 @@ int main()
 
   bool result_is_ok = false;
 
-  for(i = 0U; (i < number_of_trials) && (result_is_ok == false); ++i)
+  for(i = 0U; i < number_of_trials; ++i)
   {
     wide_integer_type n = gen1();
 
@@ -370,6 +370,8 @@ int main()
       result_is_ok = (   (miller_rabin_test((n - 1U) >> 1U, 25U, gen2) == true)
                       && (i == 18197U)
                       && (n == "0x807517654FB99B7EE275416CF4D9987E810B5E06753536531B0F1443A6145B87"));
+
+      break;
     }
   }
 

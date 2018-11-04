@@ -21,7 +21,7 @@ int main()
   const uint256_t d = (a / b);
 
   const bool result_is_ok = (   (c == "0xE491A360C57EB4306C61F9A04F7F7D99BE3676AAD2D71C5592D5AE70F84AF076")
-                             && (d == "0xA"));
+                             && (std::uint_fast8_t(d) == 10U));
 
   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
 }

@@ -19,16 +19,16 @@ int main()
 
   {
     const uint256_t a("0x03DF741DE58BCB2F37F18372026EF9CBCFC456CB80AF54D53BDEED78410065DE");
-    const uint256_t s = rootk(a, 5U);
+    const uint256_t s = rootk(a, 7U);
 
-    result_is_ok_root = (s == "0x3F9680655F23C");
+    result_is_ok_root = (s == UINT64_C(0xD10A003C0));
   }
 
   {
-    const uint256_t s("0x3F9680655F23C");
-    const uint256_t p = pow(s, 5U);
+    const uint256_t s(UINT64_C(0xD10A003C0));
+    const uint256_t p = pow(s, 7U);
 
-    result_is_ok_pow = (p == "0x03DF741DE58BC8B2A8C840BD0321CAB5CA92190FFCCCB886DEF30AFF3F933C00");
+    result_is_ok_pow = (p == "0x03DF741DE41E75AB653AB23DF2C2E1ED0FCB88B6410E63BFC26DBC0000000000");
   }
 
   std::cout << "result_is_ok_root: " << std::boolalpha << result_is_ok_root << std::endl;
