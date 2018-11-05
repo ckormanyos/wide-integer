@@ -371,7 +371,10 @@ int main()
                       && (i == 18197U)
                       && (n == "0x807517654FB99B7EE275416CF4D9987E810B5E06753536531B0F1443A6145B87"));
 
-      break;
+      if(result_is_ok)
+      {
+        break;
+      }
     }
   }
 
