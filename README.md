@@ -40,7 +40,9 @@ int main()
 }
 ```
 
-Wide-integer also supports a small selection of number-theoretical functions such as least and most significant bit, square root, k'th root, power, power-modulus and greatest common denominator. These functions can be found via ADL. The example below calculates an integer square root.
+Wide-integer also supports a small selection of number-theoretical functions such as least and most significant bit, square root, k'th root, power, power-modulus, greatest common denominator and random number generation. Most of these functions can be found via ADL.
+
+The example below calculates an integer square root.
 
 ```C
 #include <iomanip>
