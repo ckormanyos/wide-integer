@@ -240,16 +240,15 @@ namespace
 int main()
 {
   using wide_integer_type  = wide_integer::generic_template::uintwide_t<256U>;
-  using distribution_type  = wide_integer::generic_template::uniform_int_distribution<256U>;
-  using random_engine_type = wide_integer::generic_template::default_random_engine<256U>;
+  using distribution_type  = wide_integer::generic_template::uniform_int_distribution<wide_integer_type::my_digits, typename wide_integer_type::value_type>;
+  using random_engine_type = wide_integer::generic_template::default_random_engine   <wide_integer_type::my_digits, typename wide_integer_type::value_type>;
 
   // Use fixed seeds in order to obtain deterministic
   // and reproducible results for this test.
-  typename random_engine_type::value_type seed0(1332597476ULL);
-  typename random_engine_type::value_type seed1(3283409556ULL);
+  typename random_engine_type::value_type seed0(1332597477ULL);
 
   random_engine_type generator1(seed0);
-  random_engine_type generator2(seed1);
+  random_engine_type generator2;
 
   distribution_type distribution1;
   distribution_type distribution2;
@@ -265,8 +264,8 @@ int main()
       // We will now find out if [(n - 1) / 2] is also prime.
       result_is_ok =
         (   (miller_rabin_test((n - 1U) >> 1U, 25U, distribution2, generator2) == true)
-         && (n == "106133525973276275201350838001156938959947117522331299774040704801436457501843")
-         && (index == 18470U));
+         && (n == "3401859042787836548530328760785776956582810521344014846856283581144486333919")
+         && (index == 458U));
 
       if(result_is_ok)
       {
