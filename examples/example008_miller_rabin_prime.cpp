@@ -5,6 +5,12 @@
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)             //
 ///////////////////////////////////////////////////////////////////
 
+// This Miller-Rabin primality test is loosely based on
+// an adaptation of some code from Boost.Multiprecision.
+// The Boost.Multiprecision code can be found here:
+// https://www.boost.org/doc/libs/1_68_0/libs/multiprecision/doc/html/boost_multiprecision/tut/primetest.html
+
+#include <chrono>
 #include <cstdint>
 #include <iomanip>
 #include <iostream>
