@@ -48,7 +48,7 @@ namespace
 
     if(n <= 227U)
     {
-      static const std::array<std::uint_fast8_t, 48U> small_primes = 
+      const std::array<std::uint_fast8_t, 48U> small_primes = 
       {{
         UINT8_C(  3), UINT8_C(  5), UINT8_C(  7), UINT8_C( 11), UINT8_C( 13), UINT8_C( 17), UINT8_C( 19), UINT8_C( 23),
         UINT8_C( 29), UINT8_C( 31), UINT8_C( 37), UINT8_C( 41), UINT8_C( 43), UINT8_C( 47), UINT8_C( 53), UINT8_C( 59),
@@ -59,18 +59,19 @@ namespace
       }};
 
       return (std::find(small_primes.cbegin(),
-                        small_primes.cend(), std::uint_fast8_t(n32)) != small_primes.cend());
+                        small_primes.cend(),
+                        std::uint_fast8_t(n32)) != small_primes.cend());
     }
 
     // Check small factors.
     {
-      static const std::array<std::uint_fast8_t, 8U> small_factors0 =
+      const std::array<std::uint_fast8_t, 8U> small_factors0 =
       {{
         UINT8_C( 3), UINT8_C( 5), UINT8_C( 7), UINT8_C(11),
         UINT8_C(13), UINT8_C(17), UINT8_C(19), UINT8_C(23)
       }};
 
-      static const std::uint32_t pp0 = UINT32_C(223092870);
+      const std::uint32_t pp0 = UINT32_C(223092870);
 
       const std::uint32_t m(n % pp0);
 
@@ -84,13 +85,13 @@ namespace
     }
 
     {
-      static const std::array<std::uint_fast8_t, 6U> small_factors1 =
+      const std::array<std::uint_fast8_t, 6U> small_factors1 =
       {{
         UINT8_C(29), UINT8_C(31), UINT8_C(37), UINT8_C(41),
         UINT8_C(43), UINT8_C(47)
       }};
 
-      static const std::uint32_t pp1 = UINT32_C(2756205443);
+      const std::uint32_t pp1 = UINT32_C(2756205443);
 
       const std::uint32_t m(n % pp1);
 
@@ -104,13 +105,13 @@ namespace
     }
 
     {
-      static const std::array<std::uint_fast8_t, 5U> small_factors2 =
+      const std::array<std::uint_fast8_t, 5U> small_factors2 =
       {{
         UINT8_C(53), UINT8_C(59), UINT8_C(61), UINT8_C(67),
         UINT8_C(71)
       }};
 
-      static const std::uint32_t pp2 = UINT32_C(907383479);
+      const std::uint32_t pp2 = UINT32_C(907383479);
 
       const std::uint32_t m(n % pp2);
 
@@ -124,13 +125,13 @@ namespace
     }
 
     {
-      static const std::array<std::uint_fast8_t, 5U> small_factors3 =
+      const std::array<std::uint_fast8_t, 5U> small_factors3 =
       {{
         UINT8_C(73), UINT8_C(79), UINT8_C(83), UINT8_C(89),
         UINT8_C(97)
       }};
 
-      static const std::uint32_t pp3 = UINT32_C(4132280413);
+      const std::uint32_t pp3 = UINT32_C(4132280413);
 
       const std::uint32_t m(n % pp3);
 
@@ -144,7 +145,7 @@ namespace
     }
 
     {
-      static const std::array<std::array<std::uint_fast8_t, 4U>, 6U> small_factors4 =
+      const std::array<std::array<std::uint_fast8_t, 4U>, 6U> small_factors4 =
       {{
         {{ UINT8_C(101), UINT8_C(103), UINT8_C(107), UINT8_C(109) }},
         {{ UINT8_C(113), UINT8_C(127), UINT8_C(131), UINT8_C(137) }},
@@ -154,7 +155,7 @@ namespace
         {{ UINT8_C(199), UINT8_C(211), UINT8_C(223), UINT8_C(227) }}
       }};
 
-      static const std::array<std::uint32_t, 6U> pp4 =
+      const std::array<std::uint32_t, 6U> pp4 =
       {{
         UINT32_C(121330189),
         UINT32_C(113) * UINT32_C(127) * UINT32_C(131) * UINT32_C(137),
@@ -251,9 +252,9 @@ int main()
 
   // Use fixed seeds in order to obtain deterministic
   // and reproducible results for this test.
-  typename random_engine_type::value_type seed0(1332597477ULL);
+  const typename random_engine_type::value_type seed1(1332597477ULL);
 
-  random_engine_type generator1(seed0);
+  random_engine_type generator1(seed1);
   random_engine_type generator2;
 
   distribution_type distribution1;
