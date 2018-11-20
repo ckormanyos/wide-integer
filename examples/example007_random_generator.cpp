@@ -20,7 +20,7 @@ int main()
     using distribution_type  = wide_integer::generic_template::uniform_int_distribution<wide_integer_type::my_digits, typename wide_integer_type::value_type>;
     using random_engine_type = wide_integer::generic_template::default_random_engine   <wide_integer_type::my_digits, typename wide_integer_type::value_type>;
 
-    typename random_engine_type::value_type seed(1332597477ULL);
+    random_engine_type::value_type seed(1332597477ULL);
 
     random_engine_type generator(seed);
 
@@ -37,7 +37,7 @@ int main()
     using distribution_type  = wide_integer::generic_template::uniform_int_distribution<wide_integer_type::my_digits, typename wide_integer_type::value_type>;
     using random_engine_type = wide_integer::generic_template::default_random_engine   <wide_integer_type::my_digits, typename wide_integer_type::value_type>;
 
-    typename random_engine_type::value_type seed(1332597477ULL);
+    random_engine_type::value_type seed(1332597477ULL);
 
     random_engine_type generator(seed);
 
@@ -54,7 +54,7 @@ int main()
     using distribution_type  = wide_integer::generic_template::uniform_int_distribution<wide_integer_type::my_digits, typename wide_integer_type::value_type>;
     using random_engine_type = wide_integer::generic_template::default_random_engine   <wide_integer_type::my_digits, typename wide_integer_type::value_type>;
 
-    typename random_engine_type::value_type seed(1332597477ULL);
+    random_engine_type::value_type seed(1332597477ULL);
 
     random_engine_type generator(seed);
 

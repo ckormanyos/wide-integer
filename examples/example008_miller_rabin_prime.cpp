@@ -19,7 +19,7 @@ int main()
 
   // Use fixed seeds in order to obtain deterministic
   // and reproducible results for this test.
-  constexpr typename random_engine_type::value_type seed1(1332597477ULL);
+  const random_engine_type::value_type seed1(1332597477ULL);
 
   random_engine_type generator1(seed1);
   random_engine_type generator2;
