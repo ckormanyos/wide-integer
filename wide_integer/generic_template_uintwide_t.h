@@ -1,12 +1,12 @@
+///////////////////////////////////////////////////////////////////
+//  Copyright Christopher Kormanyos 1999 - 2019.                 //
+//  Distributed under the Boost Software License,                //
+//  Version 1.0. (See accompanying file LICENSE_1_0.txt          //
+//  or copy at http://www.boost.org/LICENSE_1_0.txt)             //
+///////////////////////////////////////////////////////////////////
+
 #ifndef GENERIC_TEMPLATE_UINTWIDE_T_2018_10_02_H_
   #define GENERIC_TEMPLATE_UINTWIDE_T_2018_10_02_H_
-
-  ///////////////////////////////////////////////////////////////////
-  //  Copyright Christopher Kormanyos 1999 - 2018.                 //
-  //  Distributed under the Boost Software License,                //
-  //  Version 1.0. (See accompanying file LICENSE_1_0.txt          //
-  //  or copy at http://www.boost.org/LICENSE_1_0.txt)             //
-  ///////////////////////////////////////////////////////////////////
 
   #include <algorithm>
   #include <array>
@@ -840,14 +840,15 @@
     uintwide_t& operator*=(const uintwide_t& other)
     {
       // Unary multiplication function.
-      std::array<ushort_type, number_of_limbs> result = {{ 0U }};
+      std::array<ushort_type, number_of_limbs> result;
 
-      multiplication_loop_schoolbook(values.data(),
-                                     other.values.data(),
-                                     result.data(),
-                                     result.size());
+      multiplication_loop_schoolbook_half<number_of_limbs>(values.data(),
+                                                           other.values.data(),
+                                                           result.data());
 
-      values = result;
+      std::copy(result.cbegin(),
+                result.cbegin() + number_of_limbs,
+                values.begin());
 
       return *this;
     }
@@ -1348,18 +1349,20 @@
       return char_is_valid;
     }
 
-    static void multiplication_loop_schoolbook(      ushort_type* pu,
-                                               const ushort_type* pv,
-                                                     ushort_type* pw,
-                                               const std::size_t  count)
+    template<const std::size_t ResultLimbCount>
+    static void multiplication_loop_schoolbook_half(const ushort_type* pu,
+                                                    const ushort_type* pv,
+                                                          ushort_type* pw)
     {
-      for(std::size_t j = 0U; j < count; ++j)
+      std::fill(pw, pw + ResultLimbCount, ushort_type(0U));
+
+      for(std::size_t j = 0U; j < ResultLimbCount; ++j)
       {
         if(pv[j] != ushort_type(0U))
         {
           ushort_type carry = ushort_type(0U);
 
-          for(std::size_t i = 0U, iplusj = i + j; iplusj < count; ++i, ++iplusj)
+          for(std::size_t i = 0U, iplusj = i + j; iplusj < ResultLimbCount; ++i, ++iplusj)
           {
             const ularge_type t =
               ularge_type(ularge_type(ularge_type(pu[i]) * pv[j]) + pw[iplusj]) + carry;
@@ -1370,6 +1373,17 @@
         }
       }
     }
+
+    //template<const std::size_t ResultLimbCount>
+    //static void multiplication_loop_karatsuba(const ushort_type* pu,
+    //                                          const ushort_type* pv,
+    //                                                ushort_type* pw)
+    //{
+    //  // TBD: Not yet implemented.
+    //  static_cast<void>(pu);
+    //  static_cast<void>(pv);
+    //  static_cast<void>(pw);
+    //}
 
     void quotient_and_remainder_knuth(const uintwide_t& other, uintwide_t* remainder)
     {
@@ -1816,6 +1830,17 @@
     static local_wide_integer_type (max)() { return local_wide_integer_type::limits_helper_max(); }
     static local_wide_integer_type (min)() { return local_wide_integer_type::limits_helper_min(); }
   };
+
+  template<class T>
+  struct is_integral : public std::is_integral<T> { };
+
+  template<const std::size_t Digits2,
+           typename LimbType>
+  struct is_integral<wide_integer::generic_template::uintwide_t<Digits2, LimbType>>
+    : public std::integral_constant<bool, true> { };
+
+  template<class T>
+  constexpr bool is_integral_v = is_integral<T>::value;
 
   } } // namespace wide_integer::generic_template
 
