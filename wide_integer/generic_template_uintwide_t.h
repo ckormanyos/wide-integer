@@ -1249,6 +1249,34 @@
       return wr_string_is_ok;
     }
 
+    std::int_fast8_t compare(const uintwide_t& other) const
+    {
+      std::int_fast8_t return_value;
+      std::ptrdiff_t   element_index;
+
+      for(element_index = std::ptrdiff_t(number_of_limbs - 1U); element_index >= std::ptrdiff_t(0); --element_index)
+      {
+        if(values[std::size_t(element_index)] != other.values[std::size_t(element_index)])
+        {
+          break;
+        }
+      }
+
+      if(element_index == std::ptrdiff_t(-1))
+      {
+        return_value = std::int_fast8_t(0);
+      }
+      else
+      {
+        const bool left_is_greater_than_right =
+          (values[std::size_t(element_index)] > other.values[std::size_t(element_index)]);
+
+        return_value = (left_is_greater_than_right ? std::int_fast8_t(1) : std::int_fast8_t(-1));
+      }
+
+      return return_value;
+    }
+
   private:
     representation_type values;
 
@@ -1720,34 +1748,6 @@
       }
     }
 
-    std::int_fast8_t compare(const uintwide_t& other) const
-    {
-      std::int_fast8_t return_value;
-      std::ptrdiff_t   element_index;
-
-      for(element_index = std::ptrdiff_t(number_of_limbs - 1U); element_index >= std::ptrdiff_t(0); --element_index)
-      {
-        if(values[std::size_t(element_index)] != other.values[std::size_t(element_index)])
-        {
-          break;
-        }
-      }
-
-      if(element_index == std::ptrdiff_t(-1))
-      {
-        return_value = std::int_fast8_t(0);
-      }
-      else
-      {
-        const bool left_is_greater_than_right =
-          (values[std::size_t(element_index)] > other.values[std::size_t(element_index)]);
-
-        return_value = (left_is_greater_than_right ? std::int_fast8_t(1) : std::int_fast8_t(-1));
-      }
-
-      return return_value;
-    }
-
     void bitwise_not()
     {
       for(std::size_t i = 0U; i < number_of_limbs; ++i)
@@ -1817,7 +1817,6 @@
   using uint8192_t  = uintwide_t<8192U>;
   using uint16384_t = uintwide_t<16384U>;
   using uint32768_t = uintwide_t<32768U>;
-  using uint65536_t = uintwide_t<65536U>;
 
   // Insert a base class for numeric_limits<> support.
   // This class inherits from std::numeric_limits<unsigned int>
@@ -1844,9 +1843,6 @@
            typename LimbType>
   struct is_integral<wide_integer::generic_template::uintwide_t<Digits2, LimbType>>
     : public std::integral_constant<bool, true> { };
-
-  template<class T>
-  constexpr bool is_integral_v = is_integral<T>::value;
 
   } } // namespace wide_integer::generic_template
 

@@ -40,6 +40,9 @@
     <ClInclude Include="test\test_uintwide_t.h">
       <Filter>Source Files\test</Filter>
     </ClInclude>
+    <ClInclude Include="boost\multiprecision\uintwide_t_backend.hpp">
+      <Filter>Source Files\boost\multiprecision</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="test\test.cpp">
@@ -88,6 +91,9 @@
       <Filter>Source Files\test</Filter>
     </ClCompile>
     <ClCompile Include="test\test_uintwide_t_examples.cpp">
+      <Filter>Source Files\test</Filter>
+    </ClCompile>
+    <ClCompile Include="test\test_uintwide_t_boost_backend.cpp">
       <Filter>Source Files\test</Filter>
     </ClCompile>
   </ItemGroup>

@@ -6,7 +6,15 @@
 
 #include <test/test_uintwide_t.h>
 
-BOOST_AUTO_TEST_CASE(test_uintwide_t_examples_all)
+BOOST_AUTO_TEST_CASE(test_uintwide_t_boost_backend_tag)
+{
+  // boost backend
+  std::cout << "running: test_uintwide_t_boost_backend" << std::endl;
+  const bool result_test_uintwide_t_boost_backend_is_ok = test_uintwide_t_boost_backend();
+  BOOST_CHECK(result_test_uintwide_t_boost_backend_is_ok);
+}
+
+BOOST_AUTO_TEST_CASE(test_uintwide_t_examples_tag)
 {
   // examples
   std::cout << "running: test_uintwide_t_examples" << std::endl;
