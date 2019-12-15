@@ -6,6 +6,26 @@
 
 #include <test/test_uintwide_t.h>
 
+BOOST_AUTO_TEST_CASE(test_uintwide_t_0000128)
+{
+  // 128
+  std::cout << "running: test_uintwide_t_0000128_binary_add" << std::endl;
+  const bool result_test_uintwide_t_0000128_binary_add_is_ok = test_uintwide_t_0000128_binary_add();
+  BOOST_CHECK(result_test_uintwide_t_0000128_binary_add_is_ok);
+
+  std::cout << "running: test_uintwide_t_0000128_binary_sub" << std::endl;
+  const bool result_test_uintwide_t_0000128_binary_sub_is_ok = test_uintwide_t_0000128_binary_sub();
+  BOOST_CHECK(result_test_uintwide_t_0000128_binary_sub_is_ok);
+
+  std::cout << "running: test_uintwide_t_0000128_binary_mul" << std::endl;
+  const bool result_test_uintwide_t_0000128_binary_mul_is_ok = test_uintwide_t_0000128_binary_mul();
+  BOOST_CHECK(result_test_uintwide_t_0000128_binary_mul_is_ok);
+
+  std::cout << "running: test_uintwide_t_0000128_binary_div" << std::endl;
+  const bool result_test_uintwide_t_0000128_binary_div_is_ok = test_uintwide_t_0000128_binary_div();
+  BOOST_CHECK(result_test_uintwide_t_0000128_binary_div_is_ok);
+}
+
 BOOST_AUTO_TEST_CASE(test_uintwide_t_0000512)
 {
   // 512
