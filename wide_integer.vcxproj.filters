@@ -1,0 +1,88 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Source Files\wide_integer">
+      <UniqueIdentifier>{8460bf03-d727-4c68-8f29-e2acf7b95386}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\test">
+      <UniqueIdentifier>{2ab8711c-4632-4af5-8345-b408e6ed36bb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\wide_integer\archive">
+      <UniqueIdentifier>{92d02fcd-c88d-42ef-962a-2248545a02a0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\boost">
+      <UniqueIdentifier>{48a97642-b509-4ac8-b6d5-6a19a897bacf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\boost\multiprecision">
+      <UniqueIdentifier>{340a3a17-d99f-441d-abba-fc9db2aaafa9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\examples">
+      <UniqueIdentifier>{249d1a53-43c3-4a48-9fb9-c3a477ddf025}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="wide_integer\generic_template_uintwide_t.h">
+      <Filter>Source Files\wide_integer</Filter>
+    </ClInclude>
+    <ClInclude Include="wide_integer\archive\non_template_uint128_t.h">
+      <Filter>Source Files\wide_integer\archive</Filter>
+    </ClInclude>
+    <ClInclude Include="wide_integer\archive\non_template_uint256_t.h">
+      <Filter>Source Files\wide_integer\archive</Filter>
+    </ClInclude>
+    <ClInclude Include="wide_integer\archive\recursive_template_uintwide_t.h">
+      <Filter>Source Files\wide_integer\archive</Filter>
+    </ClInclude>
+    <ClInclude Include="test\test_uintwide_t.h">
+      <Filter>Source Files\test</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="test\test.cpp">
+      <Filter>Source Files\test</Filter>
+    </ClCompile>
+    <ClCompile Include="examples\example001_mul_div.cpp">
+      <Filter>Source Files\examples</Filter>
+    </ClCompile>
+    <ClCompile Include="examples\example001a_div_mod.cpp">
+      <Filter>Source Files\examples</Filter>
+    </ClCompile>
+    <ClCompile Include="examples\example002_shl_shr.cpp">
+      <Filter>Source Files\examples</Filter>
+    </ClCompile>
+    <ClCompile Include="examples\example003_sqrt.cpp">
+      <Filter>Source Files\examples</Filter>
+    </ClCompile>
+    <ClCompile Include="examples\example004_rootk_pow.cpp">
+      <Filter>Source Files\examples</Filter>
+    </ClCompile>
+    <ClCompile Include="examples\example005_powm.cpp">
+      <Filter>Source Files\examples</Filter>
+    </ClCompile>
+    <ClCompile Include="examples\example006_gcd.cpp">
+      <Filter>Source Files\examples</Filter>
+    </ClCompile>
+    <ClCompile Include="examples\example007_random_generator.cpp">
+      <Filter>Source Files\examples</Filter>
+    </ClCompile>
+    <ClCompile Include="examples\example008_miller_rabin_prime.cpp">
+      <Filter>Source Files\examples</Filter>
+    </ClCompile>
+    <ClCompile Include="examples\example009_compare_mul_with_boost.cpp">
+      <Filter>Source Files\examples</Filter>
+    </ClCompile>
+    <ClCompile Include="test\test_uintwide_t_0000512_binary_ops.cpp">
+      <Filter>Source Files\test</Filter>
+    </ClCompile>
+    <ClCompile Include="test\test_uintwide_t_0065536_binary_ops.cpp">
+      <Filter>Source Files\test</Filter>
+    </ClCompile>
+    <ClCompile Include="test\test_uintwide_t_0008192_binary_ops.cpp">
+      <Filter>Source Files\test</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

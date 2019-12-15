@@ -8,6 +8,9 @@
 #ifndef GENERIC_TEMPLATE_UINTWIDE_T_2018_10_02_H_
   #define GENERIC_TEMPLATE_UINTWIDE_T_2018_10_02_H_
 
+  //#define WIDE_INTEGER_DISABLE_MAIN_IN_STANDALONE_EXAMPLES
+  //#define WIDE_INTEGER_DISABLE_IOSTREAM
+
   #include <algorithm>
   #include <array>
   #include <cstddef>
@@ -3026,5 +3029,20 @@
   }
 
   } } // namespace wide_integer::generic_template
+
+  namespace wide_integer {
+
+  bool example001_mul_div();
+  bool example001a_div_mod();
+  bool example002_shl_shr();
+  bool example003_sqrt();
+  bool example004_rootk_pow();
+  bool example005_powm();
+  bool example006_gcd();
+  bool example007_random_generator();
+  bool example008_miller_rabin_prime();
+  bool example009_compare_mul_with_boost();
+
+  } // namespace wide_integer
 
 #endif // GENERIC_TEMPLATE_UINTWIDE_T_2018_10_02_H_

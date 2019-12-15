@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////
-//  Copyright Christopher Kormanyos 2018.                        //
+//  Copyright Christopher Kormanyos 2018 -2019.                  //
 //  Distributed under the Boost Software License,                //
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt          //
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)             //
@@ -10,7 +10,7 @@
 
 #include <wide_integer/generic_template_uintwide_t.h>
 
-int main()
+bool wide_integer::example007_random_generator()
 {
   bool result_is_ok = true;
 
@@ -65,5 +65,16 @@ int main()
     result_is_ok &= (n == "103688572923999614683274548975545468793316802532402235278881055800362044212101");
   }
 
+  return result_is_ok;
+}
+
+#if !defined(WIDE_INTEGER_DISABLE_MAIN_IN_STANDALONE_EXAMPLES)
+
+int main()
+{
+  const bool result_is_ok = wide_integer::example007_random_generator();
+
   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
 }
+
+#endif

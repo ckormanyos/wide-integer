@@ -1,9 +1,14 @@
 ///////////////////////////////////////////////////////////////////
-//  Copyright Christopher Kormanyos 2018.                        //
+//  Copyright Christopher Kormanyos 2018 -2019.                  //
 //  Distributed under the Boost Software License,                //
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt          //
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)             //
 ///////////////////////////////////////////////////////////////////
+
+// This Miller-Rabin primality test is loosely based on
+// an adaptation of some code from Boost.Multiprecision.
+// The Boost.Multiprecision code can be found here:
+// https://www.boost.org/doc/libs/1_68_0/libs/multiprecision/doc/html/boost_multiprecision/tut/primetest.html
 
 #include <cstdint>
 #include <iomanip>
@@ -11,7 +16,7 @@
 
 #include <wide_integer/generic_template_uintwide_t.h>
 
-int main()
+bool wide_integer::example008_miller_rabin_prime()
 {
   using wide_integer_type  = wide_integer::generic_template::uintwide_t<256U>;
   using distribution_type  = wide_integer::generic_template::uniform_int_distribution<wide_integer_type::my_digits, typename wide_integer_type::value_type>;
@@ -58,5 +63,16 @@ int main()
     }
   }
 
+  return result_is_ok;
+}
+
+#if !defined(WIDE_INTEGER_DISABLE_MAIN_IN_STANDALONE_EXAMPLES)
+
+int main()
+{
+  const bool result_is_ok = wide_integer::example008_miller_rabin_prime();
+
   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
 }
+
+#endif
