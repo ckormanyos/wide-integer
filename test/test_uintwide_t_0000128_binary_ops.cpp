@@ -31,11 +31,7 @@ void get_equal_random_test_values_boost_and_local_n(boost_uint_type* u_boost, lo
     wide_integer::generic_template::default_random_engine<local_uint_type::my_digits,
                                                           typename local_uint_type::value_type>;
 
-  // Use fixed seeds in order to obtain deterministic
-  // and reproducible results for this test.
-  const random_engine_type::value_type random_seed(std::clock());
-
-  random_engine_type random_generator(random_seed);
+  random_engine_type random_generator(std::clock());
 
   for(std::size_t i = 0U; i < count; ++i)
   {

@@ -22,11 +22,10 @@ bool wide_integer::example008_miller_rabin_prime()
   using distribution_type  = wide_integer::generic_template::uniform_int_distribution<wide_integer_type::my_digits, typename wide_integer_type::value_type>;
   using random_engine_type = wide_integer::generic_template::default_random_engine   <wide_integer_type::my_digits, typename wide_integer_type::value_type>;
 
-  // Use fixed seeds in order to obtain deterministic
-  // and reproducible results for this test.
-  const random_engine_type::value_type seed1(1332597477ULL);
+  // Use a fixed seed in order to obtain deterministic
+  // and reproducible result for this test.
 
-  random_engine_type generator1(seed1);
+  random_engine_type generator1(65658281052ULL);
   random_engine_type generator2;
 
   distribution_type distribution1;
@@ -53,8 +52,8 @@ bool wide_integer::example008_miller_rabin_prime()
 
       result_is_ok =
         (   (miller_rabin_result == true)
-         && (n == "3401859042787836548530328760785776956582810521344014846856283581144486333919")
-         && (index == 458U));
+         && (n == "87176242072037071907086802804548085162415187458629769502010888229665333728499")
+         && (index == 10603U));
 
       if(result_is_ok)
       {

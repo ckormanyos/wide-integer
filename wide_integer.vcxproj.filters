@@ -84,5 +84,11 @@
     <ClCompile Include="test\test_uintwide_t_0008192_binary_ops.cpp">
       <Filter>Source Files\test</Filter>
     </ClCompile>
+    <ClCompile Include="test\test_uintwide_t_0000128_binary_ops.cpp">
+      <Filter>Source Files\test</Filter>
+    </ClCompile>
+    <ClCompile Include="test\test_uintwide_t_examples.cpp">
+      <Filter>Source Files\test</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

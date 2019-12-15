@@ -6,6 +6,14 @@
 
 #include <test/test_uintwide_t.h>
 
+BOOST_AUTO_TEST_CASE(test_uintwide_t_examples_all)
+{
+  // examples
+  std::cout << "running: test_uintwide_t_examples" << std::endl;
+  const bool result_test_uintwide_t_examples_is_ok = test_uintwide_t_examples();
+  BOOST_CHECK(result_test_uintwide_t_examples_is_ok);
+}
+
 BOOST_AUTO_TEST_CASE(test_uintwide_t_0000128)
 {
   // 128
