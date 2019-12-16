@@ -110,9 +110,9 @@
       const bool              show_pos     = ((format_flags & std::ios::showpos) != 0);
       const bool              is_uppercase = ((format_flags & std::ios::uppercase) != 0);
 
-      m_value.wr_string(pstr, base_rep, show_base, show_pos, is_uppercase);
+      const bool wr_string_is_ok = m_value.wr_string(pstr, base_rep, show_base, show_pos, is_uppercase);
 
-      const std::string str_result(pstr);
+      const std::string str_result = (wr_string_is_ok ? std::string(pstr) : std::string());
 
       return str_result;
     }
@@ -163,12 +163,11 @@
 
   template<const std::size_t MyDigits2,
            typename MyLimbType,
-           typename SignedIntegralType,
-           typename std::enable_if<(   (std::is_integral<SignedIntegralType>::value == true)
-                                    && (std::is_signed  <SignedIntegralType>::value == true))>::type const* = nullptr>
-  void eval_multiply(uintwide_t_backend<MyDigits2, MyLimbType>& result, const SignedIntegralType& n)
+           typename IntegralType,
+           typename std::enable_if<(std::is_integral<IntegralType>::value == true)>::type const* = nullptr>
+  void eval_multiply(uintwide_t_backend<MyDigits2, MyLimbType>& result, const IntegralType& n)
   {
-    result.representation().mul_by_int(static_cast<std::int64_t>(n));
+    result.representation() *= n;
   }
 
   template<const std::size_t MyDigits2,
@@ -180,12 +179,11 @@
 
   template<const std::size_t MyDigits2,
            typename MyLimbType,
-           typename SignedIntegralType,
-           typename std::enable_if<(   (std::is_integral<SignedIntegralType>::value == true)
-                                    && (std::is_signed  <SignedIntegralType>::value == true))>::type const* = nullptr>
-  void eval_divide(uintwide_t_backend<MyDigits2, MyLimbType>& result, const SignedIntegralType& n)
+           typename IntegralType,
+           typename std::enable_if<(std::is_integral<IntegralType>::value == true)>::type const* = nullptr>
+  void eval_divide(uintwide_t_backend<MyDigits2, MyLimbType>& result, const IntegralType& n)
   {
-    result.representation().div_by_int(static_cast<std::int64_t>(n));
+    result.representation() /= n;
   }
 
   template<const std::size_t MyDigits2,
@@ -267,7 +265,7 @@
            typename MyLimbType>
   bool eval_is_zero(const uintwide_t_backend<MyDigits2, MyLimbType>& x)
   {
-    return (x.crepresentation().iszero)();
+    return (x.crepresentation() == 0U);
   }
 
   template<const std::size_t MyDigits2,

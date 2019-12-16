@@ -10,9 +10,10 @@
 // The Boost.Multiprecision code can be found here:
 // https://www.boost.org/doc/libs/1_68_0/libs/multiprecision/doc/html/boost_multiprecision/tut/primetest.html
 
-#include <cstdint>
+#if !defined(WIDE_INTEGER_DISABLE_MAIN_IN_STANDALONE_EXAMPLES)
 #include <iomanip>
 #include <iostream>
+#endif
 
 #include <wide_integer/generic_template_uintwide_t.h>
 
@@ -25,7 +26,7 @@ bool wide_integer::example008_miller_rabin_prime()
   // Use a fixed seed in order to obtain deterministic
   // and reproducible result for this test.
 
-  random_engine_type generator1(65658281052ULL);
+  random_engine_type generator1(305419969ULL);
   random_engine_type generator2;
 
   distribution_type distribution1;
@@ -33,7 +34,7 @@ bool wide_integer::example008_miller_rabin_prime()
 
   bool result_is_ok = false;
 
-  for(std::uint_fast32_t index = 0U; index < UINT32_C(100000); ++index)
+  for(std::uint_fast32_t index = 0U; index < UINT32_C(10000); ++index)
   {
     const wide_integer_type n = distribution1(generator1);
 
@@ -52,8 +53,8 @@ bool wide_integer::example008_miller_rabin_prime()
 
       result_is_ok =
         (   (miller_rabin_result == true)
-         && (n == "87176242072037071907086802804548085162415187458629769502010888229665333728499")
-         && (index == 10603U));
+         && (n == "44314879133400045088401570410731290767415555827427735336410270823316569902579")
+         && (index == 694U));
 
       if(result_is_ok)
       {

@@ -34,7 +34,7 @@
            typename LimbType = std::uint32_t>
   class uintwide_t;
 
-  // Forward declarations of non-member binary add, sub, mul, div, mod of (uintwide_t op IntegralType).
+  // Forward declarations of non-member binary add, sub, mul, div, mod of (uintwide_t op uintwide_t).
   template<const std::size_t Digits2, typename LimbType> uintwide_t<Digits2, LimbType> operator+(const uintwide_t<Digits2, LimbType>& u, const uintwide_t<Digits2, LimbType>& v);
   template<const std::size_t Digits2, typename LimbType> uintwide_t<Digits2, LimbType> operator-(const uintwide_t<Digits2, LimbType>& u, const uintwide_t<Digits2, LimbType>& v);
   template<const std::size_t Digits2, typename LimbType> uintwide_t<Digits2, LimbType> operator*(const uintwide_t<Digits2, LimbType>& u, const uintwide_t<Digits2, LimbType>& v);

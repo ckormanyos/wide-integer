@@ -5,9 +5,6 @@
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)             //
 ///////////////////////////////////////////////////////////////////
 
-#include <iomanip>
-#include <iostream>
-
 #include <wide_integer/generic_template_uintwide_t.h>
 
 bool wide_integer::example007_random_generator()
@@ -63,6 +60,9 @@ bool wide_integer::example007_random_generator()
 }
 
 #if !defined(WIDE_INTEGER_DISABLE_MAIN_IN_STANDALONE_EXAMPLES)
+
+#include <iomanip>
+#include <iostream>
 
 int main()
 {

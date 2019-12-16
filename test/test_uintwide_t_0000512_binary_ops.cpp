@@ -20,7 +20,7 @@
 namespace
 {
   constexpr std::size_t test_uintwide_t_digits2              = 512U;
-  constexpr std::size_t test_uintwide_t_number_of_test_cases = 1UL << 18U;
+  constexpr std::size_t test_uintwide_t_number_of_test_cases = 1UL << 17U;
 }
 
 using boost_uint_backend_type =
