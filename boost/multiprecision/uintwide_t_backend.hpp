@@ -103,11 +103,18 @@
 
     std::string str(std::streamsize number_of_digits, const std::ios::fmtflags format_flags) const
     {
-      std::string result_str;
+      char pstr[representation_type::wr_string_max_buffer_size_dec];
 
-      m_value.write_string(result_str, number_of_digits, format_flags);
+      const std::uint_fast8_t base_rep     = (((format_flags & std::ios::hex) != 0) ? 16U : 10U);
+      const bool              show_base    = ((format_flags & std::ios::showbase) != 0);
+      const bool              show_pos     = ((format_flags & std::ios::showpos) != 0);
+      const bool              is_uppercase = ((format_flags & std::ios::uppercase) != 0);
 
-      return result_str;
+      m_value.wr_string(pstr, base_rep, show_base, show_pos, is_uppercase);
+
+      const std::string str_result(pstr);
+
+      return str_result;
     }
 
     void negate()
