@@ -12,6 +12,11 @@
 
   bool test_uintwide_t_examples();
 
+  bool test_uintwide_t_0000064_binary_add();
+  bool test_uintwide_t_0000064_binary_sub();
+  bool test_uintwide_t_0000064_binary_mul();
+  bool test_uintwide_t_0000064_binary_div();
+
   bool test_uintwide_t_0000128_binary_add();
   bool test_uintwide_t_0000128_binary_sub();
   bool test_uintwide_t_0000128_binary_mul();

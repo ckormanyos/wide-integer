@@ -96,5 +96,8 @@
     <ClCompile Include="test\test_uintwide_t_boost_backend.cpp">
       <Filter>Source Files\test</Filter>
     </ClCompile>
+    <ClCompile Include="test\test_uintwide_t_0000064_binary_ops.cpp">
+      <Filter>Source Files\test</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

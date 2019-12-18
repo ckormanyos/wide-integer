@@ -2564,13 +2564,20 @@
     static ArithmeticType rotr(const ArithmeticType& value_being_shifted,
                                const std::size_t     bits_to_shift)
     {
+      const std::size_t bits_to_shift_limited_to_arithmetic_range =
+        (std::min)(static_cast<std::size_t>(std::numeric_limits<ArithmeticType>::digits),
+                   bits_to_shift);
+
       const std::size_t left_shift_amount =
-        std::numeric_limits<ArithmeticType>::digits - bits_to_shift;
+        std::numeric_limits<ArithmeticType>::digits - bits_to_shift_limited_to_arithmetic_range;
 
-      const ArithmeticType part1 = ((bits_to_shift > 0U) ? ArithmeticType(value_being_shifted >> bits_to_shift)     : value_being_shifted);
-      const ArithmeticType part2 = ((bits_to_shift > 0U) ? ArithmeticType(value_being_shifted << left_shift_amount) : 0U);
+      const ArithmeticType result =
+        ((bits_to_shift_limited_to_arithmetic_range > 0U)
+           ? (  ArithmeticType(value_being_shifted >> bits_to_shift_limited_to_arithmetic_range)
+              | ArithmeticType(value_being_shifted << left_shift_amount))
+           : value_being_shifted);
 
-      return ArithmeticType(part1 | part2);
+      return result;
     }
 
     template<typename xtype,
