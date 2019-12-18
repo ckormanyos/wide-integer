@@ -170,6 +170,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="boost\multiprecision\uintwide_t_backend.hpp" />
+    <ClInclude Include="test\parallel_for.h" />
     <ClInclude Include="test\test_uintwide_t.h" />
     <ClInclude Include="wide_integer\archive\non_template_uint128_t.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>

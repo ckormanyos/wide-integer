@@ -13,9 +13,9 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/multiprecision/cpp_int.hpp>
 
-#include <wide_integer/generic_template_uintwide_t.h>
-
+#include <test/parallel_for.h>
 #include <test/test_uintwide_t.h>
+#include <wide_integer/generic_template_uintwide_t.h>
 
 namespace
 {
@@ -35,13 +35,18 @@ void get_equal_random_test_values_native_and_local_n(native_uint_type* u_native,
 
   random_engine_type random_generator(std::clock());
 
-  for(std::size_t i = 0U; i < count; ++i)
-  {
-    const local_uint_type a = random_generator();
+  my_concurrency::parallel_for
+  (
+    std::size_t(0U),
+    count,
+    [&random_generator, &u_local, &u_native](std::size_t i)
+    {
+      const local_uint_type a = random_generator();
 
-    u_local [i] = a;
-    u_native[i] = static_cast<native_uint_type>(a);
-  }
+      u_local [i] = a;
+      u_native[i] = static_cast<native_uint_type>(a);
+    }
+  );
 }
 
 namespace
@@ -69,13 +74,18 @@ bool test_uintwide_t_0000064_binary_add()
 
   bool result_is_ok = true;
 
-  for(std::size_t i = 0U; i < a_local.size(); ++i)
-  {
-    const native_uint_type c_native = a_native[i] + b_native[i];
-    const local_uint_type  c_local  = a_local [i] + b_local [i];
+  my_concurrency::parallel_for
+  (
+    std::size_t(0U),
+    std::size_t(a_local.size()),
+    [&result_is_ok](std::size_t i)
+    {
+      const native_uint_type c_native = a_native[i] + b_native[i];
+      const local_uint_type  c_local  = a_local [i] + b_local [i];
 
-    result_is_ok &= (c_native == static_cast<native_uint_type>(c_local));
-  }
+      result_is_ok &= (c_native == static_cast<native_uint_type>(c_local));
+    }
+  );
 
   return result_is_ok;
 }
@@ -96,13 +106,18 @@ bool test_uintwide_t_0000064_binary_sub()
 
   bool result_is_ok = true;
 
-  for(std::size_t i = 0U; i < a_local.size(); ++i)
-  {
-    const native_uint_type c_native = a_native[i] - b_native[i];
-    const local_uint_type  c_local  = a_local [i] - b_local [i];
+  my_concurrency::parallel_for
+  (
+    std::size_t(0U),
+    std::size_t(a_local.size()),
+    [&result_is_ok](std::size_t i)
+    {
+      const native_uint_type c_native = a_native[i] - b_native[i];
+      const local_uint_type  c_local  = a_local [i] - b_local [i];
 
-    result_is_ok &= (c_native == static_cast<native_uint_type>(c_local));
-  }
+      result_is_ok &= (c_native == static_cast<native_uint_type>(c_local));
+    }
+  );
 
   return result_is_ok;
 }
@@ -123,13 +138,18 @@ bool test_uintwide_t_0000064_binary_mul()
 
   bool result_is_ok = true;
 
-  for(std::size_t i = 0U; i < a_local.size(); ++i)
-  {
-    const native_uint_type c_native = a_native[i] * b_native[i];
-    const local_uint_type  c_local  = a_local [i] * b_local [i];
+  my_concurrency::parallel_for
+  (
+    std::size_t(0U),
+    std::size_t(a_local.size()),
+    [&result_is_ok](std::size_t i)
+    {
+      const native_uint_type c_native = a_native[i] * b_native[i];
+      const local_uint_type  c_local  = a_local [i] * b_local [i];
 
-    result_is_ok &= (c_native == static_cast<native_uint_type>(c_local));
-  }
+      result_is_ok &= (c_native == static_cast<native_uint_type>(c_local));
+    }
+  );
 
   return result_is_ok;
 }
@@ -158,15 +178,20 @@ bool test_uintwide_t_0000064_binary_div()
   const native_uint_type native_one(1U);
   const local_uint_type  local_one (1U);
 
-  for(std::size_t i = 0U; i < a_local.size(); ++i)
-  {
-    const std::size_t right_shift_amount = static_cast<std::size_t>(dis(gen));
+  my_concurrency::parallel_for
+  (
+    std::size_t(0U),
+    std::size_t(a_local.size()),
+    [&result_is_ok, &native_one, &local_one, &dis, &gen](std::size_t i)
+    {
+      const std::size_t right_shift_amount = static_cast<std::size_t>(dis(gen));
 
-    const native_uint_type c_native = a_native[i] / (std::max)(native_one, (b_native[i] >> right_shift_amount));
-    const local_uint_type  c_local  = a_local [i] / (std::max)(local_one,  (b_local [i] >> right_shift_amount));
+      const native_uint_type c_native = a_native[i] / (std::max)(native_one, (b_native[i] >> right_shift_amount));
+      const local_uint_type  c_local  = a_local [i] / (std::max)(local_one,  (b_local [i] >> right_shift_amount));
 
-    result_is_ok &= (c_native == static_cast<native_uint_type>(c_local));
-  }
+      result_is_ok &= (c_native == static_cast<native_uint_type>(c_local));
+    }
+  );
 
   return result_is_ok;
 }

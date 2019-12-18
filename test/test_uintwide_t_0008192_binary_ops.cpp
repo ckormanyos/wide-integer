@@ -13,9 +13,9 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/multiprecision/cpp_int.hpp>
 
-#include <wide_integer/generic_template_uintwide_t.h>
-
+#include <test/parallel_for.h>
 #include <test/test_uintwide_t.h>
+#include <wide_integer/generic_template_uintwide_t.h>
 
 namespace
 {
@@ -40,13 +40,18 @@ void get_equal_random_test_values_boost_and_local_n(boost_uint_type* u_boost, lo
 
   random_engine_type random_generator(std::clock());
 
-  for(std::size_t i = 0U; i < count; ++i)
-  {
-    const local_uint_type a = random_generator();
+  my_concurrency::parallel_for
+  (
+    std::size_t(0U),
+    count,
+    [&random_generator, &u_local, &u_boost](std::size_t i)
+    {
+      const local_uint_type a = random_generator();
 
-    u_local[i] = a;
-    u_boost[i] = boost_uint_type(boost::lexical_cast<std::string>(a));
-  }
+      u_local[i] = a;
+      u_boost[i] = boost_uint_type(boost::lexical_cast<std::string>(a));
+    }
+  );
 }
 
 namespace
@@ -74,16 +79,21 @@ bool test_uintwide_t_0008192_binary_add()
 
   bool result_is_ok = true;
 
-  for(std::size_t i = 0U; i < a_local.size(); ++i)
-  {
-    const boost_uint_type c_boost = a_boost[i] + b_boost[i];
-    const local_uint_type c_local = a_local[i] + b_local[i];
+  my_concurrency::parallel_for
+  (
+    std::size_t(0U),
+    std::size_t(a_local.size()),
+    [&result_is_ok](std::size_t i)
+    {
+      const boost_uint_type c_boost = a_boost[i] + b_boost[i];
+      const local_uint_type c_local = a_local[i] + b_local[i];
 
-    const std::string str_boost = boost::lexical_cast<std::string>(c_boost);
-    const std::string str_local = boost::lexical_cast<std::string>(c_local);
+      const std::string str_boost = boost::lexical_cast<std::string>(c_boost);
+      const std::string str_local = boost::lexical_cast<std::string>(c_local);
 
-    result_is_ok &= (str_boost == str_local);
-  }
+      result_is_ok &= (str_boost == str_local);
+    }
+  );
 
   return result_is_ok;
 }
@@ -107,16 +117,21 @@ bool test_uintwide_t_0008192_binary_sub()
 
   bool result_is_ok = true;
 
-  for(std::size_t i = 0U; i < a_local.size(); ++i)
-  {
-    const boost_uint_type c_boost = a_boost[i] - b_boost[i];
-    const local_uint_type c_local = a_local[i] - b_local[i];
+  my_concurrency::parallel_for
+  (
+    std::size_t(0U),
+    std::size_t(a_local.size()),
+    [&result_is_ok](std::size_t i)
+    {
+      const boost_uint_type c_boost = a_boost[i] - b_boost[i];
+      const local_uint_type c_local = a_local[i] - b_local[i];
 
-    const std::string str_boost = boost::lexical_cast<std::string>(c_boost);
-    const std::string str_local = boost::lexical_cast<std::string>(c_local);
+      const std::string str_boost = boost::lexical_cast<std::string>(c_boost);
+      const std::string str_local = boost::lexical_cast<std::string>(c_local);
 
-    result_is_ok &= (str_boost == str_local);
-  }
+      result_is_ok &= (str_boost == str_local);
+    }
+  );
 
   return result_is_ok;
 }
@@ -140,16 +155,21 @@ bool test_uintwide_t_0008192_binary_mul()
 
   bool result_is_ok = true;
 
-  for(std::size_t i = 0U; i < a_local.size(); ++i)
-  {
-    const boost_uint_type c_boost = a_boost[i] * b_boost[i];
-    const local_uint_type c_local = a_local[i] * b_local[i];
+  my_concurrency::parallel_for
+  (
+    std::size_t(0U),
+    std::size_t(a_local.size()),
+    [&result_is_ok](std::size_t i)
+    {
+      const boost_uint_type c_boost = a_boost[i] * b_boost[i];
+      const local_uint_type c_local = a_local[i] * b_local[i];
 
-    const std::string str_boost = boost::lexical_cast<std::string>(c_boost);
-    const std::string str_local = boost::lexical_cast<std::string>(c_local);
+      const std::string str_boost = boost::lexical_cast<std::string>(c_boost);
+      const std::string str_local = boost::lexical_cast<std::string>(c_local);
 
-    result_is_ok &= (str_boost == str_local);
-  }
+      result_is_ok &= (str_boost == str_local);
+    }
+  );
 
   return result_is_ok;
 }
@@ -181,18 +201,23 @@ bool test_uintwide_t_0008192_binary_div()
 
   bool result_is_ok = true;
 
-  for(std::size_t i = 0U; i < a_local.size(); ++i)
-  {
-    const std::size_t right_shift_amount = static_cast<std::size_t>(dis(gen));
+  my_concurrency::parallel_for
+  (
+    std::size_t(0U),
+    std::size_t(a_local.size()),
+    [&result_is_ok, &boost_one, &local_one, &dis, &gen](std::size_t i)
+    {
+      const std::size_t right_shift_amount = static_cast<std::size_t>(dis(gen));
 
-    const boost_uint_type c_boost = a_boost[i] / (std::max)(boost_one, (b_boost[i] >> right_shift_amount));
-    const local_uint_type c_local = a_local[i] / (std::max)(local_one, (b_local[i] >> right_shift_amount));
+      const boost_uint_type c_boost = a_boost[i] / (std::max)(boost_one, (b_boost[i] >> right_shift_amount));
+      const local_uint_type c_local = a_local[i] / (std::max)(local_one, (b_local[i] >> right_shift_amount));
 
-    const std::string str_boost = boost::lexical_cast<std::string>(c_boost);
-    const std::string str_local = boost::lexical_cast<std::string>(c_local);
+      const std::string str_boost = boost::lexical_cast<std::string>(c_boost);
+      const std::string str_local = boost::lexical_cast<std::string>(c_local);
 
-    result_is_ok &= (str_boost == str_local);
-  }
+      result_is_ok &= (str_boost == str_local);
+    }
+  );
 
   return result_is_ok;
 }
