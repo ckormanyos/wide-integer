@@ -800,18 +800,13 @@
     uintwide_t& operator+=(const uintwide_t& other)
     {
       // Unary addition function.
-      std::array<ularge_type, number_of_limbs> result_as_ularge_array;
+      const ushort_type carry = eval_add_n(values.data(),
+                                           values.data(),
+                                           other.values.data(),
+                                           number_of_limbs,
+                                           ushort_type(0U));
 
-      ushort_type carry(0U);
-
-      for(std::size_t i = 0U; i < number_of_limbs; ++i)
-      {
-        result_as_ularge_array[i] = ularge_type(ularge_type(values[i]) + other.values[i]) + carry;
-
-        carry = detail::make_hi<ushort_type>(result_as_ularge_array[i]);
-
-        values[i] = ushort_type(result_as_ularge_array[i]);
-      }
+      static_cast<void>(carry);
 
       return *this;
     }
@@ -819,20 +814,13 @@
     uintwide_t& operator-=(const uintwide_t& other)
     {
       // Unary subtraction function.
-      std::array<ularge_type, number_of_limbs> result_as_ularge_array;
+      const ushort_type has_borrow = eval_subtract_n(values.data(),
+                                                     values.data(),
+                                                     other.values.data(),
+                                                     number_of_limbs,
+                                                     false);
 
-      bool has_borrow = false;
-
-      for(std::size_t i = 0U; i < number_of_limbs; ++i)
-      {
-        result_as_ularge_array[i] = ularge_type(values[i]) - other.values[i];
-
-        if(has_borrow) { --result_as_ularge_array[i]; }
-
-        has_borrow = (detail::make_hi<ushort_type>(result_as_ularge_array[i]) != ushort_type(0U));
-
-        values[i] = ushort_type(result_as_ularge_array[i]);
-      }
+      static_cast<void>(has_borrow);
 
       return *this;
     }
@@ -840,11 +828,21 @@
     uintwide_t& operator*=(const uintwide_t& other)
     {
       // Unary multiplication function.
+      #if 0
+      std::array<ushort_type, number_of_limbs * 2U> result;
+
+      eval_multiply_n(result.data(),
+                      values.data(),
+                      other.values.data(),
+                      number_of_limbs);
+      #else
       std::array<ushort_type, number_of_limbs> result;
 
-      multiplication_loop_schoolbook_half<number_of_limbs>(values.data(),
-                                                           other.values.data(),
-                                                           result.data());
+      eval_multiply_nhalf(result.data(),
+                          values.data(),
+                          other.values.data(),
+                          number_of_limbs);
+      #endif
 
       std::copy(result.cbegin(),
                 result.cbegin() + number_of_limbs,
@@ -856,7 +854,7 @@
     uintwide_t& operator/=(const uintwide_t& other)
     {
       // Unary division function.
-      quotient_and_remainder_knuth(other, nullptr);
+      eval_divide_knuth(other, nullptr);
 
       return *this;
     }
@@ -866,7 +864,7 @@
       // Unary modulus function.
       uintwide_t remainder;
 
-      quotient_and_remainder_knuth(other, &remainder);
+      eval_divide_knuth(other, &remainder);
 
       values = remainder.values;
 
@@ -1277,143 +1275,116 @@
   private:
     representation_type values;
 
-    // Read string function.
-    bool rd_string(const char* str_input)
+    static ushort_type eval_add_n(      ushort_type* r,
+                                  const ushort_type* u,
+                                  const ushort_type* v,
+                                  const std::size_t  count,
+                                  const ushort_type  carry_in = 0U)
     {
-      std::fill(values.begin(), values.end(), ushort_type(0U));
+      ushort_type carry_out = carry_in;
 
-      const std::size_t str_length = detail::strlen_unsafe(str_input);
-
-      std::uint_fast8_t base = 10U;
-
-      std::size_t pos = 0U;
-
-      // Skip over a potential plus sign.
-      if((str_length > 0U) && (str_input[0U] == char('+')))
+      for(std::size_t i = 0U; i < count; ++i)
       {
-        ++pos;
+        const ularge_type uv_as_ularge = ularge_type(ularge_type(u[i]) + v[i]) + carry_out;
+
+        carry_out = detail::make_hi<ushort_type>(uv_as_ularge);
+
+        r[i] = ushort_type(uv_as_ularge);
       }
 
-      // Perform a dynamic detection of the base.
-      if(str_length > (pos + 0U))
-      {
-        const bool might_be_oct_or_hex = ((str_input[pos + 0U] == char('0')) && (str_length > (pos + 1U)));
-
-        if(might_be_oct_or_hex)
-        {
-          if((str_input[pos + 1U] >= char('0')) && (str_input[pos + 1U] <= char('8')))
-          {
-            // The input format is octal.
-            base = 8U;
-
-            pos += 1U;
-          }
-          else if((str_input[pos + 1U] == char('x')) || (str_input[pos + 1U] == char('X')))
-          {
-            // The input format is hexadecimal.
-            base = 16U;
-
-            pos += 2U;
-          }
-        }
-        else if((str_input[pos + 0U] >= char('0')) && (str_input[pos + 0U] <= char('9')))
-        {
-          // The input format is decimal.
-          ;
-        }
-      }
-
-      bool char_is_valid = true;
-
-      for( ; ((pos < str_length) && char_is_valid); ++pos)
-      {
-        std::uint8_t c = std::uint8_t(str_input[pos]);
-
-        const bool char_is_apostrophe = (c == char(39));
-
-        if(char_is_apostrophe == false)
-        {
-          if(base == 8U)
-          {
-            if  ((c >= char('0')) && (c <= char('8'))) { c -= std::uint8_t(0x30U); }
-            else                                       { char_is_valid = false; }
-
-            if(char_is_valid)
-            {
-              operator<<=(3);
-
-              values[0U] |= std::uint8_t(c);
-            }
-          }
-          else if(base == 10U)
-          {
-            if   ((c >= std::uint8_t('0')) && (c <= std::uint8_t('9'))) { c -= std::uint8_t(0x30U); }
-            else                                                        { char_is_valid = false; }
-
-            if(char_is_valid)
-            {
-              operator*=(10U);
-
-              operator+=(c);
-            }
-          }
-          else if(base == 16U)
-          {
-            if     ((c >= std::uint8_t('a')) && (c <= std::uint8_t('f'))) { c -= std::uint8_t(  87U); }
-            else if((c >= std::uint8_t('A')) && (c <= std::uint8_t('F'))) { c -= std::uint8_t(  55U); }
-            else if((c >= std::uint8_t('0')) && (c <= std::uint8_t('9'))) { c -= std::uint8_t(0x30U); }
-            else                                                          { char_is_valid = false; }
-
-            if(char_is_valid)
-            {
-              operator<<=(4);
-
-              values[0U] |= c;
-            }
-          }
-        }
-      }
-
-      return char_is_valid;
+      return carry_out;
     }
 
-    template<const std::size_t ResultLimbCount>
-    static void multiplication_loop_schoolbook_half(const ushort_type* pu,
-                                                    const ushort_type* pv,
-                                                          ushort_type* pw)
+    static bool eval_subtract_n(      ushort_type* r,
+                                const ushort_type* u,
+                                const ushort_type* v,
+                                const std::size_t  count,
+                                const bool         has_borrow_in = false)
     {
-      std::fill(pw, pw + ResultLimbCount, ushort_type(0U));
+      bool has_borrow_out = has_borrow_in;
 
-      for(std::size_t j = 0U; j < ResultLimbCount; ++j)
+      for(std::size_t i = 0U; i < count; ++i)
       {
-        if(pv[j] != ushort_type(0U))
+        ularge_type uv_as_ularge = ularge_type(u[i]) - v[i];
+
+        if(has_borrow_out)
+        {
+          --uv_as_ularge;
+        }
+
+        has_borrow_out = (detail::make_hi<ushort_type>(uv_as_ularge) != ushort_type(0U));
+
+        r[i] = ushort_type(uv_as_ularge);
+      }
+
+      return has_borrow_out;
+    }
+
+    static void eval_multiply_nhalf(      ushort_type* r,
+                                    const ushort_type* u,
+                                    const ushort_type* v,
+                                    const std::size_t  count)
+    {
+      std::fill(r, r + count, ushort_type(0U));
+
+      for(std::size_t j = 0U; j < count; ++j)
+      {
+        if(v[j] != ushort_type(0U))
         {
           ushort_type carry = ushort_type(0U);
 
-          for(std::size_t i = 0U, iplusj = i + j; iplusj < ResultLimbCount; ++i, ++iplusj)
+          for(std::size_t i = 0U, iplusj = i + j; iplusj < count; ++i, ++iplusj)
           {
             const ularge_type t =
-              ularge_type(ularge_type(ularge_type(pu[i]) * pv[j]) + pw[iplusj]) + carry;
+              ularge_type(ularge_type(ularge_type(u[i]) * v[j]) + r[iplusj]) + carry;
 
-            pw[iplusj] = detail::make_lo<ushort_type>(t);
-            carry      = detail::make_hi<ushort_type>(t);
+            r[iplusj] = detail::make_lo<ushort_type>(t);
+            carry     = detail::make_hi<ushort_type>(t);
           }
         }
       }
     }
 
-    //template<const std::size_t ResultLimbCount>
-    //static void multiplication_loop_karatsuba(const ushort_type* pu,
-    //                                          const ushort_type* pv,
-    //                                                ushort_type* pw)
-    //{
-    //  // TBD: Not yet implemented.
-    //  static_cast<void>(pu);
-    //  static_cast<void>(pv);
-    //  static_cast<void>(pw);
-    //}
+    static void eval_multiply_n(      ushort_type* r,
+                                const ushort_type* u,
+                                const ushort_type* v,
+                                const std::size_t  count)
+    {
+      std::fill(r, r + (count * 2U), ushort_type(0U));
 
-    void quotient_and_remainder_knuth(const uintwide_t& other, uintwide_t* remainder)
+      for(std::size_t j = 0U; j < count; ++j)
+      {
+        if(v[j] != ushort_type(0U))
+        {
+          ushort_type carry = ushort_type(0U);
+
+          for(std::size_t i = 0U, iplusj = i + j; iplusj < (count * 2U); ++i, ++iplusj)
+          {
+            const ularge_type t =
+              ularge_type(ularge_type(ularge_type(u[i]) * v[j]) + r[iplusj]) + carry;
+
+            r[iplusj] = detail::make_lo<ushort_type>(t);
+            carry     = detail::make_hi<ushort_type>(t);
+          }
+        }
+      }
+    }
+
+    #if 0
+    static void eval_multiply_kara(      ushort_type* r,
+                                   const ushort_type* u,
+                                   const ushort_type* v,
+                                   const std::size_t  count)
+    {
+      // TBD: Not yet implemented.
+      static_cast<void>(r);
+      static_cast<void>(u);
+      static_cast<void>(v);
+      static_cast<void>(count);
+    }
+    #endif
+
+    void eval_divide_knuth(const uintwide_t& other, uintwide_t* remainder)
     {
       // TBD: Consider cleaning up the unclear flow-control
       // caused by numerous return statements in this subroutine.
@@ -1743,6 +1714,106 @@
                     ushort_type(0U));
         }
       }
+    }
+
+    // Read string function.
+    bool rd_string(const char* str_input)
+    {
+      std::fill(values.begin(), values.end(), ushort_type(0U));
+
+      const std::size_t str_length = detail::strlen_unsafe(str_input);
+
+      std::uint_fast8_t base = 10U;
+
+      std::size_t pos = 0U;
+
+      // Skip over a potential plus sign.
+      if((str_length > 0U) && (str_input[0U] == char('+')))
+      {
+        ++pos;
+      }
+
+      // Perform a dynamic detection of the base.
+      if(str_length > (pos + 0U))
+      {
+        const bool might_be_oct_or_hex = ((str_input[pos + 0U] == char('0')) && (str_length > (pos + 1U)));
+
+        if(might_be_oct_or_hex)
+        {
+          if((str_input[pos + 1U] >= char('0')) && (str_input[pos + 1U] <= char('8')))
+          {
+            // The input format is octal.
+            base = 8U;
+
+            pos += 1U;
+          }
+          else if((str_input[pos + 1U] == char('x')) || (str_input[pos + 1U] == char('X')))
+          {
+            // The input format is hexadecimal.
+            base = 16U;
+
+            pos += 2U;
+          }
+        }
+        else if((str_input[pos + 0U] >= char('0')) && (str_input[pos + 0U] <= char('9')))
+        {
+          // The input format is decimal.
+          ;
+        }
+      }
+
+      bool char_is_valid = true;
+
+      for( ; ((pos < str_length) && char_is_valid); ++pos)
+      {
+        std::uint8_t c = std::uint8_t(str_input[pos]);
+
+        const bool char_is_apostrophe = (c == char(39));
+
+        if(char_is_apostrophe == false)
+        {
+          if(base == 8U)
+          {
+            if  ((c >= char('0')) && (c <= char('8'))) { c -= std::uint8_t(0x30U); }
+            else                                       { char_is_valid = false; }
+
+            if(char_is_valid)
+            {
+              operator<<=(3);
+
+              values[0U] |= std::uint8_t(c);
+            }
+          }
+          else if(base == 10U)
+          {
+            if   ((c >= std::uint8_t('0')) && (c <= std::uint8_t('9'))) { c -= std::uint8_t(0x30U); }
+            else                                                        { char_is_valid = false; }
+
+            if(char_is_valid)
+            {
+              operator*=(10U);
+
+              operator+=(c);
+            }
+          }
+          else if(base == 16U)
+          {
+            if     ((c >= std::uint8_t('a')) && (c <= std::uint8_t('f'))) { c -= std::uint8_t(  87U); }
+            else if((c >= std::uint8_t('A')) && (c <= std::uint8_t('F'))) { c -= std::uint8_t(  55U); }
+            else if((c >= std::uint8_t('0')) && (c <= std::uint8_t('9'))) { c -= std::uint8_t(0x30U); }
+            else                                                          { char_is_valid = false; }
+
+            if(char_is_valid)
+            {
+              operator<<=(4);
+
+              values[0U] |= c;
+            }
+          }
+        }
+      }
+
+      return char_is_valid;
     }
 
     void bitwise_not()
