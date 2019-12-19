@@ -172,6 +172,8 @@
     <ClInclude Include="boost\multiprecision\uintwide_t_backend.hpp" />
     <ClInclude Include="test\parallel_for.h" />
     <ClInclude Include="test\test_uintwide_t.h" />
+    <ClInclude Include="test\test_uintwide_t_n_binary_ops_base.h" />
+    <ClInclude Include="test\test_uintwide_t_n_binary_ops_template.h" />
     <ClInclude Include="wide_integer\archive\non_template_uint128_t.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
@@ -204,13 +206,8 @@
     <ClCompile Include="examples\example008_miller_rabin_prime.cpp" />
     <ClCompile Include="examples\example009_compare_mul_with_boost.cpp" />
     <ClCompile Include="test\test.cpp" />
-    <ClCompile Include="test\test_uintwide_t_0000064_binary_ops.cpp" />
     <ClCompile Include="test\test_uintwide_t_boost_backend.cpp" />
     <ClCompile Include="test\test_uintwide_t_examples.cpp" />
-    <ClCompile Include="test\test_uintwide_t_0000128_binary_ops.cpp" />
-    <ClCompile Include="test\test_uintwide_t_0000512_binary_ops.cpp" />
-    <ClCompile Include="test\test_uintwide_t_0008192_binary_ops.cpp" />
-    <ClCompile Include="test\test_uintwide_t_0065536_binary_ops.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

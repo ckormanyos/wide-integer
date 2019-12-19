@@ -12,10 +12,15 @@
 #include <boost/test/included/unit_test.hpp>
 
 #include <test/test_uintwide_t.h>
+#include <test/test_uintwide_t_n_binary_ops_template.h>
+
+namespace
+{
+  constexpr std::size_t test_uintwide_t_n_binary_ops_rounds = 4U;
+}
 
 BOOST_AUTO_TEST_CASE(test_uintwide_t_boost_backend_tag)
 {
-  // boost backend
   std::cout << "running: test_uintwide_t_boost_backend" << std::endl;
   const bool result_test_uintwide_t_boost_backend_is_ok = test_uintwide_t_boost_backend();
   BOOST_CHECK(result_test_uintwide_t_boost_backend_is_ok);
@@ -23,108 +28,43 @@ BOOST_AUTO_TEST_CASE(test_uintwide_t_boost_backend_tag)
 
 BOOST_AUTO_TEST_CASE(test_uintwide_t_examples_tag)
 {
-  // examples
   std::cout << "running: test_uintwide_t_examples" << std::endl;
   const bool result_test_uintwide_t_examples_is_ok = test_uintwide_t_examples();
   BOOST_CHECK(result_test_uintwide_t_examples_is_ok);
 }
 
-BOOST_AUTO_TEST_CASE(test_uintwide_t_0000064)
+BOOST_AUTO_TEST_CASE(test_uintwide_t_0000128_tag)
 {
-  // 064
-  std::cout << "running: test_uintwide_t_0000064_binary_add" << std::endl;
-  const bool result_test_uintwide_t_0000064_binary_add_is_ok = test_uintwide_t_0000064_binary_add();
-  BOOST_CHECK(result_test_uintwide_t_0000064_binary_add_is_ok);
-
-  std::cout << "running: test_uintwide_t_0000064_binary_sub" << std::endl;
-  const bool result_test_uintwide_t_0000064_binary_sub_is_ok = test_uintwide_t_0000064_binary_sub();
-  BOOST_CHECK(result_test_uintwide_t_0000064_binary_sub_is_ok);
-
-  std::cout << "running: test_uintwide_t_0000064_binary_mul" << std::endl;
-  const bool result_test_uintwide_t_0000064_binary_mul_is_ok = test_uintwide_t_0000064_binary_mul();
-  BOOST_CHECK(result_test_uintwide_t_0000064_binary_mul_is_ok);
-
-  std::cout << "running: test_uintwide_t_0000064_binary_div" << std::endl;
-  const bool result_test_uintwide_t_0000064_binary_div_is_ok = test_uintwide_t_0000064_binary_div();
-  BOOST_CHECK(result_test_uintwide_t_0000064_binary_div_is_ok);
+  std::cout << "running: test_uintwide_t_0000128" << std::endl;
+  test_uintwide_t_n_binary_ops_template<128U> test_uintwide_t_n_binary_ops_template_instance(1UL << 21U);
+  const bool result_is_ok =
+    test_uintwide_t_n_binary_ops_template_instance.do_test(test_uintwide_t_n_binary_ops_rounds);
+  BOOST_CHECK(result_is_ok);
 }
 
-BOOST_AUTO_TEST_CASE(test_uintwide_t_0000128)
+BOOST_AUTO_TEST_CASE(test_uintwide_t_0000512_tag)
 {
-  // 128
-  std::cout << "running: test_uintwide_t_0000128_binary_add" << std::endl;
-  const bool result_test_uintwide_t_0000128_binary_add_is_ok = test_uintwide_t_0000128_binary_add();
-  BOOST_CHECK(result_test_uintwide_t_0000128_binary_add_is_ok);
-
-  std::cout << "running: test_uintwide_t_0000128_binary_sub" << std::endl;
-  const bool result_test_uintwide_t_0000128_binary_sub_is_ok = test_uintwide_t_0000128_binary_sub();
-  BOOST_CHECK(result_test_uintwide_t_0000128_binary_sub_is_ok);
-
-  std::cout << "running: test_uintwide_t_0000128_binary_mul" << std::endl;
-  const bool result_test_uintwide_t_0000128_binary_mul_is_ok = test_uintwide_t_0000128_binary_mul();
-  BOOST_CHECK(result_test_uintwide_t_0000128_binary_mul_is_ok);
-
-  std::cout << "running: test_uintwide_t_0000128_binary_div" << std::endl;
-  const bool result_test_uintwide_t_0000128_binary_div_is_ok = test_uintwide_t_0000128_binary_div();
-  BOOST_CHECK(result_test_uintwide_t_0000128_binary_div_is_ok);
+  std::cout << "running: test_uintwide_t_0000512" << std::endl;
+  test_uintwide_t_n_binary_ops_template<512U> test_uintwide_t_n_binary_ops_template_instance(1UL << 19U);
+  const bool result_is_ok =
+    test_uintwide_t_n_binary_ops_template_instance.do_test(test_uintwide_t_n_binary_ops_rounds);
+  BOOST_CHECK(result_is_ok);
 }
 
-BOOST_AUTO_TEST_CASE(test_uintwide_t_0000512)
+BOOST_AUTO_TEST_CASE(test_uintwide_t_0008192_tag)
 {
-  // 512
-  std::cout << "running: test_uintwide_t_0000512_binary_add" << std::endl;
-  const bool result_test_uintwide_t_0000512_binary_add_is_ok = test_uintwide_t_0000512_binary_add();
-  BOOST_CHECK(result_test_uintwide_t_0000512_binary_add_is_ok);
-
-  std::cout << "running: test_uintwide_t_0000512_binary_sub" << std::endl;
-  const bool result_test_uintwide_t_0000512_binary_sub_is_ok = test_uintwide_t_0000512_binary_sub();
-  BOOST_CHECK(result_test_uintwide_t_0000512_binary_sub_is_ok);
-
-  std::cout << "running: test_uintwide_t_0000512_binary_mul" << std::endl;
-  const bool result_test_uintwide_t_0000512_binary_mul_is_ok = test_uintwide_t_0000512_binary_mul();
-  BOOST_CHECK(result_test_uintwide_t_0000512_binary_mul_is_ok);
-
-  std::cout << "running: test_uintwide_t_0000512_binary_div" << std::endl;
-  const bool result_test_uintwide_t_0000512_binary_div_is_ok = test_uintwide_t_0000512_binary_div();
-  BOOST_CHECK(result_test_uintwide_t_0000512_binary_div_is_ok);
+  std::cout << "running: test_uintwide_t_0008192" << std::endl;
+  test_uintwide_t_n_binary_ops_template<8192U> test_uintwide_t_n_binary_ops_template_instance(1UL << 11U);
+  const bool result_is_ok =
+    test_uintwide_t_n_binary_ops_template_instance.do_test(test_uintwide_t_n_binary_ops_rounds);
+  BOOST_CHECK(result_is_ok);
 }
 
-BOOST_AUTO_TEST_CASE(test_uintwide_t_0008192)
+BOOST_AUTO_TEST_CASE(test_uintwide_t_0065536_tag)
 {
-  // 8192
-  std::cout << "running: test_uintwide_t_0008192_binary_add" << std::endl;
-  const bool result_test_uintwide_t_0008192_binary_add_is_ok = test_uintwide_t_0008192_binary_add();
-  BOOST_CHECK(result_test_uintwide_t_0008192_binary_add_is_ok);
-
-  std::cout << "running: test_uintwide_t_0008192_binary_sub" << std::endl;
-  const bool result_test_uintwide_t_0008192_binary_sub_is_ok = test_uintwide_t_0008192_binary_sub();
-  BOOST_CHECK(result_test_uintwide_t_0008192_binary_sub_is_ok);
-
-  std::cout << "running: test_uintwide_t_0008192_binary_mul" << std::endl;
-  const bool result_test_uintwide_t_0008192_binary_mul_is_ok = test_uintwide_t_0008192_binary_mul();
-  BOOST_CHECK(result_test_uintwide_t_0008192_binary_mul_is_ok);
-
-  std::cout << "running: test_uintwide_t_0008192_binary_div" << std::endl;
-  const bool result_test_uintwide_t_0008192_binary_div_is_ok = test_uintwide_t_0008192_binary_div();
-  BOOST_CHECK(result_test_uintwide_t_0008192_binary_div_is_ok);
-}
-
-BOOST_AUTO_TEST_CASE(test_uintwide_t_0065536)
-{
-  // 65536
-  std::cout << "running: test_uintwide_t_0065536_binary_add" << std::endl;
-  const bool result_test_uintwide_t_0065536_binary_add_is_ok = test_uintwide_t_0065536_binary_add();
-  BOOST_CHECK(result_test_uintwide_t_0065536_binary_add_is_ok);
-
-  std::cout << "running: test_uintwide_t_0065536_binary_sub" << std::endl;
-  const bool result_test_uintwide_t_0065536_binary_sub_is_ok = test_uintwide_t_0065536_binary_sub();
-  BOOST_CHECK(result_test_uintwide_t_0065536_binary_sub_is_ok);
-
-  std::cout << "running: test_uintwide_t_0065536_binary_mul" << std::endl;
-  const bool result_test_uintwide_t_0065536_binary_mul_is_ok = test_uintwide_t_0065536_binary_mul();
-  BOOST_CHECK(result_test_uintwide_t_0065536_binary_mul_is_ok);
-
-  std::cout << "running: test_uintwide_t_0065536_binary_div" << std::endl;
-  const bool result_test_uintwide_t_0065536_binary_div_is_ok = test_uintwide_t_0065536_binary_div();
-  BOOST_CHECK(result_test_uintwide_t_0065536_binary_div_is_ok);
+  std::cout << "running: test_uintwide_t_0065536" << std::endl;
+  test_uintwide_t_n_binary_ops_template<65536U> test_uintwide_t_n_binary_ops_template_instance(1UL << 6U);
+  const bool result_is_ok =
+    test_uintwide_t_n_binary_ops_template_instance.do_test(test_uintwide_t_n_binary_ops_rounds);
+  BOOST_CHECK(result_is_ok);
 }
