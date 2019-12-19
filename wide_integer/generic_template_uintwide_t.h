@@ -8,9 +8,6 @@
 #ifndef GENERIC_TEMPLATE_UINTWIDE_T_2018_10_02_H_
   #define GENERIC_TEMPLATE_UINTWIDE_T_2018_10_02_H_
 
-  //#define WIDE_INTEGER_DISABLE_MAIN_IN_STANDALONE_EXAMPLES
-  //#define WIDE_INTEGER_DISABLE_IOSTREAM
-
   #include <algorithm>
   #include <array>
   #include <cstddef>

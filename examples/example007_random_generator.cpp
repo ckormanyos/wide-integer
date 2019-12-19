@@ -59,7 +59,8 @@ bool wide_integer::example007_random_generator()
   return result_is_ok;
 }
 
-#if !defined(WIDE_INTEGER_DISABLE_MAIN_IN_STANDALONE_EXAMPLES)
+// Enable this if you would like to activate this main() as a standalone example.
+#if 0
 
 #include <iomanip>
 #include <iostream>

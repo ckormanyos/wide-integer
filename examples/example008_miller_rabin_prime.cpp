@@ -10,11 +10,6 @@
 // The Boost.Multiprecision code can be found here:
 // https://www.boost.org/doc/libs/1_68_0/libs/multiprecision/doc/html/boost_multiprecision/tut/primetest.html
 
-#if !defined(WIDE_INTEGER_DISABLE_MAIN_IN_STANDALONE_EXAMPLES)
-#include <iomanip>
-#include <iostream>
-#endif
-
 #include <wide_integer/generic_template_uintwide_t.h>
 
 bool wide_integer::example008_miller_rabin_prime()
@@ -66,7 +61,11 @@ bool wide_integer::example008_miller_rabin_prime()
   return result_is_ok;
 }
 
-#if !defined(WIDE_INTEGER_DISABLE_MAIN_IN_STANDALONE_EXAMPLES)
+// Enable this if you would like to activate this main() as a standalone example.
+#if 0
+
+#include <iomanip>
+#include <iostream>
 
 int main()
 {
