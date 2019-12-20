@@ -16,7 +16,21 @@
 
 namespace
 {
-  constexpr std::size_t test_uintwide_t_n_binary_ops_rounds = 4U;
+  constexpr std::size_t test_uintwide_t_n_binary_ops_rounds = 1U;
+}
+
+BOOST_AUTO_TEST_CASE(test_uintwide_t_dummy_tag)
+{
+  std::cout << "running: test_uintwide_t_dummy" << std::endl;
+
+  using uint_type = wide_integer::generic_template::uintwide_t<32U, std::uint8_t>;
+
+  uint_type a = UINT32_C(0x11FF5522);
+  uint_type b = UINT32_C(0xABCDFFEE);
+
+  uint_type c = a * b;
+
+  BOOST_CHECK(c == UINT32_C(0xF368039C));
 }
 
 BOOST_AUTO_TEST_CASE(test_uintwide_t_boost_backend_tag)
@@ -45,7 +59,7 @@ BOOST_AUTO_TEST_CASE(test_uintwide_t_0000128_tag)
 BOOST_AUTO_TEST_CASE(test_uintwide_t_0000512_tag)
 {
   std::cout << "running: test_uintwide_t_0000512" << std::endl;
-  test_uintwide_t_n_binary_ops_template<512U> test_uintwide_t_n_binary_ops_template_instance(1UL << 19U);
+  test_uintwide_t_n_binary_ops_template<512U> test_uintwide_t_n_binary_ops_template_instance(1UL << 18U);
   const bool result_is_ok =
     test_uintwide_t_n_binary_ops_template_instance.do_test(test_uintwide_t_n_binary_ops_rounds);
   BOOST_CHECK(result_is_ok);
@@ -54,7 +68,7 @@ BOOST_AUTO_TEST_CASE(test_uintwide_t_0000512_tag)
 BOOST_AUTO_TEST_CASE(test_uintwide_t_0008192_tag)
 {
   std::cout << "running: test_uintwide_t_0008192" << std::endl;
-  test_uintwide_t_n_binary_ops_template<8192U> test_uintwide_t_n_binary_ops_template_instance(1UL << 11U);
+  test_uintwide_t_n_binary_ops_template<8192U> test_uintwide_t_n_binary_ops_template_instance(1UL << 10U);
   const bool result_is_ok =
     test_uintwide_t_n_binary_ops_template_instance.do_test(test_uintwide_t_n_binary_ops_rounds);
   BOOST_CHECK(result_is_ok);
@@ -63,7 +77,7 @@ BOOST_AUTO_TEST_CASE(test_uintwide_t_0008192_tag)
 BOOST_AUTO_TEST_CASE(test_uintwide_t_0065536_tag)
 {
   std::cout << "running: test_uintwide_t_0065536" << std::endl;
-  test_uintwide_t_n_binary_ops_template<65536U> test_uintwide_t_n_binary_ops_template_instance(1UL << 6U);
+  test_uintwide_t_n_binary_ops_template<65536U> test_uintwide_t_n_binary_ops_template_instance(1UL << 5U);
   const bool result_is_ok =
     test_uintwide_t_n_binary_ops_template_instance.do_test(test_uintwide_t_n_binary_ops_rounds);
   BOOST_CHECK(result_is_ok);

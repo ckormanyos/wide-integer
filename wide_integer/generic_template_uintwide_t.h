@@ -828,6 +828,21 @@
     uintwide_t& operator*=(const uintwide_t& other)
     {
       // Unary multiplication function.
+
+      // TBD: for high limb counts, count the number of non-zero limbs
+      // in order to determin the best mutiplication method.
+
+      // TBD: Add dedicated functions for multiplication with native uint.
+
+      #if 1
+      std::array<ushort_type, number_of_limbs> result;
+
+      eval_multiply_nhalf(result.data(),
+                          values.data(),
+                          other.values.data(),
+                          number_of_limbs);
+      #endif
+
       #if 0
       std::array<ushort_type, number_of_limbs * 2U> result;
 
@@ -835,13 +850,17 @@
                       values.data(),
                       other.values.data(),
                       number_of_limbs);
-      #else
-      std::array<ushort_type, number_of_limbs> result;
+      #endif
 
-      eval_multiply_nhalf(result.data(),
-                          values.data(),
-                          other.values.data(),
-                          number_of_limbs);
+      #if 0
+      std::array<ushort_type, number_of_limbs * 2U> result;
+      std::array<ushort_type, number_of_limbs * 4U> t;
+
+      eval_multiply_kara(result.data(),
+                         values.data(),
+                         other.values.data(),
+                         number_of_limbs,
+                         t.data());
       #endif
 
       std::copy(result.cbegin(),
@@ -1325,6 +1344,7 @@
                                     const ushort_type* v,
                                     const std::size_t  count)
     {
+      // TBD: It should be possible to eliminate this zero-clear.
       std::fill(r, r + count, ushort_type(0U));
 
       for(std::size_t j = 0U; j < count; ++j)
@@ -1350,39 +1370,200 @@
                                 const ushort_type* v,
                                 const std::size_t  count)
     {
+      // TBD: It should be possible to eliminate this zero-clear.
       std::fill(r, r + (count * 2U), ushort_type(0U));
+
+      using double_limb_type = ularge_type;
+
+      ularge_type carry = 0;
 
       for(std::size_t j = 0U; j < count; ++j)
       {
         if(v[j] != ushort_type(0U))
         {
-          ushort_type carry = ushort_type(0U);
+          std::size_t i = 0U;
 
-          for(std::size_t i = 0U, iplusj = i + j; iplusj < (count * 2U); ++i, ++iplusj)
+          for( ; i < count; ++i)
           {
-            const ularge_type t =
-              ularge_type(ularge_type(ularge_type(u[i]) * v[j]) + r[iplusj]) + carry;
+            carry += ularge_type(ularge_type(u[i]) * v[j]);
+            carry += r[i + j];
 
-            r[iplusj] = detail::make_lo<ushort_type>(t);
-            carry     = detail::make_hi<ushort_type>(t);
+            r[i + j] = detail::make_lo<ushort_type>(carry);
+            carry    = detail::make_hi<ushort_type>(carry);
           }
+
+          r[i + j] = ushort_type(carry);
+
+          carry = 0;
         }
       }
     }
 
-    #if 0
+    static void eval_multiply_kara_propagate_carry(ushort_type* t, const std::size_t n, const ushort_type carry)
+    {
+      std::size_t i = 0U;
+
+      ushort_type carry_out = carry;
+
+      while(i < n && carry_out != 0U)
+      {
+        const ularge_type uv_as_ularge = ularge_type(t[i]) + carry_out;
+
+        carry_out = detail::make_hi<ushort_type>(uv_as_ularge);
+
+        t[i] = ushort_type(uv_as_ularge);
+
+        ++i;
+      }
+    }
+
+    static void eval_multiply_kara_propagate_borrow(ushort_type* t, const std::size_t n, const bool has_borrow)
+    {
+      std::size_t i = 0U;
+
+      bool has_borrow_out = has_borrow;
+
+      while(i < n && has_borrow_out)
+      {
+        ularge_type uv_as_ularge = ularge_type(t[i]);
+
+        if(has_borrow_out)
+        {
+          --uv_as_ularge;
+        }
+
+        has_borrow_out = (detail::make_hi<ushort_type>(uv_as_ularge) != ushort_type(0U));
+
+        t[i] = ushort_type(uv_as_ularge);
+
+        ++i;
+      }
+    }
+
+    static void eval_multiply_kara_complement(ushort_type* t, const std::size_t n)
+    {
+      bool cy = true;
+
+      for(std::size_t i = 0U; i < n; ++i)
+      {
+        t[i] ^= ushort_type(~ushort_type(0U));
+
+        if(cy)
+        {
+          cy = (++t[i] == 0U);
+        }
+      }
+    }
+
     static void eval_multiply_kara(      ushort_type* r,
                                    const ushort_type* u,
                                    const ushort_type* v,
-                                   const std::size_t  count)
+                                   const std::size_t  n,
+                                         ushort_type* t)
     {
-      // TBD: Not yet implemented.
-      static_cast<void>(r);
-      static_cast<void>(u);
-      static_cast<void>(v);
-      static_cast<void>(count);
+      if(n <= 32U)
+      {
+        eval_multiply_n(r, u, v, n);
+      }
+      else
+      {
+        // Step 1
+        // Calculate u1*v1 and store it in the upper part of r.
+        // Calculate u0*v0 and store it in the lower part of r.
+        // copy r to t0.
+
+        // Step 2
+        // Add u1*v1 (which is t2) to the middle two-quarters of r (which is r1)
+        // Add u0*v0 (which is t0) to the middle two-quarters of r (which is r1)
+
+        // Step 3
+        // Calculate |u1-u0| in t0 and note the sign (i.e., the borrow flag)
+
+        // Step 4
+        // Calculate |v0-v1| in t1 and note the sign (i.e., the borrow flag)
+
+        // Step 5
+        // Call kara mul to calculate |u1-u0|*|v0-v1| in (t+n),
+
+        // Step 6
+        // If u1-u0 and v0-v1 have the same signs, then add
+        // |u1-u0|*|v0-v1| to r1, otherwise subtract
+        // it from r1.
+
+        const std::size_t  nh = n / 2U;
+
+        const ushort_type* u0 = u + 0U;
+        const ushort_type* u1 = u + nh;
+        const ushort_type* u2 = u + n;
+
+        const ushort_type* v0 = v + 0U;
+        const ushort_type* v1 = v + nh;
+
+              ushort_type* r0 = r + 0U;
+              ushort_type* r1 = r + nh;
+              ushort_type* r2 = r + n;
+              ushort_type* r3 = r + (n + nh);
+              ushort_type* r4 = r + (n + n);
+
+              ushort_type* t0 = t + 0U;
+              ushort_type* t1 = t + nh;
+              ushort_type* t2 = t + n;
+              ushort_type* t4 = t + (n + n);
+
+        // Step 1
+        //   u1*v1 -> r2
+        //   u0*v0 -> r0
+        //   r -> t0
+        eval_multiply_kara(r2, u1, v1, nh, t0);
+        eval_multiply_kara(r0, u0, v0, nh, t0);
+        std::copy(r0, r4, t0);
+
+        // Step 2
+        //   r1 += u1*v1
+        //   r1 += u0*v0
+        ushort_type carry;
+        carry = eval_add_n(r1, r1, t2, n);
+        eval_multiply_kara_propagate_carry(r3, nh, carry);
+        carry = eval_add_n(r1, r1, t0, n);
+        eval_multiply_kara_propagate_carry(r3, nh, carry);
+
+        // Step 3
+        //   |u1-u0| -> t0
+        const bool carry_u1u0 = eval_subtract_n(t0, u1, u0, nh);
+        if(carry_u1u0)
+        {
+          eval_multiply_kara_complement(t0, nh);
+        }
+
+        // Step 4
+        //   |v0-v1| -> t1
+        const bool carry_v0v1 = eval_subtract_n(t1, v0, v1, nh);
+        if(carry_v0v1)
+        {
+          eval_multiply_kara_complement(t1, nh);
+        }
+
+        // Step 5
+        //   |u1-u0|*|v0-v1| -> t2
+        eval_multiply_kara(t2, t0, t1, nh, t4);
+
+        // Step 6
+        //   either r1 += |u1-u0|*|v0-v1|
+        //   or     r1 -= |u1-u0|*|v0-v1|
+        if(carry_u1u0 == carry_v0v1)
+        {
+          carry = eval_add_n(r1, r1, t2, n);
+
+          eval_multiply_kara_propagate_carry(r3, nh, carry);
+        }
+        else
+        {
+          const bool has_borrow = eval_subtract_n(r1, r1, t2, n);
+
+          eval_multiply_kara_propagate_borrow(r3, nh, has_borrow);
+        }
+      }
     }
-    #endif
 
     void eval_divide_knuth(const uintwide_t& other, uintwide_t* remainder)
     {
