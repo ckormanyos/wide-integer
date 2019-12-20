@@ -1467,6 +1467,12 @@
       }
       else
       {
+        // The Karatsuba multipliation computes the product of u*v as:
+        // [b^N + b^(N/2)] u1*v1 + [b^(N/2)](u1 - u0)(v0 - v1) + [b^(N/2) + 1] u0*v0
+
+        // Here we visualize u and v in two components 0,1 corresponding
+        // to the high and low order parts, respectively.
+
         // Step 1
         // Calculate u1*v1 and store it in the upper part of r.
         // Calculate u0*v0 and store it in the lower part of r.
