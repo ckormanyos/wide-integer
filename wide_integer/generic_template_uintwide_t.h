@@ -570,7 +570,7 @@
     static constexpr std::size_t number_of_limbs =
       std::size_t(my_digits / std::size_t(std::numeric_limits<ushort_type>::digits));
 
-    static constexpr std::size_t number_of_limbs_karatsuba_threshold = 64U;
+    static constexpr std::size_t number_of_limbs_karatsuba_threshold = 129U;
 
     // The type of the internal data representation.
     using representation_type = std::array<ushort_type, number_of_limbs>;
@@ -587,6 +587,10 @@
     // Types that have half or double the width of *this.
     using half_width_type   = uintwide_t<my_digits / 2U, ushort_type>;
     using double_width_type = uintwide_t<my_digits * 2U, ushort_type>;
+
+    template<const std::size_t NumberOfLimbs,
+             typename EnableType>
+    friend struct eval_mul_unary_helper;
 
     // Default destructor.
     ~uintwide_t() = default;
@@ -829,39 +833,7 @@
 
     uintwide_t& operator*=(const uintwide_t& other)
     {
-      // Unary multiplication function.
-
-      // TBD: Use compile-time enable-if for the decision:
-      // Is (number_of_limbs < number_of_limbs_karatsuba_threshold)?
-
-      if(number_of_limbs < number_of_limbs_karatsuba_threshold)
-      {
-        std::array<ushort_type, number_of_limbs> result;
-
-        eval_multiply_nhalf(result.data(),
-                            values.data(),
-                            other.values.data(),
-                            number_of_limbs);
-
-        std::copy(result.cbegin(),
-                  result.cbegin() + number_of_limbs,
-                  values.begin());
-      }
-      else
-      {
-        std::array<ushort_type, number_of_limbs * 2U> result;
-        std::array<ushort_type, number_of_limbs * 4U> t;
-
-        eval_multiply_kara(result.data(),
-                           values.data(),
-                           other.values.data(),
-                           number_of_limbs,
-                           t.data());
-
-        std::copy(result.cbegin(),
-                  result.cbegin() + number_of_limbs,
-                  values.begin());
-      }
+      eval_mul_unary_helper<number_of_limbs>::eval_mul_unary(*this, other);
 
       return *this;
     }
@@ -1306,6 +1278,57 @@
   private:
     representation_type values;
 
+    template<const std::size_t NumberOfLimbs,
+             typename EnableType = void>
+    struct eval_mul_unary_helper
+    {
+      static void eval_mul_unary(uintwide_t&, const uintwide_t&) { }
+    };
+
+    template<const std::uint32_t NumberOfLimbs>
+    struct eval_mul_unary_helper<NumberOfLimbs,
+                                 typename std::enable_if<(NumberOfLimbs < uintwide_t::number_of_limbs_karatsuba_threshold)>::type>
+    {
+      static void eval_mul_unary(uintwide_t& u, const uintwide_t& v)
+      {
+        // Unary multiplication function type schoolbook multiplication.
+
+        std::array<ushort_type, NumberOfLimbs> result;
+
+        eval_multiply_nhalf(result.data(),
+                            u.values.data(),
+                            v.values.data(),
+                            NumberOfLimbs);
+
+        std::copy(result.cbegin(),
+                  result.cbegin() + NumberOfLimbs,
+                  u.values.begin());
+      }
+    };
+
+    template<const std::size_t NumberOfLimbs>
+    struct eval_mul_unary_helper<NumberOfLimbs,
+                                 typename std::enable_if<(NumberOfLimbs >= uintwide_t::number_of_limbs_karatsuba_threshold)>::type>
+    {
+      static void eval_mul_unary(uintwide_t& u, const uintwide_t& v)
+      {
+        // Unary multiplication function type Karatsuba multiplication.
+
+        std::array<ushort_type, NumberOfLimbs * 2U> result;
+        std::array<ushort_type, NumberOfLimbs * 4U> t;
+
+        eval_multiply_kara(result.data(),
+                           u.values.data(),
+                           v.values.data(),
+                           NumberOfLimbs,
+                           t.data());
+
+        std::copy(result.cbegin(),
+                  result.cbegin() + NumberOfLimbs,
+                  u.values.begin());
+      }
+    };
+
     static ushort_type eval_add_n(      ushort_type* r,
                                   const ushort_type* u,
                                   const ushort_type* v,
@@ -1522,7 +1545,7 @@
         // Calculate |v0-v1| in t1 and note the sign (i.e., the borrow flag)
 
         // Step 5
-        // Call kara mul to calculate |u1-u0|*|v0-v1| in (t+n),
+        // Call kara mul to calculate |u1-u0|*|v0-v1| in (t2),
 
         // Step 6
         // If u1-u0 and v0-v1 have the same signs, then add

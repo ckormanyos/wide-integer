@@ -39,10 +39,9 @@
            typename MyLimbType = std::uint32_t>
   class uintwide_t_backend
   {
-  private:
+  public:
     using representation_type = wide_integer::generic_template::uintwide_t<MyDigits2, MyLimbType>;
 
-  public:
     using signed_types   = boost::mpl::list<std::int64_t>;
     using unsigned_types = boost::mpl::list<std::uint64_t>;
     using float_types    = boost::mpl::list<long double>;
@@ -167,6 +166,7 @@
            typename std::enable_if<(std::is_integral<IntegralType>::value == true)>::type const* = nullptr>
   void eval_multiply(uintwide_t_backend<MyDigits2, MyLimbType>& result, const IntegralType& n)
   {
+    // TBD: Use the efficient mul_by_limb function when appropriate.
     result.representation() *= n;
   }
 
@@ -183,6 +183,7 @@
            typename std::enable_if<(std::is_integral<IntegralType>::value == true)>::type const* = nullptr>
   void eval_divide(uintwide_t_backend<MyDigits2, MyLimbType>& result, const IntegralType& n)
   {
+    // TBD: Use the efficient div_by_limb function (that doles not yet exist) when appropriate.
     result.representation() /= n;
   }
 
