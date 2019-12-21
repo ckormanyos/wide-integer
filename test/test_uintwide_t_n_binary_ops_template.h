@@ -7,7 +7,6 @@
   #include <random>
   #include <vector>
 
-  #include <boost/lexical_cast.hpp>
   #include <boost/multiprecision/cpp_int.hpp>
 
   #include <test/test_uintwide_t_n_binary_ops_base.h>
@@ -77,8 +76,8 @@
           const boost_uint_type c_boost = a_boost[i] + b_boost[i];
           const local_uint_type c_local = a_local[i] + b_local[i];
 
-          const std::string str_boost = boost::lexical_cast<std::string>(c_boost);
-          const std::string str_local = boost::lexical_cast<std::string>(c_local);
+          const std::string str_boost = hexlexical_cast(c_boost);
+          const std::string str_local = hexlexical_cast(c_local);
 
           result_is_ok &= (str_boost == str_local);
         }
@@ -100,8 +99,8 @@
           const boost_uint_type c_boost = a_boost[i] - b_boost[i];
           const local_uint_type c_local = a_local[i] - b_local[i];
 
-          const std::string str_boost = boost::lexical_cast<std::string>(c_boost);
-          const std::string str_local = boost::lexical_cast<std::string>(c_local);
+          const std::string str_boost = hexlexical_cast(c_boost);
+          const std::string str_local = hexlexical_cast(c_local);
 
           result_is_ok &= (str_boost == str_local);
         }
@@ -123,8 +122,8 @@
           const boost_uint_type c_boost = a_boost[i] * b_boost[i];
           const local_uint_type c_local = a_local[i] * b_local[i];
 
-          const std::string str_boost = boost::lexical_cast<std::string>(c_boost);
-          const std::string str_local = boost::lexical_cast<std::string>(c_local);
+          const std::string str_boost = hexlexical_cast(c_boost);
+          const std::string str_local = hexlexical_cast(c_local);
 
           result_is_ok &= (str_boost == str_local);
         }
@@ -153,8 +152,8 @@
           const boost_uint_type c_boost = a_boost[i] / (std::max)(boost_uint_type(1U), (b_boost[i] >> right_shift_amount));
           const local_uint_type c_local = a_local[i] / (std::max)(local_uint_type(1U), (b_local[i] >> right_shift_amount));
 
-          const std::string str_boost = boost::lexical_cast<std::string>(c_boost);
-          const std::string str_local = boost::lexical_cast<std::string>(c_local);
+          const std::string str_boost = hexlexical_cast(c_boost);
+          const std::string str_local = hexlexical_cast(c_local);
 
           result_is_ok &= (str_boost == str_local);
         }
@@ -176,8 +175,8 @@
           const boost_uint_type c_boost = sqrt(a_boost[i]);
           const local_uint_type c_local = sqrt(a_local[i]);
 
-          const std::string str_boost = boost::lexical_cast<std::string>(c_boost);
-          const std::string str_local = boost::lexical_cast<std::string>(c_local);
+          const std::string str_boost = hexlexical_cast(c_boost);
+          const std::string str_local = hexlexical_cast(c_local);
 
           result_is_ok &= (str_boost == str_local);
         }
@@ -213,7 +212,7 @@
           const local_uint_type a = random_generator();
 
           u_local[i] = a;
-          u_boost[i] = boost_uint_type(boost::lexical_cast<std::string>(a));
+          u_boost[i] = boost_uint_type("0x" + hexlexical_cast(a));
         }
       );
     }

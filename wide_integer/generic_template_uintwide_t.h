@@ -563,12 +563,14 @@
                    "Error: Please check the characteristics of the template parameters ST and LT");
 
     // Helper constants for the digit characteristics.
-    static const std::size_t my_digits   = Digits2;
-    static const std::size_t my_digits10 = static_cast<int>((std::uintmax_t(my_digits) * UINTMAX_C(301)) / 1000U);
+    static constexpr std::size_t my_digits   = Digits2;
+    static constexpr std::size_t my_digits10 = static_cast<int>((std::uintmax_t(my_digits) * UINTMAX_C(301)) / 1000U);
 
     // The number of limbs.
-    static const std::size_t number_of_limbs =
+    static constexpr std::size_t number_of_limbs =
       std::size_t(my_digits / std::size_t(std::numeric_limits<ushort_type>::digits));
+
+    static constexpr std::size_t number_of_limbs_karatsuba_threshold = 64U;
 
     // The type of the internal data representation.
     using representation_type = std::array<ushort_type, number_of_limbs>;
@@ -829,39 +831,49 @@
     {
       // Unary multiplication function.
 
-      // TBD: for high limb counts, count the number of non-zero limbs
-      // in order to determin the best mutiplication method.
+      // TBD: Use compile-time enable-if for the decision:
+      // Is (number_of_limbs < number_of_limbs_karatsuba_threshold)?
 
-      // TBD: Add dedicated functions for multiplication with native uint.
+      if(number_of_limbs < number_of_limbs_karatsuba_threshold)
+      {
+        std::array<ushort_type, number_of_limbs> result;
 
-      #if 1
+        eval_multiply_nhalf(result.data(),
+                            values.data(),
+                            other.values.data(),
+                            number_of_limbs);
+
+        std::copy(result.cbegin(),
+                  result.cbegin() + number_of_limbs,
+                  values.begin());
+      }
+      else
+      {
+        std::array<ushort_type, number_of_limbs * 2U> result;
+        std::array<ushort_type, number_of_limbs * 4U> t;
+
+        eval_multiply_kara(result.data(),
+                           values.data(),
+                           other.values.data(),
+                           number_of_limbs,
+                           t.data());
+
+        std::copy(result.cbegin(),
+                  result.cbegin() + number_of_limbs,
+                  values.begin());
+      }
+
+      return *this;
+    }
+
+    uintwide_t& mul_by_limb(const ushort_type v)
+    {
       std::array<ushort_type, number_of_limbs> result;
 
-      eval_multiply_nhalf(result.data(),
-                          values.data(),
-                          other.values.data(),
-                          number_of_limbs);
-      #endif
-
-      #if 0
-      std::array<ushort_type, number_of_limbs * 2U> result;
-
-      eval_multiply_n(result.data(),
-                      values.data(),
-                      other.values.data(),
-                      number_of_limbs);
-      #endif
-
-      #if 0
-      std::array<ushort_type, number_of_limbs * 2U> result;
-      std::array<ushort_type, number_of_limbs * 4U> t;
-
-      eval_multiply_kara(result.data(),
-                         values.data(),
-                         other.values.data(),
-                         number_of_limbs,
-                         t.data());
-      #endif
+      eval_multiply_1d(result.data(),
+                       values.data(),
+                       v,
+                       number_of_limbs);
 
       std::copy(result.cbegin(),
                 result.cbegin() + number_of_limbs,
@@ -1157,7 +1169,7 @@
 
             t /= ten;
 
-            char c = char(ushort_type((t_temp - (t * ten)).values[0U]));
+            char c = char(ushort_type((t_temp - (uintwide_t(t).mul_by_limb(10U))).values[0U]));
 
             if(c <= char(9)) { c += char(0x30); }
 
@@ -1351,15 +1363,15 @@
       {
         if(v[j] != ushort_type(0U))
         {
-          ushort_type carry = ushort_type(0U);
+          ularge_type carry = 0U;
 
-          for(std::size_t i = 0U, iplusj = i + j; iplusj < count; ++i, ++iplusj)
+          for(std::size_t i = 0U; i < (count - j); ++i)
           {
-            const ularge_type t =
-              ularge_type(ularge_type(ularge_type(u[i]) * v[j]) + r[iplusj]) + carry;
+            carry += ularge_type(ularge_type(u[i]) * v[j]);
+            carry += r[i + j];
 
-            r[iplusj] = detail::make_lo<ushort_type>(t);
-            carry     = detail::make_hi<ushort_type>(t);
+            r[i + j] = detail::make_lo<ushort_type>(carry);
+            carry    = detail::make_hi<ushort_type>(carry);
           }
         }
       }
@@ -1373,15 +1385,13 @@
       // TBD: It should be possible to eliminate this zero-clear.
       std::fill(r, r + (count * 2U), ushort_type(0U));
 
-      using double_limb_type = ularge_type;
-
-      ularge_type carry = 0;
-
       for(std::size_t j = 0U; j < count; ++j)
       {
         if(v[j] != ushort_type(0U))
         {
           std::size_t i = 0U;
+
+          ularge_type carry = 0U;
 
           for( ; i < count; ++i)
           {
@@ -1393,10 +1403,33 @@
           }
 
           r[i + j] = ushort_type(carry);
-
-          carry = 0;
         }
       }
+    }
+
+    static ushort_type eval_multiply_1d(      ushort_type* r,
+                                        const ushort_type* u,
+                                        const ushort_type  v,
+                                        const std::size_t  count)
+    {
+      // TBD: It should be possible to eliminate this zero-clear.
+      std::fill(r, r + count, ushort_type(0U));
+
+      ularge_type carry = 0U;
+
+      if(v != ushort_type(0U))
+      {
+        for(std::size_t i = 0U ; i < count; ++i)
+        {
+          carry += ularge_type(ularge_type(u[i]) * v);
+          carry += r[i];
+
+          r[i]  = detail::make_lo<ushort_type>(carry);
+          carry = detail::make_hi<ushort_type>(carry);
+        }
+      }
+
+      return ushort_type(carry);
     }
 
     static void eval_multiply_kara_propagate_carry(ushort_type* t, const std::size_t n, const ushort_type carry)
@@ -1978,7 +2011,7 @@
 
             if(char_is_valid)
             {
-              operator*=(10U);
+              mul_by_limb(10U);
 
               operator+=(c);
             }
@@ -2138,7 +2171,12 @@
   template<typename IntegralType, const std::size_t Digits2, typename LimbType>
   typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
                            && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType>>::type
-  operator*(const uintwide_t<Digits2, LimbType>& u, const IntegralType& v) { return uintwide_t<Digits2, LimbType>(u).operator*=(uintwide_t<Digits2, LimbType>(v)); }
+  operator*(const uintwide_t<Digits2, LimbType>& u, const IntegralType& v)
+  {
+    // TBD: Make separate functions for signed/unsigned IntegralType.
+    // TBD: And subsequently use the optimized mul_by_limb function where appropriate.
+    return uintwide_t<Digits2, LimbType>(u).operator*=(uintwide_t<Digits2, LimbType>(v));
+  }
 
   template<typename IntegralType, const std::size_t Digits2, typename LimbType>
   typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
@@ -2164,7 +2202,12 @@
   template<typename IntegralType, const std::size_t Digits2, typename LimbType>
   typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
                            && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType>>::type
-  operator*(const IntegralType& u, const uintwide_t<Digits2, LimbType>& v) { return uintwide_t<Digits2, LimbType>(u).operator*=(v); }
+  operator*(const IntegralType& u, const uintwide_t<Digits2, LimbType>& v)
+  {
+    // TBD: Make separate functions for signed/unsigned IntegralType.
+    // TBD: And subsequently use the optimized mul_by_limb function where appropriate.
+    return uintwide_t<Digits2, LimbType>(u).operator*=(v);
+  }
 
   template<typename IntegralType, const std::size_t Digits2, typename LimbType>
   typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)

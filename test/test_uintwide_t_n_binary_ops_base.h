@@ -1,6 +1,10 @@
 #ifndef TEST_UINTWIDE_T_N_BINARY_OPS_BASE_2019_12_19_H_
   #define TEST_UINTWIDE_T_N_BINARY_OPS_BASE_2019_12_19_H_
 
+  #include <iomanip>
+  #include <sstream>
+  #include <string>
+
   #include <boost/noncopyable.hpp>
 
   class test_uintwide_t_n_binary_ops_base : private boost::noncopyable
@@ -47,6 +51,16 @@
 
   protected:
     test_uintwide_t_n_binary_ops_base() = default;
+
+    template<typename UnsignedIntegralType>
+    static std::string hexlexical_cast(const UnsignedIntegralType& u)
+    {
+      std::stringstream ss;
+
+      ss << std::hex << u;
+
+      return ss.str();
+    }
   };
 
 #endif // TEST_UINTWIDE_T_N_BINARY_OPS_BASE_2019_12_19_H_
