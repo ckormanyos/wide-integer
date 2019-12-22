@@ -1,9 +1,9 @@
 # wide-integer
-wide-integer implements a generic C++ template for extended precision unsigned integral types auch as uint128_t, uint256_t, uint512_t, uint1024_t, etc. At the moment, wide-integer is limited to unsigned integral types having bit counts that are powers of 2 and greater than or equal to 64.
+wide-integer implements a generic C++ template for extended precision unsigned integral types auch as uint128_t, uint256_t, uint512_t, uint1024_t, etc. At the moment, wide-integer is limited to unsigned integral types having bit counts that are powers of 2 and greater than or equal to 16.
 
 Inclusion of a single C++11 header file is all that is needed.
 
-Wide-Integer has been tested on numerous compilers and is specifically designed for efficiency with small to medium bit counts such as 128, 256 or 512. Portability of the code is another key point of focus. Special care has been taken to test in certain high-performance embedded real-time programming environments. Tested efficient functionality on the PC and workstation is also present.
+Wide-Integer has been tested on numerous compilers and is specifically designed for efficiency with small to medium bit counts such as 128, 256 or 512. If long dvision is avoided, Karatsuba multiplication extends the high performance range to thousands of bits. Portability of the code is another key point of focus. Special care has been taken to test in certain high-performance embedded real-time programming environments. Tested efficient functionality on the PC and workstation is also present.
 
 When working with even the most tiny microcontroller systems, I/O streaming can optionally be disabled with the WIDE_INTEGER_DISABLE_IOSTREAM compiler switch. See the examples directory as more use cases are being created.
 
