@@ -1181,13 +1181,14 @@
       static void eval_mul_unary(uintwide_t&, const uintwide_t&) { }
     };
 
-    template<const std::uint32_t NumberOfLimbs>
+    template<const std::size_t NumberOfLimbs>
     struct eval_mul_unary_helper<NumberOfLimbs,
                                  typename std::enable_if<(NumberOfLimbs < uintwide_t::number_of_limbs_karatsuba_threshold)>::type>
     {
       static void eval_mul_unary(uintwide_t& u, const uintwide_t& v)
       {
-        // Unary multiplication function type schoolbook multiplication.
+        // Unary multiplication function type schoolbook multiplication,
+        // but only the half-pyramid thereof for n*n->n bit multiply.
 
         std::array<ushort_type, NumberOfLimbs> result;
 
