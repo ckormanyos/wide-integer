@@ -422,121 +422,6 @@
     return local_ularge_type(local_ularge_type(static_cast<local_ularge_type>(hi) << std::numeric_limits<ST>::digits) | lo);
   }
 
-  template<typename UnsignedIntegralType>
-  std::size_t lsb_helper(const UnsignedIntegralType& x)
-  {
-    // Compile-time checks.
-    static_assert((   (std::numeric_limits<UnsignedIntegralType>::is_integer == true)
-                   && (std::numeric_limits<UnsignedIntegralType>::is_signed  == false)),
-                   "Error: Please check the characteristics of UnsignedIntegralType");
-
-    using local_unsigned_integral_type = UnsignedIntegralType;
-
-    std::size_t i;
-
-    // This assumes that at least one bit is set.
-    // Otherwise saturation of the index will occur.
-    for(i = 0U; i < std::size_t(std::numeric_limits<local_unsigned_integral_type>::digits); ++i)
-    {
-      if((x & UnsignedIntegralType(local_unsigned_integral_type(1U) << i)) != 0U)
-      {
-        break;
-      }
-    }
-
-    return i;
-  }
-
-  template<typename UnsignedIntegralType>
-  std::size_t msb_helper(const UnsignedIntegralType& x)
-  {
-    // Compile-time checks.
-    static_assert((   (std::numeric_limits<UnsignedIntegralType>::is_integer == true)
-                   && (std::numeric_limits<UnsignedIntegralType>::is_signed  == false)),
-                   "Error: Please check the characteristics of UnsignedIntegralType");
-
-    using local_unsigned_integral_type = UnsignedIntegralType;
-
-    std::ptrdiff_t i;
-
-    // This assumes that at least one bit is set.
-    // Otherwise underflow of the index will occur.
-    for(i = std::ptrdiff_t(std::numeric_limits<local_unsigned_integral_type>::digits - 1); i >= 0; --i)
-    {
-      if((x & UnsignedIntegralType(local_unsigned_integral_type(1U) << i)) != 0U)
-      {
-        break;
-      }
-    }
-
-    return std::size_t(i);
-  }
-
-  template<typename ST>
-  ST integer_gcd_reduce_short(ST u, ST v)
-  {
-    // This implementation of GCD reduction is based on an
-    // adaptation of existing code from Boost.Multiprecision.
-
-    for(;;)
-    {
-      if(u > v)
-      {
-        std::swap(u, v);
-      }
-
-      if(u == v)
-      {
-        break;
-      }
-
-      v  -= u;
-      v >>= detail::lsb_helper(v);
-    }
-
-    return u;
-  }
-
-  template<typename LT>
-  LT integer_gcd_reduce_large(LT u, LT v)
-  {
-    // This implementation of GCD reduction is based on an
-    // adaptation of existing code from Boost.Multiprecision.
-
-    using local_ularge_type = LT;
-    using local_ushort_type = typename detail::int_type_helper<std::size_t(std::numeric_limits<local_ularge_type>::digits / 2)>::exact_unsigned_type;
-
-    for(;;)
-    {
-      if(u > v)
-      {
-        std::swap(u, v);
-      }
-
-      if(u == v)
-      {
-        break;
-      }
-
-      if(v <= local_ularge_type((std::numeric_limits<local_ushort_type>::max)()))
-      {
-        u = integer_gcd_reduce_short(local_ushort_type(v),
-                                     local_ushort_type(u));
-
-        break;
-      }
-
-      v -= u;
-
-      while((std::uint_fast8_t(v) & 1U) == 0U)
-      {
-        v >>= 1;
-      }
-    }
-
-    return u;
-  }
-
   } } } // namespace wide_integer::generic_template::detail
 
   namespace wide_integer { namespace generic_template {
@@ -591,9 +476,6 @@
     template<const std::size_t NumberOfLimbs,
              typename EnableType>
     friend struct eval_mul_unary_helper;
-
-    // Default destructor.
-    ~uintwide_t() = default;
 
     // Default constructor.
     uintwide_t() = default;
@@ -698,6 +580,9 @@
 
     // Move constructor.
     uintwide_t(uintwide_t&& other) : values(static_cast<representation_type&&>(other.values)) { }
+
+    // Default destructor.
+    ~uintwide_t() = default;
 
     // Assignment operator.
     uintwide_t& operator=(const uintwide_t& other)
@@ -1137,11 +1022,15 @@
 
           while(t.is_zero() == false)
           {
+            // TBD: Try to generally improve efficiency and reduce
+            // the number of temporaries and the count of operations
+            // on them in the conversion to decimal string.
+
             const uintwide_t t_temp(t);
 
             t /= ten;
 
-            char c = char(ushort_type((t_temp - (uintwide_t(t).mul_by_limb(10U))).values[0U]));
+            char c = char((t_temp - (uintwide_t(t).mul_by_limb(10U))).values[0U]);
 
             if(c <= char(9)) { c += char(0x30); }
 
@@ -1249,12 +1138,22 @@
 
     std::int_fast8_t compare(const uintwide_t& other) const
     {
-      std::int_fast8_t return_value;
+      const std::int_fast8_t cmp_result = compare_ranges(values.data(), other.values.data(), number_of_limbs);
+
+      return cmp_result;
+    }
+
+  private:
+    representation_type values;
+
+    static std::int_fast8_t compare_ranges(const ushort_type* a, const ushort_type* b, const std::size_t count)
+    {
+      std::int_fast8_t cmp_result;
       std::ptrdiff_t   element_index;
 
-      for(element_index = std::ptrdiff_t(number_of_limbs - 1U); element_index >= std::ptrdiff_t(0); --element_index)
+      for(element_index = std::ptrdiff_t(count - 1U); element_index >= std::ptrdiff_t(0); --element_index)
       {
-        if(values[std::size_t(element_index)] != other.values[std::size_t(element_index)])
+        if(a[std::size_t(element_index)] != b[std::size_t(element_index)])
         {
           break;
         }
@@ -1262,21 +1161,18 @@
 
       if(element_index == std::ptrdiff_t(-1))
       {
-        return_value = std::int_fast8_t(0);
+        cmp_result = std::int_fast8_t(0);
       }
       else
       {
         const bool left_is_greater_than_right =
-          (values[std::size_t(element_index)] > other.values[std::size_t(element_index)]);
+          (a[std::size_t(element_index)] > b[std::size_t(element_index)]);
 
-        return_value = (left_is_greater_than_right ? std::int_fast8_t(1) : std::int_fast8_t(-1));
+        cmp_result = (left_is_greater_than_right ? std::int_fast8_t(1) : std::int_fast8_t(-1));
       }
 
-      return return_value;
+      return cmp_result;
     }
-
-  private:
-    representation_type values;
 
     template<const std::size_t NumberOfLimbs,
              typename EnableType = void>
@@ -1493,20 +1389,6 @@
       }
     }
 
-    static void eval_multiply_kara_complement(ushort_type* t, const std::size_t n)
-    {
-      bool cy = true;
-
-      std::for_each(t,
-                    t + n,
-                    [&cy](ushort_type& u)
-                    {
-                      u ^= ushort_type(~ushort_type(0U));
-
-                      cy = (cy ? (++u == 0U) : cy);
-                    });
-    }
-
     static void eval_multiply_kara(      ushort_type* r,
                                    const ushort_type* u,
                                    const ushort_type* v,
@@ -1525,6 +1407,11 @@
         // Here we visualize u and v in two components 0,1 corresponding
         // to the high and low order parts, respectively.
 
+        // TBD: A subproblem: Deal with the subproblem getting negative,
+        // and consider the overhead for calculating the complements.
+        // Boost kara mul branch: z = (u1+u0)*(v1+v0) - u1*v1 - u0*v0
+        // This code:             z =  u1*v1 + u0*v0 - |u1-u0|*|v0-v1|
+
         // Step 1
         // Calculate u1*v1 and store it in the upper part of r.
         // Calculate u0*v0 and store it in the lower part of r.
@@ -1542,6 +1429,7 @@
 
         // Step 5
         // Call kara mul to calculate |u1-u0|*|v0-v1| in (t2),
+        // while using temporary storage in t4.
 
         // Step 6
         // Check the borrow signs. If u1-u0 and v0-v1 have the same signs,
@@ -1586,18 +1474,27 @@
 
         // Step 3
         //   |u1-u0| -> t0
-        const bool has_borrow_u1u0 = eval_subtract_n(t0, u1, u0, nh);
-        if(has_borrow_u1u0)
+        const std::int_fast8_t cmp_result_u1u0 = compare_ranges(u1, u0, nh);
+        if(cmp_result_u1u0 == 1)
         {
-          eval_multiply_kara_complement(t0, nh);
+          static_cast<void>(eval_subtract_n(t0, u1, u0, nh));
+        }
+        else if(cmp_result_u1u0 == -1)
+        {
+          static_cast<void>(eval_subtract_n(t0, u0, u1, nh));
         }
 
         // Step 4
         //   |v0-v1| -> t1
-        const bool has_borrow_v0v1 = eval_subtract_n(t1, v0, v1, nh);
-        if(has_borrow_v0v1)
+        const std::int_fast8_t cmp_result_v0v1 = compare_ranges(v0, v1, nh);
+
+        if(cmp_result_v0v1 == 1)
         {
-          eval_multiply_kara_complement(t1, nh);
+          static_cast<void>(eval_subtract_n(t1, v0, v1, nh));
+        }
+        else if(cmp_result_v0v1 == -1)
+        {
+          static_cast<void>(eval_subtract_n(t1, v1, v0, nh));
         }
 
         // Step 5
@@ -1607,13 +1504,13 @@
         // Step 6
         //   either r1 += |u1-u0|*|v0-v1|
         //   or     r1 -= |u1-u0|*|v0-v1|
-        if(has_borrow_u1u0 == has_borrow_v0v1)
+        if((cmp_result_u1u0 * cmp_result_v0v1) == 1)
         {
           carry = eval_add_n(r1, r1, t2, n);
 
           eval_multiply_kara_propagate_carry(r3, nh, carry);
         }
-        else
+        else if((cmp_result_u1u0 * cmp_result_v0v1) == -1)
         {
           const bool has_borrow = eval_subtract_n(r1, r1, t2, n);
 
@@ -2436,6 +2333,60 @@
 
   namespace wide_integer { namespace generic_template {
 
+  namespace detail {
+
+  template<typename UnsignedIntegralType>
+  std::size_t lsb_helper(const UnsignedIntegralType& x)
+  {
+    // Compile-time checks.
+    static_assert((   (std::numeric_limits<UnsignedIntegralType>::is_integer == true)
+                   && (std::numeric_limits<UnsignedIntegralType>::is_signed  == false)),
+                   "Error: Please check the characteristics of UnsignedIntegralType");
+
+    using local_unsigned_integral_type = UnsignedIntegralType;
+
+    std::size_t i;
+
+    // This assumes that at least one bit is set.
+    // Otherwise saturation of the index will occur.
+    for(i = 0U; i < std::size_t(std::numeric_limits<local_unsigned_integral_type>::digits); ++i)
+    {
+      if((x & UnsignedIntegralType(local_unsigned_integral_type(1U) << i)) != 0U)
+      {
+        break;
+      }
+    }
+
+    return i;
+  }
+
+  template<typename UnsignedIntegralType>
+  std::size_t msb_helper(const UnsignedIntegralType& x)
+  {
+    // Compile-time checks.
+    static_assert((   (std::numeric_limits<UnsignedIntegralType>::is_integer == true)
+                   && (std::numeric_limits<UnsignedIntegralType>::is_signed  == false)),
+                   "Error: Please check the characteristics of UnsignedIntegralType");
+
+    using local_unsigned_integral_type = UnsignedIntegralType;
+
+    std::ptrdiff_t i;
+
+    // This assumes that at least one bit is set.
+    // Otherwise underflow of the index will occur.
+    for(i = std::ptrdiff_t(std::numeric_limits<local_unsigned_integral_type>::digits - 1); i >= 0; --i)
+    {
+      if((x & UnsignedIntegralType(local_unsigned_integral_type(1U) << i)) != 0U)
+      {
+        break;
+      }
+    }
+
+    return std::size_t(i);
+  }
+
+  }
+
   template<const std::size_t Digits2,
            typename LimbType>
   void swap(uintwide_t<Digits2, LimbType>& x,
@@ -2758,6 +2709,75 @@
     }
 
     return result;
+  }
+
+  namespace detail {
+
+  template<typename ST>
+  ST integer_gcd_reduce_short(ST u, ST v)
+  {
+    // This implementation of GCD reduction is based on an
+    // adaptation of existing code from Boost.Multiprecision.
+
+    for(;;)
+    {
+      if(u > v)
+      {
+        std::swap(u, v);
+      }
+
+      if(u == v)
+      {
+        break;
+      }
+
+      v  -= u;
+      v >>= detail::lsb_helper(v);
+    }
+
+    return u;
+  }
+
+  template<typename LT>
+  LT integer_gcd_reduce_large(LT u, LT v)
+  {
+    // This implementation of GCD reduction is based on an
+    // adaptation of existing code from Boost.Multiprecision.
+
+    using local_ularge_type = LT;
+    using local_ushort_type = typename detail::int_type_helper<std::size_t(std::numeric_limits<local_ularge_type>::digits / 2)>::exact_unsigned_type;
+
+    for(;;)
+    {
+      if(u > v)
+      {
+        std::swap(u, v);
+      }
+
+      if(u == v)
+      {
+        break;
+      }
+
+      if(v <= local_ularge_type((std::numeric_limits<local_ushort_type>::max)()))
+      {
+        u = integer_gcd_reduce_short(local_ushort_type(v),
+                                     local_ushort_type(u));
+
+        break;
+      }
+
+      v -= u;
+
+      while((std::uint_fast8_t(v) & 1U) == 0U)
+      {
+        v >>= 1;
+      }
+    }
+
+    return u;
+  }
+
   }
 
   template<const std::size_t Digits2,
