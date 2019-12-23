@@ -315,41 +315,14 @@
 
   namespace wide_integer { namespace generic_template { namespace detail {
 
-  template<const std::size_t Digits2>
-  struct verify_power_of_two
-  {
-    static constexpr bool conditional_value = verify_power_of_two<Digits2 / 2U>::conditional_value;
-  };
+  template<const std::size_t Digits2> struct verify_power_of_two     { static constexpr bool conditional_value = verify_power_of_two<Digits2 / 2U>::conditional_value; };
+  template<>                          struct verify_power_of_two<2U> { static constexpr bool conditional_value = true; };
+  template<>                          struct verify_power_of_two<0U> { static constexpr bool conditional_value = false; };
 
-  template<>
-  struct verify_power_of_two<2U>
-  {
-    static constexpr bool conditional_value = true;
-  };
-
-  template<>
-  struct verify_power_of_two<0U>
-  {
-    static constexpr bool conditional_value = false;
-  };
-
-  template<const std::size_t Digits2>
-  struct verify_power_of_two_times_three
-  {
-    static constexpr bool conditional_value = verify_power_of_two_times_three<Digits2 / 2U>::conditional_value;
-  };
-
-  template<>
-  struct verify_power_of_two_times_three<3U>
-  {
-    static constexpr bool conditional_value = true;
-  };
-
-  template<>
-  struct verify_power_of_two_times_three<0U>
-  {
-    static constexpr bool conditional_value = false;
-  };
+  template<const std::size_t Digits2> struct verify_power_of_two_times_three     { static constexpr bool conditional_value = verify_power_of_two_times_three<Digits2 / 2U>::conditional_value; };
+  template<>                          struct verify_power_of_two_times_three<3U> { static constexpr bool conditional_value = true; };
+  template<>                          struct verify_power_of_two_times_three<2U> { static constexpr bool conditional_value = true; };
+  template<>                          struct verify_power_of_two_times_three<0U> { static constexpr bool conditional_value = false; };
 
   // Helper templates for selecting integral types.
   template<const std::size_t BitCount> struct int_type_helper
@@ -460,13 +433,6 @@
   class uintwide_t
   {
   public:
-    // Verify that the Digits2 template parameter is a power of 2.
-    static_assert(   (   (detail::verify_power_of_two            <Digits2>::conditional_value == true)
-                      || (detail::verify_power_of_two_times_three<Digits2>::conditional_value == true))
-                  && (   (Digits2 >= 16U)
-                      || (Digits2 >= 24U)),
-                  "Error: The Digits2 template parameter must be (2^n) or 3*(2^n) and 16 or 24 or larger");
-
     // Class-local type definitions.
     using ushort_type = LimbType;
     using ularge_type = typename detail::int_type_helper<std::size_t(std::numeric_limits<ushort_type>::digits * 2)>::exact_unsigned_type;
@@ -487,7 +453,15 @@
     static constexpr std::size_t number_of_limbs =
       std::size_t(my_digits / std::size_t(std::numeric_limits<ushort_type>::digits));
 
-    static constexpr std::size_t number_of_limbs_karatsuba_threshold = 129U;
+    static constexpr std::size_t number_of_limbs_karatsuba_threshold = std::size_t(128U + 1U);
+
+    // Verify that the Digits2 template parameter (my_digits) is 2^n or (3*2^n),
+    // and that there are at least 16 or 24 binary digits, and that the number of
+    // binary digits is an exact multiple of the number of limbs.
+    static_assert(   (detail::verify_power_of_two_times_three<my_digits>::conditional_value == true)
+                  && ((my_digits >= 16U) || (my_digits >= 24U))
+                  && (my_digits == (number_of_limbs * std::size_t(std::numeric_limits<ushort_type>::digits))),
+                  "Error: Digits2 must be (2^n) or 3*(2^n), 16 or 24 or larger, and exactly divisible by limb count");
 
     // The type of the internal data representation.
     using representation_type = std::array<ushort_type, number_of_limbs>;
@@ -746,7 +720,7 @@
 
     uintwide_t& operator*=(const uintwide_t& other)
     {
-      eval_mul_unary<number_of_limbs>(*this, other);
+      eval_mul_unary(*this, other);
 
       return *this;
     }
@@ -1202,48 +1176,53 @@
       return cmp_result;
     }
 
-    template<const std::size_t NumberOfLimbs,
-             typename EnableType = void>
-    static void eval_mul_unary(uintwide_t&, const uintwide_t&, EnableType);
-
-    template<const std::size_t NumberOfLimbs>
-    static void eval_mul_unary(      uintwide_t& u,
-                               const uintwide_t& v,
-                               typename std::enable_if<(NumberOfLimbs < uintwide_t::number_of_limbs_karatsuba_threshold)>::type* = nullptr)
+    template<const std::size_t OtherDigits2,
+             typename OtherLimbType>
+    friend inline void eval_mul_unary(      uintwide_t<OtherDigits2, OtherLimbType>& u,
+                                      const uintwide_t<OtherDigits2, OtherLimbType>& v,
+                                      typename std::enable_if<((OtherDigits2 / std::numeric_limits<OtherLimbType>::digits) < uintwide_t::number_of_limbs_karatsuba_threshold)>::type* = nullptr)
     {
       // Unary multiplication function using schoolbook multiplication,
       // but only half of the n*n algorithm is used for or n*n->n bit multiply.
+      using local_ushort_type = typename uintwide_t<OtherDigits2, OtherLimbType>::ushort_type;
 
-      std::array<ushort_type, NumberOfLimbs> result;
+      constexpr std::size_t local_number_of_limbs = uintwide_t<OtherDigits2, OtherLimbType>::number_of_limbs;
 
-      eval_multiply_nhalf(result.data(),
-                          u.values.data(),
-                          v.values.data(),
-                          NumberOfLimbs);
+      std::array<local_ushort_type, local_number_of_limbs> result;
+
+      eval_multiply_n_by_n_to_lo_half(result.data(),
+                                      u.values.data(),
+                                      v.values.data(),
+                                      local_number_of_limbs);
 
       std::copy(result.cbegin(),
-                result.cbegin() + NumberOfLimbs,
+                result.cbegin() + local_number_of_limbs,
                 u.values.begin());
     }
 
-    template<const std::size_t NumberOfLimbs>
-    static void eval_mul_unary(      uintwide_t& u,
-                               const uintwide_t& v,
-                               typename std::enable_if<(NumberOfLimbs >= uintwide_t::number_of_limbs_karatsuba_threshold)>::type* = nullptr)
+    template<const std::size_t OtherDigits2,
+             typename OtherLimbType>
+    friend inline void eval_mul_unary(      uintwide_t<OtherDigits2, OtherLimbType>& u,
+                                      const uintwide_t<OtherDigits2, OtherLimbType>& v,
+                                      typename std::enable_if<((OtherDigits2 / std::numeric_limits<OtherLimbType>::digits) >= uintwide_t::number_of_limbs_karatsuba_threshold)>::type* = nullptr)
     {
       // Unary multiplication function using Karatsuba multiplication.
 
-      std::array<ushort_type, NumberOfLimbs * 2U> result;
-      std::array<ushort_type, NumberOfLimbs * 4U> t;
+      using local_ushort_type = typename uintwide_t<OtherDigits2, OtherLimbType>::ushort_type;
+
+      constexpr std::size_t local_number_of_limbs = uintwide_t<OtherDigits2, OtherLimbType>::number_of_limbs;
+
+      std::array<local_ushort_type, local_number_of_limbs * 2U> result;
+      std::array<local_ushort_type, local_number_of_limbs * 4U> t;
 
       eval_multiply_kara(result.data(),
-                          u.values.data(),
-                          v.values.data(),
-                          NumberOfLimbs,
-                          t.data());
+                         u.values.data(),
+                         v.values.data(),
+                         local_number_of_limbs,
+                         t.data());
 
       std::copy(result.cbegin(),
-                result.cbegin() + NumberOfLimbs,
+                result.cbegin() + local_number_of_limbs,
                 u.values.begin());
     }
 
@@ -1292,10 +1271,10 @@
       return has_borrow_out;
     }
 
-    static void eval_multiply_nhalf(      ushort_type* r,
-                                    const ushort_type* u,
-                                    const ushort_type* v,
-                                    const std::size_t  count)
+    static void eval_multiply_n_by_n_to_lo_half(      ushort_type* r,
+                                                const ushort_type* u,
+                                                const ushort_type* v,
+                                                const std::size_t  count)
     {
       std::fill(r, r + count, ushort_type(0U));
 
