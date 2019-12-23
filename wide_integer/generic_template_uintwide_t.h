@@ -318,8 +318,37 @@
   template<const std::size_t Digits2>
   struct verify_power_of_two
   {
-    static const bool conditional_value =
-      ((Digits2 != 0U) && ((Digits2 & (Digits2 - 1U)) == 0U));
+    static constexpr bool conditional_value = verify_power_of_two<Digits2 / 2U>::conditional_value;
+  };
+
+  template<>
+  struct verify_power_of_two<2U>
+  {
+    static constexpr bool conditional_value = true;
+  };
+
+  template<>
+  struct verify_power_of_two<0U>
+  {
+    static constexpr bool conditional_value = false;
+  };
+
+  template<const std::size_t Digits2>
+  struct verify_power_of_two_times_three
+  {
+    static constexpr bool conditional_value = verify_power_of_two_times_three<Digits2 / 2U>::conditional_value;
+  };
+
+  template<>
+  struct verify_power_of_two_times_three<3U>
+  {
+    static constexpr bool conditional_value = true;
+  };
+
+  template<>
+  struct verify_power_of_two_times_three<0U>
+  {
+    static constexpr bool conditional_value = false;
   };
 
   // Helper templates for selecting integral types.
@@ -432,8 +461,11 @@
   {
   public:
     // Verify that the Digits2 template parameter is a power of 2.
-    static_assert(detail::verify_power_of_two<Digits2>::conditional_value == true,
-                  "Error: The Digits2 template parameter must be a power of 2");
+    static_assert(   (   (detail::verify_power_of_two            <Digits2>::conditional_value == true)
+                      || (detail::verify_power_of_two_times_three<Digits2>::conditional_value == true))
+                  && (   (Digits2 >= 16U)
+                      || (Digits2 >= 24U)),
+                  "Error: The Digits2 template parameter must be (2^n) or 3*(2^n) and 16 or 24 or larger");
 
     // Class-local type definitions.
     using ushort_type = LimbType;
@@ -1385,12 +1417,18 @@
                                    const std::size_t  n,
                                          ushort_type* t)
     {
-      if(n == 32U)
+      if((n == 32U) || (n == 48U))
       {
+        static_cast<void>(t);
+
         eval_multiply_n(r, u, v, n);
       }
       else
       {
+        // Based on "Algorithm 1.3 KaratsubaMultiply", Sect. 1.3.2, page 5
+        // of R.P. Brent and P. Zimmermann, "Modern Computer Arithmetic",
+        // Cambridge University Press (2011).
+
         // The Karatsuba multipliation computes the product of u*v as:
         // [b^N + b^(N/2)] u1*v1 + [b^(N/2)](u1 - u0)(v0 - v1) + [b^(N/2) + 1] u0*v0
 
@@ -1508,6 +1546,51 @@
         }
       }
     }
+
+    static void eval_multiply_toomcook3(      ushort_type* r,
+                                        const ushort_type* u,
+                                        const ushort_type* v,
+                                        const std::size_t  n,
+                                              ushort_type* t)
+    {
+      if(n == 3072U)
+      {
+        // TBD: Tune the threshold for the transition
+        // from Toom-Cook3 back to base case Karatsuba.
+
+        // Base case Karatsuba multiplication.
+        eval_multiply_kara(r, u, v, n, t);
+      }
+      else
+      {
+        // Based on "Algorithm 1.4 ToomCook3", Sect. 1.3.3, page 7 of
+        // R.P. Brent and P. Zimmermann, "Modern Computer Arithmetic",
+        // Cambridge University Press (2011).
+
+        // TBD: Toom-Cook3
+      }
+    }
+
+    static void eval_multiply_toomcook4(      ushort_type* r,
+                                        const ushort_type* u,
+                                        const ushort_type* v,
+                                        const std::size_t  n,
+                                              ushort_type* t)
+    {
+      if(n == 2048U)
+      {
+        // TBD: Tune the threshold for the transition
+        // from Toom-Cook4 back to base case Karatsuba.
+
+        // Base case Karatsuba multiplication.
+        eval_multiply_kara(r, u, v, n, t);
+      }
+      else
+      {
+        // TBD: Toom-Cook4
+      }
+    }
+
 
     void eval_divide_knuth(const uintwide_t& other, uintwide_t* remainder)
     {
