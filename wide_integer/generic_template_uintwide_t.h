@@ -1176,21 +1176,20 @@
       return cmp_result;
     }
 
-    template<const std::size_t OtherDigits2,
-             typename OtherLimbType>
-    friend inline void eval_mul_unary(      uintwide_t<OtherDigits2, OtherLimbType>& u,
-                                      const uintwide_t<OtherDigits2, OtherLimbType>& v,
-                                      typename std::enable_if<((OtherDigits2 / std::numeric_limits<OtherLimbType>::digits) < uintwide_t::number_of_limbs_karatsuba_threshold)>::type* = nullptr)
+    template<const std::size_t OtherDigits2>
+    static void eval_mul_unary(      uintwide_t<OtherDigits2, LimbType>& u,
+                               const uintwide_t<OtherDigits2, LimbType>& v,
+                               typename std::enable_if<((OtherDigits2 / std::numeric_limits<LimbType>::digits) < uintwide_t::number_of_limbs_karatsuba_threshold)>::type* = nullptr)
     {
       // Unary multiplication function using schoolbook multiplication,
-      // but only half of the n*n algorithm is used for or n*n->n bit multiply.
-      using local_ushort_type = typename uintwide_t<OtherDigits2, OtherLimbType>::ushort_type;
+      // but we only need to retain the low half of the n*n algorithm.
+      // In other words, this is an n*n->n bit multiplication.
 
-      constexpr std::size_t local_number_of_limbs = uintwide_t<OtherDigits2, OtherLimbType>::number_of_limbs;
+      constexpr std::size_t local_number_of_limbs = uintwide_t<OtherDigits2, LimbType>::number_of_limbs;
 
-      std::array<local_ushort_type, local_number_of_limbs> result;
+      std::array<ushort_type, local_number_of_limbs> result;
 
-      eval_multiply_n_by_n_to_lo_half(result.data(),
+      eval_multiply_n_by_n_to_lo_part(result.data(),
                                       u.values.data(),
                                       v.values.data(),
                                       local_number_of_limbs);
@@ -1200,20 +1199,17 @@
                 u.values.begin());
     }
 
-    template<const std::size_t OtherDigits2,
-             typename OtherLimbType>
-    friend inline void eval_mul_unary(      uintwide_t<OtherDigits2, OtherLimbType>& u,
-                                      const uintwide_t<OtherDigits2, OtherLimbType>& v,
-                                      typename std::enable_if<((OtherDigits2 / std::numeric_limits<OtherLimbType>::digits) >= uintwide_t::number_of_limbs_karatsuba_threshold)>::type* = nullptr)
+    template<const std::size_t OtherDigits2>
+    static void eval_mul_unary(      uintwide_t<OtherDigits2, LimbType>& u,
+                               const uintwide_t<OtherDigits2, LimbType>& v,
+                               typename std::enable_if<((OtherDigits2 / std::numeric_limits<LimbType>::digits) >= uintwide_t::number_of_limbs_karatsuba_threshold)>::type* = nullptr)
     {
       // Unary multiplication function using Karatsuba multiplication.
 
-      using local_ushort_type = typename uintwide_t<OtherDigits2, OtherLimbType>::ushort_type;
+      constexpr std::size_t local_number_of_limbs = uintwide_t<OtherDigits2, LimbType>::number_of_limbs;
 
-      constexpr std::size_t local_number_of_limbs = uintwide_t<OtherDigits2, OtherLimbType>::number_of_limbs;
-
-      std::array<local_ushort_type, local_number_of_limbs * 2U> result;
-      std::array<local_ushort_type, local_number_of_limbs * 4U> t;
+      std::array<ushort_type, local_number_of_limbs * 2U> result;
+      std::array<ushort_type, local_number_of_limbs * 4U> t;
 
       eval_multiply_kara(result.data(),
                          u.values.data(),
@@ -1271,7 +1267,7 @@
       return has_borrow_out;
     }
 
-    static void eval_multiply_n_by_n_to_lo_half(      ushort_type* r,
+    static void eval_multiply_n_by_n_to_lo_part(      ushort_type* r,
                                                 const ushort_type* u,
                                                 const ushort_type* v,
                                                 const std::size_t  count)
@@ -1296,10 +1292,10 @@
       }
     }
 
-    static void eval_multiply_n(      ushort_type* r,
-                                const ushort_type* u,
-                                const ushort_type* v,
-                                const std::size_t  count)
+    static void eval_multiply_n_by_n_to_2n(      ushort_type* r,
+                                           const ushort_type* u,
+                                           const ushort_type* v,
+                                           const std::size_t  count)
     {
       std::fill(r, r + (count * 2U), ushort_type(0U));
 
@@ -1400,7 +1396,7 @@
       {
         static_cast<void>(t);
 
-        eval_multiply_n(r, u, v, n);
+        eval_multiply_n_by_n_to_2n(r, u, v, n);
       }
       else
       {
