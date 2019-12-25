@@ -12,6 +12,7 @@
   #include <array>
   #include <cstddef>
   #include <cstdint>
+  #include <cstring>
   #include <iterator>
   #include <limits>
   #include <type_traits>
@@ -1272,7 +1273,7 @@
                                                 const ushort_type* b,
                                                 const std::size_t  count)
     {
-      std::fill(r, r + count, ushort_type(0U));
+      std::memset(r, 0, count * sizeof(ushort_type));
 
       for(std::size_t j = 0U; j < count; ++j)
       {
@@ -1297,7 +1298,7 @@
                                            const ushort_type* b,
                                            const std::size_t  count)
     {
-      std::fill(r, r + (count * 2U), ushort_type(0U));
+      std::memset(r, 0, (count * 2U) * sizeof(ushort_type));
 
       for(std::size_t j = 0U; j < count; ++j)
       {
@@ -1326,7 +1327,7 @@
                                         const ushort_type  b,
                                         const std::size_t  count)
     {
-      std::fill(r, r + count, ushort_type(0U));
+      std::memset(r, 0, count * sizeof(ushort_type));
 
       ularge_type carry = 0U;
 
