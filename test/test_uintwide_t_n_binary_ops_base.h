@@ -27,22 +27,22 @@
 
       for(std::size_t i = 0U; i < rounds; ++i)
       {
-        std::cout << "initialize()      : round " << i << ",  digits2: " << this->get_digits2() << std::endl;
+        std::cout << "initialize()       boost compare with uintwide_t: round " << i << ",  digits2: " << this->get_digits2() << std::endl;
         this->initialize();
 
-        std::cout << "test_binary_add() : round " << i << ",  digits2: " << this->get_digits2() << std::endl;
+        std::cout << "test_binary_add()  boost compare with uintwide_t: round " << i << ",  digits2: " << this->get_digits2() << std::endl;
         result_is_ok &= this->test_binary_add();
 
-        std::cout << "test_binary_sub() : round " << i << ",  digits2: " << this->get_digits2() << std::endl;
+        std::cout << "test_binary_sub()  boost compare with uintwide_t: round " << i << ",  digits2: " << this->get_digits2() << std::endl;
         result_is_ok &= this->test_binary_sub();
 
-        std::cout << "test_binary_mul() : round " << i << ",  digits2: " << this->get_digits2() << std::endl;
+        std::cout << "test_binary_mul()  boost compare with uintwide_t: round " << i << ",  digits2: " << this->get_digits2() << std::endl;
         result_is_ok &= this->test_binary_mul();
 
-        std::cout << "test_binary_div() : round " << i << ",  digits2: " << this->get_digits2() << std::endl;
+        std::cout << "test_binary_div()  boost compare with uintwide_t: round " << i << ",  digits2: " << this->get_digits2() << std::endl;
         result_is_ok &= this->test_binary_div();
 
-        std::cout << "test_binary_sqrt(): round " << i << ",  digits2: " << this->get_digits2() << std::endl;
+        std::cout << "test_binary_sqrt() boost compare with uintwide_t: round " << i << ",  digits2: " << this->get_digits2() << std::endl;
         result_is_ok &= this->test_binary_sqrt();
       }
 

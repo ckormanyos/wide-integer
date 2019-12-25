@@ -72,19 +72,19 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\boost\boost_1_72_0;C:\boost\madhur4127\include;$(ProjectDir);$(IncludePath)</IncludePath>
+    <IncludePath>C:\boost\boost_1_72_0;C:\boost\modular_boost\boost\libs\multiprecision\include;$(ProjectDir);$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\boost\boost_1_72_0;C:\boost\madhur4127\include;$(ProjectDir);$(IncludePath)</IncludePath>
+    <IncludePath>C:\boost\boost_1_72_0;C:\boost\modular_boost\boost\libs\multiprecision\include;$(ProjectDir);$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>C:\boost\boost_1_72_0;C:\boost\madhur4127\include;$(ProjectDir);$(IncludePath)</IncludePath>
+    <IncludePath>C:\boost\boost_1_72_0;C:\boost\modular_boost\boost\libs\multiprecision\include;$(ProjectDir);$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>C:\boost\boost_1_72_0;C:\boost\madhur4127\include;$(ProjectDir);$(IncludePath)</IncludePath>
+    <IncludePath>C:\boost\boost_1_72_0;C:\boost\modular_boost\boost\libs\multiprecision\include;$(ProjectDir);$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

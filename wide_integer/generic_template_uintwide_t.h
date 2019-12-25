@@ -1211,11 +1211,11 @@
       std::array<ushort_type, local_number_of_limbs * 2U> result;
       std::array<ushort_type, local_number_of_limbs * 4U> t;
 
-      eval_multiply_kara(result.data(),
-                         u.values.data(),
-                         v.values.data(),
-                         local_number_of_limbs,
-                         t.data());
+      eval_multiply_kara_n_by_n_to_2n(result.data(),
+                                      u.values.data(),
+                                      v.values.data(),
+                                      local_number_of_limbs,
+                                      t.data());
 
       std::copy(result.cbegin(),
                 result.cbegin() + local_number_of_limbs,
@@ -1268,21 +1268,21 @@
     }
 
     static void eval_multiply_n_by_n_to_lo_part(      ushort_type* r,
-                                                const ushort_type* u,
-                                                const ushort_type* v,
+                                                const ushort_type* a,
+                                                const ushort_type* b,
                                                 const std::size_t  count)
     {
       std::fill(r, r + count, ushort_type(0U));
 
       for(std::size_t j = 0U; j < count; ++j)
       {
-        if(v[j] != ushort_type(0U))
+        if(b[j] != ushort_type(0U))
         {
           ularge_type carry = 0U;
 
           for(std::size_t i = 0U; i < (count - j); ++i)
           {
-            carry += ularge_type(ularge_type(u[i]) * v[j]);
+            carry += ularge_type(ularge_type(a[i]) * b[j]);
             carry += r[i + j];
 
             r[i + j] = detail::make_lo<ushort_type>(carry);
@@ -1293,15 +1293,15 @@
     }
 
     static void eval_multiply_n_by_n_to_2n(      ushort_type* r,
-                                           const ushort_type* u,
-                                           const ushort_type* v,
+                                           const ushort_type* a,
+                                           const ushort_type* b,
                                            const std::size_t  count)
     {
       std::fill(r, r + (count * 2U), ushort_type(0U));
 
       for(std::size_t j = 0U; j < count; ++j)
       {
-        if(v[j] != ushort_type(0U))
+        if(b[j] != ushort_type(0U))
         {
           std::size_t i = 0U;
 
@@ -1309,7 +1309,7 @@
 
           for( ; i < count; ++i)
           {
-            carry += ularge_type(ularge_type(u[i]) * v[j]);
+            carry += ularge_type(ularge_type(a[i]) * b[j]);
             carry += r[i + j];
 
             r[i + j] = detail::make_lo<ushort_type>(carry);
@@ -1322,19 +1322,19 @@
     }
 
     static ushort_type eval_multiply_1d(      ushort_type* r,
-                                        const ushort_type* u,
-                                        const ushort_type  v,
+                                        const ushort_type* a,
+                                        const ushort_type  b,
                                         const std::size_t  count)
     {
       std::fill(r, r + count, ushort_type(0U));
 
       ularge_type carry = 0U;
 
-      if(v != ushort_type(0U))
+      if(b != ushort_type(0U))
       {
         for(std::size_t i = 0U ; i < count; ++i)
         {
-          carry += ularge_type(ularge_type(u[i]) * v);
+          carry += ularge_type(ularge_type(a[i]) * b);
           carry += r[i];
 
           r[i]  = detail::make_lo<ushort_type>(carry);
@@ -1386,17 +1386,17 @@
       }
     }
 
-    static void eval_multiply_kara(      ushort_type* r,
-                                   const ushort_type* u,
-                                   const ushort_type* v,
-                                   const std::size_t  n,
-                                         ushort_type* t)
+    static void eval_multiply_kara_n_by_n_to_2n(      ushort_type* r,
+                                                const ushort_type* a,
+                                                const ushort_type* b,
+                                                const std::size_t  n,
+                                                      ushort_type* t)
     {
       if((n == 32U) || (n == 48U))
       {
         static_cast<void>(t);
 
-        eval_multiply_n_by_n_to_2n(r, u, v, n);
+        eval_multiply_n_by_n_to_2n(r, a, b, n);
       }
       else
       {
@@ -1405,47 +1405,49 @@
         // Cambridge University Press (2011).
 
         // The Karatsuba multipliation computes the product of u*v as:
-        // [b^N + b^(N/2)] u1*v1 + [b^(N/2)](u1 - u0)(v0 - v1) + [b^(N/2) + 1] u0*v0
+        // [b^N + b^(N/2)] a1*b1 + [b^(N/2)](a1 - a0)(b0 - b1) + [b^(N/2) + 1] a0*b0
 
         // Here we visualize u and v in two components 0,1 corresponding
         // to the high and low order parts, respectively.
 
         // TBD: A subproblem: Deal with the subproblem getting negative,
         // and consider the overhead for calculating the complements.
-        // Boost kara mul branch: z = (u1+u0)*(v1+v0) - u1*v1 - u0*v0
-        // This code:             z =  u1*v1 + u0*v0 - |u1-u0|*|v0-v1|
+        // Boost kara mul branch: z = (a1+a0)*(b1+b0) - a1*b1 - a0*b0
+        // This code:             z =  a1*b1 + a0*b0 - |a1-a0|*|b0-b1|
+        // This also may seem to be known as odd-even Karatsuba in
+        // R.P. Brent and P. Zimmermann, "Modern Computer Arithmetic",
+        // Cambridge University Press (2011).
 
         // Step 1
-        // Calculate u1*v1 and store it in the upper part of r.
-        // Calculate u0*v0 and store it in the lower part of r.
+        // Calculate a1*b1 and store it in the upper part of r.
+        // Calculate a0*b0 and store it in the lower part of r.
         // copy r to t0.
 
         // Step 2
-        // Add u1*v1 (which is t2) to the middle two-quarters of r (which is r1)
-        // Add u0*v0 (which is t0) to the middle two-quarters of r (which is r1)
+        // Add a1*b1 (which is t2) to the middle two-quarters of r (which is r1)
+        // Add a0*b0 (which is t0) to the middle two-quarters of r (which is r1)
 
         // Step 3
-        // Calculate |u1-u0| in t0 and note the sign (i.e., the borrow flag)
+        // Calculate |a1-a0| in t0 and note the sign (i.e., the borrow flag)
 
         // Step 4
-        // Calculate |v0-v1| in t1 and note the sign (i.e., the borrow flag)
+        // Calculate |b0-b1| in t1 and note the sign (i.e., the borrow flag)
 
         // Step 5
-        // Call kara mul to calculate |u1-u0|*|v0-v1| in (t2),
-        // while using temporary storage in t4.
+        // Call kara mul to calculate |a1-a0|*|b0-b1| in (t2),
+        // while using temporary storage in t4 along the way.
 
         // Step 6
-        // Check the borrow signs. If u1-u0 and v0-v1 have the same signs,
-        // then add |u1-u0|*|v0-v1| to r1, otherwise subtract it from r1.
+        // Check the borrow signs. If a1-a0 and b0-b1 have the same signs,
+        // then add |a1-a0|*|b0-b1| to r1, otherwise subtract it from r1.
 
         const std::size_t  nh = n / 2U;
 
-        const ushort_type* u0 = u + 0U;
-        const ushort_type* u1 = u + nh;
-        const ushort_type* u2 = u + n;
+        const ushort_type* a0 = a + 0U;
+        const ushort_type* a1 = a + nh;
 
-        const ushort_type* v0 = v + 0U;
-        const ushort_type* v1 = v + nh;
+        const ushort_type* b0 = b + 0U;
+        const ushort_type* b1 = b + nh;
 
               ushort_type* r0 = r + 0U;
               ushort_type* r1 = r + nh;
@@ -1459,16 +1461,16 @@
               ushort_type* t4 = t + (n + n);
 
         // Step 1
-        //   u1*v1 -> r2
-        //   u0*v0 -> r0
+        //   a1*b1 -> r2
+        //   a0*b0 -> r0
         //   r -> t0
-        eval_multiply_kara(r2, u1, v1, nh, t0);
-        eval_multiply_kara(r0, u0, v0, nh, t0);
+        eval_multiply_kara_n_by_n_to_2n(r2, a1, b1, nh, t0);
+        eval_multiply_kara_n_by_n_to_2n(r0, a0, b0, nh, t0);
         std::copy(r0, r4, t0);
 
         // Step 2
-        //   r1 += u1*v1
-        //   r1 += u0*v0
+        //   r1 += a1*b1
+        //   r1 += a0*b0
         ushort_type carry;
         carry = eval_add_n(r1, r1, t2, n);
         eval_multiply_kara_propagate_carry(r3, nh, carry);
@@ -1476,44 +1478,45 @@
         eval_multiply_kara_propagate_carry(r3, nh, carry);
 
         // Step 3
-        //   |u1-u0| -> t0
-        const std::int_fast8_t cmp_result_u1u0 = compare_ranges(u1, u0, nh);
-        if(cmp_result_u1u0 == 1)
+        //   |a1-a0| -> t0
+        const std::int_fast8_t cmp_result_a1a0 = compare_ranges(a1, a0, nh);
+
+        if(cmp_result_a1a0 == 1)
         {
-          static_cast<void>(eval_subtract_n(t0, u1, u0, nh));
+          static_cast<void>(eval_subtract_n(t0, a1, a0, nh));
         }
-        else if(cmp_result_u1u0 == -1)
+        else if(cmp_result_a1a0 == -1)
         {
-          static_cast<void>(eval_subtract_n(t0, u0, u1, nh));
+          static_cast<void>(eval_subtract_n(t0, a0, a1, nh));
         }
 
         // Step 4
-        //   |v0-v1| -> t1
-        const std::int_fast8_t cmp_result_v0v1 = compare_ranges(v0, v1, nh);
+        //   |b0-b1| -> t1
+        const std::int_fast8_t cmp_result_b0b1 = compare_ranges(b0, b1, nh);
 
-        if(cmp_result_v0v1 == 1)
+        if(cmp_result_b0b1 == 1)
         {
-          static_cast<void>(eval_subtract_n(t1, v0, v1, nh));
+          static_cast<void>(eval_subtract_n(t1, b0, b1, nh));
         }
-        else if(cmp_result_v0v1 == -1)
+        else if(cmp_result_b0b1 == -1)
         {
-          static_cast<void>(eval_subtract_n(t1, v1, v0, nh));
+          static_cast<void>(eval_subtract_n(t1, b1, b0, nh));
         }
 
         // Step 5
-        //   |u1-u0|*|v0-v1| -> t2
-        eval_multiply_kara(t2, t0, t1, nh, t4);
+        //   |a1-a0|*|b0-b1| -> t2
+        eval_multiply_kara_n_by_n_to_2n(t2, t0, t1, nh, t4);
 
         // Step 6
-        //   either r1 += |u1-u0|*|v0-v1|
-        //   or     r1 -= |u1-u0|*|v0-v1|
-        if((cmp_result_u1u0 * cmp_result_v0v1) == 1)
+        //   either r1 += |a1-a0|*|b0-b1|
+        //   or     r1 -= |a1-a0|*|b0-b1|
+        if((cmp_result_a1a0 * cmp_result_b0b1) == 1)
         {
           carry = eval_add_n(r1, r1, t2, n);
 
           eval_multiply_kara_propagate_carry(r3, nh, carry);
         }
-        else if((cmp_result_u1u0 * cmp_result_v0v1) == -1)
+        else if((cmp_result_a1a0 * cmp_result_b0b1) == -1)
         {
           const bool has_borrow = eval_subtract_n(r1, r1, t2, n);
 
@@ -1534,7 +1537,7 @@
         // from Toom-Cook3 back to base case Karatsuba.
 
         // Base case Karatsuba multiplication.
-        eval_multiply_kara(r, u, v, n, t);
+        eval_multiply_kara_n_by_n_to_2n(r, u, v, n, t);
       }
       else
       {
@@ -1558,7 +1561,7 @@
         // from Toom-Cook4 back to base case Karatsuba.
 
         // Base case Karatsuba multiplication.
-        eval_multiply_kara(r, u, v, n, t);
+        eval_multiply_kara_n_by_n_to_2n(r, u, v, n, t);
       }
       else
       {
