@@ -27,7 +27,7 @@
 
   namespace wide_integer { namespace generic_template {
 
-  // Forward declaration of uintwide_t.
+  // Forward declaration of the uintwide_t template class.
   template<const std::size_t Digits2,
            typename LimbType = std::uint32_t>
   class uintwide_t;
@@ -570,6 +570,33 @@
       std::copy(v.crepresentation().cbegin(),
                 v.crepresentation().cbegin() + (v.crepresentation().size() / 2U),
                 values.begin());
+    }
+
+    // Constructor from the another type having a different width but the same limb type.
+    // This constructor is explicit because it is a non-trivial conversion.
+    template<const std::size_t OtherDigits2>
+    explicit uintwide_t(const uintwide_t<OtherDigits2, LimbType>& v)
+    {
+      if(v.crepresentation().size() > values.size())
+      {
+        std::copy(v.crepresentation().cbegin(),
+                  v.crepresentation().cbegin() + values.size(),
+                  values.begin());
+      }
+      else if(v.crepresentation().size() <= values.size())
+      {
+        std::copy(v.crepresentation().cbegin(),
+                  v.crepresentation().cend(),
+                  values.begin());
+
+        std::fill(values.begin() + v.crepresentation().size(),
+                  values.end(),
+                  0U);
+      }
+      else
+      {
+        values.fill(0U);
+      }
     }
 
     // Constructor from a constant character string.
@@ -1152,14 +1179,13 @@
     static std::int_fast8_t compare_ranges(const ushort_type* a, const ushort_type* b, const std::size_t count)
     {
       std::int_fast8_t cmp_result;
-      std::ptrdiff_t   element_index;
 
-      for(element_index = std::ptrdiff_t(count - 1U); element_index >= std::ptrdiff_t(0); --element_index)
+      std::ptrdiff_t element_index = std::ptrdiff_t(count) - 1;
+
+      while((   (element_index >= 0)
+             && (a[std::size_t(element_index)] == b[std::size_t(element_index)])))
       {
-        if(a[std::size_t(element_index)] != b[std::size_t(element_index)])
-        {
-          break;
-        }
+        --element_index;
       }
 
       if(element_index == std::ptrdiff_t(-1))
@@ -1275,13 +1301,13 @@
     {
       std::memset(r, 0, count * sizeof(ushort_type));
 
-      for(std::size_t j = 0U; j < count; ++j)
+      for(std::size_t i = 0U; i < count; ++i)
       {
-        if(b[j] != ushort_type(0U))
+        if(a[i] != ushort_type(0U))
         {
           ularge_type carry = 0U;
 
-          for(std::size_t i = 0U; i < (count - j); ++i)
+          for(std::size_t j = 0U; j < (count - i); ++j)
           {
             carry += ularge_type(ularge_type(a[i]) * b[j]);
             carry += r[i + j];
@@ -1300,15 +1326,15 @@
     {
       std::memset(r, 0, (count * 2U) * sizeof(ushort_type));
 
-      for(std::size_t j = 0U; j < count; ++j)
+      for(std::size_t i = 0U; i < count; ++i)
       {
-        if(b[j] != ushort_type(0U))
+        if(a[i] != ushort_type(0U))
         {
-          std::size_t i = 0U;
+          std::size_t j = 0U;
 
           ularge_type carry = 0U;
 
-          for( ; i < count; ++i)
+          for( ; j < count; ++j)
           {
             carry += ularge_type(ularge_type(a[i]) * b[j]);
             carry += r[i + j];
@@ -1393,7 +1419,7 @@
                                                 const std::size_t  n,
                                                       ushort_type* t)
     {
-      if((n == 32U) || (n == 48U))
+      if((n <= 32U) || (n <= 48U))
       {
         static_cast<void>(t);
 
@@ -2062,16 +2088,16 @@
   };
 
   // Define some convenient unsigned wide integer types.
-  using uint64_t    = uintwide_t<  64U, std::uint16_t>;
-  using uint128_t   = uintwide_t< 128U>;
-  using uint256_t   = uintwide_t< 256U>;
-  using uint512_t   = uintwide_t< 512U>;
-  using uint1024_t  = uintwide_t<1024U>;
-  using uint2048_t  = uintwide_t<2048U>;
-  using uint4096_t  = uintwide_t<4096U>;
-  using uint8192_t  = uintwide_t<8192U>;
-  using uint16384_t = uintwide_t<16384U>;
-  using uint32768_t = uintwide_t<32768U>;
+  using uint64_t    = uintwide_t<   64U, std::uint16_t>;
+  using uint128_t   = uintwide_t<  128U, std::uint32_t>;
+  using uint256_t   = uintwide_t<  256U, std::uint32_t>;
+  using uint512_t   = uintwide_t<  512U, std::uint32_t>;
+  using uint1024_t  = uintwide_t< 1024U, std::uint32_t>;
+  using uint2048_t  = uintwide_t< 2048U, std::uint32_t>;
+  using uint4096_t  = uintwide_t< 4096U, std::uint32_t>;
+  using uint8192_t  = uintwide_t< 8192U, std::uint32_t>;
+  using uint16384_t = uintwide_t<16384U, std::uint32_t>;
+  using uint32768_t = uintwide_t<32768U, std::uint32_t>;
 
   // Insert a base class for numeric_limits<> support.
   // This class inherits from std::numeric_limits<unsigned int>

@@ -13,6 +13,7 @@
 
 #include <test/test_uintwide_t.h>
 #include <test/test_uintwide_t_n_binary_ops_template.h>
+#include <test/test_uintwide_t_n_binary_ops_mul_n_by_m_template.h>
 
 namespace
 {
@@ -77,7 +78,7 @@ BOOST_AUTO_TEST_CASE(test_uintwide_t_0008192_tag)
 BOOST_AUTO_TEST_CASE(test_uintwide_t_0012288_tag)
 {
   std::cout << "running: test_uintwide_t_0012288" << std::endl;
-  test_uintwide_t_n_binary_ops_template<12288U> test_uintwide_t_n_binary_ops_template_instance(1UL << 12U);
+  test_uintwide_t_n_binary_ops_template<12288U> test_uintwide_t_n_binary_ops_template_instance(1UL << 11U);
   const bool result_is_ok =
     test_uintwide_t_n_binary_ops_template_instance.do_test(test_uintwide_t_n_binary_ops_rounds);
   BOOST_CHECK(result_is_ok);
@@ -87,6 +88,15 @@ BOOST_AUTO_TEST_CASE(test_uintwide_t_0065536_tag)
 {
   std::cout << "running: test_uintwide_t_0065536" << std::endl;
   test_uintwide_t_n_binary_ops_template<65536U> test_uintwide_t_n_binary_ops_template_instance(1UL << 7U);
+  const bool result_is_ok =
+    test_uintwide_t_n_binary_ops_template_instance.do_test(test_uintwide_t_n_binary_ops_rounds);
+  BOOST_CHECK(result_is_ok);
+}
+
+BOOST_AUTO_TEST_CASE(test_uintwide_t_0008129_by_0012288_tag)
+{
+  std::cout << "running: test_uintwide_t_0008129_by_0012288" << std::endl;
+  test_uintwide_t_n_binary_ops_mul_n_by_m_template<8192U, 12288U> test_uintwide_t_n_binary_ops_template_instance(1UL << 11U);
   const bool result_is_ok =
     test_uintwide_t_n_binary_ops_template_instance.do_test(test_uintwide_t_n_binary_ops_rounds);
   BOOST_CHECK(result_is_ok);

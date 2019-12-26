@@ -52,6 +52,9 @@
     <ClInclude Include="test\test_uintwide_t_n_binary_ops_base.h">
       <Filter>Source Files\test</Filter>
     </ClInclude>
+    <ClInclude Include="test\test_uintwide_t_n_binary_ops_mul_n_by_m_template.h">
+      <Filter>Source Files\test</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="test\test.cpp">

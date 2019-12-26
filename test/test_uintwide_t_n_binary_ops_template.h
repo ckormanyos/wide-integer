@@ -3,15 +3,10 @@
 
   #include <algorithm>
   #include <cstddef>
-  #include <iostream>
   #include <random>
   #include <vector>
 
-  #include <boost/multiprecision/cpp_int.hpp>
-
   #include <test/test_uintwide_t_n_binary_ops_base.h>
-  #include <test/parallel_for.h>
-  #include <wide_integer/generic_template_uintwide_t.h>
 
   template<const std::size_t MyDigits2,
            typename MyLimbType = std::uint32_t>
@@ -27,7 +22,7 @@
                                              digits2,
                                              boost::multiprecision::unsigned_magnitude>;
 
-    using boost_uint_type = boost::multiprecision::number<boost_uint_backend_type>;
+    using boost_uint_type = boost::multiprecision::number<boost_uint_backend_type, boost::multiprecision::et_off>;
 
     using local_limb_type = MyLimbType;
 
@@ -192,30 +187,6 @@
 
     std::vector<boost_uint_type> a_boost;
     std::vector<boost_uint_type> b_boost;
-
-    static void get_equal_random_test_values_boost_and_local_n(local_uint_type* u_local,
-                                                               boost_uint_type* u_boost,
-                                                               const std::size_t count)
-    {
-      using random_engine_type =
-        wide_integer::generic_template::default_random_engine<local_uint_type::my_digits,
-                                                              typename local_uint_type::value_type>;
-
-      random_engine_type random_generator(std::clock());
-
-      my_concurrency::parallel_for
-      (
-        std::size_t(0U),
-        count,
-        [&random_generator, &u_local, &u_boost](std::size_t i)
-        {
-          const local_uint_type a = random_generator();
-
-          u_local[i] = a;
-          u_boost[i] = boost_uint_type("0x" + hexlexical_cast(a));
-        }
-      );
-    }
   };
 
 #endif // TEST_UINTWIDE_T_N_BINARY_OPS_TEMPLATE_2019_12_19_H_
