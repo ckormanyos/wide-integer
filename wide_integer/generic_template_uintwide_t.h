@@ -316,14 +316,159 @@
 
   namespace wide_integer { namespace generic_template { namespace detail {
 
-  template<const std::size_t Digits2> struct verify_power_of_two     { static constexpr bool conditional_value = verify_power_of_two<Digits2 / 2U>::conditional_value; };
-  template<>                          struct verify_power_of_two<2U> { static constexpr bool conditional_value = true; };
-  template<>                          struct verify_power_of_two<0U> { static constexpr bool conditional_value = false; };
+  template<const std::size_t Digits2> struct verify_power_of_two
+  {
+    static constexpr bool conditional_value =    (Digits2 == (1ULL <<  1U))
+                                              || (Digits2 == (1ULL <<  2U))
+                                              || (Digits2 == (1ULL <<  3U))
+                                              || (Digits2 == (1ULL <<  4U))
+                                              || (Digits2 == (1ULL <<  5U))
+                                              || (Digits2 == (1ULL <<  6U))
+                                              || (Digits2 == (1ULL <<  7U))
+                                              || (Digits2 == (1ULL <<  8U))
+                                              || (Digits2 == (1ULL <<  9U))
+                                              || (Digits2 == (1ULL << 10U))
+                                              || (Digits2 == (1ULL << 11U))
+                                              || (Digits2 == (1ULL << 12U))
+                                              || (Digits2 == (1ULL << 13U))
+                                              || (Digits2 == (1ULL << 14U))
+                                              || (Digits2 == (1ULL << 15U))
+                                              || (Digits2 == (1ULL << 16U))
+                                              || (Digits2 == (1ULL << 17U))
+                                              || (Digits2 == (1ULL << 18U))
+                                              || (Digits2 == (1ULL << 19U))
+                                              || (Digits2 == (1ULL << 20U))
+                                              || (Digits2 == (1ULL << 21U))
+                                              || (Digits2 == (1ULL << 22U))
+                                              || (Digits2 == (1ULL << 23U))
+                                              || (Digits2 == (1ULL << 24U))
+                                              || (Digits2 == (1ULL << 25U))
+                                              || (Digits2 == (1ULL << 26U))
+                                              || (Digits2 == (1ULL << 27U))
+                                              || (Digits2 == (1ULL << 28U))
+                                              || (Digits2 == (1ULL << 29U))
+                                              || (Digits2 == (1ULL << 30U))
+                                              || (Digits2 == (1ULL << 31U))
+                                              ;
+  };
 
-  template<const std::size_t Digits2> struct verify_power_of_two_times_three     { static constexpr bool conditional_value = verify_power_of_two_times_three<Digits2 / 2U>::conditional_value; };
-  template<>                          struct verify_power_of_two_times_three<3U> { static constexpr bool conditional_value = true; };
-  template<>                          struct verify_power_of_two_times_three<2U> { static constexpr bool conditional_value = true; };
-  template<>                          struct verify_power_of_two_times_three<0U> { static constexpr bool conditional_value = false; };
+  template<const std::size_t Digits2> struct verify_essentially_sloanes_a029750
+  {
+    // See Sloane's A029750: List of numbers of the form 2^n times 1, 3, 5 or 7.
+    // Remove, however, from the list values 1, 2, 3, 4, 5, 6, 7, 8, 10, 12, 14, 20, 28
+    static constexpr bool conditional_value =    (Digits2 ==         16ULL)
+                                              || (Digits2 ==         24ULL)
+                                              || (Digits2 ==         28ULL)
+                                              || (Digits2 ==         32ULL)
+                                              || (Digits2 ==         40ULL)
+                                              || (Digits2 ==         48ULL)
+                                              || (Digits2 ==         56ULL)
+                                              || (Digits2 ==         64ULL)
+                                              || (Digits2 ==         80ULL)
+                                              || (Digits2 ==         96ULL)
+                                              || (Digits2 ==        112ULL)
+                                              || (Digits2 ==        128ULL)
+                                              || (Digits2 ==        160ULL)
+                                              || (Digits2 ==        192ULL)
+                                              || (Digits2 ==        224ULL)
+                                              || (Digits2 ==        256ULL)
+                                              || (Digits2 ==        320ULL)
+                                              || (Digits2 ==        384ULL)
+                                              || (Digits2 ==        448ULL)
+                                              || (Digits2 ==        512ULL)
+                                              || (Digits2 ==        640ULL)
+                                              || (Digits2 ==        768ULL)
+                                              || (Digits2 ==        896ULL)
+                                              || (Digits2 ==       1024ULL)
+                                              || (Digits2 ==       1280ULL)
+                                              || (Digits2 ==       1536ULL)
+                                              || (Digits2 ==       1792ULL)
+                                              || (Digits2 ==       2048ULL)
+                                              || (Digits2 ==       2560ULL)
+                                              || (Digits2 ==       3072ULL)
+                                              || (Digits2 ==       3584ULL)
+                                              || (Digits2 ==       4096ULL)
+                                              || (Digits2 ==       5120ULL)
+                                              || (Digits2 ==       6144ULL)
+                                              || (Digits2 ==       7168ULL)
+                                              || (Digits2 ==       8192ULL)
+                                              || (Digits2 ==      10240ULL)
+                                              || (Digits2 ==      12288ULL)
+                                              || (Digits2 ==      14336ULL)
+                                              || (Digits2 ==      16384ULL)
+                                              || (Digits2 ==      20480ULL)
+                                              || (Digits2 ==      24576ULL)
+                                              || (Digits2 ==      28672ULL)
+                                              || (Digits2 ==      32768ULL)
+                                              || (Digits2 ==      40960ULL)
+                                              || (Digits2 ==      49152ULL)
+                                              || (Digits2 ==      57344ULL)
+                                              || (Digits2 ==      65536ULL)
+                                              || (Digits2 ==      81920ULL)
+                                              || (Digits2 ==      98304ULL)
+                                              || (Digits2 ==     114688ULL)
+                                              || (Digits2 ==     131072ULL)
+                                              || (Digits2 ==     163840ULL)
+                                              || (Digits2 ==     196608ULL)
+                                              || (Digits2 ==     229376ULL)
+                                              || (Digits2 ==     262144ULL)
+                                              || (Digits2 ==     327680ULL)
+                                              || (Digits2 ==     393216ULL)
+                                              || (Digits2 ==     458752ULL)
+                                              || (Digits2 ==     524288ULL)
+                                              || (Digits2 ==     655360ULL)
+                                              || (Digits2 ==     786432ULL)
+                                              || (Digits2 ==     917504ULL)
+                                              || (Digits2 ==    1048576ULL)
+                                              || (Digits2 ==    1310720ULL)
+                                              || (Digits2 ==    1572864ULL)
+                                              || (Digits2 ==    1835008ULL)
+                                              || (Digits2 ==    2097152ULL)
+                                              || (Digits2 ==    2621440ULL)
+                                              || (Digits2 ==    3145728ULL)
+                                              || (Digits2 ==    3670016ULL)
+                                              || (Digits2 ==    4194304ULL)
+                                              || (Digits2 ==    5242880ULL)
+                                              || (Digits2 ==    6291456ULL)
+                                              || (Digits2 ==    7340032ULL)
+                                              || (Digits2 ==    8388608ULL)
+                                              || (Digits2 ==   10485760ULL)
+                                              || (Digits2 ==   12582912ULL)
+                                              || (Digits2 ==   14680064ULL)
+                                              || (Digits2 ==   16777216ULL)
+                                              || (Digits2 ==   20971520ULL)
+                                              || (Digits2 ==   25165824ULL)
+                                              || (Digits2 ==   29360128ULL)
+                                              || (Digits2 ==   33554432ULL)
+                                              || (Digits2 ==   41943040ULL)
+                                              || (Digits2 ==   50331648ULL)
+                                              || (Digits2 ==   58720256ULL)
+                                              || (Digits2 ==   67108864ULL)
+                                              || (Digits2 ==   83886080ULL)
+                                              || (Digits2 ==  100663296ULL)
+                                              || (Digits2 ==  117440512ULL)
+                                              || (Digits2 ==  134217728ULL)
+                                              || (Digits2 ==  167772160ULL)
+                                              || (Digits2 ==  201326592ULL)
+                                              || (Digits2 ==  234881024ULL)
+                                              || (Digits2 ==  268435456ULL)
+                                              || (Digits2 ==  335544320ULL)
+                                              || (Digits2 ==  402653184ULL)
+                                              || (Digits2 ==  469762048ULL)
+                                              || (Digits2 ==  536870912ULL)
+                                              || (Digits2 ==  671088640ULL)
+                                              || (Digits2 ==  805306368ULL)
+                                              || (Digits2 ==  939524096ULL)
+                                              || (Digits2 == 1073741824ULL)
+                                              || (Digits2 == 1342177280ULL)
+                                              || (Digits2 == 1610612736ULL)
+                                              || (Digits2 == 1879048192ULL)
+                                              || (Digits2 == 2147483648ULL)
+                                              || (Digits2 == 2684354560ULL)
+                                              || (Digits2 == 3221225472ULL)
+                                              || (Digits2 == 3758096384ULL)
+                                              ;
+  };
 
   // Helper templates for selecting integral types.
   template<const std::size_t BitCount> struct int_type_helper
@@ -459,7 +604,7 @@
     // Verify that the Digits2 template parameter (my_digits) is 2^n or (3*2^n),
     // and that there are at least 16 or 24 binary digits, and that the number of
     // binary digits is an exact multiple of the number of limbs.
-    static_assert(   (detail::verify_power_of_two_times_three<my_digits>::conditional_value == true)
+    static_assert(   (detail::verify_essentially_sloanes_a029750<my_digits>::conditional_value == true)
                   && ((my_digits >= 16U) || (my_digits >= 24U))
                   && (my_digits == (number_of_limbs * std::size_t(std::numeric_limits<ushort_type>::digits))),
                   "Error: Digits2 must be (2^n) or 3*(2^n), 16 or 24 or larger, and exactly divisible by limb count");
@@ -1419,7 +1564,10 @@
                                                 const std::size_t  n,
                                                       ushort_type* t)
     {
-      if((n <= 32U) || (n <= 48U))
+      if(   (n == 32U)
+         || (n == 40U)
+         || (n == 48U)
+         || (n == 56U))
       {
         static_cast<void>(t);
 

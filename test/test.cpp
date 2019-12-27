@@ -20,6 +20,19 @@ namespace
   constexpr std::size_t test_uintwide_t_n_binary_ops_rounds = 4U;
 }
 
+#if 0
+BOOST_AUTO_TEST_CASE(test_test_arithmetic_cpp_int_7_tag)
+{
+  std::cout << "running: test_arithmetic_cpp_int_7" << std::endl;
+
+  extern int main_test_arithmetic_cpp_int_7();
+
+  const int result_main_test_arithmetic_cpp_int_7 = main_test_arithmetic_cpp_int_7();
+
+  BOOST_CHECK(result_main_test_arithmetic_cpp_int_7 == 0);
+}
+#endif
+
 BOOST_AUTO_TEST_CASE(test_uintwide_t_dummy_tag)
 {
   std::cout << "running: test_uintwide_t_dummy" << std::endl;
@@ -93,10 +106,19 @@ BOOST_AUTO_TEST_CASE(test_uintwide_t_0065536_tag)
   BOOST_CHECK(result_is_ok);
 }
 
-BOOST_AUTO_TEST_CASE(test_uintwide_t_0008129_by_0012288_tag)
+BOOST_AUTO_TEST_CASE(test_uintwide_t_0008192_by_0012288_tag)
 {
-  std::cout << "running: test_uintwide_t_0008129_by_0012288" << std::endl;
-  test_uintwide_t_n_binary_ops_mul_n_by_m_template<8192U, 12288U> test_uintwide_t_n_binary_ops_template_instance(1UL << 11U);
+  std::cout << "running: test_uintwide_t_0008192_by_0012288" << std::endl;
+  test_uintwide_t_n_binary_ops_mul_n_by_m_template<8192U, 12288U> test_uintwide_t_n_binary_ops_template_instance(1UL << 10U);
+  const bool result_is_ok =
+    test_uintwide_t_n_binary_ops_template_instance.do_test(test_uintwide_t_n_binary_ops_rounds);
+  BOOST_CHECK(result_is_ok);
+}
+
+BOOST_AUTO_TEST_CASE(test_uintwide_t_0012288_by_0008192_tag)
+{
+  std::cout << "running: test_uintwide_t_0008192_by_0012288" << std::endl;
+  test_uintwide_t_n_binary_ops_mul_n_by_m_template<12288U, 8192U> test_uintwide_t_n_binary_ops_template_instance(1UL << 10U);
   const bool result_is_ok =
     test_uintwide_t_n_binary_ops_template_instance.do_test(test_uintwide_t_n_binary_ops_rounds);
   BOOST_CHECK(result_is_ok);
