@@ -1,5 +1,5 @@
 # wide-integer
-wide-integer implements a generic C++ template for extended precision unsigned integral types auch as `uint128_t`, `uint256_t`, `uint512_t`, `uint1024_t`, etc. At the moment, wide-integer is limited to unsigned integral types having bit counts having integral values `2^n` times `1`, `2`, `3`, `5`, and `7`, and being greater than or equal to 16 or 24.
+wide-integer implements a generic C++ template for extended precision unsigned integral types auch as `uint128_t`, `uint256_t`, `uint512_t`, `uint1024_t`, etc. At the moment, wide-integer is limited to unsigned integral types having integral-valued bit counts of `2^n` times `1`, `2`, `3`, `5`, and `7`, and being greater than or equal to 16 or 24.
 
 Inclusion of a single C++11 header file is all that is needed.
 
