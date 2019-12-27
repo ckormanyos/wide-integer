@@ -1,8 +1,9 @@
 # wide-integer
-wide-integer implements a generic C++ template for extended precision unsigned integral types auch as `uint128_t`, `uint256_t`, `uint512_t`, `uint1024_t`, etc. At the moment, wide-integer is limited to unsigned integral types having integral-valued bit counts of `2^n` times `1`, `2`, `3`, `5`, and `7`, and being greater than or equal to 16 or 24.
+wide-integer implements a generic C++ template for extended precision unsigned integral types auch as `uint128_t`, `uint256_t`, `uint512_t`, `uint1024_t`, etc. At the moment, wide-integer supports unsigned integral types having bit counts of `2^n` times `1`, `2`, `3`, `5`, and `7`, and also greater than or equal to 16 or 24.
 
 Inclusion of a single C++11 header file is all that is needed.
 
+# Details
 Wide-Integer has been tested on numerous compilers and is specifically designed for efficiency with small to medium bit counts. Supported bit counts include integers `2^n` times `1`, `2`, `3`, `5`, and `7` such as 256, 320, 384, 448, 512, 640, 768, 896, 1024, 1280, 1536, etc. Also smaller and larger bit counts are supported. It is even possible to make (not very efficient) versions of `uint24_t` or `uint48_t` if these are required for hardware prototyping or other simulation verification needs. On the high-digit end, Karatsuba multiplication extends the high performance range to thousands of bits. Fast long division, however, reilis on a classical algorithm and sub-quadratic high-precision division is not yet implemented.
 
 Portability of the code is another key point of focus. Special care has been taken to test in certain high-performance embedded real-time programming environments. Tested efficient functionality on the PC and workstation is also present.
@@ -10,6 +11,8 @@ Portability of the code is another key point of focus. Special care has been tak
 When working with even the most tiny microcontroller systems, I/O streaming can optionally be disabled with the WIDE_INTEGER_DISABLE_IOSTREAM compiler switch. See the examples directory as more use cases are being created.
 
 Easy application follows via a typedef or alias. The defined type can be used very much like a built-in unsinged integral type.
+
+# Examples
 
 ```C
 #include <iomanip>
