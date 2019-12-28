@@ -1,10 +1,10 @@
 # wide-integer
-wide-integer implements a generic C++ template for extended precision unsigned integral types auch as `uint128_t`, `uint256_t`, `uint512_t`, `uint1024_t`, etc. At the moment, wide-integer supports unsigned integral types having bit counts of `2^n` times `1`, `2`, `3`, `5`, and `7`, and also greater than or equal to 16 or 24.
+wide-integer implements a generic C++ template for extended precision unsigned integral types auch as `uint128_t`, `uint256_t`, `uint512_t`, `uint1024_t`, etc. At the moment, wide-integer supports unsigned integral types having bit counts of <img src="https://render.githubusercontent.com/render/math?math=1{\ldots}63{\times}2^{N}"> while being 16, 24, 32 or larger.
 
 Inclusion of a single C++11 header file is all that is needed.
 
 # Details
-Wide-Integer has been tested on numerous compilers and is specifically designed for efficiency with small to medium bit counts. Supported bit counts include integers `2^n` times `1`, `2`, `3`, `5`, and `7` such as 256, 320, 384, 448, 512, 640, 768, 896, 1024, 1280, 1536, etc. Also smaller and larger bit counts are supported. It is even possible to make (not very efficient) version of `uint48_t` if this may be useful for hardware prototyping or other simulation verification needs. On the high-digit end, Karatsuba multiplication extends the high performance range to thousands of bits. Fast long division, however, relies on a classical algorithm and sub-quadratic high-precision division is not yet implemented.
+Wide-Integer has been tested on numerous compilers and is specifically designed for efficiency with small to medium bit counts. Supported bit counts include integers <img src="https://render.githubusercontent.com/render/math?math=1{\ldots}63{\times}2^{N}"> while being 16, 24, 32 or larger such as 256, 384, 512, 768, 1024, or other less common bit counts such as 11,520, etc. Also smaller and larger bit counts are supported. It is even possible to make (not very efficient) version of `uint48_t` if this may be useful for hardware prototyping or other simulation verification needs. On the high-digit end, Karatsuba multiplication extends the high performance range to thousands of bits. Fast long division, however, relies on a classical algorithm and sub-quadratic high-precision division is not yet implemented.
 
 Portability of the code is another key point of focus. Special care has been taken to test in certain high-performance embedded real-time programming environments. Tested efficient functionality on the PC and workstation is also present.
 
