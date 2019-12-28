@@ -210,6 +210,7 @@
     <ClCompile Include="examples\example007_random_generator.cpp" />
     <ClCompile Include="examples\example008_miller_rabin_prime.cpp" />
     <ClCompile Include="examples\example009_compare_mul_with_boost.cpp" />
+    <ClCompile Include="examples\example010_uint48_t.cpp" />
     <ClCompile Include="test\test.cpp" />
     <ClCompile Include="test\test_uintwide_t_boost_backend.cpp" />
     <ClCompile Include="test\test_uintwide_t_examples.cpp" />

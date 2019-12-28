@@ -21,15 +21,15 @@ namespace
 }
 
 #if 0
-BOOST_AUTO_TEST_CASE(test_test_arithmetic_cpp_int_7_tag)
+BOOST_AUTO_TEST_CASE(test_test_arithmetic_boost_single_tag)
 {
-  std::cout << "running: test_arithmetic_cpp_int_7" << std::endl;
+  std::cout << "running: test_arithmetic_cpp_int_5" << std::endl;
 
-  extern int main_test_arithmetic_cpp_int_7();
+  extern int main_test_arithmetic_cpp_int_5();
 
-  const int result_main_test_arithmetic_cpp_int_7 = main_test_arithmetic_cpp_int_7();
+  const int result_test_arithmetic_cpp_int_5 = main_test_arithmetic_cpp_int_5();
 
-  BOOST_CHECK(result_main_test_arithmetic_cpp_int_7 == 0);
+  BOOST_CHECK(result_test_arithmetic_cpp_int_5 == 0);
 }
 #endif
 
