@@ -203,6 +203,7 @@
     <ClCompile Include="examples\example001a_div_mod.cpp" />
     <ClCompile Include="examples\example001_mul_div.cpp" />
     <ClCompile Include="examples\example002_shl_shr.cpp" />
+    <ClCompile Include="examples\example003a_cbrt.cpp" />
     <ClCompile Include="examples\example003_sqrt.cpp" />
     <ClCompile Include="examples\example004_rootk_pow.cpp" />
     <ClCompile Include="examples\example005_powm.cpp" />

@@ -99,5 +99,8 @@
     <ClCompile Include="examples\example010_uint48_t.cpp">
       <Filter>Source Files\examples</Filter>
     </ClCompile>
+    <ClCompile Include="examples\example003a_cbrt.cpp">
+      <Filter>Source Files\examples</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

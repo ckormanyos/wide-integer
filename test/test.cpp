@@ -17,7 +17,7 @@
 
 namespace
 {
-  constexpr std::size_t test_uintwide_t_n_binary_ops_rounds = 4U;
+  constexpr std::size_t test_uintwide_t_n_binary_ops_rounds = 2U;
 }
 
 #if 0
@@ -61,6 +61,33 @@ BOOST_AUTO_TEST_CASE(test_uintwide_t_examples_tag)
   BOOST_CHECK(result_test_uintwide_t_examples_is_ok);
 }
 
+BOOST_AUTO_TEST_CASE(test_uintwide_t_0000048_tag)
+{
+  std::cout << "running: test_uintwide_t_0000048" << std::endl;
+  test_uintwide_t_n_binary_ops_template<48U, std::uint8_t> test_uintwide_t_n_binary_ops_template_instance(1UL << 18U);
+  const bool result_is_ok =
+    test_uintwide_t_n_binary_ops_template_instance.do_test(test_uintwide_t_n_binary_ops_rounds);
+  BOOST_CHECK(result_is_ok);
+}
+
+BOOST_AUTO_TEST_CASE(test_uintwide_t_0000064_tag)
+{
+  std::cout << "running: test_uintwide_t_0000064" << std::endl;
+  test_uintwide_t_n_binary_ops_template<64U, std::uint32_t> test_uintwide_t_n_binary_ops_template_instance(1UL << 18U);
+  const bool result_is_ok =
+    test_uintwide_t_n_binary_ops_template_instance.do_test(test_uintwide_t_n_binary_ops_rounds);
+  BOOST_CHECK(result_is_ok);
+}
+
+BOOST_AUTO_TEST_CASE(test_uintwide_t_0000096_tag)
+{
+  std::cout << "running: test_uintwide_t_0000096" << std::endl;
+  test_uintwide_t_n_binary_ops_template<96U, std::uint16_t> test_uintwide_t_n_binary_ops_template_instance(1UL << 19U);
+  const bool result_is_ok =
+    test_uintwide_t_n_binary_ops_template_instance.do_test(test_uintwide_t_n_binary_ops_rounds);
+  BOOST_CHECK(result_is_ok);
+}
+
 BOOST_AUTO_TEST_CASE(test_uintwide_t_0000128_tag)
 {
   std::cout << "running: test_uintwide_t_0000128" << std::endl;
@@ -82,7 +109,7 @@ BOOST_AUTO_TEST_CASE(test_uintwide_t_0000512_tag)
 BOOST_AUTO_TEST_CASE(test_uintwide_t_0008192_tag)
 {
   std::cout << "running: test_uintwide_t_0008192" << std::endl;
-  test_uintwide_t_n_binary_ops_template<8192U> test_uintwide_t_n_binary_ops_template_instance(1UL << 13U);
+  test_uintwide_t_n_binary_ops_template<8192U> test_uintwide_t_n_binary_ops_template_instance(1UL << 12U);
   const bool result_is_ok =
     test_uintwide_t_n_binary_ops_template_instance.do_test(test_uintwide_t_n_binary_ops_rounds);
   BOOST_CHECK(result_is_ok);
