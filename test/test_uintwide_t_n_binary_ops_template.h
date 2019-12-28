@@ -157,6 +157,36 @@
       return result_is_ok;
     }
 
+    virtual bool test_binary_mod() const
+    {
+      std::random_device rd;
+      std::mt19937 gen(rd());
+      gen.seed(std::clock());
+      std::uniform_int_distribution<> dis(1, static_cast<int>(digits2 - 1U));
+
+      bool result_is_ok = true;
+
+      my_concurrency::parallel_for
+      (
+        std::size_t(0U),
+        size(),
+        [&result_is_ok, this, &dis, &gen](std::size_t i)
+        {
+          const std::size_t right_shift_amount = static_cast<std::size_t>(dis(gen));
+
+          const boost_uint_type c_boost = a_boost[i] % (std::max)(boost_uint_type(1U), (b_boost[i] >> right_shift_amount));
+          const local_uint_type c_local = a_local[i] % (std::max)(local_uint_type(1U), (b_local[i] >> right_shift_amount));
+
+          const std::string str_boost = hexlexical_cast(c_boost);
+          const std::string str_local = hexlexical_cast(c_local);
+
+          result_is_ok &= (str_boost == str_local);
+        }
+      );
+
+      return result_is_ok;
+    }
+
     virtual bool test_binary_sqrt() const
     {
       bool result_is_ok = true;

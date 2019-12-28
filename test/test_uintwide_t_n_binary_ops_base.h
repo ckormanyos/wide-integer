@@ -24,6 +24,7 @@
     virtual bool test_binary_sub () const { return false; }
     virtual bool test_binary_mul () const { return false; }
     virtual bool test_binary_div () const { return false; }
+    virtual bool test_binary_mod () const { return false; }
     virtual bool test_binary_sqrt() const { return false; }
 
     virtual bool do_test(const std::size_t rounds)
@@ -46,6 +47,9 @@
 
         std::cout << "test_binary_div()  boost compare with uintwide_t: round " << i << ",  digits2: " << this->get_digits2() << std::endl;
         result_is_ok &= this->test_binary_div();
+
+        std::cout << "test_binary_mod()  boost compare with uintwide_t: round " << i << ",  digits2: " << this->get_digits2() << std::endl;
+        result_is_ok &= this->test_binary_mod();
 
         std::cout << "test_binary_sqrt() boost compare with uintwide_t: round " << i << ",  digits2: " << this->get_digits2() << std::endl;
         result_is_ok &= this->test_binary_sqrt();

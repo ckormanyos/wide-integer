@@ -319,7 +319,7 @@
   template<const std::uint_fast32_t Digits2> struct verify_power_of_two
   {
     static constexpr bool conditional_value = 
-                                       (Digits2 == (1ULL <<  1U)) || (Digits2 == (1ULL <<  2U)) || (Digits2 == (1ULL <<  3U))
+         (Digits2 == (1ULL <<  0U)) || (Digits2 == (1ULL <<  1U)) || (Digits2 == (1ULL <<  2U)) || (Digits2 == (1ULL <<  3U))
       || (Digits2 == (1ULL <<  4U)) || (Digits2 == (1ULL <<  5U)) || (Digits2 == (1ULL <<  6U)) || (Digits2 == (1ULL <<  7U))
       || (Digits2 == (1ULL <<  8U)) || (Digits2 == (1ULL <<  9U)) || (Digits2 == (1ULL << 10U)) || (Digits2 == (1ULL << 11U))
       || (Digits2 == (1ULL << 12U)) || (Digits2 == (1ULL << 13U)) || (Digits2 == (1ULL << 14U)) || (Digits2 == (1ULL << 15U))
@@ -335,10 +335,11 @@
     // See Sloane's A029750: List of numbers of the form 2^n times 1, 3, 5 or 7.
     // Remove, however, from the list values 1, 2, 3, 4, 5, 6, 7, 8, 10, 12, 14, 20, 28
     static constexpr bool conditional_value =
-      (   verify_power_of_two<Digits2 / 1U>::conditional_value
-       || verify_power_of_two<Digits2 / 3U>::conditional_value
-       || verify_power_of_two<Digits2 / 5U>::conditional_value
-       || verify_power_of_two<Digits2 / 7U>::conditional_value);
+      (   ((Digits2 == 16U) || (Digits2 == 24U) || (Digits2 >= 32U))
+       && (   verify_power_of_two<Digits2 / 1U>::conditional_value
+           || verify_power_of_two<Digits2 / 3U>::conditional_value
+           || verify_power_of_two<Digits2 / 5U>::conditional_value
+           || verify_power_of_two<Digits2 / 7U>::conditional_value));
   };
 
   // Helper templates for selecting integral types.
