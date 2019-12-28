@@ -105,6 +105,6 @@ int main()
                              && (c_mul == ((a64 * b64) & 0x0000FFFFFFFFFFFFULL))
                              && (c_div == ((a64 / b64) & 0x0000FFFFFFFFFFFFULL)));
 
-  return result_is_ok;
+  std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
 }
 ```
