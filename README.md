@@ -109,7 +109,7 @@ int main()
 }
 ```
 
-The next sample computes the cube root of <img src="https://render.githubusercontent.com/render/math?math=10^{3,333}">. The cube root of this very large unsigned integer is <img src="https://render.githubusercontent.com/render/math?math=10^{1,111}">. We will use the (somewhat uncommon) integral data type `uint11520_t`. Since `uint11520_t` has 3,467 decimal digits of precision, so it is large enough to hold the value of <img src="https://render.githubusercontent.com/render/math?math=10^{3,333}"> prior to the cube root operation.
+The next sample computes the cube root of <img src="https://render.githubusercontent.com/render/math?math=10^{3,333}">. The cube root of this very large unsigned integer is <img src="https://render.githubusercontent.com/render/math?math=10^{1,111}">. We will use the (somewhat uncommon) integral data type `uint11520_t`. Since `uint11520_t` has 3,467 decimal digits of precision, it is large enough to hold the value of <img src="https://render.githubusercontent.com/render/math?math=10^{3,333}"> prior to the cube root operation.
 
 ```C
 #include <iomanip>
