@@ -4,7 +4,7 @@ wide-integer implements a generic C++ template for extended precision unsigned i
 Inclusion of a single C++11 header file is all that is needed.
 
 # Details
-Wide-Integer has been tested on numerous compilers and is specifically designed for efficiency with small to medium bit counts. Supported bit counts include integers `2^n` times `1`, `2`, `3`, `5`, and `7` such as 256, 320, 384, 448, 512, 640, 768, 896, 1024, 1280, 1536, etc. Also smaller and larger bit counts are supported. It is even possible to make (not very efficient) versions of `uint24_t` or `uint48_t` if these are required for hardware prototyping or other simulation verification needs. On the high-digit end, Karatsuba multiplication extends the high performance range to thousands of bits. Fast long division, however, relies on a classical algorithm and sub-quadratic high-precision division is not yet implemented.
+Wide-Integer has been tested on numerous compilers and is specifically designed for efficiency with small to medium bit counts. Supported bit counts include integers `2^n` times `1`, `2`, `3`, `5`, and `7` such as 256, 320, 384, 448, 512, 640, 768, 896, 1024, 1280, 1536, etc. Also smaller and larger bit counts are supported. It is even possible to make (not very efficient) version of `uint48_t` if this may be useful for hardware prototyping or other simulation verification needs. On the high-digit end, Karatsuba multiplication extends the high performance range to thousands of bits. Fast long division, however, relies on a classical algorithm and sub-quadratic high-precision division is not yet implemented.
 
 Portability of the code is another key point of focus. Special care has been taken to test in certain high-performance embedded real-time programming environments. Tested efficient functionality on the PC and workstation is also present.
 
@@ -67,5 +67,44 @@ int main()
     (s == "0xFA5FE7853F1D4AD92BDF244179CA178B");
 
   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
+}
+```
+
+The following code performs add, subtract, multiply and divide of `uint48_t`.
+
+```C
+#include <iomanip>
+#include <iostream>
+
+#include "generic_template_uintwide_t.h"
+
+int main()
+{
+  using uint48_t = wide_integer::generic_template::uintwide_t<48U, std::uint8_t>;
+
+  using distribution_type  = wide_integer::generic_template::uniform_int_distribution<48U, std::uint8_t>;
+  using random_engine_type = wide_integer::generic_template::default_random_engine   <48U, std::uint8_t>;
+
+  random_engine_type generator(0xF00DCAFEULL);
+
+  distribution_type distribution;
+
+  const std::uint64_t a64 = static_cast<std::uint64_t>(distribution(generator));
+  const std::uint64_t b64 = static_cast<std::uint64_t>(distribution(generator));
+
+  const uint48_t a(a64);
+  const uint48_t b(b64);
+
+  const uint48_t c_add = (a + b);
+  const uint48_t c_sub = (a - b);
+  const uint48_t c_mul = (a * b);
+  const uint48_t c_div = (a / b);
+
+  const bool result_is_ok = (   (c_add == ((a64 + b64) & 0x0000FFFFFFFFFFFFULL))
+                             && (c_sub == ((a64 - b64) & 0x0000FFFFFFFFFFFFULL))
+                             && (c_mul == ((a64 * b64) & 0x0000FFFFFFFFFFFFULL))
+                             && (c_div == ((a64 / b64) & 0x0000FFFFFFFFFFFFULL)));
+
+  return result_is_ok;
 }
 ```
