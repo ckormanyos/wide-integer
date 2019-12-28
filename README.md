@@ -8,7 +8,7 @@ Wide-Integer has been tested on numerous compilers and is specifically designed 
 
 Portability of the code is another key point of focus. Special care has been taken to test in certain high-performance embedded real-time programming environments. Tested efficient functionality on the PC and workstation is also present.
 
-When working with even the most tiny microcontroller systems, I/O streaming can optionally be disabled with the WIDE_INTEGER_DISABLE_IOSTREAM compiler switch. See the examples directory as more use cases are being created.
+When working with even the most tiny microcontroller systems, I/O streaming can optionally be disabled with the `WIDE_INTEGER_DISABLE_IOSTREAM` compiler switch. See the examples directory as more use cases are being created.
 
 Easy application follows via a typedef or alias. The defined type can be used very much like a built-in unsinged integral type.
 
