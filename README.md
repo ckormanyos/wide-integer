@@ -108,3 +108,48 @@ int main()
   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
 }
 ```
+
+The next sample computes the cube root of <img src="https://render.githubusercontent.com/render/math?math=10^{3,333}">. The cube root of this very large unsigned integer is <img src="https://render.githubusercontent.com/render/math?math=10^{1,111}">. We will use the (somewhat uncommon) integral data type `uint11520_t` for this operation. Note that `uint11520_t` has 3,467 decimal digits of precision, so it is large enough to hold the value of <img src="https://render.githubusercontent.com/render/math?math=10^{3,333}">.
+
+```C
+#include <iomanip>
+#include <iostream>
+
+#include "generic_template_uintwide_t.h"
+
+int main()
+{
+  using uint11520_t = wide_integer::generic_template::uintwide_t<11520U, std::uint32_t>;
+
+  // Create the string '1' + 3,333 times '0', which is
+  // equivalent to the decimal integral value 10^3333.
+  std::array<char, 3335U> str_a;
+
+  std::fill(str_a.begin() + 1U,
+            str_a.begin() + 1U + 3333U,
+            '0');
+
+  str_a.front() = '1';
+  str_a.back()  = '\0';
+
+  std::array<char, 1113U> str_control;
+
+  const uint11520_t a = str_a.data();
+
+  const uint11520_t s = cbrt(a);
+
+  // Create the string '1' + 1,111 times '0', which is
+  // equivalent to the decimal integral value 10^1111.
+  // (This is the cube root of 10^3333.)
+  std::fill(str_control.begin() + 1U,
+            str_control.begin() + 1U + 1111U,
+            '0');
+
+  str_control.front() = '1';
+  str_control.back()  = '\0';
+
+  const bool result_is_ok = (s == str_control.data());
+
+  std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
+}
+```
