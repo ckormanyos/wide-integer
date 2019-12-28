@@ -3,15 +3,10 @@
 
   #include <algorithm>
   #include <cstddef>
-  #include <iostream>
   #include <random>
   #include <vector>
 
-  #include <boost/multiprecision/cpp_int.hpp>
-
   #include <test/test_uintwide_t_n_binary_ops_base.h>
-  #include <test/parallel_for.h>
-  #include <wide_integer/generic_template_uintwide_t.h>
 
   template<const std::size_t MyDigits2,
            typename MyLimbType = std::uint32_t>
@@ -27,7 +22,7 @@
                                              digits2,
                                              boost::multiprecision::unsigned_magnitude>;
 
-    using boost_uint_type = boost::multiprecision::number<boost_uint_backend_type>;
+    using boost_uint_type = boost::multiprecision::number<boost_uint_backend_type, boost::multiprecision::et_off>;
 
     using local_limb_type = MyLimbType;
 
@@ -162,6 +157,36 @@
       return result_is_ok;
     }
 
+    virtual bool test_binary_mod() const
+    {
+      std::random_device rd;
+      std::mt19937 gen(rd());
+      gen.seed(std::clock());
+      std::uniform_int_distribution<> dis(1, static_cast<int>(digits2 - 1U));
+
+      bool result_is_ok = true;
+
+      my_concurrency::parallel_for
+      (
+        std::size_t(0U),
+        size(),
+        [&result_is_ok, this, &dis, &gen](std::size_t i)
+        {
+          const std::size_t right_shift_amount = static_cast<std::size_t>(dis(gen));
+
+          const boost_uint_type c_boost = a_boost[i] % (std::max)(boost_uint_type(1U), (b_boost[i] >> right_shift_amount));
+          const local_uint_type c_local = a_local[i] % (std::max)(local_uint_type(1U), (b_local[i] >> right_shift_amount));
+
+          const std::string str_boost = hexlexical_cast(c_boost);
+          const std::string str_local = hexlexical_cast(c_local);
+
+          result_is_ok &= (str_boost == str_local);
+        }
+      );
+
+      return result_is_ok;
+    }
+
     virtual bool test_binary_sqrt() const
     {
       bool result_is_ok = true;
@@ -192,30 +217,6 @@
 
     std::vector<boost_uint_type> a_boost;
     std::vector<boost_uint_type> b_boost;
-
-    static void get_equal_random_test_values_boost_and_local_n(local_uint_type* u_local,
-                                                               boost_uint_type* u_boost,
-                                                               const std::size_t count)
-    {
-      using random_engine_type =
-        wide_integer::generic_template::default_random_engine<local_uint_type::my_digits,
-                                                              typename local_uint_type::value_type>;
-
-      random_engine_type random_generator(std::clock());
-
-      my_concurrency::parallel_for
-      (
-        std::size_t(0U),
-        count,
-        [&random_generator, &u_local, &u_boost](std::size_t i)
-        {
-          const local_uint_type a = random_generator();
-
-          u_local[i] = a;
-          u_boost[i] = boost_uint_type("0x" + hexlexical_cast(a));
-        }
-      );
-    }
   };
 
 #endif // TEST_UINTWIDE_T_N_BINARY_OPS_TEMPLATE_2019_12_19_H_

@@ -72,19 +72,19 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\boost\boost_1_72_0;C:\boost\madhur4127\include;$(ProjectDir);$(IncludePath)</IncludePath>
+    <IncludePath>C:\boost\boost_1_72_0;$(ProjectDir);$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\boost\boost_1_72_0;C:\boost\madhur4127\include;$(ProjectDir);$(IncludePath)</IncludePath>
+    <IncludePath>C:\boost\boost_1_72_0;$(ProjectDir);$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>C:\boost\boost_1_72_0;C:\boost\madhur4127\include;$(ProjectDir);$(IncludePath)</IncludePath>
+    <IncludePath>C:\boost\boost_1_72_0;$(ProjectDir);$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>C:\boost\boost_1_72_0;C:\boost\madhur4127\include;$(ProjectDir);$(IncludePath)</IncludePath>
+    <IncludePath>C:\boost\boost_1_72_0;$(ProjectDir);$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -98,6 +98,7 @@
       </PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile />
       <DisableSpecificWarnings>4996</DisableSpecificWarnings>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -116,6 +117,7 @@
       </PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile />
       <DisableSpecificWarnings>4996</DisableSpecificWarnings>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -137,6 +139,7 @@
       <PrecompiledHeaderOutputFile />
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <DisableSpecificWarnings>4996</DisableSpecificWarnings>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -160,6 +163,7 @@
       <PrecompiledHeaderOutputFile />
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <DisableSpecificWarnings>4996</DisableSpecificWarnings>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -172,6 +176,7 @@
     <ClInclude Include="boost\multiprecision\uintwide_t_backend.hpp" />
     <ClInclude Include="test\parallel_for.h" />
     <ClInclude Include="test\test_uintwide_t.h" />
+    <ClInclude Include="test\test_uintwide_t_n_binary_ops_mul_n_by_m_template.h" />
     <ClInclude Include="test\test_uintwide_t_n_binary_ops_base.h" />
     <ClInclude Include="test\test_uintwide_t_n_binary_ops_template.h" />
     <ClInclude Include="wide_integer\archive\non_template_uint128_t.h">
@@ -198,6 +203,7 @@
     <ClCompile Include="examples\example001a_div_mod.cpp" />
     <ClCompile Include="examples\example001_mul_div.cpp" />
     <ClCompile Include="examples\example002_shl_shr.cpp" />
+    <ClCompile Include="examples\example003a_cbrt.cpp" />
     <ClCompile Include="examples\example003_sqrt.cpp" />
     <ClCompile Include="examples\example004_rootk_pow.cpp" />
     <ClCompile Include="examples\example005_powm.cpp" />
@@ -205,6 +211,7 @@
     <ClCompile Include="examples\example007_random_generator.cpp" />
     <ClCompile Include="examples\example008_miller_rabin_prime.cpp" />
     <ClCompile Include="examples\example009_compare_mul_with_boost.cpp" />
+    <ClCompile Include="examples\example010_uint48_t.cpp" />
     <ClCompile Include="test\test.cpp" />
     <ClCompile Include="test\test_uintwide_t_boost_backend.cpp" />
     <ClCompile Include="test\test_uintwide_t_examples.cpp" />

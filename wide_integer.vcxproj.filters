@@ -52,6 +52,9 @@
     <ClInclude Include="test\test_uintwide_t_n_binary_ops_base.h">
       <Filter>Source Files\test</Filter>
     </ClInclude>
+    <ClInclude Include="test\test_uintwide_t_n_binary_ops_mul_n_by_m_template.h">
+      <Filter>Source Files\test</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="test\test.cpp">
@@ -92,6 +95,12 @@
     </ClCompile>
     <ClCompile Include="test\test_uintwide_t_boost_backend.cpp">
       <Filter>Source Files\test</Filter>
+    </ClCompile>
+    <ClCompile Include="examples\example010_uint48_t.cpp">
+      <Filter>Source Files\examples</Filter>
+    </ClCompile>
+    <ClCompile Include="examples\example003a_cbrt.cpp">
+      <Filter>Source Files\examples</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

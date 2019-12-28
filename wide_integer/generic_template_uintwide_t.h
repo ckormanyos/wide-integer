@@ -12,6 +12,7 @@
   #include <array>
   #include <cstddef>
   #include <cstdint>
+  #include <cstring>
   #include <iterator>
   #include <limits>
   #include <type_traits>
@@ -26,184 +27,184 @@
 
   namespace wide_integer { namespace generic_template {
 
-  // Forward declaration of uintwide_t.
-  template<const std::size_t Digits2,
+  // Forward declaration of the uintwide_t template class.
+  template<const std::uint_fast32_t Digits2,
            typename LimbType = std::uint32_t>
   class uintwide_t;
 
   // Forward declarations of non-member binary add, sub, mul, div, mod of (uintwide_t op uintwide_t).
-  template<const std::size_t Digits2, typename LimbType> uintwide_t<Digits2, LimbType> operator+(const uintwide_t<Digits2, LimbType>& u, const uintwide_t<Digits2, LimbType>& v);
-  template<const std::size_t Digits2, typename LimbType> uintwide_t<Digits2, LimbType> operator-(const uintwide_t<Digits2, LimbType>& u, const uintwide_t<Digits2, LimbType>& v);
-  template<const std::size_t Digits2, typename LimbType> uintwide_t<Digits2, LimbType> operator*(const uintwide_t<Digits2, LimbType>& u, const uintwide_t<Digits2, LimbType>& v);
-  template<const std::size_t Digits2, typename LimbType> uintwide_t<Digits2, LimbType> operator/(const uintwide_t<Digits2, LimbType>& u, const uintwide_t<Digits2, LimbType>& v);
-  template<const std::size_t Digits2, typename LimbType> uintwide_t<Digits2, LimbType> operator%(const uintwide_t<Digits2, LimbType>& u, const uintwide_t<Digits2, LimbType>& v);
+  template<const std::uint_fast32_t Digits2, typename LimbType> uintwide_t<Digits2, LimbType> operator+(const uintwide_t<Digits2, LimbType>& u, const uintwide_t<Digits2, LimbType>& v);
+  template<const std::uint_fast32_t Digits2, typename LimbType> uintwide_t<Digits2, LimbType> operator-(const uintwide_t<Digits2, LimbType>& u, const uintwide_t<Digits2, LimbType>& v);
+  template<const std::uint_fast32_t Digits2, typename LimbType> uintwide_t<Digits2, LimbType> operator*(const uintwide_t<Digits2, LimbType>& u, const uintwide_t<Digits2, LimbType>& v);
+  template<const std::uint_fast32_t Digits2, typename LimbType> uintwide_t<Digits2, LimbType> operator/(const uintwide_t<Digits2, LimbType>& u, const uintwide_t<Digits2, LimbType>& v);
+  template<const std::uint_fast32_t Digits2, typename LimbType> uintwide_t<Digits2, LimbType> operator%(const uintwide_t<Digits2, LimbType>& u, const uintwide_t<Digits2, LimbType>& v);
 
   // Forward declarations of non-member binary add, sub, mul, div, mod of (uintwide_t op IntegralType).
-  template<typename IntegralType, const std::size_t Digits2, typename LimbType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType>
   typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
                            && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType>>::type
   operator+(const uintwide_t<Digits2, LimbType>& u, const IntegralType& v);
 
-  template<typename IntegralType, const std::size_t Digits2, typename LimbType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType>
   typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
                            && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType>>::type
   operator-(const uintwide_t<Digits2, LimbType>& u, const IntegralType& v);
 
-  template<typename IntegralType, const std::size_t Digits2, typename LimbType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType>
   typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
                            && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType>>::type
   operator*(const uintwide_t<Digits2, LimbType>& u, const IntegralType& v);
 
-  template<typename IntegralType, const std::size_t Digits2, typename LimbType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType>
   typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
                            && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType>>::type
   operator/(const uintwide_t<Digits2, LimbType>& u, const IntegralType& v);
 
-  template<typename IntegralType, const std::size_t Digits2, typename LimbType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType>
   typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
                            && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType>>::type
   operator%(const uintwide_t<Digits2, LimbType>& u, const IntegralType& v);
 
   // Forward declarations of non-member binary add, sub, mul, div, mod of (IntegralType op uintwide_t).
-  template<typename IntegralType, const std::size_t Digits2, typename LimbType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType>
   typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
                            && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType>>::type
   operator+(const IntegralType& u, const uintwide_t<Digits2, LimbType>& v);
 
-  template<typename IntegralType, const std::size_t Digits2, typename LimbType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType>
   typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
                            && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType>>::type
   operator-(const IntegralType& u, const uintwide_t<Digits2, LimbType>& v);
 
-  template<typename IntegralType, const std::size_t Digits2, typename LimbType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType>
   typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
                            && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType>>::type
   operator*(const IntegralType& u, const uintwide_t<Digits2, LimbType>& v);
 
-  template<typename IntegralType, const std::size_t Digits2, typename LimbType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType>
   typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
                            && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType>>::type
   operator/(const IntegralType& u, const uintwide_t<Digits2, LimbType>& v);
 
-  template<typename IntegralType, const std::size_t Digits2, typename LimbType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType>
   typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
                            && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType>>::type
   operator%(const IntegralType& u, const uintwide_t<Digits2, LimbType>& v);
 
   // Forward declarations of non-member binary logic operations of (uintwide_t op uintwide_t).
-  template<const std::size_t Digits2, typename LimbType> uintwide_t<Digits2, LimbType> operator|(const uintwide_t<Digits2, LimbType>& u, const uintwide_t<Digits2, LimbType>& v);
-  template<const std::size_t Digits2, typename LimbType> uintwide_t<Digits2, LimbType> operator^(const uintwide_t<Digits2, LimbType>& u, const uintwide_t<Digits2, LimbType>& v);
-  template<const std::size_t Digits2, typename LimbType> uintwide_t<Digits2, LimbType> operator&(const uintwide_t<Digits2, LimbType>& u, const uintwide_t<Digits2, LimbType>& v);
+  template<const std::uint_fast32_t Digits2, typename LimbType> uintwide_t<Digits2, LimbType> operator|(const uintwide_t<Digits2, LimbType>& u, const uintwide_t<Digits2, LimbType>& v);
+  template<const std::uint_fast32_t Digits2, typename LimbType> uintwide_t<Digits2, LimbType> operator^(const uintwide_t<Digits2, LimbType>& u, const uintwide_t<Digits2, LimbType>& v);
+  template<const std::uint_fast32_t Digits2, typename LimbType> uintwide_t<Digits2, LimbType> operator&(const uintwide_t<Digits2, LimbType>& u, const uintwide_t<Digits2, LimbType>& v);
 
   // Forward declarations of non-member binary logic operations of (uintwide_t op IntegralType).
-  template<typename IntegralType, const std::size_t Digits2, typename LimbType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType>
   typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
                            && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType>>::type
   operator|(const uintwide_t<Digits2, LimbType>& u, const IntegralType& v);
 
-  template<typename IntegralType, const std::size_t Digits2, typename LimbType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType>
   typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
                            && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType>>::type
   operator^(const uintwide_t<Digits2, LimbType>& u, const IntegralType& v);
 
-  template<typename IntegralType, const std::size_t Digits2, typename LimbType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType>
   typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
                            && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType>>::type
   operator&(const uintwide_t<Digits2, LimbType>& u, const IntegralType& v);
 
   // Forward declarations of non-member binary binary logic operations of (IntegralType op uintwide_t).
-  template<typename IntegralType, const std::size_t Digits2, typename LimbType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType>
   typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
                            && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType>>::type
   operator|(const IntegralType& u, const uintwide_t<Digits2, LimbType>& v);
 
-  template<typename IntegralType, const std::size_t Digits2, typename LimbType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType>
   typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
                            && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType>>::type
   operator^(const IntegralType& u, const uintwide_t<Digits2, LimbType>& v);
 
-  template<typename IntegralType, const std::size_t Digits2, typename LimbType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType>
   typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
                            && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType>>::type
   operator&(const IntegralType& u, const uintwide_t<Digits2, LimbType>& v);
 
   // Forward declarations of non-member shift functions of (uintwide_t shift IntegralType).
-  template<typename IntegralType, const std::size_t Digits2, typename LimbType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType>
   typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
                            && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType>>::type
   operator<<(const uintwide_t<Digits2, LimbType>& u, const IntegralType n);
 
-  template<typename IntegralType, const std::size_t Digits2, typename LimbType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType>
   typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
                            && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType>>::type
   operator>>(const uintwide_t<Digits2, LimbType>& u, const IntegralType n);
 
   // Forward declarations of non-member comparison functions of (uintwide_t cmp uintwide_t).
-  template<const std::size_t Digits2, typename LimbType> bool operator==(const uintwide_t<Digits2, LimbType>& u, const uintwide_t<Digits2, LimbType>& v);
-  template<const std::size_t Digits2, typename LimbType> bool operator!=(const uintwide_t<Digits2, LimbType>& u, const uintwide_t<Digits2, LimbType>& v);
-  template<const std::size_t Digits2, typename LimbType> bool operator> (const uintwide_t<Digits2, LimbType>& u, const uintwide_t<Digits2, LimbType>& v);
-  template<const std::size_t Digits2, typename LimbType> bool operator< (const uintwide_t<Digits2, LimbType>& u, const uintwide_t<Digits2, LimbType>& v);
-  template<const std::size_t Digits2, typename LimbType> bool operator>=(const uintwide_t<Digits2, LimbType>& u, const uintwide_t<Digits2, LimbType>& v);
-  template<const std::size_t Digits2, typename LimbType> bool operator<=(const uintwide_t<Digits2, LimbType>& u, const uintwide_t<Digits2, LimbType>& v);
+  template<const std::uint_fast32_t Digits2, typename LimbType> bool operator==(const uintwide_t<Digits2, LimbType>& u, const uintwide_t<Digits2, LimbType>& v);
+  template<const std::uint_fast32_t Digits2, typename LimbType> bool operator!=(const uintwide_t<Digits2, LimbType>& u, const uintwide_t<Digits2, LimbType>& v);
+  template<const std::uint_fast32_t Digits2, typename LimbType> bool operator> (const uintwide_t<Digits2, LimbType>& u, const uintwide_t<Digits2, LimbType>& v);
+  template<const std::uint_fast32_t Digits2, typename LimbType> bool operator< (const uintwide_t<Digits2, LimbType>& u, const uintwide_t<Digits2, LimbType>& v);
+  template<const std::uint_fast32_t Digits2, typename LimbType> bool operator>=(const uintwide_t<Digits2, LimbType>& u, const uintwide_t<Digits2, LimbType>& v);
+  template<const std::uint_fast32_t Digits2, typename LimbType> bool operator<=(const uintwide_t<Digits2, LimbType>& u, const uintwide_t<Digits2, LimbType>& v);
 
   // Forward declarations of non-member comparison functions of (uintwide_t cmp IntegralType).
-  template<typename IntegralType, const std::size_t Digits2, typename LimbType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType>
   typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
                            && (std::is_integral   <IntegralType>::value == true)), bool>::type
   operator==(const uintwide_t<Digits2, LimbType>& u, const IntegralType& v);
 
-  template<typename IntegralType, const std::size_t Digits2, typename LimbType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType>
   typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
                            && (std::is_integral   <IntegralType>::value == true)), bool>::type
   operator!=(const uintwide_t<Digits2, LimbType>& u, const IntegralType& v);
 
-  template<typename IntegralType, const std::size_t Digits2, typename LimbType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType>
   typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
                            && (std::is_integral   <IntegralType>::value == true)), bool>::type
   operator> (const uintwide_t<Digits2, LimbType>& u, const IntegralType& v);
 
-  template<typename IntegralType, const std::size_t Digits2, typename LimbType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType>
   typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
                            && (std::is_integral   <IntegralType>::value == true)), bool>::type
   operator< (const uintwide_t<Digits2, LimbType>& u, const IntegralType& v);
 
-  template<typename IntegralType, const std::size_t Digits2, typename LimbType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType>
   typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
                            && (std::is_integral   <IntegralType>::value == true)), bool>::type
   operator>=(const uintwide_t<Digits2, LimbType>& u, const IntegralType& v);
 
-  template<typename IntegralType, const std::size_t Digits2, typename LimbType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType>
   typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
                            && (std::is_integral   <IntegralType>::value == true)), bool>::type
   operator<=(const uintwide_t<Digits2, LimbType>& u, const IntegralType& v);
 
   // Forward declarations of non-member comparison functions of (IntegralType cmp uintwide_t).
-  template<typename IntegralType, const std::size_t Digits2, typename LimbType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType>
   typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
                            && (std::is_integral   <IntegralType>::value == true)), bool>::type
   operator==(const IntegralType& u, const uintwide_t<Digits2, LimbType>& v);
 
-  template<typename IntegralType, const std::size_t Digits2, typename LimbType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType>
   typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
                            && (std::is_integral   <IntegralType>::value == true)), bool>::type
   operator!=(const IntegralType& u, const uintwide_t<Digits2, LimbType>& v);
 
-  template<typename IntegralType, const std::size_t Digits2, typename LimbType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType>
   typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
                            && (std::is_integral   <IntegralType>::value == true)), bool>::type
   operator> (const IntegralType& u, const uintwide_t<Digits2, LimbType>& v);
 
-  template<typename IntegralType, const std::size_t Digits2, typename LimbType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType>
   typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
                            && (std::is_integral   <IntegralType>::value == true)), bool>::type
   operator< (const IntegralType& u, const uintwide_t<Digits2, LimbType>& v);
 
-  template<typename IntegralType, const std::size_t Digits2, typename LimbType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType>
   typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
                            && (std::is_integral   <IntegralType>::value == true)), bool>::type
   operator>=(const IntegralType& u, const uintwide_t<Digits2, LimbType>& v);
 
-  template<typename IntegralType, const std::size_t Digits2, typename LimbType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType>
   typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
                            && (std::is_integral   <IntegralType>::value == true)), bool>::type
   operator<=(const IntegralType& u, const uintwide_t<Digits2, LimbType>& v);
@@ -214,7 +215,7 @@
   // Forward declarations of I/O streaming functions.
   template<typename char_type,
            typename traits_type,
-           const std::size_t Digits2,
+           const std::uint_fast32_t Digits2,
            typename LimbType>
   std::basic_ostream<char_type,
                      traits_type>& operator<<(std::basic_ostream<char_type, traits_type>& out,
@@ -222,7 +223,7 @@
 
   template<typename char_type,
            typename traits_type,
-           const std::size_t Digits2,
+           const std::uint_fast32_t Digits2,
            typename LimbType>
   std::basic_istream<char_type,
                      traits_type>& operator>>(std::basic_istream<char_type, traits_type>& in,
@@ -231,75 +232,75 @@
   #endif
 
   // Forward declarations of various number-theoretical tools.
-  template<const std::size_t Digits2,
+  template<const std::uint_fast32_t Digits2,
            typename LimbType>
   void swap(uintwide_t<Digits2, LimbType>& x,
             uintwide_t<Digits2, LimbType>& y);
 
-  template<const std::size_t Digits2,
+  template<const std::uint_fast32_t Digits2,
            typename LimbType>
-  std::size_t lsb(const uintwide_t<Digits2, LimbType>& x);
+  std::uint_fast32_t lsb(const uintwide_t<Digits2, LimbType>& x);
 
-  template<const std::size_t Digits2,
+  template<const std::uint_fast32_t Digits2,
            typename LimbType>
-  std::size_t msb(const uintwide_t<Digits2, LimbType>& x);
+  std::uint_fast32_t msb(const uintwide_t<Digits2, LimbType>& x);
 
-  template<const std::size_t Digits2,
+  template<const std::uint_fast32_t Digits2,
            typename LimbType>
   uintwide_t<Digits2, LimbType> sqrt(const uintwide_t<Digits2, LimbType>& m);
 
-  template<const std::size_t Digits2,
+  template<const std::uint_fast32_t Digits2,
            typename LimbType>
   uintwide_t<Digits2, LimbType> cbrt(const uintwide_t<Digits2, LimbType>& m);
 
-  template<const std::size_t Digits2,
+  template<const std::uint_fast32_t Digits2,
            typename LimbType>
   uintwide_t<Digits2, LimbType> rootk(const uintwide_t<Digits2, LimbType>& m,
                                       const std::uint_fast8_t k);
 
   template<typename OtherUnsignedIntegralTypeP,
-           const std::size_t Digits2,
+           const std::uint_fast32_t Digits2,
            typename LimbType>
   uintwide_t<Digits2, LimbType> pow(const uintwide_t<Digits2, LimbType>& b,
                                     const OtherUnsignedIntegralTypeP&    p);
 
   template<typename OtherUnsignedIntegralTypeP,
            typename OtherUnsignedIntegralTypeM,
-           const std::size_t Digits2,
+           const std::uint_fast32_t Digits2,
            typename LimbType>
   uintwide_t<Digits2, LimbType> powm(const uintwide_t<Digits2, LimbType>& b,
                                      const OtherUnsignedIntegralTypeP&    p,
                                      const OtherUnsignedIntegralTypeM&    m);
 
-  template<const std::size_t Digits2,
+  template<const std::uint_fast32_t Digits2,
            typename LimbType>
   uintwide_t<Digits2, LimbType> gcd(const uintwide_t<Digits2, LimbType>& a,
                                     const uintwide_t<Digits2, LimbType>& b);
 
-  template<const std::size_t Digits2,
+  template<const std::uint_fast32_t Digits2,
            typename LimbType>
   class default_random_engine;
 
-  template<const std::size_t Digits2,
+  template<const std::uint_fast32_t Digits2,
            typename LimbType>
   class uniform_int_distribution;
 
-  template<const std::size_t Digits2,
+  template<const std::uint_fast32_t Digits2,
            typename LimbType>
   bool operator==(const uniform_int_distribution<Digits2, LimbType>& lhs,
                   const uniform_int_distribution<Digits2, LimbType>& rhs);
 
-  template<const std::size_t Digits2,
+  template<const std::uint_fast32_t Digits2,
            typename LimbType>
   bool operator!=(const uniform_int_distribution<Digits2, LimbType>& lhs,
                   const uniform_int_distribution<Digits2, LimbType>& rhs);
 
   template<typename DistributionType,
            typename GeneratorType,
-           const std::size_t Digits2,
+           const std::uint_fast32_t Digits2,
            typename LimbType>
   bool miller_rabin(const uintwide_t<Digits2, LimbType>& n,
-                    const std::size_t                    number_of_trials,
+                    const std::uint_fast32_t                    number_of_trials,
                     DistributionType&                    distribution,
                     GeneratorType&                       generator);
 
@@ -308,51 +309,52 @@
   namespace std
   {
     // Forward declaration of specialization of std::numeric_limits<uintwide_t>.
-    template<const std::size_t Digits2,
+    template<const std::uint_fast32_t Digits2,
              typename LimbType>
     class numeric_limits<wide_integer::generic_template::uintwide_t<Digits2, LimbType>>;
   }
 
   namespace wide_integer { namespace generic_template { namespace detail {
 
-  template<const std::size_t Digits2>
-  struct verify_power_of_two
+  template<const std::uint_fast32_t Digits2> struct verify_power_of_two
   {
-    static constexpr bool conditional_value = verify_power_of_two<Digits2 / 2U>::conditional_value;
+    static constexpr bool conditional_value = 
+         (Digits2 == (1ULL <<  0U)) || (Digits2 == (1ULL <<  1U)) || (Digits2 == (1ULL <<  2U)) || (Digits2 == (1ULL <<  3U))
+      || (Digits2 == (1ULL <<  4U)) || (Digits2 == (1ULL <<  5U)) || (Digits2 == (1ULL <<  6U)) || (Digits2 == (1ULL <<  7U))
+      || (Digits2 == (1ULL <<  8U)) || (Digits2 == (1ULL <<  9U)) || (Digits2 == (1ULL << 10U)) || (Digits2 == (1ULL << 11U))
+      || (Digits2 == (1ULL << 12U)) || (Digits2 == (1ULL << 13U)) || (Digits2 == (1ULL << 14U)) || (Digits2 == (1ULL << 15U))
+      || (Digits2 == (1ULL << 16U)) || (Digits2 == (1ULL << 17U)) || (Digits2 == (1ULL << 18U)) || (Digits2 == (1ULL << 19U))
+      || (Digits2 == (1ULL << 20U)) || (Digits2 == (1ULL << 21U)) || (Digits2 == (1ULL << 22U)) || (Digits2 == (1ULL << 23U))
+      || (Digits2 == (1ULL << 24U)) || (Digits2 == (1ULL << 25U)) || (Digits2 == (1ULL << 26U)) || (Digits2 == (1ULL << 27U))
+      || (Digits2 == (1ULL << 28U)) || (Digits2 == (1ULL << 29U)) || (Digits2 == (1ULL << 30U)) || (Digits2 == (1ULL << 31U))
+      ;
   };
 
-  template<>
-  struct verify_power_of_two<2U>
+  template<const std::uint_fast32_t Digits2> struct verify_power_of_two_times_granularity_one_sixty_fourth
   {
-    static constexpr bool conditional_value = true;
+    // List of numbers used to identify the form 2^n times 1...63.
+    static constexpr bool conditional_value =
+       (   verify_power_of_two<Digits2 /  1U>::conditional_value || verify_power_of_two<Digits2 /  3U>::conditional_value
+        || verify_power_of_two<Digits2 /  5U>::conditional_value || verify_power_of_two<Digits2 /  7U>::conditional_value
+        || verify_power_of_two<Digits2 /  9U>::conditional_value || verify_power_of_two<Digits2 / 11U>::conditional_value
+        || verify_power_of_two<Digits2 / 13U>::conditional_value || verify_power_of_two<Digits2 / 15U>::conditional_value
+        || verify_power_of_two<Digits2 / 17U>::conditional_value || verify_power_of_two<Digits2 / 19U>::conditional_value
+        || verify_power_of_two<Digits2 / 21U>::conditional_value || verify_power_of_two<Digits2 / 23U>::conditional_value
+        || verify_power_of_two<Digits2 / 25U>::conditional_value || verify_power_of_two<Digits2 / 27U>::conditional_value
+        || verify_power_of_two<Digits2 / 29U>::conditional_value || verify_power_of_two<Digits2 / 31U>::conditional_value
+        || verify_power_of_two<Digits2 / 33U>::conditional_value || verify_power_of_two<Digits2 / 35U>::conditional_value
+        || verify_power_of_two<Digits2 / 37U>::conditional_value || verify_power_of_two<Digits2 / 39U>::conditional_value
+        || verify_power_of_two<Digits2 / 41U>::conditional_value || verify_power_of_two<Digits2 / 43U>::conditional_value
+        || verify_power_of_two<Digits2 / 45U>::conditional_value || verify_power_of_two<Digits2 / 47U>::conditional_value
+        || verify_power_of_two<Digits2 / 49U>::conditional_value || verify_power_of_two<Digits2 / 51U>::conditional_value
+        || verify_power_of_two<Digits2 / 53U>::conditional_value || verify_power_of_two<Digits2 / 55U>::conditional_value
+        || verify_power_of_two<Digits2 / 57U>::conditional_value || verify_power_of_two<Digits2 / 59U>::conditional_value
+        || verify_power_of_two<Digits2 / 61U>::conditional_value || verify_power_of_two<Digits2 / 63U>::conditional_value);
   };
 
-  template<>
-  struct verify_power_of_two<0U>
-  {
-    static constexpr bool conditional_value = false;
-  };
-
-  template<const std::size_t Digits2>
-  struct verify_power_of_two_times_three
-  {
-    static constexpr bool conditional_value = verify_power_of_two_times_three<Digits2 / 2U>::conditional_value;
-  };
-
-  template<>
-  struct verify_power_of_two_times_three<3U>
-  {
-    static constexpr bool conditional_value = true;
-  };
-
-  template<>
-  struct verify_power_of_two_times_three<0U>
-  {
-    static constexpr bool conditional_value = false;
-  };
-
-  // Helper templates for selecting integral types.
-  template<const std::size_t BitCount> struct int_type_helper
+  template<const std::uint_fast32_t BitCount,
+           typename EnableType = void>
+  struct int_type_helper
   {
     static_assert((   ((BitCount >= 8U) && (BitCount <= 64U))
                    && (verify_power_of_two<BitCount>::conditional_value == true)),
@@ -362,10 +364,10 @@
     using exact_signed_type   = std::intmax_t;
   };
 
-  template<> struct int_type_helper< 8U> { using exact_unsigned_type = std::uint8_t;   using exact_signed_type = std::int8_t;   };
-  template<> struct int_type_helper<16U> { using exact_unsigned_type = std::uint16_t;  using exact_signed_type = std::int16_t;  };
-  template<> struct int_type_helper<32U> { using exact_unsigned_type = std::uint32_t;  using exact_signed_type = std::int32_t;  };
-  template<> struct int_type_helper<64U> { using exact_unsigned_type = std::uint64_t;  using exact_signed_type = std::int64_t;  };
+  template<const std::uint_fast32_t BitCount> struct int_type_helper<BitCount, typename std::enable_if<                     (BitCount <=  8U)>::type> { using exact_unsigned_type = std::uint8_t;  using exact_signed_type = std::int8_t;   };
+  template<const std::uint_fast32_t BitCount> struct int_type_helper<BitCount, typename std::enable_if<(BitCount >=  9U) && (BitCount <= 16U)>::type> { using exact_unsigned_type = std::uint16_t; using exact_signed_type = std::int16_t;   };
+  template<const std::uint_fast32_t BitCount> struct int_type_helper<BitCount, typename std::enable_if<(BitCount >= 17U) && (BitCount <= 32U)>::type> { using exact_unsigned_type = std::uint32_t; using exact_signed_type = std::int32_t;   };
+  template<const std::uint_fast32_t BitCount> struct int_type_helper<BitCount, typename std::enable_if<(BitCount >= 33U) && (BitCount <= 64U)>::type> { using exact_unsigned_type = std::uint64_t; using exact_signed_type = std::int64_t;   };
 
   // Use a local implementation of string copy.
   inline char* strcpy_unsafe(char* dst, const char* src)
@@ -376,17 +378,17 @@
   }
 
   // Use a local implementation of string length.
-  inline std::size_t strlen_unsafe(const char* p_str)
+  inline std::uint_fast32_t strlen_unsafe(const char* p_str)
   {
     const char* p_str_copy;
 
     for(p_str_copy = p_str; (*p_str_copy != char('\0')); ++p_str_copy) { ; }
 
-    return std::size_t(p_str_copy - p_str);
+    return std::uint_fast32_t(p_str_copy - p_str);
   }
 
   template<typename ST,
-           typename LT = typename detail::int_type_helper<std::size_t(std::numeric_limits<ST>::digits * 2)>::exact_unsigned_type>
+           typename LT = typename detail::int_type_helper<std::uint_fast32_t(std::numeric_limits<ST>::digits * 2)>::exact_unsigned_type>
   ST make_lo(const LT& u)
   {
     // From an unsigned integral input parameter of type LT,
@@ -408,7 +410,7 @@
   }
 
   template<typename ST,
-           typename LT = typename detail::int_type_helper<std::size_t(std::numeric_limits<ST>::digits * 2)>::exact_unsigned_type>
+           typename LT = typename detail::int_type_helper<std::uint_fast32_t(std::numeric_limits<ST>::digits * 2)>::exact_unsigned_type>
   ST make_hi(const LT& u)
   {
     // From an unsigned integral input parameter of type LT,
@@ -430,7 +432,7 @@
   }
 
   template<typename ST,
-           typename LT = typename detail::int_type_helper<std::size_t(std::numeric_limits<ST>::digits * 2)>::exact_unsigned_type>
+           typename LT = typename detail::int_type_helper<std::uint_fast32_t(std::numeric_limits<ST>::digits * 2)>::exact_unsigned_type>
   LT make_large(const ST& lo, const ST& hi)
   {
     // Create a composite unsigned integral value having type LT.
@@ -455,21 +457,14 @@
 
   namespace wide_integer { namespace generic_template {
 
-  template<const std::size_t Digits2,
+  template<const std::uint_fast32_t Digits2,
            typename LimbType>
   class uintwide_t
   {
   public:
-    // Verify that the Digits2 template parameter is a power of 2.
-    static_assert(   (   (detail::verify_power_of_two            <Digits2>::conditional_value == true)
-                      || (detail::verify_power_of_two_times_three<Digits2>::conditional_value == true))
-                  && (   (Digits2 >= 16U)
-                      || (Digits2 >= 24U)),
-                  "Error: The Digits2 template parameter must be (2^n) or 3*(2^n) and 16 or 24 or larger");
-
     // Class-local type definitions.
     using ushort_type = LimbType;
-    using ularge_type = typename detail::int_type_helper<std::size_t(std::numeric_limits<ushort_type>::digits * 2)>::exact_unsigned_type;
+    using ularge_type = typename detail::int_type_helper<std::uint_fast32_t(std::numeric_limits<ushort_type>::digits * 2)>::exact_unsigned_type;
 
     // More compile-time checks.
     static_assert((    (std::numeric_limits<ushort_type>::is_integer == true)
@@ -480,14 +475,23 @@
                    "Error: Please check the characteristics of the template parameters ST and LT");
 
     // Helper constants for the digit characteristics.
-    static constexpr std::size_t my_digits   = Digits2;
-    static constexpr std::size_t my_digits10 = static_cast<int>((std::uintmax_t(my_digits) * UINTMAX_C(301)) / 1000U);
+    static constexpr std::uint_fast32_t my_digits   = Digits2;
+    static constexpr std::uint_fast32_t my_digits10 = static_cast<int>((std::uintmax_t(my_digits) * UINTMAX_C(301)) / 1000U);
 
     // The number of limbs.
-    static constexpr std::size_t number_of_limbs =
-      std::size_t(my_digits / std::size_t(std::numeric_limits<ushort_type>::digits));
+    static constexpr std::uint_fast32_t number_of_limbs =
+      std::uint_fast32_t(my_digits / std::uint_fast32_t(std::numeric_limits<ushort_type>::digits));
 
-    static constexpr std::size_t number_of_limbs_karatsuba_threshold = 129U;
+    static constexpr std::uint_fast32_t number_of_limbs_karatsuba_threshold = std::uint_fast32_t(128U + 1U);
+
+    // Verify that the Digits2 template parameter (my_digits):
+    //   * Is equal to 2^n times 1...63.
+    //   * And that there are at least 16, 24 or 32 binary digits.
+    //   * And that the number of binary digits is an exact multiple of the number of limbs.
+    static_assert(   (detail::verify_power_of_two_times_granularity_one_sixty_fourth<my_digits>::conditional_value == true)
+                  && ((my_digits >= 16U) || (my_digits >= 24U))
+                  && (my_digits == (number_of_limbs * std::uint_fast32_t(std::numeric_limits<ushort_type>::digits))),
+                  "Error: Digits2 must be 2^n times 1...63 (with n >= 3), while being 16, 24, 32 or larger, and exactly divisible by limb count");
 
     // The type of the internal data representation.
     using representation_type = std::array<ushort_type, number_of_limbs>;
@@ -572,7 +576,7 @@
     }
 
     // Constructor from a C-style array.
-    template<const std::size_t N>
+    template<const std::uint_fast32_t N>
     uintwide_t(const ushort_type(&init)[N])
     {
       static_assert(N <= number_of_limbs,
@@ -595,6 +599,33 @@
       std::copy(v.crepresentation().cbegin(),
                 v.crepresentation().cbegin() + (v.crepresentation().size() / 2U),
                 values.begin());
+    }
+
+    // Constructor from the another type having a different width but the same limb type.
+    // This constructor is explicit because it is a non-trivial conversion.
+    template<const std::uint_fast32_t OtherDigits2>
+    explicit uintwide_t(const uintwide_t<OtherDigits2, LimbType>& v)
+    {
+      if(v.crepresentation().size() > values.size())
+      {
+        std::copy(v.crepresentation().cbegin(),
+                  v.crepresentation().cbegin() + values.size(),
+                  values.begin());
+      }
+      else if(v.crepresentation().size() <= values.size())
+      {
+        std::copy(v.crepresentation().cbegin(),
+                  v.crepresentation().cend(),
+                  values.begin());
+
+        std::fill(values.begin() + v.crepresentation().size(),
+                  values.end(),
+                  0U);
+      }
+      else
+      {
+        values.fill(0U);
+      }
     }
 
     // Constructor from a constant character string.
@@ -680,8 +711,7 @@
 
     // Implement the cast operator that casts to the double-width type.
     template<typename UnknownUnsignedWideIntegralType = double_width_type,
-             typename = typename std::enable_if<(   (std::is_same<UnknownUnsignedWideIntegralType, double_width_type>::value == true)
-                                                 && (my_digits >= 128U))>::type>
+             typename = typename std::enable_if<(std::is_same<UnknownUnsignedWideIntegralType, double_width_type>::value == true)>::type>
     operator double_width_type() const
     {
       double_width_type local_double_width_instance;
@@ -746,7 +776,7 @@
 
     uintwide_t& operator*=(const uintwide_t& other)
     {
-      eval_mul_unary<number_of_limbs>(*this, other);
+      eval_mul_unary(*this, other);
 
       return *this;
     }
@@ -806,7 +836,7 @@
     uintwide_t& operator|=(const uintwide_t& other)
     {
       // Bitwise OR.
-      for(std::size_t i = 0U; i < number_of_limbs; ++i)
+      for(std::uint_fast32_t i = 0U; i < number_of_limbs; ++i)
       {
         values[i] |= other.values[i];
       }
@@ -817,7 +847,7 @@
     uintwide_t& operator^=(const uintwide_t& other)
     {
       // Bitwise XOR.
-      for(std::size_t i = 0U; i < number_of_limbs; ++i)
+      for(std::uint_fast32_t i = 0U; i < number_of_limbs; ++i)
       {
         values[i] ^= other.values[i];
       }
@@ -828,7 +858,7 @@
     uintwide_t& operator&=(const uintwide_t& other)
     {
       // Bitwise AND.
-      for(std::size_t i = 0U; i < number_of_limbs; ++i)
+      for(std::uint_fast32_t i = 0U; i < number_of_limbs; ++i)
       {
         values[i] &= other.values[i];
       }
@@ -846,14 +876,14 @@
       else if(n == 0) { ; }
       else
       {
-        if(std::size_t(n) >= my_digits)
+        if(std::uint_fast32_t(n) >= my_digits)
         {
           std::fill(values.begin(), values.end(), value_type(0U));
         }
         else
         {
-          const std::size_t offset            = std::size_t(n) / std::size_t(std::numeric_limits<ushort_type>::digits);
-          const std::size_t left_shift_amount = std::size_t(n) % std::size_t(std::numeric_limits<ushort_type>::digits);
+          const std::uint_fast32_t offset            = std::uint_fast32_t(n) / std::uint_fast32_t(std::numeric_limits<ushort_type>::digits);
+          const std::uint_fast32_t left_shift_amount = std::uint_fast32_t(n) % std::uint_fast32_t(std::numeric_limits<ushort_type>::digits);
 
           std::copy_backward(values.data(),
                              values.data() + (number_of_limbs - offset),
@@ -867,13 +897,13 @@
 
           if(left_shift_amount != local_integral_type(0U))
           {
-            for(std::size_t i = offset; i < number_of_limbs; ++i)
+            for(std::uint_fast32_t i = offset; i < number_of_limbs; ++i)
             {
               const ushort_type t = values[i];
 
               values[i] = (t << local_integral_type(left_shift_amount)) | part_from_previous_value;
 
-              part_from_previous_value = ushort_type(t >> local_integral_type(std::size_t(std::numeric_limits<ushort_type>::digits - left_shift_amount)));
+              part_from_previous_value = ushort_type(t >> local_integral_type(std::uint_fast32_t(std::numeric_limits<ushort_type>::digits - left_shift_amount)));
             }
           }
         }
@@ -892,20 +922,20 @@
       else if(n == 0) { ; }
       else
       {
-        if(std::size_t(n) >= my_digits)
+        if(std::uint_fast32_t(n) >= my_digits)
         {
           std::fill(values.begin(), values.end(), value_type(0U));
         }
         else
         {
-          const std::size_t offset             = std::size_t(n) / std::size_t(std::numeric_limits<ushort_type>::digits);
-          const std::size_t right_shift_amount = std::size_t(n) % std::size_t(std::numeric_limits<ushort_type>::digits);
+          const std::uint_fast32_t offset             = std::uint_fast32_t(n) / std::uint_fast32_t(std::numeric_limits<ushort_type>::digits);
+          const std::uint_fast32_t right_shift_amount = std::uint_fast32_t(n) % std::uint_fast32_t(std::numeric_limits<ushort_type>::digits);
 
           std::copy(values.begin() + offset,
                     values.begin() + number_of_limbs,
                     values.begin());
 
-          std::fill(values.rbegin(), values.rbegin() + std::ptrdiff_t(offset), ushort_type(0U));
+          std::fill(values.rbegin(), values.rbegin() + std::int_fast32_t(offset), ushort_type(0U));
 
           ushort_type part_from_previous_value = ushort_type(0U);
 
@@ -913,13 +943,13 @@
 
           if(right_shift_amount != local_integral_type(0U))
           {
-            for(std::size_t i = ((number_of_limbs - 1U) - offset); std::ptrdiff_t(i) >= 0; --i)
+            for(std::int_fast32_t i = std::int_fast32_t((number_of_limbs - 1U) - offset); i >= 0; --i)
             {
-              const ushort_type t = values[i];
+              const ushort_type t = values[std::uint_fast32_t(i)];
 
-              values[i] = (t >> local_integral_type(right_shift_amount)) | part_from_previous_value;
+              values[std::uint_fast32_t(i)] = (t >> local_integral_type(right_shift_amount)) | part_from_previous_value;
 
-              part_from_previous_value = ushort_type(t << local_integral_type(std::size_t(std::numeric_limits<ushort_type>::digits - right_shift_amount)));
+              part_from_previous_value = ushort_type(t << local_integral_type(std::uint_fast32_t(std::numeric_limits<ushort_type>::digits - right_shift_amount)));
             }
           }
         }
@@ -955,9 +985,9 @@
 
     // Define the maximum buffer sizes for extracting
     // octal, decimal and hexadecimal string representations.
-    static const std::size_t wr_string_max_buffer_size_oct = (16U + (my_digits / 3U)) + std::size_t(((my_digits % 3U) != 0U) ? 1U : 0U) + 1U;
-    static const std::size_t wr_string_max_buffer_size_hex = (32U + (my_digits / 4U)) + 1U;
-    static const std::size_t wr_string_max_buffer_size_dec = (20U + std::size_t((std::uintmax_t(my_digits) * UINTMAX_C(301)) / UINTMAX_C(1000))) + 1U;
+    static constexpr std::uint_fast32_t wr_string_max_buffer_size_oct = (16U + (my_digits / 3U)) + std::uint_fast32_t(((my_digits % 3U) != 0U) ? 1U : 0U) + 1U;
+    static constexpr std::uint_fast32_t wr_string_max_buffer_size_hex = (32U + (my_digits / 4U)) + 1U;
+    static constexpr std::uint_fast32_t wr_string_max_buffer_size_dec = (20U + std::uint_fast32_t((std::uintmax_t(my_digits) * UINTMAX_C(301)) / UINTMAX_C(1000))) + 1U;
 
     // Write string function.
     bool wr_string(      char*             str_result,
@@ -965,7 +995,7 @@
                    const bool              show_base    = true,
                    const bool              show_pos     = false,
                    const bool              is_uppercase = true,
-                         std::size_t       field_width  = 0U,
+                         std::uint_fast32_t       field_width  = 0U,
                    const char              fill_char    = char('0')) const
     {
       uintwide_t t(*this);
@@ -978,7 +1008,7 @@
 
         char str_temp[wr_string_max_buffer_size_oct];
 
-        std::size_t pos = (sizeof(str_temp) - 1U);
+        std::uint_fast32_t pos = (sizeof(str_temp) - 1U);
 
         if(t.is_zero())
         {
@@ -1018,9 +1048,9 @@
 
         if(field_width != 0U)
         {
-          field_width = (std::min)(field_width, std::size_t(sizeof(str_temp) - 1U));
+          field_width = (std::min)(field_width, std::uint_fast32_t(sizeof(str_temp) - 1U));
 
-          while(std::ptrdiff_t(pos) > std::ptrdiff_t((sizeof(str_temp) - 1U) - field_width))
+          while(std::int_fast32_t(pos) > std::int_fast32_t((sizeof(str_temp) - 1U) - field_width))
           {
             --pos;
 
@@ -1028,7 +1058,7 @@
           }
         }
 
-        str_temp[std::size_t(sizeof(str_temp) - 1U)] = char('\0');
+        str_temp[(sizeof(str_temp) - 1U)] = char('\0');
 
         detail::strcpy_unsafe(str_result, str_temp + pos);
       }
@@ -1036,7 +1066,7 @@
       {
         char str_temp[wr_string_max_buffer_size_dec];
 
-        std::size_t pos = (sizeof(str_temp) - 1U);
+        std::uint_fast32_t pos = (sizeof(str_temp) - 1U);
 
         if(t.is_zero() == true)
         {
@@ -1077,9 +1107,9 @@
 
         if(field_width != 0U)
         {
-          field_width = (std::min)(field_width, std::size_t(sizeof(str_temp) - 1U));
+          field_width = (std::min)(field_width, std::uint_fast32_t(sizeof(str_temp) - 1U));
 
-          while(std::ptrdiff_t(pos) > std::ptrdiff_t((sizeof(str_temp) - 1U) - field_width))
+          while(std::int_fast32_t(pos) > std::int_fast32_t((sizeof(str_temp) - 1U) - field_width))
           {
             --pos;
 
@@ -1087,7 +1117,7 @@
           }
         }
 
-        str_temp[std::size_t(sizeof(str_temp) - 1U)] = char('\0');
+        str_temp[(sizeof(str_temp) - 1U)] = char('\0');
 
         detail::strcpy_unsafe(str_result, str_temp + pos);
       }
@@ -1097,7 +1127,7 @@
 
         char str_temp[wr_string_max_buffer_size_hex];
 
-        std::size_t pos = (sizeof(str_temp) - 1U);
+        std::uint_fast32_t pos = (sizeof(str_temp) - 1U);
 
         if(t.is_zero() == true)
         {
@@ -1142,9 +1172,9 @@
 
         if(field_width != 0U)
         {
-          field_width = (std::min)(field_width, std::size_t(sizeof(str_temp) - 1U));
+          field_width = (std::min)(field_width, std::uint_fast32_t(sizeof(str_temp) - 1U));
 
-          while(std::ptrdiff_t(pos) > std::ptrdiff_t((sizeof(str_temp) - 1U) - field_width))
+          while(std::int_fast32_t(pos) > std::int_fast32_t((sizeof(str_temp) - 1U) - field_width))
           {
             --pos;
 
@@ -1152,7 +1182,7 @@
           }
         }
 
-        str_temp[std::size_t(sizeof(str_temp) - 1U)] = char('\0');
+        str_temp[(sizeof(str_temp) - 1U)] = char('\0');
 
         detail::strcpy_unsafe(str_result, str_temp + pos);
       }
@@ -1174,27 +1204,26 @@
   private:
     representation_type values;
 
-    static std::int_fast8_t compare_ranges(const ushort_type* a, const ushort_type* b, const std::size_t count)
+    static std::int_fast8_t compare_ranges(const ushort_type* a, const ushort_type* b, const std::uint_fast32_t count)
     {
       std::int_fast8_t cmp_result;
-      std::ptrdiff_t   element_index;
 
-      for(element_index = std::ptrdiff_t(count - 1U); element_index >= std::ptrdiff_t(0); --element_index)
+      std::int_fast32_t element_index = std::int_fast32_t(count) - 1;
+
+      while((   (element_index >= 0)
+             && (a[(element_index)] == b[(element_index)])))
       {
-        if(a[std::size_t(element_index)] != b[std::size_t(element_index)])
-        {
-          break;
-        }
+        --element_index;
       }
 
-      if(element_index == std::ptrdiff_t(-1))
+      if(element_index == std::int_fast32_t(-1))
       {
         cmp_result = std::int_fast8_t(0);
       }
       else
       {
         const bool left_is_greater_than_right =
-          (a[std::size_t(element_index)] > b[std::size_t(element_index)]);
+          (a[(element_index)] > b[(element_index)]);
 
         cmp_result = (left_is_greater_than_right ? std::int_fast8_t(1) : std::int_fast8_t(-1));
       }
@@ -1202,60 +1231,61 @@
       return cmp_result;
     }
 
-    template<const std::size_t NumberOfLimbs,
-             typename EnableType = void>
-    static void eval_mul_unary(uintwide_t&, const uintwide_t&, EnableType);
-
-    template<const std::size_t NumberOfLimbs>
-    static void eval_mul_unary(      uintwide_t& u,
-                               const uintwide_t& v,
-                               typename std::enable_if<(NumberOfLimbs < uintwide_t::number_of_limbs_karatsuba_threshold)>::type* = nullptr)
+    template<const std::uint_fast32_t OtherDigits2>
+    static void eval_mul_unary(      uintwide_t<OtherDigits2, LimbType>& u,
+                               const uintwide_t<OtherDigits2, LimbType>& v,
+                               typename std::enable_if<((OtherDigits2 / std::numeric_limits<LimbType>::digits) < uintwide_t::number_of_limbs_karatsuba_threshold)>::type* = nullptr)
     {
       // Unary multiplication function using schoolbook multiplication,
-      // but only half of the n*n algorithm is used for or n*n->n bit multiply.
+      // but we only need to retain the low half of the n*n algorithm.
+      // In other words, this is an n*n->n bit multiplication.
 
-      std::array<ushort_type, NumberOfLimbs> result;
+      constexpr std::uint_fast32_t local_number_of_limbs = uintwide_t<OtherDigits2, LimbType>::number_of_limbs;
 
-      eval_multiply_nhalf(result.data(),
-                          u.values.data(),
-                          v.values.data(),
-                          NumberOfLimbs);
+      std::array<ushort_type, local_number_of_limbs> result;
+
+      eval_multiply_n_by_n_to_lo_part(result.data(),
+                                      u.values.data(),
+                                      v.values.data(),
+                                      local_number_of_limbs);
 
       std::copy(result.cbegin(),
-                result.cbegin() + NumberOfLimbs,
+                result.cbegin() + local_number_of_limbs,
                 u.values.begin());
     }
 
-    template<const std::size_t NumberOfLimbs>
-    static void eval_mul_unary(      uintwide_t& u,
-                               const uintwide_t& v,
-                               typename std::enable_if<(NumberOfLimbs >= uintwide_t::number_of_limbs_karatsuba_threshold)>::type* = nullptr)
+    template<const std::uint_fast32_t OtherDigits2>
+    static void eval_mul_unary(      uintwide_t<OtherDigits2, LimbType>& u,
+                               const uintwide_t<OtherDigits2, LimbType>& v,
+                               typename std::enable_if<((OtherDigits2 / std::numeric_limits<LimbType>::digits) >= uintwide_t::number_of_limbs_karatsuba_threshold)>::type* = nullptr)
     {
       // Unary multiplication function using Karatsuba multiplication.
 
-      std::array<ushort_type, NumberOfLimbs * 2U> result;
-      std::array<ushort_type, NumberOfLimbs * 4U> t;
+      constexpr std::uint_fast32_t local_number_of_limbs = uintwide_t<OtherDigits2, LimbType>::number_of_limbs;
 
-      eval_multiply_kara(result.data(),
-                          u.values.data(),
-                          v.values.data(),
-                          NumberOfLimbs,
-                          t.data());
+      std::array<ushort_type, local_number_of_limbs * 2U> result;
+      std::array<ushort_type, local_number_of_limbs * 4U> t;
+
+      eval_multiply_kara_n_by_n_to_2n(result.data(),
+                                      u.values.data(),
+                                      v.values.data(),
+                                      local_number_of_limbs,
+                                      t.data());
 
       std::copy(result.cbegin(),
-                result.cbegin() + NumberOfLimbs,
+                result.cbegin() + local_number_of_limbs,
                 u.values.begin());
     }
 
     static ushort_type eval_add_n(      ushort_type* r,
                                   const ushort_type* u,
                                   const ushort_type* v,
-                                  const std::size_t  count,
+                                  const std::uint_fast32_t  count,
                                   const ushort_type  carry_in = 0U)
     {
       ushort_type carry_out = carry_in;
 
-      for(std::size_t i = 0U; i < count; ++i)
+      for(std::uint_fast32_t i = 0U; i < count; ++i)
       {
         const ularge_type uv_as_ularge = ularge_type(ularge_type(u[i]) + v[i]) + carry_out;
 
@@ -1270,12 +1300,12 @@
     static bool eval_subtract_n(      ushort_type* r,
                                 const ushort_type* u,
                                 const ushort_type* v,
-                                const std::size_t  count,
+                                const std::uint_fast32_t  count,
                                 const bool         has_borrow_in = false)
     {
       bool has_borrow_out = has_borrow_in;
 
-      for(std::size_t i = 0U; i < count; ++i)
+      for(std::uint_fast32_t i = 0U; i < count; ++i)
       {
         ularge_type uv_as_ularge = ularge_type(u[i]) - v[i];
 
@@ -1292,22 +1322,22 @@
       return has_borrow_out;
     }
 
-    static void eval_multiply_nhalf(      ushort_type* r,
-                                    const ushort_type* u,
-                                    const ushort_type* v,
-                                    const std::size_t  count)
+    static void eval_multiply_n_by_n_to_lo_part(      ushort_type*       r,
+                                                const ushort_type*       a,
+                                                const ushort_type*       b,
+                                                const std::uint_fast32_t count)
     {
-      std::fill(r, r + count, ushort_type(0U));
+      std::memset(r, 0, count * sizeof(ushort_type));
 
-      for(std::size_t j = 0U; j < count; ++j)
+      for(std::uint_fast32_t i = 0U; i < count; ++i)
       {
-        if(v[j] != ushort_type(0U))
+        if(a[i] != ushort_type(0U))
         {
           ularge_type carry = 0U;
 
-          for(std::size_t i = 0U; i < (count - j); ++i)
+          for(std::uint_fast32_t j = 0U; j < (count - i); ++j)
           {
-            carry += ularge_type(ularge_type(u[i]) * v[j]);
+            carry += ularge_type(ularge_type(a[i]) * b[j]);
             carry += r[i + j];
 
             r[i + j] = detail::make_lo<ushort_type>(carry);
@@ -1317,24 +1347,24 @@
       }
     }
 
-    static void eval_multiply_n(      ushort_type* r,
-                                const ushort_type* u,
-                                const ushort_type* v,
-                                const std::size_t  count)
+    static void eval_multiply_n_by_n_to_2n(      ushort_type*       r,
+                                           const ushort_type*       a,
+                                           const ushort_type*       b,
+                                           const std::uint_fast32_t count)
     {
-      std::fill(r, r + (count * 2U), ushort_type(0U));
+      std::memset(r, 0, (count * 2U) * sizeof(ushort_type));
 
-      for(std::size_t j = 0U; j < count; ++j)
+      for(std::uint_fast32_t i = 0U; i < count; ++i)
       {
-        if(v[j] != ushort_type(0U))
+        if(a[i] != ushort_type(0U))
         {
-          std::size_t i = 0U;
+          std::uint_fast32_t j = 0U;
 
           ularge_type carry = 0U;
 
-          for( ; i < count; ++i)
+          for( ; j < count; ++j)
           {
-            carry += ularge_type(ularge_type(u[i]) * v[j]);
+            carry += ularge_type(ularge_type(a[i]) * b[j]);
             carry += r[i + j];
 
             r[i + j] = detail::make_lo<ushort_type>(carry);
@@ -1346,20 +1376,20 @@
       }
     }
 
-    static ushort_type eval_multiply_1d(      ushort_type* r,
-                                        const ushort_type* u,
-                                        const ushort_type  v,
-                                        const std::size_t  count)
+    static ushort_type eval_multiply_1d(      ushort_type*       r,
+                                        const ushort_type*       a,
+                                        const ushort_type        b,
+                                        const std::uint_fast32_t count)
     {
-      std::fill(r, r + count, ushort_type(0U));
+      std::memset(r, 0, count * sizeof(ushort_type));
 
       ularge_type carry = 0U;
 
-      if(v != ushort_type(0U))
+      if(b != ushort_type(0U))
       {
-        for(std::size_t i = 0U ; i < count; ++i)
+        for(std::uint_fast32_t i = 0U ; i < count; ++i)
         {
-          carry += ularge_type(ularge_type(u[i]) * v);
+          carry += ularge_type(ularge_type(a[i]) * b);
           carry += r[i];
 
           r[i]  = detail::make_lo<ushort_type>(carry);
@@ -1370,9 +1400,9 @@
       return ushort_type(carry);
     }
 
-    static void eval_multiply_kara_propagate_carry(ushort_type* t, const std::size_t n, const ushort_type carry)
+    static void eval_multiply_kara_propagate_carry(ushort_type* t, const std::uint_fast32_t n, const ushort_type carry)
     {
-      std::size_t i = 0U;
+      std::uint_fast32_t i = 0U;
 
       ushort_type carry_out = carry;
 
@@ -1388,9 +1418,9 @@
       }
     }
 
-    static void eval_multiply_kara_propagate_borrow(ushort_type* t, const std::size_t n, const bool has_borrow)
+    static void eval_multiply_kara_propagate_borrow(ushort_type* t, const std::uint_fast32_t n, const bool has_borrow)
     {
-      std::size_t i = 0U;
+      std::uint_fast32_t i = 0U;
 
       bool has_borrow_out = has_borrow;
 
@@ -1411,17 +1441,17 @@
       }
     }
 
-    static void eval_multiply_kara(      ushort_type* r,
-                                   const ushort_type* u,
-                                   const ushort_type* v,
-                                   const std::size_t  n,
-                                         ushort_type* t)
+    static void eval_multiply_kara_n_by_n_to_2n(      ushort_type*       r,
+                                                const ushort_type*       a,
+                                                const ushort_type*       b,
+                                                const std::uint_fast32_t n,
+                                                      ushort_type*       t)
     {
-      if((n == 32U) || (n == 48U))
+      if((n >= 32U) && (n <= 63U))
       {
         static_cast<void>(t);
 
-        eval_multiply_n(r, u, v, n);
+        eval_multiply_n_by_n_to_2n(r, a, b, n);
       }
       else
       {
@@ -1430,47 +1460,49 @@
         // Cambridge University Press (2011).
 
         // The Karatsuba multipliation computes the product of u*v as:
-        // [b^N + b^(N/2)] u1*v1 + [b^(N/2)](u1 - u0)(v0 - v1) + [b^(N/2) + 1] u0*v0
+        // [b^N + b^(N/2)] a1*b1 + [b^(N/2)](a1 - a0)(b0 - b1) + [b^(N/2) + 1] a0*b0
 
         // Here we visualize u and v in two components 0,1 corresponding
         // to the high and low order parts, respectively.
 
         // TBD: A subproblem: Deal with the subproblem getting negative,
         // and consider the overhead for calculating the complements.
-        // Boost kara mul branch: z = (u1+u0)*(v1+v0) - u1*v1 - u0*v0
-        // This code:             z =  u1*v1 + u0*v0 - |u1-u0|*|v0-v1|
+        // Boost kara mul branch: z = (a1+a0)*(b1+b0) - a1*b1 - a0*b0
+        // This code:             z =  a1*b1 + a0*b0 - |a1-a0|*|b0-b1|
+        // This also may seem to be known as odd-even Karatsuba in
+        // R.P. Brent and P. Zimmermann, "Modern Computer Arithmetic",
+        // Cambridge University Press (2011).
 
         // Step 1
-        // Calculate u1*v1 and store it in the upper part of r.
-        // Calculate u0*v0 and store it in the lower part of r.
+        // Calculate a1*b1 and store it in the upper part of r.
+        // Calculate a0*b0 and store it in the lower part of r.
         // copy r to t0.
 
         // Step 2
-        // Add u1*v1 (which is t2) to the middle two-quarters of r (which is r1)
-        // Add u0*v0 (which is t0) to the middle two-quarters of r (which is r1)
+        // Add a1*b1 (which is t2) to the middle two-quarters of r (which is r1)
+        // Add a0*b0 (which is t0) to the middle two-quarters of r (which is r1)
 
         // Step 3
-        // Calculate |u1-u0| in t0 and note the sign (i.e., the borrow flag)
+        // Calculate |a1-a0| in t0 and note the sign (i.e., the borrow flag)
 
         // Step 4
-        // Calculate |v0-v1| in t1 and note the sign (i.e., the borrow flag)
+        // Calculate |b0-b1| in t1 and note the sign (i.e., the borrow flag)
 
         // Step 5
-        // Call kara mul to calculate |u1-u0|*|v0-v1| in (t2),
-        // while using temporary storage in t4.
+        // Call kara mul to calculate |a1-a0|*|b0-b1| in (t2),
+        // while using temporary storage in t4 along the way.
 
         // Step 6
-        // Check the borrow signs. If u1-u0 and v0-v1 have the same signs,
-        // then add |u1-u0|*|v0-v1| to r1, otherwise subtract it from r1.
+        // Check the borrow signs. If a1-a0 and b0-b1 have the same signs,
+        // then add |a1-a0|*|b0-b1| to r1, otherwise subtract it from r1.
 
-        const std::size_t  nh = n / 2U;
+        const std::uint_fast32_t  nh = n / 2U;
 
-        const ushort_type* u0 = u + 0U;
-        const ushort_type* u1 = u + nh;
-        const ushort_type* u2 = u + n;
+        const ushort_type* a0 = a + 0U;
+        const ushort_type* a1 = a + nh;
 
-        const ushort_type* v0 = v + 0U;
-        const ushort_type* v1 = v + nh;
+        const ushort_type* b0 = b + 0U;
+        const ushort_type* b1 = b + nh;
 
               ushort_type* r0 = r + 0U;
               ushort_type* r1 = r + nh;
@@ -1484,16 +1516,16 @@
               ushort_type* t4 = t + (n + n);
 
         // Step 1
-        //   u1*v1 -> r2
-        //   u0*v0 -> r0
+        //   a1*b1 -> r2
+        //   a0*b0 -> r0
         //   r -> t0
-        eval_multiply_kara(r2, u1, v1, nh, t0);
-        eval_multiply_kara(r0, u0, v0, nh, t0);
+        eval_multiply_kara_n_by_n_to_2n(r2, a1, b1, nh, t0);
+        eval_multiply_kara_n_by_n_to_2n(r0, a0, b0, nh, t0);
         std::copy(r0, r4, t0);
 
         // Step 2
-        //   r1 += u1*v1
-        //   r1 += u0*v0
+        //   r1 += a1*b1
+        //   r1 += a0*b0
         ushort_type carry;
         carry = eval_add_n(r1, r1, t2, n);
         eval_multiply_kara_propagate_carry(r3, nh, carry);
@@ -1501,44 +1533,45 @@
         eval_multiply_kara_propagate_carry(r3, nh, carry);
 
         // Step 3
-        //   |u1-u0| -> t0
-        const std::int_fast8_t cmp_result_u1u0 = compare_ranges(u1, u0, nh);
-        if(cmp_result_u1u0 == 1)
+        //   |a1-a0| -> t0
+        const std::int_fast8_t cmp_result_a1a0 = compare_ranges(a1, a0, nh);
+
+        if(cmp_result_a1a0 == 1)
         {
-          static_cast<void>(eval_subtract_n(t0, u1, u0, nh));
+          static_cast<void>(eval_subtract_n(t0, a1, a0, nh));
         }
-        else if(cmp_result_u1u0 == -1)
+        else if(cmp_result_a1a0 == -1)
         {
-          static_cast<void>(eval_subtract_n(t0, u0, u1, nh));
+          static_cast<void>(eval_subtract_n(t0, a0, a1, nh));
         }
 
         // Step 4
-        //   |v0-v1| -> t1
-        const std::int_fast8_t cmp_result_v0v1 = compare_ranges(v0, v1, nh);
+        //   |b0-b1| -> t1
+        const std::int_fast8_t cmp_result_b0b1 = compare_ranges(b0, b1, nh);
 
-        if(cmp_result_v0v1 == 1)
+        if(cmp_result_b0b1 == 1)
         {
-          static_cast<void>(eval_subtract_n(t1, v0, v1, nh));
+          static_cast<void>(eval_subtract_n(t1, b0, b1, nh));
         }
-        else if(cmp_result_v0v1 == -1)
+        else if(cmp_result_b0b1 == -1)
         {
-          static_cast<void>(eval_subtract_n(t1, v1, v0, nh));
+          static_cast<void>(eval_subtract_n(t1, b1, b0, nh));
         }
 
         // Step 5
-        //   |u1-u0|*|v0-v1| -> t2
-        eval_multiply_kara(t2, t0, t1, nh, t4);
+        //   |a1-a0|*|b0-b1| -> t2
+        eval_multiply_kara_n_by_n_to_2n(t2, t0, t1, nh, t4);
 
         // Step 6
-        //   either r1 += |u1-u0|*|v0-v1|
-        //   or     r1 -= |u1-u0|*|v0-v1|
-        if((cmp_result_u1u0 * cmp_result_v0v1) == 1)
+        //   either r1 += |a1-a0|*|b0-b1|
+        //   or     r1 -= |a1-a0|*|b0-b1|
+        if((cmp_result_a1a0 * cmp_result_b0b1) == 1)
         {
           carry = eval_add_n(r1, r1, t2, n);
 
           eval_multiply_kara_propagate_carry(r3, nh, carry);
         }
-        else if((cmp_result_u1u0 * cmp_result_v0v1) == -1)
+        else if((cmp_result_a1a0 * cmp_result_b0b1) == -1)
         {
           const bool has_borrow = eval_subtract_n(r1, r1, t2, n);
 
@@ -1550,7 +1583,7 @@
     static void eval_multiply_toomcook3(      ushort_type* r,
                                         const ushort_type* u,
                                         const ushort_type* v,
-                                        const std::size_t  n,
+                                        const std::uint_fast32_t  n,
                                               ushort_type* t)
     {
       if(n == 3072U)
@@ -1559,7 +1592,7 @@
         // from Toom-Cook3 back to base case Karatsuba.
 
         // Base case Karatsuba multiplication.
-        eval_multiply_kara(r, u, v, n, t);
+        eval_multiply_kara_n_by_n_to_2n(r, u, v, n, t);
       }
       else
       {
@@ -1574,7 +1607,7 @@
     static void eval_multiply_toomcook4(      ushort_type* r,
                                         const ushort_type* u,
                                         const ushort_type* v,
-                                        const std::size_t  n,
+                                        const std::uint_fast32_t  n,
                                               ushort_type* t)
     {
       if(n == 2048U)
@@ -1583,7 +1616,7 @@
         // from Toom-Cook4 back to base case Karatsuba.
 
         // Base case Karatsuba multiplication.
-        eval_multiply_kara(r, u, v, n, t);
+        eval_multiply_kara_n_by_n_to_2n(r, u, v, n, t);
       }
       else
       {
@@ -1607,7 +1640,7 @@
       // Seminumerical Algorithms", Addison-Wesley (1998),
       // Section 4.3.1 Algorithm D and Exercise 16.
 
-      using local_uint_index_type = std::size_t;
+      using local_uint_index_type = std::uint_fast32_t;
 
       local_uint_index_type u_offset = local_uint_index_type(0U);
       local_uint_index_type v_offset = local_uint_index_type(0U);
@@ -1687,13 +1720,16 @@
 
         ushort_type hi_part = ushort_type(0U);
 
-        for(local_uint_index_type i = local_uint_index_type((number_of_limbs - 1U) - u_offset); std::ptrdiff_t(i) >= 0; --i)
+        for(std::int_fast32_t i = std::int_fast32_t((number_of_limbs - 1U) - u_offset); std::int_fast32_t(i) >= 0; --i)
         {
-          long_numerator = ularge_type(values[i]) + ((long_numerator - ularge_type(ularge_type(short_denominator) * hi_part)) << std::numeric_limits<ushort_type>::digits);
+          long_numerator =
+              ularge_type(values[std::uint_fast32_t(i)])
+            + ((long_numerator - ularge_type(ularge_type(short_denominator) * hi_part)) << std::numeric_limits<ushort_type>::digits);
 
-          values[i] = detail::make_lo<ushort_type>(ularge_type(long_numerator / short_denominator));
+          values[std::uint_fast32_t(i)] =
+            detail::make_lo<ushort_type>(ularge_type(long_numerator / short_denominator));
 
-          hi_part = values[i];
+          hi_part = values[std::uint_fast32_t(i)];
         }
 
         if(remainder != nullptr)
@@ -1704,7 +1740,7 @@
 
           if(u_offset != 0U)
           {
-            std::fill(values.begin() + std::size_t((number_of_limbs - 1U) - u_offset),
+            std::fill(values.begin() + std::uint_fast32_t((number_of_limbs - 1U) - u_offset),
                       values.end(),
                       ushort_type(0U));
           }
@@ -1855,7 +1891,7 @@
               }
 
               // Get the result data.
-              values[local_uint_index_type(m - j)] = detail::make_lo<ushort_type>(q_hat);
+              values[m - j] = detail::make_lo<ushort_type>(q_hat);
 
               // Step D5: Test the remainder.
               // Set the result value: Set result.m_data[m - j] = q_hat.
@@ -1886,7 +1922,7 @@
                 //     {6986485091668619828842978360442127600954041171641881730123945989288792389271,
                 //      100041341335406267530943777943625254875702684549707174207105689918734693139780}
 
-                --values[local_uint_index_type(m - j)];
+                --values[m - j];
               }
             }
           }
@@ -1908,12 +1944,14 @@
           {
             ushort_type previous_u = ushort_type(0U);
 
-            for(local_uint_index_type rl = n - 1U, ul = local_uint_index_type(number_of_limbs - (v_offset + 1U)); std::ptrdiff_t(rl) >= 0; --rl, --ul)
+            for(std::int_fast32_t rl = std::int_fast32_t(n - 1U), ul = std::int_fast32_t(number_of_limbs - (v_offset + 1U)); rl >= 0; --rl, --ul)
             {
-              const ularge_type t = ularge_type(uu[ul] + ularge_type(ularge_type(previous_u) << std::numeric_limits<ushort_type>::digits));
+              const ularge_type t =
+                ularge_type(  uu[std::uint_fast32_t(ul)]
+                            + ularge_type(ularge_type(previous_u) << std::numeric_limits<ushort_type>::digits));
 
-              remainder->values[rl] = detail::make_lo<ushort_type>(ularge_type(t / d));
-              previous_u            = ushort_type(t - ularge_type(ularge_type(d) * remainder->values[rl]));
+              remainder->values[std::uint_fast32_t(rl)] = detail::make_lo<ushort_type>(ularge_type(t / d));
+              previous_u                                = ushort_type(t - ularge_type(ularge_type(d) * remainder->values[std::uint_fast32_t(rl)]));
             }
           }
 
@@ -1929,11 +1967,11 @@
     {
       std::fill(values.begin(), values.end(), ushort_type(0U));
 
-      const std::size_t str_length = detail::strlen_unsafe(str_input);
+      const std::uint_fast32_t str_length = detail::strlen_unsafe(str_input);
 
       std::uint_fast8_t base = 10U;
 
-      std::size_t pos = 0U;
+      std::uint_fast32_t pos = 0U;
 
       // Skip over a potential plus sign.
       if((str_length > 0U) && (str_input[0U] == char('+')))
@@ -2026,7 +2064,7 @@
 
     void bitwise_not()
     {
-      for(std::size_t i = 0U; i < number_of_limbs; ++i)
+      for(std::uint_fast32_t i = 0U; i < number_of_limbs; ++i)
       {
         values[i] = value_type(~values[i]);
       }
@@ -2035,7 +2073,7 @@
     void preincrement()
     {
       // Implement pre-increment.
-      std::size_t i = 0U;
+      std::uint_fast32_t i = 0U;
 
       for( ; (i < (values.size() - 1U)) && (++values[i] == value_type(0U)); ++i)
       {
@@ -2051,7 +2089,7 @@
     void predecrement()
     {
       // Implement pre-decrement.
-      std::size_t i = 0U;
+      std::uint_fast32_t i = 0U;
 
       for( ; (i < (values.size() - 1U)) && (values[i]-- == value_type(0U)); ++i)
       {
@@ -2083,16 +2121,16 @@
   };
 
   // Define some convenient unsigned wide integer types.
-  using uint64_t    = uintwide_t<  64U, std::uint16_t>;
-  using uint128_t   = uintwide_t< 128U>;
-  using uint256_t   = uintwide_t< 256U>;
-  using uint512_t   = uintwide_t< 512U>;
-  using uint1024_t  = uintwide_t<1024U>;
-  using uint2048_t  = uintwide_t<2048U>;
-  using uint4096_t  = uintwide_t<4096U>;
-  using uint8192_t  = uintwide_t<8192U>;
-  using uint16384_t = uintwide_t<16384U>;
-  using uint32768_t = uintwide_t<32768U>;
+  using uint64_t    = uintwide_t<   64U, std::uint16_t>;
+  using uint128_t   = uintwide_t<  128U, std::uint32_t>;
+  using uint256_t   = uintwide_t<  256U, std::uint32_t>;
+  using uint512_t   = uintwide_t<  512U, std::uint32_t>;
+  using uint1024_t  = uintwide_t< 1024U, std::uint32_t>;
+  using uint2048_t  = uintwide_t< 2048U, std::uint32_t>;
+  using uint4096_t  = uintwide_t< 4096U, std::uint32_t>;
+  using uint8192_t  = uintwide_t< 8192U, std::uint32_t>;
+  using uint16384_t = uintwide_t<16384U, std::uint32_t>;
+  using uint32768_t = uintwide_t<32768U, std::uint32_t>;
 
   // Insert a base class for numeric_limits<> support.
   // This class inherits from std::numeric_limits<unsigned int>
@@ -2105,8 +2143,8 @@
     using local_wide_integer_type = WideUnsignedIntegerType;
 
   public:
-    static const int digits   = static_cast<int>(local_wide_integer_type::my_digits);
-    static const int digits10 = static_cast<int>(local_wide_integer_type::my_digits10);
+    static constexpr int digits   = static_cast<int>(local_wide_integer_type::my_digits);
+    static constexpr int digits10 = static_cast<int>(local_wide_integer_type::my_digits10);
 
     static local_wide_integer_type (max)() { return local_wide_integer_type::limits_helper_max(); }
     static local_wide_integer_type (min)() { return local_wide_integer_type::limits_helper_min(); }
@@ -2115,7 +2153,7 @@
   template<class T>
   struct is_integral : public std::is_integral<T> { };
 
-  template<const std::size_t Digits2,
+  template<const std::uint_fast32_t Digits2,
            typename LimbType>
   struct is_integral<wide_integer::generic_template::uintwide_t<Digits2, LimbType>>
     : public std::integral_constant<bool, true> { };
@@ -2125,7 +2163,7 @@
   namespace std
   {
     // Specialization of std::numeric_limits<uintwide_t>.
-    template<const std::size_t Digits2,
+    template<const std::uint_fast32_t Digits2,
              typename LimbType>
     class numeric_limits<wide_integer::generic_template::uintwide_t<Digits2, LimbType>>
       : public wide_integer::generic_template::numeric_limits_uintwide_t_base<wide_integer::generic_template::uintwide_t<Digits2, LimbType>> { };
@@ -2134,29 +2172,29 @@
   namespace wide_integer { namespace generic_template {
 
   // Non-member binary add, sub, mul, div, mod of (uintwide_t op uintwide_t).
-  template<const std::size_t Digits2, typename LimbType> uintwide_t<Digits2, LimbType> operator+ (const uintwide_t<Digits2, LimbType>& left, const uintwide_t<Digits2, LimbType>& right) { return uintwide_t<Digits2, LimbType>(left).operator+=(right); }
-  template<const std::size_t Digits2, typename LimbType> uintwide_t<Digits2, LimbType> operator- (const uintwide_t<Digits2, LimbType>& left, const uintwide_t<Digits2, LimbType>& right) { return uintwide_t<Digits2, LimbType>(left).operator-=(right); }
-  template<const std::size_t Digits2, typename LimbType> uintwide_t<Digits2, LimbType> operator* (const uintwide_t<Digits2, LimbType>& left, const uintwide_t<Digits2, LimbType>& right) { return uintwide_t<Digits2, LimbType>(left).operator*=(right); }
-  template<const std::size_t Digits2, typename LimbType> uintwide_t<Digits2, LimbType> operator/ (const uintwide_t<Digits2, LimbType>& left, const uintwide_t<Digits2, LimbType>& right) { return uintwide_t<Digits2, LimbType>(left).operator/=(right); }
-  template<const std::size_t Digits2, typename LimbType> uintwide_t<Digits2, LimbType> operator% (const uintwide_t<Digits2, LimbType>& left, const uintwide_t<Digits2, LimbType>& right) { return uintwide_t<Digits2, LimbType>(left).operator%=(right); }
+  template<const std::uint_fast32_t Digits2, typename LimbType> uintwide_t<Digits2, LimbType> operator+ (const uintwide_t<Digits2, LimbType>& left, const uintwide_t<Digits2, LimbType>& right) { return uintwide_t<Digits2, LimbType>(left).operator+=(right); }
+  template<const std::uint_fast32_t Digits2, typename LimbType> uintwide_t<Digits2, LimbType> operator- (const uintwide_t<Digits2, LimbType>& left, const uintwide_t<Digits2, LimbType>& right) { return uintwide_t<Digits2, LimbType>(left).operator-=(right); }
+  template<const std::uint_fast32_t Digits2, typename LimbType> uintwide_t<Digits2, LimbType> operator* (const uintwide_t<Digits2, LimbType>& left, const uintwide_t<Digits2, LimbType>& right) { return uintwide_t<Digits2, LimbType>(left).operator*=(right); }
+  template<const std::uint_fast32_t Digits2, typename LimbType> uintwide_t<Digits2, LimbType> operator/ (const uintwide_t<Digits2, LimbType>& left, const uintwide_t<Digits2, LimbType>& right) { return uintwide_t<Digits2, LimbType>(left).operator/=(right); }
+  template<const std::uint_fast32_t Digits2, typename LimbType> uintwide_t<Digits2, LimbType> operator% (const uintwide_t<Digits2, LimbType>& left, const uintwide_t<Digits2, LimbType>& right) { return uintwide_t<Digits2, LimbType>(left).operator%=(right); }
 
   // Non-member binary logic operations of (uintwide_t op uintwide_t).
-  template<const std::size_t Digits2, typename LimbType> uintwide_t<Digits2, LimbType> operator| (const uintwide_t<Digits2, LimbType>& left, const uintwide_t<Digits2, LimbType>& right) { return uintwide_t<Digits2, LimbType>(left).operator|=(right); }
-  template<const std::size_t Digits2, typename LimbType> uintwide_t<Digits2, LimbType> operator^ (const uintwide_t<Digits2, LimbType>& left, const uintwide_t<Digits2, LimbType>& right) { return uintwide_t<Digits2, LimbType>(left).operator^=(right); }
-  template<const std::size_t Digits2, typename LimbType> uintwide_t<Digits2, LimbType> operator& (const uintwide_t<Digits2, LimbType>& left, const uintwide_t<Digits2, LimbType>& right) { return uintwide_t<Digits2, LimbType>(left).operator&=(right); }
+  template<const std::uint_fast32_t Digits2, typename LimbType> uintwide_t<Digits2, LimbType> operator| (const uintwide_t<Digits2, LimbType>& left, const uintwide_t<Digits2, LimbType>& right) { return uintwide_t<Digits2, LimbType>(left).operator|=(right); }
+  template<const std::uint_fast32_t Digits2, typename LimbType> uintwide_t<Digits2, LimbType> operator^ (const uintwide_t<Digits2, LimbType>& left, const uintwide_t<Digits2, LimbType>& right) { return uintwide_t<Digits2, LimbType>(left).operator^=(right); }
+  template<const std::uint_fast32_t Digits2, typename LimbType> uintwide_t<Digits2, LimbType> operator& (const uintwide_t<Digits2, LimbType>& left, const uintwide_t<Digits2, LimbType>& right) { return uintwide_t<Digits2, LimbType>(left).operator&=(right); }
 
   // Non-member binary add, sub, mul, div, mod of (uintwide_t op IntegralType).
-  template<typename IntegralType, const std::size_t Digits2, typename LimbType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType>
   typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
                            && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType>>::type
   operator+(const uintwide_t<Digits2, LimbType>& u, const IntegralType& v) { return uintwide_t<Digits2, LimbType>(u).operator+=(uintwide_t<Digits2, LimbType>(v)); }
 
-  template<typename IntegralType, const std::size_t Digits2, typename LimbType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType>
   typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
                            && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType>>::type
   operator-(const uintwide_t<Digits2, LimbType>& u, const IntegralType& v) { return uintwide_t<Digits2, LimbType>(u).operator-=(uintwide_t<Digits2, LimbType>(v)); }
 
-  template<typename IntegralType, const std::size_t Digits2, typename LimbType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType>
   typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
                            && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType>>::type
   operator*(const uintwide_t<Digits2, LimbType>& u, const IntegralType& v)
@@ -2166,28 +2204,28 @@
     return uintwide_t<Digits2, LimbType>(u).operator*=(uintwide_t<Digits2, LimbType>(v));
   }
 
-  template<typename IntegralType, const std::size_t Digits2, typename LimbType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType>
   typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
                            && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType>>::type
   operator/(const uintwide_t<Digits2, LimbType>& u, const IntegralType& v) { return uintwide_t<Digits2, LimbType>(u).operator/=(uintwide_t<Digits2, LimbType>(v)); }
 
-  template<typename IntegralType, const std::size_t Digits2, typename LimbType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType>
   typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
                            && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType>>::type
   operator%(const uintwide_t<Digits2, LimbType>& u, const IntegralType& v) { return uintwide_t<Digits2, LimbType>(u).operator%=(uintwide_t<Digits2, LimbType>(v)); }
 
   // Non-member binary add, sub, mul, div, mod of (IntegralType op uintwide_t).
-  template<typename IntegralType, const std::size_t Digits2, typename LimbType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType>
   typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
                            && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType>>::type
   operator+(const IntegralType& u, const uintwide_t<Digits2, LimbType>& v) { return uintwide_t<Digits2, LimbType>(u).operator+=(v); }
 
-  template<typename IntegralType, const std::size_t Digits2, typename LimbType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType>
   typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
                            && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType>>::type
   operator-(const IntegralType& u, const uintwide_t<Digits2, LimbType>& v) { return uintwide_t<Digits2, LimbType>(u).operator-=(v); }
 
-  template<typename IntegralType, const std::size_t Digits2, typename LimbType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType>
   typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
                            && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType>>::type
   operator*(const IntegralType& u, const uintwide_t<Digits2, LimbType>& v)
@@ -2197,125 +2235,125 @@
     return uintwide_t<Digits2, LimbType>(u).operator*=(v);
   }
 
-  template<typename IntegralType, const std::size_t Digits2, typename LimbType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType>
   typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
                            && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType>>::type
   operator/(const IntegralType& u, const uintwide_t<Digits2, LimbType>& v) { return uintwide_t<Digits2, LimbType>(u).operator/=(v); }
 
-  template<typename IntegralType, const std::size_t Digits2, typename LimbType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType>
   typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
                            && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType>>::type
   operator%(const IntegralType& u, const uintwide_t<Digits2, LimbType>& v) { return uintwide_t<Digits2, LimbType>(u).operator%=(v); }
 
   // Non-member binary logic operations of (uintwide_t op IntegralType).
-  template<typename IntegralType, const std::size_t Digits2, typename LimbType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType>
   typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
                            && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType>>::type
   operator|(const uintwide_t<Digits2, LimbType>& u, const IntegralType& v) { return uintwide_t<Digits2, LimbType>(u).operator|=(uintwide_t<Digits2, LimbType>(v)); }
 
-  template<typename IntegralType, const std::size_t Digits2, typename LimbType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType>
   typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
                            && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType>>::type
   operator^(const uintwide_t<Digits2, LimbType>& u, const IntegralType& v) { return uintwide_t<Digits2, LimbType>(u).operator^=(uintwide_t<Digits2, LimbType>(v)); }
 
-  template<typename IntegralType, const std::size_t Digits2, typename LimbType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType>
   typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
                            && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType>>::type
   operator&(const uintwide_t<Digits2, LimbType>& u, const IntegralType& v) { return uintwide_t<Digits2, LimbType>(u).operator&=(uintwide_t<Digits2, LimbType>(v)); }
 
   // Non-member binary binary logic operations of (IntegralType op uintwide_t).
-  template<typename IntegralType, const std::size_t Digits2, typename LimbType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType>
   typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
                            && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType>>::type
   operator|(const IntegralType& u, const uintwide_t<Digits2, LimbType>& v) { return uintwide_t<Digits2, LimbType>(u).operator|=(v); }
 
-  template<typename IntegralType, const std::size_t Digits2, typename LimbType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType>
   typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
                            && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType>>::type
   operator^(const IntegralType& u, const uintwide_t<Digits2, LimbType>& v) { return uintwide_t<Digits2, LimbType>(u).operator^=(v); }
 
-  template<typename IntegralType, const std::size_t Digits2, typename LimbType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType>
   typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
                            && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType>>::type
   operator&(const IntegralType& u, const uintwide_t<Digits2, LimbType>& v) { return uintwide_t<Digits2, LimbType>(u).operator&=(v); }
 
   // Non-member shift functions of (uintwide_t shift IntegralType).
-  template<typename IntegralType, const std::size_t Digits2, typename LimbType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType>
   typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
                            && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType>>::type
   operator<<(const uintwide_t<Digits2, LimbType>& u, const IntegralType n) { return uintwide_t<Digits2, LimbType>(u).operator<<=(n); }
 
-  template<typename IntegralType, const std::size_t Digits2, typename LimbType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType>
   typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
                            && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType>>::type
   operator>>(const uintwide_t<Digits2, LimbType>& u, const IntegralType n) { return uintwide_t<Digits2, LimbType>(u).operator>>=(n); }
 
   // Non-member comparison functions of (uintwide_t cmp uintwide_t).
-  template<const std::size_t Digits2, typename LimbType> bool operator==(const uintwide_t<Digits2, LimbType>& u, const uintwide_t<Digits2, LimbType>& v) { return u.operator==(v); }
-  template<const std::size_t Digits2, typename LimbType> bool operator!=(const uintwide_t<Digits2, LimbType>& u, const uintwide_t<Digits2, LimbType>& v) { return u.operator!=(v); }
-  template<const std::size_t Digits2, typename LimbType> bool operator> (const uintwide_t<Digits2, LimbType>& u, const uintwide_t<Digits2, LimbType>& v) { return u.operator> (v); }
-  template<const std::size_t Digits2, typename LimbType> bool operator< (const uintwide_t<Digits2, LimbType>& u, const uintwide_t<Digits2, LimbType>& v) { return u.operator< (v); }
-  template<const std::size_t Digits2, typename LimbType> bool operator>=(const uintwide_t<Digits2, LimbType>& u, const uintwide_t<Digits2, LimbType>& v) { return u.operator>=(v); }
-  template<const std::size_t Digits2, typename LimbType> bool operator<=(const uintwide_t<Digits2, LimbType>& u, const uintwide_t<Digits2, LimbType>& v) { return u.operator<=(v); }
+  template<const std::uint_fast32_t Digits2, typename LimbType> bool operator==(const uintwide_t<Digits2, LimbType>& u, const uintwide_t<Digits2, LimbType>& v) { return u.operator==(v); }
+  template<const std::uint_fast32_t Digits2, typename LimbType> bool operator!=(const uintwide_t<Digits2, LimbType>& u, const uintwide_t<Digits2, LimbType>& v) { return u.operator!=(v); }
+  template<const std::uint_fast32_t Digits2, typename LimbType> bool operator> (const uintwide_t<Digits2, LimbType>& u, const uintwide_t<Digits2, LimbType>& v) { return u.operator> (v); }
+  template<const std::uint_fast32_t Digits2, typename LimbType> bool operator< (const uintwide_t<Digits2, LimbType>& u, const uintwide_t<Digits2, LimbType>& v) { return u.operator< (v); }
+  template<const std::uint_fast32_t Digits2, typename LimbType> bool operator>=(const uintwide_t<Digits2, LimbType>& u, const uintwide_t<Digits2, LimbType>& v) { return u.operator>=(v); }
+  template<const std::uint_fast32_t Digits2, typename LimbType> bool operator<=(const uintwide_t<Digits2, LimbType>& u, const uintwide_t<Digits2, LimbType>& v) { return u.operator<=(v); }
 
   // Non-member comparison functions of (uintwide_t cmp IntegralType).
-  template<typename IntegralType, const std::size_t Digits2, typename LimbType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType>
   typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
                            && (std::is_integral   <IntegralType>::value == true)), bool>::type
   operator==(const uintwide_t<Digits2, LimbType>& u, const IntegralType& v) { return u.operator==(uintwide_t<Digits2, LimbType>(v)); }
 
-  template<typename IntegralType, const std::size_t Digits2, typename LimbType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType>
   typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
                            && (std::is_integral   <IntegralType>::value == true)), bool>::type
   operator!=(const uintwide_t<Digits2, LimbType>& u, const IntegralType& v) { return u.operator!=(uintwide_t<Digits2, LimbType>(v)); }
 
-  template<typename IntegralType, const std::size_t Digits2, typename LimbType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType>
   typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
                            && (std::is_integral   <IntegralType>::value == true)), bool>::type
   operator> (const uintwide_t<Digits2, LimbType>& u, const IntegralType& v) { return u.operator> (uintwide_t<Digits2, LimbType>(v)); }
 
-  template<typename IntegralType, const std::size_t Digits2, typename LimbType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType>
   typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
                            && (std::is_integral   <IntegralType>::value == true)), bool>::type
   operator< (const uintwide_t<Digits2, LimbType>& u, const IntegralType& v) { return u.operator< (uintwide_t<Digits2, LimbType>(v)); }
 
-  template<typename IntegralType, const std::size_t Digits2, typename LimbType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType>
   typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
                            && (std::is_integral   <IntegralType>::value == true)), bool>::type
   operator>=(const uintwide_t<Digits2, LimbType>& u, const IntegralType& v) { return u.operator>=(uintwide_t<Digits2, LimbType>(v)); }
 
-  template<typename IntegralType, const std::size_t Digits2, typename LimbType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType>
   typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
                            && (std::is_integral   <IntegralType>::value == true)), bool>::type
   operator<=(const uintwide_t<Digits2, LimbType>& u, const IntegralType& v) { return u.operator<=(uintwide_t<Digits2, LimbType>(v)); }
 
   // Non-member comparison functions of (IntegralType cmp uintwide_t).
-  template<typename IntegralType, const std::size_t Digits2, typename LimbType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType>
   typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
                            && (std::is_integral   <IntegralType>::value == true)), bool>::type
   operator==(const IntegralType& u, const uintwide_t<Digits2, LimbType>& v) { return uintwide_t<Digits2, LimbType>(u).operator==(v); }
 
-  template<typename IntegralType, const std::size_t Digits2, typename LimbType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType>
   typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
                            && (std::is_integral   <IntegralType>::value == true)), bool>::type
   operator!=(const IntegralType& u, const uintwide_t<Digits2, LimbType>& v) { return uintwide_t<Digits2, LimbType>(u).operator!=(v); }
 
-  template<typename IntegralType, const std::size_t Digits2, typename LimbType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType>
   typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
                            && (std::is_integral   <IntegralType>::value == true)), bool>::type
   operator> (const IntegralType& u, const uintwide_t<Digits2, LimbType>& v) { return uintwide_t<Digits2, LimbType>(u).operator> (v); }
 
-  template<typename IntegralType, const std::size_t Digits2, typename LimbType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType>
   typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
                            && (std::is_integral   <IntegralType>::value == true)), bool>::type
   operator< (const IntegralType& u, const uintwide_t<Digits2, LimbType>& v) { return uintwide_t<Digits2, LimbType>(u).operator< (v); }
 
-  template<typename IntegralType, const std::size_t Digits2, typename LimbType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType>
   typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
                            && (std::is_integral   <IntegralType>::value == true)), bool>::type
   operator>=(const IntegralType& u, const uintwide_t<Digits2, LimbType>& v) { return uintwide_t<Digits2, LimbType>(u).operator>=(v); }
 
-  template<typename IntegralType, const std::size_t Digits2, typename LimbType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType>
   typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
                            && (std::is_integral   <IntegralType>::value == true)), bool>::type
   operator<=(const IntegralType& u, const uintwide_t<Digits2, LimbType>& v) { return uintwide_t<Digits2, LimbType>(u).operator<=(v); }
@@ -2326,7 +2364,7 @@
   // I/O streaming functions.
   template<typename char_type,
            typename traits_type,
-           const std::size_t Digits2,
+           const std::uint_fast32_t Digits2,
            typename LimbType>
   std::basic_ostream<char_type, traits_type>&
   operator<<(std::basic_ostream<char_type, traits_type>& out,
@@ -2346,7 +2384,7 @@
     else if((my_flags & std::ios::hex) == std::ios::hex) { base_rep = 16U; }
     else                                                 { base_rep = 10U; }
 
-    const std::size_t field_width = std::size_t(out.width());
+    const std::uint_fast32_t field_width = std::uint_fast32_t(out.width());
     const char        fill_char   = out.fill();
 
     using local_wide_integer_type = uintwide_t<Digits2, LimbType>;
@@ -2381,7 +2419,7 @@
 
   template<typename char_type,
            typename traits_type,
-           const std::size_t Digits2,
+           const std::uint_fast32_t Digits2,
            typename LimbType>
   std::basic_istream<char_type, traits_type>&
   operator>>(std::basic_istream<char_type, traits_type>& in,
@@ -2409,7 +2447,7 @@
   namespace detail {
 
   template<typename UnsignedIntegralType>
-  std::size_t lsb_helper(const UnsignedIntegralType& x)
+  std::uint_fast32_t lsb_helper(const UnsignedIntegralType& x)
   {
     // Compile-time checks.
     static_assert((   (std::numeric_limits<UnsignedIntegralType>::is_integer == true)
@@ -2418,11 +2456,11 @@
 
     using local_unsigned_integral_type = UnsignedIntegralType;
 
-    std::size_t i;
+    std::uint_fast32_t i;
 
     // This assumes that at least one bit is set.
     // Otherwise saturation of the index will occur.
-    for(i = 0U; i < std::size_t(std::numeric_limits<local_unsigned_integral_type>::digits); ++i)
+    for(i = 0U; i < std::uint_fast32_t(std::numeric_limits<local_unsigned_integral_type>::digits); ++i)
     {
       if((x & UnsignedIntegralType(local_unsigned_integral_type(1U) << i)) != 0U)
       {
@@ -2434,7 +2472,7 @@
   }
 
   template<typename UnsignedIntegralType>
-  std::size_t msb_helper(const UnsignedIntegralType& x)
+  std::uint_fast32_t msb_helper(const UnsignedIntegralType& x)
   {
     // Compile-time checks.
     static_assert((   (std::numeric_limits<UnsignedIntegralType>::is_integer == true)
@@ -2443,11 +2481,11 @@
 
     using local_unsigned_integral_type = UnsignedIntegralType;
 
-    std::ptrdiff_t i;
+    std::int_fast32_t i;
 
     // This assumes that at least one bit is set.
     // Otherwise underflow of the index will occur.
-    for(i = std::ptrdiff_t(std::numeric_limits<local_unsigned_integral_type>::digits - 1); i >= 0; --i)
+    for(i = std::int_fast32_t(std::numeric_limits<local_unsigned_integral_type>::digits - 1); i >= 0; --i)
     {
       if((x & UnsignedIntegralType(local_unsigned_integral_type(1U) << i)) != 0U)
       {
@@ -2455,12 +2493,12 @@
       }
     }
 
-    return std::size_t(i);
+    return std::uint_fast32_t(i);
   }
 
   }
 
-  template<const std::size_t Digits2,
+  template<const std::uint_fast32_t Digits2,
            typename LimbType>
   void swap(uintwide_t<Digits2, LimbType>& x,
             uintwide_t<Digits2, LimbType>& y)
@@ -2476,9 +2514,9 @@
     }
   }
 
-  template<const std::size_t Digits2,
+  template<const std::uint_fast32_t Digits2,
            typename LimbType>
-  std::size_t lsb(const uintwide_t<Digits2, LimbType>& x)
+  std::uint_fast32_t lsb(const uintwide_t<Digits2, LimbType>& x)
   {
     // Calculate the position of the least-significant bit.
 
@@ -2486,16 +2524,16 @@
     using local_const_iterator_type = typename local_wide_integer_type::const_iterator;
     using local_value_type          = typename local_wide_integer_type::value_type;
 
-    std::size_t bpos = 0U;
+    std::uint_fast32_t bpos = 0U;
 
     for(local_const_iterator_type it = x.crepresentation().cbegin(); it != x.crepresentation().cend(); ++it)
     {
       if((*it & (std::numeric_limits<local_value_type>::max)()) != 0U)
       {
-        const std::size_t offset = std::size_t(it - x.crepresentation().cbegin());
+        const std::uint_fast32_t offset = std::uint_fast32_t(it - x.crepresentation().cbegin());
 
         bpos =   detail::lsb_helper(*it)
-               + std::size_t(std::size_t(std::numeric_limits<local_value_type>::digits) * offset);
+               + std::uint_fast32_t(std::uint_fast32_t(std::numeric_limits<local_value_type>::digits) * offset);
 
         break;
       }
@@ -2504,9 +2542,9 @@
     return bpos;
   }
 
-  template<const std::size_t Digits2,
+  template<const std::uint_fast32_t Digits2,
            typename LimbType>
-  std::size_t msb(const uintwide_t<Digits2, LimbType>& x)
+  std::uint_fast32_t msb(const uintwide_t<Digits2, LimbType>& x)
   {
     // Calculate the position of the most-significant bit.
 
@@ -2514,16 +2552,16 @@
     using local_const_reverse_iterator_type = typename local_wide_integer_type::const_reverse_iterator;
     using local_value_type                  = typename local_wide_integer_type::value_type;
 
-    std::size_t bpos = 0U;
+    std::uint_fast32_t bpos = 0U;
 
     for(local_const_reverse_iterator_type ri = x.crepresentation().crbegin(); ri != x.crepresentation().crend(); ++ri)
     {
       if((*ri & (std::numeric_limits<local_value_type>::max)()) != 0U)
       {
-        const std::size_t offset = std::size_t((x.crepresentation().crend() - 1U) - ri);
+        const std::uint_fast32_t offset = std::uint_fast32_t((x.crepresentation().crend() - 1U) - ri);
 
         bpos =   detail::msb_helper(*ri)
-               + std::size_t(std::size_t(std::numeric_limits<local_value_type>::digits) * offset);
+               + std::uint_fast32_t(std::uint_fast32_t(std::numeric_limits<local_value_type>::digits) * offset);
 
         break;
       }
@@ -2532,7 +2570,7 @@
     return bpos;
   }
 
-  template<const std::size_t Digits2,
+  template<const std::uint_fast32_t Digits2,
            typename LimbType>
   uintwide_t<Digits2, LimbType> sqrt(const uintwide_t<Digits2, LimbType>& m)
   {
@@ -2558,12 +2596,13 @@
     {
       // Obtain the initial guess via algorithms
       // involving the position of the msb.
-      const std::size_t msb_pos = msb(m);
+      const std::uint_fast32_t msb_pos = msb(m);
 
       // Obtain the initial value.
-      const std::size_t left_shift_amount =
-        ((std::size_t(msb_pos % 2U) == 0U) ? 1U + std::size_t((msb_pos + 0U) / 2U)
-                                           : 1U + std::size_t((msb_pos + 1U) / 2U));
+      const std::uint_fast32_t left_shift_amount =
+        ((std::uint_fast32_t(msb_pos % 2U) == 0U)
+          ? 1U + std::uint_fast32_t((msb_pos + 0U) / 2U)
+          : 1U + std::uint_fast32_t((msb_pos + 1U) / 2U));
 
       local_wide_integer_type u(local_wide_integer_type(std::uint_fast8_t(1U)) << left_shift_amount);
 
@@ -2572,7 +2611,7 @@
       // in R.P. Brent and Paul Zimmermann, "Modern Computer Arithmetic",
       // Cambridge University Press, 2011.
 
-      for(std::size_t i = 0U; i < 64U; ++i)
+      for(std::uint_fast32_t i = 0U; i < 64U; ++i)
       {
         s = u;
 
@@ -2588,14 +2627,78 @@
     return s;
   }
 
-  template<const std::size_t Digits2,
+  template<const std::uint_fast32_t Digits2,
            typename LimbType>
   uintwide_t<Digits2, LimbType> cbrt(const uintwide_t<Digits2, LimbType>& m)
   {
-    return rootk(m, 3U);
+    // Calculate the cube root.
+
+    using local_wide_integer_type = uintwide_t<Digits2, LimbType>;
+    using local_value_type        = typename local_wide_integer_type::value_type;
+
+    local_wide_integer_type s;
+
+    const bool argument_is_zero = std::all_of(m.crepresentation().cbegin(),
+                                              m.crepresentation().cend(),
+                                              [](const local_value_type& a) -> bool
+                                              {
+                                                return (a == 0U);
+                                              });
+
+    if(argument_is_zero)
+    {
+      s = local_wide_integer_type(std::uint_fast8_t(0U));
+    }
+    else
+    {
+      // Obtain the initial guess via algorithms
+      // involving the position of the msb.
+      const std::uint_fast32_t msb_pos = msb(m);
+
+      // Obtain the initial value.
+      const std::uint_fast32_t msb_pos_mod_3 = msb_pos % 3;
+
+      const std::uint_fast32_t left_shift_amount =
+        ((msb_pos_mod_3 == 0U)
+          ? 1U + std::uint_fast32_t((msb_pos +                  0U ) / 3U)
+          : 1U + std::uint_fast32_t((msb_pos + (3U - msb_pos_mod_3)) / 3U));
+
+      local_wide_integer_type u(local_wide_integer_type(std::uint_fast8_t(1U)) << left_shift_amount);
+
+      // Perform the iteration for the k'th root.
+      // See Algorithm 1.14 RootInt, Sect. 1.5.2
+      // in R.P. Brent and Paul Zimmermann, "Modern Computer Arithmetic",
+      // Cambridge University Press, 2011.
+
+      const std::uint_fast32_t three_minus_one(3U - 1U);
+
+      for(std::uint_fast32_t i = 0U; i < 64U; ++i)
+      {
+        s = u;
+
+        local_wide_integer_type m_over_s_pow_3_minus_one = m;
+
+        for(std::uint_fast32_t j = 0U; j < 3U - 1U; ++j)
+        {
+          // Use a loop here to divide by s^(3 - 1) because
+          // without a loop, s^(3 - 1) is likely to overflow.
+
+          m_over_s_pow_3_minus_one /= s;
+        }
+
+        u = ((s * three_minus_one) + m_over_s_pow_3_minus_one) / 3U;
+
+        if(u >= s)
+        {
+          break;
+        }
+      }
+    }
+
+    return s;
   }
 
-  template<const std::size_t Digits2,
+  template<const std::uint_fast32_t Digits2,
            typename LimbType>
   uintwide_t<Digits2, LimbType> rootk(const uintwide_t<Digits2, LimbType>& m,
                                       const std::uint_fast8_t k)
@@ -2632,14 +2735,15 @@
       {
         // Obtain the initial guess via algorithms
         // involving the position of the msb.
-        const std::size_t msb_pos = msb(m);
+        const std::uint_fast32_t msb_pos = msb(m);
 
         // Obtain the initial value.
-        const std::size_t msb_pos_mod_k = msb_pos % k;
+        const std::uint_fast32_t msb_pos_mod_k = msb_pos % k;
 
-        const std::size_t left_shift_amount =
-          ((msb_pos_mod_k == 0U) ? 1U + std::size_t((msb_pos +                 0U ) / k)
-                                 : 1U + std::size_t((msb_pos + (k - msb_pos_mod_k)) / k));
+        const std::uint_fast32_t left_shift_amount =
+          ((msb_pos_mod_k == 0U)
+            ? 1U + std::uint_fast32_t((msb_pos +                 0U ) / k)
+            : 1U + std::uint_fast32_t((msb_pos + (k - msb_pos_mod_k)) / k));
 
         local_wide_integer_type u(local_wide_integer_type(std::uint_fast8_t(1U)) << left_shift_amount);
 
@@ -2648,15 +2752,15 @@
         // in R.P. Brent and Paul Zimmermann, "Modern Computer Arithmetic",
         // Cambridge University Press, 2011.
 
-        const local_wide_integer_type k_minus_one(k - 1U);
+        const std::uint_fast32_t k_minus_one(k - 1U);
 
-        for(std::size_t i = 0U; i < 64U; ++i)
+        for(std::uint_fast32_t i = 0U; i < 64U; ++i)
         {
           s = u;
 
           local_wide_integer_type m_over_s_pow_k_minus_one = m;
 
-          for(std::size_t j = 0U; j < k - 1U; ++j)
+          for(std::uint_fast32_t j = 0U; j < k - 1U; ++j)
           {
             // Use a loop here to divide by s^(k - 1) because
             // without a loop, s^(k - 1) is likely to overflow.
@@ -2678,7 +2782,7 @@
   }
 
   template<typename OtherUnsignedIntegralTypeP,
-           const std::size_t Digits2,
+           const std::uint_fast32_t Digits2,
            typename LimbType>
   uintwide_t<Digits2, LimbType> pow(const uintwide_t<Digits2, LimbType>& b,
                                     const OtherUnsignedIntegralTypeP&    p)
@@ -2729,7 +2833,7 @@
 
   template<typename OtherUnsignedIntegralTypeP,
            typename OtherUnsignedIntegralTypeM,
-           const std::size_t Digits2,
+           const std::uint_fast32_t Digits2,
            typename LimbType>
   uintwide_t<Digits2, LimbType> powm(const uintwide_t<Digits2, LimbType>& b,
                                      const OtherUnsignedIntegralTypeP&    p,
@@ -2818,7 +2922,7 @@
     // adaptation of existing code from Boost.Multiprecision.
 
     using local_ularge_type = LT;
-    using local_ushort_type = typename detail::int_type_helper<std::size_t(std::numeric_limits<local_ularge_type>::digits / 2)>::exact_unsigned_type;
+    using local_ushort_type = typename detail::int_type_helper<std::uint_fast32_t(std::numeric_limits<local_ularge_type>::digits / 2)>::exact_unsigned_type;
 
     for(;;)
     {
@@ -2853,7 +2957,7 @@
 
   }
 
-  template<const std::size_t Digits2,
+  template<const std::uint_fast32_t Digits2,
            typename LimbType>
   uintwide_t<Digits2, LimbType> gcd(const uintwide_t<Digits2, LimbType>& a,
                                     const uintwide_t<Digits2, LimbType>& b)
@@ -2892,11 +2996,11 @@
       // Let shift := lg K, where K is the greatest
       // power of 2 dividing both u and v.
 
-      std::size_t left_shift_amount;
+      std::uint_fast32_t left_shift_amount;
 
       {
-        const std::size_t u_shift = lsb(u);
-        const std::size_t v_shift = lsb(v);
+        const std::uint_fast32_t u_shift = lsb(u);
+        const std::uint_fast32_t v_shift = lsb(v);
 
         left_shift_amount = (std::min)(u_shift, v_shift);
 
@@ -2970,14 +3074,14 @@
     random_pcg32_fast_base& operator=(const random_pcg32_fast_base&) = default;
 
     template<typename ArithmeticType>
-    static ArithmeticType rotr(const ArithmeticType& value_being_shifted,
-                               const std::size_t     bits_to_shift)
+    static ArithmeticType rotr(const ArithmeticType&    value_being_shifted,
+                               const std::uint_fast32_t bits_to_shift)
     {
-      const std::size_t bits_to_shift_limited_to_arithmetic_range =
-        (std::min)(static_cast<std::size_t>(std::numeric_limits<ArithmeticType>::digits),
+      const std::uint_fast32_t bits_to_shift_limited_to_arithmetic_range =
+        (std::min)(static_cast<std::uint_fast32_t>(std::numeric_limits<ArithmeticType>::digits),
                    bits_to_shift);
 
-      const std::size_t left_shift_amount =
+      const std::uint_fast32_t left_shift_amount =
         std::numeric_limits<ArithmeticType>::digits - bits_to_shift_limited_to_arithmetic_range;
 
       const ArithmeticType result =
@@ -2995,7 +3099,7 @@
     {
       static xtype output(const internal_type internal_value)
       {
-        using bitcount_t = std::size_t;
+        using bitcount_t = std::uint_fast32_t;
 
         constexpr bitcount_t bits         = bitcount_t(sizeof(internal_type) * 8U);
         constexpr bitcount_t xtypebits    = bitcount_t(sizeof(xtype) * 8U);
@@ -3108,7 +3212,7 @@
     }
   };
 
-  template<const std::size_t Digits2,
+  template<const std::uint_fast32_t Digits2,
            typename LimbType>
   class default_random_engine
   {
@@ -3137,9 +3241,9 @@
 
       using local_result_value_type = typename result_type::value_type;
 
-      const std::size_t digits_ratio = 
-        std::size_t(  std::numeric_limits<local_result_value_type>::digits
-                    / std::numeric_limits<random_pcg32_fast::result_type>::digits);
+      const std::uint_fast32_t digits_ratio = 
+        std::uint_fast32_t(  std::numeric_limits<local_result_value_type>::digits
+                           / std::numeric_limits<random_pcg32_fast::result_type>::digits);
 
       switch(digits_ratio)
       {
@@ -3147,9 +3251,9 @@
           // The limbs in the wide integer result are less wide than
           // the 32-bit width of the random number generator result.
           {
-            const std::size_t digits_ratio_inverse = 
-              std::size_t(  std::numeric_limits<random_pcg32_fast::result_type>::digits
-                          / std::numeric_limits<local_result_value_type>::digits);
+            const std::uint_fast32_t digits_ratio_inverse = 
+              std::uint_fast32_t(  std::numeric_limits<random_pcg32_fast::result_type>::digits
+                                 / std::numeric_limits<local_result_value_type>::digits);
 
             auto it = result.representation().begin();
 
@@ -3157,9 +3261,9 @@
             {
               const random_pcg32_fast::result_type value = next_random_value();
 
-              for(std::size_t j = 0U; j < digits_ratio_inverse; ++j)
+              for(std::uint_fast32_t j = 0U; j < digits_ratio_inverse; ++j)
               {
-                *(it + j) |= local_result_value_type(value >> (j * std::size_t(std::numeric_limits<local_result_value_type>::digits)));
+                *(it + j) |= local_result_value_type(value >> (j * std::uint_fast32_t(std::numeric_limits<local_result_value_type>::digits)));
               }
 
               it += digits_ratio_inverse;
@@ -3181,12 +3285,12 @@
           // the 32-bit width of the random number generator result.
           for(auto it = result.representation().begin(); it != result.representation().end(); ++it)
           {
-            for(std::size_t j = 0U; j < digits_ratio; ++j)
+            for(std::uint_fast32_t j = 0U; j < digits_ratio; ++j)
             {
               const local_result_value_type value = local_result_value_type(next_random_value());
 
-              const std::size_t left_shift_amount =
-                std::size_t(j * std::size_t(std::numeric_limits<random_pcg32_fast::result_type>::digits));
+              const std::uint_fast32_t left_shift_amount =
+                std::uint_fast32_t(j * std::uint_fast32_t(std::numeric_limits<random_pcg32_fast::result_type>::digits));
 
               (*it) |= local_result_value_type(value << left_shift_amount);
             }
@@ -3218,7 +3322,7 @@
     }
   };
 
-  template<const std::size_t Digits2,
+  template<const std::uint_fast32_t Digits2,
            typename LimbType>
   bool operator==(const default_random_engine<Digits2, LimbType>& lhs,
                   const default_random_engine<Digits2, LimbType>& rhs)
@@ -3226,7 +3330,7 @@
     return true;
   }
 
-  template<const std::size_t Digits2,
+  template<const std::uint_fast32_t Digits2,
            typename LimbType>
   bool operator!=(const default_random_engine<Digits2, LimbType>& lhs,
                   const default_random_engine<Digits2, LimbType>& rhs)
@@ -3234,7 +3338,7 @@
     return false;
   }
 
-  template<const std::size_t Digits2,
+  template<const std::uint_fast32_t Digits2,
            typename LimbType>
   class uniform_int_distribution
   {
@@ -3351,7 +3455,7 @@
     }
   };
 
-  template<const std::size_t Digits2,
+  template<const std::uint_fast32_t Digits2,
            typename LimbType>
   bool operator==(const uniform_int_distribution<Digits2, LimbType>& lhs,
                   const uniform_int_distribution<Digits2, LimbType>& rhs)
@@ -3359,7 +3463,7 @@
     return (lhs.param() == rhs.param());
   }
 
-  template<const std::size_t Digits2,
+  template<const std::uint_fast32_t Digits2,
            typename LimbType>
   bool operator!=(const uniform_int_distribution<Digits2, LimbType>& lhs,
                   const uniform_int_distribution<Digits2, LimbType>& rhs)
@@ -3369,10 +3473,10 @@
 
   template<typename DistributionType,
            typename GeneratorType,
-           const std::size_t Digits2,
+           const std::uint_fast32_t Digits2,
            typename LimbType>
   bool miller_rabin(const uintwide_t<Digits2, LimbType>& n,
-                    const std::size_t                    number_of_trials,
+                    const std::uint_fast32_t                    number_of_trials,
                     DistributionType&                    distribution,
                     GeneratorType&                       generator)
   {
@@ -3508,19 +3612,19 @@
       return false;
     }
 
-    const std::size_t k = lsb(nm1);
+    const std::uint_fast32_t k = lsb(nm1);
     q = nm1 >> k;
 
     const typename DistributionType::param_type params(local_wide_integer_type(2U),
                                                        local_wide_integer_type(n - 2U));
 
     // Execute the random trials.
-    for(std::size_t i = 0U; i < number_of_trials; ++i)
+    for(std::uint_fast32_t i = 0U; i < number_of_trials; ++i)
     {
       local_wide_integer_type x = distribution(generator, params);
       local_wide_integer_type y = powm(x, q, n);
 
-      std::size_t j = 0U;
+      std::uint_fast32_t j = 0U;
 
       // TBD: The following code seems convoluded and it is difficult
       // to understand this code. Can this while-loop and all returns
@@ -3565,12 +3669,14 @@
   bool example001a_div_mod();
   bool example002_shl_shr();
   bool example003_sqrt();
+  bool example003a_cbrt();
   bool example004_rootk_pow();
   bool example005_powm();
   bool example006_gcd();
   bool example007_random_generator();
   bool example008_miller_rabin_prime();
   bool example009_compare_mul_with_boost();
+  bool example010_uint48_t();
 
   } // namespace wide_integer
 
