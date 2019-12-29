@@ -12,6 +12,7 @@ Testing is a big issue in progress and tested efficient functionality on the PC 
 
 When working with even the most tiny microcontroller systems, I/O streaming can optionally be disabled with the `WIDE_INTEGER_DISABLE_IOSTREAM` compiler switch. See the examples directory as more use cases are being created.
 
+# Quick start
 Easy application follows via a traditional C-style typedef or C++11 alias. The defined type can be used very much like a built-in unsinged integral type.
 
 For instance,
@@ -26,7 +27,7 @@ static uint512_t x = 3U;
 
 The code sequence above defines the local data type `uint512_t` with a C++11 alias. The first template parameter `512U` sets the binary digit count while the second optional template parameter `std::uint32_t` sets the internal _limb_ _type_. If the second template parameter is left blank, the default limb type is 32 bits in width and unsigned. The static `uint512_t` variable `x` is set to 3.
 
-# Examples
+# Detailed examples
 
 ```C
 #include <iomanip>
