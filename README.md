@@ -6,7 +6,9 @@ Inclusion of a single C++11 header file is all that is needed.
 # Details
 Wide-Integer has been tested with numerous compilers, for target systems ranging from 8 to 64 bits. The library is specifically designed for efficiency with small to medium bit counts. Supported bit counts include integers <img src="https://render.githubusercontent.com/render/math?math=1{\ldots}63{\times}2^{N}"> while being 16, 24, 32 or larger such as 256, 384, 512, 768, 1024, or other less common bit counts such as 11,520, etc. Also smaller and/or larger bit counts are supported. It is even possible to make a software-synthesized (not very efficient) version of `uint48_t` which might useful for hardware prototyping or other simulation and verification needs. On the high-digit end, Karatsuba multiplication extends the high performance range to thousands of bits. Fast long division, however, relies on a classical algorithm and sub-quadratic high-precision division is not yet implemented.
 
-Portability of the code is another key point of focus. Special care has been taken to test in certain high-performance embedded real-time programming environments. Tested efficient functionality on the PC and workstation is also present and the code is delivered with an MSVC project that uses Boost.Test for various testing cases.
+Portability of the code is another key point of focus. Special care has been taken to test in certain high-performance embedded real-time programming environments.
+
+Testing is a big issue in progress and tested efficient functionality on the PC and workstation is present. The code is delivered with an affiliated MSVC project that uses Boost.Test for various test cases.
 
 When working with even the most tiny microcontroller systems, I/O streaming can optionally be disabled with the `WIDE_INTEGER_DISABLE_IOSTREAM` compiler switch. See the examples directory as more use cases are being created.
 
