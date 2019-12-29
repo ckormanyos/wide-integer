@@ -21,10 +21,10 @@ For instance,
 
 using uint512_t = wide_integer::generic_template::uintwide_t<512U, std::uint32_t>;
 
-using uint512_t x = 3U;
+static uint512_t x = 3U;
 ```
 
-The code sequence above defines the local data type `uint512_t` with a C++11 alias. The first template parameter `512U` sets the binary digit count while the second optional template parameter `std::uint32_t` sets the internal _limb_ _type_. If the second template parameter is left blank, the default limb type is 32 bits in width and unsigned.
+The code sequence above defines the local data type `uint512_t` with a C++11 alias. The first template parameter `512U` sets the binary digit count while the second optional template parameter `std::uint32_t` sets the internal _limb_ _type_. If the second template parameter is left blank, the default limb type is 32 bits in width and unsigned. The static `uint512_t` variable `x` is set to 3.
 
 # Examples
 
