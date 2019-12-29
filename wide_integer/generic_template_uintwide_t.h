@@ -13,6 +13,7 @@
   #include <cstddef>
   #include <cstdint>
   #include <cstring>
+  #include <initializer_list>
   #include <iterator>
   #include <limits>
   #include <type_traits>
@@ -573,6 +574,16 @@
     uintwide_t(const representation_type& other_rep)
     {
       std::copy(other_rep.cbegin(), other_rep.cend(), values.begin());
+    }
+
+    // Constructor from initializer list of limbs.
+    uintwide_t(std::initializer_list<ushort_type> lst)
+    {
+      const std::uint_fast32_t sz = (std::min)(std::uint_fast32_t(lst.size()),
+                                               std::uint_fast32_t(values.size()));
+
+      std::copy(lst.begin(), lst.begin() + sz, values.begin());
+      std::fill(values.begin() + sz, values.end(), 0U);
     }
 
     // Constructor from a C-style array.
