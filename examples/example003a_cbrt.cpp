@@ -9,7 +9,7 @@
 
 bool wide_integer::example003a_cbrt()
 {
-  using uint11520_t = wide_integer::generic_template::uintwide_t<11520U>;
+  using uint11264_t = wide_integer::generic_template::uintwide_t<11264U>;
 
   // Create the string '1' + 3,333 times '0', which is
   // equivalent to the decimal integral value 10^3333.
@@ -24,9 +24,9 @@ bool wide_integer::example003a_cbrt()
 
   std::array<char, 1113U> str_control;
 
-  const uint11520_t a = str_a.data();
+  const uint11264_t a = str_a.data();
 
-  const uint11520_t s = cbrt(a);
+  const uint11264_t s = cbrt(a);
 
   // Create the string '1' + 1,111 times '0', which is
   // equivalent to the decimal integral value 10^1111.
