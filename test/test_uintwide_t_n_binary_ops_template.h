@@ -20,7 +20,7 @@
                                              digits2,
                                              boost::multiprecision::unsigned_magnitude>;
 
-    using boost_uint_type = boost::multiprecision::number<boost_uint_backend_type, boost::multiprecision::et_off>;
+    using boost_uint_type = boost::multiprecision::number<boost_uint_backend_type, boost::multiprecision::et_on>;
 
     using local_limb_type = MyLimbType;
 
@@ -142,7 +142,7 @@
         {
           const std::size_t right_shift_amount = static_cast<std::size_t>(dis(gen));
 
-          const boost_uint_type c_boost = a_boost[i] / (std::max)(boost_uint_type(1U), (b_boost[i] >> right_shift_amount));
+          const boost_uint_type c_boost = a_boost[i] / (std::max)(boost_uint_type(1U), boost_uint_type(b_boost[i] >> right_shift_amount));
           const local_uint_type c_local = a_local[i] / (std::max)(local_uint_type(1U), (b_local[i] >> right_shift_amount));
 
           const std::string str_boost = hexlexical_cast(c_boost);
@@ -172,7 +172,7 @@
         {
           const std::size_t right_shift_amount = static_cast<std::size_t>(dis(gen));
 
-          const boost_uint_type c_boost = a_boost[i] % (std::max)(boost_uint_type(1U), (b_boost[i] >> right_shift_amount));
+          const boost_uint_type c_boost = a_boost[i] % (std::max)(boost_uint_type(1U), boost_uint_type(b_boost[i] >> right_shift_amount));
           const local_uint_type c_local = a_local[i] % (std::max)(local_uint_type(1U), (b_local[i] >> right_shift_amount));
 
           const std::string str_boost = hexlexical_cast(c_boost);
