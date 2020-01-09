@@ -37,14 +37,38 @@ BOOST_AUTO_TEST_CASE(test_uintwide_t_dummy_tag)
 {
   std::cout << "running: test_uintwide_t_dummy" << std::endl;
 
-  using uint_type = wide_integer::generic_template::uintwide_t<32U, std::uint8_t>;
+  {
+    using local_uint16_t = wide_integer::generic_template::uintwide_t<16U, std::uint8_t>;
 
-  uint_type a = UINT32_C(0x11FF5522);
-  uint_type b = UINT32_C(0xABCDFFEE);
+    local_uint16_t a = UINT16_C(0x5522);
+    local_uint16_t b = UINT16_C(0xFFEE);
 
-  uint_type c = a * b;
+    local_uint16_t c = a * b;
 
-  BOOST_CHECK(c == UINT32_C(0xF368039C));
+    BOOST_CHECK(c == UINT32_C(0x039C));
+  }
+
+  {
+    using local_uint24_t = wide_integer::generic_template::uintwide_t<24U, std::uint8_t>;
+
+    local_uint24_t a = UINT32_C(0x11FF5522);
+    local_uint24_t b = UINT32_C(0xABCDFFEE);
+
+    local_uint24_t c = a * b;
+
+    BOOST_CHECK(c == UINT32_C(0xF368039C));
+  }
+
+  {
+    using local_uint32_t = wide_integer::generic_template::uintwide_t<32U, std::uint16_t>;
+
+    local_uint32_t a = UINT32_C(0x11FF5522);
+    local_uint32_t b = UINT32_C(0xABCDFFEE);
+
+    local_uint32_t c = a * b;
+
+    BOOST_CHECK(c == UINT32_C(0xF368039C));
+  }
 }
 
 BOOST_AUTO_TEST_CASE(test_uintwide_t_boost_backend_tag)
@@ -64,7 +88,7 @@ BOOST_AUTO_TEST_CASE(test_uintwide_t_examples_tag)
 BOOST_AUTO_TEST_CASE(test_uintwide_t_0000048_tag)
 {
   std::cout << "running: test_uintwide_t_0000048" << std::endl;
-  test_uintwide_t_n_binary_ops_template<48U, std::uint8_t> test_uintwide_t_n_binary_ops_template_instance(1UL << 18U);
+  test_uintwide_t_n_binary_ops_template<48U, std::uint16_t> test_uintwide_t_n_binary_ops_template_instance(1UL << 18U);
   const bool result_is_ok =
     test_uintwide_t_n_binary_ops_template_instance.do_test(test_uintwide_t_n_binary_ops_rounds);
   BOOST_CHECK(result_is_ok);

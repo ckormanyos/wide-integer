@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////
-//  Copyright Christopher Kormanyos 1999 - 2019.                 //
+//  Copyright Christopher Kormanyos 1999 - 2020.                 //
 //  Distributed under the Boost Software License,                //
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt          //
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)             //
@@ -506,8 +506,7 @@
     using reverse_iterator       = typename std::array<value_type, number_of_limbs>::reverse_iterator;
     using const_reverse_iterator = typename std::array<value_type, number_of_limbs>::const_reverse_iterator;
 
-    // Types that have half or double the width of *this.
-    using half_width_type   = uintwide_t<my_digits / 2U, ushort_type>;
+    // Define a class-local type that has double the width of *this.
     using double_width_type = uintwide_t<my_digits * 2U, ushort_type>;
 
     // Default constructor.
@@ -738,94 +737,144 @@
       return local_double_width_instance;
     }
 
-    // Intentionally delete the cast operator that casts
-    // to the half-width type. This cast is deleted because
-    // it is a narrowing conversion. There is an explicit
-    // constructor above for this conversion.
-    template<typename UnknownUnsignedWideIntegralType = half_width_type,
-             typename = typename std::enable_if<
-                          std::is_same<UnknownUnsignedWideIntegralType,
-                                       half_width_type>::value == true>::type>
-    operator half_width_type() const = delete;
-
     // Provide a user interface to the internal data representation.
           representation_type&  representation()       { return values; }
     const representation_type&  representation() const { return values; }
     const representation_type& crepresentation() const { return values; }
 
     // Unary operators: not, plus and minus.
-    uintwide_t& operator+() const { return *this; }
-    uintwide_t  operator-() const { uintwide_t tmp(*this); tmp.negate(); return tmp; }
+    const uintwide_t& operator+() const { return *this; }
+          uintwide_t  operator-() const { uintwide_t tmp(*this); tmp.negate(); return tmp; }
 
     uintwide_t& operator+=(const uintwide_t& other)
     {
-      // Unary addition function.
-      const ushort_type carry = eval_add_n(values.data(),
-                                           values.data(),
-                                           other.values.data(),
-                                           number_of_limbs,
-                                           ushort_type(0U));
+      if(this == &other)
+      {
+        return operator+=(uintwide_t(other));
+      }
+      else
+      {
+        // Unary addition function.
+        const ushort_type carry = eval_add_n(values.data(),
+                                             values.data(),
+                                             other.values.data(),
+                                             number_of_limbs,
+                                             ushort_type(0U));
 
-      static_cast<void>(carry);
+        static_cast<void>(carry);
 
-      return *this;
+        return *this;
+      }
     }
 
     uintwide_t& operator-=(const uintwide_t& other)
     {
-      // Unary subtraction function.
-      const ushort_type has_borrow = eval_subtract_n(values.data(),
-                                                     values.data(),
-                                                     other.values.data(),
-                                                     number_of_limbs,
-                                                     false);
+      if(this == &other)
+      {
+        values.fill(0U);
 
-      static_cast<void>(has_borrow);
+        return *this;
+      }
+      else
+      {
+        // Unary subtraction function.
+        const ushort_type has_borrow = eval_subtract_n(values.data(),
+                                                       values.data(),
+                                                       other.values.data(),
+                                                       number_of_limbs,
+                                                       false);
 
-      return *this;
+        static_cast<void>(has_borrow);
+
+        return *this;
+      }
     }
 
     uintwide_t& operator*=(const uintwide_t& other)
     {
-      eval_mul_unary(*this, other);
+      if(this == &other)
+      {
+        return operator*=(uintwide_t(other));
+      }
+      else
+      {
+        eval_mul_unary(*this, other);
 
-      return *this;
+        return *this;
+      }
     }
 
     uintwide_t& mul_by_limb(const ushort_type v)
     {
-      std::array<ushort_type, number_of_limbs> result;
+      if(v == 0U)
+      {
+        values.fill(0U);
 
-      eval_multiply_1d(result.data(),
-                       values.data(),
-                       v,
-                       number_of_limbs);
+        return *this;
+      }
+      else
+      {
+        std::array<ushort_type, number_of_limbs> result;
 
-      std::copy(result.cbegin(),
-                result.cbegin() + number_of_limbs,
-                values.begin());
+        const ushort_type carry = eval_multiply_1d(result.data(),
+                                                   values.data(),
+                                                   v,
+                                                   number_of_limbs);
 
-      return *this;
+        static_cast<void>(carry);
+
+        std::copy(result.cbegin(),
+                  result.cbegin() + number_of_limbs,
+                  values.begin());
+
+        return *this;
+      }
     }
 
     uintwide_t& operator/=(const uintwide_t& other)
     {
-      // Unary division function.
-      eval_divide_knuth(other, nullptr);
+      if(this == &other)
+      {
+        values.front() = 1U;
 
-      return *this;
+        std::fill(values.begin() + 1U, values.end(), 0U);
+
+        return *this;
+      }
+      else if(other.is_zero())
+      {
+        values.fill((std::numeric_limits<ushort_type>::max)());
+
+        return *this;
+      }
+      else
+      {
+        // Unary division function.
+        eval_divide_knuth(other, nullptr);
+
+        return *this;
+      }
     }
 
     uintwide_t& operator%=(const uintwide_t& other)
     {
-      // Unary modulus function.
-      uintwide_t remainder;
+      if(this == &other)
+      {
+        std::fill(values.begin(), values.end(), 0U);
 
-      eval_divide_knuth(other, &remainder);
+        return *this;
+      }
+      else
+      {
+        // Unary modulus function.
+        uintwide_t remainder;
 
-      values = remainder.values;
+        eval_divide_knuth(other, &remainder);
 
-      return *this;
+        values = remainder.values;
+
+        return *this;
+      }
     }
 
     // Operators pre-increment and pre-decrement.
@@ -846,35 +895,58 @@
 
     uintwide_t& operator|=(const uintwide_t& other)
     {
-      // Bitwise OR.
-      for(std::uint_fast32_t i = 0U; i < number_of_limbs; ++i)
+      if(this == &other)
       {
-        values[i] |= other.values[i];
+        return *this;
       }
+      else
+      {
+        // Bitwise OR.
+        for(std::uint_fast32_t i = 0U; i < number_of_limbs; ++i)
+        {
+          values[i] |= other.values[i];
+        }
 
-      return *this;
+        return *this;
+      }
     }
 
     uintwide_t& operator^=(const uintwide_t& other)
     {
-      // Bitwise XOR.
-      for(std::uint_fast32_t i = 0U; i < number_of_limbs; ++i)
+      if(this == &other)
       {
-        values[i] ^= other.values[i];
-      }
+        values.fill(0U);
 
-      return *this;
+        return *this;
+      }
+      else
+      {
+        // Bitwise XOR.
+        for(std::uint_fast32_t i = 0U; i < number_of_limbs; ++i)
+        {
+          values[i] ^= other.values[i];
+        }
+
+        return *this;
+      }
     }
 
     uintwide_t& operator&=(const uintwide_t& other)
     {
-      // Bitwise AND.
-      for(std::uint_fast32_t i = 0U; i < number_of_limbs; ++i)
+      if(this == &other)
       {
-        values[i] &= other.values[i];
+        return *this;
       }
+      else
+      {
+        // Bitwise AND.
+        for(std::uint_fast32_t i = 0U; i < number_of_limbs; ++i)
+        {
+          values[i] &= other.values[i];
+        }
 
-      return *this;
+        return *this;
+      }
     }
 
     template<typename IntegralType>
