@@ -188,6 +188,24 @@
   }
 
   template<const std::size_t MyDigits2,
+           typename MyLimbType,
+           typename IntegralType,
+           typename std::enable_if<(std::is_integral<IntegralType>::value == true)>::type const* = nullptr>
+  void eval_left_shift(uintwide_t_backend<MyDigits2, MyLimbType>& result, const IntegralType& n)
+  {
+    result.representation() <<= n;
+  }
+
+  template<const std::size_t MyDigits2,
+           typename MyLimbType,
+           typename IntegralType,
+           typename std::enable_if<(std::is_integral<IntegralType>::value == true)>::type const* = nullptr>
+  void eval_right_shift(uintwide_t_backend<MyDigits2, MyLimbType>& result, const IntegralType& n)
+  {
+    result.representation() >>= n;
+  }
+
+  template<const std::size_t MyDigits2,
            typename MyLimbType>
   bool eval_eq(const uintwide_t_backend<MyDigits2, MyLimbType>& a, const uintwide_t_backend<MyDigits2, MyLimbType>& b)
   {

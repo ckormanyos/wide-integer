@@ -88,11 +88,20 @@ bool test_uintwide_t_edge_cases()
 
   const bool result05_is_ok = (result_local.convert_to<std::string>() == result_boost.convert_to<std::string>());
 
+  const local_uint_type one_limb_effs_prior_to_half_and_zeros_local(local_uint_type(UINT32_C(0xFFFFFFFF)) << ((std::numeric_limits<local_uint_type>::digits / 2) - 32));
+  const boost_uint_type one_limb_effs_prior_to_half_and_zeros_boost(boost_uint_type(UINT32_C(0xFFFFFFFF)) << ((std::numeric_limits<boost_uint_type>::digits / 2) - 32));
+
+  result_local = one_limb_effs_prior_to_half_and_zeros_local * one_limb_effs_prior_to_half_and_zeros_local;
+  result_boost = one_limb_effs_prior_to_half_and_zeros_boost * one_limb_effs_prior_to_half_and_zeros_boost;
+
+  const bool result06_is_ok = (result_local.convert_to<std::string>() == result_boost.convert_to<std::string>());
+
   const bool result_is_ok = (   result01_is_ok
                              && result02_is_ok
                              && result03_is_ok
                              && result04_is_ok
-                             && result05_is_ok);
+                             && result05_is_ok
+                             && result06_is_ok);
 
   return result_is_ok;
 }
