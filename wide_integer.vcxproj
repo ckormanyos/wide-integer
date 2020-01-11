@@ -216,6 +216,7 @@
     <ClCompile Include="examples\example010_uint48_t.cpp" />
     <ClCompile Include="test\test.cpp" />
     <ClCompile Include="test\test_uintwide_t_boost_backend.cpp" />
+    <ClCompile Include="test\test_uintwide_t_edge_cases.cpp" />
     <ClCompile Include="test\test_uintwide_t_examples.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

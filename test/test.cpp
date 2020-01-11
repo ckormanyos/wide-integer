@@ -85,6 +85,13 @@ BOOST_AUTO_TEST_CASE(test_uintwide_t_examples_tag)
   BOOST_CHECK(result_test_uintwide_t_examples_is_ok);
 }
 
+BOOST_AUTO_TEST_CASE(test_uintwide_t_edge_cases_tag)
+{
+  std::cout << "running: test_uintwide_t_edge_cases" << std::endl;
+  const bool result_test_uintwide_t_edge_cases_is_ok = test_uintwide_t_edge_cases();
+  BOOST_CHECK(result_test_uintwide_t_edge_cases_is_ok);
+}
+
 BOOST_AUTO_TEST_CASE(test_uintwide_t_0000048_tag)
 {
   std::cout << "running: test_uintwide_t_0000048" << std::endl;

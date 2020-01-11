@@ -1284,6 +1284,13 @@
       return cmp_result;
     }
 
+    void negate()
+    {
+      bitwise_not();
+
+      preincrement();
+    }
+
   private:
     representation_type values;
 
@@ -2183,13 +2190,6 @@
       {
         --values[i];
       }
-    }
-
-    void negate()
-    {
-      bitwise_not();
-
-      preincrement();
     }
 
     bool is_zero() const

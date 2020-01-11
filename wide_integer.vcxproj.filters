@@ -108,5 +108,8 @@
     <ClCompile Include="examples\example003a_cbrt.cpp">
       <Filter>Source Files\examples</Filter>
     </ClCompile>
+    <ClCompile Include="test\test_uintwide_t_edge_cases.cpp">
+      <Filter>Source Files\test</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
