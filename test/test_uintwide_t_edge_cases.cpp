@@ -1,0 +1,98 @@
+///////////////////////////////////////////////////////////////////
+//  Copyright Christopher Kormanyos 2019 - 2020.                 //
+//  Distributed under the Boost Software License,                //
+//  Version 1.0. (See accompanying file LICENSE_1_0.txt          //
+//  or copy at http://www.boost.org/LICENSE_1_0.txt)             //
+///////////////////////////////////////////////////////////////////
+
+#include <string>
+
+#include <boost/lexical_cast.hpp>
+#include <boost/multiprecision/cpp_int.hpp>
+#include <boost/multiprecision/uintwide_t_backend.hpp>
+
+#include <wide_integer/generic_template_uintwide_t.h>
+
+namespace
+{
+  constexpr std::size_t local_digits2 = 16384U;
+}
+
+using local_uint_type =
+  boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<local_digits2>,
+                                boost::multiprecision::et_off>;
+
+using boost_uint_backend_type =
+  boost::multiprecision::cpp_int_backend<local_digits2,
+                                         local_digits2,
+                                         boost::multiprecision::unsigned_magnitude>;
+
+using boost_uint_type =
+  boost::multiprecision::number<boost_uint_backend_type,
+                                boost::multiprecision::et_off>;
+
+bool test_uintwide_t_edge_cases()
+{
+  const local_uint_type u_max_local = (std::numeric_limits<local_uint_type>::max)();
+  const boost_uint_type u_max_boost = (std::numeric_limits<boost_uint_type>::max)();
+
+  local_uint_type result_local;
+  boost_uint_type result_boost;
+
+  result_local = u_max_local * u_max_local;
+  result_boost = u_max_boost * u_max_boost;
+
+  const bool result01_is_ok = ((result_local == 1U) && (result_boost == 1U));
+
+  result_local = (u_max_local - 1U) * u_max_local;
+  result_boost = (u_max_boost - 1U) * u_max_boost;
+
+  const bool result02_is_ok = ((result_local == 2U) && (result_boost == 2U));
+
+  const std::string str_seven_and_effs =
+    "0x7" + std::string(std::string::size_type((local_digits2 / 4) - 1U), char('F'));
+
+  const local_uint_type u_seven_and_effs_local(str_seven_and_effs.c_str());
+  const boost_uint_type u_seven_and_effs_boost(str_seven_and_effs.c_str());
+
+  result_local = u_seven_and_effs_local * u_seven_and_effs_local;
+  result_boost = u_seven_and_effs_boost * u_seven_and_effs_boost;
+
+  const bool result03_is_ok = (result_local.convert_to<std::string>() == result_boost.convert_to<std::string>());
+
+  const std::string str_three_quarter_effs_and_zeros =
+      "0x"
+    + std::string(std::string::size_type((local_digits2 / 4) * 3U), char('F'))
+    + std::string(std::string::size_type((local_digits2 / 4) * 1U), char('0'))
+    ;
+
+  const local_uint_type u_three_quarter_effs_and_zeros_local(str_three_quarter_effs_and_zeros.c_str());
+  const boost_uint_type u_three_quarter_effs_and_zeros_boost(str_three_quarter_effs_and_zeros.c_str());
+
+  result_local = u_three_quarter_effs_and_zeros_local * u_three_quarter_effs_and_zeros_local;
+  result_boost = u_three_quarter_effs_and_zeros_boost * u_three_quarter_effs_and_zeros_boost;
+
+  const bool result04_is_ok = (result_local.convert_to<std::string>() == result_boost.convert_to<std::string>());
+
+  const std::string str_one_quarter_effs_and_zeros =
+      "0x"
+    + std::string(std::string::size_type((local_digits2 / 4) * 1U), char('F'))
+    + std::string(std::string::size_type((local_digits2 / 4) * 3U), char('0'))
+    ;
+
+  const local_uint_type u_one_quarter_effs_and_zeros_local(str_one_quarter_effs_and_zeros.c_str());
+  const boost_uint_type u_one_quarter_effs_and_zeros_boost(str_one_quarter_effs_and_zeros.c_str());
+
+  result_local = u_one_quarter_effs_and_zeros_local * u_one_quarter_effs_and_zeros_local;
+  result_boost = u_one_quarter_effs_and_zeros_boost * u_one_quarter_effs_and_zeros_boost;
+
+  const bool result05_is_ok = (result_local.convert_to<std::string>() == result_boost.convert_to<std::string>());
+
+  const bool result_is_ok = (   result01_is_ok
+                             && result02_is_ok
+                             && result03_is_ok
+                             && result04_is_ok
+                             && result05_is_ok);
+
+  return result_is_ok;
+}

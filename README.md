@@ -1,18 +1,57 @@
 # Wide-integer
-Wide-integer implements a generic C++ template for extended precision unsigned integral types auch as `uint128_t`, `uint256_t`, `uint512_t`, `uint1024_t`, etc. At the moment, wide-integer supports unsigned integral types having bit counts of <img src="https://render.githubusercontent.com/render/math?math=1{\ldots}63{\times}2^{N}"> while being 16, 24, 32 or larger.
+Wide-integer implements a generic C++ template for extended precision unsigned integral types such as `uint128_t`, `uint256_t`, `uint512_t`, `uint1024_t`, etc. At the moment, wide-integer supports unsigned integral types having bit counts of <img src="https://render.githubusercontent.com/render/math?math=1{\ldots}63{\times}2^{N}"> while being 16, 24, 32 or larger.
 
 Inclusion of a single C++11 header file is all that is needed.
 
 # Details
-Wide-Integer has been tested on numerous compilers and is specifically designed for efficiency with small to medium bit counts. Supported bit counts include integers <img src="https://render.githubusercontent.com/render/math?math=1{\ldots}63{\times}2^{N}"> while being 16, 24, 32 or larger such as 256, 384, 512, 768, 1024, or other less common bit counts such as 11,520, etc. Also smaller and larger bit counts are supported. It is even possible to make a software-synthesized (not very efficient) version of `uint48_t` which might useful for hardware prototyping or other simulation and verification needs. On the high-digit end, Karatsuba multiplication extends the high performance range to thousands of bits. Fast long division, however, relies on a classical algorithm and sub-quadratic high-precision division is not yet implemented.
+Wide-Integer has been tested with numerous compilers, for target systems ranging from 8 to 64 bits.
+The library is specifically designed for efficiency with small to medium bit counts.
+Supported bit counts include integers
+<img src="https://render.githubusercontent.com/render/math?math=1{\ldots}63{\times}2^{N}">
+while being 16, 24, 32 or larger such as 256, 384, 512, 768, 1024,
+or other less common bit counts such as 11,264, etc.
+Also smaller and/or larger bit counts are supported. It is even possible to make
+software-synthesized (not very efficient) versions of `uint24_t`, `uint32_t` or `uint48_t`,
+which might useful for hardware prototyping or other simulation and verification needs.
+On the high-digit end, Karatsuba multiplication extends the high performance range
+to thousands of bits. Fast long division, however, relies on a classical algorithm
+and sub-quadratic high-precision division is not yet implemented.
 
-Portability of the code is another key point of focus. Special care has been taken to test in certain high-performance embedded real-time programming environments. Tested efficient functionality on the PC and workstation is also present.
+Portability of the code is another key point of focus. Special care
+has been taken to test in certain high-performance embedded real-time
+programming environments.
 
-When working with even the most tiny microcontroller systems, I/O streaming can optionally be disabled with the `WIDE_INTEGER_DISABLE_IOSTREAM` compiler switch. See the examples directory as more use cases are being created.
+Testing is a big issue. Generating a full test suite is in continued progress
+and tested efficient functionality on the PC and workstation is present.
+The code is delivered with an affiliated MSVC project that uses Boost.Test
+for various test cases.
 
-Easy application follows via a typedef or alias. The defined type can be used very much like a built-in unsinged integral type.
+When working with even the most tiny microcontroller systems, I/O streaming
+can optionally be disabled with the `WIDE_INTEGER_DISABLE_IOSTREAM` compiler switch.
+See the examples directory as more use cases are being created.
 
-# Examples
+# Quick start
+Easy application follows via a traditional C-style typedef or C++11 alias.
+The defined type can be used very much like a built-in unsinged integral type.
+
+For instance,
+
+```C
+#include "generic_template_uintwide_t.h"
+
+using uint512_t = wide_integer::generic_template::uintwide_t<512U, std::uint32_t>;
+
+static uint512_t x = 3U;
+```
+
+The code sequence above defines the local data type `uint512_t` with
+a C++11 alias. The first template parameter `512U` sets the binary digit
+count while the second optional template parameter `std::uint32_t`
+sets the internal _limb_ _type_. If the second template parameter is left blank,
+the default limb type is 32 bits in width and unsigned.
+The static `uint512_t` variable `x` is set to 3.
+
+# Detailed examples
 
 ```C
 #include <iomanip>
@@ -45,7 +84,10 @@ int main()
 }
 ```
 
-Wide-integer also supports a small selection of number-theoretical functions such as least and most significant bit, square root, k'th root, power, power-modulus, greatest common denominator and random number generation. Most of these functions can be found via ADL.
+Wide-integer also supports a small selection of number-theoretical
+functions such as least and most significant bit, square root,
+_k_'th root, power, power-modulus, greatest common denominator
+and random number generation. Most of these functions can be found via ADL.
 
 The example below calculates an integer square root.
 
@@ -109,7 +151,15 @@ int main()
 }
 ```
 
-The next sample computes the cube root of <img src="https://render.githubusercontent.com/render/math?math=10^{3,333}">. The cube root of this very large unsigned integer is <img src="https://render.githubusercontent.com/render/math?math=10^{1,111}">. We will use the (somewhat uncommon) integral data type `uint11520_t`. Since `uint11520_t` has 3,467 decimal digits of precision, it is large enough to hold the value of <img src="https://render.githubusercontent.com/render/math?math=10^{3,333}"> prior to the cube root operation.
+The next sample computes the real-valued cube root of
+<img src="https://render.githubusercontent.com/render/math?math=10^{3,333}">.
+The real-valued cube root of this very large unsigned integer is
+<img src="https://render.githubusercontent.com/render/math?math=10^{1,111}">.
+We will use the (somewhat uncommon) integral data type `uint11264_t`.
+Since `uint11520_t` has approximately 3,390 decimal digits of precision,
+it is large enough to hold the value of
+<img src="https://render.githubusercontent.com/render/math?math=10^{3,333}">
+prior to (and following) the cube root operation.
 
 ```C
 #include <iomanip>
@@ -119,7 +169,7 @@ The next sample computes the cube root of <img src="https://render.githubusercon
 
 int main()
 {
-  using uint11520_t = wide_integer::generic_template::uintwide_t<11520U, std::uint32_t>;
+  using uint11264_t = wide_integer::generic_template::uintwide_t<11264U, std::uint32_t>;
 
   // Create the string '1' + 3,333 times '0', which is
   // equivalent to the decimal integral value 10^3333.
@@ -134,9 +184,9 @@ int main()
 
   std::array<char, 1113U> str_control;
 
-  const uint11520_t a = str_a.data();
+  const uint11264_t a = str_a.data();
 
-  const uint11520_t s = cbrt(a);
+  const uint11264_t s = cbrt(a);
 
   // Create the string '1' + 1,111 times '0', which is
   // equivalent to the decimal integral value 10^1111.

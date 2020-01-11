@@ -1,25 +1,19 @@
 #ifndef TEST_UINTWIDE_T_N_BINARY_OPS_BASE_2019_12_19_H_
   #define TEST_UINTWIDE_T_N_BINARY_OPS_BASE_2019_12_19_H_
 
-  #include <ctime>
   #include <iomanip>
   #include <iostream>
-  #include <sstream>
 
-  #include <boost/multiprecision/cpp_int.hpp>
-  #include <boost/noncopyable.hpp>
+  #include <test/test_uintwide_t_n_base.h>
 
-  #include <wide_integer/generic_template_uintwide_t.h>
-  #include <test/parallel_for.h>
-
-  class test_uintwide_t_n_binary_ops_base : private boost::noncopyable
+  class test_uintwide_t_n_binary_ops_base : public test_uintwide_t_n_base
   {
   public:
+    test_uintwide_t_n_binary_ops_base(const std::size_t count)
+      : test_uintwide_t_n_base(count) { }
+
     virtual ~test_uintwide_t_n_binary_ops_base() = default;
 
-    virtual std::size_t get_digits2() const = 0;
-
-    virtual void initialize      () = 0;
     virtual bool test_binary_add () const { return false; }
     virtual bool test_binary_sub () const { return false; }
     virtual bool test_binary_mul () const { return false; }
@@ -56,48 +50,6 @@
       }
 
       return result_is_ok;
-    }
-
-  protected:
-    test_uintwide_t_n_binary_ops_base() = default;
-
-    template<typename UnsignedIntegralType>
-    static std::string hexlexical_cast(const UnsignedIntegralType& u)
-    {
-      std::stringstream ss;
-
-      ss << std::hex << u;
-
-      return ss.str();
-    }
-
-    template<typename OtherLocalUintType,
-             typename OtherBoostUintType>
-    static void get_equal_random_test_values_boost_and_local_n(OtherLocalUintType* u_local,
-                                                               OtherBoostUintType* u_boost,
-                                                               const std::size_t count)
-    {
-      using other_local_uint_type = OtherLocalUintType;
-      using other_boost_uint_type = OtherBoostUintType;
-
-      using random_engine_type =
-        wide_integer::generic_template::default_random_engine<other_local_uint_type::my_digits,
-                                                              typename other_local_uint_type::value_type>;
-
-      random_engine_type random_generator(std::clock());
-
-      my_concurrency::parallel_for
-      (
-        std::size_t(0U),
-        count,
-        [&random_generator, &u_local, &u_boost](std::size_t i)
-        {
-          const other_local_uint_type a = random_generator();
-
-          u_local[i] = a;
-          u_boost[i] = other_boost_uint_type("0x" + hexlexical_cast(a));
-        }
-      );
     }
   };
 

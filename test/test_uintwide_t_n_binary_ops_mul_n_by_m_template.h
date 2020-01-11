@@ -1,12 +1,12 @@
 #ifndef TEST_UINTWIDE_T_N_BINARY_OPS_MUL_N_BY_M_TEMPLATE_2019_12_26_H_
   #define TEST_UINTWIDE_T_N_BINARY_OPS_MUL_N_BY_M_TEMPLATE_2019_12_26_H_
 
-  #include <test/test_uintwide_t_n_binary_ops_base.h>
+  #include <test/test_uintwide_t_n_base.h>
 
   template<const std::size_t MyDigits2A,
            const std::size_t MyDigits2B,
            typename MyLimbType = std::uint32_t>
-  class test_uintwide_t_n_binary_ops_mul_n_by_m_template : public test_uintwide_t_n_binary_ops_base
+  class test_uintwide_t_n_binary_ops_mul_n_by_m_template : public test_uintwide_t_n_base
   {
   private:
     static constexpr std::size_t digits2a = MyDigits2A;
@@ -41,15 +41,13 @@
     using local_uint_b_type = wide_integer::generic_template::uintwide_t<digits2b, local_limb_type>;
     using local_uint_c_type = wide_integer::generic_template::uintwide_t<digits2a + digits2b, local_limb_type>;
 
-    std::size_t size() const { return number_of_cases; }
-
   public:
     test_uintwide_t_n_binary_ops_mul_n_by_m_template(const std::size_t count)
-      : number_of_cases(count),
-        a_local        (),
-        b_local        (),
-        a_boost        (),
-        b_boost        () { }
+      : test_uintwide_t_n_base(count),
+        a_local(),
+        b_local(),
+        a_boost(),
+        b_boost() { }
 
     virtual ~test_uintwide_t_n_binary_ops_mul_n_by_m_template() = default;
 
@@ -113,7 +111,6 @@
     }
 
   private:
-    const std::size_t number_of_cases;
     std::vector<local_uint_a_type> a_local;
     std::vector<local_uint_b_type> b_local;
 

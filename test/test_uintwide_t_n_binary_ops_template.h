@@ -15,30 +15,28 @@
   private:
     static constexpr std::size_t digits2 = MyDigits2;
 
-    virtual std::size_t get_digits2() const { return digits2; }
-
     using boost_uint_backend_type =
       boost::multiprecision::cpp_int_backend<digits2,
                                              digits2,
                                              boost::multiprecision::unsigned_magnitude>;
 
-    using boost_uint_type = boost::multiprecision::number<boost_uint_backend_type, boost::multiprecision::et_off>;
+    using boost_uint_type = boost::multiprecision::number<boost_uint_backend_type, boost::multiprecision::et_on>;
 
     using local_limb_type = MyLimbType;
 
     using local_uint_type = wide_integer::generic_template::uintwide_t<digits2, local_limb_type>;
 
-    std::size_t size() const { return number_of_cases; }
-
   public:
     test_uintwide_t_n_binary_ops_template(const std::size_t count)
-      : number_of_cases(count),
-        a_local        (),
-        b_local        (),
-        a_boost        (),
-        b_boost        () { }
+      : test_uintwide_t_n_binary_ops_base(count),
+        a_local(),
+        b_local(),
+        a_boost(),
+        b_boost() { }
 
     virtual ~test_uintwide_t_n_binary_ops_template() = default;
+
+    virtual std::size_t get_digits2() const { return digits2; }
 
     virtual void initialize()
     {
@@ -144,7 +142,7 @@
         {
           const std::size_t right_shift_amount = static_cast<std::size_t>(dis(gen));
 
-          const boost_uint_type c_boost = a_boost[i] / (std::max)(boost_uint_type(1U), (b_boost[i] >> right_shift_amount));
+          const boost_uint_type c_boost = a_boost[i] / (std::max)(boost_uint_type(1U), boost_uint_type(b_boost[i] >> right_shift_amount));
           const local_uint_type c_local = a_local[i] / (std::max)(local_uint_type(1U), (b_local[i] >> right_shift_amount));
 
           const std::string str_boost = hexlexical_cast(c_boost);
@@ -174,7 +172,7 @@
         {
           const std::size_t right_shift_amount = static_cast<std::size_t>(dis(gen));
 
-          const boost_uint_type c_boost = a_boost[i] % (std::max)(boost_uint_type(1U), (b_boost[i] >> right_shift_amount));
+          const boost_uint_type c_boost = a_boost[i] % (std::max)(boost_uint_type(1U), boost_uint_type(b_boost[i] >> right_shift_amount));
           const local_uint_type c_local = a_local[i] % (std::max)(local_uint_type(1U), (b_local[i] >> right_shift_amount));
 
           const std::string str_boost = hexlexical_cast(c_boost);
@@ -211,7 +209,6 @@
     }
 
   private:
-    const std::size_t number_of_cases;
     std::vector<local_uint_type> a_local;
     std::vector<local_uint_type> b_local;
 
