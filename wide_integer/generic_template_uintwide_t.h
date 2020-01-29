@@ -3477,7 +3477,7 @@
       }
     };
 
-    uniform_int_distribution() : my_params(result_type(0U)) { }
+    uniform_int_distribution() : my_params() { }
 
     explicit uniform_int_distribution(const result_type& a,
                                       const result_type& b = (std::numeric_limits<result_type>::max)())
@@ -3522,19 +3522,23 @@
     result_type generate(GeneratorType& input_generator,
                          const param_type& input_params)
     {
-      result_type result = input_generator();
+      // Generate random numbers r, where a <= r <= b.
+
+      result_type r = input_generator();
 
       if(   (input_params.get_a() != (std::numeric_limits<result_type>::min)())
          || (input_params.get_b() != (std::numeric_limits<result_type>::max)()))
       {
+        // r = {[input_generator() % ((b - a) + 1)] + a}
+
         result_type range(input_params.get_b() - input_params.get_a());
         ++range;
 
-        result %= range;
-        result += input_params.get_a();
+        r %= range;
+        r += input_params.get_a();
       }
 
-      return result;
+      return r;
     }
   };
 
@@ -3559,7 +3563,7 @@
            const std::uint_fast32_t Digits2,
            typename LimbType>
   bool miller_rabin(const uintwide_t<Digits2, LimbType>& n,
-                    const std::uint_fast32_t                    number_of_trials,
+                    const std::uint_fast32_t             number_of_trials,
                     DistributionType&                    distribution,
                     GeneratorType&                       generator)
   {
