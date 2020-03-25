@@ -1,7 +1,7 @@
 # Wide-integer
 Wide-integer implements a generic C++ template for extended precision unsigned integral types.
 
-The focus of the library is big integer types such as `uint128_t`, `uint256_t`, `uint512_t`, `uint1024_t`, etc. In particular, wide-integer supports unsigned integral types having bit counts of <img src="https://render.githubusercontent.com/render/math?math=1{\ldots}63{\times}2^{N}"> while being 16, 24, 32 or larger.
+The focus of the library is big integer types such as `uint128_t`, `uint256_t`, `uint384_t`, `uint512_t`, `uint1024_t`, `uint1536_t`, etc., or even larger. In particular, wide-integer supports unsigned integral types having bit counts of <img src="https://render.githubusercontent.com/render/math?math=1{\ldots}63{\times}2^{N}"> while being 16, 24, 32 or larger.
 
 In addition, small integer types such as software synthesized versoins of `uint24_t` or `uint48_t` can be realized with wide-integer.
 
