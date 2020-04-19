@@ -3141,95 +3141,83 @@
 
   class random_pcg32_fast_base
   {
-  protected:
-    static constexpr bool is_mcg = false;
-
   public:
     using internal_type = std::uint64_t;
 
     virtual ~random_pcg32_fast_base() = default;
 
   protected:
-    explicit random_pcg32_fast_base(const internal_type = internal_type()) { }
+    explicit random_pcg32_fast_base(const internal_type) { }
 
     random_pcg32_fast_base(const random_pcg32_fast_base&) = default;
 
     random_pcg32_fast_base& operator=(const random_pcg32_fast_base&) = default;
 
     template<typename ArithmeticType>
-    static ArithmeticType rotr(const ArithmeticType&    value_being_shifted,
-                               const std::uint_fast32_t bits_to_shift)
+    static ArithmeticType rotr(const ArithmeticType& value_being_shifted,
+                               const std::size_t     bits_to_shift)
     {
-      const std::uint_fast32_t bits_to_shift_limited_to_arithmetic_range =
-        (std::min)(static_cast<std::uint_fast32_t>(std::numeric_limits<ArithmeticType>::digits),
-                   bits_to_shift);
+      const std::size_t left_shift_amount =
+        std::numeric_limits<ArithmeticType>::digits - bits_to_shift;
 
-      const std::uint_fast32_t left_shift_amount =
-        std::numeric_limits<ArithmeticType>::digits - bits_to_shift_limited_to_arithmetic_range;
+      const ArithmeticType part1 = ((bits_to_shift > 0U) ? ArithmeticType(value_being_shifted >> bits_to_shift)     : value_being_shifted);
+      const ArithmeticType part2 = ((bits_to_shift > 0U) ? ArithmeticType(value_being_shifted << left_shift_amount) : 0U);
 
-      const ArithmeticType result =
-        ((bits_to_shift_limited_to_arithmetic_range > 0U)
-           ? (  ArithmeticType(value_being_shifted >> bits_to_shift_limited_to_arithmetic_range)
-              | ArithmeticType(value_being_shifted << left_shift_amount))
-           : value_being_shifted);
+      return ArithmeticType(part1 | part2);
+    }
+
+    template<typename OutputType, typename InternalType>
+    static OutputType output(const InternalType internal_value)
+    {
+      using local_output_type   = OutputType;
+      using local_internal_type = InternalType;
+
+      using bitcount_t = std::size_t;
+
+      constexpr bitcount_t bits         = bitcount_t(sizeof(local_internal_type) * 8U);
+      constexpr bitcount_t xtypebits    = bitcount_t(sizeof(local_output_type)   * 8U);
+      constexpr bitcount_t sparebits    = bits - xtypebits;
+      constexpr bitcount_t wantedopbits =   ((xtypebits >= 128U) ? 7U
+                                          : ((xtypebits >=  64U) ? 6U
+                                          : ((xtypebits >=  32U) ? 5U
+                                          : ((xtypebits >=  16U) ? 4U
+                                          :                        3U))));
+
+      constexpr bitcount_t opbits       = ((sparebits >= wantedopbits) ? wantedopbits : sparebits);
+      constexpr bitcount_t amplifier    = wantedopbits - opbits;
+      constexpr bitcount_t mask         = (1ULL << opbits) - 1U;
+      constexpr bitcount_t topspare     = opbits;
+      constexpr bitcount_t bottomspare  = sparebits - topspare;
+      constexpr bitcount_t xshift       = (topspare + xtypebits) / 2U;
+
+      const bitcount_t rot =
+        ((opbits != 0U) ? (bitcount_t(internal_value >> (bits - opbits)) & mask)
+                        : 0U);
+
+      const bitcount_t amprot = (rot << amplifier) & mask;
+
+      const local_internal_type internal_value_xor =
+        internal_value ^ local_internal_type(internal_value >> xshift);
+
+      const local_output_type result =
+        random_pcg32_fast_base::rotr(local_output_type(internal_value_xor >> bottomspare), amprot);
 
       return result;
     }
-
-    template<typename xtype,
-             typename internal_type>
-    struct xsh_rr_mixin
-    {
-      static xtype output(const internal_type internal_value)
-      {
-        using bitcount_t = std::uint_fast32_t;
-
-        constexpr bitcount_t bits         = bitcount_t(sizeof(internal_type) * 8U);
-        constexpr bitcount_t xtypebits    = bitcount_t(sizeof(xtype) * 8U);
-        constexpr bitcount_t sparebits    = bits - xtypebits;
-        constexpr bitcount_t wantedopbits =   ((xtypebits >= 128U) ? 7U
-                                            : ((xtypebits >=  64U) ? 6U
-                                            : ((xtypebits >=  32U) ? 5U
-                                            : ((xtypebits >=  16U) ? 4U
-                                            :                        3U))));
-
-        constexpr bitcount_t opbits       = ((sparebits >= wantedopbits) ? wantedopbits : sparebits);
-        constexpr bitcount_t amplifier    = wantedopbits - opbits;
-        constexpr bitcount_t mask         = (1ULL << opbits) - 1U;
-        constexpr bitcount_t topspare     = opbits;
-        constexpr bitcount_t bottomspare  = sparebits - topspare;
-        constexpr bitcount_t xshift       = (topspare + xtypebits) / 2U;
-
-        const bitcount_t rot =
-          ((opbits != 0U) ? (bitcount_t(internal_value >> (bits - opbits)) & mask)
-                          : 0U);
-
-        const bitcount_t amprot = (rot << amplifier) & mask;
-
-        const internal_type internal_value_xor = internal_value ^ internal_type(internal_value >> xshift);
-
-        const xtype result = rotr(xtype(internal_value_xor >> bottomspare), amprot);
-
-        return result;
-      }
-    };
   };
 
   class random_pcg32_fast : public random_pcg32_fast_base
   {
-  private:
-    static constexpr internal_type default_multiplier = static_cast<internal_type>(6364136223846793005ULL);
-    static constexpr internal_type default_increment  = static_cast<internal_type>(1442695040888963407ULL);
-
   public:
     using result_type = std::uint32_t;
 
-    static constexpr internal_type default_seed = static_cast<internal_type>(0xCAFEF00DD15EA5E5ULL);
+    static constexpr random_pcg32_fast_base::internal_type default_seed =
+      static_cast<random_pcg32_fast_base::internal_type>(0xCAFEF00DD15EA5E5ULL);
 
-    explicit random_pcg32_fast(const internal_type state = default_seed)
+    explicit random_pcg32_fast(const random_pcg32_fast_base::internal_type state = default_seed)
       : random_pcg32_fast_base(state),
         my_inc  (default_increment),
-        my_state(is_mcg ? state | internal_type(3U) : bump(state + increment())) { }
+        my_state(bump(state + increment())) { }
 
     random_pcg32_fast(const random_pcg32_fast& other)
       : random_pcg32_fast_base(other),
@@ -3251,43 +3239,42 @@
       return *this;
     }
 
-    void seed(const internal_type state = default_seed)
+    void seed(const random_pcg32_fast_base::internal_type state = default_seed)
     {
       my_inc = default_increment;
 
-      my_state = (is_mcg ? state | internal_type(3U) : bump(state + increment()));
+      my_state = bump(state + increment());
     }
 
     result_type operator()()
     {
-      const result_type value =
-        xsh_rr_mixin<result_type, internal_type>::output(base_generate0());
+      const result_type value = output<result_type, random_pcg32_fast_base::internal_type>(base_generate0());
 
       return value;
     }
 
+    static random_pcg32_fast::result_type (min)() { return (std::numeric_limits<result_type>::min)(); }
+    static random_pcg32_fast::result_type (max)() { return (std::numeric_limits<result_type>::max)(); }
+
   private:
-    internal_type my_inc;
-    internal_type my_state;
+    static constexpr random_pcg32_fast_base::internal_type default_multiplier = static_cast<random_pcg32_fast_base::internal_type>(6364136223846793005ULL);
+    static constexpr random_pcg32_fast_base::internal_type default_increment  = static_cast<random_pcg32_fast_base::internal_type>(1442695040888963407ULL);
 
-    internal_type multiplier() const
-    {
-      return default_multiplier;
-    }
+    random_pcg32_fast_base::internal_type my_inc;
+    random_pcg32_fast_base::internal_type my_state;
 
-    internal_type increment() const
-    {
-      return default_increment;
-    }
+    static internal_type multiplier() { return default_multiplier; }
 
-    internal_type bump(const internal_type state)
+    static internal_type increment () { return default_increment; }
+
+    internal_type bump(const random_pcg32_fast_base::internal_type state)
     {
-      return internal_type(state * multiplier()) + increment();
+      return random_pcg32_fast_base::internal_type(state * multiplier()) + increment();
     }
 
     internal_type base_generate0()
     {
-      const internal_type old_state = my_state;
+      const random_pcg32_fast_base::internal_type old_state = my_state;
 
       my_state = bump(my_state);
 
@@ -3524,7 +3511,7 @@
     {
       // Generate random numbers r, where a <= r <= b.
 
-      result_type r = input_generator();
+      result_type result = input_generator();
 
       if(   (input_params.get_a() != (std::numeric_limits<result_type>::min)())
          || (input_params.get_b() != (std::numeric_limits<result_type>::max)()))
@@ -3534,11 +3521,11 @@
         result_type range(input_params.get_b() - input_params.get_a());
         ++range;
 
-        r %= range;
-        r += input_params.get_a();
+        result %= range;
+        result += input_params.get_a();
       }
 
-      return r;
+      return result;
     }
   };
 
