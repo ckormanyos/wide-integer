@@ -5,6 +5,7 @@
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)             //
 ///////////////////////////////////////////////////////////////////
 
+#include <util/utility/util_random_pcg32.h>
 #include <wide_integer/generic_template_uintwide_t.h>
 
 bool wide_integer::example010_uint48_t()
@@ -12,7 +13,7 @@ bool wide_integer::example010_uint48_t()
   using uint48_t = wide_integer::generic_template::uintwide_t<48U, std::uint8_t>;
 
   using distribution_type  = wide_integer::generic_template::uniform_int_distribution<48U, std::uint8_t>;
-  using random_engine_type = wide_integer::generic_template::default_random_engine   <48U, std::uint8_t>;
+  using random_engine_type = util::random_pcg32_fast;
 
   random_engine_type generator(0xF00DCAFEULL);
 

@@ -72,19 +72,19 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\boost\modular_boost\boost\libs\multiprecision\include;C:\boost\boost_1_72_0;$(ProjectDir);$(IncludePath)</IncludePath>
+    <IncludePath>C:\boost\boost_1_73_0;$(ProjectDir);$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\boost\modular_boost\boost\libs\multiprecision\include;C:\boost\boost_1_72_0;$(ProjectDir);$(IncludePath)</IncludePath>
+    <IncludePath>C:\boost\boost_1_73_0;$(ProjectDir);$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>C:\boost\modular_boost\boost\libs\multiprecision\include;C:\boost\boost_1_72_0;$(ProjectDir);$(IncludePath)</IncludePath>
+    <IncludePath>C:\boost\boost_1_73_0;$(ProjectDir);$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>C:\boost\modular_boost\boost\libs\multiprecision\include;C:\boost\boost_1_72_0;$(ProjectDir);$(IncludePath)</IncludePath>
+    <IncludePath>C:\boost\boost_1_73_0;$(ProjectDir);$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -181,6 +181,7 @@
     <ClInclude Include="test\test_uintwide_t_n_binary_ops_base.h" />
     <ClInclude Include="test\test_uintwide_t_n_binary_ops_template.h" />
     <ClInclude Include="test\test_uintwide_t_n_number_theory_funcs_template.h" />
+    <ClInclude Include="util\utility\util_random_pcg32.h" />
     <ClInclude Include="wide_integer\archive\non_template_uint128_t.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>

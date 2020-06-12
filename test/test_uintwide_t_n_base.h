@@ -6,8 +6,9 @@
   #include <boost/multiprecision/cpp_int.hpp>
   #include <boost/noncopyable.hpp>
 
-  #include <wide_integer/generic_template_uintwide_t.h>
   #include <test/parallel_for.h>
+  #include <util/utility/util_random_pcg32.h>
+  #include <wide_integer/generic_template_uintwide_t.h>
 
   class test_uintwide_t_n_base : private boost::noncopyable
   {
@@ -43,9 +44,7 @@
       using other_local_uint_type = OtherLocalUintType;
       using other_boost_uint_type = OtherBoostUintType;
 
-      using random_engine_type =
-        wide_integer::generic_template::default_random_engine<other_local_uint_type::my_digits,
-                                                              typename other_local_uint_type::value_type>;
+      using random_engine_type = util::random_pcg32_fast;
 
       random_engine_type random_generator(std::clock());
 

@@ -17,7 +17,7 @@
 
 #include <wide_integer/generic_template_uintwide_t.h>
 
-constexpr unsigned wide_integer_test9_digits2 = 1024U;
+constexpr unsigned wide_integer_test9_digits2 = 512U << 5U;
 
 #define WIDE_INTEGER_USE_GENERIC_UINTWIDE_T
 //#define WIDE_INTEGER_USE_BOOST_MULTIPRECISION
@@ -246,7 +246,7 @@ bool wide_integer::example009_compare_mul_with_boost()
 
     ++count;
   }
-  while((total_time = (float(std::clock() - start) / float(CLOCKS_PER_SEC))) < 0.25F);
+  while((total_time = (float(std::clock() - start) / float(CLOCKS_PER_SEC))) < 2.0F);
 
   // Boost.Multiprecision 1.71
   // bits: 16384, kops_per_sec: 4.7
