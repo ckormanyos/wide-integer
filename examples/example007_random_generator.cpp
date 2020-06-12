@@ -5,6 +5,7 @@
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)             //
 ///////////////////////////////////////////////////////////////////
 
+#include <util/utility/util_random_pcg32.h>
 #include <wide_integer/generic_template_uintwide_t.h>
 
 bool wide_integer::example007_random_generator()
@@ -14,8 +15,8 @@ bool wide_integer::example007_random_generator()
   {
     // Generate a random number with wide_integer_type having 32-bit limbs.
     using wide_integer_type  = wide_integer::generic_template::uintwide_t<256U, std::uint32_t>;
-    using distribution_type  = wide_integer::generic_template::uniform_int_distribution<wide_integer_type::my_digits, typename wide_integer_type::value_type>;
-    using random_engine_type = wide_integer::generic_template::default_random_engine   <wide_integer_type::my_digits, typename wide_integer_type::value_type>;
+    using distribution_type  = wide_integer::generic_template::uniform_int_distribution<wide_integer_type::my_digits, typename wide_integer_type::limb_type>;
+    using random_engine_type = util::random_pcg32_fast;
 
     random_engine_type generator(1332597477ULL);
 
@@ -29,8 +30,8 @@ bool wide_integer::example007_random_generator()
   {
     // Generate a random number with wide_integer_type having 16-bit limbs.
     using wide_integer_type  = wide_integer::generic_template::uintwide_t<256U, std::uint16_t>;
-    using distribution_type  = wide_integer::generic_template::uniform_int_distribution<wide_integer_type::my_digits, typename wide_integer_type::value_type>;
-    using random_engine_type = wide_integer::generic_template::default_random_engine   <wide_integer_type::my_digits, typename wide_integer_type::value_type>;
+    using distribution_type  = wide_integer::generic_template::uniform_int_distribution<wide_integer_type::my_digits, typename wide_integer_type::limb_type>;
+    using random_engine_type = util::random_pcg32_fast;
 
     random_engine_type generator(1332597477ULL);
 
@@ -44,8 +45,8 @@ bool wide_integer::example007_random_generator()
   {
     // Generate a random number with wide_integer_type having 8-bit limbs.
     using wide_integer_type  = wide_integer::generic_template::uintwide_t<256U, std::uint8_t>;
-    using distribution_type  = wide_integer::generic_template::uniform_int_distribution<wide_integer_type::my_digits, typename wide_integer_type::value_type>;
-    using random_engine_type = wide_integer::generic_template::default_random_engine   <wide_integer_type::my_digits, typename wide_integer_type::value_type>;
+    using distribution_type  = wide_integer::generic_template::uniform_int_distribution<wide_integer_type::my_digits, typename wide_integer_type::limb_type>;
+    using random_engine_type = util::random_pcg32_fast;
 
     random_engine_type generator(1332597477ULL);
 

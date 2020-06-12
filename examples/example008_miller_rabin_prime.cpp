@@ -10,13 +10,14 @@
 // The Boost.Multiprecision code can be found here:
 // https://www.boost.org/doc/libs/1_68_0/libs/multiprecision/doc/html/boost_multiprecision/tut/primetest.html
 
+#include <util/utility/util_random_pcg32.h>
 #include <wide_integer/generic_template_uintwide_t.h>
 
 bool wide_integer::example008_miller_rabin_prime()
 {
   using wide_integer_type  = wide_integer::generic_template::uintwide_t<256U>;
-  using distribution_type  = wide_integer::generic_template::uniform_int_distribution<wide_integer_type::my_digits, typename wide_integer_type::value_type>;
-  using random_engine_type = wide_integer::generic_template::default_random_engine   <wide_integer_type::my_digits, typename wide_integer_type::value_type>;
+  using distribution_type  = wide_integer::generic_template::uniform_int_distribution<wide_integer_type::my_digits, typename wide_integer_type::limb_type>;
+  using random_engine_type = util::random_pcg32_fast;
 
   // Use a fixed seed in order to obtain deterministic
   // and reproducible result for this test.
