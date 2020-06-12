@@ -53,7 +53,7 @@ a C++11 alias. The first template parameter `512U` sets the binary digit
 count while the second optional template parameter `std::uint32_t`
 sets the internal _limb_ _type_. If the second template parameter is left blank,
 the default limb type is 32 bits in width and unsigned.
-The static `uint512_t` variable `x` is set to 3.
+The static `uint512_t` variable `x` is initialized with unsigned value `3U`.
 
 # Detailed examples
 
