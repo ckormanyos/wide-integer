@@ -160,7 +160,7 @@ The next sample computes the real-valued cube root of
 The real-valued cube root of this very large unsigned integer is
 <img src="https://render.githubusercontent.com/render/math?math=10^{1,111}">.
 We will use the (somewhat uncommon) integral data type `uint11264_t`.
-Since `uint11520_t` has approximately 3,390 decimal digits of precision,
+Since `uint11264_t` has approximately 3,390 decimal digits of precision,
 it is large enough to hold the value of
 <img src="https://render.githubusercontent.com/render/math?math=10^{3,333}">
 prior to (and following) the cube root operation.
