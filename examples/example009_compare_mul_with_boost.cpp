@@ -272,7 +272,7 @@ bool wide_integer::example009_compare_mul_with_boost()
             << kops_per_sec
             << count << std::endl;
 
-  const bool result_is_ok = (kops_per_sec > 1.0F);
+  const bool result_is_ok = (kops_per_sec > std::numeric_limits<float>::epsilon());
 
   return result_is_ok;
 }
