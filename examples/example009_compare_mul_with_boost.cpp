@@ -13,168 +13,23 @@
 #include <iostream>
 #include <limits>
 #include <iterator>
+#include <random>
 #include <vector>
 
-#include <wide_integer/generic_template_uintwide_t.h>
-
-constexpr unsigned wide_integer_test9_digits2 = 512U << 5U;
+constexpr unsigned wide_integer_test9_digits2 = 512U << 7U;
 
 #define WIDE_INTEGER_USE_GENERIC_UINTWIDE_T
 //#define WIDE_INTEGER_USE_BOOST_MULTIPRECISION
 
-#if defined(WIDE_INTEGER_USE_BOOST_MULTIPRECISION)
-#include <boost/multiprecision/cpp_int.hpp>
+#if defined(WIDE_INTEGER_USE_GENERIC_UINTWIDE_T)
+#include <wide_integer/generic_template_uintwide_t.h>
 #endif
 
-class random_pcg32_fast_base
-{
-protected:
-  using itype = std::uint64_t;
+#if defined(WIDE_INTEGER_USE_BOOST_MULTIPRECISION)
+#include <boost/multiprecision/cpp_int.hpp>
 
-  static constexpr bool is_mcg = false;
-
-public:
-  virtual ~random_pcg32_fast_base() = default;
-
-protected:
-  explicit random_pcg32_fast_base(const itype = itype()) { }
-
-  random_pcg32_fast_base(const random_pcg32_fast_base&) = default;
-
-  random_pcg32_fast_base& operator=(const random_pcg32_fast_base&) = default;
-
-  template<typename ArithmeticType>
-  static ArithmeticType rotr(const ArithmeticType& value_being_shifted,
-                             const std::size_t     bits_to_shift)
-  {
-    const std::size_t left_shift_amount =
-      std::numeric_limits<ArithmeticType>::digits - bits_to_shift;
-
-    const ArithmeticType part1 = ((bits_to_shift > 0U) ? ArithmeticType(value_being_shifted >> bits_to_shift)     : value_being_shifted);
-    const ArithmeticType part2 = ((bits_to_shift > 0U) ? ArithmeticType(value_being_shifted << left_shift_amount) : 0U);
-
-    return ArithmeticType(part1 | part2);
-  }
-
-  template<typename xtype,
-           typename itype>
-  struct xsh_rr_mixin
-  {
-    static xtype output(const itype internal_value)
-    {
-      using bitcount_t = std::size_t;
-
-      constexpr bitcount_t bits         = bitcount_t(sizeof(itype) * 8U);
-      constexpr bitcount_t xtypebits    = bitcount_t(sizeof(xtype) * 8U);
-      constexpr bitcount_t sparebits    = bits - xtypebits;
-      constexpr bitcount_t wantedopbits =   ((xtypebits >= 128U) ? 7U
-                                          : ((xtypebits >=  64U) ? 6U
-                                          : ((xtypebits >=  32U) ? 5U
-                                          : ((xtypebits >=  16U) ? 4U
-                                          :                        3U))));
-
-      constexpr bitcount_t opbits       = ((sparebits >= wantedopbits) ? wantedopbits : sparebits);
-      constexpr bitcount_t amplifier    = wantedopbits - opbits;
-      constexpr bitcount_t mask         = (1ULL << opbits) - 1U;
-      constexpr bitcount_t topspare     = opbits;
-      constexpr bitcount_t bottomspare  = sparebits - topspare;
-      constexpr bitcount_t xshift       = (topspare + xtypebits) / 2U;
-
-      const bitcount_t rot =
-        ((opbits != 0U) ? (bitcount_t(internal_value >> (bits - opbits)) & mask)
-                        : 0U);
-
-      const bitcount_t amprot = (rot << amplifier) & mask;
-
-      const itype internal_value_xor = internal_value ^ itype(internal_value >> xshift);
-
-      const xtype result = rotr(xtype(internal_value_xor >> bottomspare), amprot);
-
-      return result;
-    }
-  };
-};
-
-class random_pcg32_fast : public random_pcg32_fast_base
-{
-private:
-  static constexpr itype default_multiplier = static_cast<itype>(6364136223846793005ULL);
-  static constexpr itype default_increment  = static_cast<itype>(1442695040888963407ULL);
-
-public:
-  using result_type = std::uint32_t;
-
-  static constexpr itype default_seed = static_cast<itype>(0xCAFEF00DD15EA5E5ULL);
-
-  explicit random_pcg32_fast(const itype state = default_seed)
-    : random_pcg32_fast_base(state),
-      my_inc  (default_increment),
-      my_state(is_mcg ? state | itype(3U) : bump(state + increment())) { }
-
-  random_pcg32_fast(const random_pcg32_fast& other)
-    : random_pcg32_fast_base(other),
-      my_inc  (other.my_inc),
-      my_state(other.my_state) { }
-
-  virtual ~random_pcg32_fast() = default;
-
-  random_pcg32_fast& operator=(const random_pcg32_fast& other)
-  {
-    static_cast<void>(random_pcg32_fast_base::operator=(other));
-
-    if(this != &other)
-    {
-      my_inc   = other.my_inc;
-      my_state = other.my_state;
-    }
-
-    return *this;
-  }
-
-  void seed(const itype state = default_seed)
-  {
-    my_inc = default_increment;
-
-    my_state = (is_mcg ? state | itype(3U) : bump(state + increment()));
-  }
-
-  result_type operator()()
-  {
-    const result_type value =
-      xsh_rr_mixin<result_type, itype>::output(base_generate0());
-
-    return value;
-  }
-
-private:
-  itype my_inc;
-  itype my_state;
-
-  itype multiplier() const
-  {
-    return default_multiplier;
-  }
-
-  itype increment() const
-  {
-    return default_increment;
-  }
-
-  itype bump(const itype state)
-  {
-    return itype(state * multiplier()) + increment();
-  }
-
-  itype base_generate0()
-  {
-    const itype old_state = my_state;
-
-    my_state = bump(my_state);
-
-    return old_state;
-  }
-};
-
+namespace wide_integer { bool example009_compare_mul_with_boost(); }
+#endif
 
 template<typename UnsignedIntegralIteratorType,
          typename RandomEngineType>
@@ -222,7 +77,9 @@ namespace local
 
 bool wide_integer::example009_compare_mul_with_boost()
 {
-  random_pcg32_fast rng;
+  using random_engine_type = std::minstd_rand;
+
+  random_engine_type rng;
 
   rng.seed(std::clock());
 
@@ -234,19 +91,29 @@ bool wide_integer::example009_compare_mul_with_boost()
 
   std::size_t count = 0U;
 
-  float total_time = 0.0F;
+  long long total_time;
 
   const std::clock_t start = std::clock();
 
-  do
+  const std::chrono::high_resolution_clock::time_point begin = std::chrono::high_resolution_clock::now();
+
+  for(;;)
   {
     const std::size_t index = count % local::a.size();
 
     local::a[index] * local::b[index];
 
+    const std::chrono::high_resolution_clock::time_point end = std::chrono::high_resolution_clock::now();
+
+    total_time = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count();
+
     ++count;
+
+    if(total_time > 2999U)
+    {
+      break;
+    }
   }
-  while((total_time = (float(std::clock() - start) / float(CLOCKS_PER_SEC))) < 2.0F);
 
   // Boost.Multiprecision 1.71
   // bits: 16384, kops_per_sec: 4.7
@@ -256,15 +123,10 @@ bool wide_integer::example009_compare_mul_with_boost()
   // bits: 262144, kops_per_sec: 0.019
   // bits: 524288, kops_per_sec: 0.0047
 
-  // Boost.Multiprecision + kara mult
-  // bits: 16384, kops_per_sec: 4.8
-  // bits: 32768, kops_per_sec: 1.6
-  // bits: 65536, kops_per_sec: 0.5
-  // bits: 131072, kops_per_sec: 0.15
-  // bits: 262144, kops_per_sec: 0.043
-  // bits: 524288, kops_per_sec: 0.011
+  // TBD:
+  // Use Boost.Multiprecision 1.73 above.
 
-  const float kops_per_sec = (float(count) / total_time) / 1000.0F;
+  const float kops_per_sec = float(count) / float((std::uint32_t) total_time);
 
   std::cout << "bits: "
             << std::numeric_limits<big_uint_type>::digits
@@ -272,7 +134,7 @@ bool wide_integer::example009_compare_mul_with_boost()
             << kops_per_sec
             << count << std::endl;
 
-  const bool result_is_ok = (kops_per_sec > std::numeric_limits<float>::epsilon());
+  const bool result_is_ok = (kops_per_sec > (std::numeric_limits<float>::min)());
 
   return result_is_ok;
 }

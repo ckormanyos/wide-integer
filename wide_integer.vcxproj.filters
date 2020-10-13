@@ -23,12 +23,6 @@
     <Filter Include="Source Files\examples">
       <UniqueIdentifier>{249d1a53-43c3-4a48-9fb9-c3a477ddf025}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\util">
-      <UniqueIdentifier>{89765525-5b57-41ee-904f-20f65978e988}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\util\utility">
-      <UniqueIdentifier>{2005dcd8-dad3-4e52-b39b-77a5a46805d1}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="wide_integer\generic_template_uintwide_t.h">
@@ -66,9 +60,6 @@
     </ClInclude>
     <ClInclude Include="test\test_uintwide_t_n_base.h">
       <Filter>Source Files\test</Filter>
-    </ClInclude>
-    <ClInclude Include="util\utility\util_random_pcg32.h">
-      <Filter>Source Files\util\utility</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -119,6 +110,9 @@
     </ClCompile>
     <ClCompile Include="test\test_uintwide_t_edge_cases.cpp">
       <Filter>Source Files\test</Filter>
+    </ClCompile>
+    <ClCompile Include="examples\example011_uint24_t.cpp">
+      <Filter>Source Files\examples</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

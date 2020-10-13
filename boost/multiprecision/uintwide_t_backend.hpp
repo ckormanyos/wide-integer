@@ -93,7 +93,7 @@
 
     void swap(uintwide_t_backend& other_mp_cpp_backend)
     {
-      m_value.swap(other_mp_cpp_backend.m_value);
+      m_value.representation().swap(other_mp_cpp_backend.m_value.representation());
     }
 
           representation_type&  representation()       { return m_value; }
@@ -104,10 +104,10 @@
     {
       char pstr[representation_type::wr_string_max_buffer_size_dec];
 
-      const std::uint_fast8_t base_rep     = (((format_flags & std::ios::hex) != 0) ? 16U : 10U);
-      const bool              show_base    = ((format_flags & std::ios::showbase) != 0);
-      const bool              show_pos     = ((format_flags & std::ios::showpos) != 0);
-      const bool              is_uppercase = ((format_flags & std::ios::uppercase) != 0);
+      const std::uint_fast8_t base_rep     = (((format_flags & std::ios::hex)       != 0) ? 16U : 10U);
+      const bool              show_base    = ( (format_flags & std::ios::showbase)  != 0);
+      const bool              show_pos     = ( (format_flags & std::ios::showpos)   != 0);
+      const bool              is_uppercase = ( (format_flags & std::ios::uppercase) != 0);
 
       const bool wr_string_is_ok = m_value.wr_string(pstr, base_rep, show_base, show_pos, is_uppercase);
 
