@@ -96,18 +96,21 @@ bool test_uintwide_t_edge_cases()
 
   const bool result06_is_ok = (result_local.convert_to<std::string>() == result_boost.convert_to<std::string>());
 
-  const local_uint_type u_mid_local = (std::numeric_limits<local_uint_type>::max)() / typename local_uint_type::backend_type::representation_type::limb_type(2U);
-  const boost_uint_type u_mid_boost = (std::numeric_limits<boost_uint_type>::max)() / typename std::iterator_traits<boost_uint_type::backend_type::limb_pointer>::value_type(2U);
+  const local_uint_type u_mid_local = u_three_quarter_effs_and_zeros_local / typename local_uint_type::backend_type::representation_type::limb_type(2U);
+  const boost_uint_type u_mid_boost = u_three_quarter_effs_and_zeros_boost / typename std::iterator_traits<boost_uint_type::backend_type::limb_pointer>::value_type(2U);
+
+  constexpr int signed_shift_amount =
+    -(std::numeric_limits<typename local_uint_type::backend_type::representation_type::limb_type>::digits + 7);
 
   result_local = u_mid_local;
-  result_local.backend().representation() >>= -3;
-  result_boost = u_mid_boost *  8U;
+  result_local.backend().representation() >>= signed_shift_amount;
+  result_boost = u_mid_boost * (boost_uint_type(1U) << (-signed_shift_amount));
 
   const bool result07_is_ok = (result_local.convert_to<std::string>() == result_boost.convert_to<std::string>());
 
   result_local = u_mid_local;
-  result_local.backend().representation() <<= -3;
-  result_boost = u_mid_boost /  8U;
+  result_local.backend().representation() <<= signed_shift_amount;
+  result_boost = u_mid_boost / (boost_uint_type(1U) << (-signed_shift_amount));
 
   const bool result08_is_ok = (result_local.convert_to<std::string>() == result_boost.convert_to<std::string>());
 

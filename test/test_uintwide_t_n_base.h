@@ -1,13 +1,13 @@
 #ifndef TEST_UINTWIDE_T_N_BASE_2019_12_29_H_
   #define TEST_UINTWIDE_T_N_BASE_2019_12_29_H_
 
+  #include <random>
   #include <sstream>
 
   #include <boost/multiprecision/cpp_int.hpp>
   #include <boost/noncopyable.hpp>
 
   #include <test/parallel_for.h>
-  #include <util/utility/util_random_pcg32.h>
   #include <wide_integer/generic_template_uintwide_t.h>
 
   class test_uintwide_t_n_base : private boost::noncopyable
@@ -44,7 +44,7 @@
       using other_local_uint_type = OtherLocalUintType;
       using other_boost_uint_type = OtherBoostUintType;
 
-      using random_engine_type = util::random_pcg32_fast;
+      using random_engine_type = std::minstd_rand;
 
       random_engine_type random_generator(std::clock());
 
