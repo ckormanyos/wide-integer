@@ -1,9 +1,9 @@
 # Wide-integer
 Wide-integer implements a generic C++ template for extended precision unsigned integral types.
 
-This C++ template header-only library implements drop-in big integer types such as `uint128_t`, `uint256_t`, `uint384_t`, `uint512_t`, `uint1024_t`, `uint1536_t`, etc., that can be used essentially like regular built-in integers. Wide-integer supports unsigned integral types having bit counts of <img src="https://render.githubusercontent.com/render/math?math=1{\ldots}63{\times}2^{N}"> while being 16, 24, 32 or larger. In addition, small integer types such as software synthesized versoins of `uint24_t` or `uint48_t` can be realized with wide-integer.
+This C++ template header-only library implements drop-in big integer types such as `uint128_t`, `uint256_t`, `uint384_t`, `uint512_t`, `uint1024_t`, `uint1536_t`, etc., that can be used essentially like regular built-in integers. Wide-integer supports unsigned integral types having bit counts of <img src="https://render.githubusercontent.com/render/math?math=1{\ldots}63{\times}2^{N}"> while being 16, 24, 32 or larger. In addition, small integer types such as software synthesized versoins of `uint24_t` or `uint48_t` can also be crafted with wide-integer.
 
-Wide-integer also features elementary realizations of several number theoretical functions such as root finding, basic random distribution, Miller-Rabin primality testing and greatest common denominator (GCD).
+Wide-integer also features elementary realizations of several number theoretical functions such as root finding, basic random distribution, Miller-Rabin primality testing, greatest common denominator (GCD) and more.
 
 Inclusion of a single C++11 header file is all that is needed.
 
@@ -160,7 +160,7 @@ The next sample computes the real-valued cube root of
 The real-valued cube root of this very large unsigned integer is
 <img src="https://render.githubusercontent.com/render/math?math=10^{1,111}">.
 We will use the (somewhat uncommon) integral data type `uint11264_t`.
-Since `uint11520_t` has approximately 3,390 decimal digits of precision,
+Since `uint11264_t` has approximately 3,390 decimal digits of precision,
 it is large enough to hold the value of
 <img src="https://render.githubusercontent.com/render/math?math=10^{3,333}">
 prior to (and following) the cube root operation.

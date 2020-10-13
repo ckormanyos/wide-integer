@@ -96,12 +96,29 @@ bool test_uintwide_t_edge_cases()
 
   const bool result06_is_ok = (result_local.convert_to<std::string>() == result_boost.convert_to<std::string>());
 
+  const local_uint_type u_mid_local = (std::numeric_limits<local_uint_type>::max)() / typename local_uint_type::backend_type::representation_type::limb_type(2U);
+  const boost_uint_type u_mid_boost = (std::numeric_limits<boost_uint_type>::max)() / typename std::iterator_traits<boost_uint_type::backend_type::limb_pointer>::value_type(2U);
+
+  result_local = u_mid_local;
+  result_local.backend().representation() >>= -3;
+  result_boost = u_mid_boost *  8U;
+
+  const bool result07_is_ok = (result_local.convert_to<std::string>() == result_boost.convert_to<std::string>());
+
+  result_local = u_mid_local;
+  result_local.backend().representation() <<= -3;
+  result_boost = u_mid_boost /  8U;
+
+  const bool result08_is_ok = (result_local.convert_to<std::string>() == result_boost.convert_to<std::string>());
+
   const bool result_is_ok = (   result01_is_ok
                              && result02_is_ok
                              && result03_is_ok
                              && result04_is_ok
                              && result05_is_ok
-                             && result06_is_ok);
+                             && result06_is_ok
+                             && result07_is_ok
+                             && result08_is_ok);
 
   return result_is_ok;
 }
