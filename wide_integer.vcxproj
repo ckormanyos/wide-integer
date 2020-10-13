@@ -185,7 +185,6 @@
     <ClInclude Include="test\test_uintwide_t_n_binary_ops_base.h" />
     <ClInclude Include="test\test_uintwide_t_n_binary_ops_template.h" />
     <ClInclude Include="test\test_uintwide_t_n_number_theory_funcs_template.h" />
-    <ClInclude Include="util\utility\util_random_pcg32.h" />
     <ClInclude Include="wide_integer\archive\non_template_uint128_t.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
@@ -219,6 +218,7 @@
     <ClCompile Include="examples\example008_miller_rabin_prime.cpp" />
     <ClCompile Include="examples\example009_compare_mul_with_boost.cpp" />
     <ClCompile Include="examples\example010_uint48_t.cpp" />
+    <ClCompile Include="examples\example011_uint24_t.cpp" />
     <ClCompile Include="test\test.cpp" />
     <ClCompile Include="test\test_uintwide_t_boost_backend.cpp" />
     <ClCompile Include="test\test_uintwide_t_edge_cases.cpp" />

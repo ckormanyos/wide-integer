@@ -1611,7 +1611,7 @@
                                                 const std::uint_fast32_t n,
                                                       limb_type*       t)
     {
-      if((n >= 32U) && (n <= 63U))
+      if(n <= 63U)
       {
         static_cast<void>(t);
 
@@ -3763,6 +3763,7 @@
   bool example008_miller_rabin_prime();
   bool example009_compare_mul_with_boost();
   bool example010_uint48_t();
+  bool example011_uint24_t();
 
   } // namespace wide_integer
 
