@@ -218,10 +218,14 @@
            typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
                                     && (std::is_integral   <IntegralType>::value == true)
                                     && (std::is_unsigned   <IntegralType>::value == true)
-                                    && (std::numeric_limits<IntegralType>::digits <= std::numeric_limits<IntegralType>::digits))>::type const* = nullptr>
-  void eval_integer_modulus(uintwide_t_backend<MyDigits2, MyLimbType>& x, const IntegralType& n)
+                                    && (std::numeric_limits<IntegralType>::digits <= std::numeric_limits<MyLimbType>::digits))>::type const* = nullptr>
+  IntegralType eval_integer_modulus(uintwide_t_backend<MyDigits2, MyLimbType>& x, const IntegralType& n)
   {
-    const uintwide_t_backend<MyDigits2, MyLimbType> rem = x.crepresentation() % n;
+    using local_wide_integer_type = typename uintwide_t_backend<MyDigits2, MyLimbType>::representation_type;
+
+    typename uintwide_t_backend<MyDigits2, MyLimbType>::representation_type rem;
+
+    local_wide_integer_type(x.crepresentation()).eval_divide_by_single_limb(n, 0U, &rem);
 
     return (IntegralType) rem;
   }
@@ -233,7 +237,7 @@
                                     && (std::is_integral   <IntegralType>::value == true)
                                     && (std::is_unsigned   <IntegralType>::value == true)
                                     && (std::numeric_limits<IntegralType>::digits) < std::numeric_limits<IntegralType>::digits)>::type const* = nullptr>
-  void eval_integer_modulus(uintwide_t_backend<MyDigits2, MyLimbType>& x, const IntegralType& n)
+  IntegralType eval_integer_modulus(uintwide_t_backend<MyDigits2, MyLimbType>& x, const IntegralType& n)
   {
     const uintwide_t_backend<MyDigits2, MyLimbType> rem = x.crepresentation() % uintwide_t_backend<MyDigits2, MyLimbType>(n);
 
