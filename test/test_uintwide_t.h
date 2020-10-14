@@ -9,8 +9,9 @@
   #define TEST_UINTWIDE_T_2019_12_15_H_
 
   bool test_uintwide_t_boost_backend();
-  bool test_uintwide_t_examples();
-  bool test_uintwide_t_edge_cases();
+  bool test_uintwide_t_examples     ();
+  bool test_uintwide_t_edge_cases   ();
+  bool test_uintwide_t_spot_values  ();
 
   bool test_uintwide_t_0000064_binary_add();
   bool test_uintwide_t_0000064_binary_sub();

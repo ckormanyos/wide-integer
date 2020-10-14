@@ -215,6 +215,7 @@
     <ClCompile Include="examples\example005_powm.cpp" />
     <ClCompile Include="examples\example006_gcd.cpp" />
     <ClCompile Include="examples\example007_random_generator.cpp" />
+    <ClCompile Include="examples\example008a_miller_rabin_prime.cpp" />
     <ClCompile Include="examples\example008_miller_rabin_prime.cpp" />
     <ClCompile Include="examples\example009_compare_mul_with_boost.cpp" />
     <ClCompile Include="examples\example010_uint48_t.cpp" />
@@ -223,6 +224,7 @@
     <ClCompile Include="test\test_uintwide_t_boost_backend.cpp" />
     <ClCompile Include="test\test_uintwide_t_edge_cases.cpp" />
     <ClCompile Include="test\test_uintwide_t_examples.cpp" />
+    <ClCompile Include="test\test_uintwide_t_spot_values.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

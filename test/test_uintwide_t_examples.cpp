@@ -21,6 +21,7 @@ bool test_uintwide_t_examples()
   result_is_ok &= wide_integer::example006_gcd                   ();
   result_is_ok &= wide_integer::example007_random_generator      ();
   result_is_ok &= wide_integer::example008_miller_rabin_prime    ();
+  result_is_ok &= wide_integer::example008a_miller_rabin_prime   ();
   result_is_ok &= wide_integer::example009_compare_mul_with_boost();
   result_is_ok &= wide_integer::example010_uint48_t              ();
   result_is_ok &= wide_integer::example011_uint24_t              ();

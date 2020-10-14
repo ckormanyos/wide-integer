@@ -52,7 +52,7 @@ bool wide_integer::example011_uint24_t()
 
 int main()
 {
-  const bool result_is_ok = wide_integer::example010_uint48_t();
+  const bool result_is_ok = wide_integer::example011_uint24_t();
 
   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
 }
