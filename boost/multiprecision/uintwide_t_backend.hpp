@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////
-//  Copyright Christopher Kormanyos 2019.                        //
+//  Copyright Christopher Kormanyos 2019 - 2020.                 //
 //  Distributed under the Boost Software License,                //
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt          //
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)             //
@@ -180,11 +180,109 @@
   template<const std::size_t MyDigits2,
            typename MyLimbType,
            typename IntegralType,
-           typename std::enable_if<(std::is_integral<IntegralType>::value == true)>::type const* = nullptr>
+           typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
+                                    && (std::is_integral   <IntegralType>::value == true)
+                                    && (std::is_unsigned   <IntegralType>::value == true)
+                                    && (std::numeric_limits<IntegralType>::digits <= std::numeric_limits<IntegralType>::digits))>::type const* = nullptr>
   void eval_divide(uintwide_t_backend<MyDigits2, MyLimbType>& result, const IntegralType& n)
   {
-    // TBD: Use the efficient div_by_limb function (that doles not yet exist) when appropriate.
-    result.representation() /= n;
+    using local_limb_type = typename uintwide_t_backend<MyDigits2, MyLimbType>::representation_type::limb_type;
+
+    result.representation().eval_divide_by_single_limb((local_limb_type) n, 0U, nullptr);
+  }
+
+  template<const std::size_t MyDigits2,
+           typename MyLimbType,
+           typename IntegralType,
+           typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
+                                    && (std::is_integral   <IntegralType>::value == true)
+                                    && (std::is_unsigned   <IntegralType>::value == true)
+                                    && (std::numeric_limits<IntegralType>::digits) < std::numeric_limits<IntegralType>::digits)>::type const* = nullptr>
+  void eval_divide(uintwide_t_backend<MyDigits2, MyLimbType>& result, const IntegralType& n)
+  {
+    using local_limb_type = typename uintwide_t_backend<MyDigits2, MyLimbType>::representation_type::limb_type;
+
+    result.representation() /= uintwide_t_backend<MyDigits2, MyLimbType>(n);
+  }
+
+  template<const std::size_t MyDigits2,
+           typename MyLimbType>
+  void eval_modulus(uintwide_t_backend<MyDigits2, MyLimbType>& result, const uintwide_t_backend<MyDigits2, MyLimbType>& x)
+  {
+    result.representation() %= x.crepresentation();
+  }
+
+  template<const std::size_t MyDigits2,
+           typename MyLimbType,
+           typename IntegralType,
+           typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
+                                    && (std::is_integral   <IntegralType>::value == true)
+                                    && (std::is_unsigned   <IntegralType>::value == true)
+                                    && (std::numeric_limits<IntegralType>::digits <= std::numeric_limits<IntegralType>::digits))>::type const* = nullptr>
+  void eval_integer_modulus(uintwide_t_backend<MyDigits2, MyLimbType>& x, const IntegralType& n)
+  {
+    const uintwide_t_backend<MyDigits2, MyLimbType> rem = x.crepresentation() % n;
+
+    return (IntegralType) rem;
+  }
+
+  template<const std::size_t MyDigits2,
+           typename MyLimbType,
+           typename IntegralType,
+           typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
+                                    && (std::is_integral   <IntegralType>::value == true)
+                                    && (std::is_unsigned   <IntegralType>::value == true)
+                                    && (std::numeric_limits<IntegralType>::digits) < std::numeric_limits<IntegralType>::digits)>::type const* = nullptr>
+  void eval_integer_modulus(uintwide_t_backend<MyDigits2, MyLimbType>& x, const IntegralType& n)
+  {
+    const uintwide_t_backend<MyDigits2, MyLimbType> rem = x.crepresentation() % uintwide_t_backend<MyDigits2, MyLimbType>(n);
+
+    return (IntegralType) rem;
+  }
+
+  template<const std::size_t MyDigits2,
+           typename MyLimbType>
+  void eval_bitwise_and(uintwide_t_backend<MyDigits2, MyLimbType>& result, const uintwide_t_backend<MyDigits2, MyLimbType>& x)
+  {
+    result.representation() &= x.crepresentation();
+  }
+
+  template<const std::size_t MyDigits2,
+           typename MyLimbType>
+  void eval_bitwise_or(uintwide_t_backend<MyDigits2, MyLimbType>& result, const uintwide_t_backend<MyDigits2, MyLimbType>& x)
+  {
+    result.representation() |= x.crepresentation();
+  }
+
+  template<const std::size_t MyDigits2,
+           typename MyLimbType>
+  void eval_bitwise_xor(uintwide_t_backend<MyDigits2, MyLimbType>& result, const uintwide_t_backend<MyDigits2, MyLimbType>& x)
+  {
+    result.representation() ^= x.crepresentation();
+  }
+
+  template<const std::size_t MyDigits2,
+           typename MyLimbType>
+  void eval_complement(uintwide_t_backend<MyDigits2, MyLimbType>& result, const uintwide_t_backend<MyDigits2, MyLimbType>& x)
+  {
+    for(auto i = 0U; i < std::tuple_size<typename uintwide_t_backend<MyDigits2, MyLimbType>::representation_type>::value; ++i)
+    {
+      using local_limb_type = typename uintwide_t_backend<MyDigits2, MyLimbType>::limb_type;
+
+      result.representation().representation()[i] = (local_limb_type) ~x.crepresentation().crepresentation()[i];
+    }
+  }
+
+  template<const std::size_t MyDigits2,
+           typename MyLimbType>
+  void eval_powm(      uintwide_t_backend<MyDigits2, MyLimbType>& result,
+                 const uintwide_t_backend<MyDigits2, MyLimbType>& b,
+                 const uintwide_t_backend<MyDigits2, MyLimbType>& p,
+                 const uintwide_t_backend<MyDigits2, MyLimbType>& m)
+  {
+    result.representation() = powm(b.crepresentation(),
+                                   p.crepresentation(),
+                                   m.crepresentation());
   }
 
   template<const std::size_t MyDigits2,
@@ -203,6 +301,20 @@
   void eval_right_shift(uintwide_t_backend<MyDigits2, MyLimbType>& result, const IntegralType& n)
   {
     result.representation() >>= n;
+  }
+
+  template<const std::size_t MyDigits2,
+           typename MyLimbType>
+  unsigned eval_lsb(const uintwide_t_backend<MyDigits2, MyLimbType>& a)
+  {
+    return (unsigned) lsb(a.crepresentation());
+  }
+
+  template<const std::size_t MyDigits2,
+           typename MyLimbType>
+  unsigned eval_msb(const uintwide_t_backend<MyDigits2, MyLimbType>& a)
+  {
+    return (unsigned) msb(a.crepresentation());
   }
 
   template<const std::size_t MyDigits2,

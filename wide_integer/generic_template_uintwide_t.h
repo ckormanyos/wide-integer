@@ -322,7 +322,7 @@
            const std::uint_fast32_t Digits2,
            typename LimbType>
   bool miller_rabin(const uintwide_t<Digits2, LimbType>& n,
-                    const std::uint_fast32_t                    number_of_trials,
+                    const std::uint_fast32_t             number_of_trials,
                     DistributionType&                    distribution,
                     GeneratorType&                       generator);
 
@@ -3761,6 +3761,7 @@
   bool example006_gcd();
   bool example007_random_generator();
   bool example008_miller_rabin_prime();
+  bool example008a_miller_rabin_prime();
   bool example009_compare_mul_with_boost();
   bool example010_uint48_t();
   bool example011_uint24_t();
