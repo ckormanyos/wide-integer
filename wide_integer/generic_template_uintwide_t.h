@@ -1611,7 +1611,7 @@
                                                 const std::uint_fast32_t n,
                                                       limb_type*       t)
     {
-      if(n <= 63U)
+      if(n <= 32U)
       {
         static_cast<void>(t);
 

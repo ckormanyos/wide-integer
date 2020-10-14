@@ -183,10 +183,12 @@
            typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
                                     && (std::is_integral   <IntegralType>::value == true)
                                     && (std::is_unsigned   <IntegralType>::value == true)
-                                    && (std::numeric_limits<IntegralType>::digits <= std::numeric_limits<IntegralType>::digits))>::type const* = nullptr>
+                                    && (std::numeric_limits<IntegralType>::digits <= std::numeric_limits<MyLimbType>::digits))>::type const* = nullptr>
   void eval_divide(uintwide_t_backend<MyDigits2, MyLimbType>& result, const IntegralType& n)
   {
-    using local_limb_type = typename uintwide_t_backend<MyDigits2, MyLimbType>::representation_type::limb_type;
+    using local_wide_integer_type = typename uintwide_t_backend<MyDigits2, MyLimbType>::representation_type;
+
+    using local_limb_type = typename local_wide_integer_type::limb_type;
 
     result.representation().eval_divide_by_single_limb((local_limb_type) n, 0U, nullptr);
   }
@@ -197,12 +199,12 @@
            typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
                                     && (std::is_integral   <IntegralType>::value == true)
                                     && (std::is_unsigned   <IntegralType>::value == true)
-                                    && (std::numeric_limits<IntegralType>::digits) < std::numeric_limits<IntegralType>::digits)>::type const* = nullptr>
+                                    && (std::numeric_limits<IntegralType>::digits) > std::numeric_limits<MyLimbType>::digits)>::type const* = nullptr>
   void eval_divide(uintwide_t_backend<MyDigits2, MyLimbType>& result, const IntegralType& n)
   {
-    using local_limb_type = typename uintwide_t_backend<MyDigits2, MyLimbType>::representation_type::limb_type;
+    using local_wide_integer_type = typename uintwide_t_backend<MyDigits2, MyLimbType>::representation_type;
 
-    result.representation() /= uintwide_t_backend<MyDigits2, MyLimbType>(n);
+    result.representation() /= n;
   }
 
   template<const std::size_t MyDigits2,

@@ -115,16 +115,17 @@ bool wide_integer::example009_compare_mul_with_boost()
     }
   }
 
-  // Boost.Multiprecision 1.71
-  // bits: 16384, kops_per_sec: 4.7
-  // bits: 32768, kops_per_sec: 1.2
-  // bits: 65536, kops_per_sec: 0.3
-  // bits: 131072, kops_per_sec: 0.075
-  // bits: 262144, kops_per_sec: 0.019
-  // bits: 524288, kops_per_sec: 0.0047
+  // uintwide_t
+  // bits: 16384,  kops_per_sec: 10.0
+  // bits: 32768,  kops_per_sec: 3.3
+  // bits: 65536,  kops_per_sec: 0.96
+  // bits: 131072, kops_per_sec: 0.36
 
-  // TBD:
-  // Use Boost.Multiprecision 1.73 above.
+  // Boost.Multiprecision 1.73
+  // bits: 16384,  kops_per_sec: 8.8
+  // bits: 32768,  kops_per_sec: 2.9
+  // bits: 65536,  kops_per_sec: 0.96
+  // bits: 131072, kops_per_sec: 0.32
 
   const float kops_per_sec = float(count) / float((std::uint32_t) total_time);
 
