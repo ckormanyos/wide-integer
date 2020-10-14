@@ -74,7 +74,10 @@
 
     uintwide_t_backend& operator=(const uintwide_t_backend& other)
     {
-      m_value = other.m_value;
+      if(this != &other)
+      {
+        m_value.representation() = other.m_value.crepresentation();
+      }
 
       return *this;
     }
