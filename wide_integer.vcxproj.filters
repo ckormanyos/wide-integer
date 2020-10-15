@@ -93,9 +93,6 @@
     <ClCompile Include="examples\example008_miller_rabin_prime.cpp">
       <Filter>Source Files\examples</Filter>
     </ClCompile>
-    <ClCompile Include="examples\example009_compare_mul_with_boost.cpp">
-      <Filter>Source Files\examples</Filter>
-    </ClCompile>
     <ClCompile Include="test\test_uintwide_t_examples.cpp">
       <Filter>Source Files\test</Filter>
     </ClCompile>
@@ -118,6 +115,9 @@
       <Filter>Source Files\test</Filter>
     </ClCompile>
     <ClCompile Include="examples\example008a_miller_rabin_prime.cpp">
+      <Filter>Source Files\examples</Filter>
+    </ClCompile>
+    <ClCompile Include="examples\example009_timed_mul.cpp">
       <Filter>Source Files\examples</Filter>
     </ClCompile>
   </ItemGroup>

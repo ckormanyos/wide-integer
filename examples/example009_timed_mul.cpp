@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////
-//  Copyright Christopher Kormanyos 2018 -2019.                  //
+//  Copyright Christopher Kormanyos 2018 -2020.                  //
 //  Distributed under the Boost Software License,                //
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt          //
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)             //
@@ -16,20 +16,9 @@
 #include <random>
 #include <vector>
 
-constexpr unsigned wide_integer_test9_digits2 = 512U << 7U;
+constexpr unsigned wide_integer_test9_digits2 = 512U << 8U;
 
-#define WIDE_INTEGER_USE_GENERIC_UINTWIDE_T
-//#define WIDE_INTEGER_USE_BOOST_MULTIPRECISION
-
-#if defined(WIDE_INTEGER_USE_GENERIC_UINTWIDE_T)
 #include <wide_integer/generic_template_uintwide_t.h>
-#endif
-
-#if defined(WIDE_INTEGER_USE_BOOST_MULTIPRECISION)
-#include <boost/multiprecision/cpp_int.hpp>
-
-namespace wide_integer { bool example009_compare_mul_with_boost(); }
-#endif
 
 template<typename UnsignedIntegralIteratorType,
          typename RandomEngineType>
@@ -56,18 +45,7 @@ void get_random_big_uint(RandomEngineType& rng, UnsignedIntegralIteratorType it_
   }
 }
 
-#if defined(WIDE_INTEGER_USE_BOOST_MULTIPRECISION)
-using big_uint_backend_type =
-  boost::multiprecision::cpp_int_backend<wide_integer_test9_digits2,
-                                         wide_integer_test9_digits2,
-                                         boost::multiprecision::unsigned_magnitude>;
-
-using big_uint_type = boost::multiprecision::number<big_uint_backend_type>;
-#endif
-
-#if defined(WIDE_INTEGER_USE_GENERIC_UINTWIDE_T)
 using big_uint_type = wide_integer::generic_template::uintwide_t<wide_integer_test9_digits2>;
-#endif
 
 namespace local
 {
@@ -75,7 +53,7 @@ namespace local
   std::vector<big_uint_type> b(a.size());
 }
 
-bool wide_integer::example009_compare_mul_with_boost()
+bool wide_integer::example009_timed_mul()
 {
   using random_engine_type = std::minstd_rand;
 
@@ -115,18 +93,6 @@ bool wide_integer::example009_compare_mul_with_boost()
     }
   }
 
-  // uintwide_t
-  // bits: 16384,  kops_per_sec: 10.0
-  // bits: 32768,  kops_per_sec: 3.3
-  // bits: 65536,  kops_per_sec: 0.96
-  // bits: 131072, kops_per_sec: 0.36
-
-  // Boost.Multiprecision 1.73
-  // bits: 16384,  kops_per_sec: 8.8
-  // bits: 32768,  kops_per_sec: 2.9
-  // bits: 65536,  kops_per_sec: 0.96
-  // bits: 131072, kops_per_sec: 0.32
-
   const float kops_per_sec = float(count) / float((std::uint32_t) total_time);
 
   std::cout << "bits: "
@@ -145,7 +111,7 @@ bool wide_integer::example009_compare_mul_with_boost()
 
 int main()
 {
-  const bool result_is_ok = wide_integer::example009_compare_mul_with_boost();
+  const bool result_is_ok = wide_integer::example009_timed_mul();
 
   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
 }
