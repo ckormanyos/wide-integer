@@ -71,7 +71,7 @@
   typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
                            && (std::is_integral   <IntegralType>::value == true)
                            && (std::is_unsigned   <IntegralType>::value == true)
-                           && std::numeric_limits<IntegralType>::digits <= (std::numeric_limits<LimbType>::digits)), typename uintwide_t<Digits2, LimbType>::limb_type>::type
+                           && (std::numeric_limits<IntegralType>::digits <= std::numeric_limits<LimbType>::digits)), typename uintwide_t<Digits2, LimbType>::limb_type>::type
   operator%(const uintwide_t<Digits2, LimbType>& u, const IntegralType& v);
 
   template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType>
@@ -1427,6 +1427,7 @@
 
       constexpr std::uint_fast32_t local_number_of_limbs = uintwide_t<OtherDigits2, LimbType>::number_of_limbs;
 
+      // TBD: Can use specialized allocator or memory pool for these arrays.
       std::array<limb_type, local_number_of_limbs * 2U> result;
       std::array<limb_type, local_number_of_limbs * 4U> t;
 
@@ -1611,7 +1612,7 @@
                                                 const std::uint_fast32_t n,
                                                       limb_type*       t)
     {
-      if(n <= 63U)
+      if(n <= 32U)
       {
         static_cast<void>(t);
 
@@ -2403,7 +2404,7 @@
   typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
                            && (std::is_integral   <IntegralType>::value == true)
                            && (std::is_unsigned   <IntegralType>::value == true)
-                           && std::numeric_limits<IntegralType>::digits <= (std::numeric_limits<LimbType>::digits)), typename uintwide_t<Digits2, LimbType>::limb_type>::type
+                           && (std::numeric_limits<IntegralType>::digits <= std::numeric_limits<LimbType>::digits)), typename uintwide_t<Digits2, LimbType>::limb_type>::type
   operator%(const uintwide_t<Digits2, LimbType>& u, const IntegralType& v)
   {
     uintwide_t<Digits2, LimbType> remainder;
@@ -3762,7 +3763,7 @@
   bool example007_random_generator();
   bool example008_miller_rabin_prime();
   bool example008a_miller_rabin_prime();
-  bool example009_compare_mul_with_boost();
+  bool example009_timed_mul();
   bool example010_uint48_t();
   bool example011_uint24_t();
 
