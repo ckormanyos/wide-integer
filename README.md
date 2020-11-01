@@ -57,6 +57,8 @@ The static `uint512_t` variable `x` is initialized with unsigned value `3U`.
 
 # Detailed examples
 
+The example below performs some elementary algebraic calculations with a 256-bit unsigned integral type.
+
 ```C
 #include <iomanip>
 #include <iostream>
