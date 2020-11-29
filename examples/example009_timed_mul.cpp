@@ -16,7 +16,7 @@
 #include <random>
 #include <vector>
 
-constexpr unsigned wide_integer_test9_digits2 = 512U << 8U;
+constexpr unsigned wide_integer_test9_digits2 = 512U << 7U;
 
 #include <wide_integer/generic_template_uintwide_t.h>
 
