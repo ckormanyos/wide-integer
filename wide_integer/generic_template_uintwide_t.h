@@ -1204,25 +1204,15 @@
         }
         else
         {
-          const uintwide_t ten(std::uint8_t(10U));
-
           while(t.is_zero() == false)
           {
-            // TBD: Try to generally improve efficiency and reduce
-            // the number of temporaries and the count of operations
-            // on them in the conversion to decimal string.
+            const uintwide_t tmp(t);
 
-            const uintwide_t t_temp(t);
-
-            t /= ten;
-
-            char c = char((t_temp - (uintwide_t(t).mul_by_limb(10U))).values[0U]);
-
-            if(c <= char(9)) { c += char(0x30); }
+            t.eval_divide_by_single_limb(limb_type(10U), 0U, nullptr);
 
             --pos;
 
-            str_temp[pos] = c;
+            str_temp[pos] = (char) ((limb_type) (tmp - (uintwide_t(t).mul_by_limb(10U))) + 0x30U);
           }
         }
 
@@ -2594,7 +2584,7 @@
     else                                                 { base_rep = 10U; }
 
     const std::uint_fast32_t field_width = std::uint_fast32_t(out.width());
-    const char        fill_char   = out.fill();
+    const char               fill_char   = out.fill();
 
     using local_wide_integer_type = uintwide_t<Digits2, LimbType>;
 
