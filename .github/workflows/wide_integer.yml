@@ -9,7 +9,7 @@ jobs:
         with:
           fetch-depth: '0'
       - name: update-tools
-        run: sudo apt install g++-10
+        run: sudo apt install g++-9
       - name: update-libboost-dev
         run: sudo apt install libboost-dev
       - name: update-libboost-all-dev
