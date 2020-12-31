@@ -31,7 +31,7 @@
   // interacting as a backend with boost::muliprecision.
   template<const std::size_t MyDigits2,
            typename MyLimbType>
-  struct boost::multiprecision::number_category<uintwide_t_backend<MyDigits2, MyLimbType>>
+  struct number_category<uintwide_t_backend<MyDigits2, MyLimbType>>
     : public boost::mpl::int_<boost::multiprecision::number_kind_integer> { };
 
   // This is the uintwide_t_backend multiple precision class.
@@ -105,6 +105,8 @@
 
     std::string str(std::streamsize number_of_digits, const std::ios::fmtflags format_flags) const
     {
+      (void) number_of_digits;
+
       char pstr[representation_type::wr_string_max_buffer_size_dec];
 
       const std::uint_fast8_t base_rep     = (((format_flags & std::ios::hex)       != 0) ? 16U : 10U);
@@ -204,8 +206,6 @@
                                     && (std::numeric_limits<IntegralType>::digits) > std::numeric_limits<MyLimbType>::digits)>::type const* = nullptr>
   void eval_divide(uintwide_t_backend<MyDigits2, MyLimbType>& result, const IntegralType& n)
   {
-    using local_wide_integer_type = typename uintwide_t_backend<MyDigits2, MyLimbType>::representation_type;
-
     result.representation() /= n;
   }
 

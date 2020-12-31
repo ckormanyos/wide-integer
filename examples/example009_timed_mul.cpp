@@ -71,8 +71,6 @@ bool wide_integer::example009_timed_mul()
 
   long long total_time;
 
-  const std::clock_t start = std::clock();
-
   const std::chrono::high_resolution_clock::time_point begin = std::chrono::high_resolution_clock::now();
 
   for(;;)
