@@ -18,6 +18,7 @@ bool wide_integer::example007_random_generator()
 
   bool result_is_ok = true;
 
+  #if 0
   {
     // Generate a random number with wide_integer_type having 32-bit limbs.
     using wide_integer_type  = wide_integer::generic_template::uintwide_t<256U, std::uint32_t>;
@@ -45,6 +46,7 @@ bool wide_integer::example007_random_generator()
 
     result_is_ok &= (n == wide_integer_type(str_control.c_str()));
   }
+  #endif
 
   {
     // Generate a random number with wide_integer_type having 8-bit limbs.
