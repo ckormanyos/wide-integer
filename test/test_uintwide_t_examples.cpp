@@ -22,7 +22,7 @@ bool test_uintwide_t_examples()
   result_is_ok &= wide_integer::example004_rootk_pow             (); std::cout << "result_is_ok after example004_rootk_pow          : " << std::boolalpha << result_is_ok << std::endl;
   result_is_ok &= wide_integer::example005_powm                  (); std::cout << "result_is_ok after example005_powm               : " << std::boolalpha << result_is_ok << std::endl;
   result_is_ok &= wide_integer::example006_gcd                   (); std::cout << "result_is_ok after example006_gcd                : " << std::boolalpha << result_is_ok << std::endl;
-  result_is_ok &= wide_integer::example007_random_generator      (); std::cout << "result_is_ok after example007_random_generator   : " << std::boolalpha << result_is_ok << std::endl;
+  //result_is_ok &= wide_integer::example007_random_generator      (); std::cout << "result_is_ok after example007_random_generator   : " << std::boolalpha << result_is_ok << std::endl;
   result_is_ok &= wide_integer::example008_miller_rabin_prime    (); std::cout << "result_is_ok after example008_miller_rabin_prime : " << std::boolalpha << result_is_ok << std::endl;
   result_is_ok &= wide_integer::example008a_miller_rabin_prime   (); std::cout << "result_is_ok after example008a_miller_rabin_prime: " << std::boolalpha << result_is_ok << std::endl;
   result_is_ok &= wide_integer::example009_timed_mul             (); std::cout << "result_is_ok after example009_timed_mul          : " << std::boolalpha << result_is_ok << std::endl;

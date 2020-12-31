@@ -6,6 +6,7 @@
 ///////////////////////////////////////////////////////////////////
 
 #include <random>
+#include <string>
 
 #include <wide_integer/generic_template_uintwide_t.h>
 
@@ -13,7 +14,7 @@ bool wide_integer::example007_random_generator()
 {
   using random_engine_type = std::minstd_rand;
 
-  const char str_control[] = "53413622039681179743449193804286578688081252809224238447264353161956925468397";
+  const std::string str_control("53413622039681179743449193804286578688081252809224238447264353161956925468397");
 
   bool result_is_ok = true;
 
@@ -28,7 +29,7 @@ bool wide_integer::example007_random_generator()
 
     const wide_integer_type n = distribution(generator);
 
-    result_is_ok &= (n == wide_integer_type(str_control));
+    result_is_ok &= (n == wide_integer_type(str_control.c_str()));
   }
 
   {
@@ -42,7 +43,7 @@ bool wide_integer::example007_random_generator()
 
     const wide_integer_type n = distribution(generator);
 
-    result_is_ok &= (n == wide_integer_type(str_control));
+    result_is_ok &= (n == wide_integer_type(str_control.c_str()));
   }
 
   {
@@ -56,7 +57,7 @@ bool wide_integer::example007_random_generator()
 
     const wide_integer_type n = distribution(generator);
 
-    result_is_ok &= (n == wide_integer_type(str_control));
+    result_is_ok &= (n == wide_integer_type(str_control.c_str()));
   }
 
   return result_is_ok;
