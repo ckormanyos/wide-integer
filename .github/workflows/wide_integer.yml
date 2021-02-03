@@ -49,6 +49,31 @@ jobs:
           echo "result_wide_integer:"  "$result_wide_integer"
           exit $result_wide_integer
         shell: bash
+  run-gcc-10-cpp11-asan:
+    runs-on: ubuntu-20.04
+    if: "!contains(github.event.commits[0].message, '[CI SKIP]')"
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: '0'
+      - name: update-tools
+        run: sudo apt install g++-10
+      - name: update-libboost-dev
+        run: sudo apt install libboost-dev
+      - name: update-libboost-all-dev
+        run: sudo apt install libboost-all-dev
+      - name: run-gcc-10-cpp11-asan
+        run: |
+          echo "compile ./wide_integer.exe"
+          g++-10 -v
+          g++-10 -finline-functions -finline-limit=32 -fsanitize=address -m64 -O3 -Wall -Wextra -pedantic -Wno-maybe-uninitialized -Wno-cast-function-type -std=c++11 -I. -pthread -lpthread  test/test.cpp test/test_uintwide_t_boost_backend.cpp test/test_uintwide_t_edge_cases.cpp test/test_uintwide_t_examples.cpp test/test_uintwide_t_spot_values.cpp examples/example001a_div_mod.cpp examples/example001_mul_div.cpp examples/example002_shl_shr.cpp examples/example003a_cbrt.cpp examples/example003_sqrt.cpp examples/example004_rootk_pow.cpp examples/example005_powm.cpp examples/example006_gcd.cpp examples/example007_random_generator.cpp examples/example008_miller_rabin_prime.cpp examples/example008a_miller_rabin_prime.cpp examples/example009_timed_mul.cpp examples/example010_uint48_t.cpp examples/example011_uint24_t.cpp -o wide_integer.exe
+          echo "ls ./wide_integer.exe"
+          ls ./wide_integer.exe
+          ./wide_integer.exe
+          result_wide_integer=$?
+          echo "result_wide_integer:"  "$result_wide_integer"
+          exit $result_wide_integer
+        shell: bash
   run-gcc-10-cpp14:
     runs-on: ubuntu-20.04
     if: "!contains(github.event.commits[0].message, '[CI SKIP]')"
