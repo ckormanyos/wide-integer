@@ -84,7 +84,7 @@ jobs:
           echo "ls ./wide_integer.exe"
           ls -la ./wide_integer.exe
           ./wide_integer.exe
-  apple-clang-native:
+  apple-gcc-clang-native:
     runs-on: macos-latest
     defaults:
       run:
@@ -93,18 +93,21 @@ jobs:
       fail-fast: false
       matrix:
         standard: [ c++11, c++14, c++17, c++2a ]
+        compiler: [ g++, clang++ ]
     if: "!contains(github.event.commits[0].message, '[CI SKIP]')"
     steps:
       - uses: actions/checkout@v2
         with:
           fetch-depth: '0'
+      - name: install gcc
+        run: brew install gcc
       - name: install boost
         run: brew install boost
-      - name: apple-clang-native
+      - name: apple-gcc-clang-native
         run: |
           echo "compile ./wide_integer.exe"
-          clang++ -v
-          clang++ -finline-functions -m64 -O3 -Wall -Wextra -pedantic -std=${{ matrix.standard }} -I. -pthread -lpthread  test/test.cpp test/test_uintwide_t_boost_backend.cpp test/test_uintwide_t_edge_cases.cpp test/test_uintwide_t_examples.cpp test/test_uintwide_t_spot_values.cpp examples/example001a_div_mod.cpp examples/example001_mul_div.cpp examples/example002_shl_shr.cpp examples/example003a_cbrt.cpp examples/example003_sqrt.cpp examples/example004_rootk_pow.cpp examples/example005_powm.cpp examples/example006_gcd.cpp examples/example007_random_generator.cpp examples/example008_miller_rabin_prime.cpp examples/example008a_miller_rabin_prime.cpp examples/example009_timed_mul.cpp examples/example010_uint48_t.cpp examples/example011_uint24_t.cpp -o wide_integer.exe
+          ${{ matrix.compiler }} -v
+          ${{ matrix.compiler }} -finline-functions -m64 -O3 -Wall -Wextra -pedantic -std=${{ matrix.standard }} -I. -pthread -lpthread  test/test.cpp test/test_uintwide_t_boost_backend.cpp test/test_uintwide_t_edge_cases.cpp test/test_uintwide_t_examples.cpp test/test_uintwide_t_spot_values.cpp examples/example001a_div_mod.cpp examples/example001_mul_div.cpp examples/example002_shl_shr.cpp examples/example003a_cbrt.cpp examples/example003_sqrt.cpp examples/example004_rootk_pow.cpp examples/example005_powm.cpp examples/example006_gcd.cpp examples/example007_random_generator.cpp examples/example008_miller_rabin_prime.cpp examples/example008a_miller_rabin_prime.cpp examples/example009_timed_mul.cpp examples/example010_uint48_t.cpp examples/example011_uint24_t.cpp -o wide_integer.exe
           echo "ls ./wide_integer.exe"
           ls -la ./wide_integer.exe
           ./wide_integer.exe
