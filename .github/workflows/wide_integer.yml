@@ -11,7 +11,6 @@ jobs:
       matrix:
         standard: [ c++11, c++14, c++17, c++2a ]
         compiler: [ g++, clang++ ]
-    if: "!contains(github.event.commits[0].message, '[CI SKIP]')"
     steps:
       - uses: actions/checkout@v2
         with:
@@ -38,7 +37,6 @@ jobs:
       matrix:
         standard: [ c++11, c++14, c++17, c++20 ]
         compiler: [ g++-10, clang++-10 ]
-    if: "!contains(github.event.commits[0].message, '[CI SKIP]')"
     steps:
       - uses: actions/checkout@v2
         with:
@@ -67,7 +65,6 @@ jobs:
       matrix:
         standard: [ c++11, c++14, c++17, c++2a ]
         compiler: [ g++, clang++ ]
-    if: "!contains(github.event.commits[0].message, '[CI SKIP]')"
     steps:
       - uses: actions/checkout@v2
         with:
@@ -94,7 +91,6 @@ jobs:
       matrix:
         standard: [ c++11, c++14, c++17, c++2a ]
         compiler: [ g++, clang++ ]
-    if: "!contains(github.event.commits[0].message, '[CI SKIP]')"
     steps:
       - uses: actions/checkout@v2
         with:
@@ -113,15 +109,13 @@ jobs:
           ./wide_integer.exe
   msvc-release-x64:
     runs-on: windows-latest
-    if: "!contains(github.event.commits[0].message, '[CI SKIP]')"
     steps:
       - uses: actions/checkout@v1
       - uses: ilammy/msvc-dev-cmd@v1
       - name: msvc-release-x64
-        shell: cmd
-        working-directory: ./
         run: |
           set INCLUDE=%cd%;%BOOST_ROOT_1_72_0%\include\boost-1_72;%INCLUDE%
           MSBuild -m wide_integer.sln -p:useenv=true -p:Configuration=Release -p:Platform=x64 /t:Rebuild
           dir %cd%\x64\Release\wide_integer.exe
           %cd%\x64\Release\wide_integer.exe
+        working-directory: ./
