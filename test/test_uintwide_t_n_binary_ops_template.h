@@ -61,11 +61,13 @@
     {
       bool result_is_ok = true;
 
+      std::atomic_flag test_lock = ATOMIC_FLAG_INIT;
+
       my_concurrency::parallel_for
       (
         std::size_t(0U),
         size(),
-        [&result_is_ok, this](std::size_t i)
+        [&test_lock, &result_is_ok, this](std::size_t i)
         {
           const boost_uint_type c_boost = a_boost[i] + b_boost[i];
           const local_uint_type c_local = a_local[i] + b_local[i];
@@ -73,7 +75,9 @@
           const std::string str_boost = hexlexical_cast(c_boost);
           const std::string str_local = hexlexical_cast(c_local);
 
+          while(test_lock.test_and_set()) { ; }
           result_is_ok &= (str_boost == str_local);
+          test_lock.clear();
         }
       );
 
@@ -84,11 +88,13 @@
     {
       bool result_is_ok = true;
 
+      std::atomic_flag test_lock = ATOMIC_FLAG_INIT;
+
       my_concurrency::parallel_for
       (
         std::size_t(0U),
         size(),
-        [&result_is_ok, this](std::size_t i)
+        [&test_lock, &result_is_ok, this](std::size_t i)
         {
           const boost_uint_type c_boost = a_boost[i] - b_boost[i];
           const local_uint_type c_local = a_local[i] - b_local[i];
@@ -96,7 +102,9 @@
           const std::string str_boost = hexlexical_cast(c_boost);
           const std::string str_local = hexlexical_cast(c_local);
 
+          while(test_lock.test_and_set()) { ; }
           result_is_ok &= (str_boost == str_local);
+          test_lock.clear();
         }
       );
 
@@ -107,11 +115,13 @@
     {
       bool result_is_ok = true;
 
+      std::atomic_flag test_lock = ATOMIC_FLAG_INIT;
+
       my_concurrency::parallel_for
       (
         std::size_t(0U),
         size(),
-        [&result_is_ok, this](std::size_t i)
+        [&test_lock, &result_is_ok, this](std::size_t i)
         {
           const boost_uint_type c_boost = a_boost[i] * b_boost[i];
           const local_uint_type c_local = a_local[i] * b_local[i];
@@ -119,7 +129,9 @@
           const std::string str_boost = hexlexical_cast(c_boost);
           const std::string str_local = hexlexical_cast(c_local);
 
+          while(test_lock.test_and_set()) { ; }
           result_is_ok &= (str_boost == str_local);
+          test_lock.clear();
         }
       );
 
@@ -151,7 +163,9 @@
           const std::string str_boost = hexlexical_cast(c_boost);
           const std::string str_local = hexlexical_cast(c_local);
 
+          while(test_lock.test_and_set()) { ; }
           result_is_ok &= (str_boost == str_local);
+          test_lock.clear();
         }
       );
 
@@ -183,7 +197,9 @@
           const std::string str_boost = hexlexical_cast(c_boost);
           const std::string str_local = hexlexical_cast(c_local);
 
+          while(test_lock.test_and_set()) { ; }
           result_is_ok &= (str_boost == str_local);
+          test_lock.clear();
         }
       );
 
@@ -194,11 +210,13 @@
     {
       bool result_is_ok = true;
 
+      std::atomic_flag test_lock = ATOMIC_FLAG_INIT;
+
       my_concurrency::parallel_for
       (
         std::size_t(0U),
         size(),
-        [&result_is_ok, this](std::size_t i)
+        [&test_lock, &result_is_ok, this](std::size_t i)
         {
           const boost_uint_type c_boost = sqrt(a_boost[i]);
           const local_uint_type c_local = sqrt(a_local[i]);
@@ -206,7 +224,9 @@
           const std::string str_boost = hexlexical_cast(c_boost);
           const std::string str_local = hexlexical_cast(c_local);
 
+          while(test_lock.test_and_set()) { ; }
           result_is_ok &= (str_boost == str_local);
+          test_lock.clear();
         }
       );
 
