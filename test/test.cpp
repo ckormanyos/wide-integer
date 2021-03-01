@@ -1,5 +1,5 @@
 ﻿///////////////////////////////////////////////////////////////////
-//  Copyright Christopher Kormanyos 2019 - 2020.                 //
+//  Copyright Christopher Kormanyos 2018 - 2021.                 //
 //  Distributed under the Boost Software License,                //
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt          //
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)             //
@@ -16,9 +16,23 @@
 #include <test/test_uintwide_t_n_binary_ops_template.h>
 #include <test/test_uintwide_t_n_binary_ops_mul_n_by_m_template.h>
 
+#if defined(__clang__)
+  #if defined __has_feature && __has_feature(thread_sanitizer)
+  #define UINTWIDE_T_REDUCE_TEST_DEPTH
+  #endif
+#elif defined(__GNUC__)
+  #if defined(__SANITIZE_THREAD__)
+  #define UINTWIDE_T_REDUCE_TEST_DEPTH
+  #endif
+#endif
+
 namespace {
 
-constexpr std::size_t test_uintwide_t_n_binary_ops_rounds = 2U;
+#if !defined(UINTWIDE_T_REDUCE_TEST_DEPTH)
+constexpr std::size_t test_uintwide_t_n_binary_ops_rounds = 4U;
+#else
+constexpr std::size_t test_uintwide_t_n_binary_ops_rounds = 1U;
+#endif
 
 bool test_uintwide_t_dummy_tag()
 {

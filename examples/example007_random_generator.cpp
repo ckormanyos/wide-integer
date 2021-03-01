@@ -5,9 +5,6 @@
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)             //
 ///////////////////////////////////////////////////////////////////
 
-#include <iomanip>
-#include <iostream>
-
 #include <random>
 #include <string>
 
@@ -45,8 +42,6 @@ namespace
 
     const bool result_is_ok =
       (n == wide_integer_type("0xF258D22D4DB91392B5EE8CB6ABE457F8401F7AC78BC80F1CC96D191CF6F6AEA6"));
-
-    std::cout << "0x" << std::hex << std::uppercase << n << std::endl;
 
     return result_is_ok;
   }
