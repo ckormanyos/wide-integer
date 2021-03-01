@@ -3452,23 +3452,22 @@
     {
       // Generate random numbers r, where a <= r <= b.
 
-      result_type result(std::uint_fast8_t(0U));
+      result_type result(std::uint8_t(0U));
 
       using local_limb_type = typename result_type::limb_type;
 
       using generator_result_type = typename GeneratorType::result_type;
 
-      constexpr std::uint_fast8_t digits_generator_result_type =
-        std::uint_fast8_t(std::numeric_limits<generator_result_type>::digits);
+      constexpr std::uint32_t digits_generator_result_type =
+        std::uint32_t(std::numeric_limits<generator_result_type>::digits);
 
       static_assert((digits_generator_result_type % 8U) == 0U,
                     "Error: Generator result type must have a multiple of 8 bits.");
 
-      constexpr std::uint_fast8_t digits_limb_ratio = 
-        std::uint_fast8_t(std::numeric_limits<local_limb_type>::digits / 8U);
+      constexpr std::uint32_t digits_limb_ratio = 
+        std::uint32_t(std::numeric_limits<local_limb_type>::digits / 8U);
 
-      constexpr std::uint_fast8_t digits_gtor_ratio = 
-        std::uint_fast8_t(digits_generator_result_type / 8U);
+      constexpr std::uint32_t digits_gtor_ratio = std::uint32_t(digits_generator_result_type / 8U);
 
       generator_result_type value = generator_result_type();
 

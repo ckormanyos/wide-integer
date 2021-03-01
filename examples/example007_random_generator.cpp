@@ -18,7 +18,20 @@ namespace
   template<typename LimbType>
   bool generate()
   {
-    using random_engine_type = std::mt19937;
+    using random_engine_type = std::mersenne_twister_engine<std::uint64_t,
+                                                            64,
+                                                            312,
+                                                            156,
+                                                            31,
+                                                            UINT64_C(0xB5026F5AA96619E9),
+                                                            29,
+                                                            UINT64_C(0x5555555555555555),
+                                                            17,
+                                                            UINT64_C(0x71D67FFFEDA60000),
+                                                            37,
+                                                            UINT64_C(0xFFF7EEE000000000),
+                                                            43,
+                                                            UINT64_C(6364136223846793005)>;
 
     using wide_integer_type  = wide_integer::generic_template::uintwide_t<256U, std::uint32_t>;
     using distribution_type  = wide_integer::generic_template::uniform_int_distribution<wide_integer_type::my_digits, typename wide_integer_type::limb_type>;
@@ -31,7 +44,7 @@ namespace
     const wide_integer_type n = distribution(generator);
 
     const bool result_is_ok =
-      (n == wide_integer_type("0x3895AFE1E9D30005F807B7DF2082352CD5C31F79E7E1FAEE22AE9EF6D091BB5C"));
+      (n == wide_integer_type("0xF258D22D4DB91392B5EE8CB6ABE457F8401F7AC78BC80F1CC96D191CF6F6AEA6"));
 
     std::cout << "0x" << std::hex << std::uppercase << n << std::endl;
 
