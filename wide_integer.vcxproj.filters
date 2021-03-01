@@ -29,6 +29,9 @@
     <Filter Include=".github\workflows">
       <UniqueIdentifier>{26852f75-5102-4d51-a876-48fadc8bc7dc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="_doc">
+      <UniqueIdentifier>{2fd84722-7a2f-490d-80e6-9961207cee67}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="wide_integer\generic_template_uintwide_t.h">
@@ -130,6 +133,9 @@
   <ItemGroup>
     <None Include=".github\workflows\wide_integer.yml">
       <Filter>.github\workflows</Filter>
+    </None>
+    <None Include="README.md">
+      <Filter>_doc</Filter>
     </None>
   </ItemGroup>
 </Project>
