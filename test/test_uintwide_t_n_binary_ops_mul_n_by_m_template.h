@@ -1,6 +1,8 @@
 #ifndef TEST_UINTWIDE_T_N_BINARY_OPS_MUL_N_BY_M_TEMPLATE_2019_12_26_H_
   #define TEST_UINTWIDE_T_N_BINARY_OPS_MUL_N_BY_M_TEMPLATE_2019_12_26_H_
 
+  #include <atomic>
+
   #include <test/test_uintwide_t_n_base.h>
 
   template<const std::size_t MyDigits2A,
@@ -89,21 +91,26 @@
     {
       bool result_is_ok = true;
 
+      std::atomic_flag test_lock = ATOMIC_FLAG_INIT;
+
       my_concurrency::parallel_for
       (
         std::size_t(0U),
         size(),
-        [&result_is_ok, this](std::size_t i)
+        [&test_lock, &result_is_ok, this](std::size_t i)
         {
           const boost_uint_c_type c_boost =   boost_uint_c_type(a_boost[i])
                                             * b_boost[i];
+
           const local_uint_c_type c_local =   static_cast<local_uint_c_type>(a_local[i])
                                             * static_cast<local_uint_c_type>(b_local[i]);
 
           const std::string str_boost = hexlexical_cast(c_boost);
           const std::string str_local = hexlexical_cast(c_local);
 
+          while(test_lock.test_and_set()) { ; }
           result_is_ok &= (str_boost == str_local);
+          test_lock.clear();
         }
       );
 
