@@ -5,6 +5,9 @@
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)             //
 ///////////////////////////////////////////////////////////////////
 
+#include <iomanip>
+#include <iostream>
+
 #include <random>
 #include <string>
 
@@ -21,14 +24,16 @@ namespace
     using distribution_type  = wide_integer::generic_template::uniform_int_distribution<wide_integer_type::my_digits, typename wide_integer_type::limb_type>;
 
     // Generate a random number with wide_integer_type having limbs of type LimbType.
-    random_engine_type generator(123U);
+    random_engine_type generator;
 
     distribution_type distribution;
 
     const wide_integer_type n = distribution(generator);
 
     const bool result_is_ok =
-      (n == wide_integer_type("0xB81A3C118D22F6E6B0DDD4623A12EFDC6DB0454249406D7EB6843D6DB24BCDFE"));
+      (n == wide_integer_type("0x3895AFE1E9D30005F807B7DF2082352CD5C31F79E7E1FAEE22AE9EF6D091BB5C"));
+
+    std::cout << "0x" << std::hex << std::uppercase << n << std::endl;
 
     return result_is_ok;
   }
