@@ -132,6 +132,9 @@
     <ClCompile Include="test\test_uintwide_t_n_binary_ops_base.cpp">
       <Filter>Source Files\test</Filter>
     </ClCompile>
+    <ClCompile Include="test\test_uintwide_t_n_base.cpp">
+      <Filter>Source Files\test</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include=".github\workflows\wide_integer.yml">

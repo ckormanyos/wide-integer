@@ -1,6 +1,7 @@
 #ifndef TEST_UINTWIDE_T_N_BASE_2019_12_29_H_
   #define TEST_UINTWIDE_T_N_BASE_2019_12_29_H_
 
+  #include <atomic>
   #include <random>
   #include <sstream>
 
@@ -44,17 +45,19 @@
       using other_local_uint_type = OtherLocalUintType;
       using other_boost_uint_type = OtherBoostUintType;
 
-      using random_engine_type = std::minstd_rand;
+      my_random_generator.seed(std::clock());
 
-      random_engine_type random_generator(std::clock());
+      std::atomic_flag rnd_lock = ATOMIC_FLAG_INIT;
 
       my_concurrency::parallel_for
       (
         std::size_t(0U),
         count,
-        [&random_generator, &u_local, &u_boost](std::size_t i)
+        [&u_local, &u_boost, &rnd_lock](std::size_t i)
         {
-          const other_local_uint_type a = random_generator();
+          while(rnd_lock.test_and_set()) { ; }
+          const other_local_uint_type a = my_random_generator();
+          rnd_lock.clear();
 
           u_local[i] = a;
           u_boost[i] = other_boost_uint_type("0x" + hexlexical_cast(a));
@@ -63,6 +66,7 @@
     }
 
   private:
+    static std::minstd_rand my_random_generator;
     const std::size_t number_of_cases;
 
     test_uintwide_t_n_base() = delete;
