@@ -51,6 +51,10 @@
 
       return result_is_ok;
     }
+
+  protected:
+    static std::random_device my_rnd;
+    static std::mt19937       my_gen;
   };
 
 #endif // TEST_UINTWIDE_T_N_BINARY_OPS_BASE_2019_12_19_H_

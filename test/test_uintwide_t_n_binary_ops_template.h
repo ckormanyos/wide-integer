@@ -2,6 +2,7 @@
   #define TEST_UINTWIDE_T_N_BINARY_OPS_TEMPLATE_2019_12_19_H_
 
   #include <algorithm>
+  #include <atomic>
   #include <cstddef>
   #include <random>
   #include <vector>
@@ -127,9 +128,9 @@
 
     virtual bool test_binary_div() const
     {
-      std::random_device rd;
-      std::mt19937 gen(rd());
-      gen.seed(std::clock());
+      std::atomic_flag test_lock = ATOMIC_FLAG_INIT;
+
+      my_gen.seed(std::clock());
       std::uniform_int_distribution<> dis(1, static_cast<int>(digits2 - 1U));
 
       bool result_is_ok = true;
@@ -138,9 +139,11 @@
       (
         std::size_t(0U),
         size(),
-        [&result_is_ok, this, &dis, &gen](std::size_t i)
+        [&result_is_ok, this, &dis, &test_lock](std::size_t i)
         {
-          const std::size_t right_shift_amount = static_cast<std::size_t>(dis(gen));
+          while(test_lock.test_and_set()) { ; }
+          const std::size_t right_shift_amount = static_cast<std::size_t>(dis(my_gen));
+          test_lock.clear();
 
           const boost_uint_type c_boost = a_boost[i] / (std::max)(boost_uint_type(1U), boost_uint_type(b_boost[i] >> right_shift_amount));
           const local_uint_type c_local = a_local[i] / (std::max)(local_uint_type(1U), (b_local[i] >> right_shift_amount));
@@ -157,9 +160,9 @@
 
     virtual bool test_binary_mod() const
     {
-      std::random_device rd;
-      std::mt19937 gen(rd());
-      gen.seed(std::clock());
+      std::atomic_flag test_lock = ATOMIC_FLAG_INIT;
+
+      my_gen.seed(std::clock());
       std::uniform_int_distribution<> dis(1, static_cast<int>(digits2 - 1U));
 
       bool result_is_ok = true;
@@ -168,9 +171,11 @@
       (
         std::size_t(0U),
         size(),
-        [&result_is_ok, this, &dis, &gen](std::size_t i)
+        [&result_is_ok, this, &dis, &test_lock](std::size_t i)
         {
-          const std::size_t right_shift_amount = static_cast<std::size_t>(dis(gen));
+          while(test_lock.test_and_set()) { ; }
+          const std::size_t right_shift_amount = static_cast<std::size_t>(dis(my_gen));
+          test_lock.clear();
 
           const boost_uint_type c_boost = a_boost[i] % (std::max)(boost_uint_type(1U), boost_uint_type(b_boost[i] >> right_shift_amount));
           const local_uint_type c_local = a_local[i] % (std::max)(local_uint_type(1U), (b_local[i] >> right_shift_amount));
