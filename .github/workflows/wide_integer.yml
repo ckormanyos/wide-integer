@@ -113,9 +113,11 @@ jobs:
       - uses: actions/checkout@v1
       - uses: ilammy/msvc-dev-cmd@v1
       - name: msvc-release-x64
+        shell: cmd
+        working-directory: ./
         run: |
           set INCLUDE=%cd%;%BOOST_ROOT_1_72_0%\include\boost-1_72;%INCLUDE%
           MSBuild -m wide_integer.sln -p:useenv=true -p:Configuration=Release -p:Platform=x64 /t:Rebuild
           dir %cd%\x64\Release\wide_integer.exe
           %cd%\x64\Release\wide_integer.exe
-        working-directory: ./
+

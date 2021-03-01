@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////
-//  Copyright Christopher Kormanyos 2018 - 2020.                 //
+//  Copyright Christopher Kormanyos 2018 - 2021.                 //
 //  Distributed under the Boost Software License,                //
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt          //
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)             //
@@ -10,60 +10,39 @@
 
 #include <wide_integer/generic_template_uintwide_t.h>
 
-// TBD: Compare with an actual expected value.
-// This test obtains different numerical results on CI server.
-// Suspect a possible byte order erroneous dependency in
-// uintwide_t random distribution generator code.
-// TBD: For the moment, test that the generated randoms
-// are != 0.
-
-bool wide_integer::example007_random_generator()
+namespace
 {
-  using random_engine_type = std::mt19937;
-
-  bool result_is_ok = true;
-
+  template<typename LimbType>
+  bool generate()
   {
-    // Generate a random number with wide_integer_type having 32-bit limbs.
+    using random_engine_type = std::mt19937;
+
     using wide_integer_type  = wide_integer::generic_template::uintwide_t<256U, std::uint32_t>;
     using distribution_type  = wide_integer::generic_template::uniform_int_distribution<wide_integer_type::my_digits, typename wide_integer_type::limb_type>;
 
+    // Generate a random number with wide_integer_type having limbs of type LimbType.
     random_engine_type generator(123U);
 
     distribution_type distribution;
 
     const wide_integer_type n = distribution(generator);
 
-    result_is_ok &= (n != 0U);
+    const bool result_is_ok =
+      (n == wide_integer_type("0xB81A3C118D22F6E6B0DDD4623A12EFDC6DB0454249406D7EB6843D6DB24BCDFE"));
+
+    return result_is_ok;
   }
+}
 
-  {
-    // Generate a random number with wide_integer_type having 16-bit limbs.
-    using wide_integer_type  = wide_integer::generic_template::uintwide_t<256U, std::uint16_t>;
-    using distribution_type  = wide_integer::generic_template::uniform_int_distribution<wide_integer_type::my_digits, typename wide_integer_type::limb_type>;
+bool wide_integer::example007_random_generator()
+{
+  const bool result_08_is_ok = generate<std::uint8_t> ();
+  const bool result_16_is_ok = generate<std::uint16_t>();
+  const bool result_32_is_ok = generate<std::uint32_t>();
 
-    random_engine_type generator(123U);
-
-    distribution_type distribution;
-
-    const wide_integer_type n = distribution(generator);
-
-    result_is_ok &= (n != 0U);
-  }
-
-  {
-    // Generate a random number with wide_integer_type having 8-bit limbs.
-    using wide_integer_type  = wide_integer::generic_template::uintwide_t<256U, std::uint8_t>;
-    using distribution_type  = wide_integer::generic_template::uniform_int_distribution<wide_integer_type::my_digits, typename wide_integer_type::limb_type>;
-
-    random_engine_type generator(123U);
-
-    distribution_type distribution;
-
-    const wide_integer_type n = distribution(generator);
-
-    result_is_ok &= (n != 0U);
-  }
+  const bool result_is_ok = (   result_08_is_ok
+                             && result_16_is_ok
+                             && result_32_is_ok);
 
   return result_is_ok;
 }
