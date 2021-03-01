@@ -1,4 +1,5 @@
 # Wide-integer
+
 Wide-integer implements a generic C++ template for extended precision unsigned integral types.
 
 This C++ template header-only library implements drop-in big integer types
@@ -32,7 +33,7 @@ The defined type can be used very much like a built-in unsinged integral type.
 For instance,
 
 ```C
-#include "generic_template_uintwide_t.h"
+#include <wide_integer/generic_template_uintwide_t.h>
 
 using uint512_t = wide_integer::generic_template::uintwide_t<512U, std::uint32_t>;
 
@@ -46,7 +47,7 @@ sets the internal _limb_ _type_. If the second template parameter is left blank,
 the default limb type is 32 bits in width and unsigned.
 The static `uint512_t` variable `x` is initialized with unsigned value `3U`.
 
-# Examples
+## Examples
 
 Various interesting and algorithmically challenging
 [examples](./examples) have been implemented.
@@ -68,7 +69,44 @@ how to use wide-integer.
   - ![`example010_uint48_t.cpp`](./examples/example010_uint48_t.cpp) verifies 48-bit integer caluclations.
   - ![`example011_uint24_t.cpp`](./examples/example011_uint24_t.cpp) does some calculations with 24-bits, the smallest range of wide-integer.
 
-## Examples up Close
+## Testing
+
+Testing is a big issue and a growing test suite is in continued progress
+providing for tested, efficient functionality on the PC and workstation.
+The GitHub code is delivered with an affiliated MSVC project that uses easy-to-understand
+subroutines called from `main()` that exercise various test cases.
+
+Continuous integration runs on push using GitHub Actions.
+Various compilers, operating systems, and C++ standards
+ranging from C++11, 14, 17, 20 are included in CI.
+
+## Details
+
+Wide-Integer has been tested with numerous compilers, for target systems ranging from 8 to 64 bits.
+The library is specifically designed for efficiency with small to medium bit counts.
+Supported bit counts include integers
+<img src="https://render.githubusercontent.com/render/math?math=1{\ldots}63{\times}2^{N}">
+while being 16, 24, 32 or larger such as 256, 384, 512, 768, 1024,
+or other less common bit counts such as 11,264, etc.
+Also smaller and/or larger bit counts are supported. It is even possible to make
+software-synthesized (not very efficient) versions of `uint24_t`, `uint32_t` or `uint48_t`,
+which might useful for hardware prototyping or other simulation and verification needs.
+On the high-digit end, Karatsuba multiplication extends the high performance range
+to thousands of bits. Fast long division, however, relies on a classical algorithm
+and sub-quadratic high-precision division is not yet implemented.
+
+Portability of the code is another key point of focus. Special care
+has been taken to test in certain high-performance embedded real-time
+programming environments.
+
+When working with even the most tiny microcontroller systems,
+I/O streaming can optionally be disabled with the compiler switch:
+
+```
+#define WIDE_INTEGER_DISABLE_IOSTREAM
+```
+
+## Detailed Examples
 
 The example below performs some elementary algebraic calculations with a 256-bit unsigned integral type.
 
@@ -222,40 +260,3 @@ int main()
   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
 }
 ```
-
-## Testing
-Testing is a big issue and a growing test suite is in continued progress
-providing for tested, efficient functionality on the PC and workstation.
-The GitHub code is delivered with an affiliated MSVC project that uses easy-to-understand
-subroutines called from `main()` that exercise various test cases.
-
-Continuous integration runs on push using GitHub Actions.
-Various compilers, operating systems, and C++ standards
-ranging from C++11, 14, 17, 20 are included in CI.
-
-# Details
-Wide-Integer has been tested with numerous compilers, for target systems ranging from 8 to 64 bits.
-The library is specifically designed for efficiency with small to medium bit counts.
-Supported bit counts include integers
-<img src="https://render.githubusercontent.com/render/math?math=1{\ldots}63{\times}2^{N}">
-while being 16, 24, 32 or larger such as 256, 384, 512, 768, 1024,
-or other less common bit counts such as 11,264, etc.
-Also smaller and/or larger bit counts are supported. It is even possible to make
-software-synthesized (not very efficient) versions of `uint24_t`, `uint32_t` or `uint48_t`,
-which might useful for hardware prototyping or other simulation and verification needs.
-On the high-digit end, Karatsuba multiplication extends the high performance range
-to thousands of bits. Fast long division, however, relies on a classical algorithm
-and sub-quadratic high-precision division is not yet implemented.
-
-Portability of the code is another key point of focus. Special care
-has been taken to test in certain high-performance embedded real-time
-programming environments.
-
-Testing is a big issue. Generating a full test suite is in continued progress
-and tested efficient functionality on the PC and workstation is present.
-The code is delivered with an affiliated MSVC project that uses easy-to-understand
-subroutines called from `main()` that exercise various test cases.
-
-When working with even the most tiny microcontroller systems, I/O streaming
-can optionally be disabled with the `WIDE_INTEGER_DISABLE_IOSTREAM` compiler switch.
-See the examples directory as more use cases are being created.
