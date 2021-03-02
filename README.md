@@ -59,7 +59,7 @@ how to use wide-integer.
   - ![`example002_shl_shr.cpp`](./examples/example002_shl_shr.cpp) does a few left and right shift operations.
   - ![`example003_sqrt.cpp`](./examples/example003_sqrt.cpp) computes a square root.
   - ![`example003a_cbrt`](./examples/example003a_cbrt.cpp) computes a cube root.
-  - ![`example004_rootk_pow.cpp`](./examples/example004_rootk_pow.cpp) computes an higher integral root and its corresponding power.
+  - ![`example004_rootk_pow.cpp`](./examples/example004_rootk_pow.cpp) computes an integral seventh root and its corresponding power.
   - ![`example005_powm.cpp`](./examples/example005_powm.cpp) tests the power-modulus function.
   - ![`example006_gcd.cpp`](./examples/example006_gcd.cpp) tests the computation of a greatest common divisor.
   - ![`example007_random_generator.cpp`](./examples/example007_random_generator.cpp) computes some large pseudo-random integers.
@@ -67,7 +67,7 @@ how to use wide-integer.
   - ![`example008a_miller_rabin_prime.cpp`](./examples/example008a_miller_rabin_prime.cpp) tests Boost interaction with Miller-Rabin primality checks.
   - ![`example009_timed_mul.cpp`](./examples/example009_timed_mul.cpp) measures multiplication timings.
   - ![`example010_uint48_t.cpp`](./examples/example010_uint48_t.cpp) verifies 48-bit integer caluclations.
-  - ![`example011_uint24_t.cpp`](./examples/example011_uint24_t.cpp) does some calculations with 24-bits on the small side of the range of wide-integer.
+  - ![`example011_uint24_t.cpp`](./examples/example011_uint24_t.cpp) performs calculations with 24-bits, which is definitely on the small side of the range of wide-integer.
 
 ## Testing
 
@@ -225,7 +225,7 @@ prior to (and following) the cube root operation.
 #include <iomanip>
 #include <iostream>
 
-#include "generic_template_uintwide_t.h"
+#include <wide_integer/generic_template_uintwide_t.h>
 
 int main()
 {
