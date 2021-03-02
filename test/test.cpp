@@ -9,6 +9,7 @@
 
 // g++ -finline-functions -finline-limit=32 -march=native -mtune=native -O3 -Wall -Wextra -pedantic -Wno-maybe-uninitialized -Wno-cast-function-type -std=c++11 -I. -IC:/boost/boost_1_75_0 -pthread -lpthread  test/test.cpp test/test_uintwide_t_boost_backend.cpp test/test_uintwide_t_edge_cases.cpp test/test_uintwide_t_examples.cpp test/test_uintwide_t_n_base.cpp test/test_uintwide_t_n_binary_ops_base.cpp test/test_uintwide_t_spot_values.cpp examples/example001a_div_mod.cpp examples/example001_mul_div.cpp examples/example002_shl_shr.cpp examples/example003a_cbrt.cpp examples/example003_sqrt.cpp examples/example004_rootk_pow.cpp examples/example005_powm.cpp examples/example006_gcd.cpp examples/example007_random_generator.cpp examples/example008_miller_rabin_prime.cpp examples/example008a_miller_rabin_prime.cpp examples/example009_timed_mul.cpp examples/example010_uint48_t.cpp examples/example011_uint24_t.cpp -o wide_integer.exe
 
+#include <chrono>
 #include <iomanip>
 #include <iostream>
 
@@ -28,15 +29,19 @@
 
 namespace {
 
+using clock_type = std::chrono::high_resolution_clock;
+
+auto wide_decimal_time_start = clock_type::now();
+
 #if !defined(UINTWIDE_T_REDUCE_TEST_DEPTH)
 constexpr std::size_t test_uintwide_t_n_binary_ops_rounds = 4U;
 #else
 constexpr std::size_t test_uintwide_t_n_binary_ops_rounds = 1U;
 #endif
 
-bool test_uintwide_t_dummy_tag()
+bool test_uintwide_t_small_bits_tag()
 {
-  std::cout << "running: test_uintwide_t_dummy" << std::endl;
+  std::cout << "running: test_uintwide_t_small_bits" << std::endl;
 
   bool result_is_ok = true;
 
@@ -207,9 +212,16 @@ bool test_uintwide_t_0012288_by_0008192_tag()
 
 int main()
 {
+  using time_point_type = std::chrono::high_resolution_clock::time_point;
+
+  time_point_type start;
+  time_point_type stop;
+
+  start = clock_type::now();
+
   bool result_is_ok = true;
 
-  result_is_ok &= test_uintwide_t_dummy_tag();
+  result_is_ok &= test_uintwide_t_small_bits_tag();
   result_is_ok &= test_uintwide_t_boost_backend_tag();
   result_is_ok &= test_uintwide_t_examples_tag();
   result_is_ok &= test_uintwide_t_edge_cases_tag();
@@ -226,5 +238,17 @@ int main()
   result_is_ok &= test_uintwide_t_0008192_by_0012288_tag();
   result_is_ok &= test_uintwide_t_0012288_by_0008192_tag();
 
-  return result_is_ok ? 0 : -1;
+  stop = clock_type::now();
+
+  std::cout << "result_is_ok: "
+            << std::boolalpha
+            << result_is_ok
+            << ", time: "
+            << std::fixed
+            << std::setprecision(1)
+            << ((float) std::chrono::duration_cast<std::chrono::milliseconds>(stop - start).count()) / 1000.0F
+            << "s"
+            << std::endl;
+
+  return (result_is_ok ? 0 : -1);
 }
