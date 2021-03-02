@@ -28,7 +28,7 @@ bool wide_integer::example008a_miller_rabin_prime()
                                          wide_integer_type>
   gen(base_gen);
 
-  std::minstd_rand gen2(std::clock());
+  std::linear_congruential_engine<std::uint32_t, UINT32_C(48271), UINT32_C(0), UINT32_C(2147483647)> gen2(std::clock());
 
   wide_integer_type p0;
   wide_integer_type p1;

@@ -55,7 +55,8 @@ namespace local
 
 bool wide_integer::example009_timed_mul()
 {
-  using random_engine_type = std::minstd_rand;
+  using random_engine_type =
+    std::linear_congruential_engine<std::uint32_t, UINT32_C(48271), UINT32_C(0), UINT32_C(2147483647)>;
 
   random_engine_type rng;
 

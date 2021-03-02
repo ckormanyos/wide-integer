@@ -117,7 +117,7 @@ The example below performs some elementary algebraic calculations with a 256-bit
 #include <iomanip>
 #include <iostream>
 
-#include "generic_template_uintwide_t.h"
+#include <wide_integer/generic_template_uintwide_t.h>
 
 int main()
 {
@@ -155,7 +155,7 @@ The example below calculates an integer square root.
 #include <iomanip>
 #include <iostream>
 
-#include "generic_template_uintwide_t.h"
+#include <wide_integer/generic_template_uintwide_t.h>
 
 int main()
 {
@@ -178,7 +178,7 @@ The following code performs add, subtract, multiply and divide of `uint48_t`.
 #include <iomanip>
 #include <iostream>
 
-#include "generic_template_uintwide_t.h"
+#include <wide_integer/generic_template_uintwide_t.h>
 
 int main()
 {

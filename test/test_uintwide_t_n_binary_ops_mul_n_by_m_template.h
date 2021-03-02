@@ -1,3 +1,10 @@
+///////////////////////////////////////////////////////////////////////////////
+//  Copyright Christopher Kormanyos 2019 - 2021.
+//  Distributed under the Boost Software License,
+//  Version 1.0. (See accompanying file LICENSE_1_0.txt
+//  or copy at http://www.boost.org/LICENSE_1_0.txt)
+//
+
 #ifndef TEST_UINTWIDE_T_N_BINARY_OPS_MUL_N_BY_M_TEMPLATE_2019_12_26_H_
   #define TEST_UINTWIDE_T_N_BINARY_OPS_MUL_N_BY_M_TEMPLATE_2019_12_26_H_
 

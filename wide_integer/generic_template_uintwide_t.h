@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////
-//  Copyright Christopher Kormanyos 1999 - 2020.                 //
+//  Copyright Christopher Kormanyos 1999 - 2021.                 //
 //  Distributed under the Boost Software License,                //
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt          //
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)             //
@@ -3430,23 +3430,26 @@
     result_type a() const { return my_params.get_a(); }
     result_type b() const { return my_params.get_b(); }
 
-    template<typename GeneratorType>
+    template<typename GeneratorType,
+             const int GeneratorResultBits = std::numeric_limits<typename GeneratorType::result_type>::digits>
     result_type operator()(GeneratorType& generator)
     {
-      return generate(generator, my_params);
+      return generate<GeneratorType, GeneratorResultBits>(generator, my_params);
     }
 
-    template<typename GeneratorType>
+    template<typename GeneratorType,
+             const int GeneratorResultBits = std::numeric_limits<typename GeneratorType::result_type>::digits>
     result_type operator()(GeneratorType& input_generator,
                            const param_type& input_params)
     {
-      return generate(input_generator, input_params);
+      return generate<GeneratorType, GeneratorResultBits>(input_generator, input_params);
     }
 
   private:
     param_type my_params;
 
-    template<typename GeneratorType>
+    template<typename GeneratorType,
+             const int GeneratorResultBits = std::numeric_limits<typename GeneratorType::result_type>::digits>
     result_type generate(GeneratorType& input_generator,
                          const param_type& input_params)
     {
@@ -3458,8 +3461,7 @@
 
       using generator_result_type = typename GeneratorType::result_type;
 
-      constexpr std::uint32_t digits_generator_result_type =
-        std::uint32_t(std::numeric_limits<generator_result_type>::digits);
+      constexpr std::uint32_t digits_generator_result_type = static_cast<std::uint32_t>(GeneratorResultBits);
 
       static_assert((digits_generator_result_type % 8U) == 0U,
                     "Error: Generator result type must have a multiple of 8 bits.");
