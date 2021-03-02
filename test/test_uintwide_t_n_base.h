@@ -66,7 +66,7 @@
     }
 
   private:
-    static std::minstd_rand my_random_generator;
+    static std::linear_congruential_engine<std::uint32_t, 48271, 0, 2147483647> my_random_generator;
     const std::size_t number_of_cases;
 
     test_uintwide_t_n_base() = delete;

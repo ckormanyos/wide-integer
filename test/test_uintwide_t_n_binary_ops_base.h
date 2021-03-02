@@ -1,8 +1,10 @@
 #ifndef TEST_UINTWIDE_T_N_BINARY_OPS_BASE_2019_12_19_H_
   #define TEST_UINTWIDE_T_N_BINARY_OPS_BASE_2019_12_19_H_
 
+  #include <cstdint>
   #include <iomanip>
   #include <iostream>
+  #include <random>
 
   #include <test/test_uintwide_t_n_base.h>
 
@@ -53,8 +55,23 @@
     }
 
   protected:
-    static std::random_device my_rnd;
-    static std::mt19937       my_gen;
+    using random_generator_type = std::mersenne_twister_engine<std::uint32_t,
+                                                               32,
+                                                               624,
+                                                               397,
+                                                               31,
+                                                               UINT32_C(0x9908B0DF),
+                                                               11,
+                                                               UINT32_C(0xFFFFFFFF),
+                                                               7,
+                                                               UINT32_C(0x9D2C5680),
+                                                               15,
+                                                               UINT32_C(0xEFC60000),
+                                                               18,
+                                                               UINT32_C(1812433253)>;
+
+    static std::random_device    my_rnd;
+    static random_generator_type my_gen;
   };
 
 #endif // TEST_UINTWIDE_T_N_BINARY_OPS_BASE_2019_12_19_H_
