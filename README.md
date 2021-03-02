@@ -24,7 +24,7 @@ Inclusion of a single C++11 header file is all that is needed.
   - Moderately good efficiency over the entire wide precision range
   - Clean header-only C++11 design
   - Seamless portability to any modern C++11, 14, 17, 20 compiler
-  - Scalability with small memory footprint and efficiency suitable for _bare-metal_ embedded systems
+  - Scalability with small memory footprint and efficiency suitable for both PC/workstation systems as well as _bare-metal_ embedded systems
 
 ## Quick start
 Easy application follows via a traditional C-style typedef or C++11 alias.
@@ -67,7 +67,7 @@ how to use wide-integer.
   - ![`example008a_miller_rabin_prime.cpp`](./examples/example008a_miller_rabin_prime.cpp) tests Boost interaction with Miller-Rabin primality checks.
   - ![`example009_timed_mul.cpp`](./examples/example009_timed_mul.cpp) measures multiplication timings.
   - ![`example010_uint48_t.cpp`](./examples/example010_uint48_t.cpp) verifies 48-bit integer caluclations.
-  - ![`example011_uint24_t.cpp`](./examples/example011_uint24_t.cpp) does some calculations with 24-bits, the smallest range of wide-integer.
+  - ![`example011_uint24_t.cpp`](./examples/example011_uint24_t.cpp) does some calculations with 24-bits on the small side of the range of wide-integer.
 
 ## Testing
 
@@ -88,11 +88,14 @@ Supported bit counts include integers
 <img src="https://render.githubusercontent.com/render/math?math=1{\ldots}63{\times}2^{N}">
 while being 16, 24, 32 or larger such as 256, 384, 512, 768, 1024,
 or other less common bit counts such as 11,264, etc.
-Also smaller and/or larger bit counts are supported. It is even possible to make
+
+Small, medium and large bit counts are supported.
+Common applications might use the range of `uint128_t`, `uint256_t` or `uint512_t`.
+It is also possible to make
 software-synthesized (not very efficient) versions of `uint24_t`, `uint32_t` or `uint48_t`,
 which might useful for hardware prototyping or other simulation and verification needs.
 On the high-digit end, Karatsuba multiplication extends the high performance range
-to thousands of bits. Fast long division, however, relies on a classical algorithm
+to many thousands of bits. Fast long division, however, relies on a classical algorithm
 and sub-quadratic high-precision division is not yet implemented.
 
 Portability of the code is another key point of focus. Special care
