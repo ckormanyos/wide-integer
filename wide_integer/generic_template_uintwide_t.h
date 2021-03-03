@@ -1496,7 +1496,7 @@
 
       // Performance improvement:
       //   (old) kops_per_sec: 33173.50
-      //   (new) kops_per_sec: 86156.29
+      //   (new) kops_per_sec: 95069.43
 
       static_cast<void>(count);
 
@@ -1523,31 +1523,32 @@
       }
       else
       {
-        const double_limb_type Bd = a[0U] * double_limb_type(b[2U]); // 0 for BITS/2 * BITS/2 = BITS
-        const double_limb_type Ad = a[0U] * double_limb_type(b[3U]); // 0 for BITS/2 * BITS/2 = BITS
-
-        const double_limb_type Bc = a[1U] * double_limb_type(b[2U]); // 0 for BITS/2 * BITS/2 = BITS
-
-        const double_limb_type bD = a[2U] * double_limb_type(b[0U]); // 0 for BITS/2 * BITS/2 = BITS
-        const double_limb_type bC = a[2U] * double_limb_type(b[1U]); // 0 for T-bits * T-bits = double_limb_type-bits
-
-        const double_limb_type aD = a[3U] * double_limb_type(b[0U]); // 0 for BITS/2 * BITS/2 = BITS
+        const double_limb_type Bd =           a[0U] * double_limb_type(b[2U]);
+        const        limb_type Ad = limb_type(a[0U] * b[3U]);
+        const        limb_type Bc = limb_type(a[1U] * b[2U]);
+        const double_limb_type bD =           a[2U] * double_limb_type(b[0U]);
+        const        limb_type bC = limb_type(a[2U] * b[1U]);
+        const        limb_type aD = limb_type(a[3U] * b[0U]);
 
         r1    = double_limb_type(detail::make_lo<limb_type>(Cd)) + detail::make_lo<limb_type>(cD) + detail::make_hi<limb_type>(dD);
         r2    = double_limb_type(detail::make_lo<limb_type>(cC)) + detail::make_lo<limb_type>(Bd) + detail::make_lo<limb_type>(bD) + detail::make_hi<limb_type>(Cd) + detail::make_hi<limb_type>(cD) + detail::make_hi<limb_type>(r1);
-        r[3U] = detail::make_lo<limb_type>(Bc) + detail::make_lo<limb_type>(bC) + detail::make_lo<limb_type>(aD) + detail::make_lo<limb_type>(Ad) + detail::make_hi<limb_type>(cC) + detail::make_hi<limb_type>(Bd) + detail::make_hi<limb_type>(bD) + detail::make_hi<limb_type>(r2);
+        r[3U] =   limb_type(limb_type(Bc + bC) + limb_type(aD + Ad))
+                + detail::make_hi<limb_type>(cC)
+                + detail::make_hi<limb_type>(Bd)
+                + detail::make_hi<limb_type>(bD)
+                + detail::make_hi<limb_type>(r2);
       }
 
-      r[0U] = detail::make_lo<limb_type>(dD);
+      r[0U] = limb_type(dD);
       r[1U] = limb_type(r1);
       r[2U] = limb_type(r2);
     }
 
     template<const std::uint_fast32_t RePhraseDigits2 = Digits2,
              typename std::enable_if<(std::numeric_limits<limb_type>::digits * 4 != RePhraseDigits2)>::type const* = nullptr>
-    static void eval_multiply_n_by_n_to_lo_part(      limb_type*       r,
-                                                const limb_type*       a,
-                                                const limb_type*       b,
+    static void eval_multiply_n_by_n_to_lo_part(      limb_type*         r,
+                                                const limb_type*         a,
+                                                const limb_type*         b,
                                                 const std::uint_fast32_t count)
     {
       std::memset(r, 0, count * sizeof(limb_type));
