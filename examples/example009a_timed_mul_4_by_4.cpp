@@ -16,8 +16,6 @@
 #include <random>
 #include <vector>
 
-constexpr unsigned wide_integer_test9_digits2 = 512U << 7U;
-
 #include <wide_integer/generic_template_uintwide_t.h>
 
 template<typename UnsignedIntegralIteratorType,
@@ -45,15 +43,15 @@ void get_random_big_uint(RandomEngineType& rng, UnsignedIntegralIteratorType it_
   }
 }
 
-using big_uint_type = wide_integer::generic_template::uintwide_t<wide_integer_test9_digits2>;
+using big_uint_type = wide_integer::generic_template::uintwide_t<128U>;
 
 namespace
 {
-  std::vector<big_uint_type> local_a(64U);
+  std::vector<big_uint_type> local_a(1024U);
   std::vector<big_uint_type> local_b(local_a.size());
 }
 
-bool wide_integer::example009_timed_mul()
+bool wide_integer::example009a_timed_mul_4_by_4()
 {
   using random_engine_type =
     std::linear_congruential_engine<std::uint32_t, UINT32_C(48271), UINT32_C(0), UINT32_C(2147483647)>;
@@ -77,14 +75,17 @@ bool wide_integer::example009_timed_mul()
 
   for(;;)
   {
-    local_a[index] * local_b[index];
+    local_a[index + 0U] * local_b[index + 0U];
+    local_a[index + 1U] * local_b[index + 1U];
+    local_a[index + 2U] * local_b[index + 2U];
+    local_a[index + 3U] * local_b[index + 3U];
 
     const std::chrono::high_resolution_clock::time_point end = std::chrono::high_resolution_clock::now();
 
     total_time = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count();
 
-    ++count;
-    ++index;
+    count += 4U;
+    index += 4U;
 
     if(index >= local_a.size())
     {
@@ -119,7 +120,7 @@ bool wide_integer::example009_timed_mul()
 
 int main()
 {
-  const bool result_is_ok = wide_integer::example009_timed_mul();
+  const bool result_is_ok = wide_integer::example009a_timed_mul_4_by_4();
 
   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
 }

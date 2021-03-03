@@ -218,6 +218,7 @@
     <ClCompile Include="examples\example008a_miller_rabin_prime.cpp" />
     <ClCompile Include="examples\example008_miller_rabin_prime.cpp" />
     <ClCompile Include="examples\example009_timed_mul.cpp" />
+    <ClCompile Include="examples\example009a_timed_mul_4_by_4.cpp" />
     <ClCompile Include="examples\example010_uint48_t.cpp" />
     <ClCompile Include="examples\example011_uint24_t.cpp" />
     <ClCompile Include="test\test.cpp" />

@@ -126,14 +126,17 @@
     <ClCompile Include="examples\example008a_miller_rabin_prime.cpp">
       <Filter>Source Files\examples</Filter>
     </ClCompile>
-    <ClCompile Include="examples\example009_timed_mul.cpp">
-      <Filter>Source Files\examples</Filter>
-    </ClCompile>
     <ClCompile Include="test\test_uintwide_t_n_binary_ops_base.cpp">
       <Filter>Source Files\test</Filter>
     </ClCompile>
     <ClCompile Include="test\test_uintwide_t_n_base.cpp">
       <Filter>Source Files\test</Filter>
+    </ClCompile>
+    <ClCompile Include="examples\example009_timed_mul.cpp">
+      <Filter>Source Files\examples</Filter>
+    </ClCompile>
+    <ClCompile Include="examples\example009a_timed_mul_4_by_4.cpp">
+      <Filter>Source Files\examples</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
