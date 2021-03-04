@@ -15,7 +15,7 @@
   template<const std::size_t MyDigits2A,
            const std::size_t MyDigits2B,
            typename MyLimbType = std::uint32_t>
-  class test_uintwide_t_n_binary_ops_mul_n_by_m_template : public test_uintwide_t_n_base
+  class test_uintwide_t_n_binary_ops_mul_n_by_m_template : public test_uintwide_t_n_binary_ops_base
   {
   private:
     static constexpr std::size_t digits2a = MyDigits2A;
@@ -52,7 +52,7 @@
 
   public:
     test_uintwide_t_n_binary_ops_mul_n_by_m_template(const std::size_t count)
-      : test_uintwide_t_n_base(count),
+      : test_uintwide_t_n_binary_ops_base(count),
         a_local(),
         b_local(),
         a_boost(),

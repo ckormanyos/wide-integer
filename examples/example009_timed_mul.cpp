@@ -16,7 +16,7 @@
 #include <random>
 #include <vector>
 
-constexpr unsigned wide_integer_test9_digits2 = 512U << 7U;
+constexpr unsigned wide_integer_test9_digits2 = 512U << 6U;
 
 #include <wide_integer/generic_template_uintwide_t.h>
 
@@ -38,7 +38,7 @@ namespace
 
   using big_uint_type = wide_integer::generic_template::uintwide_t<wide_integer_test9_digits2>;
 
-  std::vector<big_uint_type> local_a(64U);
+  std::vector<big_uint_type> local_a(128U);
   std::vector<big_uint_type> local_b(local_a.size());
 }
 
@@ -80,7 +80,7 @@ bool wide_integer::example009_timed_mul()
       index = 0U;
     }
 
-    if(total_time > 2999U)
+    if(total_time > 5999U)
     {
       break;
     }
@@ -92,7 +92,7 @@ bool wide_integer::example009_timed_mul()
             << std::numeric_limits<big_uint_type>::digits
             << ", kops_per_sec: "
             << std::fixed
-            << std::setprecision(2)
+            << std::setprecision(3)
             << kops_per_sec
             << ", count: "
             << count

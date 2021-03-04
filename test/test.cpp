@@ -40,6 +40,12 @@ constexpr std::size_t test_uintwide_t_n_binary_ops_rounds = 4U;
 constexpr std::size_t test_uintwide_t_n_binary_ops_rounds = 1U;
 #endif
 
+#if !defined(UINTWIDE_T_REDUCE_TEST_DEPTH)
+constexpr std::uint32_t test_uintwide_t_n_binary_ops_4_by_4_cases = std::uint32_t(1UL << 20U);
+#else
+constexpr std::uint32_t test_uintwide_t_n_binary_ops_4_by_4_cases = std::uint32_t(1UL << 18U);
+#endif
+
 bool test_uintwide_t_small_bits_tag()
 {
   std::cout << "running: test_uintwide_t_small_bits" << std::endl;
@@ -167,7 +173,7 @@ bool test_uintwide_t_0000512_tag()
 bool test_uintwide_t_0008192_tag()
 {
   std::cout << "running: test_uintwide_t_0008192" << std::endl;
-  test_uintwide_t_n_binary_ops_template<8192U> test_uintwide_t_n_binary_ops_template_instance(1UL << 13U);
+  test_uintwide_t_n_binary_ops_template<8192U> test_uintwide_t_n_binary_ops_template_instance(1UL << 12U);
   const bool result_is_ok =
     test_uintwide_t_n_binary_ops_template_instance.do_test(test_uintwide_t_n_binary_ops_rounds);
   return result_is_ok;
@@ -202,19 +208,12 @@ bool test_uintwide_t_0008192_by_0012288_tag()
 
 bool test_uintwide_t_0012288_by_0008192_tag()
 {
-  std::cout << "running: test_uintwide_t_0008192_by_0012288" << std::endl;
+  std::cout << "running: test_uintwide_t_0012288_by_0008192_tag" << std::endl;
   test_uintwide_t_n_binary_ops_mul_n_by_m_template<12288U, 8192U> test_uintwide_t_n_binary_ops_template_instance(1UL << 9U);
   const bool result_is_ok =
     test_uintwide_t_n_binary_ops_template_instance.do_test(test_uintwide_t_n_binary_ops_rounds);
   return result_is_ok;
 }
-
-#if !defined(UINTWIDE_T_REDUCE_TEST_DEPTH)
-constexpr std::uint32_t test_uintwide_t_n_binary_ops_4_by_4_cases = std::uint32_t(1UL << 21U);
-#else
-constexpr std::uint32_t test_uintwide_t_n_binary_ops_4_by_4_cases = std::uint32_t(1UL << 19U);
-#endif
-
 
 bool test_uintwide_t_0000032_by_0000032_4_by_4_tag()
 {
