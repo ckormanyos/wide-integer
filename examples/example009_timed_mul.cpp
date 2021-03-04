@@ -20,35 +20,24 @@ constexpr unsigned wide_integer_test9_digits2 = 512U << 7U;
 
 #include <wide_integer/generic_template_uintwide_t.h>
 
-template<typename UnsignedIntegralIteratorType,
-         typename RandomEngineType>
-void get_random_big_uint(RandomEngineType& rng, UnsignedIntegralIteratorType it_out)
-{
-  using local_random_value_type = typename RandomEngineType::result_type;
-
-  using local_uint_type = typename std::iterator_traits<UnsignedIntegralIteratorType>::value_type;
-
-  constexpr std::size_t digits_of_uint___type = static_cast<std::size_t>(std::numeric_limits<local_uint_type>::digits);
-  constexpr std::size_t digits_of_random_type = static_cast<std::size_t>(std::numeric_limits<local_random_value_type>::digits);
-
-  local_random_value_type next_random = rng();
-
-  *it_out = next_random;
-
-  for(std::size_t i = digits_of_random_type; i < digits_of_uint___type; i += digits_of_random_type)
-  {
-    (*it_out) <<= digits_of_random_type;
-
-    next_random = rng();
-
-    (*it_out) |= next_random;
-  }
-}
-
-using big_uint_type = wide_integer::generic_template::uintwide_t<wide_integer_test9_digits2>;
-
 namespace
 {
+  template<typename UnsignedIntegralIteratorType,
+           typename RandomEngineType>
+  void get_random_big_uint(RandomEngineType& rng, UnsignedIntegralIteratorType it_out)
+  {
+    using local_uint_type = typename std::iterator_traits<UnsignedIntegralIteratorType>::value_type;
+
+    using distribution_type =
+      wide_integer::generic_template::uniform_int_distribution<std::numeric_limits<local_uint_type>::digits, typename local_uint_type::limb_type>;
+
+    distribution_type distribution;
+
+    *it_out = distribution(rng);
+  }
+
+  using big_uint_type = wide_integer::generic_template::uintwide_t<wide_integer_test9_digits2>;
+
   std::vector<big_uint_type> local_a(64U);
   std::vector<big_uint_type> local_b(local_a.size());
 }

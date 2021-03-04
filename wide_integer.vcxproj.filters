@@ -70,6 +70,9 @@
     <ClInclude Include="test\test_uintwide_t_n_base.h">
       <Filter>Source Files\test</Filter>
     </ClInclude>
+    <ClInclude Include="test\test_uintwide_t_n_binary_ops_mul_div_4_by_4_template.h">
+      <Filter>Source Files\test</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="test\test.cpp">

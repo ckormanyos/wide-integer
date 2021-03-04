@@ -54,16 +54,21 @@
 
       my_random_generator.seed(std::clock());
 
+      using distribution_type =
+        wide_integer::generic_template::uniform_int_distribution<other_local_uint_type::my_digits, typename other_local_uint_type::limb_type>;
+
+      distribution_type distribution;
+
       std::atomic_flag rnd_lock = ATOMIC_FLAG_INIT;
 
       my_concurrency::parallel_for
       (
         std::size_t(0U),
         count,
-        [&u_local, &u_boost, &rnd_lock](std::size_t i)
+        [&u_local, &u_boost, &distribution, &rnd_lock](std::size_t i)
         {
           while(rnd_lock.test_and_set()) { ; }
-          const other_local_uint_type a = my_random_generator();
+          const other_local_uint_type a = distribution(my_random_generator);
           rnd_lock.clear();
 
           u_local[i] = a;
@@ -72,8 +77,10 @@
       );
     }
 
-  private:
+  protected:
     static std::linear_congruential_engine<std::uint32_t, 48271, 0, 2147483647> my_random_generator;
+
+  private:
     const std::size_t number_of_cases;
 
     test_uintwide_t_n_base() = delete;

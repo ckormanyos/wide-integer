@@ -16,6 +16,7 @@
 #include <test/test_uintwide_t.h>
 #include <test/test_uintwide_t_n_binary_ops_template.h>
 #include <test/test_uintwide_t_n_binary_ops_mul_n_by_m_template.h>
+#include <test/test_uintwide_t_n_binary_ops_mul_div_4_by_4_template.h>
 
 #if defined(__clang__)
   #if defined __has_feature && __has_feature(thread_sanitizer)
@@ -112,7 +113,7 @@ bool test_uintwide_t_spot_values_tag()
 bool test_uintwide_t_0000024_tag()
 {
   std::cout << "running: test_uintwide_t_0000024" << std::endl;
-  test_uintwide_t_n_binary_ops_template<24U, std::uint8_t> test_uintwide_t_n_binary_ops_template_instance(1UL << 18U);
+  test_uintwide_t_n_binary_ops_template<24U, std::uint8_t> test_uintwide_t_n_binary_ops_template_instance(1UL << 17U);
   const bool result_is_ok =
     test_uintwide_t_n_binary_ops_template_instance.do_test(test_uintwide_t_n_binary_ops_rounds);
   return result_is_ok;
@@ -121,7 +122,7 @@ bool test_uintwide_t_0000024_tag()
 bool test_uintwide_t_0000048_tag()
 {
   std::cout << "running: test_uintwide_t_0000048" << std::endl;
-  test_uintwide_t_n_binary_ops_template<48U, std::uint16_t> test_uintwide_t_n_binary_ops_template_instance(1UL << 18U);
+  test_uintwide_t_n_binary_ops_template<48U, std::uint16_t> test_uintwide_t_n_binary_ops_template_instance(1UL << 17U);
   const bool result_is_ok =
     test_uintwide_t_n_binary_ops_template_instance.do_test(test_uintwide_t_n_binary_ops_rounds);
   return result_is_ok;
@@ -130,7 +131,7 @@ bool test_uintwide_t_0000048_tag()
 bool test_uintwide_t_0000064_tag()
 {
   std::cout << "running: test_uintwide_t_0000064" << std::endl;
-  test_uintwide_t_n_binary_ops_template<64U, std::uint32_t> test_uintwide_t_n_binary_ops_template_instance(1UL << 18U);
+  test_uintwide_t_n_binary_ops_template<64U, std::uint32_t> test_uintwide_t_n_binary_ops_template_instance(1UL << 17U);
   const bool result_is_ok =
     test_uintwide_t_n_binary_ops_template_instance.do_test(test_uintwide_t_n_binary_ops_rounds);
   return result_is_ok;
@@ -139,7 +140,7 @@ bool test_uintwide_t_0000064_tag()
 bool test_uintwide_t_0000096_tag()
 {
   std::cout << "running: test_uintwide_t_0000096" << std::endl;
-  test_uintwide_t_n_binary_ops_template<96U, std::uint16_t> test_uintwide_t_n_binary_ops_template_instance(1UL << 19U);
+  test_uintwide_t_n_binary_ops_template<96U, std::uint16_t> test_uintwide_t_n_binary_ops_template_instance(1UL << 18U);
   const bool result_is_ok =
     test_uintwide_t_n_binary_ops_template_instance.do_test(test_uintwide_t_n_binary_ops_rounds);
   return result_is_ok;
@@ -148,7 +149,7 @@ bool test_uintwide_t_0000096_tag()
 bool test_uintwide_t_0000128_tag()
 {
   std::cout << "running: test_uintwide_t_0000128" << std::endl;
-  test_uintwide_t_n_binary_ops_template<128U> test_uintwide_t_n_binary_ops_template_instance(1UL << 19U);
+  test_uintwide_t_n_binary_ops_template<128U> test_uintwide_t_n_binary_ops_template_instance(1UL << 18U);
   const bool result_is_ok =
     test_uintwide_t_n_binary_ops_template_instance.do_test(test_uintwide_t_n_binary_ops_rounds);
   return result_is_ok;
@@ -157,7 +158,7 @@ bool test_uintwide_t_0000128_tag()
 bool test_uintwide_t_0000512_tag()
 {
   std::cout << "running: test_uintwide_t_0000512" << std::endl;
-  test_uintwide_t_n_binary_ops_template<512U> test_uintwide_t_n_binary_ops_template_instance(1UL << 19U);
+  test_uintwide_t_n_binary_ops_template<512U> test_uintwide_t_n_binary_ops_template_instance(1UL << 18U);
   const bool result_is_ok =
     test_uintwide_t_n_binary_ops_template_instance.do_test(test_uintwide_t_n_binary_ops_rounds);
   return result_is_ok;
@@ -166,7 +167,7 @@ bool test_uintwide_t_0000512_tag()
 bool test_uintwide_t_0008192_tag()
 {
   std::cout << "running: test_uintwide_t_0008192" << std::endl;
-  test_uintwide_t_n_binary_ops_template<8192U> test_uintwide_t_n_binary_ops_template_instance(1UL << 14U);
+  test_uintwide_t_n_binary_ops_template<8192U> test_uintwide_t_n_binary_ops_template_instance(1UL << 13U);
   const bool result_is_ok =
     test_uintwide_t_n_binary_ops_template_instance.do_test(test_uintwide_t_n_binary_ops_rounds);
   return result_is_ok;
@@ -175,7 +176,7 @@ bool test_uintwide_t_0008192_tag()
 bool test_uintwide_t_0012288_tag()
 {
   std::cout << "running: test_uintwide_t_0012288" << std::endl;
-  test_uintwide_t_n_binary_ops_template<12288U> test_uintwide_t_n_binary_ops_template_instance(1UL << 13U);
+  test_uintwide_t_n_binary_ops_template<12288U> test_uintwide_t_n_binary_ops_template_instance(1UL << 12U);
   const bool result_is_ok =
     test_uintwide_t_n_binary_ops_template_instance.do_test(test_uintwide_t_n_binary_ops_rounds);
   return result_is_ok;
@@ -184,7 +185,7 @@ bool test_uintwide_t_0012288_tag()
 bool test_uintwide_t_0065536_tag()
 {
   std::cout << "running: test_uintwide_t_0065536" << std::endl;
-  test_uintwide_t_n_binary_ops_template<65536U> test_uintwide_t_n_binary_ops_template_instance(1UL << 9U);
+  test_uintwide_t_n_binary_ops_template<65536U> test_uintwide_t_n_binary_ops_template_instance(1UL << 8U);
   const bool result_is_ok =
     test_uintwide_t_n_binary_ops_template_instance.do_test(test_uintwide_t_n_binary_ops_rounds);
   return result_is_ok;
@@ -193,7 +194,7 @@ bool test_uintwide_t_0065536_tag()
 bool test_uintwide_t_0008192_by_0012288_tag()
 {
   std::cout << "running: test_uintwide_t_0008192_by_0012288" << std::endl;
-  test_uintwide_t_n_binary_ops_mul_n_by_m_template<8192U, 12288U> test_uintwide_t_n_binary_ops_template_instance(1UL << 10U);
+  test_uintwide_t_n_binary_ops_mul_n_by_m_template<8192U, 12288U> test_uintwide_t_n_binary_ops_template_instance(1UL << 9U);
   const bool result_is_ok =
     test_uintwide_t_n_binary_ops_template_instance.do_test(test_uintwide_t_n_binary_ops_rounds);
   return result_is_ok;
@@ -202,7 +203,25 @@ bool test_uintwide_t_0008192_by_0012288_tag()
 bool test_uintwide_t_0012288_by_0008192_tag()
 {
   std::cout << "running: test_uintwide_t_0008192_by_0012288" << std::endl;
-  test_uintwide_t_n_binary_ops_mul_n_by_m_template<12288U, 8192U> test_uintwide_t_n_binary_ops_template_instance(1UL << 10U);
+  test_uintwide_t_n_binary_ops_mul_n_by_m_template<12288U, 8192U> test_uintwide_t_n_binary_ops_template_instance(1UL << 9U);
+  const bool result_is_ok =
+    test_uintwide_t_n_binary_ops_template_instance.do_test(test_uintwide_t_n_binary_ops_rounds);
+  return result_is_ok;
+}
+
+bool test_uintwide_t_0000032_by_0000032_4_by_4_tag()
+{
+  std::cout << "running: test_uintwide_t_0000032_by_0000032_4_by_4" << std::endl;
+  test_uintwide_t_n_binary_ops_mul_div_4_by_4_template<32U, std::uint8_t> test_uintwide_t_n_binary_ops_template_instance(1UL << 21U);
+  const bool result_is_ok =
+    test_uintwide_t_n_binary_ops_template_instance.do_test(test_uintwide_t_n_binary_ops_rounds);
+  return result_is_ok;
+}
+
+bool test_uintwide_t_0000064_by_0000064_4_by_4_tag()
+{
+  std::cout << "running: test_uintwide_t_0000064_by_0000064_4_by_4" << std::endl;
+  test_uintwide_t_n_binary_ops_mul_div_4_by_4_template<64U, std::uint16_t> test_uintwide_t_n_binary_ops_template_instance(1UL << 21U);
   const bool result_is_ok =
     test_uintwide_t_n_binary_ops_template_instance.do_test(test_uintwide_t_n_binary_ops_rounds);
   return result_is_ok;
@@ -221,22 +240,24 @@ int main()
 
   bool result_is_ok = true;
 
-  result_is_ok &= test_uintwide_t_small_bits_tag();
-  result_is_ok &= test_uintwide_t_boost_backend_tag();
-  result_is_ok &= test_uintwide_t_examples_tag();
-  result_is_ok &= test_uintwide_t_edge_cases_tag();
-  result_is_ok &= test_uintwide_t_spot_values_tag();
-  result_is_ok &= test_uintwide_t_0000024_tag();
-  result_is_ok &= test_uintwide_t_0000048_tag();
-  result_is_ok &= test_uintwide_t_0000064_tag();
-  result_is_ok &= test_uintwide_t_0000096_tag();
-  result_is_ok &= test_uintwide_t_0000128_tag();
-  result_is_ok &= test_uintwide_t_0000512_tag();
-  result_is_ok &= test_uintwide_t_0008192_tag();
-  result_is_ok &= test_uintwide_t_0012288_tag();
-  result_is_ok &= test_uintwide_t_0065536_tag();
-  result_is_ok &= test_uintwide_t_0008192_by_0012288_tag();
-  result_is_ok &= test_uintwide_t_0012288_by_0008192_tag();
+  result_is_ok &= test_uintwide_t_small_bits_tag();                std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
+  result_is_ok &= test_uintwide_t_boost_backend_tag();             std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
+  result_is_ok &= test_uintwide_t_examples_tag();                  std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
+  result_is_ok &= test_uintwide_t_edge_cases_tag();                std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
+  result_is_ok &= test_uintwide_t_spot_values_tag();               std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
+  result_is_ok &= test_uintwide_t_0000024_tag();                   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
+  result_is_ok &= test_uintwide_t_0000048_tag();                   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
+  result_is_ok &= test_uintwide_t_0000064_tag();                   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
+  result_is_ok &= test_uintwide_t_0000096_tag();                   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
+  result_is_ok &= test_uintwide_t_0000128_tag();                   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
+  result_is_ok &= test_uintwide_t_0000512_tag();                   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
+  result_is_ok &= test_uintwide_t_0008192_tag();                   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
+  result_is_ok &= test_uintwide_t_0012288_tag();                   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
+  result_is_ok &= test_uintwide_t_0065536_tag();                   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
+  result_is_ok &= test_uintwide_t_0008192_by_0012288_tag();        std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
+  result_is_ok &= test_uintwide_t_0012288_by_0008192_tag();        std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
+  result_is_ok &= test_uintwide_t_0000032_by_0000032_4_by_4_tag(); std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
+  result_is_ok &= test_uintwide_t_0000064_by_0000064_4_by_4_tag(); std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
 
   stop = clock_type::now();
 
