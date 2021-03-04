@@ -209,10 +209,17 @@ bool test_uintwide_t_0012288_by_0008192_tag()
   return result_is_ok;
 }
 
+#if !defined(UINTWIDE_T_REDUCE_TEST_DEPTH)
+constexpr std::uint32_t test_uintwide_t_n_binary_ops_4_by_4_cases = std::uint32_t(1UL << 21U);
+#else
+constexpr std::uint32_t test_uintwide_t_n_binary_ops_4_by_4_cases = std::uint32_t(1UL << 19U);
+#endif
+
+
 bool test_uintwide_t_0000032_by_0000032_4_by_4_tag()
 {
   std::cout << "running: test_uintwide_t_0000032_by_0000032_4_by_4" << std::endl;
-  test_uintwide_t_n_binary_ops_mul_div_4_by_4_template<32U, std::uint8_t> test_uintwide_t_n_binary_ops_template_instance(1UL << 21U);
+  test_uintwide_t_n_binary_ops_mul_div_4_by_4_template<32U, std::uint8_t> test_uintwide_t_n_binary_ops_template_instance(test_uintwide_t_n_binary_ops_4_by_4_cases);
   const bool result_is_ok =
     test_uintwide_t_n_binary_ops_template_instance.do_test(test_uintwide_t_n_binary_ops_rounds);
   return result_is_ok;
@@ -221,7 +228,7 @@ bool test_uintwide_t_0000032_by_0000032_4_by_4_tag()
 bool test_uintwide_t_0000064_by_0000064_4_by_4_tag()
 {
   std::cout << "running: test_uintwide_t_0000064_by_0000064_4_by_4" << std::endl;
-  test_uintwide_t_n_binary_ops_mul_div_4_by_4_template<64U, std::uint16_t> test_uintwide_t_n_binary_ops_template_instance(1UL << 21U);
+  test_uintwide_t_n_binary_ops_mul_div_4_by_4_template<64U, std::uint16_t> test_uintwide_t_n_binary_ops_template_instance(test_uintwide_t_n_binary_ops_4_by_4_cases);
   const bool result_is_ok =
     test_uintwide_t_n_binary_ops_template_instance.do_test(test_uintwide_t_n_binary_ops_rounds);
   return result_is_ok;
@@ -233,10 +240,7 @@ int main()
 {
   using time_point_type = std::chrono::high_resolution_clock::time_point;
 
-  time_point_type start;
-  time_point_type stop;
-
-  start = clock_type::now();
+  const time_point_type start = clock_type::now();
 
   bool result_is_ok = true;
 
@@ -259,7 +263,7 @@ int main()
   result_is_ok &= test_uintwide_t_0000032_by_0000032_4_by_4_tag(); std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
   result_is_ok &= test_uintwide_t_0000064_by_0000064_4_by_4_tag(); std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
 
-  stop = clock_type::now();
+  const time_point_type stop = clock_type::now();
 
   std::cout << "result_is_ok: "
             << std::boolalpha
