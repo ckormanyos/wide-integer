@@ -57,13 +57,13 @@
 
       for(std::size_t i = 0U; i < rounds; ++i)
       {
-        std::cout << "initialize()       boost compare with uintwide_t: round " << i << ",  digits2: " << this->get_digits2() << std::endl;
+        std::cout << "initialize()       native compare with uintwide_t: round " << i << ",  digits2: " << this->get_digits2() << std::endl;
         this->initialize();
 
-        std::cout << "test_binary_mul()  boost compare with uintwide_t: round " << i << ",  digits2: " << this->get_digits2() << std::endl;
+        std::cout << "test_binary_mul()  native compare with uintwide_t: round " << i << ",  digits2: " << this->get_digits2() << std::endl;
         result_is_ok &= this->test_binary_mul();
 
-        std::cout << "test_binary_div()  boost compare with uintwide_t: round " << i << ",  digits2: " << this->get_digits2() << std::endl;
+        std::cout << "test_binary_div()  native compare with uintwide_t: round " << i << ",  digits2: " << this->get_digits2() << std::endl;
         result_is_ok &= this->test_binary_div();
       }
 

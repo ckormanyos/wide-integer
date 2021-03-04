@@ -16,12 +16,12 @@
 #include <random>
 #include <vector>
 
-constexpr unsigned wide_integer_test9_digits2 = 512U << 6U;
-
 #include <wide_integer/generic_template_uintwide_t.h>
 
 namespace
 {
+  constexpr std::uint32_t wide_integer_test9_digits2 = std::uint32_t(1ULL << 15U);
+
   template<typename UnsignedIntegralIteratorType,
            typename RandomEngineType>
   void get_random_big_uint(RandomEngineType& rng, UnsignedIntegralIteratorType it_out)

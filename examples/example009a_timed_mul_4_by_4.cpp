@@ -81,7 +81,7 @@ bool wide_integer::example009a_timed_mul_4_by_4()
       index = 0U;
     }
 
-    if(total_time > 2999U)
+    if(total_time > 5999U)
     {
       break;
     }
