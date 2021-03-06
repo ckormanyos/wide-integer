@@ -33,6 +33,7 @@ jobs:
           git submodule update --init libs/iterator
           git submodule update --init libs/lexical_cast
           git submodule update --init libs/math
+          git submodule update --init libs/mpl
           git submodule update --init libs/multiprecision
           git submodule update --init libs/predef
           git submodule update --init libs/random
@@ -82,6 +83,7 @@ jobs:
           git submodule update --init libs/iterator
           git submodule update --init libs/lexical_cast
           git submodule update --init libs/math
+          git submodule update --init libs/mpl
           git submodule update --init libs/multiprecision
           git submodule update --init libs/predef
           git submodule update --init libs/random
