@@ -1848,7 +1848,8 @@
       // Use Knuth's long division algorithm.
       // The loop-ordering of indexes in Knuth's original
       // algorithm has been reversed due to the data format
-      // used here.
+      // used here. Several optimizations and combinations
+      // of logic have been carried out in the source code.
 
       // See also:
       // D.E. Knuth, "The Art of Computer Programming, Volume 2:
@@ -1938,15 +1939,10 @@
 
           if(d > limb_type(1U))
           {
-            uu[number_of_limbs - u_offset] = eval_multiply_1d(uu.data(),
-                                                              values.data(),
-                                                              d,
-                                                              number_of_limbs - u_offset);
+            uu[number_of_limbs - u_offset] =
+              eval_multiply_1d(uu.data(), values.data(), d, number_of_limbs - u_offset);
 
-            eval_multiply_1d(vv.data(),
-                             other.values.data(),
-                             d,
-                             number_of_limbs - v_offset);
+            static_cast<void>(eval_multiply_1d(vv.data(), other.values.data(), d, number_of_limbs - v_offset));
           }
           else
           {
@@ -1983,12 +1979,8 @@
             // expression [(u[uj] * b + u[uj - 1] - q_hat * v[vj0 - 1]) * b]
             // exceeds the range of uintwide_t.
 
-            double_limb_type t;
-
-            for(;;)
+            for(double_limb_type t = u_j_j1 - double_limb_type(q_hat * double_limb_type(vv[vj0])); ; --q_hat, t += vv[vj0])
             {
-              t = u_j_j1 - double_limb_type(q_hat * double_limb_type(vv[vj0]));
-
               if(detail::make_hi<limb_type>(t) != limb_type(0U))
               {
                 break;
@@ -1999,8 +1991,6 @@
               {
                 break;
               }
-
-              --q_hat;
             }
 
             // Step D4: Multiply and subtract.
@@ -2009,35 +1999,27 @@
             // Set nv = q_hat * (v[1, ... n]).
             std::array<limb_type, number_of_limbs + 1U> nv;
 
-            nv[n] = eval_multiply_1d(nv.data(),
-                                      vv.data(),
-                                      q_hat,
-                                      n);
+            nv[n] = eval_multiply_1d(nv.data(), vv.data(), q_hat, n);
 
-            const limb_type borrow = eval_subtract_n(uu.data() + (uj - n),
-                                                      uu.data() + (uj - n),
-                                                      nv.data(),
-                                                      n + 1U);
+            const bool has_borrow =
+              eval_subtract_n(uu.data() + (uj - n), uu.data() + (uj - n), nv.data(), n + 1U);
 
 
             // Get the result data.
-            values[m - j] = q_hat - borrow;
+            values[m - j] = q_hat - (has_borrow ? 1U : 0U);
 
             // Step D5: Test the remainder.
             // Set the result value: Set result.m_data[m - j] = q_hat.
             // Use the condition (u[j] < 0), in other words if the borrow
             // is non-zero, then step D6 needs to be carried out.
 
-            if(borrow != std::uint_fast8_t(0U))
+            if(has_borrow)
             {
               // Step D6: Add back.
               // Add v[1, ... n] back to u[j, ... j + n],
               // and decrease the result by 1.
 
-              eval_add_n(uu.data() + (uj - n),
-                          uu.data() + (uj - n),
-                          vv.data(),
-                          n);
+              static_cast<void>(eval_add_n(uu.data() + (uj - n), uu.data() + (uj - n), vv.data(), n));
             }
           }
 
@@ -2063,8 +2045,8 @@
                   double_limb_type(  uu[std::uint_fast32_t(ul)]
                                    + double_limb_type(double_limb_type(previous_u) << std::numeric_limits<limb_type>::digits));
 
-                remainder->values[std::uint_fast32_t(rl)] = detail::make_lo<limb_type>(double_limb_type(t / d));
-                previous_u                                = limb_type(t - double_limb_type(double_limb_type(d) * remainder->values[std::uint_fast32_t(rl)]));
+                remainder->values[std::uint_fast32_t(rl)] = limb_type(double_limb_type(t / d));
+                previous_u                                = limb_type(double_limb_type(t - double_limb_type(double_limb_type(d) * remainder->values[std::uint_fast32_t(rl)])));
               }
             }
 
@@ -2081,8 +2063,8 @@
       if(offset > 0U)
       {
         std::copy_backward(values.data(),
-                            values.data() + (number_of_limbs - offset),
-                            values.data() +  number_of_limbs);
+                           values.data() + (number_of_limbs - offset),
+                           values.data() +  number_of_limbs);
 
         std::fill(values.begin(), values.begin() + offset, limb_type(0U));
       }
