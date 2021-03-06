@@ -72,19 +72,19 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\boost\boost_1_73_0;$(ProjectDir);$(IncludePath)</IncludePath>
+    <IncludePath>C:\boost\boost_1_75_0;$(ProjectDir);$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\boost\boost_1_73_0;$(ProjectDir);$(IncludePath)</IncludePath>
+    <IncludePath>C:\boost\boost_1_75_0;$(ProjectDir);$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>C:\boost\boost_1_73_0;$(ProjectDir);$(IncludePath)</IncludePath>
+    <IncludePath>C:\boost\boost_1_75_0;$(ProjectDir);$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>C:\boost\boost_1_73_0;$(ProjectDir);$(IncludePath)</IncludePath>
+    <IncludePath>C:\boost\boost_1_75_0;$(ProjectDir);$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -181,6 +181,7 @@
     <ClInclude Include="test\parallel_for.h" />
     <ClInclude Include="test\test_uintwide_t.h" />
     <ClInclude Include="test\test_uintwide_t_n_base.h" />
+    <ClInclude Include="test\test_uintwide_t_n_binary_ops_mul_div_4_by_4_template.h" />
     <ClInclude Include="test\test_uintwide_t_n_binary_ops_mul_n_by_m_template.h" />
     <ClInclude Include="test\test_uintwide_t_n_binary_ops_base.h" />
     <ClInclude Include="test\test_uintwide_t_n_binary_ops_template.h" />
@@ -218,13 +219,20 @@
     <ClCompile Include="examples\example008a_miller_rabin_prime.cpp" />
     <ClCompile Include="examples\example008_miller_rabin_prime.cpp" />
     <ClCompile Include="examples\example009_timed_mul.cpp" />
+    <ClCompile Include="examples\example009a_timed_mul_4_by_4.cpp" />
     <ClCompile Include="examples\example010_uint48_t.cpp" />
     <ClCompile Include="examples\example011_uint24_t.cpp" />
     <ClCompile Include="test\test.cpp" />
     <ClCompile Include="test\test_uintwide_t_boost_backend.cpp" />
     <ClCompile Include="test\test_uintwide_t_edge_cases.cpp" />
     <ClCompile Include="test\test_uintwide_t_examples.cpp" />
+    <ClCompile Include="test\test_uintwide_t_n_base.cpp" />
     <ClCompile Include="test\test_uintwide_t_spot_values.cpp" />
+    <ClCompile Include="test\test_uintwide_t_n_binary_ops_base.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include=".github\workflows\wide_integer.yml" />
+    <None Include="README.md" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

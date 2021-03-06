@@ -1,47 +1,39 @@
 # Wide-integer
+
 Wide-integer implements a generic C++ template for extended precision unsigned integral types.
 
-This C++ template header-only library implements drop-in big integer types such as `uint128_t`, `uint256_t`, `uint384_t`, `uint512_t`, `uint1024_t`, `uint1536_t`, etc., that can be used essentially like regular built-in integers. Wide-integer supports unsigned integral types having bit counts of <img src="https://render.githubusercontent.com/render/math?math=1{\ldots}63{\times}2^{N}"> while being 16, 24, 32 or larger. In addition, small integer types such as software synthesized versoins of `uint24_t` or `uint48_t` can also be crafted with wide-integer.
+This C++ template header-only library implements drop-in big integer types
+such as `uint128_t`, `uint256_t`, `uint384_t`, `uint512_t`, `uint1024_t`, `uint1536_t`, etc.,
+that can be used essentially like regular built-in integers.
+Wide-integer supports unsigned integral types having bit counts
+of <img src="https://render.githubusercontent.com/render/math?math=1{\ldots}63{\times}2^{N}">
+while being 16, 24, 32 or larger.
+In addition, small integer types such as software synthesized versions
+of `uint24_t` or `uint48_t` can also be crafted with wide-integer.
 
-Wide-integer also features elementary realizations of several number theoretical functions such as root finding, basic random distribution, Miller-Rabin primality testing, greatest common denominator (GCD) and more.
+Wide-integer also features elementary realizations
+of several number theoretical functions such as root finding,
+basic random distribution, Miller-Rabin primality testing,
+greatest common denominator (GCD) and more.
 
 Inclusion of a single C++11 header file is all that is needed.
 
-# Details
-Wide-Integer has been tested with numerous compilers, for target systems ranging from 8 to 64 bits.
-The library is specifically designed for efficiency with small to medium bit counts.
-Supported bit counts include integers
-<img src="https://render.githubusercontent.com/render/math?math=1{\ldots}63{\times}2^{N}">
-while being 16, 24, 32 or larger such as 256, 384, 512, 768, 1024,
-or other less common bit counts such as 11,264, etc.
-Also smaller and/or larger bit counts are supported. It is even possible to make
-software-synthesized (not very efficient) versions of `uint24_t`, `uint32_t` or `uint48_t`,
-which might useful for hardware prototyping or other simulation and verification needs.
-On the high-digit end, Karatsuba multiplication extends the high performance range
-to thousands of bits. Fast long division, however, relies on a classical algorithm
-and sub-quadratic high-precision division is not yet implemented.
+## Implementation goals
 
-Portability of the code is another key point of focus. Special care
-has been taken to test in certain high-performance embedded real-time
-programming environments.
+  - Relatively wide precision range from 24, 32, 64 bits up to a few tens of thousands of bits
+  - Moderately good efficiency over the entire wide precision range
+  - Clean header-only C++11 design
+  - Seamless portability to any modern C++11, 14, 17, 20 compiler
+  - Scalability with small memory footprint and efficiency suitable for both PC/workstation systems as well as _bare-metal_ embedded systems
 
-Testing is a big issue. Generating a full test suite is in continued progress
-and tested efficient functionality on the PC and workstation is present.
-The code is delivered with an affiliated MSVC project that uses Boost.Test
-for various test cases.
-
-When working with even the most tiny microcontroller systems, I/O streaming
-can optionally be disabled with the `WIDE_INTEGER_DISABLE_IOSTREAM` compiler switch.
-See the examples directory as more use cases are being created.
-
-# Quick start
+## Quick start
 Easy application follows via a traditional C-style typedef or C++11 alias.
 The defined type can be used very much like a built-in unsinged integral type.
 
 For instance,
 
 ```C
-#include "generic_template_uintwide_t.h"
+#include <wide_integer/generic_template_uintwide_t.h>
 
 using uint512_t = wide_integer::generic_template::uintwide_t<512U, std::uint32_t>;
 
@@ -55,13 +47,78 @@ sets the internal _limb_ _type_. If the second template parameter is left blank,
 the default limb type is 32 bits in width and unsigned.
 The static `uint512_t` variable `x` is initialized with unsigned value `3U`.
 
-# Detailed examples
+## Examples
+
+Various interesting and algorithmically challenging
+[examples](./examples) have been implemented.
+It is hoped that the examples provide inspiration and guidance on
+how to use wide-integer.
+
+  - ![`example001_mul_div.cpp`](./examples/example001_mul_div.cpp) performs multiplication and division.
+  - ![`example001a_div_mod.cpp`](./examples/example001a_div_mod.cpp) exercises division and modulus calculations.
+  - ![`example002_shl_shr.cpp`](./examples/example002_shl_shr.cpp) does a few left and right shift operations.
+  - ![`example003_sqrt.cpp`](./examples/example003_sqrt.cpp) computes a square root.
+  - ![`example003a_cbrt`](./examples/example003a_cbrt.cpp) computes a cube root.
+  - ![`example004_rootk_pow.cpp`](./examples/example004_rootk_pow.cpp) computes an integral seventh root and its corresponding power.
+  - ![`example005_powm.cpp`](./examples/example005_powm.cpp) tests the power-modulus function.
+  - ![`example006_gcd.cpp`](./examples/example006_gcd.cpp) tests the computation of a greatest common divisor.
+  - ![`example007_random_generator.cpp`](./examples/example007_random_generator.cpp) computes some large pseudo-random integers.
+  - ![`example008_miller_rabin_prime.cpp`](./examples/example008_miller_rabin_prime.cpp) implements primality testing via Miller-Rabin.
+  - ![`example008a_miller_rabin_prime.cpp`](./examples/example008a_miller_rabin_prime.cpp) tests Boost interaction with Miller-Rabin primality checks.
+  - ![`example009_timed_mul.cpp`](./examples/example009_timed_mul.cpp) measures multiplication timings.
+  - ![`example009a_timed_mul_4_by_4.cpp`](./examples/example009a_timed_mul_4_by_4.cpp) also measures multiplication timings for the special case of wide integers having 4 limbs.
+  - ![`example010_uint48_t.cpp`](./examples/example010_uint48_t.cpp) verifies 48-bit integer caluclations.
+  - ![`example011_uint24_t.cpp`](./examples/example011_uint24_t.cpp) performs calculations with 24-bits, which is definitely on the small side of the range of wide-integer.
+
+## Testing
+
+Testing is a big issue and a growing test suite is in continued progress
+providing for tested, efficient functionality on the PC and workstation.
+The GitHub code is delivered with an affiliated MSVC project that uses easy-to-understand
+subroutines called from `main()` that exercise various test cases.
+
+Continuous integration runs on push using GitHub Actions.
+Various compilers, operating systems, and C++ standards
+ranging from C++11, 14, 17, 20 are included in CI.
+
+## Details
+
+Wide-Integer has been tested with numerous compilers, for target systems ranging from 8 to 64 bits.
+The library is specifically designed for efficiency with small to medium bit counts.
+Supported bit counts include integers
+<img src="https://render.githubusercontent.com/render/math?math=1{\ldots}63{\times}2^{N}">
+while being 16, 24, 32 or larger such as 256, 384, 512, 768, 1024,
+or other less common bit counts such as 11,264, etc.
+
+Small, medium and large bit counts are supported.
+Common applications might use the range of `uint128_t`, `uint256_t` or `uint512_t`.
+It is also possible to make
+software-synthesized (not very efficient) versions of `uint24_t`, `uint32_t` or `uint48_t`,
+which might useful for hardware prototyping or other simulation and verification needs.
+On the high-digit end, Karatsuba multiplication extends the high performance range
+to many thousands of bits. Fast long division, however, relies on a classical algorithm
+and sub-quadratic high-precision division is not yet implemented.
+
+Portability of the code is another key point of focus. Special care
+has been taken to test in certain high-performance embedded real-time
+programming environments.
+
+When working with even the most tiny microcontroller systems,
+I/O streaming can optionally be disabled with the compiler switch:
+
+```
+#define WIDE_INTEGER_DISABLE_IOSTREAM
+```
+
+## Detailed Examples
+
+The example below performs some elementary algebraic calculations with a 256-bit unsigned integral type.
 
 ```C
 #include <iomanip>
 #include <iostream>
 
-#include "generic_template_uintwide_t.h"
+#include <wide_integer/generic_template_uintwide_t.h>
 
 int main()
 {
@@ -99,7 +156,7 @@ The example below calculates an integer square root.
 #include <iomanip>
 #include <iostream>
 
-#include "generic_template_uintwide_t.h"
+#include <wide_integer/generic_template_uintwide_t.h>
 
 int main()
 {
@@ -122,7 +179,7 @@ The following code performs add, subtract, multiply and divide of `uint48_t`.
 #include <iomanip>
 #include <iostream>
 
-#include "generic_template_uintwide_t.h"
+#include <wide_integer/generic_template_uintwide_t.h>
 
 int main()
 {
@@ -169,7 +226,7 @@ prior to (and following) the cube root operation.
 #include <iomanip>
 #include <iostream>
 
-#include "generic_template_uintwide_t.h"
+#include <wide_integer/generic_template_uintwide_t.h>
 
 int main()
 {

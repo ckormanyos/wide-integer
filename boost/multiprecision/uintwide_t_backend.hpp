@@ -25,14 +25,25 @@
   template<const std::size_t MyDigits2,
            typename MyLimbType>
   class uintwide_t_backend;
+  } }
+
 
   // Define the number category as a floating-point kind
   // for the uintwide_t_backend. This is needed for properly
   // interacting as a backend with boost::muliprecision.
+  #if defined(BOOST_VERSION) && (BOOST_VERSION < 107500)
   template<const std::size_t MyDigits2,
            typename MyLimbType>
-  struct boost::multiprecision::number_category<uintwide_t_backend<MyDigits2, MyLimbType>>
+  struct boost::multiprecision::number_category<boost::multiprecision::uintwide_t_backend<MyDigits2, MyLimbType>>
     : public boost::mpl::int_<boost::multiprecision::number_kind_integer> { };
+  #else
+  template<const std::size_t MyDigits2,
+           typename MyLimbType>
+  struct boost::multiprecision::number_category<boost::multiprecision::uintwide_t_backend<MyDigits2, MyLimbType>>
+    : public std::integral_constant<int, boost::multiprecision::number_kind_integer> { };
+  #endif
+
+  namespace boost { namespace multiprecision {
 
   // This is the uintwide_t_backend multiple precision class.
   template<const std::size_t MyDigits2,
@@ -42,9 +53,15 @@
   public:
     using representation_type = wide_integer::generic_template::uintwide_t<MyDigits2, MyLimbType>;
 
+    #if defined(BOOST_VERSION) && (BOOST_VERSION < 107500)
     using signed_types   = boost::mpl::list<std::int64_t>;
     using unsigned_types = boost::mpl::list<std::uint64_t>;
     using float_types    = boost::mpl::list<long double>;
+    #else
+    using   signed_types = std::tuple<  signed char,   signed short,   signed int,   signed long,   signed long long, std::intmax_t>;
+    using unsigned_types = std::tuple<unsigned char, unsigned short, unsigned int, unsigned long, unsigned long long, std::uintmax_t>;
+    using float_types    = std::tuple<float, double, long double>;
+    #endif
 
     uintwide_t_backend() : m_value() { }
 
@@ -105,6 +122,8 @@
 
     std::string str(std::streamsize number_of_digits, const std::ios::fmtflags format_flags) const
     {
+      (void) number_of_digits;
+
       char pstr[representation_type::wr_string_max_buffer_size_dec];
 
       const std::uint_fast8_t base_rep     = (((format_flags & std::ios::hex)       != 0) ? 16U : 10U);
@@ -204,8 +223,6 @@
                                     && (std::numeric_limits<IntegralType>::digits) > std::numeric_limits<MyLimbType>::digits)>::type const* = nullptr>
   void eval_divide(uintwide_t_backend<MyDigits2, MyLimbType>& result, const IntegralType& n)
   {
-    using local_wide_integer_type = typename uintwide_t_backend<MyDigits2, MyLimbType>::representation_type;
-
     result.representation() /= n;
   }
 
@@ -490,10 +507,11 @@
                                                  ExpressionTemplatesOptions>,
                    ThisPolicy>
   {
-    typedef typename ThisPolicy::precision_type precision_type;
+    using precision_type = typename ThisPolicy::precision_type;
 
-    typedef digits2<MyDigits2> local_digits_2;
+    using local_digits_2 = digits2<MyDigits2>;
 
+    #if defined(BOOST_VERSION) && (BOOST_VERSION < 107500)
     typedef typename mpl::if_c
       <
         (   (local_digits_2::value <= precision_type::value)
@@ -502,6 +520,11 @@
         precision_type
       >::type
     type;
+    #else
+    using type = typename std::conditional<((local_digits_2::value <= precision_type::value) || (precision_type::value <= 0)),
+                                           local_digits_2,
+                                           precision_type>::type;
+    #endif
   };
 
   } } } // namespaces boost::math::policies

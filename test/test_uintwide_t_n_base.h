@@ -1,6 +1,14 @@
+///////////////////////////////////////////////////////////////////////////////
+//  Copyright Christopher Kormanyos 2019 - 2021.
+//  Distributed under the Boost Software License,
+//  Version 1.0. (See accompanying file LICENSE_1_0.txt
+//  or copy at http://www.boost.org/LICENSE_1_0.txt)
+//
+
 #ifndef TEST_UINTWIDE_T_N_BASE_2019_12_29_H_
   #define TEST_UINTWIDE_T_N_BASE_2019_12_29_H_
 
+  #include <atomic>
   #include <random>
   #include <sstream>
 
@@ -44,23 +52,33 @@
       using other_local_uint_type = OtherLocalUintType;
       using other_boost_uint_type = OtherBoostUintType;
 
-      using random_engine_type = std::minstd_rand;
+      my_random_generator.seed(std::clock());
 
-      random_engine_type random_generator(std::clock());
+      using distribution_type =
+        wide_integer::generic_template::uniform_int_distribution<other_local_uint_type::my_digits, typename other_local_uint_type::limb_type>;
+
+      distribution_type distribution;
+
+      std::atomic_flag rnd_lock = ATOMIC_FLAG_INIT;
 
       my_concurrency::parallel_for
       (
         std::size_t(0U),
         count,
-        [&random_generator, &u_local, &u_boost](std::size_t i)
+        [&u_local, &u_boost, &distribution, &rnd_lock](std::size_t i)
         {
-          const other_local_uint_type a = random_generator();
+          while(rnd_lock.test_and_set()) { ; }
+          const other_local_uint_type a = distribution(my_random_generator);
+          rnd_lock.clear();
 
           u_local[i] = a;
           u_boost[i] = other_boost_uint_type("0x" + hexlexical_cast(a));
         }
       );
     }
+
+  protected:
+    static std::linear_congruential_engine<std::uint32_t, 48271, 0, 2147483647> my_random_generator;
 
   private:
     const std::size_t number_of_cases;

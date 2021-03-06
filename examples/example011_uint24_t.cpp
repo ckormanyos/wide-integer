@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////
-//  Copyright Christopher Kormanyos 2018 -2020.                  //
+//  Copyright Christopher Kormanyos 2018 - 2020.                 //
 //  Distributed under the Boost Software License,                //
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt          //
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)             //
@@ -14,9 +14,9 @@ bool wide_integer::example011_uint24_t()
   using uint24_t = wide_integer::generic_template::uintwide_t<24U, std::uint8_t>;
 
   using distribution_type  = wide_integer::generic_template::uniform_int_distribution<24U, typename uint24_t::limb_type>;
-  using random_engine_type = std::minstd_rand;
+  using random_engine_type = std::linear_congruential_engine<std::uint32_t, UINT32_C(48271), UINT32_C(0), UINT32_C(2147483647)>;
 
-  random_engine_type generator(0xDEADBEEFULL);
+  random_engine_type generator(UINT32_C(0xDEADBEEF));
 
   distribution_type distribution;
 

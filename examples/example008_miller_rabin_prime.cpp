@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////
-//  Copyright Christopher Kormanyos 2018 -2020.                  //
+//  Copyright Christopher Kormanyos 2018 - 2020.                 //
 //  Distributed under the Boost Software License,                //
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt          //
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)             //
@@ -18,7 +18,7 @@ bool wide_integer::example008_miller_rabin_prime()
 {
   using wide_integer_type  = wide_integer::generic_template::uintwide_t<256U>;
   using distribution_type  = wide_integer::generic_template::uniform_int_distribution<wide_integer_type::my_digits, typename wide_integer_type::limb_type>;
-  using random_engine_type = std::minstd_rand;
+  using random_engine_type = std::linear_congruential_engine<std::uint32_t, UINT32_C(48271), UINT32_C(0), UINT32_C(2147483647)>;
 
   // Use a fixed seed in order to obtain deterministic
   // and reproducible result for this test.

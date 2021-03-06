@@ -1,63 +1,62 @@
 ///////////////////////////////////////////////////////////////////
-//  Copyright Christopher Kormanyos 2018 -2019.                  //
+//  Copyright Christopher Kormanyos 2018 - 2021.                 //
 //  Distributed under the Boost Software License,                //
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt          //
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)             //
 ///////////////////////////////////////////////////////////////////
 
+#include <cstdint>
 #include <random>
+#include <string>
 
 #include <wide_integer/generic_template_uintwide_t.h>
 
-bool wide_integer::example007_random_generator()
+namespace
 {
-  using random_engine_type = std::minstd_rand;
-
-  const char str_control[] = "53413622039681179743449193804286578688081252809224238447264353161956925468397";
-
-  bool result_is_ok = true;
-
+  template<typename LimbType>
+  bool generate()
   {
-    // Generate a random number with wide_integer_type having 32-bit limbs.
+    using random_engine_type = std::mersenne_twister_engine<std::uint64_t,
+                                                            64,
+                                                            312,
+                                                            156,
+                                                            31,
+                                                            UINT64_C(0xB5026F5AA96619E9),
+                                                            29,
+                                                            UINT64_C(0x5555555555555555),
+                                                            17,
+                                                            UINT64_C(0x71D67FFFEDA60000),
+                                                            37,
+                                                            UINT64_C(0xFFF7EEE000000000),
+                                                            43,
+                                                            UINT64_C(6364136223846793005)>;
+
     using wide_integer_type  = wide_integer::generic_template::uintwide_t<256U, std::uint32_t>;
     using distribution_type  = wide_integer::generic_template::uniform_int_distribution<wide_integer_type::my_digits, typename wide_integer_type::limb_type>;
 
-    random_engine_type generator(1332597477ULL);
+    // Generate a random number with wide_integer_type having limbs of type LimbType.
+    random_engine_type generator;
 
     distribution_type distribution;
 
     const wide_integer_type n = distribution(generator);
 
-    result_is_ok &= (n == wide_integer_type(str_control));
+    const bool result_is_ok =
+      (n == wide_integer_type("0xF258D22D4DB91392B5EE8CB6ABE457F8401F7AC78BC80F1CC96D191CF6F6AEA6"));
+
+    return result_is_ok;
   }
+}
 
-  {
-    // Generate a random number with wide_integer_type having 16-bit limbs.
-    using wide_integer_type  = wide_integer::generic_template::uintwide_t<256U, std::uint16_t>;
-    using distribution_type  = wide_integer::generic_template::uniform_int_distribution<wide_integer_type::my_digits, typename wide_integer_type::limb_type>;
+bool wide_integer::example007_random_generator()
+{
+  const bool result_08_is_ok = generate<std::uint8_t> ();
+  const bool result_16_is_ok = generate<std::uint16_t>();
+  const bool result_32_is_ok = generate<std::uint32_t>();
 
-    random_engine_type generator(1332597477ULL);
-
-    distribution_type distribution;
-
-    const wide_integer_type n = distribution(generator);
-
-    result_is_ok &= (n == wide_integer_type(str_control));
-  }
-
-  {
-    // Generate a random number with wide_integer_type having 8-bit limbs.
-    using wide_integer_type  = wide_integer::generic_template::uintwide_t<256U, std::uint8_t>;
-    using distribution_type  = wide_integer::generic_template::uniform_int_distribution<wide_integer_type::my_digits, typename wide_integer_type::limb_type>;
-
-    random_engine_type generator(1332597477ULL);
-
-    distribution_type distribution;
-
-    const wide_integer_type n = distribution(generator);
-
-    result_is_ok &= (n == wide_integer_type(str_control));
-  }
+  const bool result_is_ok = (   result_08_is_ok
+                             && result_16_is_ok
+                             && result_32_is_ok);
 
   return result_is_ok;
 }

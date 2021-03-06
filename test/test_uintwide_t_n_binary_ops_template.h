@@ -1,7 +1,15 @@
+///////////////////////////////////////////////////////////////////////////////
+//  Copyright Christopher Kormanyos 2019 - 2021.
+//  Distributed under the Boost Software License,
+//  Version 1.0. (See accompanying file LICENSE_1_0.txt
+//  or copy at http://www.boost.org/LICENSE_1_0.txt)
+//
+
 #ifndef TEST_UINTWIDE_T_N_BINARY_OPS_TEMPLATE_2019_12_19_H_
   #define TEST_UINTWIDE_T_N_BINARY_OPS_TEMPLATE_2019_12_19_H_
 
   #include <algorithm>
+  #include <atomic>
   #include <cstddef>
   #include <random>
   #include <vector>
@@ -60,11 +68,13 @@
     {
       bool result_is_ok = true;
 
+      std::atomic_flag test_lock = ATOMIC_FLAG_INIT;
+
       my_concurrency::parallel_for
       (
         std::size_t(0U),
         size(),
-        [&result_is_ok, this](std::size_t i)
+        [&test_lock, &result_is_ok, this](std::size_t i)
         {
           const boost_uint_type c_boost = a_boost[i] + b_boost[i];
           const local_uint_type c_local = a_local[i] + b_local[i];
@@ -72,7 +82,9 @@
           const std::string str_boost = hexlexical_cast(c_boost);
           const std::string str_local = hexlexical_cast(c_local);
 
+          while(test_lock.test_and_set()) { ; }
           result_is_ok &= (str_boost == str_local);
+          test_lock.clear();
         }
       );
 
@@ -83,11 +95,13 @@
     {
       bool result_is_ok = true;
 
+      std::atomic_flag test_lock = ATOMIC_FLAG_INIT;
+
       my_concurrency::parallel_for
       (
         std::size_t(0U),
         size(),
-        [&result_is_ok, this](std::size_t i)
+        [&test_lock, &result_is_ok, this](std::size_t i)
         {
           const boost_uint_type c_boost = a_boost[i] - b_boost[i];
           const local_uint_type c_local = a_local[i] - b_local[i];
@@ -95,7 +109,9 @@
           const std::string str_boost = hexlexical_cast(c_boost);
           const std::string str_local = hexlexical_cast(c_local);
 
+          while(test_lock.test_and_set()) { ; }
           result_is_ok &= (str_boost == str_local);
+          test_lock.clear();
         }
       );
 
@@ -106,11 +122,13 @@
     {
       bool result_is_ok = true;
 
+      std::atomic_flag test_lock = ATOMIC_FLAG_INIT;
+
       my_concurrency::parallel_for
       (
         std::size_t(0U),
         size(),
-        [&result_is_ok, this](std::size_t i)
+        [&test_lock, &result_is_ok, this](std::size_t i)
         {
           const boost_uint_type c_boost = a_boost[i] * b_boost[i];
           const local_uint_type c_local = a_local[i] * b_local[i];
@@ -118,7 +136,9 @@
           const std::string str_boost = hexlexical_cast(c_boost);
           const std::string str_local = hexlexical_cast(c_local);
 
+          while(test_lock.test_and_set()) { ; }
           result_is_ok &= (str_boost == str_local);
+          test_lock.clear();
         }
       );
 
@@ -127,9 +147,9 @@
 
     virtual bool test_binary_div() const
     {
-      std::random_device rd;
-      std::mt19937 gen(rd());
-      gen.seed(std::clock());
+      std::atomic_flag test_lock = ATOMIC_FLAG_INIT;
+
+      my_gen.seed(std::clock());
       std::uniform_int_distribution<> dis(1, static_cast<int>(digits2 - 1U));
 
       bool result_is_ok = true;
@@ -138,17 +158,21 @@
       (
         std::size_t(0U),
         size(),
-        [&result_is_ok, this, &dis, &gen](std::size_t i)
+        [&result_is_ok, this, &dis, &test_lock](std::size_t i)
         {
-          const std::size_t right_shift_amount = static_cast<std::size_t>(dis(gen));
+          while(test_lock.test_and_set()) { ; }
+          const std::size_t right_shift_amount = static_cast<std::size_t>(dis(my_gen));
+          test_lock.clear();
 
           const boost_uint_type c_boost = a_boost[i] / (std::max)(boost_uint_type(1U), boost_uint_type(b_boost[i] >> right_shift_amount));
-          const local_uint_type c_local = a_local[i] / (std::max)(local_uint_type(1U), (b_local[i] >> right_shift_amount));
+          const local_uint_type c_local = a_local[i] / (std::max)(local_uint_type(1U),                (b_local[i] >> right_shift_amount));
 
           const std::string str_boost = hexlexical_cast(c_boost);
           const std::string str_local = hexlexical_cast(c_local);
 
+          while(test_lock.test_and_set()) { ; }
           result_is_ok &= (str_boost == str_local);
+          test_lock.clear();
         }
       );
 
@@ -157,9 +181,9 @@
 
     virtual bool test_binary_mod() const
     {
-      std::random_device rd;
-      std::mt19937 gen(rd());
-      gen.seed(std::clock());
+      std::atomic_flag test_lock = ATOMIC_FLAG_INIT;
+
+      my_gen.seed(std::clock());
       std::uniform_int_distribution<> dis(1, static_cast<int>(digits2 - 1U));
 
       bool result_is_ok = true;
@@ -168,9 +192,11 @@
       (
         std::size_t(0U),
         size(),
-        [&result_is_ok, this, &dis, &gen](std::size_t i)
+        [&result_is_ok, this, &dis, &test_lock](std::size_t i)
         {
-          const std::size_t right_shift_amount = static_cast<std::size_t>(dis(gen));
+          while(test_lock.test_and_set()) { ; }
+          const std::size_t right_shift_amount = static_cast<std::size_t>(dis(my_gen));
+          test_lock.clear();
 
           const boost_uint_type c_boost = a_boost[i] % (std::max)(boost_uint_type(1U), boost_uint_type(b_boost[i] >> right_shift_amount));
           const local_uint_type c_local = a_local[i] % (std::max)(local_uint_type(1U), (b_local[i] >> right_shift_amount));
@@ -178,7 +204,9 @@
           const std::string str_boost = hexlexical_cast(c_boost);
           const std::string str_local = hexlexical_cast(c_local);
 
+          while(test_lock.test_and_set()) { ; }
           result_is_ok &= (str_boost == str_local);
+          test_lock.clear();
         }
       );
 
@@ -189,11 +217,13 @@
     {
       bool result_is_ok = true;
 
+      std::atomic_flag test_lock = ATOMIC_FLAG_INIT;
+
       my_concurrency::parallel_for
       (
         std::size_t(0U),
         size(),
-        [&result_is_ok, this](std::size_t i)
+        [&test_lock, &result_is_ok, this](std::size_t i)
         {
           const boost_uint_type c_boost = sqrt(a_boost[i]);
           const local_uint_type c_local = sqrt(a_local[i]);
@@ -201,7 +231,9 @@
           const std::string str_boost = hexlexical_cast(c_boost);
           const std::string str_local = hexlexical_cast(c_local);
 
+          while(test_lock.test_and_set()) { ; }
           result_is_ok &= (str_boost == str_local);
+          test_lock.clear();
         }
       );
 

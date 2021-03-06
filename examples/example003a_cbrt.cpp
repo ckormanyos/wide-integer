@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////
-//  Copyright Christopher Kormanyos 2019.                        //
+//  Copyright Christopher Kormanyos 2018 - 2020.                 //
 //  Distributed under the Boost Software License,                //
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt          //
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)             //
@@ -7,13 +7,18 @@
 
 #include <wide_integer/generic_template_uintwide_t.h>
 
+namespace
+{
+  std::array<char, 3335U> str_a;
+  std::array<char, 1113U> str_control;
+}
+
 bool wide_integer::example003a_cbrt()
 {
   using uint11264_t = wide_integer::generic_template::uintwide_t<11264U>;
 
   // Create the string '1' + 3,333 times '0', which is
   // equivalent to the decimal integral value 10^3333.
-  std::array<char, 3335U> str_a;
 
   std::fill(str_a.begin() + 1U,
             str_a.begin() + 1U + 3333U,
@@ -21,8 +26,6 @@ bool wide_integer::example003a_cbrt()
 
   str_a.front() = '1';
   str_a.back()  = '\0';
-
-  std::array<char, 1113U> str_control;
 
   const uint11264_t a = str_a.data();
 
