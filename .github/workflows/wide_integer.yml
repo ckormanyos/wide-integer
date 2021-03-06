@@ -35,8 +35,10 @@ jobs:
           git submodule update --init libs/multiprecision
           git submodule update --init libs/predef
           git submodule update --init libs/random
+          git submodule update --init libs/range
           git submodule update --init libs/rational
           git submodule update --init libs/throw_exception
+          git submodule update --init libs/type_traits
           ./bootstrap.sh
           ./b2 headers
       - name: gcc-clang-native
@@ -81,8 +83,10 @@ jobs:
           git submodule update --init libs/multiprecision
           git submodule update --init libs/predef
           git submodule update --init libs/random
+          git submodule update --init libs/range
           git submodule update --init libs/rational
           git submodule update --init libs/throw_exception
+          git submodule update --init libs/type_traits
           ./bootstrap.sh
           ./b2 headers
       - name: gcc-clang-native-x86
