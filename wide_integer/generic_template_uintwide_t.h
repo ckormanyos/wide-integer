@@ -1110,13 +1110,13 @@
     static constexpr std::uint_fast32_t wr_string_max_buffer_size_dec = (20U + std::uint_fast32_t((std::uintmax_t(my_digits) * UINTMAX_C(301)) / UINTMAX_C(1000))) + 1U;
 
     // Write string function.
-    bool wr_string(      char*             str_result,
-                   const std::uint_fast8_t base_rep     = 0x10U,
-                   const bool              show_base    = true,
-                   const bool              show_pos     = false,
-                   const bool              is_uppercase = true,
-                         std::uint_fast32_t       field_width  = 0U,
-                   const char              fill_char    = char('0')) const
+    bool wr_string(      char*              str_result,
+                   const std::uint_fast8_t  base_rep     = 0x10U,
+                   const bool               show_base    = true,
+                   const bool               show_pos     = false,
+                   const bool               is_uppercase = true,
+                         std::uint_fast32_t field_width  = 0U,
+                   const char               fill_char    = char('0')) const
     {
       uintwide_t t(*this);
 
@@ -1318,12 +1318,14 @@
       preincrement();
     }
 
-    void eval_divide_by_single_limb(const limb_type short_denominator, const std::uint_fast32_t u_offset, uintwide_t* remainder)
+    void eval_divide_by_single_limb(const limb_type          short_denominator,
+                                    const std::uint_fast32_t u_offset,
+                                          uintwide_t*        remainder)
     {
       // The denominator has one single limb.
       // Use a one-dimensional division algorithm.
 
-      double_limb_type long_numerator    = double_limb_type(0U);
+      double_limb_type long_numerator = double_limb_type(0U);
 
       limb_type hi_part = limb_type(0U);
 
@@ -1350,7 +1352,9 @@
   private:
     representation_type values;
 
-    static std::int_fast8_t compare_ranges(const limb_type* a, const limb_type* b, const std::uint_fast32_t count)
+    static std::int_fast8_t compare_ranges(const limb_type*         a,
+                                           const limb_type*         b,
+                                           const std::uint_fast32_t count)
     {
       std::int_fast8_t cmp_result;
 
@@ -1561,9 +1565,9 @@
       }
     }
 
-    static void eval_multiply_n_by_n_to_2n(      limb_type*       r,
-                                           const limb_type*       a,
-                                           const limb_type*       b,
+    static void eval_multiply_n_by_n_to_2n(      limb_type*         r,
+                                           const limb_type*         a,
+                                           const limb_type*         b,
                                            const std::uint_fast32_t count)
     {
       std::memset(r, 0, (count * 2U) * sizeof(limb_type));
@@ -1656,11 +1660,11 @@
       }
     }
 
-    static void eval_multiply_kara_n_by_n_to_2n(      limb_type*       r,
-                                                const limb_type*       a,
-                                                const limb_type*       b,
+    static void eval_multiply_kara_n_by_n_to_2n(      limb_type*         r,
+                                                const limb_type*         a,
+                                                const limb_type*         b,
                                                 const std::uint_fast32_t n,
-                                                      limb_type*       t)
+                                                      limb_type*         t)
     {
       if(n <= 32U)
       {
@@ -1819,11 +1823,11 @@
       }
     }
 
-    static void eval_multiply_toomcook4(      limb_type* r,
-                                        const limb_type* u,
-                                        const limb_type* v,
-                                        const std::uint_fast32_t  n,
-                                              limb_type* t)
+    static void eval_multiply_toomcook4(      limb_type*         r,
+                                        const limb_type*         u,
+                                        const limb_type*         v,
+                                        const std::uint_fast32_t n,
+                                              limb_type*         t)
     {
       if(n == 2048U)
       {
@@ -1922,11 +1926,9 @@
           // We will now use the Knuth long division algorithm.
 
           // Compute the normalization factor d.
-          const double_limb_type d_large =
-            double_limb_type(  ((double_limb_type(std::uint8_t(1U))) << std::numeric_limits<limb_type>::digits)
-                             /   double_limb_type(double_limb_type(other.values[(number_of_limbs - 1U) - v_offset]) + limb_type(1U)));
-
-          const limb_type d = limb_type(d_large);
+          const limb_type d =
+            limb_type(double_limb_type(  ((double_limb_type(std::uint8_t(1U))) << std::numeric_limits<limb_type>::digits)
+                                       /   double_limb_type(double_limb_type(other.values[(number_of_limbs - 1U) - v_offset]) + limb_type(1U))));
 
           // Step D1(b), normalize u -> u * d = uu.
           // Step D1(c): normalize v -> v * d = vv.
