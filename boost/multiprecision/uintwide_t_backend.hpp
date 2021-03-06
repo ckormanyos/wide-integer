@@ -31,7 +31,7 @@
   // Define the number category as a floating-point kind
   // for the uintwide_t_backend. This is needed for properly
   // interacting as a backend with boost::muliprecision.
-  #if defined(BOOST_VERSION) && (BOOST_VERSION < 107500)
+  #if (BOOST_VERSION <= 107500)
   template<const std::size_t MyDigits2,
            typename MyLimbType>
   struct boost::multiprecision::number_category<boost::multiprecision::uintwide_t_backend<MyDigits2, MyLimbType>>
@@ -53,10 +53,10 @@
   public:
     using representation_type = wide_integer::generic_template::uintwide_t<MyDigits2, MyLimbType>;
 
-    #if defined(BOOST_VERSION) && (BOOST_VERSION < 107500)
-    using signed_types   = boost::mpl::list<std::int64_t>;
-    using unsigned_types = boost::mpl::list<std::uint64_t>;
-    using float_types    = boost::mpl::list<long double>;
+    #if (BOOST_VERSION <= 107500)
+    using signed_types   = mpl::list<std::int64_t>;
+    using unsigned_types = mpl::list<std::uint64_t>;
+    using float_types    = mpl::list<long double>;
     #else
     using   signed_types = std::tuple<  signed char,   signed short,   signed int,   signed long,   signed long long, std::intmax_t>;
     using unsigned_types = std::tuple<unsigned char, unsigned short, unsigned int, unsigned long, unsigned long long, std::uintmax_t>;
@@ -511,19 +511,14 @@
 
     using local_digits_2 = digits2<MyDigits2>;
 
-    #if defined(BOOST_VERSION) && (BOOST_VERSION < 107500)
-    typedef typename mpl::if_c
-      <
-        (   (local_digits_2::value <= precision_type::value)
-         || (precision_type::value <= 0)),
-        local_digits_2,
-        precision_type
-      >::type
-    type;
+    #if (BOOST_VERSION <= 107500)
+    using type = typename mpl::if_c<((local_digits_2::value <= precision_type::value) || (precision_type::value <= 0)),
+                                      local_digits_2,
+                                      precision_type>::type;
     #else
     using type = typename std::conditional<((local_digits_2::value <= precision_type::value) || (precision_type::value <= 0)),
-                                           local_digits_2,
-                                           precision_type>::type;
+                                             local_digits_2,
+                                             precision_type>::type;
     #endif
   };
 
