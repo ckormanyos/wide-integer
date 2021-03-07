@@ -93,7 +93,6 @@ jobs:
           git submodule update --init libs/typeof
           git submodule update --init libs/unordered
           git submodule update --init libs/utility
-          git submodule update --init libs/uuid
           git submodule update --init libs/variant
           ./bootstrap.sh
           ./b2 headers
@@ -197,7 +196,6 @@ jobs:
           git submodule update --init libs/typeof
           git submodule update --init libs/unordered
           git submodule update --init libs/utility
-          git submodule update --init libs/uuid
           git submodule update --init libs/variant
           ./bootstrap.sh
           ./b2 headers
@@ -301,7 +299,6 @@ jobs:
           git submodule update --init libs/typeof
           git submodule update --init libs/unordered
           git submodule update --init libs/utility
-          git submodule update --init libs/uuid
           git submodule update --init libs/variant
           ./bootstrap.sh
           ./b2 headers
@@ -403,7 +400,6 @@ jobs:
           git submodule update --init libs/typeof
           git submodule update --init libs/unordered
           git submodule update --init libs/utility
-          git submodule update --init libs/uuid
           git submodule update --init libs/variant
           ./bootstrap.sh
           ./b2 headers
@@ -505,7 +501,6 @@ jobs:
           git submodule update --init libs/typeof
           git submodule update --init libs/unordered
           git submodule update --init libs/utility
-          git submodule update --init libs/uuid
           git submodule update --init libs/variant
           ./bootstrap.sh
           ./b2 headers
@@ -607,7 +602,6 @@ jobs:
           git submodule update --init libs/typeof
           git submodule update --init libs/unordered
           git submodule update --init libs/utility
-          git submodule update --init libs/uuid
           git submodule update --init libs/variant
           ./bootstrap.sh
           ./b2 headers
