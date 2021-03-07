@@ -5,7 +5,6 @@
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
 
-#include <boost/lexical_cast.hpp>
 #include <boost/multiprecision/cpp_int.hpp>
 #include <boost/multiprecision/uintwide_t_backend.hpp>
 
