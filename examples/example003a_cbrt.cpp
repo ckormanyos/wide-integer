@@ -41,7 +41,7 @@ bool wide_integer::example003a_cbrt()
   str_control.front() = '1';
   str_control.back()  = '\0';
 
-  const bool result_is_ok = (s == str_control.data());
+  const bool result_is_ok = (s == uint11264_t(str_control.data()));
 
   return result_is_ok;
 }

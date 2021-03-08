@@ -141,9 +141,6 @@
     <ClCompile Include="examples\example009a_timed_mul_4_by_4.cpp">
       <Filter>Source Files\examples</Filter>
     </ClCompile>
-    <ClCompile Include="examples\example012_uint64_t_limb.cpp">
-      <Filter>Source Files\examples</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include=".github\workflows\wide_integer.yml">

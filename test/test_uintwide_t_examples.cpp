@@ -29,7 +29,6 @@ bool test_uintwide_t_examples()
   result_is_ok &= wide_integer::example009a_timed_mul_4_by_4  (); std::cout << "result_is_ok after example009a_timed_mul_4_by_4  : " << std::boolalpha << result_is_ok << std::endl;
   result_is_ok &= wide_integer::example010_uint48_t           (); std::cout << "result_is_ok after example010_uint48_t           : " << std::boolalpha << result_is_ok << std::endl;
   result_is_ok &= wide_integer::example011_uint24_t           (); std::cout << "result_is_ok after example011_uint24_t           : " << std::boolalpha << result_is_ok << std::endl;
-  result_is_ok &= wide_integer::example012_uint64_t_limb      (); std::cout << "result_is_ok after example012_uint64_t_limb      : " << std::boolalpha << result_is_ok << std::endl;
 
   return result_is_ok;
 }
