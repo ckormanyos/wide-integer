@@ -7,7 +7,7 @@
 
 // cd C:\Users\User\Documents\Ks\PC_Software\NumericalPrograms\ExtendedNumberTypes\wide_integer
 
-// g++ -finline-functions -finline-limit=32 -march=native -mtune=native -O3 -Wall -Wextra -pedantic -Wno-maybe-uninitialized -Wno-cast-function-type -std=c++11 -I. -IC:/boost/boost_1_75_0 -pthread -lpthread  test/test.cpp test/test_uintwide_t_boost_backend.cpp test/test_uintwide_t_edge_cases.cpp test/test_uintwide_t_examples.cpp test/test_uintwide_t_n_base.cpp test/test_uintwide_t_n_binary_ops_base.cpp test/test_uintwide_t_spot_values.cpp examples/example001a_div_mod.cpp examples/example001_mul_div.cpp examples/example002_shl_shr.cpp examples/example003a_cbrt.cpp examples/example003_sqrt.cpp examples/example004_rootk_pow.cpp examples/example005_powm.cpp examples/example006_gcd.cpp examples/example007_random_generator.cpp examples/example008_miller_rabin_prime.cpp examples/example008a_miller_rabin_prime.cpp examples/example009_timed_mul.cpp examples/example009a_timed_mul_4_by_4.cpp examples/example010_uint48_t.cpp examples/example011_uint24_t.cpp -o wide_integer.exe
+// g++ -finline-functions -finline-limit=32 -march=native -mtune=native -O3 -Wall -Wextra -pedantic -Wno-maybe-uninitialized -Wno-cast-function-type -std=c++11 -I. -IC:/boost/boost_1_75_0 -pthread -lpthread  test/test.cpp test/test_uintwide_t_boost_backend.cpp test/test_uintwide_t_edge_cases.cpp test/test_uintwide_t_examples.cpp test/test_uintwide_t_n_base.cpp test/test_uintwide_t_n_binary_ops_base.cpp test/test_uintwide_t_spot_values.cpp examples/example001a_div_mod.cpp examples/example001_mul_div.cpp examples/example002_shl_shr.cpp examples/example003a_cbrt.cpp examples/example003_sqrt.cpp examples/example004_rootk_pow.cpp examples/example005_powm.cpp examples/example006_gcd.cpp examples/example007_random_generator.cpp examples/example008_miller_rabin_prime.cpp examples/example008a_miller_rabin_prime.cpp examples/example009_timed_mul.cpp examples/example009a_timed_mul_4_by_4.cpp examples/example010_uint48_t.cpp examples/example011_uint24_t.cpp examples/example012_uint64_t_limb.cpp -o wide_integer.exe
 
 #include <chrono>
 #include <iomanip>
@@ -41,9 +41,9 @@ constexpr std::size_t test_uintwide_t_n_binary_ops_rounds = 1U;
 #endif
 
 #if !defined(UINTWIDE_T_REDUCE_TEST_DEPTH)
-constexpr std::uint32_t test_uintwide_t_n_binary_ops_4_by_4_cases = std::uint32_t(1UL << 19U);
-#else
 constexpr std::uint32_t test_uintwide_t_n_binary_ops_4_by_4_cases = std::uint32_t(1UL << 17U);
+#else
+constexpr std::uint32_t test_uintwide_t_n_binary_ops_4_by_4_cases = std::uint32_t(1UL << 15U);
 #endif
 
 bool test_uintwide_t_small_bits_tag()
@@ -233,6 +233,15 @@ bool test_uintwide_t_0000064_by_0000064_4_by_4_tag()
   return result_is_ok;
 }
 
+bool test_uintwide_t_0000128_by_0000128_4_by_4_tag()
+{
+  std::cout << "running: test_uintwide_t_0000128_by_0000128_4_by_4" << std::endl;
+  test_uintwide_t_n_binary_ops_mul_div_4_by_4_template<128U, std::uint32_t> test_uintwide_t_n_binary_ops_template_instance(test_uintwide_t_n_binary_ops_4_by_4_cases);
+  const bool result_is_ok =
+    test_uintwide_t_n_binary_ops_template_instance.do_test(test_uintwide_t_n_binary_ops_rounds);
+  return result_is_ok;
+}
+
 }
 
 int main()
@@ -261,6 +270,7 @@ int main()
   result_is_ok &= test_uintwide_t_0012288_by_0008192_tag();        std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
   result_is_ok &= test_uintwide_t_0000032_by_0000032_4_by_4_tag(); std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
   result_is_ok &= test_uintwide_t_0000064_by_0000064_4_by_4_tag(); std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
+  result_is_ok &= test_uintwide_t_0000128_by_0000128_4_by_4_tag(); std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
 
   const time_point_type stop = clock_type::now();
 

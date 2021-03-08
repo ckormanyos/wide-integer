@@ -378,18 +378,18 @@
            typename EnableType = void>
   struct int_type_helper
   {
-    static_assert((   ((BitCount >= 8U) && (BitCount <= 64U))
+    static_assert((   ((BitCount >= 8U) && (BitCount <= 128U))
                    && (verify_power_of_two<BitCount>::conditional_value == true)),
                   "Error: int_type_helper is not intended to be used for this BitCount");
 
     using exact_unsigned_type = std::uintmax_t;
-    using exact_signed_type   = std::intmax_t;
   };
 
-  template<const std::uint_fast32_t BitCount> struct int_type_helper<BitCount, typename std::enable_if<                     (BitCount <=  8U)>::type> { using exact_unsigned_type = std::uint8_t;  using exact_signed_type = std::int8_t;   };
-  template<const std::uint_fast32_t BitCount> struct int_type_helper<BitCount, typename std::enable_if<(BitCount >=  9U) && (BitCount <= 16U)>::type> { using exact_unsigned_type = std::uint16_t; using exact_signed_type = std::int16_t;   };
-  template<const std::uint_fast32_t BitCount> struct int_type_helper<BitCount, typename std::enable_if<(BitCount >= 17U) && (BitCount <= 32U)>::type> { using exact_unsigned_type = std::uint32_t; using exact_signed_type = std::int32_t;   };
-  template<const std::uint_fast32_t BitCount> struct int_type_helper<BitCount, typename std::enable_if<(BitCount >= 33U) && (BitCount <= 64U)>::type> { using exact_unsigned_type = std::uint64_t; using exact_signed_type = std::int64_t;   };
+  template<const std::uint_fast32_t BitCount> struct int_type_helper<BitCount, typename std::enable_if<                     (BitCount <=   8U)>::type> { using exact_unsigned_type = std::uint8_t;  };
+  template<const std::uint_fast32_t BitCount> struct int_type_helper<BitCount, typename std::enable_if<(BitCount >=  9U) && (BitCount <=  16U)>::type> { using exact_unsigned_type = std::uint16_t; };
+  template<const std::uint_fast32_t BitCount> struct int_type_helper<BitCount, typename std::enable_if<(BitCount >= 17U) && (BitCount <=  32U)>::type> { using exact_unsigned_type = std::uint32_t; };
+  template<const std::uint_fast32_t BitCount> struct int_type_helper<BitCount, typename std::enable_if<(BitCount >= 33U) && (BitCount <=  64U)>::type> { using exact_unsigned_type = std::uint64_t; };
+  template<const std::uint_fast32_t BitCount> struct int_type_helper<BitCount, typename std::enable_if<(BitCount >= 65U) && (BitCount <= 128U)>::type> { using exact_unsigned_type = wide_integer::generic_template::uintwide_t<128U, std::uint32_t>; };
 
   // Use a local implementation of string copy.
   inline char* strcpy_unsafe(char* dst, const char* src)
@@ -770,6 +770,7 @@
     const representation_type& crepresentation() const { return values; }
 
     // Unary operators: not, plus and minus.
+          uintwide_t& operator~()       { bitwise_not(); return *this; }
     const uintwide_t& operator+() const { return *this; }
           uintwide_t  operator-() const { uintwide_t tmp(*this); tmp.negate(); return tmp; }
 
@@ -901,14 +902,6 @@
     // Operators post-increment and post-decrement.
     uintwide_t operator++(int) { const uintwide_t w(*this); preincrement(); return w; }
     uintwide_t operator--(int) { const uintwide_t w(*this); predecrement(); return w; }
-
-    uintwide_t& operator~()
-    {
-      // Bitwise NOT.
-      bitwise_not();
-
-      return *this;
-    }
 
     uintwide_t& operator|=(const uintwide_t& other)
     {
@@ -3716,6 +3709,7 @@
   bool example009a_timed_mul_4_by_4  ();
   bool example010_uint48_t           ();
   bool example011_uint24_t           ();
+  bool example012_uint64_t_limb      ();
 
   } // namespace wide_integer
 

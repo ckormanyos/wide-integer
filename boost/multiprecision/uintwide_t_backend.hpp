@@ -31,11 +31,16 @@
   // Define the number category as a floating-point kind
   // for the uintwide_t_backend. This is needed for properly
   // interacting as a backend with boost::muliprecision.
-  #if (BOOST_VERSION <= 107500)
+  #if (BOOST_VERSION <= 107200)
   template<const std::size_t MyDigits2,
            typename MyLimbType>
   struct boost::multiprecision::number_category<boost::multiprecision::uintwide_t_backend<MyDigits2, MyLimbType>>
     : public boost::mpl::int_<boost::multiprecision::number_kind_integer> { };
+  #elif (BOOST_VERSION <= 107500)
+  template<const std::size_t MyDigits2,
+           typename MyLimbType>
+  struct boost::multiprecision::number_category<boost::multiprecision::uintwide_t_backend<MyDigits2, MyLimbType>>
+    : public boost::integral_constant<int, boost::multiprecision::number_kind_integer> { };
   #else
   template<const std::size_t MyDigits2,
            typename MyLimbType>
@@ -512,9 +517,9 @@
     using local_digits_2 = digits2<MyDigits2>;
 
     #if (BOOST_VERSION <= 107500)
-    using type = typename mpl::if_c<((local_digits_2::value <= precision_type::value) || (precision_type::value <= 0)),
-                                      local_digits_2,
-                                      precision_type>::type;
+    using type = typename mpl::if_c       <((local_digits_2::value <= precision_type::value) || (precision_type::value <= 0)),
+                                             local_digits_2,
+                                             precision_type>::type;
     #else
     using type = typename std::conditional<((local_digits_2::value <= precision_type::value) || (precision_type::value <= 0)),
                                              local_digits_2,

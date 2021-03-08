@@ -222,6 +222,7 @@
     <ClCompile Include="examples\example009a_timed_mul_4_by_4.cpp" />
     <ClCompile Include="examples\example010_uint48_t.cpp" />
     <ClCompile Include="examples\example011_uint24_t.cpp" />
+    <ClCompile Include="examples\example012_uint64_t_limb.cpp" />
     <ClCompile Include="test\test.cpp" />
     <ClCompile Include="test\test_uintwide_t_boost_backend.cpp" />
     <ClCompile Include="test\test_uintwide_t_edge_cases.cpp" />
