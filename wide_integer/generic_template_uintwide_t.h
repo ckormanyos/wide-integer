@@ -534,7 +534,7 @@
     using double_width_type = uintwide_t<my_digits * 2U, limb_type>;
 
     // Default constructor.
-    uintwide_t() = default;
+    uintwide_t() { }
 
     // Constructors from built-in unsigned integral types that
     // are less wide than limb_type or exactly as wide as limb_type.
@@ -594,10 +594,7 @@
     }
 
     // Constructor from the internal data representation.
-    uintwide_t(const representation_type& other_rep)
-    {
-      std::copy(other_rep.cbegin(), other_rep.cend(), values.begin());
-    }
+    constexpr uintwide_t(const representation_type& other_rep) : values(other_rep) { }
 
     // Constructor from initializer list of limbs.
     uintwide_t(std::initializer_list<limb_type> lst)
@@ -672,7 +669,7 @@
     }
 
     // Move constructor.
-    uintwide_t(uintwide_t&& other) : values(static_cast<representation_type&&>(other.values)) { }
+    constexpr uintwide_t(uintwide_t&& other) : values(static_cast<representation_type&&>(other.values)) { }
 
     // Default destructor.
     ~uintwide_t() = default;
@@ -682,7 +679,7 @@
     {
       if(this != &other)
       {
-        std::copy(other.values.cbegin(), other.values.cend(), values.begin());
+        values = other.values;
       }
 
       return *this;
@@ -691,7 +688,7 @@
     // Trivial move assignment operator.
     uintwide_t& operator=(uintwide_t&& other)
     {
-      std::copy(other.values.cbegin(), other.values.cend(), values.begin());
+      values = static_cast<representation_type&&>(other.values);
 
       return *this;
     }
@@ -776,7 +773,7 @@
     {
       if(this == &other)
       {
-        return operator+=(uintwide_t(other));
+        operator+=(uintwide_t(other));
       }
       else
       {
@@ -788,9 +785,9 @@
                                            limb_type(0U));
 
         static_cast<void>(carry);
-
-        return *this;
       }
+
+      return *this;
     }
 
     uintwide_t& operator-=(const uintwide_t& other)
@@ -798,8 +795,6 @@
       if(this == &other)
       {
         values.fill(0U);
-
-        return *this;
       }
       else
       {
@@ -811,23 +806,23 @@
                                                        false);
 
         static_cast<void>(has_borrow);
-
-        return *this;
       }
+
+      return *this;
     }
 
     uintwide_t& operator*=(const uintwide_t& other)
     {
       if(this == &other)
       {
-        return operator*=(uintwide_t(other));
+        operator*=(uintwide_t(other));
       }
       else
       {
         eval_mul_unary(*this, other);
-
-        return *this;
       }
+
+      return *this;
     }
 
     uintwide_t& mul_by_limb(const limb_type v)
@@ -854,22 +849,18 @@
         values.front() = 1U;
 
         std::fill(values.begin() + 1U, values.end(), limb_type(0U));
-
-        return *this;
       }
       else if(other.is_zero())
       {
         values.fill((std::numeric_limits<limb_type>::max)());
-
-        return *this;
       }
       else
       {
         // Unary division function.
         eval_divide_knuth(other, nullptr);
-
-        return *this;
       }
+
+      return *this;
     }
 
     uintwide_t& operator%=(const uintwide_t& other)
@@ -877,8 +868,6 @@
       if(this == &other)
       {
         std::fill(values.begin(), values.end(), limb_type(0U));
-
-        return *this;
       }
       else
       {
@@ -888,9 +877,9 @@
         eval_divide_knuth(other, &remainder);
 
         values = remainder.values;
-
-        return *this;
       }
+
+      return *this;
     }
 
     // Operators pre-increment and pre-decrement.
@@ -911,20 +900,16 @@
 
     uintwide_t& operator|=(const uintwide_t& other)
     {
-      if(this == &other)
-      {
-        return *this;
-      }
-      else
+      if(this != &other)
       {
         // Bitwise OR.
         for(std::uint_fast32_t i = 0U; i < number_of_limbs; ++i)
         {
           values[i] |= other.values[i];
         }
-
-        return *this;
       }
+
+      return *this;
     }
 
     uintwide_t& operator^=(const uintwide_t& other)
@@ -932,8 +917,6 @@
       if(this == &other)
       {
         values.fill(0U);
-
-        return *this;
       }
       else
       {
@@ -942,27 +925,23 @@
         {
           values[i] ^= other.values[i];
         }
-
-        return *this;
       }
+
+      return *this;
     }
 
     uintwide_t& operator&=(const uintwide_t& other)
     {
-      if(this == &other)
-      {
-        return *this;
-      }
-      else
+      if(this != &other)
       {
         // Bitwise AND.
         for(std::uint_fast32_t i = 0U; i < number_of_limbs; ++i)
         {
           values[i] &= other.values[i];
         }
-
-        return *this;
       }
+
+      return *this;
     }
 
     template<typename SignedIntegralType>
@@ -1371,8 +1350,7 @@
       }
       else
       {
-        const bool left_is_greater_than_right =
-          (a[(element_index)] > b[(element_index)]);
+        const bool left_is_greater_than_right = (a[element_index] > b[element_index]);
 
         cmp_result = (left_is_greater_than_right ? std::int_fast8_t(1) : std::int_fast8_t(-1));
       }
@@ -3002,20 +2980,20 @@
     // Calculate (b ^ p).
 
     using local_wide_integer_type = uintwide_t<Digits2, LimbType>;
+    using local_limb_type         = typename local_wide_integer_type::limb_type;
 
     local_wide_integer_type result;
+    local_limb_type         p0(p);
 
-    const OtherUnsignedIntegralTypeP zero(std::uint8_t(0U));
-
-    if(p == zero)
+    if((p0 == 0U) && (p == 0U))
     {
       result = local_wide_integer_type(std::uint8_t(1U));
     }
-    else if(p == 1U)
+    else if((p0 == 1U) && (p == 1U))
     {
       result = b;
     }
-    else if(p == 2U)
+    else if((p0 == 2U) && (p == 2U))
     {
       result  = b;
       result *= b;
@@ -3027,9 +3005,9 @@
       local_wide_integer_type y      (b);
       local_wide_integer_type p_local(p);
 
-      while(!(p_local == zero))
+      while(((p0 = local_limb_type(p_local)) != 0U) || (p_local != 0U))
       {
-        if(std::uint_fast8_t(p_local) & 1U)
+        if((p0 & 1U) != 0U)
         {
           result *= y;
         }
@@ -3060,8 +3038,7 @@
           local_normal_width_type    result;
           local_double_width_type    y      (b);
     const local_double_width_type    m_local(m);
-
-    local_limb_type p0 = static_cast<local_limb_type>(p);
+          local_limb_type            p0(p);
 
     if((p0 == 0U) && (p == 0U))
     {
@@ -3083,7 +3060,7 @@
       local_double_width_type    x      (std::uint8_t(1U));
       OtherUnsignedIntegralTypeP p_local(p);
 
-      while(!(((p0 = static_cast<local_limb_type>(p_local)) == 0U) && (p_local == 0U)))
+      while(((p0 = local_limb_type(p_local)) != 0U) || (p_local != 0U))
       {
         if((p0 & 1U) != 0U)
         {
