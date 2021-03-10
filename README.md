@@ -1,4 +1,6 @@
-# Wide-integer
+Wide-integer
+[![Build Status](https://github.com/ckormanyos/wide-integer/actions/workflows/wide_integer.yml/badge.svg)](https://github.com/ckormanyos/wide-integer/actions)
+==================
 
 Wide-integer implements a generic C++ template for extended precision unsigned integral types.
 
@@ -70,7 +72,7 @@ how to use wide-integer.
   - ![`example010_uint48_t.cpp`](./examples/example010_uint48_t.cpp) verifies 48-bit integer caluclations.
   - ![`example011_uint24_t.cpp`](./examples/example011_uint24_t.cpp) performs calculations with 24-bits, which is definitely on the small side of the range of wide-integer.
 
-## Testing
+## Testing and CI
 
 Testing is a big issue and a growing test suite is in continued progress
 providing for tested, efficient functionality on the PC and workstation.
@@ -80,6 +82,9 @@ subroutines called from `main()` that exercise various test cases.
 Continuous integration runs on push using GitHub Actions.
 Various compilers, operating systems, and C++ standards
 ranging from C++11, 14, 17, 20 are included in CI.
+
+### Build Status
+[![Build Status](https://github.com/ckormanyos/wide-integer/actions/workflows/wide_integer.yml/badge.svg)](https://github.com/ckormanyos/wide-integer/actions)
 
 ## Details
 
