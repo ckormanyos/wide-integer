@@ -5,27 +5,18 @@
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)             //
 ///////////////////////////////////////////////////////////////////
 
-#include <wide_integer/generic_template_uintwide_t.h>
+#include <string>
 
-namespace
-{
-  std::array<char, 3335U> str_a;
-  std::array<char, 1113U> str_control;
-}
+#include <wide_integer/generic_template_uintwide_t.h>
 
 bool wide_integer::example003a_cbrt()
 {
-  using uint11264_t = wide_integer::generic_template::uintwide_t<11264U>;
+  using uint11264_t = wide_integer::generic_template::uintwide_t<11264U, std::uint32_t, std::allocator<std::uint32_t>>;
 
   // Create the string '1' + 3,333 times '0', which is
   // equivalent to the decimal integral value 10^3333.
 
-  std::fill(str_a.begin() + 1U,
-            str_a.begin() + 1U + 3333U,
-            '0');
-
-  str_a.front() = '1';
-  str_a.back()  = '\0';
+  const std::string str_a = "1" + std::string(3333U, '0');
 
   const uint11264_t a = str_a.data();
 
@@ -34,12 +25,8 @@ bool wide_integer::example003a_cbrt()
   // Create the string '1' + 1,111 times '0', which is
   // equivalent to the decimal integral value 10^1111.
   // (This is the cube root of 10^3333.)
-  std::fill(str_control.begin() + 1U,
-            str_control.begin() + 1U + 1111U,
-            '0');
 
-  str_control.front() = '1';
-  str_control.back()  = '\0';
+  const std::string str_control = "1" + std::string(1111U, '0');
 
   const bool result_is_ok = (s == uint11264_t(str_control.data()));
 

@@ -35,7 +35,7 @@
     virtual std::size_t get_digits2 () const { return digits2; }
 
     using native_uint_cntrl_type =
-      typename wide_integer::generic_template::detail::int_type_helper<digits2>::exact_unsigned_type;
+      typename wide_integer::generic_template::detail::uint_type_helper<digits2>::exact_unsigned_type;
 
     using local_limb_type = MyLimbType;
 

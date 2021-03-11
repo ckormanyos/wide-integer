@@ -17,7 +17,8 @@
   #include <test/test_uintwide_t_n_binary_ops_base.h>
 
   template<const std::size_t MyDigits2,
-           typename MyLimbType = std::uint32_t>
+           typename MyLimbType = std::uint32_t,
+           typename AllocatorType = void>
   class test_uintwide_t_n_binary_ops_template : public test_uintwide_t_n_binary_ops_base
   {
   private:
@@ -32,7 +33,7 @@
 
     using local_limb_type = MyLimbType;
 
-    using local_uint_type = wide_integer::generic_template::uintwide_t<digits2, local_limb_type>;
+    using local_uint_type = wide_integer::generic_template::uintwide_t<digits2, local_limb_type, AllocatorType>;
 
   public:
     test_uintwide_t_n_binary_ops_template(const std::size_t count)
@@ -60,8 +61,8 @@
       a_boost.resize(size());
       b_boost.resize(size());
 
-      get_equal_random_test_values_boost_and_local_n(a_local.data(), a_boost.data(), size());
-      get_equal_random_test_values_boost_and_local_n(b_local.data(), b_boost.data(), size());
+      get_equal_random_test_values_boost_and_local_n<local_uint_type, boost_uint_type, AllocatorType>(a_local.data(), a_boost.data(), size());
+      get_equal_random_test_values_boost_and_local_n<local_uint_type, boost_uint_type, AllocatorType>(b_local.data(), b_boost.data(), size());
     }
 
     virtual bool test_binary_add() const

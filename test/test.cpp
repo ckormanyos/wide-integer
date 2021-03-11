@@ -188,10 +188,19 @@ bool test_uintwide_t_0012288()
   return result_is_ok;
 }
 
-bool test_uintwide_t_0065536()
+bool test_uintwide_t_0032768()
 {
-  std::cout << "running: test_uintwide_t_0065536" << std::endl;
-  test_uintwide_t_n_binary_ops_template<65536U> test_uintwide_t_n_binary_ops_template_instance(1UL << 7U);
+  std::cout << "running: test_uintwide_t_0032768" << std::endl;
+  test_uintwide_t_n_binary_ops_template<32768U> test_uintwide_t_n_binary_ops_template_instance(1UL << 8U);
+  const bool result_is_ok =
+    test_uintwide_t_n_binary_ops_template_instance.do_test(test_uintwide_t_n_binary_ops_rounds);
+  return result_is_ok;
+}
+
+bool test_uintwide_t_0065536_alloc()
+{
+  std::cout << "running: test_uintwide_t_0065536_alloc" << std::endl;
+  test_uintwide_t_n_binary_ops_template<65536U, std::uint32_t, std::allocator<std::uint32_t>> test_uintwide_t_n_binary_ops_template_instance(1UL << 6U);
   const bool result_is_ok =
     test_uintwide_t_n_binary_ops_template_instance.do_test(test_uintwide_t_n_binary_ops_rounds);
   return result_is_ok;
@@ -256,7 +265,8 @@ int main()
   result_is_ok &= local::test_uintwide_t_0000512();                   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
   result_is_ok &= local::test_uintwide_t_0008192();                   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
   result_is_ok &= local::test_uintwide_t_0012288();                   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
-  result_is_ok &= local::test_uintwide_t_0065536();                   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
+  result_is_ok &= local::test_uintwide_t_0032768();                   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
+  result_is_ok &= local::test_uintwide_t_0065536_alloc();             std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
   result_is_ok &= local::test_uintwide_t_0008192_by_0012288();        std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
   result_is_ok &= local::test_uintwide_t_0012288_by_0008192();        std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
   result_is_ok &= local::test_uintwide_t_0000032_by_0000032_4_by_4(); std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
