@@ -44,7 +44,8 @@
     }
 
     template<typename OtherLocalUintType,
-             typename OtherBoostUintType>
+             typename OtherBoostUintType,
+             typename AllocatorType = void>
     static void get_equal_random_test_values_boost_and_local_n(OtherLocalUintType* u_local,
                                                                OtherBoostUintType* u_boost,
                                                                const std::size_t count)
@@ -55,7 +56,7 @@
       my_random_generator.seed(std::clock());
 
       using distribution_type =
-        wide_integer::generic_template::uniform_int_distribution<other_local_uint_type::my_digits, typename other_local_uint_type::limb_type>;
+        wide_integer::generic_template::uniform_int_distribution<other_local_uint_type::my_digits, typename other_local_uint_type::limb_type, AllocatorType>;
 
       distribution_type distribution;
 

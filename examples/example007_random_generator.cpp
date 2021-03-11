@@ -13,7 +13,7 @@
 
 namespace
 {
-  template<typename LimbType>
+  template<typename LimbType, typename AllocatorType = void>
   bool generate()
   {
     using random_engine_type = std::mersenne_twister_engine<std::uint64_t,
@@ -31,7 +31,7 @@ namespace
                                                             43,
                                                             UINT64_C(6364136223846793005)>;
 
-    using wide_integer_type  = wide_integer::generic_template::uintwide_t<256U, std::uint32_t>;
+    using wide_integer_type  = wide_integer::generic_template::uintwide_t<256U, std::uint32_t, AllocatorType>;
     using distribution_type  = wide_integer::generic_template::uniform_int_distribution<wide_integer_type::my_digits, typename wide_integer_type::limb_type>;
 
     // Generate a random number with wide_integer_type having limbs of type LimbType.
