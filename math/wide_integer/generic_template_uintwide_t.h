@@ -402,6 +402,77 @@
     }
   };
 
+  template<typename MyType,
+           const std::uint_fast32_t MySize>
+  class fixed_static_array final : public std::array<MyType, MySize>
+  {
+  private:
+    using base_class_type = std::array<MyType, MySize>;
+
+  public:
+    fixed_static_array(const typename base_class_type::size_type   s = MySize,
+                       const typename base_class_type::value_type& v = typename base_class_type::value_type())
+    {
+      std::fill(base_class_type::begin(),
+                base_class_type::begin() + (std::min)(MySize, (std::uint_fast32_t) s),
+                v);
+
+      std::fill(base_class_type::begin() + (std::min)(MySize, (std::uint_fast32_t) s),
+                base_class_type::end(),
+                typename base_class_type::value_type());
+    }
+
+    constexpr fixed_static_array(const fixed_static_array& other_array)
+      : base_class_type((const base_class_type&) other_array) { }
+
+    template<const std::uint_fast32_t OtherSize>
+    fixed_static_array(const fixed_static_array<std::uint_fast32_t, OtherSize>& other_array)
+    {
+      std::copy(other_array.cbegin(),
+                other_array.cbegin() + (std::min)(OtherSize, MySize),
+                base_class_type::begin());
+
+      std::fill(base_class_type::begin() + (std::min)(OtherSize, MySize),
+                base_class_type::end(),
+                typename base_class_type::value_type());
+    }
+
+    explicit fixed_static_array(std::initializer_list<typename base_class_type::value_type> lst)
+    {
+      std::copy(lst.begin(),
+                lst.begin() + (std::min)((std::uint_fast32_t) lst.size(), MySize),
+                base_class_type::begin());
+
+      std::fill(base_class_type::begin() + (std::min)((std::uint_fast32_t) lst.size(), MySize),
+                base_class_type::end(),
+                typename base_class_type::value_type());
+    }
+
+    constexpr fixed_static_array(fixed_static_array&& other_array)
+      : base_class_type((base_class_type&&) other_array) { }
+
+    fixed_static_array& operator=(const fixed_static_array& other_array)
+    {
+      base_class_type::operator=((const base_class_type&) other_array);
+
+      return *this;
+    }
+
+    fixed_static_array& operator=(fixed_static_array&& other_array)
+    {
+      base_class_type::operator=((base_class_type&&) other_array);
+
+      return *this;
+    }
+
+    ~fixed_static_array() { }
+
+    static constexpr typename base_class_type::size_type static_size()
+    {
+      return MySize;
+    }
+  };
+
   template<const std::uint_fast32_t Digits2> struct verify_power_of_two
   {
     static constexpr bool conditional_value = 
@@ -543,7 +614,8 @@
   namespace wide_integer { namespace generic_template {
 
   template<const std::uint_fast32_t Digits2,
-           typename LimbType, typename AllocatorType>
+           typename LimbType,
+           typename AllocatorType>
   class uintwide_t
   {
   public:
@@ -578,17 +650,17 @@
 
     // Verify that the Digits2 template parameter (my_digits):
     //   * Is equal to 2^n times 1...63.
-    //   * And that there are at least 16, 24 or 32 binary digits.
+    //   * And that there are at least 16, 24 or 32 binary digits, or more.
     //   * And that the number of binary digits is an exact multiple of the number of limbs.
     static_assert(   (detail::verify_power_of_two_times_granularity_one_sixty_fourth<my_digits>::conditional_value == true)
-                  && ((my_digits >= 16U) || (my_digits >= 24U))
+                  && ((my_digits >= 16U) || (my_digits >= 24U) || (my_digits >= 32U))
                   && (my_digits == (number_of_limbs * std::uint_fast32_t(std::numeric_limits<limb_type>::digits))),
                   "Error: Digits2 must be 2^n times 1...63 (with n >= 3), while being 16, 24, 32 or larger, and exactly divisible by limb count");
 
     // The type of the internal data representation.
     using representation_type =
       typename std::conditional<std::is_same<AllocatorType, void>::value,
-                                std::array<limb_type, number_of_limbs>,
+                                detail::fixed_static_array <limb_type, number_of_limbs>,
                                 detail::fixed_dynamic_array<limb_type, number_of_limbs, AllocatorType>>::type;
 
     // The iterator types of the internal data representation.
@@ -601,21 +673,17 @@
     using double_width_type = uintwide_t<my_digits * 2U, limb_type>;
 
     // Default constructor.
-    uintwide_t() { }
+    constexpr uintwide_t() { }
 
     // Constructors from built-in unsigned integral types that
     // are less wide than limb_type or exactly as wide as limb_type.
     template<typename UnsignedIntegralType>
-    uintwide_t(const UnsignedIntegralType v,
-               typename std::enable_if<(   (std::is_fundamental<UnsignedIntegralType>::value == true)
-                                        && (std::is_integral   <UnsignedIntegralType>::value == true)
-                                        && (std::is_unsigned   <UnsignedIntegralType>::value == true)
-                                        && (std::numeric_limits<UnsignedIntegralType>::digits <= std::numeric_limits<limb_type>::digits))>::type* = nullptr)
-    {
-      values[0U] = limb_type(v);
-
-      std::fill(values.begin() + 1U, values.end(), limb_type(0U));
-    }
+    constexpr uintwide_t(const UnsignedIntegralType v,
+                         typename std::enable_if<(   (std::is_fundamental<UnsignedIntegralType>::value == true)
+                                                  && (std::is_integral   <UnsignedIntegralType>::value == true)
+                                                  && (std::is_unsigned   <UnsignedIntegralType>::value == true)
+                                                  && (std::numeric_limits<UnsignedIntegralType>::digits <= std::numeric_limits<limb_type>::digits))>::type* = nullptr)
+      : values(1U, v) { }
 
     // Constructors from built-in unsigned integral types that
     // are wider than limb_type, and do not have exactly the
@@ -664,67 +732,32 @@
     constexpr uintwide_t(const representation_type& other_rep) : values(other_rep) { }
 
     // Constructor from initializer list of limbs.
-    uintwide_t(std::initializer_list<limb_type> lst)
-    {
-      const std::uint_fast32_t sz = (std::min)(std::uint_fast32_t(lst.size()),
-                                               std::uint_fast32_t(values.size()));
-
-      std::copy(lst.begin(), lst.begin() + sz, values.begin());
-      std::fill(values.begin() + sz, values.end(), limb_type(0U));
-    }
+    constexpr uintwide_t(std::initializer_list<limb_type> lst)
+      : values(lst) { }
 
     // Constructor from a C-style array.
     template<const std::uint_fast32_t N>
-    uintwide_t(const limb_type(&init)[N])
-    {
-      static_assert(N <= number_of_limbs,
-                    "Error: The initialization list has too many elements.");
-
-      std::copy(init, init + (std::min)(N, number_of_limbs), values.begin());
-    }
+    constexpr uintwide_t(const limb_type(&init)[N])
+      : values(init, init + (std::min)(N, number_of_limbs), values.begin()) { }
 
     // Copy constructor.
-    uintwide_t(const uintwide_t& other) : values(other.values) { }
+    constexpr uintwide_t(const uintwide_t& other) : values(other.values) { }
 
     // Constructor from the double-width type.
     // This constructor is explicit because it
     // is a narrowing conversion.
     template<typename UnknownUnsignedWideIntegralType = double_width_type>
-    explicit uintwide_t(const UnknownUnsignedWideIntegralType& v,
-                        typename std::enable_if<(   (std::is_same<UnknownUnsignedWideIntegralType, double_width_type>::value == true)
-                                                 && (128U <= my_digits))>::type* = nullptr)
-    {
-      std::copy(v.crepresentation().cbegin(),
-                v.crepresentation().cbegin() + (v.crepresentation().size() / 2U),
-                values.begin());
-    }
+    explicit constexpr uintwide_t(const UnknownUnsignedWideIntegralType& v,
+                                  typename std::enable_if<(   (std::is_same<UnknownUnsignedWideIntegralType, double_width_type>::value == true)
+                                                           && (128U <= my_digits))>::type* = nullptr)
+      : values(v.crepresentation().cbegin(),
+               v.crepresentation().cbegin() + (v.crepresentation().size() / 2U)) { }
 
     // Constructor from the another type having a different width but the same limb type.
     // This constructor is explicit because it is a non-trivial conversion.
     template<const std::uint_fast32_t OtherDigits2>
-    explicit uintwide_t(const uintwide_t<OtherDigits2, LimbType>& v)
-    {
-      if(v.crepresentation().size() > values.size())
-      {
-        std::copy(v.crepresentation().cbegin(),
-                  v.crepresentation().cbegin() + values.size(),
-                  values.begin());
-      }
-      else if(v.crepresentation().size() <= values.size())
-      {
-        std::copy(v.crepresentation().cbegin(),
-                  v.crepresentation().cend(),
-                  values.begin());
-
-        std::fill(values.begin() + v.crepresentation().size(),
-                  values.end(),
-                  limb_type(0U));
-      }
-      else
-      {
-        values.fill(0U);
-      }
-    }
+    explicit constexpr uintwide_t(const uintwide_t<OtherDigits2, LimbType>& v)
+      : values(representation_type(v.crepresentation())) { }
 
     // Constructor from a constant character string.
     uintwide_t(const char* str_input)
@@ -739,7 +772,7 @@
     constexpr uintwide_t(uintwide_t&& other) : values(static_cast<representation_type&&>(other.values)) { }
 
     // Default destructor.
-    ~uintwide_t() = default;
+    ~uintwide_t() { }
 
     // Assignment operator.
     uintwide_t& operator=(const uintwide_t& other)
@@ -1132,20 +1165,14 @@
     bool operator>=(const uintwide_t& other) const { return (compare(other) >= std::int_fast8_t( 0)); }
 
     // Helper functions for supporting std::numeric_limits<>.
-    static uintwide_t limits_helper_max()
+    static constexpr uintwide_t limits_helper_max()
     {
-      uintwide_t val;
-
-      std::fill(val.values.begin(),
-                val.values.end(),
-                (std::numeric_limits<limb_type>::max)());
-
-      return val;
+      return uintwide_t(representation_type(number_of_limbs, (std::numeric_limits<limb_type>::max)()));
     }
 
-    static uintwide_t limits_helper_min()
+    static constexpr uintwide_t limits_helper_min()
     {
-      return uintwide_t(std::uint8_t(0U));
+      return uintwide_t(representation_type(number_of_limbs, limb_type(0U)));
     }
 
     // Define the maximum buffer sizes for extracting
@@ -1459,11 +1486,11 @@
 
       // TBD: Can use specialized allocator or memory pool for these arrays.
       typename std::conditional<std::is_same<AllocatorType, void>::value,
-                                std::array<limb_type, number_of_limbs * 2U>,
+                                detail::fixed_static_array <limb_type, number_of_limbs * 2U>,
                                 detail::fixed_dynamic_array<limb_type, number_of_limbs * 2U, AllocatorType>>::type result;
 
       typename std::conditional<std::is_same<AllocatorType, void>::value,
-                                std::array<limb_type, number_of_limbs * 4U>,
+                                detail::fixed_static_array <limb_type, number_of_limbs * 4U>,
                                 detail::fixed_dynamic_array<limb_type, number_of_limbs * 4U, AllocatorType>>::type t;
 
       eval_multiply_kara_n_by_n_to_2n(result.data(),
@@ -1977,7 +2004,7 @@
 
           using uu_array_type =
             typename std::conditional<std::is_same<AllocatorType, void>::value,
-                                      std::array<limb_type, number_of_limbs + 1U>,
+                                      detail::fixed_static_array <limb_type, number_of_limbs + 1U>,
                                       detail::fixed_dynamic_array<limb_type, number_of_limbs + 1U, AllocatorType>>::type;
 
           uu_array_type       uu;
@@ -2333,8 +2360,8 @@
     static constexpr int digits   = static_cast<int>(local_wide_integer_type::my_digits);
     static constexpr int digits10 = static_cast<int>(local_wide_integer_type::my_digits10);
 
-    static local_wide_integer_type (max)() { return local_wide_integer_type::limits_helper_max(); }
-    static local_wide_integer_type (min)() { return local_wide_integer_type::limits_helper_min(); }
+    static constexpr local_wide_integer_type (max)() { return local_wide_integer_type::limits_helper_max(); }
+    static constexpr local_wide_integer_type (min)() { return local_wide_integer_type::limits_helper_min(); }
   };
 
   template<class T>
