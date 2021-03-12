@@ -5,14 +5,8 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
-    <Filter Include="Source Files\wide_integer">
-      <UniqueIdentifier>{8460bf03-d727-4c68-8f29-e2acf7b95386}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\test">
       <UniqueIdentifier>{2ab8711c-4632-4af5-8345-b408e6ed36bb}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\wide_integer\archive">
-      <UniqueIdentifier>{92d02fcd-c88d-42ef-962a-2248545a02a0}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\boost">
       <UniqueIdentifier>{48a97642-b509-4ac8-b6d5-6a19a897bacf}</UniqueIdentifier>
@@ -32,20 +26,20 @@
     <Filter Include="_doc">
       <UniqueIdentifier>{2fd84722-7a2f-490d-80e6-9961207cee67}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\math">
+      <UniqueIdentifier>{7ea96594-9256-4fd5-8e0e-04b187aa45c3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\math\wide_integer">
+      <UniqueIdentifier>{8460bf03-d727-4c68-8f29-e2acf7b95386}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\util">
+      <UniqueIdentifier>{02427872-b7b8-4a03-b0ae-49204c85b102}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\util\utility">
+      <UniqueIdentifier>{57015fe8-47d9-4158-9386-ab373ea546e2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="wide_integer\generic_template_uintwide_t.h">
-      <Filter>Source Files\wide_integer</Filter>
-    </ClInclude>
-    <ClInclude Include="wide_integer\archive\non_template_uint128_t.h">
-      <Filter>Source Files\wide_integer\archive</Filter>
-    </ClInclude>
-    <ClInclude Include="wide_integer\archive\non_template_uint256_t.h">
-      <Filter>Source Files\wide_integer\archive</Filter>
-    </ClInclude>
-    <ClInclude Include="wide_integer\archive\recursive_template_uintwide_t.h">
-      <Filter>Source Files\wide_integer\archive</Filter>
-    </ClInclude>
     <ClInclude Include="test\test_uintwide_t.h">
       <Filter>Source Files\test</Filter>
     </ClInclude>
@@ -72,6 +66,12 @@
     </ClInclude>
     <ClInclude Include="test\test_uintwide_t_n_binary_ops_mul_div_4_by_4_template.h">
       <Filter>Source Files\test</Filter>
+    </ClInclude>
+    <ClInclude Include="math\wide_integer\generic_template_uintwide_t.h">
+      <Filter>Source Files\math\wide_integer</Filter>
+    </ClInclude>
+    <ClInclude Include="util\utility\util_dynamic_array.h">
+      <Filter>Source Files\util\utility</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

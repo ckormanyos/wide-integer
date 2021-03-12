@@ -16,7 +16,7 @@
   #include <boost/config.hpp>
   #include <boost/multiprecision/number.hpp>
 
-  #include <wide_integer/generic_template_uintwide_t.h>
+  #include <math/wide_integer/generic_template_uintwide_t.h>
 
   namespace boost { namespace multiprecision {
 

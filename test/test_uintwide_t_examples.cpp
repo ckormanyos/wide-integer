@@ -8,7 +8,7 @@
 #include <iomanip>
 #include <iostream>
 
-#include <wide_integer/generic_template_uintwide_t.h>
+#include <math/wide_integer/generic_template_uintwide_t.h>
 
 bool test_uintwide_t_examples()
 {

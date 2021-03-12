@@ -11,7 +11,7 @@
 #include <boost/multiprecision/cpp_int.hpp>
 #include <boost/multiprecision/uintwide_t_backend.hpp>
 
-#include <wide_integer/generic_template_uintwide_t.h>
+#include <math/wide_integer/generic_template_uintwide_t.h>
 
 namespace
 {

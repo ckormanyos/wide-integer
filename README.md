@@ -35,7 +35,7 @@ The defined type can be used very much like a built-in unsinged integral type.
 For instance,
 
 ```C
-#include <wide_integer/generic_template_uintwide_t.h>
+#include <math/wide_integer/generic_template_uintwide_t.h>
 
 using uint512_t = wide_integer::generic_template::uintwide_t<512U, std::uint32_t>;
 
@@ -123,7 +123,7 @@ The example below performs some elementary algebraic calculations with a 256-bit
 #include <iomanip>
 #include <iostream>
 
-#include <wide_integer/generic_template_uintwide_t.h>
+#include <math/wide_integer/generic_template_uintwide_t.h>
 
 int main()
 {
@@ -161,7 +161,7 @@ The example below calculates an integer square root.
 #include <iomanip>
 #include <iostream>
 
-#include <wide_integer/generic_template_uintwide_t.h>
+#include <math/wide_integer/generic_template_uintwide_t.h>
 
 int main()
 {
@@ -184,7 +184,7 @@ The following code performs add, subtract, multiply and divide of `uint48_t`.
 #include <iomanip>
 #include <iostream>
 
-#include <wide_integer/generic_template_uintwide_t.h>
+#include <math/wide_integer/generic_template_uintwide_t.h>
 
 int main()
 {
@@ -231,7 +231,7 @@ prior to (and following) the cube root operation.
 #include <iomanip>
 #include <iostream>
 
-#include <wide_integer/generic_template_uintwide_t.h>
+#include <math/wide_integer/generic_template_uintwide_t.h>
 
 int main()
 {

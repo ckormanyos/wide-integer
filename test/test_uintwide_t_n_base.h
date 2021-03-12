@@ -16,7 +16,7 @@
   #include <boost/noncopyable.hpp>
 
   #include <test/parallel_for.h>
-  #include <wide_integer/generic_template_uintwide_t.h>
+  #include <math/wide_integer/generic_template_uintwide_t.h>
 
   class test_uintwide_t_n_base : private boost::noncopyable
   {

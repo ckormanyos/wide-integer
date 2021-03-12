@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include <wide_integer/generic_template_uintwide_t.h>
+#include <math/wide_integer/generic_template_uintwide_t.h>
 
 bool wide_integer::example003a_cbrt()
 {

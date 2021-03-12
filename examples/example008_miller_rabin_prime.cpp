@@ -12,7 +12,7 @@
 
 #include <random>
 
-#include <wide_integer/generic_template_uintwide_t.h>
+#include <math/wide_integer/generic_template_uintwide_t.h>
 
 bool wide_integer::example008_miller_rabin_prime()
 {

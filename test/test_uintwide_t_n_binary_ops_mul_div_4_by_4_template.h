@@ -10,8 +10,8 @@
 
   #include <atomic>
 
+  #include <math/wide_integer/generic_template_uintwide_t.h>
   #include <test/test_uintwide_t_n_base.h>
-  #include <wide_integer/generic_template_uintwide_t.h>
 
   template<const std::size_t MyDigits2,
            typename MyLimbType,
