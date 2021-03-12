@@ -422,8 +422,12 @@
                 typename base_class_type::value_type());
     }
 
-    constexpr fixed_static_array(const fixed_static_array& other_array)
-      : base_class_type((const base_class_type&) other_array) { }
+    fixed_static_array(const fixed_static_array& other_array)
+    {
+      std::copy(other_array.cbegin(),
+                other_array.cend(),
+                base_class_type::begin());
+    }
 
     template<const std::uint_fast32_t OtherSize>
     fixed_static_array(const fixed_static_array<std::uint_fast32_t, OtherSize>& other_array)
@@ -448,8 +452,12 @@
                 typename base_class_type::value_type());
     }
 
-    constexpr fixed_static_array(fixed_static_array&& other_array)
-      : base_class_type((base_class_type&&) other_array) { }
+    fixed_static_array(fixed_static_array&& other_array)
+    {
+      std::copy(other_array.cbegin(),
+                other_array.cend(),
+                base_class_type::begin());
+    }
 
     fixed_static_array& operator=(const fixed_static_array& other_array)
     {
@@ -747,17 +755,30 @@
     // This constructor is explicit because it
     // is a narrowing conversion.
     template<typename UnknownUnsignedWideIntegralType = double_width_type>
-    explicit constexpr uintwide_t(const UnknownUnsignedWideIntegralType& v,
-                                  typename std::enable_if<(   (std::is_same<UnknownUnsignedWideIntegralType, double_width_type>::value == true)
-                                                           && (128U <= my_digits))>::type* = nullptr)
-      : values(v.crepresentation().cbegin(),
-               v.crepresentation().cbegin() + (v.crepresentation().size() / 2U)) { }
+    explicit uintwide_t(const UnknownUnsignedWideIntegralType& v,
+                        typename std::enable_if<(   (std::is_same<UnknownUnsignedWideIntegralType, double_width_type>::value == true)
+                                                 && (128U <= my_digits))>::type* = nullptr)
+    {
+      std::copy(v.crepresentation().cbegin(),
+                v.crepresentation().cbegin() + (v.crepresentation().size() / 2U),
+                values.begin());
+    }
 
     // Constructor from the another type having a different width but the same limb type.
     // This constructor is explicit because it is a non-trivial conversion.
     template<const std::uint_fast32_t OtherDigits2>
-    explicit constexpr uintwide_t(const uintwide_t<OtherDigits2, LimbType>& v)
-      : values(representation_type(v.crepresentation())) { }
+    uintwide_t(const uintwide_t<OtherDigits2, LimbType>& v)
+    {
+      const std::uint_fast32_t sz =
+        (std::min)(std::uint_fast32_t(v.crepresentation().size()),
+                   std::uint_fast32_t(number_of_limbs));
+
+      std::copy(v.crepresentation().cbegin(),
+                v.crepresentation().cbegin() + sz,
+                values.begin());
+
+      std::fill(values.begin() + sz, values.end(), limb_type(0U));
+    }
 
     // Constructor from a constant character string.
     uintwide_t(const char* str_input)
