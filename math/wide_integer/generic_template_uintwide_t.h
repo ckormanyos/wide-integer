@@ -252,49 +252,58 @@
 
   // Forward declarations of various number-theoretical tools.
   template<const std::uint_fast32_t Digits2,
-           typename LimbType, typename AllocatorType>
+           typename LimbType,
+           typename AllocatorType>
   void swap(uintwide_t<Digits2, LimbType, AllocatorType>& x,
             uintwide_t<Digits2, LimbType, AllocatorType>& y);
 
   template<const std::uint_fast32_t Digits2,
-           typename LimbType, typename AllocatorType>
+           typename LimbType,
+           typename AllocatorType>
   std::uint_fast32_t lsb(const uintwide_t<Digits2, LimbType, AllocatorType>& x);
 
   template<const std::uint_fast32_t Digits2,
-           typename LimbType, typename AllocatorType>
+           typename LimbType,
+           typename AllocatorType>
   std::uint_fast32_t msb(const uintwide_t<Digits2, LimbType, AllocatorType>& x);
 
   template<const std::uint_fast32_t Digits2,
-           typename LimbType, typename AllocatorType>
+           typename LimbType,
+           typename AllocatorType>
   uintwide_t<Digits2, LimbType, AllocatorType> sqrt(const uintwide_t<Digits2, LimbType, AllocatorType>& m);
 
   template<const std::uint_fast32_t Digits2,
-           typename LimbType, typename AllocatorType>
+           typename LimbType,
+           typename AllocatorType>
   uintwide_t<Digits2, LimbType, AllocatorType> cbrt(const uintwide_t<Digits2, LimbType, AllocatorType>& m);
 
   template<const std::uint_fast32_t Digits2,
-           typename LimbType, typename AllocatorType>
+           typename LimbType,
+           typename AllocatorType>
   uintwide_t<Digits2, LimbType, AllocatorType> rootk(const uintwide_t<Digits2, LimbType, AllocatorType>& m,
-                                      const std::uint_fast8_t k);
+                                                     const std::uint_fast8_t k);
 
   template<typename OtherUnsignedIntegralTypeP,
            const std::uint_fast32_t Digits2,
-           typename LimbType, typename AllocatorType>
+           typename LimbType,
+           typename AllocatorType>
   uintwide_t<Digits2, LimbType, AllocatorType> pow(const uintwide_t<Digits2, LimbType, AllocatorType>& b,
-                                    const OtherUnsignedIntegralTypeP&    p);
+                                                   const OtherUnsignedIntegralTypeP&    p);
 
   template<typename OtherUnsignedIntegralTypeP,
            typename OtherUnsignedIntegralTypeM,
            const std::uint_fast32_t Digits2,
-           typename LimbType, typename AllocatorType>
+           typename LimbType,
+           typename AllocatorType>
   uintwide_t<Digits2, LimbType, AllocatorType> powm(const uintwide_t<Digits2, LimbType, AllocatorType>& b,
-                                     const OtherUnsignedIntegralTypeP&    p,
-                                     const OtherUnsignedIntegralTypeM&    m);
+                                                    const OtherUnsignedIntegralTypeP&    p,
+                                                    const OtherUnsignedIntegralTypeM&    m);
 
   template<const std::uint_fast32_t Digits2,
-           typename LimbType, typename AllocatorType>
+           typename LimbType,
+           typename AllocatorType>
   uintwide_t<Digits2, LimbType, AllocatorType> gcd(const uintwide_t<Digits2, LimbType, AllocatorType>& a,
-                                    const uintwide_t<Digits2, LimbType, AllocatorType>& b);
+                                                   const uintwide_t<Digits2, LimbType, AllocatorType>& b);
 
   template<typename ST>
   typename std::enable_if<(   (std::is_fundamental<ST>::value == true)
@@ -314,13 +323,13 @@
 
   template<const std::uint_fast32_t Digits2,
            typename LimbType,
-           typename AllocatorType = void>
+           typename AllocatorType>
   bool operator==(const uniform_int_distribution<Digits2, LimbType, AllocatorType>& lhs,
                   const uniform_int_distribution<Digits2, LimbType, AllocatorType>& rhs);
 
   template<const std::uint_fast32_t Digits2,
            typename LimbType,
-           typename AllocatorType = void>
+           typename AllocatorType>
   bool operator!=(const uniform_int_distribution<Digits2, LimbType, AllocatorType>& lhs,
                   const uniform_int_distribution<Digits2, LimbType, AllocatorType>& rhs);
 
@@ -328,7 +337,7 @@
            typename GeneratorType,
            const std::uint_fast32_t Digits2,
            typename LimbType,
-           typename AllocatorType = void>
+           typename AllocatorType>
   bool miller_rabin(const uintwide_t<Digits2, LimbType, AllocatorType>& n,
                     const std::uint_fast32_t             number_of_trials,
                     DistributionType&                    distribution,
@@ -347,9 +356,9 @@
 
   namespace wide_integer { namespace generic_template { namespace detail {
 
-  template <typename MyType,
-            const std::uint_fast32_t MySize,
-            typename MyAlloc>
+  template<typename MyType,
+           const std::uint_fast32_t MySize,
+           typename MyAlloc>
   class fixed_dynamic_array final : public util::dynamic_array<MyType, MyAlloc>
   {
   private:
@@ -2618,7 +2627,8 @@
   template<typename char_type,
            typename traits_type,
            const std::uint_fast32_t Digits2,
-           typename LimbType, typename AllocatorType>
+           typename LimbType,
+           typename AllocatorType>
   std::basic_ostream<char_type, traits_type>&
   operator<<(std::basic_ostream<char_type, traits_type>& out,
              const uintwide_t<Digits2, LimbType, AllocatorType>& x)
@@ -2673,7 +2683,8 @@
   template<typename char_type,
            typename traits_type,
            const std::uint_fast32_t Digits2,
-           typename LimbType, typename AllocatorType>
+           typename LimbType,
+           typename AllocatorType>
   std::basic_istream<char_type, traits_type>&
   operator>>(std::basic_istream<char_type, traits_type>& in,
              uintwide_t<Digits2, LimbType, AllocatorType>& x)
@@ -2806,7 +2817,8 @@
   }
 
   template<const std::uint_fast32_t Digits2,
-           typename LimbType, typename AllocatorType>
+           typename LimbType,
+           typename AllocatorType>
   void swap(uintwide_t<Digits2, LimbType, AllocatorType>& x,
             uintwide_t<Digits2, LimbType, AllocatorType>& y)
   {
@@ -2822,7 +2834,8 @@
   }
 
   template<const std::uint_fast32_t Digits2,
-           typename LimbType, typename AllocatorType>
+           typename LimbType,
+           typename AllocatorType>
   std::uint_fast32_t lsb(const uintwide_t<Digits2, LimbType, AllocatorType>& x)
   {
     // Calculate the position of the least-significant bit.
@@ -2851,7 +2864,8 @@
   }
 
   template<const std::uint_fast32_t Digits2,
-           typename LimbType, typename AllocatorType>
+           typename LimbType,
+           typename AllocatorType>
   std::uint_fast32_t msb(const uintwide_t<Digits2, LimbType, AllocatorType>& x)
   {
     // Calculate the position of the most-significant bit.
@@ -2880,7 +2894,8 @@
   }
 
   template<const std::uint_fast32_t Digits2,
-           typename LimbType, typename AllocatorType>
+           typename LimbType,
+           typename AllocatorType>
   uintwide_t<Digits2, LimbType, AllocatorType> sqrt(const uintwide_t<Digits2, LimbType, AllocatorType>& m)
   {
     // Calculate the square root.
@@ -2937,7 +2952,8 @@
   }
 
   template<const std::uint_fast32_t Digits2,
-           typename LimbType, typename AllocatorType>
+           typename LimbType,
+           typename AllocatorType>
   uintwide_t<Digits2, LimbType, AllocatorType> cbrt(const uintwide_t<Digits2, LimbType, AllocatorType>& m)
   {
     // Calculate the cube root.
@@ -3008,9 +3024,10 @@
   }
 
   template<const std::uint_fast32_t Digits2,
-           typename LimbType, typename AllocatorType>
+           typename LimbType,
+           typename AllocatorType>
   uintwide_t<Digits2, LimbType, AllocatorType> rootk(const uintwide_t<Digits2, LimbType, AllocatorType>& m,
-                                      const std::uint_fast8_t k)
+                                                     const std::uint_fast8_t k)
   {
     // Calculate the k'th root.
 
@@ -3092,9 +3109,10 @@
 
   template<typename OtherUnsignedIntegralTypeP,
            const std::uint_fast32_t Digits2,
-           typename LimbType, typename AllocatorType>
+           typename LimbType,
+           typename AllocatorType>
   uintwide_t<Digits2, LimbType, AllocatorType> pow(const uintwide_t<Digits2, LimbType, AllocatorType>& b,
-                                    const OtherUnsignedIntegralTypeP&    p)
+                                                   const OtherUnsignedIntegralTypeP&    p)
   {
     // Calculate (b ^ p).
 
@@ -3143,7 +3161,8 @@
   template<typename OtherUnsignedIntegralTypeP,
            typename OtherUnsignedIntegralTypeM,
            const std::uint_fast32_t Digits2,
-           typename LimbType, typename AllocatorType>
+           typename LimbType,
+           typename AllocatorType>
   uintwide_t<Digits2, LimbType, AllocatorType> powm(const uintwide_t<Digits2, LimbType, AllocatorType>& b,
                                      const OtherUnsignedIntegralTypeP&    p,
                                      const OtherUnsignedIntegralTypeM&    m)
@@ -3269,9 +3288,10 @@
   }
 
   template<const std::uint_fast32_t Digits2,
-           typename LimbType, typename AllocatorType>
+           typename LimbType,
+           typename AllocatorType>
   uintwide_t<Digits2, LimbType, AllocatorType> gcd(const uintwide_t<Digits2, LimbType, AllocatorType>& a,
-                                    const uintwide_t<Digits2, LimbType, AllocatorType>& b)
+                                                   const uintwide_t<Digits2, LimbType, AllocatorType>& b)
   {
     // This implementation of GCD is an adaptation
     // of existing code from Boost.Multiprecision.
@@ -3403,7 +3423,8 @@
   }
 
   template<const std::uint_fast32_t Digits2,
-           typename LimbType, typename AllocatorType>
+           typename LimbType,
+           typename AllocatorType>
   class uniform_int_distribution
   {
   public:
@@ -3566,7 +3587,8 @@
   };
 
   template<const std::uint_fast32_t Digits2,
-           typename LimbType, typename AllocatorType>
+           typename LimbType,
+           typename AllocatorType>
   bool operator==(const uniform_int_distribution<Digits2, LimbType, AllocatorType>& lhs,
                   const uniform_int_distribution<Digits2, LimbType, AllocatorType>& rhs)
   {
@@ -3574,7 +3596,8 @@
   }
 
   template<const std::uint_fast32_t Digits2,
-           typename LimbType, typename AllocatorType>
+           typename LimbType,
+           typename AllocatorType>
   bool operator!=(const uniform_int_distribution<Digits2, LimbType, AllocatorType>& lhs,
                   const uniform_int_distribution<Digits2, LimbType, AllocatorType>& rhs)
   {
@@ -3584,11 +3607,12 @@
   template<typename DistributionType,
            typename GeneratorType,
            const std::uint_fast32_t Digits2,
-           typename LimbType, typename AllocatorType>
+           typename LimbType,
+           typename AllocatorType>
   bool miller_rabin(const uintwide_t<Digits2, LimbType, AllocatorType>& n,
-                    const std::uint_fast32_t             number_of_trials,
-                    DistributionType&                    distribution,
-                    GeneratorType&                       generator)
+                    const std::uint_fast32_t                            number_of_trials,
+                    DistributionType&                                   distribution,
+                    GeneratorType&                                      generator)
   {
     // This Miller-Rabin primality test is loosely based on
     // an adaptation of some code from Boost.Multiprecision.

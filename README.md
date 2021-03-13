@@ -18,7 +18,8 @@ of several number theoretical functions such as root finding,
 basic random distribution, Miller-Rabin primality testing,
 greatest common denominator (GCD) and more.
 
-Inclusion of a single C++11 header file is all that is needed.
+Inclusion of a single C++11 header file (plus one additional
+utility header file) is all that is needed.
 
 ## Implementation goals
 
@@ -31,8 +32,10 @@ Inclusion of a single C++11 header file is all that is needed.
 ## Quick start
 Easy application follows via a traditional C-style typedef or C++11 alias.
 The defined type can be used very much like a built-in unsinged integral type.
+In the following example, the static `uint512_t` variable `x` is initialized
+with unsigned value `3U`.
 
-For instance,
+In particular,
 
 ```C
 #include <math/wide_integer/generic_template_uintwide_t.h>
@@ -47,7 +50,13 @@ a C++11 alias. The first template parameter `512U` sets the binary digit
 count while the second optional template parameter `std::uint32_t`
 sets the internal _limb_ _type_. If the second template parameter is left blank,
 the default limb type is 32 bits in width and unsigned.
-The static `uint512_t` variable `x` is initialized with unsigned value `3U`.
+
+`uintwide_t` also has a third optional template paramter that
+can be used to set the allocator type for internal storage of the
+big integer type. This optional parameter can help to reduce
+large stack, especially when using higher digit counts.
+If left blank, the default allocator type is `void`
+and stack allocation is used.
 
 ## Examples
 
