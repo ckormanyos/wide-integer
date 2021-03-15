@@ -365,7 +365,7 @@
     using base_class_type = util::dynamic_array<MyType, MyAlloc>;
 
   public:
-    fixed_dynamic_array(const typename base_class_type::size_type       s  = MySize,
+    fixed_dynamic_array(const typename base_class_type::size_type       s = MySize,
                         const typename base_class_type::value_type&     v = typename base_class_type::value_type(),
                         const typename base_class_type::allocator_type& a = typename base_class_type::allocator_type())
       : base_class_type(MySize, typename base_class_type::value_type(), a)
@@ -642,11 +642,11 @@
     using ularge_type = double_limb_type;
 
     // More compile-time checks.
-    static_assert((    (std::numeric_limits<limb_type>::is_integer == true)
+    static_assert((    (std::numeric_limits<limb_type>::is_integer        == true)
                    &&  (std::numeric_limits<double_limb_type>::is_integer == true)
-                   &&  (std::numeric_limits<limb_type>::is_signed  == false)
+                   &&  (std::numeric_limits<limb_type>::is_signed         == false)
                    &&  (std::numeric_limits<double_limb_type>::is_signed  == false)
-                   && ((std::numeric_limits<limb_type>::digits * 2) == std::numeric_limits<double_limb_type>::digits)),
+                   && ((std::numeric_limits<limb_type>::digits * 2)       == std::numeric_limits<double_limb_type>::digits)),
                    "Error: Please check the characteristics of the template parameters ST and LT");
 
     // Helper constants for the digit characteristics.
@@ -855,7 +855,7 @@
           {
             const local_unsigned_integral_type u =
               ((typename representation_type::size_type(i) < values.size())
-                ? local_unsigned_integral_type(values[i]) << (std::numeric_limits<limb_type>::digits * int(i))
+                ? local_unsigned_integral_type(local_unsigned_integral_type(values[i]) << (std::numeric_limits<limb_type>::digits * int(i)))
                 : 0U);
 
             cast_result |= u;
@@ -3164,8 +3164,8 @@
            typename LimbType,
            typename AllocatorType>
   uintwide_t<Digits2, LimbType, AllocatorType> powm(const uintwide_t<Digits2, LimbType, AllocatorType>& b,
-                                     const OtherUnsignedIntegralTypeP&    p,
-                                     const OtherUnsignedIntegralTypeM&    m)
+                                                    const OtherUnsignedIntegralTypeP&    p,
+                                                    const OtherUnsignedIntegralTypeM&    m)
   {
     // Calculate (b ^ p) % m.
 

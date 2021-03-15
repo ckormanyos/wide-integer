@@ -54,9 +54,10 @@ the default limb type is 32 bits in width and unsigned.
 `uintwide_t` also has a third optional template paramter that
 can be used to set the allocator type for internal storage of the
 big integer type. This optional parameter can help to reduce
-large stack, especially when using higher digit counts.
+stack consumption, especially when using higher digit counts.
 If left blank, the default allocator type is `void`
-and stack allocation is used.
+and stack allocation is used with an `array`-like
+internal representation.
 
 ## Examples
 
