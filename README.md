@@ -2,6 +2,8 @@ Wide-integer
 [![Build Status](https://github.com/ckormanyos/wide-integer/actions/workflows/wide_integer.yml/badge.svg)](https://github.com/ckormanyos/wide-integer/actions)
 ==================
 
+---
+
 ## Breaking Change Announcement April 2021
 
 Name changes of header file and `namespace` are planned in April 2021.
@@ -10,6 +12,8 @@ with the [wide-decimal project](https://github.com/ckormanyos/wide-decimal).
   - Change name of header file `generic_template_uintwide_t` to `uintwide_t.h`.
   - Change name of `namespace` `wide_integer::generic_template` to `math::wide_integer`.
   - No backward compatibility measures are planned at the moment.
+
+---
 
 Wide-integer implements a generic C++ template for extended precision unsigned integral types.
 
