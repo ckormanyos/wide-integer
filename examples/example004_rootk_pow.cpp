@@ -5,11 +5,11 @@
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)             //
 ///////////////////////////////////////////////////////////////////
 
-#include <math/wide_integer/generic_template_uintwide_t.h>
+#include <math/wide_integer/uintwide_t.h>
 
-bool wide_integer::example004_rootk_pow()
+bool math::wide_integer::example004_rootk_pow()
 {
-  using uint256_t = wide_integer::generic_template::uint256_t;
+  using uint256_t = math::wide_integer::uint256_t;
 
   bool result_is_ok_root;
   bool result_is_ok_pow;

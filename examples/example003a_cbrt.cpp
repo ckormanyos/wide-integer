@@ -7,11 +7,11 @@
 
 #include <string>
 
-#include <math/wide_integer/generic_template_uintwide_t.h>
+#include <math/wide_integer/uintwide_t.h>
 
-bool wide_integer::example003a_cbrt()
+bool math::wide_integer::example003a_cbrt()
 {
-  using uint11264_t = wide_integer::generic_template::uintwide_t<11264U, std::uint32_t, std::allocator<std::uint32_t>>;
+  using uint11264_t = math::wide_integer::uintwide_t<11264U, std::uint32_t, std::allocator<std::uint32_t>>;
 
   // Create the string '1' + 3,333 times '0', which is
   // equivalent to the decimal integral value 10^3333.

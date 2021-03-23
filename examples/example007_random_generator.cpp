@@ -9,7 +9,7 @@
 #include <random>
 #include <string>
 
-#include <math/wide_integer/generic_template_uintwide_t.h>
+#include <math/wide_integer/uintwide_t.h>
 
 namespace
 {
@@ -31,8 +31,8 @@ namespace
                                                             43,
                                                             UINT64_C(6364136223846793005)>;
 
-    using wide_integer_type  = wide_integer::generic_template::uintwide_t<256U, std::uint32_t, AllocatorType>;
-    using distribution_type  = wide_integer::generic_template::uniform_int_distribution<wide_integer_type::my_digits, typename wide_integer_type::limb_type>;
+    using wide_integer_type  = math::wide_integer::uintwide_t<256U, std::uint32_t, AllocatorType>;
+    using distribution_type  = math::wide_integer::uniform_int_distribution<wide_integer_type::my_digits, typename wide_integer_type::limb_type>;
 
     // Generate a random number with wide_integer_type having limbs of type LimbType.
     random_engine_type generator;
@@ -48,7 +48,7 @@ namespace
   }
 }
 
-bool wide_integer::example007_random_generator()
+bool math::wide_integer::example007_random_generator()
 {
   const bool result_08_is_ok = generate<std::uint8_t> ();
   const bool result_16_is_ok = generate<std::uint16_t>();

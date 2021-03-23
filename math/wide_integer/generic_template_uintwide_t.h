@@ -5,8 +5,8 @@
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)             //
 ///////////////////////////////////////////////////////////////////
 
-#ifndef GENERIC_TEMPLATE_UINTWIDE_T_2018_10_02_H_
-  #define GENERIC_TEMPLATE_UINTWIDE_T_2018_10_02_H_
+#ifndef UINTWIDE_T_2018_10_02_H_
+  #define UINTWIDE_T_2018_10_02_H_
 
   #include <algorithm>
   #include <array>
@@ -28,7 +28,7 @@
 
   #include <util/utility/util_dynamic_array.h>
 
-  namespace wide_integer { namespace generic_template {
+  namespace math { namespace wide_integer {
 
   // Forward declaration of the uintwide_t template class.
   template<const std::uint_fast32_t Digits2,
@@ -343,7 +343,7 @@
                     DistributionType&                    distribution,
                     GeneratorType&                       generator);
 
-  } } // namespace wide_integer::generic_template
+  } } // namespace math::wide_integer
 
   namespace std
   {
@@ -351,10 +351,10 @@
     template<const std::uint_fast32_t Digits2,
              typename LimbType,
              typename AllocatorType>
-    class numeric_limits<wide_integer::generic_template::uintwide_t<Digits2, LimbType, AllocatorType>>;
+    class numeric_limits<math::wide_integer::uintwide_t<Digits2, LimbType, AllocatorType>>;
   }
 
-  namespace wide_integer { namespace generic_template { namespace detail {
+  namespace math { namespace wide_integer { namespace detail {
 
   template<typename MyType,
            const std::uint_fast32_t MySize,
@@ -620,9 +620,9 @@
     return local_ularge_type(local_ularge_type(static_cast<local_ularge_type>(hi) << std::numeric_limits<ST>::digits) | lo);
   }
 
-  } } } // namespace wide_integer::generic_template::detail
+  } } } // namespace math::wide_integer::detail
 
-  namespace wide_integer { namespace generic_template {
+  namespace math { namespace wide_integer {
 
   template<const std::uint_fast32_t Digits2,
            typename LimbType,
@@ -2393,21 +2393,21 @@
 
   template<const std::uint_fast32_t Digits2,
            typename LimbType, typename AllocatorType>
-  struct is_integral<wide_integer::generic_template::uintwide_t<Digits2, LimbType, AllocatorType>>
+  struct is_integral<math::wide_integer::uintwide_t<Digits2, LimbType, AllocatorType>>
     : public std::integral_constant<bool, true> { };
 
-  } } // namespace wide_integer::generic_template
+  } } // namespace math::wide_integer
 
   namespace std
   {
     // Specialization of std::numeric_limits<uintwide_t>.
     template<const std::uint_fast32_t Digits2,
              typename LimbType, typename AllocatorType>
-    class numeric_limits<wide_integer::generic_template::uintwide_t<Digits2, LimbType, AllocatorType>>
-      : public wide_integer::generic_template::numeric_limits_uintwide_t_base<wide_integer::generic_template::uintwide_t<Digits2, LimbType, AllocatorType>> { };
+    class numeric_limits<math::wide_integer::uintwide_t<Digits2, LimbType, AllocatorType>>
+      : public math::wide_integer::numeric_limits_uintwide_t_base<math::wide_integer::uintwide_t<Digits2, LimbType, AllocatorType>> { };
   }
 
-  namespace wide_integer { namespace generic_template {
+  namespace math { namespace wide_integer {
 
   // Non-member binary add, sub, mul, div, mod of (uintwide_t op uintwide_t).
   template<const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType> uintwide_t<Digits2, LimbType, AllocatorType> operator+ (const uintwide_t<Digits2, LimbType, AllocatorType>& left, const uintwide_t<Digits2, LimbType, AllocatorType>& right) { return uintwide_t<Digits2, LimbType, AllocatorType>(left).operator+=(right); }
@@ -2702,11 +2702,11 @@
 
   #endif
 
-  } } // namespace wide_integer::generic_template
+  } } // namespace math::wide_integer
 
   // Implement various number-theoretical tools.
 
-  namespace wide_integer { namespace generic_template {
+  namespace math { namespace wide_integer {
 
   namespace detail {
 
@@ -3816,10 +3816,6 @@
     return is_probably_prime;
   }
 
-  } } // namespace wide_integer::generic_template
-
-  namespace wide_integer {
-
   bool example001_mul_div            ();
   bool example001a_div_mod           ();
   bool example002_shl_shr            ();
@@ -3836,6 +3832,6 @@
   bool example010_uint48_t           ();
   bool example011_uint24_t           ();
 
-  } // namespace wide_integer
+  } } // namespace math::wide_integer
 
-#endif // GENERIC_TEMPLATE_UINTWIDE_T_2018_10_02_H_
+#endif // UINTWIDE_T_2018_10_02_H_

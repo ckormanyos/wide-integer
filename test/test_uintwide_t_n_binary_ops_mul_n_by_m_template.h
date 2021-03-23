@@ -46,9 +46,9 @@
 
     using local_limb_type = MyLimbType;
 
-    using local_uint_a_type = wide_integer::generic_template::uintwide_t<digits2a, local_limb_type>;
-    using local_uint_b_type = wide_integer::generic_template::uintwide_t<digits2b, local_limb_type>;
-    using local_uint_c_type = wide_integer::generic_template::uintwide_t<digits2a + digits2b, local_limb_type>;
+    using local_uint_a_type = math::wide_integer::uintwide_t<digits2a, local_limb_type>;
+    using local_uint_b_type = math::wide_integer::uintwide_t<digits2b, local_limb_type>;
+    using local_uint_c_type = math::wide_integer::uintwide_t<digits2a + digits2b, local_limb_type>;
 
   public:
     test_uintwide_t_n_binary_ops_mul_n_by_m_template(const std::size_t count)
