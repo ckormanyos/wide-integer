@@ -9,7 +9,7 @@ Wide-integer
 Name changes of header file and `namespace` are planned in April 2021.
 The reason for the changes is to provide better compatibility
 with the [wide-decimal project](https://github.com/ckormanyos/wide-decimal).
-  - Change name of header file `generic_template_uintwide_t` to `uintwide_t.h`.
+  - Change name of header file `generic_template_uintwide_t.h` to `uintwide_t.h`.
   - Change name of `namespace` `wide_integer::generic_template` to `math::wide_integer`.
   - No backward compatibility measures are planned at the moment.
 
