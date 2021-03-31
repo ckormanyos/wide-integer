@@ -52,7 +52,7 @@ bool test_uintwide_t_small_bits()
   bool result_is_ok = true;
 
   {
-    using local_uint16_t = wide_integer::generic_template::uintwide_t<16U, std::uint8_t>;
+    using local_uint16_t = math::wide_integer::uintwide_t<16U, std::uint8_t>;
 
     local_uint16_t a = UINT16_C(0x5522);
     local_uint16_t b = UINT16_C(0xFFEE);
@@ -63,7 +63,7 @@ bool test_uintwide_t_small_bits()
   }
 
   {
-    using local_uint24_t = wide_integer::generic_template::uintwide_t<24U, std::uint8_t>;
+    using local_uint24_t = math::wide_integer::uintwide_t<24U, std::uint8_t>;
 
     local_uint24_t a = UINT32_C(0x11FF5522);
     local_uint24_t b = UINT32_C(0xABCDFFEE);
@@ -74,7 +74,7 @@ bool test_uintwide_t_small_bits()
   }
 
   {
-    using local_uint32_t = wide_integer::generic_template::uintwide_t<32U, std::uint16_t>;
+    using local_uint32_t = math::wide_integer::uintwide_t<32U, std::uint16_t>;
 
     local_uint32_t a = UINT32_C(0x11FF5522);
     local_uint32_t b = UINT32_C(0xABCDFFEE);

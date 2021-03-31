@@ -5,8 +5,8 @@
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)             //
 ///////////////////////////////////////////////////////////////////
 
-#ifndef GENERIC_TEMPLATE_UINTWIDE_T_2018_10_02_H_
-  #define GENERIC_TEMPLATE_UINTWIDE_T_2018_10_02_H_
+#ifndef UINTWIDE_T_2018_10_02_H_
+  #define UINTWIDE_T_2018_10_02_H_
 
   #include <algorithm>
   #include <array>
@@ -28,7 +28,7 @@
 
   #include <util/utility/util_dynamic_array.h>
 
-  namespace wide_integer { namespace generic_template {
+  namespace math { namespace wide_integer {
 
   // Forward declaration of the uintwide_t template class.
   template<const std::uint_fast32_t Digits2,
@@ -343,7 +343,7 @@
                     DistributionType&                    distribution,
                     GeneratorType&                       generator);
 
-  } } // namespace wide_integer::generic_template
+  } } // namespace math::wide_integer
 
   namespace std
   {
@@ -351,10 +351,10 @@
     template<const std::uint_fast32_t Digits2,
              typename LimbType,
              typename AllocatorType>
-    class numeric_limits<wide_integer::generic_template::uintwide_t<Digits2, LimbType, AllocatorType>>;
+    class numeric_limits<math::wide_integer::uintwide_t<Digits2, LimbType, AllocatorType>>;
   }
 
-  namespace wide_integer { namespace generic_template { namespace detail {
+  namespace math { namespace wide_integer { namespace detail {
 
   template<typename MyType,
            const std::uint_fast32_t MySize,
@@ -620,9 +620,9 @@
     return local_ularge_type(local_ularge_type(static_cast<local_ularge_type>(hi) << std::numeric_limits<ST>::digits) | lo);
   }
 
-  } } } // namespace wide_integer::generic_template::detail
+  } } } // namespace math::wide_integer::detail
 
-  namespace wide_integer { namespace generic_template {
+  namespace math { namespace wide_integer {
 
   template<const std::uint_fast32_t Digits2,
            typename LimbType,
@@ -1452,40 +1452,43 @@
                                            const limb_type*         b,
                                            const std::uint_fast32_t count)
     {
-      std::int_fast8_t cmp_result;
+      using local_const_reverse_iterator_type = std::reverse_iterator<const limb_type*>;
 
-      std::int_fast32_t element_index = std::int_fast32_t(count) - 1;
+      local_const_reverse_iterator_type rcbegin_a(a + count);
+      local_const_reverse_iterator_type rcend_a  (a);
+      local_const_reverse_iterator_type rcbegin_b(b + count);
+      local_const_reverse_iterator_type rcend_b  (b);
 
-      while((   (element_index >= 0)
-             && (a[(element_index)] == b[(element_index)])))
+      const auto mismatch_pair = std::mismatch(rcbegin_a, rcend_a, rcbegin_b);
+
+      std::int_fast8_t n_return;
+
+      if((mismatch_pair.first != rcend_a) || (mismatch_pair.second != rcend_b))
       {
-        --element_index;
-      }
+        const limb_type left  = *mismatch_pair.first;
+        const limb_type right = *mismatch_pair.second;
 
-      if(element_index == std::int_fast32_t(-1))
-      {
-        cmp_result = std::int_fast8_t(0);
+        n_return = ((left > right) ? static_cast<std::int_fast8_t>( 1)
+                                   : static_cast<std::int_fast8_t>(-1));
       }
       else
       {
-        const bool left_is_greater_than_right = (a[element_index] > b[element_index]);
-
-        cmp_result = (left_is_greater_than_right ? std::int_fast8_t(1) : std::int_fast8_t(-1));
+        n_return = static_cast<std::int_fast8_t>(0);
       }
 
-      return cmp_result;
+      return n_return;
     }
 
     template<const std::uint_fast32_t OtherDigits2>
-    static void eval_mul_unary(      uintwide_t<OtherDigits2, LimbType>& u,
-                               const uintwide_t<OtherDigits2, LimbType>& v,
-                               typename std::enable_if<((OtherDigits2 / std::numeric_limits<LimbType>::digits) < uintwide_t::number_of_limbs_karatsuba_threshold)>::type* = nullptr)
+    static void eval_mul_unary(      uintwide_t<OtherDigits2, LimbType, AllocatorType>& u,
+                               const uintwide_t<OtherDigits2, LimbType, AllocatorType>& v,
+                               typename std::enable_if<((OtherDigits2 / std::numeric_limits<LimbType>::digits) < number_of_limbs_karatsuba_threshold)>::type* = nullptr)
     {
       // Unary multiplication function using schoolbook multiplication,
       // but we only need to retain the low half of the n*n algorithm.
       // In other words, this is an n*n->n bit multiplication.
 
-      constexpr std::uint_fast32_t local_number_of_limbs = uintwide_t<OtherDigits2, LimbType>::number_of_limbs;
+      constexpr std::uint_fast32_t local_number_of_limbs = uintwide_t<OtherDigits2, LimbType, AllocatorType>::number_of_limbs;
 
       representation_type result;
 
@@ -1502,20 +1505,20 @@
     template<const std::uint_fast32_t OtherDigits2>
     static void eval_mul_unary(      uintwide_t<OtherDigits2, LimbType, AllocatorType>& u,
                                const uintwide_t<OtherDigits2, LimbType, AllocatorType>& v,
-                               typename std::enable_if<((OtherDigits2 / std::numeric_limits<LimbType>::digits) >= uintwide_t::number_of_limbs_karatsuba_threshold)>::type* = nullptr)
+                               typename std::enable_if<((OtherDigits2 / std::numeric_limits<LimbType>::digits) >= number_of_limbs_karatsuba_threshold)>::type* = nullptr)
     {
       // Unary multiplication function using Karatsuba multiplication.
 
-      constexpr std::uint_fast32_t local_number_of_limbs = uintwide_t<OtherDigits2, LimbType>::number_of_limbs;
+      constexpr std::uint_fast32_t local_number_of_limbs = uintwide_t<OtherDigits2, LimbType, AllocatorType>::number_of_limbs;
 
       // TBD: Can use specialized allocator or memory pool for these arrays.
       typename std::conditional<std::is_same<AllocatorType, void>::value,
-                                detail::fixed_static_array <limb_type, number_of_limbs * 2U>,
-                                detail::fixed_dynamic_array<limb_type, number_of_limbs * 2U, AllocatorType>>::type result;
+                                detail::fixed_static_array <limb_type, local_number_of_limbs * 2U>,
+                                detail::fixed_dynamic_array<limb_type, local_number_of_limbs * 2U, AllocatorType>>::type result;
 
       typename std::conditional<std::is_same<AllocatorType, void>::value,
-                                detail::fixed_static_array <limb_type, number_of_limbs * 4U>,
-                                detail::fixed_dynamic_array<limb_type, number_of_limbs * 4U, AllocatorType>>::type t;
+                                detail::fixed_static_array <limb_type, local_number_of_limbs * 4U>,
+                                detail::fixed_dynamic_array<limb_type, local_number_of_limbs * 4U, AllocatorType>>::type t;
 
       eval_multiply_kara_n_by_n_to_2n(result.data(),
                                       u.values.data(),
@@ -1528,11 +1531,11 @@
                 u.values.begin());
     }
 
-    static limb_type eval_add_n(      limb_type*           r,
-                                  const limb_type*         u,
-                                  const limb_type*         v,
-                                  const std::uint_fast32_t count,
-                                  const limb_type          carry_in = 0U)
+    static limb_type eval_add_n(      limb_type*         r,
+                                const limb_type*         u,
+                                const limb_type*         v,
+                                const std::uint_fast32_t count,
+                                const limb_type          carry_in = 0U)
     {
       limb_type carry_out = carry_in;
 
@@ -1766,7 +1769,7 @@
                                                 const std::uint_fast32_t n,
                                                       limb_type*         t)
     {
-      if(n <= 32U)
+      if(n <= 48U)
       {
         static_cast<void>(t);
 
@@ -1819,7 +1822,6 @@
               limb_type* r1 = r + nh;
               limb_type* r2 = r + n;
               limb_type* r3 = r + (n + nh);
-              limb_type* r4 = r + (n + n);
 
               limb_type* t0 = t + 0U;
               limb_type* t1 = t + nh;
@@ -1832,7 +1834,7 @@
         //   r -> t0
         eval_multiply_kara_n_by_n_to_2n(r2, a1, b1, nh, t0);
         eval_multiply_kara_n_by_n_to_2n(r0, a0, b0, nh, t0);
-        std::copy(r0, r4, t0);
+        std::copy(r0, r0 + (2U * n), t0);
 
         // Step 2
         //   r1 += a1*b1
@@ -1891,6 +1893,7 @@
       }
     }
 
+    #if 0
     static void eval_multiply_toomcook3(      limb_type*         r,
                                         const limb_type*         u,
                                         const limb_type*         v,
@@ -1912,6 +1915,7 @@
         // Cambridge University Press (2011).
 
         // TBD: Toom-Cook3
+        eval_multiply_kara_n_by_n_to_2n(r, u, v, n, t);
       }
     }
 
@@ -1932,8 +1936,10 @@
       else
       {
         // TBD: Toom-Cook4
+        eval_multiply_kara_n_by_n_to_2n(r, u, v, n, t);
       }
     }
+    #endif
 
     void eval_divide_knuth(const uintwide_t& other, uintwide_t* remainder)
     {
@@ -2320,12 +2326,12 @@
       // Implement pre-increment.
       std::uint_fast32_t i = 0U;
 
-      for( ; (i < (values.size() - 1U)) && (++values[i] == limb_type(0U)); ++i)
+      for( ; (i < std::uint_fast32_t(values.size() - 1U)) && (++values[i] == limb_type(0U)); ++i)
       {
         ;
       }
 
-      if(i == (values.size() - 1U))
+      if(i == std::uint_fast32_t(values.size() - 1U))
       {
         ++values[i];
       }
@@ -2336,12 +2342,12 @@
       // Implement pre-decrement.
       std::uint_fast32_t i = 0U;
 
-      for( ; (i < (values.size() - 1U)) && (values[i]-- == limb_type(0U)); ++i)
+      for( ; (i < std::uint_fast32_t(values.size() - 1U)) && (values[i]-- == limb_type(0U)); ++i)
       {
         ;
       }
 
-      if(i == (values.size() - 1U))
+      if(i == std::uint_fast32_t(values.size() - 1U))
       {
         --values[i];
       }
@@ -2393,21 +2399,21 @@
 
   template<const std::uint_fast32_t Digits2,
            typename LimbType, typename AllocatorType>
-  struct is_integral<wide_integer::generic_template::uintwide_t<Digits2, LimbType, AllocatorType>>
+  struct is_integral<math::wide_integer::uintwide_t<Digits2, LimbType, AllocatorType>>
     : public std::integral_constant<bool, true> { };
 
-  } } // namespace wide_integer::generic_template
+  } } // namespace math::wide_integer
 
   namespace std
   {
     // Specialization of std::numeric_limits<uintwide_t>.
     template<const std::uint_fast32_t Digits2,
              typename LimbType, typename AllocatorType>
-    class numeric_limits<wide_integer::generic_template::uintwide_t<Digits2, LimbType, AllocatorType>>
-      : public wide_integer::generic_template::numeric_limits_uintwide_t_base<wide_integer::generic_template::uintwide_t<Digits2, LimbType, AllocatorType>> { };
+    class numeric_limits<math::wide_integer::uintwide_t<Digits2, LimbType, AllocatorType>>
+      : public math::wide_integer::numeric_limits_uintwide_t_base<math::wide_integer::uintwide_t<Digits2, LimbType, AllocatorType>> { };
   }
 
-  namespace wide_integer { namespace generic_template {
+  namespace math { namespace wide_integer {
 
   // Non-member binary add, sub, mul, div, mod of (uintwide_t op uintwide_t).
   template<const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType> uintwide_t<Digits2, LimbType, AllocatorType> operator+ (const uintwide_t<Digits2, LimbType, AllocatorType>& left, const uintwide_t<Digits2, LimbType, AllocatorType>& right) { return uintwide_t<Digits2, LimbType, AllocatorType>(left).operator+=(right); }
@@ -2702,11 +2708,11 @@
 
   #endif
 
-  } } // namespace wide_integer::generic_template
+  } } // namespace math::wide_integer
 
   // Implement various number-theoretical tools.
 
-  namespace wide_integer { namespace generic_template {
+  namespace math { namespace wide_integer {
 
   namespace detail {
 
@@ -3816,10 +3822,6 @@
     return is_probably_prime;
   }
 
-  } } // namespace wide_integer::generic_template
-
-  namespace wide_integer {
-
   bool example001_mul_div            ();
   bool example001a_div_mod           ();
   bool example002_shl_shr            ();
@@ -3836,6 +3838,6 @@
   bool example010_uint48_t           ();
   bool example011_uint24_t           ();
 
-  } // namespace wide_integer
+  } } // namespace math::wide_integer
 
-#endif // GENERIC_TEMPLATE_UINTWIDE_T_2018_10_02_H_
+#endif // UINTWIDE_T_2018_10_02_H_

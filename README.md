@@ -51,9 +51,9 @@ with unsigned value `3U`.
 In particular,
 
 ```C
-#include <math/wide_integer/generic_template_uintwide_t.h>
+#include <math/wide_integer/uintwide_t.h>
 
-using uint512_t = wide_integer::generic_template::uintwide_t<512U, std::uint32_t>;
+using uint512_t = math::wide_integer::uintwide_t<512U, std::uint32_t>;
 
 static uint512_t x = 3U;
 ```
@@ -146,11 +146,11 @@ The example below performs some elementary algebraic calculations with a 256-bit
 #include <iomanip>
 #include <iostream>
 
-#include <math/wide_integer/generic_template_uintwide_t.h>
+#include <math/wide_integer/uintwide_t.h>
 
 int main()
 {
-  using uint256_t = wide_integer::generic_template::uint256_t;
+  using uint256_t = math::wide_integer::uint256_t;
 
   // Construction from string. Other constructors are available from built-in types.
   const uint256_t a("0xF4DF741DE58BCB2F37F18372026EF9CBCFC456CB80AF54D53BDEED78410065DE");
@@ -184,11 +184,11 @@ The example below calculates an integer square root.
 #include <iomanip>
 #include <iostream>
 
-#include <math/wide_integer/generic_template_uintwide_t.h>
+#include <math/wide_integer/uintwide_t.h>
 
 int main()
 {
-  using uint256_t = wide_integer::generic_template::uint256_t;
+  using uint256_t = math::wide_integer::uint256_t;
 
   const uint256_t a("0xF4DF741DE58BCB2F37F18372026EF9CBCFC456CB80AF54D53BDEED78410065DE");
 
@@ -207,14 +207,14 @@ The following code performs add, subtract, multiply and divide of `uint48_t`.
 #include <iomanip>
 #include <iostream>
 
-#include <math/wide_integer/generic_template_uintwide_t.h>
+#include <math/wide_integer/uintwide_t.h>
 
 int main()
 {
-  using uint48_t = wide_integer::generic_template::uintwide_t<48U, std::uint8_t>;
+  using uint48_t = math::wide_integer::uintwide_t<48U, std::uint8_t>;
 
-  using distribution_type  = wide_integer::generic_template::uniform_int_distribution<48U, std::uint8_t>;
-  using random_engine_type = wide_integer::generic_template::default_random_engine   <48U, std::uint8_t>;
+  using distribution_type  = math::wide_integer::uniform_int_distribution<48U, std::uint8_t>;
+  using random_engine_type = math::wide_integer::default_random_engine   <48U, std::uint8_t>;
 
   random_engine_type generator(0xF00DCAFEULL);
 
@@ -254,11 +254,11 @@ prior to (and following) the cube root operation.
 #include <iomanip>
 #include <iostream>
 
-#include <math/wide_integer/generic_template_uintwide_t.h>
+#include <math/wide_integer/uintwide_t.h>
 
 int main()
 {
-  using uint11264_t = wide_integer::generic_template::uintwide_t<11264U, std::uint32_t>;
+  using uint11264_t = math::wide_integer::uintwide_t<11264U, std::uint32_t>;
 
   // Create the string '1' + 3,333 times '0', which is
   // equivalent to the decimal integral value 10^3333.

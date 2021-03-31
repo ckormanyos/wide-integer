@@ -33,7 +33,7 @@
 
     using local_limb_type = MyLimbType;
 
-    using local_uint_type = wide_integer::generic_template::uintwide_t<digits2, local_limb_type, AllocatorType>;
+    using local_uint_type = math::wide_integer::uintwide_t<digits2, local_limb_type, AllocatorType>;
 
   public:
     test_uintwide_t_n_binary_ops_template(const std::size_t count)

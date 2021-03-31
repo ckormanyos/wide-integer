@@ -5,11 +5,11 @@
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)             //
 ///////////////////////////////////////////////////////////////////
 
-#include <math/wide_integer/generic_template_uintwide_t.h>
+#include <math/wide_integer/uintwide_t.h>
 
-bool wide_integer::example005_powm()
+bool math::wide_integer::example005_powm()
 {
-  using uint256_t = wide_integer::generic_template::uint256_t;
+  using uint256_t = math::wide_integer::uint256_t;
 
   const uint256_t b("0xDA4033C9B1B0675C20B7879EA63FFFBEEBEC3F89F78D22C393FAD98E7AE9BF69");
   const uint256_t p("0xA4748AD2DAFEED29C73927BD0945EF45EFEC9DAA95CC59390D406FC27236A174");
