@@ -1,25 +1,27 @@
-Wide-integer
+Wide-integer\
 [![Build Status](https://github.com/ckormanyos/wide-integer/actions/workflows/wide_integer.yml/badge.svg)](https://github.com/ckormanyos/wide-integer/actions)
 ==================
 
-Wide-integer implements a generic C++ template for extended precision unsigned integral types.
+Wide-integer implements a generic C++ template for extended width unsigned integral types.
 
 This C++ template header-only library implements drop-in big integer types
-such as `uint128_t`, `uint256_t`, `uint384_t`, `uint512_t`, `uint1024_t`, `uint1536_t`, etc.,
-that can be used essentially like regular built-in integers.
+such as `uint128_t`, `uint256_t`, `uint384_t`, `uint512_t`, `uint1024_t`, `uint1536_t`, etc.
+These can be used essentially like regular built-in integers.
+
 Wide-integer supports unsigned integral types having bit counts
 of <img src="https://render.githubusercontent.com/render/math?math=1{\ldots}63{\times}2^{N}">
 while being 16, 24, 32 or larger.
 In addition, small integer types such as software synthesized versions
 of `uint24_t` or `uint48_t` can also be crafted with wide-integer.
 
-Wide-integer also features elementary realizations
-of several number theoretical functions such as root finding,
-basic random distribution, Miller-Rabin primality testing,
+Wide-integer also features basic realizations of several
+elementary and number theoretical functions such as root finding,
+random distribution, Miller-Rabin primality testing,
 greatest common denominator (GCD) and more.
 
 Inclusion of a single C++11 header file (plus one additional
-utility header file) is all that is needed.
+utility header file) is all that is needed for using wide-integer,
+as shown in the [examples](./examples).
 
 ## Implementation goals
 
