@@ -73,6 +73,9 @@
     <ClInclude Include="util\utility\util_dynamic_array.h">
       <Filter>Source Files\util\utility</Filter>
     </ClInclude>
+    <ClInclude Include="math\wide_integer\uintwide_t_examples.h">
+      <Filter>Source Files\math\wide_integer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="test\test.cpp">

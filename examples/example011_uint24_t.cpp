@@ -8,6 +8,7 @@
 #include <random>
 
 #include <math/wide_integer/uintwide_t.h>
+#include <math/wide_integer/uintwide_t_examples.h>
 
 bool math::wide_integer::example011_uint24_t()
 {

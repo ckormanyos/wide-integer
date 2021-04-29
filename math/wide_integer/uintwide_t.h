@@ -1612,7 +1612,7 @@
     }
 
     template<const std::uint_fast32_t RePhraseDigits2 = Digits2,
-             typename std::enable_if<(std::numeric_limits<limb_type>::digits * 4 == RePhraseDigits2)>::type const* = nullptr>
+             typename std::enable_if<((sizeof(limb_type) * 8U) * 4U == RePhraseDigits2)>::type const* = nullptr>
     static void eval_multiply_n_by_n_to_lo_part(      limb_type*         r,
                                                 const limb_type*         a,
                                                 const limb_type*         b,
@@ -1677,7 +1677,7 @@
     }
 
     template<const std::uint_fast32_t RePhraseDigits2 = Digits2,
-             typename std::enable_if<(std::numeric_limits<limb_type>::digits * 4 != RePhraseDigits2)>::type const* = nullptr>
+             typename std::enable_if<((sizeof(limb_type) * 8U) * 4U != RePhraseDigits2)>::type const* = nullptr>
     static void eval_multiply_n_by_n_to_lo_part(      limb_type*         r,
                                                 const limb_type*         a,
                                                 const limb_type*         b,
@@ -3856,22 +3856,6 @@
     // Probably prime.
     return is_probably_prime;
   }
-
-  bool example001_mul_div            ();
-  bool example001a_div_mod           ();
-  bool example002_shl_shr            ();
-  bool example003_sqrt               ();
-  bool example003a_cbrt              ();
-  bool example004_rootk_pow          ();
-  bool example005_powm               ();
-  bool example006_gcd                ();
-  bool example007_random_generator   ();
-  bool example008_miller_rabin_prime ();
-  bool example008a_miller_rabin_prime();
-  bool example009_timed_mul          ();
-  bool example009a_timed_mul_4_by_4  ();
-  bool example010_uint48_t           ();
-  bool example011_uint24_t           ();
 
   } } // namespace math::wide_integer
 

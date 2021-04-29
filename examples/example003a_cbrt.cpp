@@ -8,6 +8,7 @@
 #include <string>
 
 #include <math/wide_integer/uintwide_t.h>
+#include <math/wide_integer/uintwide_t_examples.h>
 
 bool math::wide_integer::example003a_cbrt()
 {

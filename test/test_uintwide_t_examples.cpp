@@ -9,6 +9,7 @@
 #include <iostream>
 
 #include <math/wide_integer/uintwide_t.h>
+#include <math/wide_integer/uintwide_t_examples.h>
 
 bool test_uintwide_t_examples()
 {

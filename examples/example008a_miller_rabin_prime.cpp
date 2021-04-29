@@ -15,6 +15,7 @@
 
 #include <boost/multiprecision/miller_rabin.hpp>
 #include <boost/multiprecision/uintwide_t_backend.hpp>
+#include <math/wide_integer/uintwide_t_examples.h>
 
 bool math::wide_integer::example008a_miller_rabin_prime()
 {

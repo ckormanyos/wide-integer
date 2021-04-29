@@ -6,6 +6,7 @@
 ///////////////////////////////////////////////////////////////////
 
 #include <math/wide_integer/uintwide_t.h>
+#include <math/wide_integer/uintwide_t_examples.h>
 
 bool math::wide_integer::example002_shl_shr()
 {
