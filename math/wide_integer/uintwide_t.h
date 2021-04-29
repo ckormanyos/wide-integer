@@ -8,6 +8,12 @@
 #ifndef UINTWIDE_T_2018_10_02_H_
   #define UINTWIDE_T_2018_10_02_H_
 
+  #if defined(__GNUC__) || defined(__clang__)
+  #if defined(WIDE_INTEGER_HAS_LIMB_TYPE_UINT64)
+  #include <inttypes.h>
+  #endif
+  #endif
+
   #include <algorithm>
   #include <array>
   #include <cstddef>
@@ -524,17 +530,26 @@
            typename EnableType = void>
   struct uint_type_helper
   {
+    #if defined(WIDE_INTEGER_HAS_LIMB_TYPE_UINT64)
+    static_assert((   ((BitCount >= 8U) && (BitCount <= 128U))
+                   && (verify_power_of_two<BitCount>::conditional_value == true)),
+                  "Error: uint_type_helper is not intended to be used for this BitCount");
+    #else
     static_assert((   ((BitCount >= 8U) && (BitCount <= 64U))
                    && (verify_power_of_two<BitCount>::conditional_value == true)),
                   "Error: uint_type_helper is not intended to be used for this BitCount");
+    #endif
 
     using exact_unsigned_type = std::uintmax_t;
   };
 
-  template<const std::uint_fast32_t BitCount> struct uint_type_helper<BitCount, typename std::enable_if<                     (BitCount <=  8U)>::type> { using exact_unsigned_type = std::uint8_t;  };
-  template<const std::uint_fast32_t BitCount> struct uint_type_helper<BitCount, typename std::enable_if<(BitCount >=  9U) && (BitCount <= 16U)>::type> { using exact_unsigned_type = std::uint16_t; };
-  template<const std::uint_fast32_t BitCount> struct uint_type_helper<BitCount, typename std::enable_if<(BitCount >= 17U) && (BitCount <= 32U)>::type> { using exact_unsigned_type = std::uint32_t; };
-  template<const std::uint_fast32_t BitCount> struct uint_type_helper<BitCount, typename std::enable_if<(BitCount >= 33U) && (BitCount <= 64U)>::type> { using exact_unsigned_type = std::uint64_t; };
+  template<const std::uint_fast32_t BitCount> struct uint_type_helper<BitCount, typename std::enable_if<                     (BitCount <=   8U)>::type> { using exact_unsigned_type = std::uint8_t;  };
+  template<const std::uint_fast32_t BitCount> struct uint_type_helper<BitCount, typename std::enable_if<(BitCount >=  9U) && (BitCount <=  16U)>::type> { using exact_unsigned_type = std::uint16_t; };
+  template<const std::uint_fast32_t BitCount> struct uint_type_helper<BitCount, typename std::enable_if<(BitCount >= 17U) && (BitCount <=  32U)>::type> { using exact_unsigned_type = std::uint32_t; };
+  template<const std::uint_fast32_t BitCount> struct uint_type_helper<BitCount, typename std::enable_if<(BitCount >= 33U) && (BitCount <=  64U)>::type> { using exact_unsigned_type = std::uint64_t; };
+  #if defined(WIDE_INTEGER_HAS_LIMB_TYPE_UINT64)
+  template<const std::uint_fast32_t BitCount> struct uint_type_helper<BitCount, typename std::enable_if<(BitCount >= 65U) && (BitCount <= 128U)>::type> { using exact_unsigned_type = unsigned __int128; };
+  #endif
 
   // Use a local implementation of string copy.
   inline char* strcpy_unsafe(char* dst, const char* src)
@@ -566,12 +581,17 @@
     using local_ularge_type = LT;
 
     // Compile-time checks.
+    #if defined(WIDE_INTEGER_HAS_LIMB_TYPE_UINT64)
+    static_assert(((sizeof(local_ushort_type) * 2U) == sizeof(local_ularge_type)),
+                   "Error: Please check the characteristics of the template parameters ST and LT");
+    #else
     static_assert((    (std::numeric_limits<local_ushort_type>::is_integer == true)
                    &&  (std::numeric_limits<local_ularge_type>::is_integer == true)
                    &&  (std::numeric_limits<local_ushort_type>::is_signed  == false)
                    &&  (std::numeric_limits<local_ularge_type>::is_signed  == false)
-                   && ((std::numeric_limits<local_ushort_type>::digits * 2) == std::numeric_limits<local_ularge_type>::digits)),
+                   &&  ((sizeof(local_ushort_type) * 2U)                   == sizeof(local_ularge_type))),
                    "Error: Please check the characteristics of the template parameters ST and LT");
+    #endif
 
     return static_cast<local_ushort_type>(u);
   }
@@ -588,12 +608,17 @@
     using local_ularge_type = LT;
 
     // Compile-time checks.
+    #if defined(WIDE_INTEGER_HAS_LIMB_TYPE_UINT64)
+    static_assert(((sizeof(local_ushort_type) * 2U) == sizeof(local_ularge_type)),
+                   "Error: Please check the characteristics of the template parameters ST and LT");
+    #else
     static_assert((    (std::numeric_limits<local_ushort_type>::is_integer == true)
                    &&  (std::numeric_limits<local_ularge_type>::is_integer == true)
                    &&  (std::numeric_limits<local_ushort_type>::is_signed  == false)
                    &&  (std::numeric_limits<local_ularge_type>::is_signed  == false)
-                   && ((std::numeric_limits<local_ushort_type>::digits * 2) == std::numeric_limits<local_ularge_type>::digits)),
+                   &&  ((sizeof(local_ushort_type) * 2U)                   == sizeof(local_ularge_type))),
                    "Error: Please check the characteristics of the template parameters ST and LT");
+    #endif
 
     return static_cast<local_ushort_type>(u >> std::numeric_limits<local_ushort_type>::digits);
   }
@@ -610,12 +635,17 @@
     using local_ularge_type = LT;
 
     // Compile-time checks.
+    #if defined(WIDE_INTEGER_HAS_LIMB_TYPE_UINT64)
+    static_assert(((sizeof(local_ushort_type) * 2U) == sizeof(local_ularge_type)),
+                   "Error: Please check the characteristics of the template parameters ST and LT");
+    #else
     static_assert((    (std::numeric_limits<local_ushort_type>::is_integer == true)
                    &&  (std::numeric_limits<local_ularge_type>::is_integer == true)
                    &&  (std::numeric_limits<local_ushort_type>::is_signed  == false)
                    &&  (std::numeric_limits<local_ularge_type>::is_signed  == false)
-                   && ((std::numeric_limits<local_ushort_type>::digits * 2) == std::numeric_limits<local_ularge_type>::digits)),
+                   &&  ((sizeof(local_ushort_type) * 2U)                   == sizeof(local_ularge_type))),
                    "Error: Please check the characteristics of the template parameters ST and LT");
+    #endif
 
     return local_ularge_type(local_ularge_type(static_cast<local_ularge_type>(hi) << std::numeric_limits<ST>::digits) | lo);
   }
@@ -642,12 +672,17 @@
     using ularge_type = double_limb_type;
 
     // More compile-time checks.
+    #if defined(WIDE_INTEGER_HAS_LIMB_TYPE_UINT64)
+    static_assert(((sizeof(limb_type) * 2U) == sizeof(double_limb_type)),
+                   "Error: Please check the characteristics of the template parameters ST and LT");
+    #else
     static_assert((    (std::numeric_limits<limb_type>::is_integer        == true)
                    &&  (std::numeric_limits<double_limb_type>::is_integer == true)
                    &&  (std::numeric_limits<limb_type>::is_signed         == false)
                    &&  (std::numeric_limits<double_limb_type>::is_signed  == false)
-                   && ((std::numeric_limits<limb_type>::digits * 2)       == std::numeric_limits<double_limb_type>::digits)),
+                   &&  ((sizeof(limb_type) * 2U)                          == sizeof(double_limb_type))),
                    "Error: Please check the characteristics of the template parameters ST and LT");
+    #endif
 
     // Helper constants for the digit characteristics.
     static constexpr std::uint_fast32_t my_digits   = Digits2;

@@ -1,4 +1,4 @@
-Wide-integer\
+Wide-integer
 [![Build Status](https://github.com/ckormanyos/wide-integer/actions/workflows/wide_integer.yml/badge.svg)](https://github.com/ckormanyos/wide-integer/actions)
 ==================
 
@@ -125,6 +125,16 @@ I/O streaming can optionally be disabled with the compiler switch:
 
 ```
 #define WIDE_INTEGER_DISABLE_IOSTREAM
+```
+
+When working on high-performance systems having `unsigned __int128`
+(an extended-width, yet non-standard data type),
+a 64-bit limb of type `uint64_t` can be used.
+Enable the 64-bit limb type on such systems
+with the compiler switch:
+
+```
+#define WIDE_INTEGER_HAS_LIMB_TYPE_UINT64
 ```
 
 ## Detailed Examples
