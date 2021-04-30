@@ -16,7 +16,8 @@
 #include <random>
 #include <vector>
 
-#include <wide_integer/generic_template_uintwide_t.h>
+#include <math/wide_integer/uintwide_t.h>
+#include <math/wide_integer/uintwide_t_examples.h>
 
 namespace
 {
@@ -29,20 +30,20 @@ namespace
     using local_uint_type = typename std::iterator_traits<UnsignedIntegralIteratorType>::value_type;
 
     using distribution_type =
-      wide_integer::generic_template::uniform_int_distribution<std::numeric_limits<local_uint_type>::digits, typename local_uint_type::limb_type>;
+      math::wide_integer::uniform_int_distribution<std::numeric_limits<local_uint_type>::digits, typename local_uint_type::limb_type>;
 
     distribution_type distribution;
 
     *it_out = distribution(rng);
   }
 
-  using big_uint_type = wide_integer::generic_template::uintwide_t<wide_integer_test9_digits2>;
+  using big_uint_type = math::wide_integer::uintwide_t<wide_integer_test9_digits2>;
 
   std::vector<big_uint_type> local_a(128U);
   std::vector<big_uint_type> local_b(local_a.size());
 }
 
-bool wide_integer::example009_timed_mul()
+bool math::wide_integer::example009_timed_mul()
 {
   using random_engine_type =
     std::linear_congruential_engine<std::uint32_t, UINT32_C(48271), UINT32_C(0), UINT32_C(2147483647)>;

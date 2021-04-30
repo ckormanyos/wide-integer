@@ -1,22 +1,27 @@
-# Wide-integer
+Wide-integer
+[![Build Status](https://github.com/ckormanyos/wide-integer/actions/workflows/wide_integer.yml/badge.svg)](https://github.com/ckormanyos/wide-integer/actions)
+==================
 
-Wide-integer implements a generic C++ template for extended precision unsigned integral types.
+Wide-integer implements a generic C++ template for extended width unsigned integral types.
 
 This C++ template header-only library implements drop-in big integer types
-such as `uint128_t`, `uint256_t`, `uint384_t`, `uint512_t`, `uint1024_t`, `uint1536_t`, etc.,
-that can be used essentially like regular built-in integers.
+such as `uint128_t`, `uint256_t`, `uint384_t`, `uint512_t`, `uint1024_t`, `uint1536_t`, etc.
+These can be used essentially like regular built-in integers.
+
 Wide-integer supports unsigned integral types having bit counts
 of <img src="https://render.githubusercontent.com/render/math?math=1{\ldots}63{\times}2^{N}">
 while being 16, 24, 32 or larger.
 In addition, small integer types such as software synthesized versions
 of `uint24_t` or `uint48_t` can also be crafted with wide-integer.
 
-Wide-integer also features elementary realizations
-of several number theoretical functions such as root finding,
-basic random distribution, Miller-Rabin primality testing,
+Wide-integer also features basic realizations of several
+elementary and number theoretical functions such as root finding,
+random distribution, Miller-Rabin primality testing,
 greatest common denominator (GCD) and more.
 
-Inclusion of a single C++11 header file is all that is needed.
+Inclusion of a single C++11 header file (plus one additional
+utility header file) is all that is needed for using wide-integer,
+as shown in the [examples](./examples).
 
 ## Implementation goals
 
@@ -29,13 +34,15 @@ Inclusion of a single C++11 header file is all that is needed.
 ## Quick start
 Easy application follows via a traditional C-style typedef or C++11 alias.
 The defined type can be used very much like a built-in unsinged integral type.
+In the following example, the static `uint512_t` variable `x` is initialized
+with unsigned value `3U`.
 
-For instance,
+In particular,
 
-```C
-#include <wide_integer/generic_template_uintwide_t.h>
+```
+#include <math/wide_integer/uintwide_t.h>
 
-using uint512_t = wide_integer::generic_template::uintwide_t<512U, std::uint32_t>;
+using uint512_t = math::wide_integer::uintwide_t<512U, std::uint32_t>;
 
 static uint512_t x = 3U;
 ```
@@ -45,7 +52,14 @@ a C++11 alias. The first template parameter `512U` sets the binary digit
 count while the second optional template parameter `std::uint32_t`
 sets the internal _limb_ _type_. If the second template parameter is left blank,
 the default limb type is 32 bits in width and unsigned.
-The static `uint512_t` variable `x` is initialized with unsigned value `3U`.
+
+`uintwide_t` also has a third optional template paramter that
+can be used to set the allocator type for internal storage of the
+big integer type. This optional parameter can help to reduce
+stack consumption, especially when using higher digit counts.
+If left blank, the default allocator type is `void`
+and stack allocation is used with an `array`-like
+internal representation.
 
 ## Examples
 
@@ -70,7 +84,7 @@ how to use wide-integer.
   - ![`example010_uint48_t.cpp`](./examples/example010_uint48_t.cpp) verifies 48-bit integer caluclations.
   - ![`example011_uint24_t.cpp`](./examples/example011_uint24_t.cpp) performs calculations with 24-bits, which is definitely on the small side of the range of wide-integer.
 
-## Testing
+## Testing and CI
 
 Testing is a big issue and a growing test suite is in continued progress
 providing for tested, efficient functionality on the PC and workstation.
@@ -80,6 +94,9 @@ subroutines called from `main()` that exercise various test cases.
 Continuous integration runs on push using GitHub Actions.
 Various compilers, operating systems, and C++ standards
 ranging from C++11, 14, 17, 20 are included in CI.
+
+### Build Status
+[![Build Status](https://github.com/ckormanyos/wide-integer/actions/workflows/wide_integer.yml/badge.svg)](https://github.com/ckormanyos/wide-integer/actions)
 
 ## Details
 
@@ -110,19 +127,53 @@ I/O streaming can optionally be disabled with the compiler switch:
 #define WIDE_INTEGER_DISABLE_IOSTREAM
 ```
 
+When working on high-performance systems having `unsigned __int128`
+(an extended-width, yet non-standard data type),
+a 64-bit limb of type `uint64_t` can be used.
+Enable the 64-bit limb type on such systems
+with the compiler switch:
+
+```
+#define WIDE_INTEGER_HAS_LIMB_TYPE_UINT64
+```
+
+or (when using GCC, clang or similar) on the compiler
+command line with:
+
+```
+-DWIDE_INTEGER_HAS_LIMB_TYPE_UINT64
+```
+
+The example below, for instance, uses a 64-bit limb type
+on GCC or clang.
+
+```
+#define WIDE_INTEGER_HAS_LIMB_TYPE_UINT64
+
+#include <math/wide_integer/uintwide_t.h>
+
+using uint_fast256_t = math::wide_integer::uintwide_t<256U, std::uint64_t>;
+
+static uint_fast256_t x = 42U;
+```
+
+
 ## Detailed Examples
 
-The example below performs some elementary algebraic calculations with a 256-bit unsigned integral type.
+We will now present various straightforward examples.
 
-```C
+The code below performs some elementary algebraic calculations
+with a 256-bit unsigned integral type.
+
+```
 #include <iomanip>
 #include <iostream>
 
-#include <wide_integer/generic_template_uintwide_t.h>
+#include <math/wide_integer/uintwide_t.h>
 
 int main()
 {
-  using uint256_t = wide_integer::generic_template::uint256_t;
+  using uint256_t = math::wide_integer::uint256_t;
 
   // Construction from string. Other constructors are available from built-in types.
   const uint256_t a("0xF4DF741DE58BCB2F37F18372026EF9CBCFC456CB80AF54D53BDEED78410065DE");
@@ -156,11 +207,11 @@ The example below calculates an integer square root.
 #include <iomanip>
 #include <iostream>
 
-#include <wide_integer/generic_template_uintwide_t.h>
+#include <math/wide_integer/uintwide_t.h>
 
 int main()
 {
-  using uint256_t = wide_integer::generic_template::uint256_t;
+  using uint256_t = math::wide_integer::uint256_t;
 
   const uint256_t a("0xF4DF741DE58BCB2F37F18372026EF9CBCFC456CB80AF54D53BDEED78410065DE");
 
@@ -173,20 +224,20 @@ int main()
 }
 ```
 
-The following code performs add, subtract, multiply and divide of `uint48_t`.
+The following sample performs add, subtract, multiply and divide of `uint48_t`.
 
-```C
+```
 #include <iomanip>
 #include <iostream>
 
-#include <wide_integer/generic_template_uintwide_t.h>
+#include <math/wide_integer/uintwide_t.h>
 
 int main()
 {
-  using uint48_t = wide_integer::generic_template::uintwide_t<48U, std::uint8_t>;
+  using uint48_t = math::wide_integer::uintwide_t<48U, std::uint8_t>;
 
-  using distribution_type  = wide_integer::generic_template::uniform_int_distribution<48U, std::uint8_t>;
-  using random_engine_type = wide_integer::generic_template::default_random_engine   <48U, std::uint8_t>;
+  using distribution_type  = math::wide_integer::uniform_int_distribution<48U, std::uint8_t>;
+  using random_engine_type = math::wide_integer::default_random_engine   <48U, std::uint8_t>;
 
   random_engine_type generator(0xF00DCAFEULL);
 
@@ -212,7 +263,7 @@ int main()
 }
 ```
 
-The next sample computes the real-valued cube root of
+The next example computes the real-valued cube root of
 <img src="https://render.githubusercontent.com/render/math?math=10^{3,333}">.
 The real-valued cube root of this very large unsigned integer is
 <img src="https://render.githubusercontent.com/render/math?math=10^{1,111}">.
@@ -226,11 +277,11 @@ prior to (and following) the cube root operation.
 #include <iomanip>
 #include <iostream>
 
-#include <wide_integer/generic_template_uintwide_t.h>
+#include <math/wide_integer/uintwide_t.h>
 
 int main()
 {
-  using uint11264_t = wide_integer::generic_template::uintwide_t<11264U, std::uint32_t>;
+  using uint11264_t = math::wide_integer::uintwide_t<11264U, std::uint32_t>;
 
   // Create the string '1' + 3,333 times '0', which is
   // equivalent to the decimal integral value 10^3333.

@@ -15,8 +15,9 @@
 
 #include <boost/multiprecision/miller_rabin.hpp>
 #include <boost/multiprecision/uintwide_t_backend.hpp>
+#include <math/wide_integer/uintwide_t_examples.h>
 
-bool wide_integer::example008a_miller_rabin_prime()
+bool math::wide_integer::example008a_miller_rabin_prime()
 {
   using wide_integer_type = boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<256U>,
                                                           boost::multiprecision::et_off>;

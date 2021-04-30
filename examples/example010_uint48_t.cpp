@@ -7,13 +7,14 @@
 
 #include <random>
 
-#include <wide_integer/generic_template_uintwide_t.h>
+#include <math/wide_integer/uintwide_t.h>
+#include <math/wide_integer/uintwide_t_examples.h>
 
-bool wide_integer::example010_uint48_t()
+bool math::wide_integer::example010_uint48_t()
 {
-  using uint48_t = wide_integer::generic_template::uintwide_t<48U, std::uint8_t>;
+  using uint48_t = math::wide_integer::uintwide_t<48U, std::uint8_t>;
 
-  using distribution_type  = wide_integer::generic_template::uniform_int_distribution<48U, typename uint48_t::limb_type>;
+  using distribution_type  = math::wide_integer::uniform_int_distribution<48U, typename uint48_t::limb_type>;
   using random_engine_type = std::linear_congruential_engine<std::uint32_t, UINT32_C(48271), UINT32_C(0), UINT32_C(2147483647)>;
 
   random_engine_type generator(0xF00DCAFEULL);

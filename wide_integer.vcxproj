@@ -72,19 +72,19 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\boost\boost_1_75_0;$(ProjectDir);$(IncludePath)</IncludePath>
+    <IncludePath>C:\boost\boost_1_76_0;$(ProjectDir);$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\boost\boost_1_75_0;$(ProjectDir);$(IncludePath)</IncludePath>
+    <IncludePath>C:\boost\boost_1_76_0;$(ProjectDir);$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>C:\boost\boost_1_75_0;$(ProjectDir);$(IncludePath)</IncludePath>
+    <IncludePath>C:\boost\boost_1_76_0;$(ProjectDir);$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>C:\boost\boost_1_75_0;$(ProjectDir);$(IncludePath)</IncludePath>
+    <IncludePath>C:\boost\boost_1_76_0;$(ProjectDir);$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -178,6 +178,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="boost\multiprecision\uintwide_t_backend.hpp" />
+    <ClInclude Include="math\wide_integer\uintwide_t.h" />
+    <ClInclude Include="math\wide_integer\uintwide_t_examples.h" />
     <ClInclude Include="test\parallel_for.h" />
     <ClInclude Include="test\test_uintwide_t.h" />
     <ClInclude Include="test\test_uintwide_t_n_base.h" />
@@ -186,25 +188,7 @@
     <ClInclude Include="test\test_uintwide_t_n_binary_ops_base.h" />
     <ClInclude Include="test\test_uintwide_t_n_binary_ops_template.h" />
     <ClInclude Include="test\test_uintwide_t_n_number_theory_funcs_template.h" />
-    <ClInclude Include="wide_integer\archive\non_template_uint128_t.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="wide_integer\archive\non_template_uint256_t.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="wide_integer\archive\recursive_template_uintwide_t.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="wide_integer\generic_template_uintwide_t.h" />
+    <ClInclude Include="util\utility\util_dynamic_array.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="examples\example001a_div_mod.cpp" />

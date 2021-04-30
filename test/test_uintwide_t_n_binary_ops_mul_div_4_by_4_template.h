@@ -10,8 +10,8 @@
 
   #include <atomic>
 
+  #include <math/wide_integer/uintwide_t.h>
   #include <test/test_uintwide_t_n_base.h>
-  #include <wide_integer/generic_template_uintwide_t.h>
 
   template<const std::size_t MyDigits2,
            typename MyLimbType,
@@ -35,11 +35,11 @@
     virtual std::size_t get_digits2 () const { return digits2; }
 
     using native_uint_cntrl_type =
-      typename wide_integer::generic_template::detail::int_type_helper<digits2>::exact_unsigned_type;
+      typename math::wide_integer::detail::uint_type_helper<digits2>::exact_unsigned_type;
 
     using local_limb_type = MyLimbType;
 
-    using local_uint_ab_type = wide_integer::generic_template::uintwide_t<digits2, local_limb_type>;
+    using local_uint_ab_type = math::wide_integer::uintwide_t<digits2, local_limb_type>;
 
   public:
     test_uintwide_t_n_binary_ops_mul_div_4_by_4_template(const std::size_t count)
@@ -171,7 +171,7 @@
       test_uintwide_t_n_base::my_random_generator.seed(std::clock());
 
       using distribution_type =
-        wide_integer::generic_template::uniform_int_distribution<other_local_uint_type::my_digits, typename other_local_uint_type::limb_type>;
+        math::wide_integer::uniform_int_distribution<other_local_uint_type::my_digits, typename other_local_uint_type::limb_type>;
 
       distribution_type distribution;
 

@@ -16,7 +16,7 @@
   #include <boost/config.hpp>
   #include <boost/multiprecision/number.hpp>
 
-  #include <wide_integer/generic_template_uintwide_t.h>
+  #include <math/wide_integer/uintwide_t.h>
 
   namespace boost { namespace multiprecision {
 
@@ -31,11 +31,16 @@
   // Define the number category as a floating-point kind
   // for the uintwide_t_backend. This is needed for properly
   // interacting as a backend with boost::muliprecision.
-  #if defined(BOOST_VERSION) && (BOOST_VERSION < 107500)
+  #if (BOOST_VERSION <= 107200)
   template<const std::size_t MyDigits2,
            typename MyLimbType>
   struct boost::multiprecision::number_category<boost::multiprecision::uintwide_t_backend<MyDigits2, MyLimbType>>
     : public boost::mpl::int_<boost::multiprecision::number_kind_integer> { };
+  #elif (BOOST_VERSION <= 107500)
+  template<const std::size_t MyDigits2,
+           typename MyLimbType>
+  struct boost::multiprecision::number_category<boost::multiprecision::uintwide_t_backend<MyDigits2, MyLimbType>>
+    : public boost::integral_constant<int, boost::multiprecision::number_kind_integer> { };
   #else
   template<const std::size_t MyDigits2,
            typename MyLimbType>
@@ -51,12 +56,12 @@
   class uintwide_t_backend
   {
   public:
-    using representation_type = wide_integer::generic_template::uintwide_t<MyDigits2, MyLimbType>;
+    using representation_type = ::math::wide_integer::uintwide_t<MyDigits2, MyLimbType>;
 
-    #if defined(BOOST_VERSION) && (BOOST_VERSION < 107500)
-    using signed_types   = boost::mpl::list<std::int64_t>;
-    using unsigned_types = boost::mpl::list<std::uint64_t>;
-    using float_types    = boost::mpl::list<long double>;
+    #if (BOOST_VERSION <= 107500)
+    using signed_types   = mpl::list<std::int64_t>;
+    using unsigned_types = mpl::list<std::uint64_t>;
+    using float_types    = mpl::list<long double>;
     #else
     using   signed_types = std::tuple<  signed char,   signed short,   signed int,   signed long,   signed long long, std::intmax_t>;
     using unsigned_types = std::tuple<unsigned char, unsigned short, unsigned int, unsigned long, unsigned long long, std::uintmax_t>;
@@ -511,19 +516,14 @@
 
     using local_digits_2 = digits2<MyDigits2>;
 
-    #if defined(BOOST_VERSION) && (BOOST_VERSION < 107500)
-    typedef typename mpl::if_c
-      <
-        (   (local_digits_2::value <= precision_type::value)
-         || (precision_type::value <= 0)),
-        local_digits_2,
-        precision_type
-      >::type
-    type;
+    #if (BOOST_VERSION <= 107500)
+    using type = typename mpl::if_c       <((local_digits_2::value <= precision_type::value) || (precision_type::value <= 0)),
+                                             local_digits_2,
+                                             precision_type>::type;
     #else
     using type = typename std::conditional<((local_digits_2::value <= precision_type::value) || (precision_type::value <= 0)),
-                                           local_digits_2,
-                                           precision_type>::type;
+                                             local_digits_2,
+                                             precision_type>::type;
     #endif
   };
 
@@ -549,10 +549,10 @@
       BOOST_STATIC_CONSTEXPR int  digits10       = static_cast<int>((MyDigits2 * 301LL) / 1000LL);
       BOOST_STATIC_CONSTEXPR int  max_digits10   = static_cast<int>((MyDigits2 * 301LL) / 1000LL);
 
-      BOOST_STATIC_CONSTEXPR int max_exponent   = std::numeric_limits<wide_integer::generic_template::uintwide_t<MyDigits2, MyLimbType>>::max_exponent;
-      BOOST_STATIC_CONSTEXPR int max_exponent10 = std::numeric_limits<wide_integer::generic_template::uintwide_t<MyDigits2, MyLimbType>>::max_exponent10;
-      BOOST_STATIC_CONSTEXPR int min_exponent   = std::numeric_limits<wide_integer::generic_template::uintwide_t<MyDigits2, MyLimbType>>::min_exponent;
-      BOOST_STATIC_CONSTEXPR int min_exponent10 = std::numeric_limits<wide_integer::generic_template::uintwide_t<MyDigits2, MyLimbType>>::min_exponent10;
+      BOOST_STATIC_CONSTEXPR int max_exponent   = std::numeric_limits<::math::wide_integer::uintwide_t<MyDigits2, MyLimbType>>::max_exponent;
+      BOOST_STATIC_CONSTEXPR int max_exponent10 = std::numeric_limits<::math::wide_integer::uintwide_t<MyDigits2, MyLimbType>>::max_exponent10;
+      BOOST_STATIC_CONSTEXPR int min_exponent   = std::numeric_limits<::math::wide_integer::uintwide_t<MyDigits2, MyLimbType>>::min_exponent;
+      BOOST_STATIC_CONSTEXPR int min_exponent10 = std::numeric_limits<::math::wide_integer::uintwide_t<MyDigits2, MyLimbType>>::min_exponent10;
 
       BOOST_STATIC_CONSTEXPR int                     radix             = 2;
       BOOST_STATIC_CONSTEXPR std::float_round_style  round_style       = std::round_to_nearest;
@@ -564,15 +564,15 @@
       BOOST_STATIC_CONSTEXPR bool                    traps             = false;
       BOOST_STATIC_CONSTEXPR bool                    tinyness_before   = false;
 
-      BOOST_STATIC_CONSTEXPR boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyDigits2, MyLimbType>, ExpressionTemplatesOptions> (min)        () { return boost::multiprecision::uintwide_t_backend<MyDigits2, MyLimbType>((std::numeric_limits<wide_integer::generic_template::uintwide_t<MyDigits2, MyLimbType>>::min)()      ); }
-      BOOST_STATIC_CONSTEXPR boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyDigits2, MyLimbType>, ExpressionTemplatesOptions> (max)        () { return boost::multiprecision::uintwide_t_backend<MyDigits2, MyLimbType>((std::numeric_limits<wide_integer::generic_template::uintwide_t<MyDigits2, MyLimbType>>::max)()      ); }
-      BOOST_STATIC_CONSTEXPR boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyDigits2, MyLimbType>, ExpressionTemplatesOptions> lowest       () { return boost::multiprecision::uintwide_t_backend<MyDigits2, MyLimbType>(std::numeric_limits<wide_integer::generic_template::uintwide_t<MyDigits2, MyLimbType>>::lowest       ); }
-      BOOST_STATIC_CONSTEXPR boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyDigits2, MyLimbType>, ExpressionTemplatesOptions> epsilon      () { return boost::multiprecision::uintwide_t_backend<MyDigits2, MyLimbType>(std::numeric_limits<wide_integer::generic_template::uintwide_t<MyDigits2, MyLimbType>>::epsilon      ); }
-      BOOST_STATIC_CONSTEXPR boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyDigits2, MyLimbType>, ExpressionTemplatesOptions> round_error  () { return boost::multiprecision::uintwide_t_backend<MyDigits2, MyLimbType>(std::numeric_limits<wide_integer::generic_template::uintwide_t<MyDigits2, MyLimbType>>::round_error  ); }
-      BOOST_STATIC_CONSTEXPR boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyDigits2, MyLimbType>, ExpressionTemplatesOptions> infinity     () { return boost::multiprecision::uintwide_t_backend<MyDigits2, MyLimbType>(std::numeric_limits<wide_integer::generic_template::uintwide_t<MyDigits2, MyLimbType>>::infinity     ); }
-      BOOST_STATIC_CONSTEXPR boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyDigits2, MyLimbType>, ExpressionTemplatesOptions> quiet_NaN    () { return boost::multiprecision::uintwide_t_backend<MyDigits2, MyLimbType>(std::numeric_limits<wide_integer::generic_template::uintwide_t<MyDigits2, MyLimbType>>::quiet_NaN    ); }
-      BOOST_STATIC_CONSTEXPR boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyDigits2, MyLimbType>, ExpressionTemplatesOptions> signaling_NaN() { return boost::multiprecision::uintwide_t_backend<MyDigits2, MyLimbType>(std::numeric_limits<wide_integer::generic_template::uintwide_t<MyDigits2, MyLimbType>>::signaling_NaN); }
-      BOOST_STATIC_CONSTEXPR boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyDigits2, MyLimbType>, ExpressionTemplatesOptions> denorm_min   () { return boost::multiprecision::uintwide_t_backend<MyDigits2, MyLimbType>(std::numeric_limits<wide_integer::generic_template::uintwide_t<MyDigits2, MyLimbType>>::denorm_min   ); }
+      BOOST_STATIC_CONSTEXPR boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyDigits2, MyLimbType>, ExpressionTemplatesOptions> (min)        () { return boost::multiprecision::uintwide_t_backend<MyDigits2, MyLimbType>((std::numeric_limits<::math::wide_integer::uintwide_t<MyDigits2, MyLimbType>>::min)()       ); }
+      BOOST_STATIC_CONSTEXPR boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyDigits2, MyLimbType>, ExpressionTemplatesOptions> (max)        () { return boost::multiprecision::uintwide_t_backend<MyDigits2, MyLimbType>((std::numeric_limits<::math::wide_integer::uintwide_t<MyDigits2, MyLimbType>>::max)()       ); }
+      BOOST_STATIC_CONSTEXPR boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyDigits2, MyLimbType>, ExpressionTemplatesOptions> lowest       () { return boost::multiprecision::uintwide_t_backend<MyDigits2, MyLimbType> (std::numeric_limits<::math::wide_integer::uintwide_t<MyDigits2, MyLimbType>>::lowest       ); }
+      BOOST_STATIC_CONSTEXPR boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyDigits2, MyLimbType>, ExpressionTemplatesOptions> epsilon      () { return boost::multiprecision::uintwide_t_backend<MyDigits2, MyLimbType> (std::numeric_limits<::math::wide_integer::uintwide_t<MyDigits2, MyLimbType>>::epsilon      ); }
+      BOOST_STATIC_CONSTEXPR boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyDigits2, MyLimbType>, ExpressionTemplatesOptions> round_error  () { return boost::multiprecision::uintwide_t_backend<MyDigits2, MyLimbType> (std::numeric_limits<::math::wide_integer::uintwide_t<MyDigits2, MyLimbType>>::round_error  ); }
+      BOOST_STATIC_CONSTEXPR boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyDigits2, MyLimbType>, ExpressionTemplatesOptions> infinity     () { return boost::multiprecision::uintwide_t_backend<MyDigits2, MyLimbType> (std::numeric_limits<::math::wide_integer::uintwide_t<MyDigits2, MyLimbType>>::infinity     ); }
+      BOOST_STATIC_CONSTEXPR boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyDigits2, MyLimbType>, ExpressionTemplatesOptions> quiet_NaN    () { return boost::multiprecision::uintwide_t_backend<MyDigits2, MyLimbType> (std::numeric_limits<::math::wide_integer::uintwide_t<MyDigits2, MyLimbType>>::quiet_NaN    ); }
+      BOOST_STATIC_CONSTEXPR boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyDigits2, MyLimbType>, ExpressionTemplatesOptions> signaling_NaN() { return boost::multiprecision::uintwide_t_backend<MyDigits2, MyLimbType> (std::numeric_limits<::math::wide_integer::uintwide_t<MyDigits2, MyLimbType>>::signaling_NaN); }
+      BOOST_STATIC_CONSTEXPR boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyDigits2, MyLimbType>, ExpressionTemplatesOptions> denorm_min   () { return boost::multiprecision::uintwide_t_backend<MyDigits2, MyLimbType> (std::numeric_limits<::math::wide_integer::uintwide_t<MyDigits2, MyLimbType>>::denorm_min   ); }
     };
 
     #ifndef BOOST_NO_INCLASS_MEMBER_INITIALIZATION

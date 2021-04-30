@@ -26,8 +26,8 @@ jobs:
           git submodule update --init libs/algorithm
           git submodule update --init libs/align
           git submodule update --init libs/any
-          git submodule update --init libs/assert
           git submodule update --init libs/array
+          git submodule update --init libs/assert
           git submodule update --init libs/atomic
           git submodule update --init libs/bind
           git submodule update --init libs/chrono
@@ -44,28 +44,26 @@ jobs:
           git submodule update --init libs/dynamic_bitset
           git submodule update --init libs/endian
           git submodule update --init libs/exception
-          git submodule update --init libs/filesystem
-          git submodule update --init libs/tokenizer
           git submodule update --init libs/foreach
           git submodule update --init libs/format
           git submodule update --init libs/function
           git submodule update --init libs/function_types
           git submodule update --init libs/fusion
-          git submodule update --init libs/intrusive
-          git submodule update --init libs/lexical_cast
-          git submodule update --init libs/logic
-          git submodule update --init libs/math
-          git submodule update --init libs/multi_index
-          git submodule update --init libs/multiprecision
           git submodule update --init libs/hana
           git submodule update --init libs/headers
           git submodule update --init libs/integer
+          git submodule update --init libs/intrusive
           git submodule update --init libs/io
           git submodule update --init libs/iterator
           git submodule update --init libs/lambda
+          git submodule update --init libs/lexical_cast
+          git submodule update --init libs/logic
+          git submodule update --init libs/math
           git submodule update --init libs/move
           git submodule update --init libs/mp11
           git submodule update --init libs/mpl
+          git submodule update --init libs/multi_index
+          git submodule update --init libs/multiprecision
           git submodule update --init libs/numeric/conversion
           git submodule update --init libs/numeric/interval
           git submodule update --init libs/optional
@@ -85,26 +83,126 @@ jobs:
           git submodule update --init libs/spirit
           git submodule update --init libs/static_assert
           git submodule update --init libs/system
-          git submodule update --init libs/throw_exception
-          git submodule update --init libs/type_traits
-          git submodule update --init libs/tuple
-          git submodule update --init libs/test
           git submodule update --init libs/thread
+          git submodule update --init libs/throw_exception
+          git submodule update --init libs/tokenizer
           git submodule update --init libs/tti
+          git submodule update --init libs/tuple
           git submodule update --init libs/type_index
+          git submodule update --init libs/type_traits
           git submodule update --init libs/typeof
           git submodule update --init libs/unordered
           git submodule update --init libs/utility
-          git submodule update --init libs/uuid
           git submodule update --init libs/variant
-          git submodule update --init libs/winapi
           ./bootstrap.sh
           ./b2 headers
       - name: gcc-clang-native
         run: |
+          grep BOOST_VERSION ../boost-root/boost/version.hpp
           echo "compile ./wide_integer.exe"
           ${{ matrix.compiler }} -v
           ${{ matrix.compiler }} -finline-functions -m64 -O3 -Wall -Wextra -std=${{ matrix.standard }} -I. -I../boost-root -pthread -lpthread  test/test.cpp test/test_uintwide_t_boost_backend.cpp test/test_uintwide_t_edge_cases.cpp test/test_uintwide_t_examples.cpp test/test_uintwide_t_n_base.cpp test/test_uintwide_t_n_binary_ops_base.cpp test/test_uintwide_t_spot_values.cpp examples/example001a_div_mod.cpp examples/example001_mul_div.cpp examples/example002_shl_shr.cpp examples/example003a_cbrt.cpp examples/example003_sqrt.cpp examples/example004_rootk_pow.cpp examples/example005_powm.cpp examples/example006_gcd.cpp examples/example007_random_generator.cpp examples/example008_miller_rabin_prime.cpp examples/example008a_miller_rabin_prime.cpp examples/example009_timed_mul.cpp examples/example009a_timed_mul_4_by_4.cpp examples/example010_uint48_t.cpp examples/example011_uint24_t.cpp -o wide_integer.exe
+          echo "ls ./wide_integer.exe"
+          ls -la ./wide_integer.exe
+          ./wide_integer.exe
+  gcc-clang-native-limb_type_uint64_t:
+    runs-on: ubuntu-20.04
+    defaults:
+      run:
+        shell: bash
+    strategy:
+      fail-fast: false
+      matrix:
+        standard: [ gnu++11, gnu++14, gnu++17, gnu++2a ]
+        compiler: [ g++, clang++ ]
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: '0'
+      - name: clone-submods-bootstrap-headers-boost-develop
+        run: |
+          git clone -b develop --depth 1 https://github.com/boostorg/boost.git ../boost-root
+          cd ../boost-root
+          git submodule update --init tools
+          git submodule update --init libs/algorithm
+          git submodule update --init libs/align
+          git submodule update --init libs/any
+          git submodule update --init libs/array
+          git submodule update --init libs/assert
+          git submodule update --init libs/atomic
+          git submodule update --init libs/bind
+          git submodule update --init libs/chrono
+          git submodule update --init libs/circular_buffer
+          git submodule update --init libs/compute
+          git submodule update --init libs/concept_check
+          git submodule update --init libs/config
+          git submodule update --init libs/container
+          git submodule update --init libs/container_hash
+          git submodule update --init libs/conversion
+          git submodule update --init libs/core
+          git submodule update --init libs/date_time
+          git submodule update --init libs/detail
+          git submodule update --init libs/dynamic_bitset
+          git submodule update --init libs/endian
+          git submodule update --init libs/exception
+          git submodule update --init libs/foreach
+          git submodule update --init libs/format
+          git submodule update --init libs/function
+          git submodule update --init libs/function_types
+          git submodule update --init libs/fusion
+          git submodule update --init libs/hana
+          git submodule update --init libs/headers
+          git submodule update --init libs/integer
+          git submodule update --init libs/intrusive
+          git submodule update --init libs/io
+          git submodule update --init libs/iterator
+          git submodule update --init libs/lambda
+          git submodule update --init libs/lexical_cast
+          git submodule update --init libs/logic
+          git submodule update --init libs/math
+          git submodule update --init libs/move
+          git submodule update --init libs/mp11
+          git submodule update --init libs/mpl
+          git submodule update --init libs/multi_index
+          git submodule update --init libs/multiprecision
+          git submodule update --init libs/numeric/conversion
+          git submodule update --init libs/numeric/interval
+          git submodule update --init libs/optional
+          git submodule update --init libs/phoenix
+          git submodule update --init libs/pool
+          git submodule update --init libs/predef
+          git submodule update --init libs/preprocessor
+          git submodule update --init libs/property_tree
+          git submodule update --init libs/proto
+          git submodule update --init libs/random
+          git submodule update --init libs/range
+          git submodule update --init libs/ratio
+          git submodule update --init libs/rational
+          git submodule update --init libs/regex
+          git submodule update --init libs/serialization
+          git submodule update --init libs/smart_ptr
+          git submodule update --init libs/spirit
+          git submodule update --init libs/static_assert
+          git submodule update --init libs/system
+          git submodule update --init libs/thread
+          git submodule update --init libs/throw_exception
+          git submodule update --init libs/tokenizer
+          git submodule update --init libs/tti
+          git submodule update --init libs/tuple
+          git submodule update --init libs/type_index
+          git submodule update --init libs/type_traits
+          git submodule update --init libs/typeof
+          git submodule update --init libs/unordered
+          git submodule update --init libs/utility
+          git submodule update --init libs/variant
+          ./bootstrap.sh
+          ./b2 headers
+      - name: gcc-clang-native-limb_type_uint64_t
+        run: |
+          grep BOOST_VERSION ../boost-root/boost/version.hpp
+          echo "compile ./wide_integer.exe"
+          ${{ matrix.compiler }} -v
+          ${{ matrix.compiler }} -finline-functions -m64 -O3 -Wall -Wextra -std=${{ matrix.standard }} -DWIDE_INTEGER_HAS_LIMB_TYPE_UINT64 -I. -I../boost-root -pthread -lpthread  test/test.cpp test/test_uintwide_t_boost_backend.cpp test/test_uintwide_t_edge_cases.cpp test/test_uintwide_t_examples.cpp test/test_uintwide_t_n_base.cpp test/test_uintwide_t_n_binary_ops_base.cpp test/test_uintwide_t_spot_values.cpp examples/example001a_div_mod.cpp examples/example001_mul_div.cpp examples/example002_shl_shr.cpp examples/example003a_cbrt.cpp examples/example003_sqrt.cpp examples/example004_rootk_pow.cpp examples/example005_powm.cpp examples/example006_gcd.cpp examples/example007_random_generator.cpp examples/example008_miller_rabin_prime.cpp examples/example008a_miller_rabin_prime.cpp examples/example009_timed_mul.cpp examples/example009a_timed_mul_4_by_4.cpp examples/example010_uint48_t.cpp examples/example011_uint24_t.cpp -o wide_integer.exe
           echo "ls ./wide_integer.exe"
           ls -la ./wide_integer.exe
           ./wide_integer.exe
@@ -132,8 +230,8 @@ jobs:
           git submodule update --init libs/algorithm
           git submodule update --init libs/align
           git submodule update --init libs/any
-          git submodule update --init libs/assert
           git submodule update --init libs/array
+          git submodule update --init libs/assert
           git submodule update --init libs/atomic
           git submodule update --init libs/bind
           git submodule update --init libs/chrono
@@ -150,28 +248,26 @@ jobs:
           git submodule update --init libs/dynamic_bitset
           git submodule update --init libs/endian
           git submodule update --init libs/exception
-          git submodule update --init libs/filesystem
-          git submodule update --init libs/tokenizer
           git submodule update --init libs/foreach
           git submodule update --init libs/format
           git submodule update --init libs/function
           git submodule update --init libs/function_types
           git submodule update --init libs/fusion
-          git submodule update --init libs/intrusive
-          git submodule update --init libs/lexical_cast
-          git submodule update --init libs/logic
-          git submodule update --init libs/math
-          git submodule update --init libs/multi_index
-          git submodule update --init libs/multiprecision
           git submodule update --init libs/hana
           git submodule update --init libs/headers
           git submodule update --init libs/integer
+          git submodule update --init libs/intrusive
           git submodule update --init libs/io
           git submodule update --init libs/iterator
           git submodule update --init libs/lambda
+          git submodule update --init libs/lexical_cast
+          git submodule update --init libs/logic
+          git submodule update --init libs/math
           git submodule update --init libs/move
           git submodule update --init libs/mp11
           git submodule update --init libs/mpl
+          git submodule update --init libs/multi_index
+          git submodule update --init libs/multiprecision
           git submodule update --init libs/numeric/conversion
           git submodule update --init libs/numeric/interval
           git submodule update --init libs/optional
@@ -191,23 +287,22 @@ jobs:
           git submodule update --init libs/spirit
           git submodule update --init libs/static_assert
           git submodule update --init libs/system
-          git submodule update --init libs/throw_exception
-          git submodule update --init libs/type_traits
-          git submodule update --init libs/tuple
-          git submodule update --init libs/test
           git submodule update --init libs/thread
+          git submodule update --init libs/throw_exception
+          git submodule update --init libs/tokenizer
           git submodule update --init libs/tti
+          git submodule update --init libs/tuple
           git submodule update --init libs/type_index
+          git submodule update --init libs/type_traits
           git submodule update --init libs/typeof
           git submodule update --init libs/unordered
           git submodule update --init libs/utility
-          git submodule update --init libs/uuid
           git submodule update --init libs/variant
-          git submodule update --init libs/winapi
           ./bootstrap.sh
           ./b2 headers
       - name: gcc-clang-native-x86
         run: |
+          grep BOOST_VERSION ../boost-root/boost/version.hpp
           echo "compile ./wide_integer.exe"
           ${{ matrix.compiler }} -v
           ${{ matrix.compiler }} -finline-functions -m32 -O3 -Wall -Wextra -std=${{ matrix.standard }} -I. -I../boost-root -pthread -lpthread  test/test.cpp test/test_uintwide_t_boost_backend.cpp test/test_uintwide_t_edge_cases.cpp test/test_uintwide_t_examples.cpp test/test_uintwide_t_n_base.cpp test/test_uintwide_t_n_binary_ops_base.cpp test/test_uintwide_t_spot_values.cpp examples/example001a_div_mod.cpp examples/example001_mul_div.cpp examples/example002_shl_shr.cpp examples/example003a_cbrt.cpp examples/example003_sqrt.cpp examples/example004_rootk_pow.cpp examples/example005_powm.cpp examples/example006_gcd.cpp examples/example007_random_generator.cpp examples/example008_miller_rabin_prime.cpp examples/example008a_miller_rabin_prime.cpp examples/example009_timed_mul.cpp examples/example009a_timed_mul_4_by_4.cpp examples/example010_uint48_t.cpp examples/example011_uint24_t.cpp -o wide_integer.exe
@@ -238,8 +333,8 @@ jobs:
           git submodule update --init libs/algorithm
           git submodule update --init libs/align
           git submodule update --init libs/any
-          git submodule update --init libs/assert
           git submodule update --init libs/array
+          git submodule update --init libs/assert
           git submodule update --init libs/atomic
           git submodule update --init libs/bind
           git submodule update --init libs/chrono
@@ -256,28 +351,26 @@ jobs:
           git submodule update --init libs/dynamic_bitset
           git submodule update --init libs/endian
           git submodule update --init libs/exception
-          git submodule update --init libs/filesystem
-          git submodule update --init libs/tokenizer
           git submodule update --init libs/foreach
           git submodule update --init libs/format
           git submodule update --init libs/function
           git submodule update --init libs/function_types
           git submodule update --init libs/fusion
-          git submodule update --init libs/intrusive
-          git submodule update --init libs/lexical_cast
-          git submodule update --init libs/logic
-          git submodule update --init libs/math
-          git submodule update --init libs/multi_index
-          git submodule update --init libs/multiprecision
           git submodule update --init libs/hana
           git submodule update --init libs/headers
           git submodule update --init libs/integer
+          git submodule update --init libs/intrusive
           git submodule update --init libs/io
           git submodule update --init libs/iterator
           git submodule update --init libs/lambda
+          git submodule update --init libs/lexical_cast
+          git submodule update --init libs/logic
+          git submodule update --init libs/math
           git submodule update --init libs/move
           git submodule update --init libs/mp11
           git submodule update --init libs/mpl
+          git submodule update --init libs/multi_index
+          git submodule update --init libs/multiprecision
           git submodule update --init libs/numeric/conversion
           git submodule update --init libs/numeric/interval
           git submodule update --init libs/optional
@@ -297,23 +390,22 @@ jobs:
           git submodule update --init libs/spirit
           git submodule update --init libs/static_assert
           git submodule update --init libs/system
-          git submodule update --init libs/throw_exception
-          git submodule update --init libs/type_traits
-          git submodule update --init libs/tuple
-          git submodule update --init libs/test
           git submodule update --init libs/thread
+          git submodule update --init libs/throw_exception
+          git submodule update --init libs/tokenizer
           git submodule update --init libs/tti
+          git submodule update --init libs/tuple
           git submodule update --init libs/type_index
+          git submodule update --init libs/type_traits
           git submodule update --init libs/typeof
           git submodule update --init libs/unordered
           git submodule update --init libs/utility
-          git submodule update --init libs/uuid
           git submodule update --init libs/variant
-          git submodule update --init libs/winapi
           ./bootstrap.sh
           ./b2 headers
       - name: gcc-clang-10
         run: |
+          grep BOOST_VERSION ../boost-root/boost/version.hpp
           echo "compile ./wide_integer.exe"
           ${{ matrix.compiler }} -v
           ${{ matrix.compiler }} -finline-functions -m64 -O3 -Wall -Wextra -std=${{ matrix.standard }} -I. -I../boost-root -pthread -lpthread  test/test.cpp test/test_uintwide_t_boost_backend.cpp test/test_uintwide_t_edge_cases.cpp test/test_uintwide_t_examples.cpp test/test_uintwide_t_n_base.cpp test/test_uintwide_t_n_binary_ops_base.cpp test/test_uintwide_t_spot_values.cpp examples/example001a_div_mod.cpp examples/example001_mul_div.cpp examples/example002_shl_shr.cpp examples/example003a_cbrt.cpp examples/example003_sqrt.cpp examples/example004_rootk_pow.cpp examples/example005_powm.cpp examples/example006_gcd.cpp examples/example007_random_generator.cpp examples/example008_miller_rabin_prime.cpp examples/example008a_miller_rabin_prime.cpp examples/example009_timed_mul.cpp examples/example009a_timed_mul_4_by_4.cpp examples/example010_uint48_t.cpp examples/example011_uint24_t.cpp -o wide_integer.exe
@@ -342,8 +434,8 @@ jobs:
           git submodule update --init libs/algorithm
           git submodule update --init libs/align
           git submodule update --init libs/any
-          git submodule update --init libs/assert
           git submodule update --init libs/array
+          git submodule update --init libs/assert
           git submodule update --init libs/atomic
           git submodule update --init libs/bind
           git submodule update --init libs/chrono
@@ -360,28 +452,26 @@ jobs:
           git submodule update --init libs/dynamic_bitset
           git submodule update --init libs/endian
           git submodule update --init libs/exception
-          git submodule update --init libs/filesystem
-          git submodule update --init libs/tokenizer
           git submodule update --init libs/foreach
           git submodule update --init libs/format
           git submodule update --init libs/function
           git submodule update --init libs/function_types
           git submodule update --init libs/fusion
-          git submodule update --init libs/intrusive
-          git submodule update --init libs/lexical_cast
-          git submodule update --init libs/logic
-          git submodule update --init libs/math
-          git submodule update --init libs/multi_index
-          git submodule update --init libs/multiprecision
           git submodule update --init libs/hana
           git submodule update --init libs/headers
           git submodule update --init libs/integer
+          git submodule update --init libs/intrusive
           git submodule update --init libs/io
           git submodule update --init libs/iterator
           git submodule update --init libs/lambda
+          git submodule update --init libs/lexical_cast
+          git submodule update --init libs/logic
+          git submodule update --init libs/math
           git submodule update --init libs/move
           git submodule update --init libs/mp11
           git submodule update --init libs/mpl
+          git submodule update --init libs/multi_index
+          git submodule update --init libs/multiprecision
           git submodule update --init libs/numeric/conversion
           git submodule update --init libs/numeric/interval
           git submodule update --init libs/optional
@@ -401,26 +491,227 @@ jobs:
           git submodule update --init libs/spirit
           git submodule update --init libs/static_assert
           git submodule update --init libs/system
-          git submodule update --init libs/throw_exception
-          git submodule update --init libs/type_traits
-          git submodule update --init libs/tuple
-          git submodule update --init libs/test
           git submodule update --init libs/thread
+          git submodule update --init libs/throw_exception
+          git submodule update --init libs/tokenizer
           git submodule update --init libs/tti
+          git submodule update --init libs/tuple
           git submodule update --init libs/type_index
+          git submodule update --init libs/type_traits
           git submodule update --init libs/typeof
           git submodule update --init libs/unordered
           git submodule update --init libs/utility
-          git submodule update --init libs/uuid
           git submodule update --init libs/variant
-          git submodule update --init libs/winapi
           ./bootstrap.sh
           ./b2 headers
       - name: gcc-clang-native-asan
         run: |
+          grep BOOST_VERSION ../boost-root/boost/version.hpp
           echo "compile ./wide_integer.exe"
           ${{ matrix.compiler }} -v
-          ${{ matrix.compiler }} -finline-functions -fsanitize=address -fsanitize=leak -fsanitize=bounds -m64 -O3 -Wall -Wextra -std=${{ matrix.standard }} -I. -I../boost-root -pthread -lpthread  test/test.cpp test/test_uintwide_t_boost_backend.cpp test/test_uintwide_t_edge_cases.cpp test/test_uintwide_t_examples.cpp test/test_uintwide_t_n_base.cpp test/test_uintwide_t_n_binary_ops_base.cpp test/test_uintwide_t_spot_values.cpp examples/example001a_div_mod.cpp examples/example001_mul_div.cpp examples/example002_shl_shr.cpp examples/example003a_cbrt.cpp examples/example003_sqrt.cpp examples/example004_rootk_pow.cpp examples/example005_powm.cpp examples/example006_gcd.cpp examples/example007_random_generator.cpp examples/example008_miller_rabin_prime.cpp examples/example008a_miller_rabin_prime.cpp examples/example009_timed_mul.cpp examples/example009a_timed_mul_4_by_4.cpp examples/example010_uint48_t.cpp examples/example011_uint24_t.cpp -o wide_integer.exe
+          ${{ matrix.compiler }} -finline-functions -fsanitize=address -fsanitize=leak -m64 -O3 -Wall -Wextra -std=${{ matrix.standard }} -I. -I../boost-root -pthread -lpthread  test/test.cpp test/test_uintwide_t_boost_backend.cpp test/test_uintwide_t_edge_cases.cpp test/test_uintwide_t_examples.cpp test/test_uintwide_t_n_base.cpp test/test_uintwide_t_n_binary_ops_base.cpp test/test_uintwide_t_spot_values.cpp examples/example001a_div_mod.cpp examples/example001_mul_div.cpp examples/example002_shl_shr.cpp examples/example003a_cbrt.cpp examples/example003_sqrt.cpp examples/example004_rootk_pow.cpp examples/example005_powm.cpp examples/example006_gcd.cpp examples/example007_random_generator.cpp examples/example008_miller_rabin_prime.cpp examples/example008a_miller_rabin_prime.cpp examples/example009_timed_mul.cpp examples/example009a_timed_mul_4_by_4.cpp examples/example010_uint48_t.cpp examples/example011_uint24_t.cpp -o wide_integer.exe
+          echo "ls ./wide_integer.exe"
+          ls -la ./wide_integer.exe
+          ./wide_integer.exe
+  gcc-clang-native-ubsan:
+    runs-on: ubuntu-20.04
+    defaults:
+      run:
+        shell: bash
+    strategy:
+      fail-fast: false
+      matrix:
+        standard: [ c++11, c++14, c++17, c++2a ]
+        compiler: [ g++, clang++ ]
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: '0'
+      - name: clone-submods-bootstrap-headers-boost-develop
+        run: |
+          git clone -b develop --depth 1 https://github.com/boostorg/boost.git ../boost-root
+          cd ../boost-root
+          git submodule update --init tools
+          git submodule update --init libs/algorithm
+          git submodule update --init libs/align
+          git submodule update --init libs/any
+          git submodule update --init libs/array
+          git submodule update --init libs/assert
+          git submodule update --init libs/atomic
+          git submodule update --init libs/bind
+          git submodule update --init libs/chrono
+          git submodule update --init libs/circular_buffer
+          git submodule update --init libs/compute
+          git submodule update --init libs/concept_check
+          git submodule update --init libs/config
+          git submodule update --init libs/container
+          git submodule update --init libs/container_hash
+          git submodule update --init libs/conversion
+          git submodule update --init libs/core
+          git submodule update --init libs/date_time
+          git submodule update --init libs/detail
+          git submodule update --init libs/dynamic_bitset
+          git submodule update --init libs/endian
+          git submodule update --init libs/exception
+          git submodule update --init libs/foreach
+          git submodule update --init libs/format
+          git submodule update --init libs/function
+          git submodule update --init libs/function_types
+          git submodule update --init libs/fusion
+          git submodule update --init libs/hana
+          git submodule update --init libs/headers
+          git submodule update --init libs/integer
+          git submodule update --init libs/intrusive
+          git submodule update --init libs/io
+          git submodule update --init libs/iterator
+          git submodule update --init libs/lambda
+          git submodule update --init libs/lexical_cast
+          git submodule update --init libs/logic
+          git submodule update --init libs/math
+          git submodule update --init libs/move
+          git submodule update --init libs/mp11
+          git submodule update --init libs/mpl
+          git submodule update --init libs/multi_index
+          git submodule update --init libs/multiprecision
+          git submodule update --init libs/numeric/conversion
+          git submodule update --init libs/numeric/interval
+          git submodule update --init libs/optional
+          git submodule update --init libs/phoenix
+          git submodule update --init libs/pool
+          git submodule update --init libs/predef
+          git submodule update --init libs/preprocessor
+          git submodule update --init libs/property_tree
+          git submodule update --init libs/proto
+          git submodule update --init libs/random
+          git submodule update --init libs/range
+          git submodule update --init libs/ratio
+          git submodule update --init libs/rational
+          git submodule update --init libs/regex
+          git submodule update --init libs/serialization
+          git submodule update --init libs/smart_ptr
+          git submodule update --init libs/spirit
+          git submodule update --init libs/static_assert
+          git submodule update --init libs/system
+          git submodule update --init libs/thread
+          git submodule update --init libs/throw_exception
+          git submodule update --init libs/tokenizer
+          git submodule update --init libs/tti
+          git submodule update --init libs/tuple
+          git submodule update --init libs/type_index
+          git submodule update --init libs/type_traits
+          git submodule update --init libs/typeof
+          git submodule update --init libs/unordered
+          git submodule update --init libs/utility
+          git submodule update --init libs/variant
+          ./bootstrap.sh
+          ./b2 headers
+      - name: gcc-clang-native-ubsan
+        run: |
+          grep BOOST_VERSION ../boost-root/boost/version.hpp
+          echo "compile ./wide_integer.exe"
+          ${{ matrix.compiler }} -v
+          ${{ matrix.compiler }} -finline-functions -finline-functions -fsanitize=shift -fsanitize=shift-exponent -fsanitize=shift-base -fsanitize=integer-divide-by-zero -fsanitize=null -fsanitize=signed-integer-overflow -fsanitize=bounds -fsanitize=alignment -fsanitize=float-divide-by-zero -fsanitize=float-cast-overflow -fsanitize=enum -m64 -O3 -Wall -Wextra -std=${{ matrix.standard }} -I. -I../boost-root -pthread -lpthread  test/test.cpp test/test_uintwide_t_boost_backend.cpp test/test_uintwide_t_edge_cases.cpp test/test_uintwide_t_examples.cpp test/test_uintwide_t_n_base.cpp test/test_uintwide_t_n_binary_ops_base.cpp test/test_uintwide_t_spot_values.cpp examples/example001a_div_mod.cpp examples/example001_mul_div.cpp examples/example002_shl_shr.cpp examples/example003a_cbrt.cpp examples/example003_sqrt.cpp examples/example004_rootk_pow.cpp examples/example005_powm.cpp examples/example006_gcd.cpp examples/example007_random_generator.cpp examples/example008_miller_rabin_prime.cpp examples/example008a_miller_rabin_prime.cpp examples/example009_timed_mul.cpp examples/example009a_timed_mul_4_by_4.cpp examples/example010_uint48_t.cpp examples/example011_uint24_t.cpp -o wide_integer.exe
+          echo "ls ./wide_integer.exe"
+          ls -la ./wide_integer.exe
+          ./wide_integer.exe
+  gcc-clang-native-ubsan-limb_type_uint64_t:
+    runs-on: ubuntu-20.04
+    defaults:
+      run:
+        shell: bash
+    strategy:
+      fail-fast: false
+      matrix:
+        standard: [ gnu++11, gnu++14, gnu++17, gnu++2a ]
+        compiler: [ g++, clang++ ]
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: '0'
+      - name: clone-submods-bootstrap-headers-boost-develop
+        run: |
+          git clone -b develop --depth 1 https://github.com/boostorg/boost.git ../boost-root
+          cd ../boost-root
+          git submodule update --init tools
+          git submodule update --init libs/algorithm
+          git submodule update --init libs/align
+          git submodule update --init libs/any
+          git submodule update --init libs/array
+          git submodule update --init libs/assert
+          git submodule update --init libs/atomic
+          git submodule update --init libs/bind
+          git submodule update --init libs/chrono
+          git submodule update --init libs/circular_buffer
+          git submodule update --init libs/compute
+          git submodule update --init libs/concept_check
+          git submodule update --init libs/config
+          git submodule update --init libs/container
+          git submodule update --init libs/container_hash
+          git submodule update --init libs/conversion
+          git submodule update --init libs/core
+          git submodule update --init libs/date_time
+          git submodule update --init libs/detail
+          git submodule update --init libs/dynamic_bitset
+          git submodule update --init libs/endian
+          git submodule update --init libs/exception
+          git submodule update --init libs/foreach
+          git submodule update --init libs/format
+          git submodule update --init libs/function
+          git submodule update --init libs/function_types
+          git submodule update --init libs/fusion
+          git submodule update --init libs/hana
+          git submodule update --init libs/headers
+          git submodule update --init libs/integer
+          git submodule update --init libs/intrusive
+          git submodule update --init libs/io
+          git submodule update --init libs/iterator
+          git submodule update --init libs/lambda
+          git submodule update --init libs/lexical_cast
+          git submodule update --init libs/logic
+          git submodule update --init libs/math
+          git submodule update --init libs/move
+          git submodule update --init libs/mp11
+          git submodule update --init libs/mpl
+          git submodule update --init libs/multi_index
+          git submodule update --init libs/multiprecision
+          git submodule update --init libs/numeric/conversion
+          git submodule update --init libs/numeric/interval
+          git submodule update --init libs/optional
+          git submodule update --init libs/phoenix
+          git submodule update --init libs/pool
+          git submodule update --init libs/predef
+          git submodule update --init libs/preprocessor
+          git submodule update --init libs/property_tree
+          git submodule update --init libs/proto
+          git submodule update --init libs/random
+          git submodule update --init libs/range
+          git submodule update --init libs/ratio
+          git submodule update --init libs/rational
+          git submodule update --init libs/regex
+          git submodule update --init libs/serialization
+          git submodule update --init libs/smart_ptr
+          git submodule update --init libs/spirit
+          git submodule update --init libs/static_assert
+          git submodule update --init libs/system
+          git submodule update --init libs/thread
+          git submodule update --init libs/throw_exception
+          git submodule update --init libs/tokenizer
+          git submodule update --init libs/tti
+          git submodule update --init libs/tuple
+          git submodule update --init libs/type_index
+          git submodule update --init libs/type_traits
+          git submodule update --init libs/typeof
+          git submodule update --init libs/unordered
+          git submodule update --init libs/utility
+          git submodule update --init libs/variant
+          ./bootstrap.sh
+          ./b2 headers
+      - name: gcc-clang-native-ubsan-limb_type_uint64_t
+        run: |
+          grep BOOST_VERSION ../boost-root/boost/version.hpp
+          echo "compile ./wide_integer.exe"
+          ${{ matrix.compiler }} -v
+          ${{ matrix.compiler }} -finline-functions -finline-functions -fsanitize=shift -fsanitize=shift-exponent -fsanitize=shift-base -fsanitize=integer-divide-by-zero -fsanitize=null -fsanitize=signed-integer-overflow -fsanitize=bounds -fsanitize=alignment -fsanitize=float-divide-by-zero -fsanitize=float-cast-overflow -fsanitize=enum -m64 -O3 -Wall -Wextra -std=${{ matrix.standard }} -DWIDE_INTEGER_HAS_LIMB_TYPE_UINT64 -I. -I../boost-root -pthread -lpthread  test/test.cpp test/test_uintwide_t_boost_backend.cpp test/test_uintwide_t_edge_cases.cpp test/test_uintwide_t_examples.cpp test/test_uintwide_t_n_base.cpp test/test_uintwide_t_n_binary_ops_base.cpp test/test_uintwide_t_spot_values.cpp examples/example001a_div_mod.cpp examples/example001_mul_div.cpp examples/example002_shl_shr.cpp examples/example003a_cbrt.cpp examples/example003_sqrt.cpp examples/example004_rootk_pow.cpp examples/example005_powm.cpp examples/example006_gcd.cpp examples/example007_random_generator.cpp examples/example008_miller_rabin_prime.cpp examples/example008a_miller_rabin_prime.cpp examples/example009_timed_mul.cpp examples/example009a_timed_mul_4_by_4.cpp examples/example010_uint48_t.cpp examples/example011_uint24_t.cpp -o wide_integer.exe
           echo "ls ./wide_integer.exe"
           ls -la ./wide_integer.exe
           ./wide_integer.exe
@@ -446,8 +737,8 @@ jobs:
           git submodule update --init libs/algorithm
           git submodule update --init libs/align
           git submodule update --init libs/any
-          git submodule update --init libs/assert
           git submodule update --init libs/array
+          git submodule update --init libs/assert
           git submodule update --init libs/atomic
           git submodule update --init libs/bind
           git submodule update --init libs/chrono
@@ -464,28 +755,26 @@ jobs:
           git submodule update --init libs/dynamic_bitset
           git submodule update --init libs/endian
           git submodule update --init libs/exception
-          git submodule update --init libs/filesystem
-          git submodule update --init libs/tokenizer
           git submodule update --init libs/foreach
           git submodule update --init libs/format
           git submodule update --init libs/function
           git submodule update --init libs/function_types
           git submodule update --init libs/fusion
-          git submodule update --init libs/intrusive
-          git submodule update --init libs/lexical_cast
-          git submodule update --init libs/logic
-          git submodule update --init libs/math
-          git submodule update --init libs/multi_index
-          git submodule update --init libs/multiprecision
           git submodule update --init libs/hana
           git submodule update --init libs/headers
           git submodule update --init libs/integer
+          git submodule update --init libs/intrusive
           git submodule update --init libs/io
           git submodule update --init libs/iterator
           git submodule update --init libs/lambda
+          git submodule update --init libs/lexical_cast
+          git submodule update --init libs/logic
+          git submodule update --init libs/math
           git submodule update --init libs/move
           git submodule update --init libs/mp11
           git submodule update --init libs/mpl
+          git submodule update --init libs/multi_index
+          git submodule update --init libs/multiprecision
           git submodule update --init libs/numeric/conversion
           git submodule update --init libs/numeric/interval
           git submodule update --init libs/optional
@@ -505,23 +794,22 @@ jobs:
           git submodule update --init libs/spirit
           git submodule update --init libs/static_assert
           git submodule update --init libs/system
-          git submodule update --init libs/throw_exception
-          git submodule update --init libs/type_traits
-          git submodule update --init libs/tuple
-          git submodule update --init libs/test
           git submodule update --init libs/thread
+          git submodule update --init libs/throw_exception
+          git submodule update --init libs/tokenizer
           git submodule update --init libs/tti
+          git submodule update --init libs/tuple
           git submodule update --init libs/type_index
+          git submodule update --init libs/type_traits
           git submodule update --init libs/typeof
           git submodule update --init libs/unordered
           git submodule update --init libs/utility
-          git submodule update --init libs/uuid
           git submodule update --init libs/variant
-          git submodule update --init libs/winapi
           ./bootstrap.sh
           ./b2 headers
       - name: gcc-clang-native-tsan
         run: |
+          grep BOOST_VERSION ../boost-root/boost/version.hpp
           echo "compile ./wide_integer.exe"
           ${{ matrix.compiler }} -v
           ${{ matrix.compiler }} -finline-functions -fsanitize=thread -m64 -O3 -Wall -Wextra -std=${{ matrix.standard }} -I. -I../boost-root -pthread -lpthread  test/test.cpp test/test_uintwide_t_boost_backend.cpp test/test_uintwide_t_edge_cases.cpp test/test_uintwide_t_examples.cpp test/test_uintwide_t_n_base.cpp test/test_uintwide_t_n_binary_ops_base.cpp test/test_uintwide_t_spot_values.cpp examples/example001a_div_mod.cpp examples/example001_mul_div.cpp examples/example002_shl_shr.cpp examples/example003a_cbrt.cpp examples/example003_sqrt.cpp examples/example004_rootk_pow.cpp examples/example005_powm.cpp examples/example006_gcd.cpp examples/example007_random_generator.cpp examples/example008_miller_rabin_prime.cpp examples/example008a_miller_rabin_prime.cpp examples/example009_timed_mul.cpp examples/example009a_timed_mul_4_by_4.cpp examples/example010_uint48_t.cpp examples/example011_uint24_t.cpp -o wide_integer.exe
@@ -550,8 +838,8 @@ jobs:
           git submodule update --init libs/algorithm
           git submodule update --init libs/align
           git submodule update --init libs/any
-          git submodule update --init libs/assert
           git submodule update --init libs/array
+          git submodule update --init libs/assert
           git submodule update --init libs/atomic
           git submodule update --init libs/bind
           git submodule update --init libs/chrono
@@ -568,28 +856,26 @@ jobs:
           git submodule update --init libs/dynamic_bitset
           git submodule update --init libs/endian
           git submodule update --init libs/exception
-          git submodule update --init libs/filesystem
-          git submodule update --init libs/tokenizer
           git submodule update --init libs/foreach
           git submodule update --init libs/format
           git submodule update --init libs/function
           git submodule update --init libs/function_types
           git submodule update --init libs/fusion
-          git submodule update --init libs/intrusive
-          git submodule update --init libs/lexical_cast
-          git submodule update --init libs/logic
-          git submodule update --init libs/math
-          git submodule update --init libs/multi_index
-          git submodule update --init libs/multiprecision
           git submodule update --init libs/hana
           git submodule update --init libs/headers
           git submodule update --init libs/integer
+          git submodule update --init libs/intrusive
           git submodule update --init libs/io
           git submodule update --init libs/iterator
           git submodule update --init libs/lambda
+          git submodule update --init libs/lexical_cast
+          git submodule update --init libs/logic
+          git submodule update --init libs/math
           git submodule update --init libs/move
           git submodule update --init libs/mp11
           git submodule update --init libs/mpl
+          git submodule update --init libs/multi_index
+          git submodule update --init libs/multiprecision
           git submodule update --init libs/numeric/conversion
           git submodule update --init libs/numeric/interval
           git submodule update --init libs/optional
@@ -609,23 +895,22 @@ jobs:
           git submodule update --init libs/spirit
           git submodule update --init libs/static_assert
           git submodule update --init libs/system
-          git submodule update --init libs/throw_exception
-          git submodule update --init libs/type_traits
-          git submodule update --init libs/tuple
-          git submodule update --init libs/test
           git submodule update --init libs/thread
+          git submodule update --init libs/throw_exception
+          git submodule update --init libs/tokenizer
           git submodule update --init libs/tti
+          git submodule update --init libs/tuple
           git submodule update --init libs/type_index
+          git submodule update --init libs/type_traits
           git submodule update --init libs/typeof
           git submodule update --init libs/unordered
           git submodule update --init libs/utility
-          git submodule update --init libs/uuid
           git submodule update --init libs/variant
-          git submodule update --init libs/winapi
           ./bootstrap.sh
           ./b2 headers
       - name: apple-gcc-clang-native
         run: |
+          grep BOOST_VERSION ../boost-root/boost/version.hpp
           echo "compile ./wide_integer.exe"
           ${{ matrix.compiler }} -v
           ${{ matrix.compiler }} -finline-functions -m64 -O3 -Wall -Wextra -std=${{ matrix.standard }} -I. -I../boost-root -pthread -lpthread  test/test.cpp test/test_uintwide_t_boost_backend.cpp test/test_uintwide_t_edge_cases.cpp test/test_uintwide_t_examples.cpp test/test_uintwide_t_n_base.cpp test/test_uintwide_t_n_binary_ops_base.cpp test/test_uintwide_t_spot_values.cpp examples/example001a_div_mod.cpp examples/example001_mul_div.cpp examples/example002_shl_shr.cpp examples/example003a_cbrt.cpp examples/example003_sqrt.cpp examples/example004_rootk_pow.cpp examples/example005_powm.cpp examples/example006_gcd.cpp examples/example007_random_generator.cpp examples/example008_miller_rabin_prime.cpp examples/example008a_miller_rabin_prime.cpp examples/example009_timed_mul.cpp examples/example009a_timed_mul_4_by_4.cpp examples/example010_uint48_t.cpp examples/example011_uint24_t.cpp -o wide_integer.exe
@@ -635,13 +920,192 @@ jobs:
   msvc-release-x64:
     runs-on: windows-latest
     steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: '0'
+      - name: clone-submods-bootstrap-headers-boost-develop
+        run: |
+          git clone -b develop --depth 1 https://github.com/boostorg/boost.git ../boost-root
+          cd ../boost-root
+          git submodule update --init tools
+          git submodule update --init libs/algorithm
+          git submodule update --init libs/align
+          git submodule update --init libs/any
+          git submodule update --init libs/array
+          git submodule update --init libs/assert
+          git submodule update --init libs/atomic
+          git submodule update --init libs/bind
+          git submodule update --init libs/chrono
+          git submodule update --init libs/circular_buffer
+          git submodule update --init libs/compute
+          git submodule update --init libs/concept_check
+          git submodule update --init libs/config
+          git submodule update --init libs/container
+          git submodule update --init libs/container_hash
+          git submodule update --init libs/conversion
+          git submodule update --init libs/core
+          git submodule update --init libs/date_time
+          git submodule update --init libs/detail
+          git submodule update --init libs/dynamic_bitset
+          git submodule update --init libs/endian
+          git submodule update --init libs/exception
+          git submodule update --init libs/foreach
+          git submodule update --init libs/format
+          git submodule update --init libs/function
+          git submodule update --init libs/function_types
+          git submodule update --init libs/fusion
+          git submodule update --init libs/hana
+          git submodule update --init libs/headers
+          git submodule update --init libs/integer
+          git submodule update --init libs/intrusive
+          git submodule update --init libs/io
+          git submodule update --init libs/iterator
+          git submodule update --init libs/lambda
+          git submodule update --init libs/lexical_cast
+          git submodule update --init libs/logic
+          git submodule update --init libs/math
+          git submodule update --init libs/move
+          git submodule update --init libs/mp11
+          git submodule update --init libs/mpl
+          git submodule update --init libs/multi_index
+          git submodule update --init libs/multiprecision
+          git submodule update --init libs/numeric/conversion
+          git submodule update --init libs/numeric/interval
+          git submodule update --init libs/optional
+          git submodule update --init libs/phoenix
+          git submodule update --init libs/pool
+          git submodule update --init libs/predef
+          git submodule update --init libs/preprocessor
+          git submodule update --init libs/property_tree
+          git submodule update --init libs/proto
+          git submodule update --init libs/random
+          git submodule update --init libs/range
+          git submodule update --init libs/ratio
+          git submodule update --init libs/rational
+          git submodule update --init libs/regex
+          git submodule update --init libs/serialization
+          git submodule update --init libs/smart_ptr
+          git submodule update --init libs/spirit
+          git submodule update --init libs/static_assert
+          git submodule update --init libs/system
+          git submodule update --init libs/thread
+          git submodule update --init libs/throw_exception
+          git submodule update --init libs/tokenizer
+          git submodule update --init libs/tti
+          git submodule update --init libs/tuple
+          git submodule update --init libs/type_index
+          git submodule update --init libs/type_traits
+          git submodule update --init libs/typeof
+          git submodule update --init libs/unordered
+          git submodule update --init libs/utility
+          git submodule update --init libs/variant
+          ./bootstrap.bat
+          ./b2 headers
       - uses: actions/checkout@v1
       - uses: ilammy/msvc-dev-cmd@v1
       - name: msvc-release-x64
         shell: cmd
         working-directory: ./
         run: |
-          set INCLUDE=%cd%;%BOOST_ROOT_1_72_0%\include\boost-1_72;%INCLUDE%
+          set INCLUDE=%cd%;%cd%\..\boost-root;%INCLUDE%
           MSBuild -m wide_integer.sln -p:useenv=true -p:Configuration=Release -p:Platform=x64 /t:Rebuild
           dir %cd%\x64\Release\wide_integer.exe
           %cd%\x64\Release\wide_integer.exe
+  mingw-winhost-x64:
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        compiler: [ g++ ]
+        standard: [ c++11, c++14, c++17, c++2a ]
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: '0'
+      - name: clone-submods-bootstrap-headers-boost-develop
+        run: |
+          git clone -b develop --depth 1 https://github.com/boostorg/boost.git ../boost-root
+          cd ../boost-root
+          git submodule update --init tools
+          git submodule update --init libs/algorithm
+          git submodule update --init libs/align
+          git submodule update --init libs/any
+          git submodule update --init libs/array
+          git submodule update --init libs/assert
+          git submodule update --init libs/atomic
+          git submodule update --init libs/bind
+          git submodule update --init libs/chrono
+          git submodule update --init libs/circular_buffer
+          git submodule update --init libs/compute
+          git submodule update --init libs/concept_check
+          git submodule update --init libs/config
+          git submodule update --init libs/container
+          git submodule update --init libs/container_hash
+          git submodule update --init libs/conversion
+          git submodule update --init libs/core
+          git submodule update --init libs/date_time
+          git submodule update --init libs/detail
+          git submodule update --init libs/dynamic_bitset
+          git submodule update --init libs/endian
+          git submodule update --init libs/exception
+          git submodule update --init libs/foreach
+          git submodule update --init libs/format
+          git submodule update --init libs/function
+          git submodule update --init libs/function_types
+          git submodule update --init libs/fusion
+          git submodule update --init libs/hana
+          git submodule update --init libs/headers
+          git submodule update --init libs/integer
+          git submodule update --init libs/intrusive
+          git submodule update --init libs/io
+          git submodule update --init libs/iterator
+          git submodule update --init libs/lambda
+          git submodule update --init libs/lexical_cast
+          git submodule update --init libs/logic
+          git submodule update --init libs/math
+          git submodule update --init libs/move
+          git submodule update --init libs/mp11
+          git submodule update --init libs/mpl
+          git submodule update --init libs/multi_index
+          git submodule update --init libs/multiprecision
+          git submodule update --init libs/numeric/conversion
+          git submodule update --init libs/numeric/interval
+          git submodule update --init libs/optional
+          git submodule update --init libs/phoenix
+          git submodule update --init libs/pool
+          git submodule update --init libs/predef
+          git submodule update --init libs/preprocessor
+          git submodule update --init libs/property_tree
+          git submodule update --init libs/proto
+          git submodule update --init libs/random
+          git submodule update --init libs/range
+          git submodule update --init libs/ratio
+          git submodule update --init libs/rational
+          git submodule update --init libs/regex
+          git submodule update --init libs/serialization
+          git submodule update --init libs/smart_ptr
+          git submodule update --init libs/spirit
+          git submodule update --init libs/static_assert
+          git submodule update --init libs/system
+          git submodule update --init libs/thread
+          git submodule update --init libs/throw_exception
+          git submodule update --init libs/tokenizer
+          git submodule update --init libs/tti
+          git submodule update --init libs/tuple
+          git submodule update --init libs/type_index
+          git submodule update --init libs/type_traits
+          git submodule update --init libs/typeof
+          git submodule update --init libs/unordered
+          git submodule update --init libs/utility
+          git submodule update --init libs/variant
+          ./bootstrap.bat
+          ./b2 headers
+      - name: mingw-winhost-x64
+        shell: cmd
+        working-directory: ./
+        run: |
+          echo compile ./wide_integer.exe
+          ${{ matrix.compiler }} -v
+          ${{ matrix.compiler }} -finline-functions -m64 -O3 -Wall -Wextra -std=${{ matrix.standard }} -I. -I../boost-root -pthread -lpthread  test/test.cpp test/test_uintwide_t_boost_backend.cpp test/test_uintwide_t_edge_cases.cpp test/test_uintwide_t_examples.cpp test/test_uintwide_t_n_base.cpp test/test_uintwide_t_n_binary_ops_base.cpp test/test_uintwide_t_spot_values.cpp examples/example001a_div_mod.cpp examples/example001_mul_div.cpp examples/example002_shl_shr.cpp examples/example003a_cbrt.cpp examples/example003_sqrt.cpp examples/example004_rootk_pow.cpp examples/example005_powm.cpp examples/example006_gcd.cpp examples/example007_random_generator.cpp examples/example008_miller_rabin_prime.cpp examples/example008a_miller_rabin_prime.cpp examples/example009_timed_mul.cpp examples/example009a_timed_mul_4_by_4.cpp examples/example010_uint48_t.cpp examples/example011_uint24_t.cpp -o wide_integer.exe
+          dir %cd%\wide_integer.exe
+          %cd%\wide_integer.exe
