@@ -43,9 +43,9 @@ constexpr std::size_t test_uintwide_t_n_binary_ops_rounds = 1U;
 #endif
 
 #if !defined(UINTWIDE_T_REDUCE_TEST_DEPTH)
-constexpr std::uint32_t test_uintwide_t_n_binary_ops_4_by_4_cases = std::uint32_t(1UL << 17U);
+constexpr std::uint32_t test_uintwide_t_n_binary_ops_4_by_4_cases = std::uint32_t(1UL << 16U);
 #else
-constexpr std::uint32_t test_uintwide_t_n_binary_ops_4_by_4_cases = std::uint32_t(1UL << 15U);
+constexpr std::uint32_t test_uintwide_t_n_binary_ops_4_by_4_cases = std::uint32_t(1UL << 14U);
 #endif
 
 bool test_uintwide_t_small_bits()
@@ -121,7 +121,7 @@ bool test_uintwide_t_spot_values()
 bool test_uintwide_t_0000024()
 {
   std::cout << "running: test_uintwide_t_0000024" << std::endl;
-  test_uintwide_t_n_binary_ops_template<24U, std::uint8_t> test_uintwide_t_n_binary_ops_template_instance(1UL << 17U);
+  test_uintwide_t_n_binary_ops_template<24U, std::uint8_t> test_uintwide_t_n_binary_ops_template_instance(1UL << 16U);
   const bool result_is_ok =
     test_uintwide_t_n_binary_ops_template_instance.do_test(test_uintwide_t_n_binary_ops_rounds);
   return result_is_ok;
@@ -130,7 +130,7 @@ bool test_uintwide_t_0000024()
 bool test_uintwide_t_0000048()
 {
   std::cout << "running: test_uintwide_t_0000048" << std::endl;
-  test_uintwide_t_n_binary_ops_template<48U, std::uint16_t> test_uintwide_t_n_binary_ops_template_instance(1UL << 17U);
+  test_uintwide_t_n_binary_ops_template<48U, std::uint16_t> test_uintwide_t_n_binary_ops_template_instance(1UL << 16U);
   const bool result_is_ok =
     test_uintwide_t_n_binary_ops_template_instance.do_test(test_uintwide_t_n_binary_ops_rounds);
   return result_is_ok;
@@ -139,7 +139,7 @@ bool test_uintwide_t_0000048()
 bool test_uintwide_t_0000064()
 {
   std::cout << "running: test_uintwide_t_0000064" << std::endl;
-  test_uintwide_t_n_binary_ops_template<64U, std::uint32_t> test_uintwide_t_n_binary_ops_template_instance(1UL << 17U);
+  test_uintwide_t_n_binary_ops_template<64U, std::uint32_t> test_uintwide_t_n_binary_ops_template_instance(1UL << 16U);
   const bool result_is_ok =
     test_uintwide_t_n_binary_ops_template_instance.do_test(test_uintwide_t_n_binary_ops_rounds);
   return result_is_ok;
@@ -148,7 +148,7 @@ bool test_uintwide_t_0000064()
 bool test_uintwide_t_0000096()
 {
   std::cout << "running: test_uintwide_t_0000096" << std::endl;
-  test_uintwide_t_n_binary_ops_template<96U, std::uint16_t> test_uintwide_t_n_binary_ops_template_instance(1UL << 18U);
+  test_uintwide_t_n_binary_ops_template<96U, std::uint16_t> test_uintwide_t_n_binary_ops_template_instance(1UL << 16U);
   const bool result_is_ok =
     test_uintwide_t_n_binary_ops_template_instance.do_test(test_uintwide_t_n_binary_ops_rounds);
   return result_is_ok;
@@ -157,7 +157,7 @@ bool test_uintwide_t_0000096()
 bool test_uintwide_t_0000128()
 {
   std::cout << "running: test_uintwide_t_0000128" << std::endl;
-  test_uintwide_t_n_binary_ops_template<128U> test_uintwide_t_n_binary_ops_template_instance(1UL << 18U);
+  test_uintwide_t_n_binary_ops_template<128U> test_uintwide_t_n_binary_ops_template_instance(1UL << 16U);
   const bool result_is_ok =
     test_uintwide_t_n_binary_ops_template_instance.do_test(test_uintwide_t_n_binary_ops_rounds);
   return result_is_ok;
@@ -167,7 +167,7 @@ bool test_uintwide_t_0000128()
 bool test_uintwide_t_0000256_limb_type_uint64_t()
 {
   std::cout << "running: test_uintwide_t_0000256_limb_type_uint64_t" << std::endl;
-  test_uintwide_t_n_binary_ops_template<256U, std::uint64_t> test_uintwide_t_n_binary_ops_template_instance(1UL << 18U);
+  test_uintwide_t_n_binary_ops_template<256U, std::uint64_t> test_uintwide_t_n_binary_ops_template_instance(1UL << 16U);
   const bool result_is_ok =
     test_uintwide_t_n_binary_ops_template_instance.do_test(test_uintwide_t_n_binary_ops_rounds);
   return result_is_ok;
@@ -177,7 +177,7 @@ bool test_uintwide_t_0000256_limb_type_uint64_t()
 bool test_uintwide_t_0000512()
 {
   std::cout << "running: test_uintwide_t_0000512" << std::endl;
-  test_uintwide_t_n_binary_ops_template<512U> test_uintwide_t_n_binary_ops_template_instance(1UL << 18U);
+  test_uintwide_t_n_binary_ops_template<512U> test_uintwide_t_n_binary_ops_template_instance(1UL << 16U);
   const bool result_is_ok =
     test_uintwide_t_n_binary_ops_template_instance.do_test(test_uintwide_t_n_binary_ops_rounds);
   return result_is_ok;
@@ -186,7 +186,7 @@ bool test_uintwide_t_0000512()
 bool test_uintwide_t_0001024()
 {
   std::cout << "running: test_uintwide_t_0001024" << std::endl;
-  test_uintwide_t_n_binary_ops_template<1024U> test_uintwide_t_n_binary_ops_template_instance(1UL << 17U);
+  test_uintwide_t_n_binary_ops_template<1024U> test_uintwide_t_n_binary_ops_template_instance(1UL << 15U);
   const bool result_is_ok =
     test_uintwide_t_n_binary_ops_template_instance.do_test(test_uintwide_t_n_binary_ops_rounds);
   return result_is_ok;
@@ -195,7 +195,7 @@ bool test_uintwide_t_0001024()
 bool test_uintwide_t_0002048()
 {
   std::cout << "running: test_uintwide_t_0002048" << std::endl;
-  test_uintwide_t_n_binary_ops_template<2048U> test_uintwide_t_n_binary_ops_template_instance(1UL << 15U);
+  test_uintwide_t_n_binary_ops_template<2048U> test_uintwide_t_n_binary_ops_template_instance(1UL << 14U);
   const bool result_is_ok =
     test_uintwide_t_n_binary_ops_template_instance.do_test(test_uintwide_t_n_binary_ops_rounds);
   return result_is_ok;
@@ -204,7 +204,7 @@ bool test_uintwide_t_0002048()
 bool test_uintwide_t_0008192()
 {
   std::cout << "running: test_uintwide_t_0008192" << std::endl;
-  test_uintwide_t_n_binary_ops_template<8192U> test_uintwide_t_n_binary_ops_template_instance(1UL << 13U);
+  test_uintwide_t_n_binary_ops_template<8192U> test_uintwide_t_n_binary_ops_template_instance(1UL << 12U);
   const bool result_is_ok =
     test_uintwide_t_n_binary_ops_template_instance.do_test(test_uintwide_t_n_binary_ops_rounds);
   return result_is_ok;
@@ -214,7 +214,7 @@ bool test_uintwide_t_0008192()
 bool test_uintwide_t_0008192_limb_type_uint64_t()
 {
   std::cout << "running: test_uintwide_t_0008192_limb_type_uint64_t" << std::endl;
-  test_uintwide_t_n_binary_ops_template<8192U, std::uint64_t> test_uintwide_t_n_binary_ops_template_instance(1UL << 13U);
+  test_uintwide_t_n_binary_ops_template<8192U, std::uint64_t> test_uintwide_t_n_binary_ops_template_instance(1UL << 12U);
   const bool result_is_ok =
     test_uintwide_t_n_binary_ops_template_instance.do_test(test_uintwide_t_n_binary_ops_rounds);
   return result_is_ok;
@@ -233,7 +233,7 @@ bool test_uintwide_t_0012288()
 bool test_uintwide_t_0032768()
 {
   std::cout << "running: test_uintwide_t_0032768" << std::endl;
-  test_uintwide_t_n_binary_ops_template<32768U> test_uintwide_t_n_binary_ops_template_instance(1UL << 8U);
+  test_uintwide_t_n_binary_ops_template<32768U> test_uintwide_t_n_binary_ops_template_instance(1UL << 7U);
   const bool result_is_ok =
     test_uintwide_t_n_binary_ops_template_instance.do_test(test_uintwide_t_n_binary_ops_rounds);
   return result_is_ok;
@@ -251,7 +251,7 @@ bool test_uintwide_t_0065536_alloc()
 bool test_uintwide_t_0008192_by_0012288()
 {
   std::cout << "running: test_uintwide_t_0008192_by_0012288" << std::endl;
-  test_uintwide_t_n_binary_ops_mul_n_by_m_template<8192U, 12288U> test_uintwide_t_n_binary_ops_template_instance(1UL << 8U);
+  test_uintwide_t_n_binary_ops_mul_n_by_m_template<8192U, 12288U> test_uintwide_t_n_binary_ops_template_instance(1UL << 7U);
   const bool result_is_ok =
     test_uintwide_t_n_binary_ops_template_instance.do_test(test_uintwide_t_n_binary_ops_rounds);
   return result_is_ok;
@@ -260,7 +260,7 @@ bool test_uintwide_t_0008192_by_0012288()
 bool test_uintwide_t_0012288_by_0008192()
 {
   std::cout << "running: test_uintwide_t_0012288_by_0008192" << std::endl;
-  test_uintwide_t_n_binary_ops_mul_n_by_m_template<12288U, 8192U> test_uintwide_t_n_binary_ops_template_instance(1UL << 8U);
+  test_uintwide_t_n_binary_ops_mul_n_by_m_template<12288U, 8192U> test_uintwide_t_n_binary_ops_template_instance(1UL << 7U);
   const bool result_is_ok =
     test_uintwide_t_n_binary_ops_template_instance.do_test(test_uintwide_t_n_binary_ops_rounds);
   return result_is_ok;
