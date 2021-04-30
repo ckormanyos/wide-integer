@@ -1547,6 +1547,8 @@
       constexpr std::uint_fast32_t local_number_of_limbs = uintwide_t<OtherDigits2, LimbType, AllocatorType>::number_of_limbs;
 
       // TBD: Can use specialized allocator or memory pool for these arrays.
+      // Good examples for this (both threaded as well as non-threaded)
+      // can be found in the wide_decimal project.
       typename std::conditional<std::is_same<AllocatorType, void>::value,
                                 detail::fixed_static_array <limb_type, local_number_of_limbs * 2U>,
                                 detail::fixed_dynamic_array<limb_type, local_number_of_limbs * 2U, AllocatorType>>::type result;
@@ -1566,21 +1568,50 @@
                 u.values.begin());
     }
 
-    static limb_type eval_add_n(      limb_type*         r,
-                                const limb_type*         u,
-                                const limb_type*         v,
+    template<const std::uint_fast32_t RePhraseDigits2 = Digits2,
+             typename std::enable_if<((sizeof(typename uintwide_t<RePhraseDigits2, LimbType, AllocatorType>::limb_type) * 8U) * 4U == RePhraseDigits2)>::type const* = nullptr>
+    static limb_type eval_add_n(      LimbType*          r,
+                                const LimbType*          u,
+                                const LimbType*          v,
                                 const std::uint_fast32_t count,
-                                const limb_type          carry_in = 0U)
+                                const LimbType           carry_in = 0U)
     {
-      limb_type carry_out = carry_in;
+      (void) count;
+
+      using local_limb_type        = typename uintwide_t<RePhraseDigits2, LimbType, AllocatorType>::limb_type;
+      using local_double_limb_type = typename uintwide_t<RePhraseDigits2, LimbType, AllocatorType>::double_limb_type;
+
+      local_limb_type        carry_out = carry_in;
+      local_double_limb_type uv_as_ularge;
+
+      uv_as_ularge = local_double_limb_type(local_double_limb_type(u[0U]) + v[0U]) + carry_out; carry_out = detail::make_hi<local_limb_type>(uv_as_ularge); r[0U] = local_limb_type(uv_as_ularge);
+      uv_as_ularge = local_double_limb_type(local_double_limb_type(u[1U]) + v[1U]) + carry_out; carry_out = detail::make_hi<local_limb_type>(uv_as_ularge); r[1U] = local_limb_type(uv_as_ularge);
+      uv_as_ularge = local_double_limb_type(local_double_limb_type(u[2U]) + v[2U]) + carry_out; carry_out = detail::make_hi<local_limb_type>(uv_as_ularge); r[2U] = local_limb_type(uv_as_ularge);
+      uv_as_ularge = local_double_limb_type(local_double_limb_type(u[3U]) + v[3U]) + carry_out; carry_out = detail::make_hi<local_limb_type>(uv_as_ularge); r[3U] = local_limb_type(uv_as_ularge);
+
+      return carry_out;
+    }
+
+    template<const std::uint_fast32_t RePhraseDigits2 = Digits2,
+             typename std::enable_if<((sizeof(typename uintwide_t<RePhraseDigits2, LimbType, AllocatorType>::limb_type) * 8U) * 4U != RePhraseDigits2)>::type const* = nullptr>
+    static limb_type eval_add_n(      LimbType*          r,
+                                const LimbType*          u,
+                                const LimbType*          v,
+                                const std::uint_fast32_t count,
+                                const LimbType           carry_in = 0U)
+    {
+      using local_limb_type        = typename uintwide_t<RePhraseDigits2, LimbType, AllocatorType>::limb_type;
+      using local_double_limb_type = typename uintwide_t<RePhraseDigits2, LimbType, AllocatorType>::double_limb_type;
+
+      local_limb_type carry_out = carry_in;
 
       for(std::uint_fast32_t i = 0U; i < count; ++i)
       {
-        const double_limb_type uv_as_ularge = double_limb_type(double_limb_type(u[i]) + v[i]) + carry_out;
+        const local_double_limb_type uv_as_ularge = local_double_limb_type(local_double_limb_type(u[i]) + v[i]) + carry_out;
 
-        carry_out = detail::make_hi<limb_type>(uv_as_ularge);
+        carry_out = detail::make_hi<local_limb_type>(uv_as_ularge);
 
-        r[i] = limb_type(uv_as_ularge);
+        r[i] = local_limb_type(uv_as_ularge);
       }
 
       return carry_out;
@@ -1612,12 +1643,15 @@
     }
 
     template<const std::uint_fast32_t RePhraseDigits2 = Digits2,
-             typename std::enable_if<((sizeof(limb_type) * 8U) * 4U == RePhraseDigits2)>::type const* = nullptr>
-    static void eval_multiply_n_by_n_to_lo_part(      limb_type*         r,
-                                                const limb_type*         a,
-                                                const limb_type*         b,
+             typename std::enable_if<((sizeof(typename uintwide_t<RePhraseDigits2, LimbType, AllocatorType>::limb_type) * 8U) * 4U == RePhraseDigits2)>::type const* = nullptr>
+    static void eval_multiply_n_by_n_to_lo_part(      LimbType*          r,
+                                                const LimbType*          a,
+                                                const LimbType*          b,
                                                 const std::uint_fast32_t count)
     {
+      using local_limb_type        = typename uintwide_t<RePhraseDigits2, LimbType, AllocatorType>::limb_type;
+      using local_double_limb_type = typename uintwide_t<RePhraseDigits2, LimbType, AllocatorType>::double_limb_type;
+
       // The algorithm has been derived from the polynomial multiplication
       // given by: (D + Cx + Bx^2 + Ax^3) * (d + cx + bx^2 + ax^3).
       // After the multiplication terms of equal order are grouped
@@ -1632,13 +1666,13 @@
 
       static_cast<void>(count);
 
-      double_limb_type r1;
-      double_limb_type r2;
+      local_double_limb_type r1;
+      local_double_limb_type r2;
 
-      const double_limb_type dD = a[0U] * double_limb_type(b[0U]);
-      const double_limb_type Cd = a[0U] * double_limb_type(b[1U]);
-      const double_limb_type cD = a[1U] * double_limb_type(b[0U]);
-      const double_limb_type cC = a[1U] * double_limb_type(b[1U]);
+      const local_double_limb_type dD = a[0U] * local_double_limb_type(b[0U]);
+      const local_double_limb_type Cd = a[0U] * local_double_limb_type(b[1U]);
+      const local_double_limb_type cD = a[1U] * local_double_limb_type(b[0U]);
+      const local_double_limb_type cC = a[1U] * local_double_limb_type(b[1U]);
 
       // One special case is considered, the case of multiplication
       // of the form BITS/2 * BITS/2 = BITS. In this case, the algorithm
@@ -1649,55 +1683,58 @@
           && (a[3U] == 0U)
           && (b[3U] == 0U))
       {
-        r1    = double_limb_type(detail::make_lo<limb_type>(Cd)) + detail::make_lo<limb_type>(cD) + detail::make_hi<limb_type>(dD);
-        r2    = double_limb_type(detail::make_lo<limb_type>(cC)) + detail::make_hi<limb_type>(Cd) + detail::make_hi<limb_type>(cD) + detail::make_hi<limb_type>(r1);
-        r[3U] = detail::make_hi<limb_type>(cC) + detail::make_hi<limb_type>(r2);
+        r1    = local_double_limb_type(detail::make_lo<local_limb_type>(Cd)) + detail::make_lo<local_limb_type>(cD) + detail::make_hi<local_limb_type>(dD);
+        r2    = local_double_limb_type(detail::make_lo<local_limb_type>(cC)) + detail::make_hi<local_limb_type>(Cd) + detail::make_hi<local_limb_type>(cD) + detail::make_hi<local_limb_type>(r1);
+        r[3U] = detail::make_hi<local_limb_type>(cC) + detail::make_hi<local_limb_type>(r2);
       }
       else
       {
-        const double_limb_type Bd =           a[0U] * double_limb_type(b[2U]);
-        const        limb_type Ad = limb_type(a[0U] * b[3U]);
-        const        limb_type Bc = limb_type(a[1U] * b[2U]);
-        const double_limb_type bD =           a[2U] * double_limb_type(b[0U]);
-        const        limb_type bC = limb_type(a[2U] * b[1U]);
-        const        limb_type aD = limb_type(a[3U] * b[0U]);
+        const local_double_limb_type Bd =           a[0U] * local_double_limb_type(b[2U]);
+        const        local_limb_type Ad = local_limb_type(a[0U] * b[3U]);
+        const        local_limb_type Bc = local_limb_type(a[1U] * b[2U]);
+        const local_double_limb_type bD =           a[2U] * local_double_limb_type(b[0U]);
+        const        local_limb_type bC = local_limb_type(a[2U] * b[1U]);
+        const        local_limb_type aD = local_limb_type(a[3U] * b[0U]);
 
-        r1    = double_limb_type(detail::make_lo<limb_type>(Cd)) + detail::make_lo<limb_type>(cD) + detail::make_hi<limb_type>(dD);
-        r2    = double_limb_type(detail::make_lo<limb_type>(cC)) + detail::make_lo<limb_type>(Bd) + detail::make_lo<limb_type>(bD) + detail::make_hi<limb_type>(Cd) + detail::make_hi<limb_type>(cD) + detail::make_hi<limb_type>(r1);
-        r[3U] =   limb_type(limb_type(Bc + bC) + limb_type(aD + Ad))
-                + detail::make_hi<limb_type>(cC)
-                + detail::make_hi<limb_type>(Bd)
-                + detail::make_hi<limb_type>(bD)
-                + detail::make_hi<limb_type>(r2);
+        r1    = local_double_limb_type(detail::make_lo<local_limb_type>(Cd)) + detail::make_lo<local_limb_type>(cD) + detail::make_hi<local_limb_type>(dD);
+        r2    = local_double_limb_type(detail::make_lo<local_limb_type>(cC)) + detail::make_lo<local_limb_type>(Bd) + detail::make_lo<local_limb_type>(bD) + detail::make_hi<local_limb_type>(Cd) + detail::make_hi<local_limb_type>(cD) + detail::make_hi<local_limb_type>(r1);
+        r[3U] =   local_limb_type(local_limb_type(Bc + bC) + local_limb_type(aD + Ad))
+                + detail::make_hi<local_limb_type>(cC)
+                + detail::make_hi<local_limb_type>(Bd)
+                + detail::make_hi<local_limb_type>(bD)
+                + detail::make_hi<local_limb_type>(r2);
       }
 
-      r[0U] = limb_type(dD);
-      r[1U] = limb_type(r1);
-      r[2U] = limb_type(r2);
+      r[0U] = local_limb_type(dD);
+      r[1U] = local_limb_type(r1);
+      r[2U] = local_limb_type(r2);
     }
 
     template<const std::uint_fast32_t RePhraseDigits2 = Digits2,
-             typename std::enable_if<((sizeof(limb_type) * 8U) * 4U != RePhraseDigits2)>::type const* = nullptr>
-    static void eval_multiply_n_by_n_to_lo_part(      limb_type*         r,
-                                                const limb_type*         a,
-                                                const limb_type*         b,
+             typename std::enable_if<((sizeof(typename uintwide_t<RePhraseDigits2, LimbType, AllocatorType>::limb_type) * 8U) * 4U != RePhraseDigits2)>::type const* = nullptr>
+    static void eval_multiply_n_by_n_to_lo_part(      LimbType*          r,
+                                                const LimbType*          a,
+                                                const LimbType*          b,
                                                 const std::uint_fast32_t count)
     {
-      std::memset(r, 0, count * sizeof(limb_type));
+      using local_limb_type        = typename uintwide_t<RePhraseDigits2, LimbType, AllocatorType>::limb_type;
+      using local_double_limb_type = typename uintwide_t<RePhraseDigits2, LimbType, AllocatorType>::double_limb_type;
+
+      std::memset(r, 0, count * sizeof(local_limb_type));
 
       for(std::uint_fast32_t i = 0U; i < count; ++i)
       {
-        if(a[i] != limb_type(0U))
+        if(a[i] != local_limb_type(0U))
         {
-          double_limb_type carry = 0U;
+          local_double_limb_type carry = 0U;
 
           for(std::uint_fast32_t j = 0U; j < (count - i); ++j)
           {
-            carry += double_limb_type(double_limb_type(a[i]) * b[j]);
+            carry += local_double_limb_type(local_double_limb_type(a[i]) * b[j]);
             carry += r[i + j];
 
-            r[i + j] = limb_type(carry);
-            carry    = detail::make_hi<limb_type>(carry);
+            r[i + j] = local_limb_type(carry);
+            carry    = detail::make_hi<local_limb_type>(carry);
           }
         }
       }

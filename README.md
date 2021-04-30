@@ -39,7 +39,7 @@ with unsigned value `3U`.
 
 In particular,
 
-```C
+```
 #include <math/wide_integer/uintwide_t.h>
 
 using uint512_t = math::wide_integer::uintwide_t<512U, std::uint32_t>;
@@ -137,11 +137,35 @@ with the compiler switch:
 #define WIDE_INTEGER_HAS_LIMB_TYPE_UINT64
 ```
 
+or (when using GCC, clang or similar) on the compiler
+command line with:
+
+```
+-DWIDE_INTEGER_HAS_LIMB_TYPE_UINT64
+```
+
+The example below, for instance, uses a 64-bit limb type
+on GCC or clang.
+
+```
+#define WIDE_INTEGER_HAS_LIMB_TYPE_UINT64
+
+#include <math/wide_integer/uintwide_t.h>
+
+using uint_fast256_t = math::wide_integer::uintwide_t<256U, std::uint64_t>;
+
+static uint_fast256_t x = 42U;
+```
+
+
 ## Detailed Examples
 
-The example below performs some elementary algebraic calculations with a 256-bit unsigned integral type.
+We will now present various straightforward examples.
 
-```C
+The code below performs some elementary algebraic calculations
+with a 256-bit unsigned integral type.
+
+```
 #include <iomanip>
 #include <iostream>
 
@@ -200,9 +224,9 @@ int main()
 }
 ```
 
-The following code performs add, subtract, multiply and divide of `uint48_t`.
+The following sample performs add, subtract, multiply and divide of `uint48_t`.
 
-```C
+```
 #include <iomanip>
 #include <iostream>
 
@@ -239,7 +263,7 @@ int main()
 }
 ```
 
-The next sample computes the real-valued cube root of
+The next example computes the real-valued cube root of
 <img src="https://render.githubusercontent.com/render/math?math=10^{3,333}">.
 The real-valued cube root of this very large unsigned integer is
 <img src="https://render.githubusercontent.com/render/math?math=10^{1,111}">.
