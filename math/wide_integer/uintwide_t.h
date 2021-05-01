@@ -362,6 +362,16 @@
 
   namespace math { namespace wide_integer { namespace detail {
 
+  template<class InputIt, class OutputIt>
+  constexpr OutputIt copy(InputIt first, InputIt last, OutputIt d_first)
+  {
+    while(first != last)
+    {
+      *d_first++ = *first++;
+    }
+    return d_first;
+  }
+
   template<class ForwardIt, class T>
   constexpr void fill(ForwardIt first, ForwardIt last, const T& value)
   {
@@ -415,9 +425,9 @@
     explicit fixed_dynamic_array(std::initializer_list<typename base_class_type::value_type> lst)
       : base_class_type(MySize)
     {
-      std::copy(lst.begin(),
-                lst.begin() + (std::min)((std::uint_fast32_t) lst.size(), MySize),
-                base_class_type::begin());
+      detail::copy(lst.begin(),
+                   lst.begin() + (std::min)((std::uint_fast32_t) lst.size(), MySize),
+                   base_class_type::begin());
     }
 
     constexpr fixed_dynamic_array(fixed_dynamic_array&& other_array)
@@ -473,9 +483,9 @@
     template<const std::uint_fast32_t OtherSize>
     constexpr fixed_static_array(const fixed_static_array<std::uint_fast32_t, OtherSize>& other_array)
     {
-      std::copy(other_array.cbegin(),
-                other_array.cbegin() + (std::min)(OtherSize, MySize),
-                base_class_type::begin());
+      copy(other_array.cbegin(),
+           other_array.cbegin() + (std::min)(OtherSize, MySize),
+           base_class_type::begin());
 
       fill(base_class_type::begin() + (std::min)(OtherSize, MySize),
            base_class_type::end(),
@@ -484,9 +494,9 @@
 
     explicit constexpr fixed_static_array(std::initializer_list<typename base_class_type::value_type> lst)
     {
-      std::copy(lst.begin(),
-                lst.begin() + (std::min)((std::uint_fast32_t) lst.size(), MySize),
-                base_class_type::begin());
+      copy(lst.begin(),
+           lst.begin() + (std::min)((std::uint_fast32_t) lst.size(), MySize),
+           base_class_type::begin());
 
       fill(base_class_type::begin() + (std::min)((std::uint_fast32_t) lst.size(), MySize),
            base_class_type::end(),
@@ -823,9 +833,9 @@
                         typename std::enable_if<(   (std::is_same<UnknownUnsignedWideIntegralType, double_width_type>::value == true)
                                                  && (128U <= my_digits))>::type* = nullptr)
     {
-      std::copy(v.crepresentation().cbegin(),
-                v.crepresentation().cbegin() + (v.crepresentation().size() / 2U),
-                values.begin());
+      detail::copy(v.crepresentation().cbegin(),
+                   v.crepresentation().cbegin() + (v.crepresentation().size() / 2U),
+                   values.begin());
     }
 
     // Constructor from the another type having a different width but the same limb type.
@@ -837,9 +847,9 @@
         (std::min)(std::uint_fast32_t(v.crepresentation().size()),
                    std::uint_fast32_t(number_of_limbs));
 
-      std::copy(v.crepresentation().cbegin(),
-                v.crepresentation().cbegin() + sz,
-                values.begin());
+      detail::copy(v.crepresentation().cbegin(),
+                   v.crepresentation().cbegin() + sz,
+                   values.begin());
 
       detail::fill(values.begin() + sz, values.end(), limb_type(0U));
     }
@@ -931,9 +941,9 @@
     {
       double_width_type local_double_width_instance;
 
-      std::copy(values.cbegin(),
-                values.cend(),
-                local_double_width_instance.representation().begin());
+      copy(values.cbegin(),
+           values.cend(),
+           local_double_width_instance.representation().begin());
 
       fill(local_double_width_instance.representation().begin() + number_of_limbs,
            local_double_width_instance.representation().end(),
@@ -1555,9 +1565,9 @@
                                       v.values.data(),
                                       local_number_of_limbs);
 
-      std::copy(result.cbegin(),
-                result.cbegin() + local_number_of_limbs,
-                u.values.begin());
+      detail::copy(result.cbegin(),
+                   result.cbegin() + local_number_of_limbs,
+                   u.values.begin());
     }
 
     template<const std::uint_fast32_t OtherDigits2>
@@ -1586,9 +1596,9 @@
                                       local_number_of_limbs,
                                       t.data());
 
-      std::copy(result.cbegin(),
-                result.cbegin() + local_number_of_limbs,
-                u.values.begin());
+      detail::copy(result.cbegin(),
+                   result.cbegin() + local_number_of_limbs,
+                   u.values.begin());
     }
 
     static constexpr limb_type eval_add_n(      limb_type*          r,
@@ -1945,7 +1955,7 @@
         //   r -> t0
         eval_multiply_kara_n_by_n_to_2n(r2, a1, b1, nh, t0);
         eval_multiply_kara_n_by_n_to_2n(r0, a0, b0, nh, t0);
-        std::copy(r0, r0 + (2U * n), t0);
+        detail::copy(r0, r0 + (2U * n), t0);
 
         // Step 2
         //   r1 += a1*b1
@@ -2160,7 +2170,7 @@
           }
           else
           {
-            std::copy(values.cbegin(), values.cend(), uu.begin());
+            detail::copy(values.cbegin(), values.cend(), uu.begin());
 
             uu[number_of_limbs - u_offset] = limb_type(0U);
 
@@ -2241,9 +2251,9 @@
           {
             if(d == 1U)
             {
-              std::copy(uu.cbegin(),
-                        uu.cbegin() + (number_of_limbs - v_offset),
-                        remainder->values.begin());
+              detail::copy(uu.cbegin(),
+                           uu.cbegin() + (number_of_limbs - v_offset),
+                           remainder->values.begin());
             }
             else
             {
@@ -2300,9 +2310,9 @@
     {
       if(offset > 0U)
       {
-        std::copy(values.begin() + offset,
-                  values.begin() + number_of_limbs,
-                  values.begin());
+        detail::copy(values.begin() + offset,
+                     values.begin() + number_of_limbs,
+                     values.begin());
 
         detail::fill(values.end() - offset, values.end(), limb_type(0U));
       }
