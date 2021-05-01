@@ -371,6 +371,25 @@
     }
   }
 
+  template<class InputIt, class UnaryPredicate>
+  constexpr InputIt find_if_not(InputIt first, InputIt last, UnaryPredicate q)
+  {
+    for(; first != last; ++first)
+    {
+      if(!q(*first))
+      {
+        return first;
+      }
+    }
+    return last;
+  }
+
+  template< class InputIt, class UnaryPredicate >
+  constexpr bool all_of(InputIt first, InputIt last, UnaryPredicate p)
+  {
+    return find_if_not(first, last, p) == last;
+  }
+
   template<typename MyType,
            const std::uint_fast32_t MySize,
            typename MyAlloc>
@@ -2447,12 +2466,12 @@
 
     constexpr bool is_zero() const
     {
-      return std::all_of(values.cbegin(),
-                         values.cend(),
-                         [](const limb_type& u) -> bool
-                         {
-                           return (u == limb_type(0U));
-                         });
+      return detail::all_of(values.cbegin(),
+                            values.cend(),
+                            [](const limb_type& u) -> bool
+                            {
+                              return (u == limb_type(0U));
+                            });
     }
   };
 
@@ -3001,12 +3020,12 @@
     using local_wide_integer_type = uintwide_t<Digits2, LimbType, AllocatorType>;
     using local_limb_type         = typename local_wide_integer_type::limb_type;
 
-    const bool argument_is_zero = std::all_of(m.crepresentation().cbegin(),
-                                              m.crepresentation().cend(),
-                                              [](const local_limb_type& a) -> bool
-                                              {
-                                                return (a == 0U);
-                                              });
+    const bool argument_is_zero = detail::all_of(m.crepresentation().cbegin(),
+                                                 m.crepresentation().cend(),
+                                                 [](const local_limb_type& a) -> bool
+                                                 {
+                                                   return (a == 0U);
+                                                 });
 
     local_wide_integer_type s;
 
@@ -3061,12 +3080,12 @@
 
     local_wide_integer_type s;
 
-    const bool argument_is_zero = std::all_of(m.crepresentation().cbegin(),
-                                              m.crepresentation().cend(),
-                                              [](const local_limb_type& a) -> bool
-                                              {
-                                                return (a == 0U);
-                                              });
+    const bool argument_is_zero = detail::all_of(m.crepresentation().cbegin(),
+                                                 m.crepresentation().cend(),
+                                                 [](const local_limb_type& a) -> bool
+                                                 {
+                                                   return (a == 0U);
+                                                 });
 
     if(argument_is_zero)
     {
@@ -3144,12 +3163,12 @@
     }
     else
     {
-      const bool argument_is_zero = std::all_of(m.crepresentation().cbegin(),
-                                                m.crepresentation().cend(),
-                                                [](const local_limb_type& a) -> bool
-                                                {
-                                                  return (a == 0U);
-                                                });
+      const bool argument_is_zero = detail::all_of(m.crepresentation().cbegin(),
+                                                   m.crepresentation().cend(),
+                                                   [](const local_limb_type& a) -> bool
+                                                   {
+                                                     return (a == 0U);
+                                                   });
 
       if(argument_is_zero)
       {
