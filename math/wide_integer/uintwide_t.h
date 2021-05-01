@@ -311,11 +311,11 @@
   uintwide_t<Digits2, LimbType, AllocatorType> gcd(const uintwide_t<Digits2, LimbType, AllocatorType>& a,
                                                    const uintwide_t<Digits2, LimbType, AllocatorType>& b);
 
-  template<typename ST>
-  typename std::enable_if<(   (std::is_fundamental<ST>::value == true)
-                           && (std::is_integral   <ST>::value == true)
-                           && (std::is_unsigned   <ST>::value == true)), ST>::type
-  gcd(const ST& u, const ST& v);
+  template<typename UshortType>
+  typename std::enable_if<(   (std::is_fundamental<UshortType>::value == true)
+                           && (std::is_integral   <UshortType>::value == true)
+                           && (std::is_unsigned   <UshortType>::value == true)), UshortType>::type
+  gcd(const UshortType& u, const UshortType& v);
 
   template<const std::uint_fast32_t Digits2,
            typename LimbType,
@@ -569,85 +569,85 @@
     return std::uint_fast32_t(p_str_copy - p_str);
   }
 
-  template<typename ST,
-           typename LT = typename detail::uint_type_helper<std::uint_fast32_t(std::numeric_limits<ST>::digits * 2)>::exact_unsigned_type>
-  ST make_lo(const LT& u)
+  template<typename UshortType,
+           typename UlargeType = typename detail::uint_type_helper<std::uint_fast32_t(std::numeric_limits<UshortType>::digits * 2)>::exact_unsigned_type>
+  UshortType make_lo(const UlargeType& u)
   {
-    // From an unsigned integral input parameter of type LT,
+    // From an unsigned integral input parameter of type UlargeType,
     // extract the low part of it. The type of the extracted
-    // low part is ST, which has half the width of LT.
+    // low part is UshortType, which has half the width of UlargeType.
 
-    using local_ushort_type = ST;
-    using local_ularge_type = LT;
+    using local_ushort_type = UshortType;
+    using local_ularge_type = UlargeType;
 
     // Compile-time checks.
     #if defined(WIDE_INTEGER_HAS_LIMB_TYPE_UINT64)
     static_assert(((sizeof(local_ushort_type) * 2U) == sizeof(local_ularge_type)),
-                   "Error: Please check the characteristics of the template parameters ST and LT");
+                   "Error: Please check the characteristics of the template parameters UshortType and UlargeType");
     #else
     static_assert((    (std::numeric_limits<local_ushort_type>::is_integer == true)
                    &&  (std::numeric_limits<local_ularge_type>::is_integer == true)
                    &&  (std::numeric_limits<local_ushort_type>::is_signed  == false)
                    &&  (std::numeric_limits<local_ularge_type>::is_signed  == false)
                    &&  ((sizeof(local_ushort_type) * 2U)                   == sizeof(local_ularge_type))),
-                   "Error: Please check the characteristics of the template parameters ST and LT");
+                   "Error: Please check the characteristics of the template parameters UshortType and UlargeType");
     #endif
 
     return static_cast<local_ushort_type>(u);
   }
 
-  template<typename ST,
-           typename LT = typename detail::uint_type_helper<std::uint_fast32_t(std::numeric_limits<ST>::digits * 2)>::exact_unsigned_type>
-  ST make_hi(const LT& u)
+  template<typename UshortType,
+           typename UlargeType = typename detail::uint_type_helper<std::uint_fast32_t(std::numeric_limits<UshortType>::digits * 2)>::exact_unsigned_type>
+  UshortType make_hi(const UlargeType& u)
   {
-    // From an unsigned integral input parameter of type LT,
+    // From an unsigned integral input parameter of type UlargeType,
     // extract the high part of it. The type of the extracted
-    // high part is ST, which has half the width of LT.
+    // high part is UshortType, which has half the width of UlargeType.
 
-    using local_ushort_type = ST;
-    using local_ularge_type = LT;
+    using local_ushort_type = UshortType;
+    using local_ularge_type = UlargeType;
 
     // Compile-time checks.
     #if defined(WIDE_INTEGER_HAS_LIMB_TYPE_UINT64)
     static_assert(((sizeof(local_ushort_type) * 2U) == sizeof(local_ularge_type)),
-                   "Error: Please check the characteristics of the template parameters ST and LT");
+                   "Error: Please check the characteristics of the template parameters UshortType and UlargeType");
     #else
     static_assert((    (std::numeric_limits<local_ushort_type>::is_integer == true)
                    &&  (std::numeric_limits<local_ularge_type>::is_integer == true)
                    &&  (std::numeric_limits<local_ushort_type>::is_signed  == false)
                    &&  (std::numeric_limits<local_ularge_type>::is_signed  == false)
                    &&  ((sizeof(local_ushort_type) * 2U)                   == sizeof(local_ularge_type))),
-                   "Error: Please check the characteristics of the template parameters ST and LT");
+                   "Error: Please check the characteristics of the template parameters UshortType and UlargeType");
     #endif
 
     return static_cast<local_ushort_type>(u >> std::numeric_limits<local_ushort_type>::digits);
   }
 
-  template<typename ST,
-           typename LT = typename detail::uint_type_helper<std::uint_fast32_t(std::numeric_limits<ST>::digits * 2)>::exact_unsigned_type>
-  LT make_large(const ST& lo, const ST& hi)
+  template<typename UshortType,
+           typename UlargeType = typename detail::uint_type_helper<std::uint_fast32_t(std::numeric_limits<UshortType>::digits * 2)>::exact_unsigned_type>
+  UlargeType make_large(const UshortType& lo, const UshortType& hi)
   {
-    // Create a composite unsigned integral value having type LT.
-    // Two constituents are used having type ST, whereby the
-    // width of ST is half the width of LT.
+    // Create a composite unsigned integral value having type UlargeType.
+    // Two constituents are used having type UshortType, whereby the
+    // width of UshortType is half the width of UlargeType.
 
-    using local_ushort_type = ST;
-    using local_ularge_type = LT;
+    using local_ushort_type = UshortType;
+    using local_ularge_type = UlargeType;
 
     // Compile-time checks.
     #if defined(WIDE_INTEGER_HAS_LIMB_TYPE_UINT64)
     static_assert(((sizeof(local_ushort_type) * 2U) == sizeof(local_ularge_type)),
-                   "Error: Please check the characteristics of the template parameters ST and LT");
+                   "Error: Please check the characteristics of the template parameters UshortType and UlargeType");
     #else
     static_assert((    (std::numeric_limits<local_ushort_type>::is_integer == true)
                    &&  (std::numeric_limits<local_ularge_type>::is_integer == true)
                    &&  (std::numeric_limits<local_ushort_type>::is_signed  == false)
                    &&  (std::numeric_limits<local_ularge_type>::is_signed  == false)
                    &&  ((sizeof(local_ushort_type) * 2U)                   == sizeof(local_ularge_type))),
-                   "Error: Please check the characteristics of the template parameters ST and LT");
+                   "Error: Please check the characteristics of the template parameters UshortType and UlargeType");
     #endif
 
-    return local_ularge_type(local_ularge_type(static_cast<local_ularge_type>(hi) << std::numeric_limits<ST>::digits) | lo);
+    return local_ularge_type(local_ularge_type(static_cast<local_ularge_type>(hi) << std::numeric_limits<UshortType>::digits) | lo);
   }
 
   } } } // namespace math::wide_integer::detail
@@ -674,14 +674,14 @@
     // More compile-time checks.
     #if defined(WIDE_INTEGER_HAS_LIMB_TYPE_UINT64)
     static_assert(((sizeof(limb_type) * 2U) == sizeof(double_limb_type)),
-                   "Error: Please check the characteristics of the template parameters ST and LT");
+                   "Error: Please check the characteristics of the template parameters UshortType and UlargeType");
     #else
     static_assert((    (std::numeric_limits<limb_type>::is_integer        == true)
                    &&  (std::numeric_limits<double_limb_type>::is_integer == true)
                    &&  (std::numeric_limits<limb_type>::is_signed         == false)
                    &&  (std::numeric_limits<double_limb_type>::is_signed  == false)
                    &&  ((sizeof(limb_type) * 2U)                          == sizeof(double_limb_type))),
-                   "Error: Please check the characteristics of the template parameters ST and LT");
+                   "Error: Please check the characteristics of the template parameters UshortType and UlargeType");
     #endif
 
     // Helper constants for the digit characteristics.
@@ -959,10 +959,10 @@
       {
         // Unary subtraction function.
         const limb_type has_borrow = eval_subtract_n(values.data(),
-                                                       values.data(),
-                                                       other.values.data(),
-                                                       number_of_limbs,
-                                                       false);
+                                                     values.data(),
+                                                     other.values.data(),
+                                                     number_of_limbs,
+                                                     false);
 
         static_cast<void>(has_borrow);
       }
@@ -1568,53 +1568,24 @@
                 u.values.begin());
     }
 
-    template<const std::uint_fast32_t RePhraseDigits2 = Digits2,
-             typename std::enable_if<((sizeof(typename uintwide_t<RePhraseDigits2, LimbType, AllocatorType>::limb_type) * 8U) * 4U == RePhraseDigits2)>::type const* = nullptr>
-    static limb_type eval_add_n(      LimbType*          r,
-                                const LimbType*          u,
-                                const LimbType*          v,
-                                const std::uint_fast32_t count,
-                                const LimbType           carry_in = 0U)
+    static limb_type eval_add_n(      limb_type*          r,
+                                const limb_type*          u,
+                                const limb_type*          v,
+                                const std::uint_fast32_t  count,
+                                const limb_type           carry_in = 0U)
     {
-      (void) count;
-
-      using local_limb_type        = typename uintwide_t<RePhraseDigits2, LimbType, AllocatorType>::limb_type;
-      using local_double_limb_type = typename uintwide_t<RePhraseDigits2, LimbType, AllocatorType>::double_limb_type;
-
-      local_limb_type        carry_out = carry_in;
-      local_double_limb_type uv_as_ularge;
-
-      uv_as_ularge = local_double_limb_type(local_double_limb_type(u[0U]) + v[0U]) + carry_out; carry_out = detail::make_hi<local_limb_type>(uv_as_ularge); r[0U] = local_limb_type(uv_as_ularge);
-      uv_as_ularge = local_double_limb_type(local_double_limb_type(u[1U]) + v[1U]) + carry_out; carry_out = detail::make_hi<local_limb_type>(uv_as_ularge); r[1U] = local_limb_type(uv_as_ularge);
-      uv_as_ularge = local_double_limb_type(local_double_limb_type(u[2U]) + v[2U]) + carry_out; carry_out = detail::make_hi<local_limb_type>(uv_as_ularge); r[2U] = local_limb_type(uv_as_ularge);
-      uv_as_ularge = local_double_limb_type(local_double_limb_type(u[3U]) + v[3U]) + carry_out; carry_out = detail::make_hi<local_limb_type>(uv_as_ularge); r[3U] = local_limb_type(uv_as_ularge);
-
-      return carry_out;
-    }
-
-    template<const std::uint_fast32_t RePhraseDigits2 = Digits2,
-             typename std::enable_if<((sizeof(typename uintwide_t<RePhraseDigits2, LimbType, AllocatorType>::limb_type) * 8U) * 4U != RePhraseDigits2)>::type const* = nullptr>
-    static limb_type eval_add_n(      LimbType*          r,
-                                const LimbType*          u,
-                                const LimbType*          v,
-                                const std::uint_fast32_t count,
-                                const LimbType           carry_in = 0U)
-    {
-      using local_limb_type        = typename uintwide_t<RePhraseDigits2, LimbType, AllocatorType>::limb_type;
-      using local_double_limb_type = typename uintwide_t<RePhraseDigits2, LimbType, AllocatorType>::double_limb_type;
-
-      local_limb_type carry_out = carry_in;
+      std::uint_fast8_t carry_out = static_cast<std::uint_fast8_t>(carry_in);
 
       for(std::uint_fast32_t i = 0U; i < count; ++i)
       {
-        const local_double_limb_type uv_as_ularge = local_double_limb_type(local_double_limb_type(u[i]) + v[i]) + carry_out;
+        const double_limb_type uv_as_ularge = double_limb_type(double_limb_type(u[i]) + v[i]) + carry_out;
 
-        carry_out = detail::make_hi<local_limb_type>(uv_as_ularge);
+        carry_out = static_cast<std::uint_fast8_t>(detail::make_hi<limb_type>(uv_as_ularge));
 
-        r[i] = local_limb_type(uv_as_ularge);
+        r[i] = static_cast<limb_type>(uv_as_ularge);
       }
 
-      return carry_out;
+      return static_cast<limb_type>(carry_out);
     }
 
     static bool eval_subtract_n(      limb_type*         r,
@@ -1623,23 +1594,18 @@
                                 const std::uint_fast32_t count,
                                 const bool               has_borrow_in = false)
     {
-      bool has_borrow_out = has_borrow_in;
+      std::uint_fast8_t has_borrow_out = (has_borrow_in ? 1U : 0U);
 
       for(std::uint_fast32_t i = 0U; i < count; ++i)
       {
-        double_limb_type uv_as_ularge = double_limb_type(u[i]) - v[i];
+        const double_limb_type uv_as_ularge = double_limb_type(double_limb_type(u[i]) - v[i]) - has_borrow_out;
 
-        if(has_borrow_out)
-        {
-          --uv_as_ularge;
-        }
-
-        has_borrow_out = (detail::make_hi<limb_type>(uv_as_ularge) != limb_type(0U));
+        has_borrow_out = (detail::make_hi<limb_type>(uv_as_ularge) != limb_type(0U)) ? 1U : 0U;
 
         r[i] = limb_type(uv_as_ularge);
       }
 
-      return has_borrow_out;
+      return (has_borrow_out != 0U);
     }
 
     template<const std::uint_fast32_t RePhraseDigits2 = Digits2,
@@ -1649,69 +1615,119 @@
                                                 const LimbType*          b,
                                                 const std::uint_fast32_t count)
     {
+      static_cast<void>(count);
+
       using local_limb_type        = typename uintwide_t<RePhraseDigits2, LimbType, AllocatorType>::limb_type;
       using local_double_limb_type = typename uintwide_t<RePhraseDigits2, LimbType, AllocatorType>::double_limb_type;
 
-      // The algorithm has been derived from the polynomial multiplication
-      // given by: (D + Cx + Bx^2 + Ax^3) * (d + cx + bx^2 + ax^3).
+      // The algorithm has been derived from the polynomial multiplication.
       // After the multiplication terms of equal order are grouped
       // together and retained up to order(3). The carries from the
       // multiplications are included when adding up the terms.
       // The results of the intermediate multiplications are stored
       // in local variables in memory.
 
+      //   Column[CoefficientList[Expand[(d + c x + b x^2 + a x^3) (D + C x + B x^2 + A x^3)], x]]
+      //   d D
+      //   C d + c D
+      //   c C + B d + b D
+      //   B c + b C + A d + a D
+
+      // See also Wolfram Alpha at:
+      // https://www.wolframalpha.com/input/?i=Column%5BCoefficientList%5BExpand%5B%28d+%2B+c+x+%2B+b+x%5E2+%2B+a+x%5E3%29+%28D+%2B+C+x+%2B+B+x%5E2+%2B+A+x%5E3%29%5D%2C+x%5D%5D
+      // ... and take the upper half of the pyramid.
+
       // Performance improvement:
       //   (old) kops_per_sec: 33173.50
       //   (new) kops_per_sec: 95069.43
 
-      static_cast<void>(count);
-
       local_double_limb_type r1;
       local_double_limb_type r2;
 
-      const local_double_limb_type dD = a[0U] * local_double_limb_type(b[0U]);
-      const local_double_limb_type Cd = a[0U] * local_double_limb_type(b[1U]);
-      const local_double_limb_type cD = a[1U] * local_double_limb_type(b[0U]);
-      const local_double_limb_type cC = a[1U] * local_double_limb_type(b[1U]);
+      const local_double_limb_type a0b0 = a[0U] * local_double_limb_type(b[0U]);
+      const local_double_limb_type a0b1 = a[0U] * local_double_limb_type(b[1U]);
+      const local_double_limb_type a1b0 = a[1U] * local_double_limb_type(b[0U]);
+      const local_double_limb_type a1b1 = a[1U] * local_double_limb_type(b[1U]);
 
       // One special case is considered, the case of multiplication
       // of the form BITS/2 * BITS/2 = BITS. In this case, the algorithm
       // can be significantly simplified by using only the 'lower-halves'
       // of the data.
-      if(    (a[2U] == 0U)
-          && (b[2U] == 0U)
-          && (a[3U] == 0U)
-          && (b[3U] == 0U))
+      if(    (a[2U] == 0U) && (b[2U] == 0U)
+          && (a[3U] == 0U) && (b[3U] == 0U))
       {
-        r1    = local_double_limb_type(detail::make_lo<local_limb_type>(Cd)) + detail::make_lo<local_limb_type>(cD) + detail::make_hi<local_limb_type>(dD);
-        r2    = local_double_limb_type(detail::make_lo<local_limb_type>(cC)) + detail::make_hi<local_limb_type>(Cd) + detail::make_hi<local_limb_type>(cD) + detail::make_hi<local_limb_type>(r1);
-        r[3U] = detail::make_hi<local_limb_type>(cC) + detail::make_hi<local_limb_type>(r2);
+        r1    =   local_double_limb_type(detail::make_lo<local_limb_type>(a0b1))
+                + detail::make_lo<local_limb_type>(a1b0)
+                + detail::make_hi<local_limb_type>(a0b0);
+        r2    =   local_double_limb_type(detail::make_lo<local_limb_type>(a1b1))
+                + detail::make_hi<local_limb_type>(a1b0)
+                + detail::make_hi<local_limb_type>(a0b1)
+                + detail::make_hi<local_limb_type>(r1);
+        r[3U] = detail::make_hi<local_limb_type>(a1b1) + detail::make_hi<local_limb_type>(r2);
       }
       else
       {
-        const local_double_limb_type Bd =           a[0U] * local_double_limb_type(b[2U]);
-        const        local_limb_type Ad = local_limb_type(a[0U] * b[3U]);
-        const        local_limb_type Bc = local_limb_type(a[1U] * b[2U]);
-        const local_double_limb_type bD =           a[2U] * local_double_limb_type(b[0U]);
-        const        local_limb_type bC = local_limb_type(a[2U] * b[1U]);
-        const        local_limb_type aD = local_limb_type(a[3U] * b[0U]);
+        const local_double_limb_type a0b2 = a[0U] * local_double_limb_type(b[2U]);
+        const local_double_limb_type a2b0 = a[2U] * local_double_limb_type(b[0U]);
 
-        r1    = local_double_limb_type(detail::make_lo<local_limb_type>(Cd)) + detail::make_lo<local_limb_type>(cD) + detail::make_hi<local_limb_type>(dD);
-        r2    = local_double_limb_type(detail::make_lo<local_limb_type>(cC)) + detail::make_lo<local_limb_type>(Bd) + detail::make_lo<local_limb_type>(bD) + detail::make_hi<local_limb_type>(Cd) + detail::make_hi<local_limb_type>(cD) + detail::make_hi<local_limb_type>(r1);
-        r[3U] =   local_limb_type(local_limb_type(Bc + bC) + local_limb_type(aD + Ad))
-                + detail::make_hi<local_limb_type>(cC)
-                + detail::make_hi<local_limb_type>(Bd)
-                + detail::make_hi<local_limb_type>(bD)
+        r1    =   local_double_limb_type(detail::make_lo<local_limb_type>(a0b1))
+                + detail::make_lo<local_limb_type>(a1b0)
+                + detail::make_hi<local_limb_type>(a0b0);
+        r2    =   local_double_limb_type(detail::make_lo<local_limb_type>(a1b1))
+                + detail::make_lo<local_limb_type>(a0b2)
+                + detail::make_lo<local_limb_type>(a2b0)
+                + detail::make_hi<local_limb_type>(a0b1)
+                + detail::make_hi<local_limb_type>(a1b0)
+                + detail::make_hi<local_limb_type>(r1);
+        r[3U] =   local_limb_type
+                  (
+                      local_limb_type(local_limb_type(a[1U] * b[2U]) + local_limb_type(a[2U] * b[1U]))
+                    + local_limb_type(local_limb_type(a[3U] * b[0U]) + local_limb_type(a[0U] * b[3U]))
+                  )
+                + detail::make_hi<local_limb_type>(a1b1)
+                + detail::make_hi<local_limb_type>(a0b2)
+                + detail::make_hi<local_limb_type>(a2b0)
                 + detail::make_hi<local_limb_type>(r2);
       }
 
-      r[0U] = local_limb_type(dD);
+      r[0U] = local_limb_type(a0b0);
       r[1U] = local_limb_type(r1);
       r[2U] = local_limb_type(r2);
     }
 
     template<const std::uint_fast32_t RePhraseDigits2 = Digits2,
-             typename std::enable_if<((sizeof(typename uintwide_t<RePhraseDigits2, LimbType, AllocatorType>::limb_type) * 8U) * 4U != RePhraseDigits2)>::type const* = nullptr>
+             typename std::enable_if<((sizeof(typename uintwide_t<RePhraseDigits2, LimbType, AllocatorType>::limb_type) * 8U) * 8U == RePhraseDigits2)>::type const* = nullptr>
+    static void eval_multiply_n_by_n_to_lo_part(      LimbType*          r,
+                                                const LimbType*          a,
+                                                const LimbType*          b,
+                                                const std::uint_fast32_t count)
+    {
+      using local_limb_type        = typename uintwide_t<RePhraseDigits2, LimbType, AllocatorType>::limb_type;
+      using local_double_limb_type = typename uintwide_t<RePhraseDigits2, LimbType, AllocatorType>::double_limb_type;
+
+      std::memset(r, 0, count * sizeof(local_limb_type));
+
+      for(std::uint_fast32_t i = 0U; i < count; ++i)
+      {
+        if(a[i] != local_limb_type(0U))
+        {
+          local_double_limb_type carry = 0U;
+
+          for(std::uint_fast32_t j = 0U; j < (count - i); ++j)
+          {
+            carry += local_double_limb_type(local_double_limb_type(a[i]) * b[j]);
+            carry += r[i + j];
+
+            r[i + j] = local_limb_type(carry);
+            carry    = detail::make_hi<local_limb_type>(carry);
+          }
+        }
+      }
+    }
+
+    template<const std::uint_fast32_t RePhraseDigits2 = Digits2,
+             typename std::enable_if<(   ((sizeof(typename uintwide_t<RePhraseDigits2, LimbType, AllocatorType>::limb_type) * 8U) * 4U != RePhraseDigits2)
+                                      && ((sizeof(typename uintwide_t<RePhraseDigits2, LimbType, AllocatorType>::limb_type) * 8U) * 8U != RePhraseDigits2))>::type const* = nullptr>
     static void eval_multiply_n_by_n_to_lo_part(      LimbType*          r,
                                                 const LimbType*          a,
                                                 const LimbType*          b,
@@ -3298,8 +3314,8 @@
 
   namespace detail {
 
-  template<typename ST>
-  ST integer_gcd_reduce_short(ST u, ST v)
+  template<typename UshortType>
+  UshortType integer_gcd_reduce_short(UshortType u, UshortType v)
   {
     // This implementation of GCD reduction is based on an
     // adaptation of existing code from Boost.Multiprecision.
@@ -3323,13 +3339,13 @@
     return u;
   }
 
-  template<typename LT>
-  LT integer_gcd_reduce_large(LT u, LT v)
+  template<typename UlargeType>
+  UlargeType integer_gcd_reduce_large(UlargeType u, UlargeType v)
   {
     // This implementation of GCD reduction is based on an
     // adaptation of existing code from Boost.Multiprecision.
 
-    using local_ularge_type = LT;
+    using local_ularge_type = UlargeType;
     using local_ushort_type = typename detail::uint_type_helper<std::uint_fast32_t(std::numeric_limits<local_ularge_type>::digits / 2)>::exact_unsigned_type;
 
     for(;;)
@@ -3465,13 +3481,13 @@
     return result;
   }
 
-  template<typename ST>
-  typename std::enable_if<(   (std::is_fundamental<ST>::value == true)
-                           && (std::is_integral   <ST>::value == true)
-                           && (std::is_unsigned   <ST>::value == true)), ST>::type
-  gcd(const ST& u, const ST& v)
+  template<typename UshortType>
+  typename std::enable_if<(   (std::is_fundamental<UshortType>::value == true)
+                           && (std::is_integral   <UshortType>::value == true)
+                           && (std::is_unsigned   <UshortType>::value == true)), UshortType>::type
+  gcd(const UshortType& u, const UshortType& v)
   {
-    ST result;
+    UshortType result;
 
     if(u > v)
     {
