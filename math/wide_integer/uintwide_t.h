@@ -372,6 +372,16 @@
     return d_first;
   }
 
+  template<class BidirIt1, class BidirIt2>
+  constexpr BidirIt2 copy_backward(BidirIt1 first, BidirIt1 last, BidirIt2 d_last)
+  {
+    while(first != last)
+    {
+      *(--d_last) = *(--last);
+    }
+    return d_last;
+  }
+
   template<class ForwardIt, class T>
   constexpr void fill(ForwardIt first, ForwardIt last, const T& value)
   {
@@ -2282,9 +2292,9 @@
     {
       if(offset > 0U)
       {
-        std::copy_backward(values.data(),
-                           values.data() + (number_of_limbs - offset),
-                           values.data() +  number_of_limbs);
+        detail::copy_backward(values.data(),
+                              values.data() + (number_of_limbs - offset),
+                              values.data() +  number_of_limbs);
 
         detail::fill(values.begin(), values.begin() + offset, limb_type(0U));
       }
