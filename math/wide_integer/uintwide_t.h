@@ -404,6 +404,16 @@
     return last;
   }
 
+  template<class InputIt1, class InputIt2>
+  constexpr std::pair<InputIt1, InputIt2> mismatch(InputIt1 first1, InputIt1 last1, InputIt2 first2)
+  {
+    while(first1 != last1 && *first1 == *first2)
+    {
+      ++first1, ++first2;
+    }
+    return std::make_pair(first1, first2);
+  }
+
   template< class InputIt, class UnaryPredicate >
   constexpr bool all_of(InputIt first, InputIt last, UnaryPredicate p)
   {
@@ -1537,7 +1547,7 @@
       local_const_reverse_iterator_type rcbegin_b(b + count);
       local_const_reverse_iterator_type rcend_b  (b);
 
-      const auto mismatch_pair = std::mismatch(rcbegin_a, rcend_a, rcbegin_b);
+      const auto mismatch_pair = detail::mismatch(rcbegin_a, rcend_a, rcbegin_b);
 
       std::int_fast8_t n_return;
 
