@@ -95,6 +95,14 @@ Continuous integration runs on push using GitHub Actions.
 Various compilers, operating systems, and C++ standards
 ranging from C++11, 14, 17, 20 are included in CI.
 
+You can build and run tests from an empty directory using CMake:
+
+```sh
+cmake /path/to/wide-integer
+cmake --build .
+ctest --verbose
+```
+
 ### Build Status
 [![Build Status](https://github.com/ckormanyos/wide-integer/actions/workflows/wide_integer.yml/badge.svg)](https://github.com/ckormanyos/wide-integer/actions)
 
