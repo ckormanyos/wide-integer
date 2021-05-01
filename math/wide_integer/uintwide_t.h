@@ -362,6 +362,15 @@
 
   namespace math { namespace wide_integer { namespace detail {
 
+  template<class ForwardIt, class T>
+  constexpr void fill(ForwardIt first, ForwardIt last, const T& value)
+  {
+    for(; first != last; ++first)
+    {
+      *first = value;
+    }
+  }
+
   template<typename MyType,
            const std::uint_fast32_t MySize,
            typename MyAlloc>
@@ -376,9 +385,9 @@
                         const typename base_class_type::allocator_type& a = typename base_class_type::allocator_type())
       : base_class_type(MySize, typename base_class_type::value_type(), a)
     {
-      std::fill(base_class_type::begin(),
-                base_class_type::begin() + (std::min)(MySize, (std::uint_fast32_t) s),
-                v);
+      fill(base_class_type::begin(),
+           base_class_type::begin() + (std::min)(MySize, (std::uint_fast32_t) s),
+           v);
     }
 
     constexpr fixed_dynamic_array(const fixed_dynamic_array& other_array)
@@ -430,13 +439,13 @@
     constexpr fixed_static_array(const typename base_class_type::size_type   s,
                        const typename base_class_type::value_type& v = typename base_class_type::value_type())
     {
-      std::fill(base_class_type::begin(),
-                base_class_type::begin() + (std::min)(MySize, (std::uint_fast32_t) s),
-                v);
+      fill(base_class_type::begin(),
+           base_class_type::begin() + (std::min)(MySize, (std::uint_fast32_t) s),
+           v);
 
-      std::fill(base_class_type::begin() + (std::min)(MySize, (std::uint_fast32_t) s),
-                base_class_type::end(),
-                typename base_class_type::value_type());
+      fill(base_class_type::begin() + (std::min)(MySize, (std::uint_fast32_t) s),
+           base_class_type::end(),
+           typename base_class_type::value_type());
     }
 
     constexpr fixed_static_array(const fixed_static_array& other_array)
@@ -449,9 +458,9 @@
                 other_array.cbegin() + (std::min)(OtherSize, MySize),
                 base_class_type::begin());
 
-      std::fill(base_class_type::begin() + (std::min)(OtherSize, MySize),
-                base_class_type::end(),
-                typename base_class_type::value_type());
+      fill(base_class_type::begin() + (std::min)(OtherSize, MySize),
+           base_class_type::end(),
+           typename base_class_type::value_type());
     }
 
     explicit constexpr fixed_static_array(std::initializer_list<typename base_class_type::value_type> lst)
@@ -460,9 +469,9 @@
                 lst.begin() + (std::min)((std::uint_fast32_t) lst.size(), MySize),
                 base_class_type::begin());
 
-      std::fill(base_class_type::begin() + (std::min)((std::uint_fast32_t) lst.size(), MySize),
-                base_class_type::end(),
-                typename base_class_type::value_type());
+      fill(base_class_type::begin() + (std::min)((std::uint_fast32_t) lst.size(), MySize),
+           base_class_type::end(),
+           typename base_class_type::value_type());
     }
 
     constexpr fixed_static_array(fixed_static_array&& other_array)
@@ -749,7 +758,7 @@
         right_shift_amount_v += std::uint_fast32_t(std::numeric_limits<limb_type>::digits);
       }
 
-      std::fill(values.begin() + index_u, values.end(), limb_type(0U));
+      detail::fill(values.begin() + index_u, values.end(), limb_type(0U));
     }
 
     // Constructors from built-in signed integral types.
@@ -813,7 +822,7 @@
                 v.crepresentation().cbegin() + sz,
                 values.begin());
 
-      std::fill(values.begin() + sz, values.end(), limb_type(0U));
+      detail::fill(values.begin() + sz, values.end(), limb_type(0U));
     }
 
     // Constructor from a constant character string.
@@ -821,7 +830,7 @@
     {
       if(rd_string(str_input) == false)
       {
-        std::fill(values.begin(), values.end(), (std::numeric_limits<limb_type>::max)());
+        detail::fill(values.begin(), values.end(), (std::numeric_limits<limb_type>::max)());
       }
     }
 
@@ -907,9 +916,9 @@
                 values.cend(),
                 local_double_width_instance.representation().begin());
 
-      std::fill(local_double_width_instance.representation().begin() + number_of_limbs,
-                local_double_width_instance.representation().end(),
-                limb_type(0U));
+      fill(local_double_width_instance.representation().begin() + number_of_limbs,
+           local_double_width_instance.representation().end(),
+           limb_type(0U));
 
       return local_double_width_instance;
     }
@@ -1002,7 +1011,7 @@
       {
         values.front() = 1U;
 
-        std::fill(values.begin() + 1U, values.end(), limb_type(0U));
+        detail::fill(values.begin() + 1U, values.end(), limb_type(0U));
       }
       else if(other.is_zero())
       {
@@ -1021,7 +1030,7 @@
     {
       if(this == &other)
       {
-        std::fill(values.begin(), values.end(), limb_type(0U));
+        detail::fill(values.begin(), values.end(), limb_type(0U));
       }
       else
       {
@@ -1115,7 +1124,7 @@
       }
       else if(std::uint_fast32_t(n) >= my_digits)
       {
-        std::fill(values.begin(), values.end(), limb_type(0U));
+        detail::fill(values.begin(), values.end(), limb_type(0U));
       }
       else
       {
@@ -1141,7 +1150,7 @@
       }
       else if(std::uint_fast32_t(n) >= my_digits)
       {
-        std::fill(values.begin(), values.end(), limb_type(0U));
+        detail::fill(values.begin(), values.end(), limb_type(0U));
       }
       else
       {
@@ -1171,7 +1180,7 @@
       }
       else if(std::uint_fast32_t(n) >= my_digits)
       {
-        std::fill(values.begin(), values.end(), limb_type(0U));
+        detail::fill(values.begin(), values.end(), limb_type(0U));
       }
       else
       {
@@ -1197,7 +1206,7 @@
       }
       else if(std::uint_fast32_t(n) >= my_digits)
       {
-        std::fill(values.begin(), values.end(), limb_type(0U));
+        detail::fill(values.begin(), values.end(), limb_type(0U));
       }
       else
       {
@@ -1789,7 +1798,7 @@
 
       if(b == 0U)
       {
-        std::fill(r, r + count, limb_type(0U));
+        detail::fill(r, r + count, limb_type(0U));
       }
       else
       {
@@ -2207,7 +2216,7 @@
 
           // Clear the data elements that have not
           // been computed in the division algorithm.
-          std::fill(values.begin() + (m + 1U), values.end(), limb_type(0U));
+          detail::fill(values.begin() + (m + 1U), values.end(), limb_type(0U));
 
           if(remainder != nullptr)
           {
@@ -2232,9 +2241,9 @@
               }
             }
 
-            std::fill(remainder->values.begin() + n,
-                      remainder->values.end(),
-                      limb_type(0U));
+            detail::fill(remainder->values.begin() + n,
+                         remainder->values.end(),
+                         limb_type(0U));
           }
         }
       }
@@ -2248,7 +2257,7 @@
                            values.data() + (number_of_limbs - offset),
                            values.data() +  number_of_limbs);
 
-        std::fill(values.begin(), values.begin() + offset, limb_type(0U));
+        detail::fill(values.begin(), values.begin() + offset, limb_type(0U));
       }
 
       limb_type part_from_previous_value = limb_type(0U);
@@ -2276,7 +2285,7 @@
                   values.begin() + number_of_limbs,
                   values.begin());
 
-        std::fill(values.end() - offset, values.end(), limb_type(0U));
+        detail::fill(values.end() - offset, values.end(), limb_type(0U));
       }
 
       limb_type part_from_previous_value = limb_type(0U);
@@ -2299,7 +2308,7 @@
     // Read string function.
     constexpr bool rd_string(const char* str_input)
     {
-      std::fill(values.begin(), values.end(), limb_type(0U));
+      detail::fill(values.begin(), values.end(), limb_type(0U));
 
       const std::uint_fast32_t str_length = detail::strlen_unsafe(str_input);
 
