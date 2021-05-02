@@ -144,6 +144,9 @@
     <ClCompile Include="examples\example009a_timed_mul_4_by_4.cpp">
       <Filter>Source Files\examples</Filter>
     </ClCompile>
+    <ClCompile Include="examples\example009b_timed_mul_8_by_8.cpp">
+      <Filter>Source Files\examples</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include=".github\workflows\wide_integer.yml">
@@ -152,5 +155,13 @@
     <None Include="README.md">
       <Filter>_doc</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="examples\CMakeLists.txt">
+      <Filter>Source Files\examples</Filter>
+    </Text>
+    <Text Include="test\CMakeLists.txt">
+      <Filter>Source Files\test</Filter>
+    </Text>
   </ItemGroup>
 </Project>

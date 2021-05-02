@@ -25,6 +25,7 @@
   bool example008a_miller_rabin_prime();
   bool example009_timed_mul          ();
   bool example009a_timed_mul_4_by_4  ();
+  bool example009b_timed_mul_8_by_8  ();
   bool example010_uint48_t           ();
   bool example011_uint24_t           ();
 
