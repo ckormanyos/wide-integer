@@ -1652,8 +1652,8 @@
                 (
                   detail::make_hi<local_limb_type>(a0b0)
                 )
-                + detail::make_lo<local_limb_type>(a0b1)
                 + detail::make_lo<local_limb_type>(a1b0)
+                + detail::make_lo<local_limb_type>(a0b1)
                 ;
         r2    = local_double_limb_type
                 (
@@ -1676,27 +1676,27 @@
                 (
                   detail::make_hi<local_limb_type>(a0b0)
                 )
-                + detail::make_lo<local_limb_type>(a0b1)
                 + detail::make_lo<local_limb_type>(a1b0)
+                + detail::make_lo<local_limb_type>(a0b1)
                 ;
         r2    = local_double_limb_type
                 (
                   detail::make_hi<local_limb_type>(r1)
                 )
-                + detail::make_lo<local_limb_type>(a0b2)
-                + detail::make_lo<local_limb_type>(a1b1)
                 + detail::make_lo<local_limb_type>(a2b0)
-                + detail::make_hi<local_limb_type>(a0b1)
+                + detail::make_lo<local_limb_type>(a1b1)
+                + detail::make_lo<local_limb_type>(a0b2)
                 + detail::make_hi<local_limb_type>(a1b0)
+                + detail::make_hi<local_limb_type>(a0b1)
                 ;
         r[3U] =   detail::make_hi<local_limb_type>(r2)
-                + static_cast<local_limb_type>    (a[0U] * b[3U])
-                + static_cast<local_limb_type>    (a[1U] * b[2U])
-                + static_cast<local_limb_type>    (a[2U] * b[1U])
                 + static_cast<local_limb_type>    (a[3U] * b[0U])
-                + detail::make_hi<local_limb_type>(a0b2)
-                + detail::make_hi<local_limb_type>(a1b1)
+                + static_cast<local_limb_type>    (a[2U] * b[1U])
+                + static_cast<local_limb_type>    (a[1U] * b[2U])
+                + static_cast<local_limb_type>    (a[0U] * b[3U])
                 + detail::make_hi<local_limb_type>(a2b0)
+                + detail::make_hi<local_limb_type>(a1b1)
+                + detail::make_hi<local_limb_type>(a0b2)
                 ;
       }
 
@@ -1705,6 +1705,7 @@
       r[2U] = local_limb_type(r2);
     }
 
+    #if defined(WIDE_INTEGER_HAS_MUL_8_BY_8_UNROLL)
     template<const std::uint_fast32_t RePhraseDigits2 = Digits2,
              typename std::enable_if<(uintwide_t<RePhraseDigits2, LimbType, AllocatorType>::number_of_limbs == 8U)>::type const* = nullptr>
     static void eval_multiply_n_by_n_to_lo_part(      LimbType*          r,
@@ -1712,10 +1713,11 @@
                                                 const LimbType*          b,
                                                 const std::uint_fast32_t count)
     {
+      static_cast<void>(count);
+
       using local_limb_type        = typename uintwide_t<RePhraseDigits2, LimbType, AllocatorType>::limb_type;
       using local_double_limb_type = typename uintwide_t<RePhraseDigits2, LimbType, AllocatorType>::double_limb_type;
 
-      #if 0
       // The algorithm has been derived from the polynomial multiplication.
       // After the multiplication terms of equal order are grouped
       // together and retained up to order(3). The carries from the
@@ -1737,79 +1739,257 @@
       // https://www.wolframalpha.com/input/?i=Column%5BCoefficientList%5B+++Expand%5B%28a0+%2B+a1+x+%2B+a2+x%5E2+%2B+a3+x%5E3%29+%28b0+%2B+b1+x+%2B+b2+x%5E2+%2B+b3+x%5E3%29%5D%2C++++x%5D%5D
       // ... and take the upper half of the pyramid.
 
-      const std::array<local_double_limb_type, 8U> rn =
-      {{
-            a[0U] * local_double_limb_type(b[0U]),
-            a[1U] * local_double_limb_type(b[0U])
-          + a[0U] * local_double_limb_type(b[1U]) + detail::make_hi<local_limb_type>(rn[0U]),
-            a[2U] * local_double_limb_type(b[0U])
-          + a[1U] * local_double_limb_type(b[1U])
-          + a[0U] * local_double_limb_type(b[2U]) + detail::make_hi<local_limb_type>(rn[1U]),
-            a[3U] * local_double_limb_type(b[0U])
-          + a[2U] * local_double_limb_type(b[1U])
-          + a[1U] * local_double_limb_type(b[2U])
-          + a[0U] * local_double_limb_type(b[3U]) + detail::make_hi<local_limb_type>(rn[2U]),
-            a[4U] * local_double_limb_type(b[0U])
-          + a[3U] * local_double_limb_type(b[1U])
-          + a[2U] * local_double_limb_type(b[2U])
-          + a[1U] * local_double_limb_type(b[3U])
-          + a[0U] * local_double_limb_type(b[4U]) + detail::make_hi<local_limb_type>(rn[3U]),
-            a[5U] * local_double_limb_type(b[0U])
-          + a[4U] * local_double_limb_type(b[1U])
-          + a[3U] * local_double_limb_type(b[2U])
-          + a[2U] * local_double_limb_type(b[3U])
-          + a[1U] * local_double_limb_type(b[4U])
-          + a[0U] * local_double_limb_type(b[5U]) + detail::make_hi<local_limb_type>(rn[4U]),
-            a[6U] * local_double_limb_type(b[0U])
-          + a[5U] * local_double_limb_type(b[1U])
-          + a[4U] * local_double_limb_type(b[2U])
-          + a[3U] * local_double_limb_type(b[3U])
-          + a[2U] * local_double_limb_type(b[4U])
-          + a[1U] * local_double_limb_type(b[5U])
-          + a[0U] * local_double_limb_type(b[6U]) + detail::make_hi<local_limb_type>(rn[5U]),
-            a[7U] * local_double_limb_type(b[0U])
-          + a[6U] * local_double_limb_type(b[1U])
-          + a[5U] * local_double_limb_type(b[2U])
-          + a[4U] * local_double_limb_type(b[3U])
-          + a[3U] * local_double_limb_type(b[4U])
-          + a[2U] * local_double_limb_type(b[5U])
-          + a[1U] * local_double_limb_type(b[6U])
-          + a[0U] * local_double_limb_type(b[7U]) + detail::make_hi<local_limb_type>(rn[6U])
-      }};
+      const local_double_limb_type a0b0 = a[0U] * local_double_limb_type(b[0U]);
 
-      r[0U] = static_cast<local_limb_type>(rn[0U]);
-      r[1U] = static_cast<local_limb_type>(rn[1U]);
-      r[2U] = static_cast<local_limb_type>(rn[2U]);
-      r[3U] = static_cast<local_limb_type>(rn[3U]);
-      r[4U] = static_cast<local_limb_type>(rn[4U]);
-      r[5U] = static_cast<local_limb_type>(rn[5U]);
-      r[6U] = static_cast<local_limb_type>(rn[6U]);
-      r[7U] = static_cast<local_limb_type>(rn[7U]);
-      #else
-      std::memset(r, 0, count * sizeof(local_limb_type));
+      const local_double_limb_type a1b0 = a[1U] * local_double_limb_type(b[0U]);
+      const local_double_limb_type a0b1 = a[0U] * local_double_limb_type(b[1U]);
 
-      for(std::uint_fast32_t i = 0U; i < count; ++i)
+      const local_double_limb_type a2b0 = a[2U] * local_double_limb_type(b[0U]);
+      const local_double_limb_type a1b1 = a[1U] * local_double_limb_type(b[1U]);
+      const local_double_limb_type a0b2 = a[0U] * local_double_limb_type(b[2U]);
+
+      const local_double_limb_type a3b0 = a[3U] * local_double_limb_type(b[0U]);
+      const local_double_limb_type a2b1 = a[2U] * local_double_limb_type(b[1U]);
+      const local_double_limb_type a1b2 = a[1U] * local_double_limb_type(b[2U]);
+      const local_double_limb_type a0b3 = a[0U] * local_double_limb_type(b[3U]);
+
+      const local_double_limb_type a3b1 = a[3U] * local_double_limb_type(b[1U]);
+      const local_double_limb_type a2b2 = a[2U] * local_double_limb_type(b[2U]);
+      const local_double_limb_type a1b3 = a[1U] * local_double_limb_type(b[3U]);
+
+      const local_double_limb_type a3b2 = a[3U] * local_double_limb_type(b[2U]);
+      const local_double_limb_type a2b3 = a[2U] * local_double_limb_type(b[3U]);
+
+      const local_double_limb_type a3b3 = a[3U] * local_double_limb_type(b[3U]);
+
+            local_double_limb_type rd1;
+            local_double_limb_type rd2;
+            local_double_limb_type rd3;
+            local_double_limb_type rd4;
+            local_double_limb_type rd5;
+            local_double_limb_type rd6;
+
+      // One special case is considered, the case of multiplication
+      // of the form BITS/2 * BITS/2 = BITS. In this case, the algorithm
+      // can be significantly simplified by using only the 'lower-halves'
+      // of the data.
+      if(    (a[7U] == 0U) && (b[7U] == 0U)
+          && (a[6U] == 0U) && (b[6U] == 0U)
+          && (a[5U] == 0U) && (b[5U] == 0U)
+          && (a[4U] == 0U) && (b[4U] == 0U))
       {
-        if(a[i] != local_limb_type(0U))
-        {
-          local_double_limb_type carry = 0U;
+        rd1   = local_double_limb_type
+                (
+                  detail::make_hi<local_limb_type>(a0b0)
+                )
+                + detail::make_lo<local_limb_type>(a1b0)
+                + detail::make_lo<local_limb_type>(a0b1)
+                ;
 
-          for(std::uint_fast32_t j = 0U; j < (count - i); ++j)
-          {
-            carry += local_double_limb_type(local_double_limb_type(a[i]) * b[j]);
-            carry += r[i + j];
+        rd2   = local_double_limb_type
+                (
+                  detail::make_hi<local_limb_type>(rd1)
+                )
+                + detail::make_lo<local_limb_type>(a2b0)
+                + detail::make_lo<local_limb_type>(a1b1)
+                + detail::make_lo<local_limb_type>(a0b2)
+                + detail::make_hi<local_limb_type>(a1b0)
+                + detail::make_hi<local_limb_type>(a0b1)
+                ;
 
-            r[i + j] = local_limb_type(carry);
-            carry    = detail::make_hi<local_limb_type>(carry);
-          }
-        }
+        rd3   = local_double_limb_type
+                (
+                  detail::make_hi<local_limb_type>(rd2)
+                )
+                + detail::make_lo<local_limb_type>(a3b0)
+                + detail::make_lo<local_limb_type>(a2b1)
+                + detail::make_lo<local_limb_type>(a1b2)
+                + detail::make_lo<local_limb_type>(a0b3)
+                + detail::make_hi<local_limb_type>(a2b0)
+                + detail::make_hi<local_limb_type>(a1b1)
+                + detail::make_hi<local_limb_type>(a0b2)
+                ;
+
+        rd4   = local_double_limb_type
+                (
+                  detail::make_hi<local_limb_type>(rd3)
+                )
+                + detail::make_lo<local_limb_type>(a3b1)
+                + detail::make_lo<local_limb_type>(a2b2)
+                + detail::make_lo<local_limb_type>(a1b3)
+                + detail::make_hi<local_limb_type>(a3b0)
+                + detail::make_hi<local_limb_type>(a2b1)
+                + detail::make_hi<local_limb_type>(a1b2)
+                + detail::make_hi<local_limb_type>(a0b3)
+                ;
+
+        rd5   = local_double_limb_type
+                (
+                  detail::make_hi<local_limb_type>(rd4)
+                )
+                + detail::make_lo<local_limb_type>(a3b2)
+                + detail::make_lo<local_limb_type>(a2b3)
+                + detail::make_hi<local_limb_type>(a3b1)
+                + detail::make_hi<local_limb_type>(a2b2)
+                + detail::make_hi<local_limb_type>(a1b3)
+                ;
+
+        rd6   = local_double_limb_type
+                (
+                  detail::make_hi<local_limb_type>(rd5)
+                )
+                + detail::make_lo<local_limb_type>(a3b3)
+                + detail::make_hi<local_limb_type>(a3b2)
+                + detail::make_hi<local_limb_type>(a2b3)
+                ;
+
+        r[7U] = local_double_limb_type
+                (
+                  detail::make_hi<local_limb_type>(rd6)
+                )
+                + detail::make_hi<local_limb_type>(a3b3)
+                ;
       }
-      #endif
+      else
+      {
+        const local_double_limb_type a4b0 = a[4U] * local_double_limb_type(b[0U]);
+        const local_double_limb_type a0b4 = a[0U] * local_double_limb_type(b[4U]);
+
+        const local_double_limb_type a5b0 = a[5U] * local_double_limb_type(b[0U]);
+        const local_double_limb_type a4b1 = a[4U] * local_double_limb_type(b[1U]);
+
+        const local_double_limb_type a1b4 = a[1U] * local_double_limb_type(b[4U]);
+        const local_double_limb_type a0b5 = a[0U] * local_double_limb_type(b[5U]);
+
+        const local_double_limb_type a6b0 = a[6U] * local_double_limb_type(b[0U]);
+        const local_double_limb_type a5b1 = a[5U] * local_double_limb_type(b[1U]);
+        const local_double_limb_type a4b2 = a[4U] * local_double_limb_type(b[2U]);
+
+        const local_double_limb_type a2b4 = a[2U] * local_double_limb_type(b[4U]);
+        const local_double_limb_type a1b5 = a[1U] * local_double_limb_type(b[5U]);
+        const local_double_limb_type a0b6 = a[0U] * local_double_limb_type(b[6U]);
+
+        rd1   = local_double_limb_type
+                (
+                  detail::make_hi<local_limb_type>(a0b0)
+                )
+                + detail::make_lo<local_limb_type>(a1b0)
+                + detail::make_lo<local_limb_type>(a0b1)
+                ;
+
+        rd2   = local_double_limb_type
+                (
+                  detail::make_hi<local_limb_type>(rd1)
+                )
+                + detail::make_lo<local_limb_type>(a2b0)
+                + detail::make_lo<local_limb_type>(a1b1)
+                + detail::make_lo<local_limb_type>(a0b2)
+                + detail::make_hi<local_limb_type>(a1b0)
+                + detail::make_hi<local_limb_type>(a0b1)
+                ;
+
+        rd3   = local_double_limb_type
+                (
+                  detail::make_hi<local_limb_type>(rd2)
+                )
+                + detail::make_lo<local_limb_type>(a3b0)
+                + detail::make_lo<local_limb_type>(a2b1)
+                + detail::make_lo<local_limb_type>(a1b2)
+                + detail::make_lo<local_limb_type>(a0b3)
+                + detail::make_hi<local_limb_type>(a2b0)
+                + detail::make_hi<local_limb_type>(a1b1)
+                + detail::make_hi<local_limb_type>(a0b2)
+                ;
+
+        rd4   = local_double_limb_type
+                (
+                  detail::make_hi<local_limb_type>(rd3)
+                )
+                + detail::make_lo<local_limb_type>(a4b0)
+                + detail::make_lo<local_limb_type>(a3b1)
+                + detail::make_lo<local_limb_type>(a2b2)
+                + detail::make_lo<local_limb_type>(a1b3)
+                + detail::make_lo<local_limb_type>(a0b4)
+                + detail::make_hi<local_limb_type>(a3b0)
+                + detail::make_hi<local_limb_type>(a2b1)
+                + detail::make_hi<local_limb_type>(a1b2)
+                + detail::make_hi<local_limb_type>(a0b3)
+                ;
+
+        rd5   = local_double_limb_type
+                (
+                  detail::make_hi<local_limb_type>(rd4)
+                )
+                + detail::make_lo<local_limb_type>(a5b0)
+                + detail::make_lo<local_limb_type>(a4b1)
+                + detail::make_lo<local_limb_type>(a3b2)
+                + detail::make_lo<local_limb_type>(a2b3)
+                + detail::make_lo<local_limb_type>(a1b4)
+                + detail::make_lo<local_limb_type>(a0b5)
+                + detail::make_hi<local_limb_type>(a4b0)
+                + detail::make_hi<local_limb_type>(a3b1)
+                + detail::make_hi<local_limb_type>(a2b2)
+                + detail::make_hi<local_limb_type>(a1b3)
+                + detail::make_hi<local_limb_type>(a0b4)
+                ;
+
+        rd6   = local_double_limb_type
+                (
+                  detail::make_hi<local_limb_type>(rd5)
+                )
+                + detail::make_lo<local_limb_type>(a6b0)
+                + detail::make_lo<local_limb_type>(a5b1)
+                + detail::make_lo<local_limb_type>(a4b2)
+                + detail::make_lo<local_limb_type>(a3b3)
+                + detail::make_lo<local_limb_type>(a2b4)
+                + detail::make_lo<local_limb_type>(a1b5)
+                + detail::make_lo<local_limb_type>(a0b6)
+                + detail::make_hi<local_limb_type>(a5b0)
+                + detail::make_hi<local_limb_type>(a4b1)
+                + detail::make_hi<local_limb_type>(a3b2)
+                + detail::make_hi<local_limb_type>(a2b3)
+                + detail::make_hi<local_limb_type>(a1b4)
+                + detail::make_hi<local_limb_type>(a0b5)
+                ;
+
+        r[7U] = local_double_limb_type
+                (
+                  detail::make_hi<local_limb_type>(rd6)
+                )
+                + static_cast<local_limb_type>    (a[7U] * b[0U])
+                + static_cast<local_limb_type>    (a[6U] * b[1U])
+                + static_cast<local_limb_type>    (a[5U] * b[2U])
+                + static_cast<local_limb_type>    (a[4U] * b[3U])
+                + static_cast<local_limb_type>    (a[3U] * b[4U])
+                + static_cast<local_limb_type>    (a[2U] * b[5U])
+                + static_cast<local_limb_type>    (a[1U] * b[6U])
+                + static_cast<local_limb_type>    (a[0U] * b[7U])
+                + detail::make_hi<local_limb_type>(a6b0)
+                + detail::make_hi<local_limb_type>(a5b1)
+                + detail::make_hi<local_limb_type>(a4b2)
+                + detail::make_hi<local_limb_type>(a3b3)
+                + detail::make_hi<local_limb_type>(a2b4)
+                + detail::make_hi<local_limb_type>(a1b5)
+                + detail::make_hi<local_limb_type>(a0b6)
+                ;
+      }
+
+      r[0U] = static_cast<local_limb_type>(a0b0);
+      r[1U] = static_cast<local_limb_type>(rd1);
+      r[2U] = static_cast<local_limb_type>(rd2);
+      r[3U] = static_cast<local_limb_type>(rd3);
+      r[4U] = static_cast<local_limb_type>(rd4);
+      r[5U] = static_cast<local_limb_type>(rd5);
+      r[6U] = static_cast<local_limb_type>(rd6);
     }
+    #endif
 
     template<const std::uint_fast32_t RePhraseDigits2 = Digits2,
              typename std::enable_if<(   (uintwide_t<RePhraseDigits2, LimbType, AllocatorType>::number_of_limbs != 4U)
-                                      && (uintwide_t<RePhraseDigits2, LimbType, AllocatorType>::number_of_limbs != 8U))>::type const* = nullptr>
+    #if defined(WIDE_INTEGER_HAS_MUL_8_BY_8_UNROLL)
+                                      && (uintwide_t<RePhraseDigits2, LimbType, AllocatorType>::number_of_limbs != 8U)
+    #endif
+                                     )>::type const* = nullptr>
     static void eval_multiply_n_by_n_to_lo_part(      LimbType*          r,
                                                 const LimbType*          a,
                                                 const LimbType*          b,
