@@ -10,6 +10,12 @@
 
   // This file contains function prototypes of the uintwide_t examples.
 
+  #if __cplusplus > 201703L
+    #define UINTWIDE_T_TEST_CONSTEXPR constexpr
+  #else
+    #define UINTWIDE_T_TEST_CONSTEXPR const
+  #endif
+
   namespace math { namespace wide_integer {
 
   bool example001_mul_div            ();
