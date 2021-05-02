@@ -391,6 +391,16 @@
     }
   }
 
+  template<class OutputIt, class Size, class T>
+  constexpr OutputIt fill_n(OutputIt first, Size count, const T& value)
+  {
+    for(Size i = 0; i < count; i++)
+    {
+      *first++ = value;
+    }
+    return first;
+  }
+
   template<class InputIt, class UnaryPredicate>
   constexpr InputIt find_if_not(InputIt first, InputIt last, UnaryPredicate q)
   {
@@ -1789,7 +1799,7 @@
       using local_limb_type        = typename uintwide_t<RePhraseDigits2, LimbType, AllocatorType>::limb_type;
       using local_double_limb_type = typename uintwide_t<RePhraseDigits2, LimbType, AllocatorType>::double_limb_type;
 
-      std::fill_n(r, count, 0);
+      detail::fill_n(r, count, 0);
 
       for(std::uint_fast32_t i = 0U; i < count; ++i)
       {
