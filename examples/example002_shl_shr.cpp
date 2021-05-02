@@ -17,8 +17,8 @@ bool math::wide_integer::example002_shl_shr()
   UINTWIDE_T_TEST_CONSTEXPR uint256_t c = (a << 67);
   UINTWIDE_T_TEST_CONSTEXPR uint256_t d = (a >> 79);
 
-  UINTWIDE_T_TEST_CONSTEXPR bool result_is_ok = (   (c == "0xBF8C1B901377CE5E7E22B65C057AA6A9DEF76BC208032EF00000000000000000")
-                                                 && (d == "0x1E9BEE83BCB17965E6FE306E404DDF3979F88AD97015E"));
+  const bool result_is_ok = (   (c == "0xBF8C1B901377CE5E7E22B65C057AA6A9DEF76BC208032EF00000000000000000")
+                             && (d == "0x1E9BEE83BCB17965E6FE306E404DDF3979F88AD97015E"));
 
   return result_is_ok;
 }

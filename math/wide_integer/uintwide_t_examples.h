@@ -10,7 +10,7 @@
 
   // This file contains function prototypes of the uintwide_t examples.
 
-  #if __cplusplus > 201703L
+  #if defined(__cpp_lib_constexpr_algorithms) && (__cpp_lib_constexpr_algorithms>=201806)
     #define UINTWIDE_T_TEST_CONSTEXPR constexpr
   #else
     #define UINTWIDE_T_TEST_CONSTEXPR const

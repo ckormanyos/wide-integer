@@ -34,7 +34,7 @@
 
   #include <util/utility/util_dynamic_array.h>
 
-  #if __cplusplus > 201703L
+  #if defined(__cpp_lib_constexpr_algorithms) && (__cpp_lib_constexpr_algorithms>=201806)
     #define WIDE_INTEGER_CONSTEXPR constexpr
   #else
     #define WIDE_INTEGER_CONSTEXPR
@@ -377,6 +377,8 @@
     using base_class_type = util::dynamic_array<MyType, MyAlloc>;
 
   public:
+    static constexpr std::uint_fast32_t static_size() { return MySize; }
+
     fixed_dynamic_array(const typename base_class_type::size_type       s = MySize,
                         const typename base_class_type::value_type&     v = typename base_class_type::value_type(),
                         const typename base_class_type::allocator_type& a = typename base_class_type::allocator_type())
@@ -416,11 +418,6 @@
     }
 
     virtual ~fixed_dynamic_array() = default;
-
-    static constexpr typename base_class_type::size_type static_size()
-    {
-      return MySize;
-    }
   };
 
   template<typename MyType,
@@ -431,7 +428,9 @@
     using base_class_type = std::array<MyType, MySize>;
 
   public:
-    WIDE_INTEGER_CONSTEXPR fixed_static_array() = default;
+    static constexpr std::uint_fast32_t static_size() { return MySize; }
+
+    WIDE_INTEGER_CONSTEXPR fixed_static_array() { }
 
     WIDE_INTEGER_CONSTEXPR fixed_static_array(const typename base_class_type::size_type   s,
                        const typename base_class_type::value_type& v = typename base_class_type::value_type())
@@ -486,11 +485,6 @@
       base_class_type::operator=((base_class_type&&) other_array);
 
       return *this;
-    }
-
-    static constexpr typename base_class_type::size_type static_size()
-    {
-      return MySize;
     }
   };
 
@@ -723,12 +717,12 @@
     using double_width_type = uintwide_t<my_digits * 2U, limb_type>;
 
     // Default constructor.
-    constexpr uintwide_t() { }
+    WIDE_INTEGER_CONSTEXPR uintwide_t() { }
 
     // Constructors from built-in unsigned integral types that
     // are less wide than limb_type or exactly as wide as limb_type.
     template<typename UnsignedIntegralType>
-    constexpr uintwide_t(const UnsignedIntegralType v,
+    WIDE_INTEGER_CONSTEXPR uintwide_t(const UnsignedIntegralType v,
                          typename std::enable_if<(   (std::is_fundamental<UnsignedIntegralType>::value == true)
                                                   && (std::is_integral   <UnsignedIntegralType>::value == true)
                                                   && (std::is_unsigned   <UnsignedIntegralType>::value == true)
@@ -1497,7 +1491,7 @@
 
       const auto mismatch_pair = std::mismatch(rcbegin_a, rcend_a, rcbegin_b);
 
-      std::int_fast8_t n_return;
+      std::int_fast8_t n_return{};
 
       if((mismatch_pair.first != rcend_a) || (mismatch_pair.second != rcend_b))
       {
@@ -1540,8 +1534,8 @@
 
     template<const std::uint_fast32_t OtherDigits2>
     static WIDE_INTEGER_CONSTEXPR void eval_mul_unary(      uintwide_t<OtherDigits2, LimbType, AllocatorType>& u,
-                                         const uintwide_t<OtherDigits2, LimbType, AllocatorType>& v,
-                                         typename std::enable_if<((OtherDigits2 / std::numeric_limits<LimbType>::digits) >= number_of_limbs_karatsuba_threshold)>::type* = nullptr)
+                                                      const uintwide_t<OtherDigits2, LimbType, AllocatorType>& v,
+                                                      typename std::enable_if<((OtherDigits2 / std::numeric_limits<LimbType>::digits) >= number_of_limbs_karatsuba_threshold)>::type* = nullptr)
     {
       // Unary multiplication function using Karatsuba multiplication.
 
@@ -2000,9 +1994,9 @@
     #endif
                                      )>::type const* = nullptr>
     static WIDE_INTEGER_CONSTEXPR void eval_multiply_n_by_n_to_lo_part(      LimbType*          r,
-                                                                       const LimbType*          a,
-                                                                       const LimbType*          b,
-                                                                       const std::uint_fast32_t count)
+                                                const LimbType*          a,
+                                                const LimbType*          b,
+                                                const std::uint_fast32_t count)
     {
       using local_limb_type        = typename uintwide_t<RePhraseDigits2, LimbType, AllocatorType>::limb_type;
       using local_double_limb_type = typename uintwide_t<RePhraseDigits2, LimbType, AllocatorType>::double_limb_type;
@@ -3656,7 +3650,7 @@
            typename LimbType,
            typename AllocatorType>
   WIDE_INTEGER_CONSTEXPR uintwide_t<Digits2, LimbType, AllocatorType> gcd(const uintwide_t<Digits2, LimbType, AllocatorType>& a,
-                                                             const uintwide_t<Digits2, LimbType, AllocatorType>& b)
+                                                                          const uintwide_t<Digits2, LimbType, AllocatorType>& b)
   {
     // This implementation of GCD is an adaptation
     // of existing code from Boost.Multiprecision.
@@ -3754,8 +3748,8 @@
 
   template<typename UnsignedShortType>
   WIDE_INTEGER_CONSTEXPR typename std::enable_if<(   (std::is_fundamental<UnsignedShortType>::value == true)
-                                     && (std::is_integral   <UnsignedShortType>::value == true)
-                                     && (std::is_unsigned   <UnsignedShortType>::value == true)), UnsignedShortType>::type
+                           && (std::is_integral   <UnsignedShortType>::value == true)
+                           && (std::is_unsigned   <UnsignedShortType>::value == true)), UnsignedShortType>::type
   gcd(const UnsignedShortType& u, const UnsignedShortType& v)
   {
     UnsignedShortType result;
@@ -3900,7 +3894,7 @@
 
       using generator_result_type = typename GeneratorType::result_type;
 
-      constexpr std::uint32_t digits_generator_result_type = static_cast<std::uint32_t>(GeneratorResultBits);
+      constexpr const std::uint32_t digits_generator_result_type = static_cast<std::uint32_t>(GeneratorResultBits);
 
       static_assert((digits_generator_result_type % 8U) == 0U,
                     "Error: Generator result type must have a multiple of 8 bits.");
