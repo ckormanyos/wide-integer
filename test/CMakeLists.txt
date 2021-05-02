@@ -1,6 +1,5 @@
 enable_testing()
 find_package(Threads)
-find_package(Boost 1.55.0)
 add_executable(test_uintwide_t
   test_uintwide_t_boost_backend.cpp
   test_uintwide_t_edge_cases.cpp
