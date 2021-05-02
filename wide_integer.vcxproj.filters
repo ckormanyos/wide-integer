@@ -153,4 +153,12 @@
       <Filter>_doc</Filter>
     </None>
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="examples\CMakeLists.txt">
+      <Filter>Source Files\examples</Filter>
+    </Text>
+    <Text Include="test\CMakeLists.txt">
+      <Filter>Source Files\test</Filter>
+    </Text>
+  </ItemGroup>
 </Project>
