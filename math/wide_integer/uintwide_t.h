@@ -1559,7 +1559,7 @@
 
       const auto mismatch_pair = detail::mismatch(rcbegin_a, rcend_a, rcbegin_b);
 
-      std::int_fast8_t n_return;
+      std::int_fast8_t n_return{};
 
       if((mismatch_pair.first != rcend_a) || (mismatch_pair.second != rcend_b))
       {
@@ -1588,7 +1588,7 @@
 
       constexpr std::uint_fast32_t local_number_of_limbs = uintwide_t<OtherDigits2, LimbType, AllocatorType>::number_of_limbs;
 
-      representation_type result;
+      representation_type result{};
 
       eval_multiply_n_by_n_to_lo_part(result.data(),
                                       u.values.data(),
@@ -2188,8 +2188,8 @@
                                       detail::fixed_static_array <limb_type, number_of_limbs + 1U>,
                                       detail::fixed_dynamic_array<limb_type, number_of_limbs + 1U, AllocatorType>>::type;
 
-          uu_array_type       uu;
-          representation_type vv;
+          uu_array_type       uu{};
+          representation_type vv{};
 
           if(d > limb_type(1U))
           {
@@ -2247,7 +2247,7 @@
             // Replace u[j, ... j + n] by u[j, ... j + n] - q_hat * v[1, ... n].
 
             // Set nv = q_hat * (v[1, ... n]).
-            uu_array_type nv;
+            uu_array_type nv{};
 
             nv[n] = eval_multiply_1d(nv.data(), vv.data(), q_hat, n);
 
@@ -2907,7 +2907,7 @@
 
     using local_unsigned_integral_type = UnsignedIntegralType;
 
-    std::int_fast32_t i;
+    std::int_fast32_t i{};
 
     // TBD: This could potentially be improved with a binary
     // search for the highest bit position in the type.
@@ -3484,7 +3484,7 @@
       // Let shift := lg K, where K is the greatest
       // power of 2 dividing both u and v.
 
-      std::uint_fast32_t left_shift_amount;
+      std::uint_fast32_t left_shift_amount{};
 
       {
         const std::uint_fast32_t u_shift = lsb(u);
