@@ -914,7 +914,7 @@
     // Implement the cast operator that casts to the double-width type.
     template<typename UnknownUnsignedWideIntegralType = double_width_type,
              typename = typename std::enable_if<(std::is_same<UnknownUnsignedWideIntegralType, double_width_type>::value == true)>::type>
-    constexpr operator double_width_type() const
+    WIDE_INTEGER_CONSTEXPR operator double_width_type() const
     {
       double_width_type local_double_width_instance;
 
@@ -935,8 +935,8 @@
     WIDE_INTEGER_CONSTEXPR const representation_type& crepresentation() const { return values; }
 
     // Unary operators: not, plus and minus.
-    constexpr const uintwide_t& operator+() const { return *this; }
-    constexpr       uintwide_t  operator-() const { uintwide_t tmp(*this); tmp.negate(); return tmp; }
+    WIDE_INTEGER_CONSTEXPR const uintwide_t& operator+() const { return *this; }
+    WIDE_INTEGER_CONSTEXPR       uintwide_t  operator-() const { uintwide_t tmp(*this); tmp.negate(); return tmp; }
 
     WIDE_INTEGER_CONSTEXPR uintwide_t& operator+=(const uintwide_t& other)
     {
