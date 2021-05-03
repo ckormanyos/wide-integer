@@ -163,5 +163,6 @@
     <Text Include="test\CMakeLists.txt">
       <Filter>Source Files\test</Filter>
     </Text>
+    <Text Include="CMakeLists.txt" />
   </ItemGroup>
 </Project>
