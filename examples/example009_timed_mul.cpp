@@ -21,7 +21,7 @@
 
 namespace
 {
-  UINTWIDE_T_TEST_CONSTEXPR std::uint32_t wide_integer_test9_digits2 = std::uint32_t(1ULL << 15U);
+  constexpr std::uint32_t wide_integer_test9_digits2 = std::uint32_t(1ULL << 15U);
 
   template<typename UnsignedIntegralIteratorType,
            typename RandomEngineType>
