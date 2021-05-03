@@ -12,11 +12,11 @@ bool math::wide_integer::example003_sqrt()
 {
   using uint256_t = math::wide_integer::uint256_t;
 
-  const uint256_t a("0xF4DF741DE58BCB2F37F18372026EF9CBCFC456CB80AF54D53BDEED78410065DE");
+  UINTWIDE_T_TEST_CONSTEXPR uint256_t a("0xF4DF741DE58BCB2F37F18372026EF9CBCFC456CB80AF54D53BDEED78410065DE");
 
-  const uint256_t s = sqrt(a);
+  UINTWIDE_T_TEST_CONSTEXPR uint256_t s = sqrt(a);
 
-  const bool result_is_ok =
+  UINTWIDE_T_TEST_CONSTEXPR bool result_is_ok =
     (s == "0xFA5FE7853F1D4AD92BDF244179CA178B");
 
   return result_is_ok;

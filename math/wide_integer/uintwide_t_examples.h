@@ -10,6 +10,12 @@
 
   // This file contains function prototypes of the uintwide_t examples.
 
+  #if defined(__cpp_lib_constexpr_algorithms) && (__cpp_lib_constexpr_algorithms>=201806)
+    #define UINTWIDE_T_TEST_CONSTEXPR constexpr
+  #else
+    #define UINTWIDE_T_TEST_CONSTEXPR const
+  #endif
+
   namespace math { namespace wide_integer {
 
   bool example001_mul_div            ();
@@ -25,6 +31,7 @@
   bool example008a_miller_rabin_prime();
   bool example009_timed_mul          ();
   bool example009a_timed_mul_4_by_4  ();
+  bool example009b_timed_mul_8_by_8  ();
   bool example010_uint48_t           ();
   bool example011_uint24_t           ();
 

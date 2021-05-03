@@ -81,10 +81,36 @@ how to use wide-integer.
   - ![`example008a_miller_rabin_prime.cpp`](./examples/example008a_miller_rabin_prime.cpp) tests Boost interaction with Miller-Rabin primality checks.
   - ![`example009_timed_mul.cpp`](./examples/example009_timed_mul.cpp) measures multiplication timings.
   - ![`example009a_timed_mul_4_by_4.cpp`](./examples/example009a_timed_mul_4_by_4.cpp) also measures multiplication timings for the special case of wide integers having 4 limbs.
+  - ![`example009b_timed_mul_8_by_8.cpp`](./examples/example009b_timed_mul_8_by_8.cpp) yet again measures multiplication timings for the special case of wide integers having 8 limbs.
   - ![`example010_uint48_t.cpp`](./examples/example010_uint48_t.cpp) verifies 48-bit integer caluclations.
   - ![`example011_uint24_t.cpp`](./examples/example011_uint24_t.cpp) performs calculations with 24-bits, which is definitely on the small side of the range of wide-integer.
 
-## Testing and CI
+## Building, testing and CI
+
+### Build Status
+[![Build Status](https://github.com/ckormanyos/wide-integer/actions/workflows/wide_integer.yml/badge.svg)](https://github.com/ckormanyos/wide-integer/actions)
+
+Building and running the tests can be accomplished using the provided Microsoft VisualStudio solution workspace.
+
+You can also build and run tests from an empty directory using CMake:
+
+```sh
+cmake /path/to/wide-integer
+cmake --build .
+ctest --verbose
+```
+
+Alternatively building with native GCC (i.e., on *nix) can be executed with a simple command line.
+Consider, for instance, building in Linux with GCC in the presence of `unsigned __int128`.
+Boost is used for some examples and tests.
+In this build example, Boost intended to be located in the made-up directory `../boost-root`,
+which needs to be adapted according to the actual location of Boost.
+
+```
+cd wide_integer
+g++ -finline-functions -finline-limit=32 -march=native -mtune=native -O3 -Wall -Wextra -Wno-maybe-uninitialized -Wno-cast-function-type -std=gnu++11 -DWIDE_INTEGER_HAS_LIMB_TYPE_UINT64 -I. -I../boost-root -pthread -lpthread  test/test.cpp test/test_uintwide_t_boost_backend.cpp test/test_uintwide_t_edge_cases.cpp test/test_uintwide_t_examples.cpp test/test_uintwide_t_n_base.cpp test/test_uintwide_t_n_binary_ops_base.cpp test/test_uintwide_t_spot_values.cpp examples/example001a_div_mod.cpp examples/example001_mul_div.cpp examples/example002_shl_shr.cpp examples/example003a_cbrt.cpp examples/example003_sqrt.cpp examples/example004_rootk_pow.cpp examples/example005_powm.cpp examples/example006_gcd.cpp examples/example007_random_generator.cpp examples/example008_miller_rabin_prime.cpp examples/example008a_miller_rabin_prime.cpp examples/example009_timed_mul.cpp examples/example009a_timed_mul_4_by_4.cpp examples/example009b_timed_mul_8_by_8.cpp examples/example010_uint48_t.cpp examples/example011_uint24_t.cpp -o wide_integer.exe
+```
+
 
 Testing is a big issue and a growing test suite is in continued progress
 providing for tested, efficient functionality on the PC and workstation.
@@ -95,10 +121,7 @@ Continuous integration runs on push using GitHub Actions.
 Various compilers, operating systems, and C++ standards
 ranging from C++11, 14, 17, 20 are included in CI.
 
-### Build Status
-[![Build Status](https://github.com/ckormanyos/wide-integer/actions/workflows/wide_integer.yml/badge.svg)](https://github.com/ckormanyos/wide-integer/actions)
-
-## Details
+## Additional details
 
 Wide-Integer has been tested with numerous compilers, for target systems ranging from 8 to 64 bits.
 The library is specifically designed for efficiency with small to medium bit counts.
@@ -144,6 +167,8 @@ command line with:
 -DWIDE_INTEGER_HAS_LIMB_TYPE_UINT64
 ```
 
+This macro is disabled by default.
+
 The example below, for instance, uses a 64-bit limb type
 on GCC or clang.
 
@@ -157,6 +182,16 @@ using uint_fast256_t = math::wide_integer::uintwide_t<256U, std::uint64_t>;
 static uint_fast256_t x = 42U;
 ```
 
+Another potential optimization macro can be activated with
+
+```
+#define WIDE_INTEGER_HAS_MUL_8_BY_8_UNROLL
+```
+
+This macro might improve performance on some target/compiler systems
+by manually unrolling the multiplication loop(s) for
+`uintwide_t` instances having 8 limbs. This macro is disabled
+by default.
 
 ## Detailed Examples
 
