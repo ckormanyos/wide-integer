@@ -94,28 +94,28 @@ bool test_uintwide_t_small_bits()
 bool test_uintwide_t_boost_backend()
 {
   std::cout << "running: test_uintwide_t_boost_backend" << std::endl;
-  const bool result_test_uintwide_t_boost_backend_is_ok = ::test_uintwide_t_boost_backend();
+  const bool result_test_uintwide_t_boost_backend_is_ok = math::wide_integer::test_uintwide_t_boost_backend();
   return result_test_uintwide_t_boost_backend_is_ok;
 }
 
 bool test_uintwide_t_examples()
 {
   std::cout << "running: test_uintwide_t_examples" << std::endl;
-  const bool result_test_uintwide_t_examples_is_ok = ::test_uintwide_t_examples();
+  const bool result_test_uintwide_t_examples_is_ok = math::wide_integer::test_uintwide_t_examples();
   return result_test_uintwide_t_examples_is_ok;
 }
 
 bool test_uintwide_t_edge_cases()
 {
   std::cout << "running: test_uintwide_t_edge_cases" << std::endl;
-  const bool result_test_uintwide_t_edge_cases_is_ok = ::test_uintwide_t_edge_cases();
+  const bool result_test_uintwide_t_edge_cases_is_ok = math::wide_integer::test_uintwide_t_edge_cases();
   return result_test_uintwide_t_edge_cases_is_ok;
 }
 
 bool test_uintwide_t_spot_values()
 {
   std::cout << "running: test_uintwide_t_spot_values" << std::endl;
-  const bool result_test_uintwide_t_spot_values_is_ok = ::test_uintwide_t_spot_values();
+  const bool result_test_uintwide_t_spot_values_is_ok = math::wide_integer::test_uintwide_t_spot_values();
   return result_test_uintwide_t_spot_values_is_ok;
 }
 

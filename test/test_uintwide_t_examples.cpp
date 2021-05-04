@@ -10,8 +10,9 @@
 
 #include <math/wide_integer/uintwide_t.h>
 #include <math/wide_integer/uintwide_t_examples.h>
+#include <test/test_uintwide_t.h>
 
-bool test_uintwide_t_examples()
+bool math::wide_integer::test_uintwide_t_examples()
 {
   bool result_is_ok = true;
 

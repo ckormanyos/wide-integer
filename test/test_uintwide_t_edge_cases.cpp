@@ -12,6 +12,7 @@
 #include <boost/multiprecision/uintwide_t_backend.hpp>
 
 #include <math/wide_integer/uintwide_t.h>
+#include <test/test_uintwide_t.h>
 
 namespace
 {
@@ -31,7 +32,7 @@ using boost_uint_type =
   boost::multiprecision::number<boost_uint_backend_type,
                                 boost::multiprecision::et_off>;
 
-bool test_uintwide_t_edge_cases()
+bool math::wide_integer::test_uintwide_t_edge_cases()
 {
   const local_uint_type u_max_local = (std::numeric_limits<local_uint_type>::max)();
   const boost_uint_type u_max_boost = (std::numeric_limits<boost_uint_type>::max)();

@@ -98,7 +98,7 @@
       </PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile />
       <DisableSpecificWarnings>4996</DisableSpecificWarnings>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
       <AdditionalOptions>/bigobj</AdditionalOptions>
     </ClCompile>
     <Link>
@@ -118,7 +118,7 @@
       </PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile />
       <DisableSpecificWarnings>4996</DisableSpecificWarnings>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
       <AdditionalOptions>/bigobj</AdditionalOptions>
     </ClCompile>
     <Link>
@@ -141,7 +141,7 @@
       <PrecompiledHeaderOutputFile />
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <DisableSpecificWarnings>4996</DisableSpecificWarnings>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
       <AdditionalOptions>/bigobj</AdditionalOptions>
     </ClCompile>
     <Link>
@@ -166,7 +166,7 @@
       <PrecompiledHeaderOutputFile />
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <DisableSpecificWarnings>4996</DisableSpecificWarnings>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
       <AdditionalOptions>/bigobj</AdditionalOptions>
     </ClCompile>
     <Link>
