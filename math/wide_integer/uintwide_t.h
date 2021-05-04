@@ -24,8 +24,7 @@
   #include <limits>
   #include <type_traits>
 
-  #if defined(WIDE_INTEGER_DISABLE_IOSTREAM)
-  #else
+  #if !defined(WIDE_INTEGER_DISABLE_IOSTREAM)
   #include <iomanip>
   #include <istream>
   #include <ostream>
@@ -270,8 +269,7 @@
                                      && (std::is_integral   <IntegralType>::value == true)), bool>::type
   operator<=(const IntegralType& u, const uintwide_t<Digits2, LimbType, AllocatorType>& v);
 
-  #if defined(WIDE_INTEGER_DISABLE_IOSTREAM)
-  #else
+  #if !defined(WIDE_INTEGER_DISABLE_IOSTREAM)
 
   // Forward declarations of I/O streaming functions.
   template<typename char_type,
@@ -2742,12 +2740,12 @@
     {
       auto it = values.cbegin();
 
-      while(it != values.cend() && *it == limb_type(0U))
+      while((it != values.cend()) && (*it == limb_type(0U)))
       {
         ++it;
       }
 
-      return it == values.cend();
+      return (it == values.cend());
     }
   };
 
@@ -3013,8 +3011,7 @@
                                      && (std::is_integral   <IntegralType>::value == true)), bool>::type
   operator<=(const IntegralType& u, const uintwide_t<Digits2, LimbType, AllocatorType>& v) { return uintwide_t<Digits2, LimbType, AllocatorType>(u).operator<=(v); }
 
-  #if defined(WIDE_INTEGER_DISABLE_IOSTREAM)
-  #else
+  #if !defined(WIDE_INTEGER_DISABLE_IOSTREAM)
 
   // I/O streaming functions.
   template<typename char_type,

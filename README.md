@@ -30,6 +30,7 @@ as shown in the [examples](./examples).
   - Clean header-only C++11 design
   - Seamless portability to any modern C++11, 14, 17, 20 compiler
   - Scalability with small memory footprint and efficiency suitable for both PC/workstation systems as well as _bare-metal_ embedded systems
+  - Support `constexpr`-ness for construction, binary arithmetic operations and some rudimentary functions provided C++14 or higher is being used to compile.
 
 ## Quick start
 Easy application follows via a traditional C-style typedef or C++11 alias.
@@ -143,6 +144,17 @@ Portability of the code is another key point of focus. Special care
 has been taken to test in certain high-performance embedded real-time
 programming environments.
 
+### Compiler switches
+
+Various configuration features can optionally be
+enabled or disabled with the compiler switches:
+
+```
+#define WIDE_INTEGER_DISABLE_IOSTREAM
+#define WIDE_INTEGER_HAS_LIMB_TYPE_UINT64
+#define WIDE_INTEGER_HAS_MUL_8_BY_8_UNROLL
+```
+
 When working with even the most tiny microcontroller systems,
 I/O streaming can optionally be disabled with the compiler switch:
 
@@ -192,6 +204,20 @@ This macro might improve performance on some target/compiler systems
 by manually unrolling the multiplication loop(s) for
 `uintwide_t` instances having 8 limbs. This macro is disabled
 by default.
+
+### C++14, 17, 20 `constexpr` support
+
+C++ 14, 17, 20 `constexpr` allows for compile-time evaluation
+of `uintwide_t` construction, binary arithmetic and comparison operators
+and various elementary functions.
+
+The compiler definition `WIDE_INTEGER_CONSTEXPR` acts as a synonym for
+`constexpr` and the when using `uintwide_t`.
+The preprocessor symbol `WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST`
+has the value of 0 or 1, where 1 indicatesthat `uintwide_t`
+values qualified with `WIDE_INTEGER_CONSTEXPR` are actually
+compile-time constant (i.e., `constexpr`).
+See the examples for use cases.
 
 ## Detailed Examples
 
