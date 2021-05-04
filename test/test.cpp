@@ -16,7 +16,7 @@
 #include <iomanip>
 #include <iostream>
 
-#include <test/test_uintwide_t.h>
+#include <math/wide_integer/uintwide_t_test.h>
 #include <test/test_uintwide_t_n_binary_ops_template.h>
 #include <test/test_uintwide_t_n_binary_ops_mul_n_by_m_template.h>
 #include <test/test_uintwide_t_n_binary_ops_mul_div_4_by_4_template.h>

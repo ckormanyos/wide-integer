@@ -10,34 +10,6 @@
 
   // This file contains function prototypes of the uintwide_t examples.
 
-  #if defined(_MSC_VER)
-    #if defined(_HAS_CXX20) && (_HAS_CXX20 != 0)
-      #define UINTWIDE_T_EXAMPLES_CONSTEXPR constexpr
-    #else
-      #define UINTWIDE_T_EXAMPLES_CONSTEXPR
-    #endif
-  #else
-    #if (defined(__cplusplus) && (__cplusplus >= 201402L))
-      #if defined(__AVR__) && (!defined(__GNUC__) || (defined(__GNUC__) && (__GNUC__ > 6)))
-      #define UINTWIDE_T_EXAMPLES_CONSTEXPR constexpr
-      #elif (defined(__cpp_lib_constexpr_algorithms) && (__cpp_lib_constexpr_algorithms>=201806))
-        #if defined(__clang__)
-          #if (__clang_major__ > 9)
-          #define UINTWIDE_T_EXAMPLES_CONSTEXPR constexpr
-          #else
-          #define UINTWIDE_T_EXAMPLES_CONSTEXPR
-          #endif
-        #else
-        #define UINTWIDE_T_EXAMPLES_CONSTEXPR constexpr
-        #endif
-      #else
-      #define UINTWIDE_T_EXAMPLES_CONSTEXPR
-      #endif
-    #else
-      #define UINTWIDE_T_EXAMPLES_CONSTEXPR
-    #endif
-  #endif
-
   namespace math { namespace wide_integer {
 
   bool example001_mul_div            ();

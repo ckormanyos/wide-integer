@@ -6,7 +6,7 @@
 //
 
 #include <math/wide_integer/uintwide_t.h>
-#include <test/test_uintwide_t.h>
+#include <math/wide_integer/uintwide_t_test.h>
 
 bool math::wide_integer::test_uintwide_t_spot_values()
 {
@@ -62,7 +62,7 @@ bool math::wide_integer::test_uintwide_t_spot_values()
     // Modulus:
     //   a % b = 0x14998D5CA3DB6385F7DEDF4621DE48A9104AC13797C6567713D7ABC216D7AB4C
 
-    UINTWIDE_T_TESTS_CONSTEXPR uint256_t a
+    WIDE_INTEGER_CONSTEXPR uint256_t a
     (
       {
         UINT32_C(0x410065DE),
@@ -76,7 +76,7 @@ bool math::wide_integer::test_uintwide_t_spot_values()
       }
     );
 
-    UINTWIDE_T_TESTS_CONSTEXPR uint256_t b
+    WIDE_INTEGER_CONSTEXPR uint256_t b
     (
       {
         UINT32_C(0x9DD0DF75),
@@ -90,7 +90,7 @@ bool math::wide_integer::test_uintwide_t_spot_values()
       }
     );
 
-    UINTWIDE_T_TESTS_CONSTEXPR uint256_t c
+    WIDE_INTEGER_CONSTEXPR uint256_t c
     (
       {
         UINT32_C(0xF84AF076),
@@ -106,11 +106,11 @@ bool math::wide_integer::test_uintwide_t_spot_values()
 
     result_is_ok &= ((a * b) == c);
 
-    UINTWIDE_T_TESTS_CONSTEXPR uint256_t q(10U);
+    WIDE_INTEGER_CONSTEXPR uint256_t q(10U);
 
     result_is_ok &= ((a / b) == q);
 
-    UINTWIDE_T_TESTS_CONSTEXPR uint256_t m
+    WIDE_INTEGER_CONSTEXPR uint256_t m
     (
       {
         UINT32_C(0x16D7AB4C),

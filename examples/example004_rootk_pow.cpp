@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////
-//  Copyright Christopher Kormanyos 2018 - 2020.                 //
+//  Copyright Christopher Kormanyos 2018 - 2021.                 //
 //  Distributed under the Boost Software License,                //
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt          //
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)             //
@@ -12,24 +12,35 @@ bool math::wide_integer::example004_rootk_pow()
 {
   using uint256_t = math::wide_integer::uint256_t;
 
-  bool result_is_ok_root;
-  bool result_is_ok_pow;
+  bool result_is_ok = true;
 
   {
-    UINTWIDE_T_EXAMPLES_CONSTEXPR uint256_t x("0x95E0E51079E1D11737D3FD01429AA745582FEB4381D61FA56948C1A949E43C32");
-    UINTWIDE_T_EXAMPLES_CONSTEXPR uint256_t r = rootk(x, 7U);
+    WIDE_INTEGER_CONSTEXPR uint256_t x("0x95E0E51079E1D11737D3FD01429AA745582FEB4381D61FA56948C1A949E43C32");
+    WIDE_INTEGER_CONSTEXPR uint256_t r = rootk(x, 7U);
 
-    result_is_ok_root = (r == UINT64_C(0x16067D1894));
+    WIDE_INTEGER_CONSTEXPR bool result_is_ok_root = (r == UINT64_C(0x16067D1894));
+
+    result_is_ok &= result_is_ok_root;
+
+    #if defined(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST) && (WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST != 0)
+    static_assert(result_is_ok_root == true, "Error: example004_rootk_pow not OK!");
+    #endif
   }
 
   {
-    UINTWIDE_T_EXAMPLES_CONSTEXPR uint256_t r(UINT64_C(0x16067D1894));
-    UINTWIDE_T_EXAMPLES_CONSTEXPR uint256_t p = pow(r, 7U);
+    WIDE_INTEGER_CONSTEXPR uint256_t r(UINT64_C(0x16067D1894));
+    WIDE_INTEGER_CONSTEXPR uint256_t p = pow(r, 7U);
 
-    result_is_ok_pow = (p == "0x95E0E5104B2F636571834936C982E40EFA25682E7370CD1C248051E1CDC34000");
+    WIDE_INTEGER_CONSTEXPR bool result_is_ok_pow = (p == "0x95E0E5104B2F636571834936C982E40EFA25682E7370CD1C248051E1CDC34000");
+
+    result_is_ok &= result_is_ok_pow;
+
+    #if defined(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST) && (WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST != 0)
+    static_assert(result_is_ok_pow == true, "Error: example004_rootk_pow not OK!");
+    #endif
   }
 
-  return (result_is_ok_root && result_is_ok_pow);
+  return result_is_ok;
 }
 
 // Enable this if you would like to activate this main() as a standalone example.

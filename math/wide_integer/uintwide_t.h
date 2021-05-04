@@ -35,30 +35,38 @@
   #include <util/utility/util_dynamic_array.h>
 
   #if defined(_MSC_VER)
-    #if defined(_HAS_CXX20) && (_HAS_CXX20 != 0)
+    #if (_MSC_VER >= 1900) && defined(_HAS_CXX20) && (_HAS_CXX20 != 0)
       #define WIDE_INTEGER_CONSTEXPR constexpr
+      #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 1
     #else
       #define WIDE_INTEGER_CONSTEXPR
+      #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 0
     #endif
   #else
     #if (defined(__cplusplus) && (__cplusplus >= 201402L))
       #if defined(__AVR__) && (!defined(__GNUC__) || (defined(__GNUC__) && (__GNUC__ > 6)))
       #define WIDE_INTEGER_CONSTEXPR constexpr
+      #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 1
       #elif (defined(__cpp_lib_constexpr_algorithms) && (__cpp_lib_constexpr_algorithms>=201806))
         #if defined(__clang__)
           #if (__clang_major__ > 9)
           #define WIDE_INTEGER_CONSTEXPR constexpr
+          #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 1
           #else
           #define WIDE_INTEGER_CONSTEXPR
+          #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 0
           #endif
         #else
         #define WIDE_INTEGER_CONSTEXPR constexpr
+        #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 1
         #endif
       #else
       #define WIDE_INTEGER_CONSTEXPR
+      #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 0
       #endif
     #else
       #define WIDE_INTEGER_CONSTEXPR
+      #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 0
     #endif
   #endif
 
