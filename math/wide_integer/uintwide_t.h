@@ -1540,7 +1540,23 @@
     }
 
   private:
-    representation_type values{};
+    representation_type values { };
+
+    template<const bool RePhraseIsSigned = IsSigned,
+             typename std::enable_if<(RePhraseIsSigned == false)>::type const* = nullptr>
+    static WIDE_INTEGER_CONSTEXPR bool is_neg(const uintwide_t<Digits2, LimbType, AllocatorType, RePhraseIsSigned>& a)
+    {
+      return false;
+    }
+
+    template<const bool RePhraseIsSigned = IsSigned,
+             typename std::enable_if<(RePhraseIsSigned == true)>::type const* = nullptr>
+    static WIDE_INTEGER_CONSTEXPR bool is_neg(const uintwide_t<Digits2, LimbType, AllocatorType, RePhraseIsSigned>& a)
+    {
+      using local_limb_type = typename uintwide_t<Digits2, LimbType, AllocatorType, RePhraseIsSigned>::limb_type;
+
+      return ((std::uint_fast8_t(a.values[0U] >> std::numeric_limits<local_limb_type>::digits) & 1U) != 0U);
+    }
 
     static WIDE_INTEGER_CONSTEXPR std::int_fast8_t compare_ranges(const limb_type*         a,
                                                                   const limb_type*         b,
@@ -1561,15 +1577,15 @@
     }
 
     template<const std::uint_fast32_t OtherDigits2>
-    static WIDE_INTEGER_CONSTEXPR void eval_mul_unary(      uintwide_t<OtherDigits2, LimbType, AllocatorType>& u,
-                                                      const uintwide_t<OtherDigits2, LimbType, AllocatorType>& v,
+    static WIDE_INTEGER_CONSTEXPR void eval_mul_unary(      uintwide_t<OtherDigits2, LimbType, AllocatorType, IsSigned>& u,
+                                                      const uintwide_t<OtherDigits2, LimbType, AllocatorType, IsSigned>& v,
                                                       typename std::enable_if<((OtherDigits2 / std::numeric_limits<LimbType>::digits) < number_of_limbs_karatsuba_threshold)>::type* = nullptr)
     {
       // Unary multiplication function using schoolbook multiplication,
       // but we only need to retain the low half of the n*n algorithm.
       // In other words, this is an n*n->n bit multiplication.
 
-      constexpr std::uint_fast32_t local_number_of_limbs = uintwide_t<OtherDigits2, LimbType, AllocatorType>::number_of_limbs;
+      constexpr std::uint_fast32_t local_number_of_limbs = uintwide_t<OtherDigits2, LimbType, AllocatorType, IsSigned>::number_of_limbs;
 
       representation_type result{};
 
@@ -1584,13 +1600,13 @@
     }
 
     template<const std::uint_fast32_t OtherDigits2>
-    static WIDE_INTEGER_CONSTEXPR void eval_mul_unary(      uintwide_t<OtherDigits2, LimbType, AllocatorType>& u,
-                                                      const uintwide_t<OtherDigits2, LimbType, AllocatorType>& v,
+    static WIDE_INTEGER_CONSTEXPR void eval_mul_unary(      uintwide_t<OtherDigits2, LimbType, AllocatorType, IsSigned>& u,
+                                                      const uintwide_t<OtherDigits2, LimbType, AllocatorType, IsSigned>& v,
                                                       typename std::enable_if<((OtherDigits2 / std::numeric_limits<LimbType>::digits) >= number_of_limbs_karatsuba_threshold)>::type* = nullptr)
     {
       // Unary multiplication function using Karatsuba multiplication.
 
-      constexpr std::uint_fast32_t local_number_of_limbs = uintwide_t<OtherDigits2, LimbType, AllocatorType>::number_of_limbs;
+      constexpr std::uint_fast32_t local_number_of_limbs = uintwide_t<OtherDigits2, LimbType, AllocatorType, IsSigned>::number_of_limbs;
 
       // TBD: Can use specialized allocator or memory pool for these arrays.
       // Good examples for this (both threaded as well as non-threaded)
@@ -1655,7 +1671,7 @@
     }
 
     template<const std::uint_fast32_t RePhraseDigits2 = Digits2,
-             typename std::enable_if<(uintwide_t<RePhraseDigits2, LimbType, AllocatorType>::number_of_limbs == 4U)>::type const* = nullptr>
+             typename std::enable_if<(uintwide_t<RePhraseDigits2, LimbType, AllocatorType, IsSigned>::number_of_limbs == 4U)>::type const* = nullptr>
     static WIDE_INTEGER_CONSTEXPR void eval_multiply_n_by_n_to_lo_part(      LimbType*          r,
                                                                        const LimbType*          a,
                                                                        const LimbType*          b,
@@ -1663,8 +1679,8 @@
     {
       static_cast<void>(count);
 
-      using local_limb_type        = typename uintwide_t<RePhraseDigits2, LimbType, AllocatorType>::limb_type;
-      using local_double_limb_type = typename uintwide_t<RePhraseDigits2, LimbType, AllocatorType>::double_limb_type;
+      using local_limb_type        = typename uintwide_t<RePhraseDigits2, LimbType, AllocatorType, IsSigned>::limb_type;
+      using local_double_limb_type = typename uintwide_t<RePhraseDigits2, LimbType, AllocatorType, IsSigned>::double_limb_type;
 
       // The algorithm has been derived from the polynomial multiplication.
       // After the multiplication terms of equal order are grouped
@@ -1761,7 +1777,7 @@
 
     #if defined(WIDE_INTEGER_HAS_MUL_8_BY_8_UNROLL)
     template<const std::uint_fast32_t RePhraseDigits2 = Digits2,
-             typename std::enable_if<(uintwide_t<RePhraseDigits2, LimbType, AllocatorType>::number_of_limbs == 8U)>::type const* = nullptr>
+             typename std::enable_if<(uintwide_t<RePhraseDigits2, LimbType, AllocatorType, IsSigned>::number_of_limbs == 8U)>::type const* = nullptr>
     static WIDE_INTEGER_CONSTEXPR void eval_multiply_n_by_n_to_lo_part(      LimbType*          r,
                                                                        const LimbType*          a,
                                                                        const LimbType*          b,
@@ -1769,8 +1785,8 @@
     {
       static_cast<void>(count);
 
-      using local_limb_type        = typename uintwide_t<RePhraseDigits2, LimbType, AllocatorType>::limb_type;
-      using local_double_limb_type = typename uintwide_t<RePhraseDigits2, LimbType, AllocatorType>::double_limb_type;
+      using local_limb_type        = typename uintwide_t<RePhraseDigits2, LimbType, AllocatorType, IsSigned>::limb_type;
+      using local_double_limb_type = typename uintwide_t<RePhraseDigits2, LimbType, AllocatorType, IsSigned>::double_limb_type;
 
       // The algorithm has been derived from the polynomial multiplication.
       // After the multiplication terms of equal order are grouped
