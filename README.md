@@ -25,12 +25,12 @@ as shown in the [examples](./examples).
 
 ## Implementation goals
 
-  - Relatively wide precision range from 24, 32, 64 bits up to a few tens of thousands of bits
-  - Moderately good efficiency over the entire wide precision range
-  - Clean header-only C++11 design
-  - Seamless portability to any modern C++11, 14, 17, 20 compiler
-  - Scalability with small memory footprint and efficiency suitable for both PC/workstation systems as well as _bare-metal_ embedded systems
-  - Support `constexpr`-ness for construction, binary arithmetic operations and some rudimentary functions provided C++14 or higher is being used to compile.
+  - Relatively wide precision range from 24, 32, 64 bits up to tens of thousands of bits.
+  - Moderately good efficiency over the entire wide precision range.
+  - Clean header-only C++11 design.
+  - Seamless portability to any modern C++11, 14, 17, 20 compiler.
+  - Scalability with small memory footprint and efficiency suitable for both PC/workstation systems as well as _bare-metal_ embedded systems.
+  - Support C++20 `constexpr`-ness for construction, binary arithmetic and comparison operations, and some elementary functions.
 
 ## Quick start
 Easy application follows via a traditional C-style typedef or C++11 alias.
@@ -40,7 +40,7 @@ with unsigned value `3U`.
 
 In particular,
 
-```
+```C
 #include <math/wide_integer/uintwide_t.h>
 
 using uint512_t = math::wide_integer::uintwide_t<512U, std::uint32_t>;
@@ -107,7 +107,7 @@ Boost is used for some examples and tests.
 In this build example, Boost intended to be located in the made-up directory `../boost-root`,
 which needs to be adapted according to the actual location of Boost.
 
-```
+```C
 cd wide_integer
 g++ -finline-functions -finline-limit=32 -march=native -mtune=native -O3 -Wall -Wextra -Wno-maybe-uninitialized -Wno-cast-function-type -std=gnu++11 -DWIDE_INTEGER_HAS_LIMB_TYPE_UINT64 -I. -I../boost-root -pthread -lpthread  test/test.cpp test/test_uintwide_t_boost_backend.cpp test/test_uintwide_t_edge_cases.cpp test/test_uintwide_t_examples.cpp test/test_uintwide_t_n_base.cpp test/test_uintwide_t_n_binary_ops_base.cpp test/test_uintwide_t_spot_values.cpp examples/example001a_div_mod.cpp examples/example001_mul_div.cpp examples/example002_shl_shr.cpp examples/example003a_cbrt.cpp examples/example003_sqrt.cpp examples/example004_rootk_pow.cpp examples/example005_powm.cpp examples/example006_gcd.cpp examples/example007_random_generator.cpp examples/example008_miller_rabin_prime.cpp examples/example008a_miller_rabin_prime.cpp examples/example009_timed_mul.cpp examples/example009a_timed_mul_4_by_4.cpp examples/example009b_timed_mul_8_by_8.cpp examples/example010_uint48_t.cpp examples/example011_uint24_t.cpp -o wide_integer.exe
 ```
@@ -149,7 +149,7 @@ programming environments.
 Various configuration features can optionally be
 enabled or disabled with the compiler switches:
 
-```
+```C
 #define WIDE_INTEGER_DISABLE_IOSTREAM
 #define WIDE_INTEGER_HAS_LIMB_TYPE_UINT64
 #define WIDE_INTEGER_HAS_MUL_8_BY_8_UNROLL
@@ -158,7 +158,7 @@ enabled or disabled with the compiler switches:
 When working with even the most tiny microcontroller systems,
 I/O streaming can optionally be disabled with the compiler switch:
 
-```
+```C
 #define WIDE_INTEGER_DISABLE_IOSTREAM
 ```
 
@@ -168,14 +168,14 @@ a 64-bit limb of type `uint64_t` can be used.
 Enable the 64-bit limb type on such systems
 with the compiler switch:
 
-```
+```C
 #define WIDE_INTEGER_HAS_LIMB_TYPE_UINT64
 ```
 
 or (when using GCC, clang or similar) on the compiler
 command line with:
 
-```
+```C
 -DWIDE_INTEGER_HAS_LIMB_TYPE_UINT64
 ```
 
@@ -184,7 +184,7 @@ This macro is disabled by default.
 The example below, for instance, uses a 64-bit limb type
 on GCC or clang.
 
-```
+```C
 #define WIDE_INTEGER_HAS_LIMB_TYPE_UINT64
 
 #include <math/wide_integer/uintwide_t.h>
@@ -196,7 +196,7 @@ static uint_fast256_t x = 42U;
 
 Another potential optimization macro can be activated with
 
-```
+```C
 #define WIDE_INTEGER_HAS_MUL_8_BY_8_UNROLL
 ```
 
@@ -205,62 +205,6 @@ by manually unrolling the multiplication loop(s) for
 `uintwide_t` instances having 8 limbs. This macro is disabled
 by default.
 
-### C++14, 17, 20 `constexpr` support
-
-When using C++20 `uintwide_t` supports compile-time
-`constexpr` construction and evaluation of results
-of binary arithmetic, comparison operators
-and various elementary functions.
-The following code, for instance, shows a compile-time instantiation
-of `uintwide_t` and subsequent `constexpr` evaluations
-of binary operations multiply, divide and comparison.
-(See also the examples for additional use cases).
-
-```
-#include <math/wide_integer/uintwide_t.h>
-
-// Use a C++20 compiler for this example.
-using uint256_t = math::wide_integer::uintwide_t<256U>;
-
-constexpr uint256_t a("0xF4DF741DE58BCB2F37F18372026EF9CBCFC456CB80AF54D53BDEED78410065DE");
-constexpr uint256_t b("0x166D63E0202B3D90ECCEAA046341AB504658F55B974A7FD63733ECF89DD0DF75");
-
-constexpr uint256_t c = (a * b);
-constexpr uint256_t d = (a / b);
-
-constexpr bool result_is_ok = (   (c == "0xE491A360C57EB4306C61F9A04F7F7D99BE3676AAD2D71C5592D5AE70F84AF076")
-                               && (std::uint_fast8_t(d) == 10U));
-
-static_assert(result_is_ok == true, "Error: example is not OK!");
-```
-
-`constexpr`-ness has been checked on GCC 10, clang 10
-(with `-std=c++20`) and VC 14.2 (with `/std:c++latest`),
-also for various embedded compilers such as `avr-gcc` 10,
-`arm-non-eabi-gcc` 10, and more. Less modern compiler versions,
-some with standards such as C++14, 17, 2a have also been checked
-for `constexpr` usage of `uintwide_t`. If you have an older
-compiler, you might have to check compiler
-for availability of `constexpr` with wide_integer.
-
-If a fully compliant C++20 compiler is not available,
-the preprocessor symbols below can be useful.
-These symbols are defined or set by the wide_integer library.
-
-```
-WIDE_INTEGER_CONSTEXPR
-WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST
-```
-
-The preprocessor symbol `WIDE_INTEGER_CONSTEXPR` acts as either
-a synonym for `constexpr` or expands to nothing depending on
-whether the availability of `constexpr` support has been automatically
-detected or not.
-The preprocessor symbol `WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST`
-has the value of 0 or 1, where 1 indicates that `uintwide_t`
-values qualified with `WIDE_INTEGER_CONSTEXPR` are actually
-compile-time constant (i.e., `constexpr`).
-
 ## Detailed Examples
 
 We will now present various straightforward detailed examples.
@@ -268,7 +212,7 @@ We will now present various straightforward detailed examples.
 The code below performs some elementary algebraic calculations
 with a 256-bit unsigned integral type.
 
-```
+```C
 #include <iomanip>
 #include <iostream>
 
@@ -278,8 +222,8 @@ int main()
 {
   using uint256_t = math::wide_integer::uint256_t;
 
-  // Construction from string.
-  // Other constructors are available from built-in types.
+  // Construction from string. Additional constructors
+  // are available from other built-in types.
 
   const uint256_t a("0xF4DF741DE58BCB2F37F18372026EF9CBCFC456CB80AF54D53BDEED78410065DE");
   const uint256_t b("0x166D63E0202B3D90ECCEAA046341AB504658F55B974A7FD63733ECF89DD0DF75");
@@ -333,7 +277,7 @@ int main()
 
 The following sample performs add, subtract, multiply and divide of `uint48_t`.
 
-```
+```C
 #include <iomanip>
 #include <iostream>
 
@@ -422,3 +366,72 @@ int main()
   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
 }
 ```
+
+## C++14, 17, 20 `constexpr` support
+
+When using C++20 `uintwide_t` supports compile-time
+`constexpr` construction and evaluation of results
+of binary arithmetic, comparison operators
+and various elementary functions.
+The following code, for instance, shows compile-time instantiations
+of `uintwide_t` from character strings with subsequent `constexpr` evaluations
+of binary operations multiply, divide, intergal cast and comparison.
+
+```C
+#include <math/wide_integer/uintwide_t.h>
+
+// Use a C++20 compiler for this example.
+
+using uint256_t = math::wide_integer::uintwide_t<256U>;
+
+// Compile-time construction from string.
+constexpr uint256_t a("0xF4DF741DE58BCB2F37F18372026EF9CBCFC456CB80AF54D53BDEED78410065DE");
+constexpr uint256_t b("0x166D63E0202B3D90ECCEAA046341AB504658F55B974A7FD63733ECF89DD0DF75");
+
+// Compile time binary arithmetic operations.
+constexpr uint256_t c = (a * b);
+constexpr uint256_t d = (a / b);
+
+// Compile-time comparison.
+constexpr bool result_is_ok = (   (c == "0xE491A360C57EB4306C61F9A04F7F7D99BE3676AAD2D71C5592D5AE70F84AF076")
+                               && (std::uint_fast8_t(d) == 10U));
+
+// constexpr verification.
+static_assert(result_is_ok == true, "Error: example is not OK!");
+```
+
+`constexpr`-ness has been checked on GCC 10, clang 10
+(with `-std=c++20`) and VC 14.2 (with `/std:c++latest`),
+also for various embedded compilers such as `avr-gcc` 10,
+`arm-non-eabi-gcc` 10, and more. In addition,
+less modern compiler versions,
+some with standards such as C++14, 17, 2a have also been checked
+for `constexpr` usage of `uintwide_t`. If you have an older
+compiler, you might have to check the compiler's
+ability to use `constexpr` with wide_integer.
+
+If full `constexpr` compliance is not available or its
+availability is unknown, the preprocessor symbols below can be useful.
+These symbols are defined or set directly within the header(s)
+of the wide_integer library.
+
+```C
+WIDE_INTEGER_CONSTEXPR
+WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST
+```
+
+The preprocessor symbol `WIDE_INTEGER_CONSTEXPR` acts as either
+a synonym for `constexpr` or expands to nothing depending on
+whether the availability of `constexpr` support has been automatically
+detected or not.
+The preprocessor symbol `WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST`
+has the value of 0 or 1, where 1 indicates that `uintwide_t`
+values qualified with `WIDE_INTEGER_CONSTEXPR` are actually
+compile-time constant (i.e., `constexpr`).
+
+Detection of availability of `constexpr` support is implemented
+[with preprocessor queries in uintwide_t.h](https://github.com/ckormanyos/wide-integer/blob/4ad2cb5e96acc0b326c8fc2bbb74546dc90053ef/math/wide_integer/uintwide_t.h#L36).
+These complicated proprocessor queries are not complete (in the sense of
+detecting all world-wide compiler/target systems). If you have
+a specific compiler/target system needing `constexpr` detection,
+please feel free to contact me directly so that this can be implemented.
