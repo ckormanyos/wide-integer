@@ -83,7 +83,10 @@
       get_equal_random_test_values_boost_and_local_n<local_uint_type, boost_uint_type, AllocatorType>(b_local.data(), b_boost.data(), size());
 
       std::copy(a_local.cbegin(), a_local.cend(), a_local_signed.begin());
+      std::copy(b_local.cbegin(), b_local.cend(), b_local_signed.begin());
+
       std::copy(a_boost.cbegin(), a_boost.cend(), a_boost_signed.begin());
+      std::copy(b_boost.cbegin(), b_boost.cend(), b_boost_signed.begin());
     }
 
     virtual bool test_binary_add() const
@@ -101,8 +104,8 @@
           const boost_sint_type c_boost_signed = a_boost_signed[i] + b_boost_signed[i];
           const local_sint_type c_local_signed = a_local_signed[i] + b_local_signed[i];
 
-          const std::string str_boost_signed = declexical_cast(c_boost_signed);
-          const std::string str_local_signed = declexical_cast(c_local_signed);
+          const std::string str_boost_signed = hexlexical_cast((boost_uint_type) c_boost_signed);
+          const std::string str_local_signed = hexlexical_cast((local_uint_type) c_local_signed);
 
           while(test_lock.test_and_set()) { ; }
           result_is_ok &= (str_boost_signed == str_local_signed);
@@ -128,8 +131,8 @@
           const boost_sint_type c_boost_signed = a_boost_signed[i] - b_boost_signed[i];
           const local_sint_type c_local_signed = a_local_signed[i] - b_local_signed[i];
 
-          const std::string str_boost_signed = declexical_cast(c_boost_signed);
-          const std::string str_local_signed = declexical_cast(c_local_signed);
+          const std::string str_boost_signed = hexlexical_cast((boost_uint_type) c_boost_signed);
+          const std::string str_local_signed = hexlexical_cast((local_uint_type) c_local_signed);
 
           while(test_lock.test_and_set()) { ; }
           result_is_ok &= (str_boost_signed == str_local_signed);
@@ -155,8 +158,8 @@
           const boost_sint_type c_boost_signed = a_boost_signed[i] * b_boost_signed[i];
           const local_sint_type c_local_signed = a_local_signed[i] * b_local_signed[i];
 
-          const std::string str_boost_signed = declexical_cast(c_boost_signed);
-          const std::string str_local_signed = declexical_cast(c_local_signed);
+          const std::string str_boost_signed = hexlexical_cast((boost_uint_type) c_boost_signed);
+          const std::string str_local_signed = hexlexical_cast((local_uint_type) c_local_signed);
 
           while(test_lock.test_and_set()) { ; }
           result_is_ok &= (str_boost_signed == str_local_signed);
