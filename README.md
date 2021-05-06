@@ -2,6 +2,23 @@ Wide-integer
 [![Build Status](https://github.com/ckormanyos/wide-integer/actions/workflows/wide_integer.yml/badge.svg)](https://github.com/ckormanyos/wide-integer/actions)
 ==================
 
+---
+
+## ANNOUNCEMENT: May 2021
+
+Signed integer type expected in May 2021.
+
+A signed integer extension of the wide_integer library
+enabling types such as `int256_t`, `int1024_t`, etc. is under construction.
+A tested implementation with a first preliminary release is scheduled
+for May 2021. The reason for the change is strong community interest
+in the signed integer type.
+  - The signed extension _will not_ be a breaking change.
+  - Existing code using unsigned integer types will remain unchanged.
+  - Performance of the unsigned code will is not expected to be be significantly (or at all) degraded.
+
+---
+
 Wide-integer implements a generic C++ template for extended width unsigned integral types.
 
 This C++ template header-only library implements drop-in big integer types
