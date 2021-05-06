@@ -153,6 +153,15 @@ bool test_uintwide_t_0000064()
   return result_is_ok;
 }
 
+bool test_uintwide_t_0000064_signed()
+{
+  std::cout << "running: test_uintwide_t_0000064_signed" << std::endl;
+  test_uintwide_t_n_binary_ops_template_signed<64U, std::uint16_t> test_uintwide_t_n_binary_ops_template_instance(1UL << 18U);
+  const bool result_is_ok =
+    test_uintwide_t_n_binary_ops_template_instance.do_test(test_uintwide_t_n_binary_ops_rounds);
+  return result_is_ok;
+}
+
 bool test_uintwide_t_0000096()
 {
   std::cout << "running: test_uintwide_t_0000096" << std::endl;
@@ -328,6 +337,7 @@ int main()
   result_is_ok &= local::test_uintwide_t_0000024();                                       std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
   result_is_ok &= local::test_uintwide_t_0000048();                                       std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
   result_is_ok &= local::test_uintwide_t_0000064();                                       std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
+  result_is_ok &= local::test_uintwide_t_0000064_signed();                                std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
   result_is_ok &= local::test_uintwide_t_0000096();                                       std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
   result_is_ok &= local::test_uintwide_t_0000128();                                       std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
   result_is_ok &= local::test_uintwide_t_0000256();                                       std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;

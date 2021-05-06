@@ -909,7 +909,7 @@
     // Move-like constructor from the other signed-ness type.
     template<const bool OtherIsSigned,
              typename std::enable_if<(OtherIsSigned != IsSigned)>::type const* = nullptr>
-    constexpr uintwide_t(const uintwide_t<Digits2, LimbType, AllocatorType, OtherIsSigned>&& other)
+    constexpr uintwide_t(uintwide_t<Digits2, LimbType, AllocatorType, OtherIsSigned>&& other)
       : values(static_cast<representation_type&&>(other.values)) { }
 
     // Assignment operator.
@@ -1016,6 +1016,14 @@
                 limb_type(0U));
 
       return local_double_width_instance;
+    }
+
+    // Implement a cast operator that casts to a uintwide_t having the other signed-ness type.
+    template<const bool OtherIsSigned,
+             typename std::enable_if<(OtherIsSigned != IsSigned)>::type const* = nullptr>
+    explicit WIDE_INTEGER_CONSTEXPR operator uintwide_t<Digits2, LimbType, AllocatorType, OtherIsSigned>() const
+    {
+      return uintwide_t<Digits2, LimbType, AllocatorType, OtherIsSigned>(values);
     }
 
     // Provide a user interface to the internal data representation.
@@ -1223,8 +1231,8 @@
       }
       else
       {
-        const std::uint_fast32_t offset            = std::uint_fast32_t(n) / std::uint_fast32_t(std::numeric_limits<limb_type>::digits);
-        const std::uint_fast32_t left_shift_amount = std::uint_fast32_t(n) % std::uint_fast32_t(std::numeric_limits<limb_type>::digits);
+        const std::uint_fast32_t offset            =                    std::uint_fast32_t(n) / std::uint_fast32_t(std::numeric_limits<limb_type>::digits);
+        const std::uint_fast16_t left_shift_amount = std::uint_fast16_t(std::uint_fast32_t(n) % std::uint_fast32_t(std::numeric_limits<limb_type>::digits));
 
         shl(offset, left_shift_amount);
       }
@@ -1249,8 +1257,8 @@
       }
       else
       {
-        const std::uint_fast32_t offset            = std::uint_fast32_t(n) / std::uint_fast32_t(std::numeric_limits<limb_type>::digits);
-        const std::uint_fast32_t left_shift_amount = std::uint_fast32_t(n) % std::uint_fast32_t(std::numeric_limits<limb_type>::digits);
+        const std::uint_fast32_t offset            =                    std::uint_fast32_t(n) / std::uint_fast32_t(std::numeric_limits<limb_type>::digits);
+        const std::uint_fast16_t left_shift_amount = std::uint_fast16_t(std::uint_fast32_t(n) % std::uint_fast32_t(std::numeric_limits<limb_type>::digits));
 
         shl(offset, left_shift_amount);
       }
@@ -1279,8 +1287,8 @@
       }
       else
       {
-        const std::uint_fast32_t offset             = std::uint_fast32_t(n) / std::uint_fast32_t(std::numeric_limits<limb_type>::digits);
-        const std::uint_fast32_t right_shift_amount = std::uint_fast32_t(n) % std::uint_fast32_t(std::numeric_limits<limb_type>::digits);
+        const std::uint_fast32_t offset             =                    std::uint_fast32_t(n) / std::uint_fast32_t(std::numeric_limits<limb_type>::digits);
+        const std::uint_fast16_t right_shift_amount = std::uint_fast16_t(std::uint_fast32_t(n) % std::uint_fast32_t(std::numeric_limits<limb_type>::digits));
 
         shr(offset, right_shift_amount);
       }
@@ -1305,8 +1313,8 @@
       }
       else
       {
-        const std::uint_fast32_t offset             = std::uint_fast32_t(n) / std::uint_fast32_t(std::numeric_limits<limb_type>::digits);
-        const std::uint_fast32_t right_shift_amount = std::uint_fast32_t(n) % std::uint_fast32_t(std::numeric_limits<limb_type>::digits);
+        const std::uint_fast32_t offset             =                    std::uint_fast32_t(n) / std::uint_fast32_t(std::numeric_limits<limb_type>::digits);
+        const std::uint_fast16_t right_shift_amount = std::uint_fast16_t(std::uint_fast32_t(n) % std::uint_fast32_t(std::numeric_limits<limb_type>::digits));
 
         shr(offset, right_shift_amount);
       }
@@ -2681,7 +2689,7 @@
     }
 
     WIDE_INTEGER_CONSTEXPR void shl(const std::uint_fast32_t offset,
-                                    const std::uint_fast32_t left_shift_amount)
+                                    const std::uint_fast16_t left_shift_amount)
     {
       if(offset > 0U)
       {
@@ -2692,12 +2700,12 @@
         std::fill(values.begin(), values.begin() + offset, limb_type(0U));
       }
 
-      limb_type part_from_previous_value = limb_type(0U);
-
       using local_integral_type = std::uint_fast32_t;
 
       if(left_shift_amount != local_integral_type(0U))
       {
+        limb_type part_from_previous_value = limb_type(0U);
+
         for(std::uint_fast32_t i = offset; i < number_of_limbs; ++i)
         {
           const limb_type t = values[i];
@@ -2710,7 +2718,7 @@
     }
 
     WIDE_INTEGER_CONSTEXPR void shr(const std::uint_fast32_t offset,
-                                    const std::uint_fast32_t right_shift_amount)
+                                    const std::uint_fast16_t right_shift_amount)
     {
       if(offset > 0U)
       {
@@ -2718,15 +2726,20 @@
                   values.begin() + number_of_limbs,
                   values.begin());
 
-        std::fill(values.end() - offset, values.end(), limb_type(0U));
+        std::fill(values.end() - offset,
+                  values.end(),
+                  (is_neg(*this) == false) ? limb_type(0U) : limb_type((std::numeric_limits<limb_type>::max)()));
       }
-
-      limb_type part_from_previous_value = limb_type(0U);
 
       using local_integral_type = std::uint_fast32_t;
 
       if(right_shift_amount != local_integral_type(0U))
       {
+        limb_type part_from_previous_value =
+          (is_neg(*this) == false)
+            ? limb_type(0U)
+            : limb_type((std::numeric_limits<limb_type>::max)() << std::uint_fast16_t(std::uint_fast16_t(std::numeric_limits<limb_type>::digits) - right_shift_amount));
+
         for(std::int_fast32_t i = std::int_fast32_t((number_of_limbs - 1U) - offset); i >= 0; --i)
         {
           const limb_type t = values[std::uint_fast32_t(i)];
