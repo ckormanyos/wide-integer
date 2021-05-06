@@ -76,6 +76,9 @@
     <ClInclude Include="math\wide_integer\uintwide_t_test.h">
       <Filter>Source Files\math\wide_integer</Filter>
     </ClInclude>
+    <ClInclude Include="test\test_uintwide_t_n_binary_ops_template_signed.h">
+      <Filter>Source Files\test</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="test\test.cpp">

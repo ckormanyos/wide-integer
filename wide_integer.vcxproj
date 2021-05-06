@@ -186,6 +186,7 @@
     <ClInclude Include="test\test_uintwide_t_n_binary_ops_mul_div_4_by_4_template.h" />
     <ClInclude Include="test\test_uintwide_t_n_binary_ops_mul_n_by_m_template.h" />
     <ClInclude Include="test\test_uintwide_t_n_binary_ops_base.h" />
+    <ClInclude Include="test\test_uintwide_t_n_binary_ops_template_signed.h" />
     <ClInclude Include="test\test_uintwide_t_n_binary_ops_template.h" />
     <ClInclude Include="test\test_uintwide_t_n_number_theory_funcs_template.h" />
     <ClInclude Include="util\utility\util_dynamic_array.h" />

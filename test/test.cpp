@@ -24,6 +24,7 @@
 
 #include <math/wide_integer/uintwide_t_test.h>
 #include <test/test_uintwide_t_n_binary_ops_template.h>
+#include <test/test_uintwide_t_n_binary_ops_template_signed.h>
 #include <test/test_uintwide_t_n_binary_ops_mul_n_by_m_template.h>
 #include <test/test_uintwide_t_n_binary_ops_mul_div_4_by_4_template.h>
 
@@ -199,6 +200,15 @@ bool test_uintwide_t_0000512()
   return result_is_ok;
 }
 
+bool test_uintwide_t_0000512_signed()
+{
+  std::cout << "running: test_uintwide_t_0000512_signed" << std::endl;
+  test_uintwide_t_n_binary_ops_template_signed<512U> test_uintwide_t_n_binary_ops_template_signed_instance(1UL << 16U);
+  const bool result_is_ok =
+    test_uintwide_t_n_binary_ops_template_signed_instance.do_test(test_uintwide_t_n_binary_ops_rounds);
+  return result_is_ok;
+}
+
 bool test_uintwide_t_0001024()
 {
   std::cout << "running: test_uintwide_t_0001024" << std::endl;
@@ -322,6 +332,7 @@ int main()
   result_is_ok &= local::test_uintwide_t_0000128();                                       std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
   result_is_ok &= local::test_uintwide_t_0000256();                                       std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
   result_is_ok &= local::test_uintwide_t_0000512();                                       std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
+  result_is_ok &= local::test_uintwide_t_0000512_signed();                                std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
   #if defined(WIDE_INTEGER_HAS_LIMB_TYPE_UINT64)
   result_is_ok &= local::test_uintwide_t_0000256_limb_type_uint64_t();                    std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
   #endif

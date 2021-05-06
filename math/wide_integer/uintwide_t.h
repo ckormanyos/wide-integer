@@ -722,6 +722,12 @@
   class uintwide_t
   {
   public:
+    template<const std::uint_fast32_t OtherDigits2,
+             typename OtherLimbType,
+             typename OtherAllocatorType,
+             const bool OtherIsSigned>
+    friend class uintwide_t;
+
     // Class-local type definitions.
     using limb_type = LimbType;
 
@@ -853,6 +859,12 @@
     // Copy constructor.
     constexpr uintwide_t(const uintwide_t& other) : values(other.values) { }
 
+    // Copy-like constructor from the other signed-ness type.
+    template<const bool OtherIsSigned,
+             typename std::enable_if<(OtherIsSigned != IsSigned)>::type const* = nullptr>
+    constexpr uintwide_t(const uintwide_t<Digits2, LimbType, AllocatorType, OtherIsSigned>& other)
+      : values(other.values) { }
+
     // Constructor from the double-width type.
     // This constructor is explicit because it
     // is a narrowing conversion.
@@ -894,6 +906,12 @@
     // Move constructor.
     constexpr uintwide_t(uintwide_t&& other) : values(static_cast<representation_type&&>(other.values)) { }
 
+    // Move-like constructor from the other signed-ness type.
+    template<const bool OtherIsSigned,
+             typename std::enable_if<(OtherIsSigned != IsSigned)>::type const* = nullptr>
+    constexpr uintwide_t(const uintwide_t<Digits2, LimbType, AllocatorType, OtherIsSigned>&& other)
+      : values(static_cast<representation_type&&>(other.values)) { }
+
     // Assignment operator.
     WIDE_INTEGER_CONSTEXPR uintwide_t& operator=(const uintwide_t& other)
     {
@@ -905,8 +923,28 @@
       return *this;
     }
 
+    // Assignment operator from the other signed-ness type.
+    template<const bool OtherIsSigned,
+             typename std::enable_if<(OtherIsSigned != IsSigned)>::type const* = nullptr>
+    WIDE_INTEGER_CONSTEXPR uintwide_t& operator=(const uintwide_t<Digits2, LimbType, AllocatorType, OtherIsSigned>& other)
+    {
+      values = other.values;
+
+      return *this;
+    }
+
     // Trivial move assignment operator.
     WIDE_INTEGER_CONSTEXPR uintwide_t& operator=(uintwide_t&& other)
+    {
+      values = static_cast<representation_type&&>(other.values);
+
+      return *this;
+    }
+
+    // Trivial move assignment operator from the other signed-ness type.
+    template<const bool OtherIsSigned,
+             typename std::enable_if<(OtherIsSigned != IsSigned)>::type const* = nullptr>
+    WIDE_INTEGER_CONSTEXPR uintwide_t& operator=(uintwide_t<Digits2, LimbType, AllocatorType, OtherIsSigned>&& other)
     {
       values = static_cast<representation_type&&>(other.values);
 
@@ -1509,11 +1547,49 @@
       return wr_string_is_ok;
     }
 
-    WIDE_INTEGER_CONSTEXPR std::int_fast8_t compare(const uintwide_t& other) const
+    template<const bool RePhraseIsSigned = IsSigned,
+             typename std::enable_if<(RePhraseIsSigned == false)>::type const* = nullptr>
+    WIDE_INTEGER_CONSTEXPR std::int_fast8_t compare(const uintwide_t<Digits2, LimbType, AllocatorType, RePhraseIsSigned>& other) const
     {
-      const std::int_fast8_t cmp_result = compare_ranges(values.data(), other.values.data(), number_of_limbs);
+      constexpr std::uint_fast32_t local_number_of_limbs =
+        uintwide_t<Digits2, LimbType, AllocatorType, RePhraseIsSigned>::number_of_limbs;
 
-      return cmp_result;
+      return compare_ranges(values.data(), other.values.data(), local_number_of_limbs);
+    }
+
+    template<const bool RePhraseIsSigned = IsSigned,
+             typename std::enable_if<(RePhraseIsSigned == true)>::type const* = nullptr>
+    WIDE_INTEGER_CONSTEXPR std::int_fast8_t compare(const uintwide_t<Digits2, LimbType, AllocatorType, RePhraseIsSigned>& other) const
+    {
+      constexpr std::uint_fast32_t local_number_of_limbs =
+        uintwide_t<Digits2, LimbType, AllocatorType, RePhraseIsSigned>::number_of_limbs;
+
+      std::int_fast8_t n_result;
+
+      if(is_neg())
+      {
+        if(other.is_neg())
+        {
+          n_result = compare_ranges(values.data(), other.values.data(), local_number_of_limbs);
+        }
+        else
+        {
+          n_result = INT8_C(-1);
+        }
+      }
+      else
+      {
+        if(other.is_neg())
+        {
+          n_result = INT8_C(1);
+        }
+        else
+        {
+          n_result = compare_ranges(values.data(), other.values.data(), local_number_of_limbs);
+        }
+      }
+
+      return n_result;
     }
 
     WIDE_INTEGER_CONSTEXPR void negate()

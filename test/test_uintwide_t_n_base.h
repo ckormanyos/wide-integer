@@ -33,6 +33,16 @@
     test_uintwide_t_n_base(const std::size_t count)
       : number_of_cases(count) { }
 
+    template<typename IntegralType>
+    static std::string declexical_cast(const IntegralType& n)
+    {
+      std::stringstream ss;
+
+      ss << std::dec << n;
+
+      return ss.str();
+    }
+
     template<typename UnsignedIntegralType>
     static std::string hexlexical_cast(const UnsignedIntegralType& u)
     {
