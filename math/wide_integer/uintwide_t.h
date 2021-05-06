@@ -806,7 +806,9 @@
       std::uint_fast32_t right_shift_amount_v = 0U;
       std::uint_fast8_t  index_u              = 0U;
 
-      for( ; (index_u < values.size()) && (right_shift_amount_v < std::uint_fast32_t(std::numeric_limits<UnsignedIntegralType>::digits)); ++index_u)
+      for( ; (   (index_u < values.size())
+              && (right_shift_amount_v < std::uint_fast32_t(std::numeric_limits<UnsignedIntegralType>::digits)));
+             ++index_u)
       {
         values[index_u] = limb_type(v >> (int) right_shift_amount_v);
 
@@ -826,14 +828,14 @@
       using local_signed_integral_type   = SignedIntegralType;
       using local_unsigned_integral_type = typename detail::uint_type_helper<std::numeric_limits<local_signed_integral_type>::digits + 1>::exact_unsigned_type;
 
-      const bool is_neg = (v < local_signed_integral_type(0));
+      const bool v_is_neg = (v < local_signed_integral_type(0));
 
       const local_unsigned_integral_type u =
-        ((is_neg == false) ? local_unsigned_integral_type(v) : local_unsigned_integral_type(-v));
+        ((v_is_neg == false) ? local_unsigned_integral_type(v) : local_unsigned_integral_type(-v));
 
       operator=(uintwide_t(u));
 
-      if(is_neg) { negate(); }
+      if(v_is_neg) { negate(); }
     }
 
     // Constructor from the internal data representation.
@@ -855,9 +857,9 @@
     // This constructor is explicit because it
     // is a narrowing conversion.
     template<typename UnknownUnsignedWideIntegralType = double_width_type>
-    explicit uintwide_t(const UnknownUnsignedWideIntegralType& v,
-                        typename std::enable_if<(   (std::is_same<UnknownUnsignedWideIntegralType, double_width_type>::value == true)
-                                                 && (128U <= my_digits))>::type* = nullptr)
+    explicit WIDE_INTEGER_CONSTEXPR uintwide_t(const UnknownUnsignedWideIntegralType& v,
+                                               typename std::enable_if<(   (std::is_same<UnknownUnsignedWideIntegralType, double_width_type>::value == true)
+                                                                        && (128U <= my_digits))>::type* = nullptr)
     {
       std::copy(v.crepresentation().cbegin(),
                 v.crepresentation().cbegin() + (v.crepresentation().size() / 2U),
@@ -1101,12 +1103,12 @@
     }
 
     // Operators pre-increment and pre-decrement.
-    uintwide_t& operator++() { preincrement(); return *this; }
-    uintwide_t& operator--() { predecrement(); return *this; }
+    WIDE_INTEGER_CONSTEXPR uintwide_t& operator++() { preincrement(); return *this; }
+    WIDE_INTEGER_CONSTEXPR uintwide_t& operator--() { predecrement(); return *this; }
 
     // Operators post-increment and post-decrement.
-    uintwide_t operator++(int) { const uintwide_t w(*this); preincrement(); return w; }
-    uintwide_t operator--(int) { const uintwide_t w(*this); predecrement(); return w; }
+    WIDE_INTEGER_CONSTEXPR uintwide_t operator++(int) { const uintwide_t w(*this); preincrement(); return w; }
+    WIDE_INTEGER_CONSTEXPR uintwide_t operator--(int) { const uintwide_t w(*this); predecrement(); return w; }
 
     WIDE_INTEGER_CONSTEXPR uintwide_t& operator~()
     {
@@ -1374,6 +1376,13 @@
       }
       else if(base_rep == 10U)
       {
+        const bool str_has_neg_sign = is_neg(t);
+
+        if(str_has_neg_sign)
+        {
+          t.negate();
+        }
+
         char str_temp[wr_string_max_buffer_size_dec];
 
         std::uint_fast32_t pos = (sizeof(str_temp) - 1U);
@@ -1398,11 +1407,17 @@
           }
         }
 
-        if(show_pos)
+        if(show_pos && (!str_has_neg_sign))
         {
           --pos;
 
           str_temp[pos] = char('+');
+        }
+        else if(str_has_neg_sign)
+        {
+          --pos;
+
+          str_temp[pos] = char('-');
         }
 
         if(field_width != 0U)
@@ -1539,23 +1554,33 @@
       }
     }
 
+    WIDE_INTEGER_CONSTEXPR bool is_zero() const
+    {
+      auto it = values.cbegin();
+
+      while((it != values.cend()) && (*it == limb_type(0U)))
+      {
+        ++it;
+      }
+
+      return (it == values.cend());
+    }
+
   private:
     representation_type values { };
 
     template<const bool RePhraseIsSigned = IsSigned,
              typename std::enable_if<(RePhraseIsSigned == false)>::type const* = nullptr>
-    static WIDE_INTEGER_CONSTEXPR bool is_neg(const uintwide_t<Digits2, LimbType, AllocatorType, RePhraseIsSigned>& a)
+    static constexpr bool is_neg(uintwide_t<Digits2, LimbType, AllocatorType, RePhraseIsSigned>)
     {
       return false;
     }
 
     template<const bool RePhraseIsSigned = IsSigned,
              typename std::enable_if<(RePhraseIsSigned == true)>::type const* = nullptr>
-    static WIDE_INTEGER_CONSTEXPR bool is_neg(const uintwide_t<Digits2, LimbType, AllocatorType, RePhraseIsSigned>& a)
+    static constexpr bool is_neg(uintwide_t<Digits2, LimbType, AllocatorType, RePhraseIsSigned> a)
     {
-      using local_limb_type = typename uintwide_t<Digits2, LimbType, AllocatorType, RePhraseIsSigned>::limb_type;
-
-      return ((std::uint_fast8_t(a.values[0U] >> std::numeric_limits<local_limb_type>::digits) & 1U) != 0U);
+      return (std::uint_fast8_t(std::uint_fast8_t(a.values.back() >> (std::numeric_limits<typename uintwide_t<Digits2, LimbType, AllocatorType, RePhraseIsSigned>::limb_type>::digits - 1)) & 1U) != 0U);
     }
 
     static WIDE_INTEGER_CONSTEXPR std::int_fast8_t compare_ranges(const limb_type*         a,
@@ -1585,7 +1610,8 @@
       // but we only need to retain the low half of the n*n algorithm.
       // In other words, this is an n*n->n bit multiplication.
 
-      constexpr std::uint_fast32_t local_number_of_limbs = uintwide_t<OtherDigits2, LimbType, AllocatorType, IsSigned>::number_of_limbs;
+      constexpr std::uint_fast32_t local_number_of_limbs =
+        uintwide_t<OtherDigits2, LimbType, AllocatorType, IsSigned>::number_of_limbs;
 
       representation_type result{};
 
@@ -1606,7 +1632,8 @@
     {
       // Unary multiplication function using Karatsuba multiplication.
 
-      constexpr std::uint_fast32_t local_number_of_limbs = uintwide_t<OtherDigits2, LimbType, AllocatorType, IsSigned>::number_of_limbs;
+      constexpr std::uint_fast32_t local_number_of_limbs =
+        uintwide_t<OtherDigits2, LimbType, AllocatorType, IsSigned>::number_of_limbs;
 
       // TBD: Can use specialized allocator or memory pool for these arrays.
       // Good examples for this (both threaded as well as non-threaded)
@@ -2577,7 +2604,8 @@
       }
     }
 
-    WIDE_INTEGER_CONSTEXPR void shl(const std::uint_fast32_t offset, const std::uint_fast32_t left_shift_amount)
+    WIDE_INTEGER_CONSTEXPR void shl(const std::uint_fast32_t offset,
+                                    const std::uint_fast32_t left_shift_amount)
     {
       if(offset > 0U)
       {
@@ -2605,7 +2633,8 @@
       }
     }
 
-    WIDE_INTEGER_CONSTEXPR void shr(const std::uint_fast32_t offset, const std::uint_fast32_t right_shift_amount)
+    WIDE_INTEGER_CONSTEXPR void shr(const std::uint_fast32_t offset,
+                                    const std::uint_fast32_t right_shift_amount)
     {
       if(offset > 0U)
       {
@@ -2644,9 +2673,21 @@
 
       std::uint_fast32_t pos = 0U;
 
-      // Skip over a potential plus sign.
+      // Detect: Is there a plus sign?
+      // And if there is a plus sign, skip over the plus sign.
       if((str_length > 0U) && (str_input[0U] == char('+')))
       {
+        ++pos;
+      }
+
+      bool str_has_neg_sign = false;
+
+      // Detect: Is there a minus sign?
+      // And if there is a minus sign, skip over the minus sign.
+      if((str_length > 0U) && (str_input[0U] == char('-')))
+      {
+        str_has_neg_sign = true;
+
         ++pos;
       }
 
@@ -2730,6 +2771,11 @@
         }
       }
 
+      if(str_has_neg_sign)
+      {
+        negate();
+      }
+
       return char_is_valid;
     }
 
@@ -2771,18 +2817,6 @@
       {
         --values[i];
       }
-    }
-
-    WIDE_INTEGER_CONSTEXPR bool is_zero() const
-    {
-      auto it = values.cbegin();
-
-      while((it != values.cend()) && (*it == limb_type(0U)))
-      {
-        ++it;
-      }
-
-      return (it == values.cend());
     }
   };
 
@@ -2886,10 +2920,10 @@
   operator%(const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& u, const IntegralType& v) { return uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>(u).operator%=(uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>(v)); }
 
   template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType, const bool IsSigned>
-  WIDE_INTEGER_CONSTEXPR  typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
-                                                   && (std::is_integral   <IntegralType>::value == true)
-                                                   && (std::is_unsigned   <IntegralType>::value == true)
-                                                   && (std::numeric_limits<IntegralType>::digits <= std::numeric_limits<LimbType>::digits)), typename uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>::limb_type>::type
+  WIDE_INTEGER_CONSTEXPR typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
+                                                  && (std::is_integral   <IntegralType>::value == true)
+                                                  && (std::is_unsigned   <IntegralType>::value == true)
+                                                  && (std::numeric_limits<IntegralType>::digits <= std::numeric_limits<LimbType>::digits)), typename uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>::limb_type>::type
   operator%(const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& u, const IntegralType& v)
   {
     uintwide_t<Digits2, LimbType, AllocatorType, IsSigned> remainder;
@@ -3338,18 +3372,10 @@
     // Calculate the square root.
 
     using local_wide_integer_type = uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>;
-    using local_limb_type         = typename local_wide_integer_type::limb_type;
-
-    const bool argument_is_zero = std::all_of(m.crepresentation().cbegin(),
-                                              m.crepresentation().cend(),
-                                              [](const local_limb_type& a) -> bool
-                                              {
-                                                return (a == 0U);
-                                              });
 
     local_wide_integer_type s;
 
-    if(argument_is_zero)
+    if(m.is_zero())
     {
       s = local_wide_integer_type(std::uint_fast8_t(0U));
     }
@@ -3397,18 +3423,10 @@
     // Calculate the cube root.
 
     using local_wide_integer_type = uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>;
-    using local_limb_type         = typename local_wide_integer_type::limb_type;
 
     local_wide_integer_type s;
 
-    const bool argument_is_zero = std::all_of(m.crepresentation().cbegin(),
-                                              m.crepresentation().cend(),
-                                              [](const local_limb_type& a) -> bool
-                                              {
-                                                return (a == 0U);
-                                              });
-
-    if(argument_is_zero)
+    if(m.is_zero())
     {
       s = local_wide_integer_type(std::uint_fast8_t(0U));
     }
@@ -3466,12 +3484,11 @@
            typename AllocatorType,
            const bool IsSigned>
   WIDE_INTEGER_CONSTEXPR uintwide_t<Digits2, LimbType, AllocatorType, IsSigned> rootk(const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& m,
-                                                                            const std::uint_fast8_t k)
+                                                                                      const std::uint_fast8_t k)
   {
     // Calculate the k'th root.
 
     using local_wide_integer_type = uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>;
-    using local_limb_type         = typename local_wide_integer_type::limb_type;
 
     local_wide_integer_type s;
 
@@ -3485,14 +3502,7 @@
     }
     else
     {
-      const bool argument_is_zero = std::all_of(m.crepresentation().cbegin(),
-                                                m.crepresentation().cend(),
-                                                [](const local_limb_type& a) -> bool
-                                                {
-                                                  return (a == 0U);
-                                                });
-
-      if(argument_is_zero)
+      if(m.is_zero())
       {
         s = local_wide_integer_type(std::uint_fast8_t(0U));
       }
@@ -3605,8 +3615,8 @@
            typename AllocatorType,
            const bool IsSigned>
   WIDE_INTEGER_CONSTEXPR uintwide_t<Digits2, LimbType, AllocatorType, IsSigned> powm(const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& b,
-                                                                           const OtherUnsignedIntegralTypeP&    p,
-                                                                           const OtherUnsignedIntegralTypeM&    m)
+                                                                                     const OtherUnsignedIntegralTypeP& p,
+                                                                                     const OtherUnsignedIntegralTypeM& m)
   {
     // Calculate (b ^ p) % m.
 
@@ -3614,10 +3624,10 @@
     using local_double_width_type = typename local_normal_width_type::double_width_type;
     using local_limb_type         = typename local_normal_width_type::limb_type;
 
-          local_normal_width_type    result;
-          local_double_width_type    y      (b);
-    const local_double_width_type    m_local(m);
-          local_limb_type            p0(p);
+          local_normal_width_type result;
+          local_double_width_type y      (b);
+    const local_double_width_type m_local(m);
+          local_limb_type         p0     (p);
 
     if((p0 == 0U) && (p == 0U))
     {
@@ -3733,7 +3743,7 @@
            typename AllocatorType,
            const bool IsSigned>
   WIDE_INTEGER_CONSTEXPR uintwide_t<Digits2, LimbType, AllocatorType, IsSigned> gcd(const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& a,
-                                                                          const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& b)
+                                                                                    const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& b)
   {
     // This implementation of GCD is an adaptation
     // of existing code from Boost.Multiprecision.

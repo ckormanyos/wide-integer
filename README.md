@@ -1,3 +1,14 @@
+===
+
+ANNOUNCEMENT: May 2021: Signed integer type expected in May 2021
+
+The signed extension (i.e., enabling types such as `int256_t`, `int1024_t`, etc.) is planned to be implemented and tested
+with a first preliminary release in May 2021. This signed extension _will not_ be a breaking change. Existing code
+using unsigned integer types will remain unchanged. Performance of the unsigned code will is not expected
+to be be significantly (or at all) degraded.
+
+===
+
 Wide-integer
 [![Build Status](https://github.com/ckormanyos/wide-integer/actions/workflows/wide_integer.yml/badge.svg)](https://github.com/ckormanyos/wide-integer/actions)
 ==================
