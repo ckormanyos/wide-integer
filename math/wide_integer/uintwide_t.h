@@ -1283,7 +1283,16 @@
       }
       else if(std::uint_fast32_t(n) >= my_digits)
       {
-        std::fill(values.begin(), values.end(), limb_type(0U));
+        // Fill with either 0's or 1's. Note also the implementation-defined
+        // behavior of excessive right-shift of negative value.
+        if(is_neg(*this) == false)
+        {
+          std::fill(values.begin(), values.end(), limb_type(0U));
+        }
+        else
+        {
+          std::fill(values.begin(), values.end(), (std::numeric_limits<limb_type>::max)());
+        }
       }
       else
       {
@@ -1356,12 +1365,12 @@
                          std::uint_fast32_t field_width  = 0U,
                    const char               fill_char    = char('0')) const
     {
-      uintwide_t t(*this);
-
       bool wr_string_is_ok = true;
 
       if(base_rep == 8U)
       {
+        uintwide_t t(*this);
+
         const limb_type mask(std::uint8_t(0x7U));
 
         char str_temp[wr_string_max_buffer_size_oct];
@@ -1376,17 +1385,37 @@
         }
         else
         {
-          while(t.is_zero() == false)
+          if(is_neg(t) == false)
           {
-            char c = char(t.values[0U] & mask);
+            while(t.is_zero() == false)
+            {
+              char c = char(t.values[0U] & mask);
 
-            if(c <= 8) { c += char(0x30); }
+              if(c <= 8) { c += char(0x30); }
 
-            --pos;
+              --pos;
 
-            str_temp[pos] = c;
+              str_temp[pos] = c;
 
-            t >>= 3;
+              t >>= 3;
+            }
+          }
+          else
+          {
+            uintwide_t<my_digits, limb_type, AllocatorType, false> tu(t);
+
+            while(tu.is_zero() == false)
+            {
+              char c = char(tu.values[0U] & mask);
+
+              if(c <= 8) { c += char(0x30); }
+
+              --pos;
+
+              str_temp[pos] = c;
+
+              tu >>= 3;
+            }
           }
         }
 
@@ -1422,6 +1451,8 @@
       }
       else if(base_rep == 10U)
       {
+        uintwide_t t(*this);
+
         const bool str_has_neg_sign = is_neg(t);
 
         if(str_has_neg_sign)
@@ -1484,6 +1515,8 @@
       }
       else if(base_rep == 16U)
       {
+        uintwide_t t(*this);
+
         const limb_type mask(std::uint8_t(0xFU));
 
         char str_temp[wr_string_max_buffer_size_hex];
@@ -1498,18 +1531,39 @@
         }
         else
         {
-          while(t.is_zero() == false)
+          if(is_neg(t) == false)
           {
-            char c(t.values[0U] & mask);
+            while(t.is_zero() == false)
+            {
+              char c(t.values[0U] & mask);
 
-            if      (c <= char(  9))                      { c += char(0x30); }
-            else if((c >= char(0xA)) && (c <= char(0xF))) { c += (is_uppercase ? char(55) : char(87)); }
+              if      (c <= char(  9))                      { c += char(0x30); }
+              else if((c >= char(0xA)) && (c <= char(0xF))) { c += (is_uppercase ? char(55) : char(87)); }
 
-            --pos;
+              --pos;
 
-            str_temp[pos] = c;
+              str_temp[pos] = c;
 
-            t >>= 4;
+              t >>= 4;
+            }
+          }
+          else
+          {
+            uintwide_t<my_digits, limb_type, AllocatorType, false> tu(t);
+
+            while(tu.is_zero() == false)
+            {
+              char c(tu.values[0U] & mask);
+
+              if      (c <= char(  9))                      { c += char(0x30); }
+              else if((c >= char(0xA)) && (c <= char(0xF))) { c += (is_uppercase ? char(55) : char(87)); }
+
+              --pos;
+
+              str_temp[pos] = c;
+
+              tu >>= 4;
+            }
           }
         }
 
@@ -1574,9 +1628,9 @@
 
       std::int_fast8_t n_result;
 
-      if(is_neg())
+      if(is_neg(*this))
       {
-        if(other.is_neg())
+        if(is_neg(other))
         {
           n_result = compare_ranges(values.data(), other.values.data(), local_number_of_limbs);
         }
@@ -1587,7 +1641,7 @@
       }
       else
       {
-        if(other.is_neg())
+        if(is_neg(other))
         {
           n_result = INT8_C(1);
         }

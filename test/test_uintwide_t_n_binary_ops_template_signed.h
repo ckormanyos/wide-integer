@@ -247,7 +247,6 @@
 
       std::mt19937_64 eng64(std::clock());
 
-      // Mantissa range from 10^15 ... 2^53-1
       std::uniform_int_distribution<std::uint64_t> dst_u64(UINT64_C(1), UINT64_C(0xFFFFFFFFFFFFFFFF));
 
       for(size_t i = 0U; i < size(); ++i)
@@ -353,9 +352,71 @@
       return result_is_ok;
     }
 
+    virtual bool test_binary_shr() const
+    {
+      std::minstd_rand eng(std::clock());
+
+      std::random_device rd;
+      std::mt19937 gen(rd());
+      std::uniform_int_distribution<> distrib(0, 64);
+
+      bool result_is_ok = true;
+
+      std::atomic_flag test_lock = ATOMIC_FLAG_INIT;
+
+      my_concurrency::parallel_for
+      (
+        std::size_t(0U),
+        size(),
+        [&test_lock, &result_is_ok, this, &distrib, &gen, &rd](std::size_t i)
+        {
+          const std::uint32_t u_shr = distrib(gen);
+
+          const native_sint_type c_native_signed = a_native_signed[i] >> u_shr;
+          const local_sint_type  c_local_signed  = a_local_signed [i] >> u_shr;
+
+          const bool current_result_is_zero = (c_local_signed == 0U);
+          const bool current_result_is_ok   = (current_result_is_zero || (c_native_signed == (std::int64_t) c_local_signed));
+
+          while(test_lock.test_and_set()) { ; }
+          result_is_ok &= current_result_is_ok;
+          test_lock.clear();
+        }
+      );
+
+      return result_is_ok;
+    }
+
     virtual bool do_test(const std::size_t rounds)
     {
-      bool result_is_ok = test_uintwide_t_n_binary_ops_base::do_test(rounds);
+      bool result_is_ok = true;
+
+      for(std::size_t i = 0U; i < rounds; ++i)
+      {
+        std::cout << "initialize()       boost compare with uintwide_t: round " << i << ",  digits2: " << this->get_digits2() << std::endl;
+        this->initialize();
+
+        std::cout << "test_binary_add()  boost compare with uintwide_t: round " << i << ",  digits2: " << this->get_digits2() << std::endl;
+        result_is_ok &= this->test_binary_add();
+
+        std::cout << "test_binary_sub()  boost compare with uintwide_t: round " << i << ",  digits2: " << this->get_digits2() << std::endl;
+        result_is_ok &= this->test_binary_sub();
+
+        std::cout << "test_binary_mul()  boost compare with uintwide_t: round " << i << ",  digits2: " << this->get_digits2() << std::endl;
+        result_is_ok &= this->test_binary_mul();
+
+        std::cout << "test_binary_div()  boost compare with uintwide_t: round " << i << ",  digits2: " << this->get_digits2() << std::endl;
+        result_is_ok &= this->test_binary_div();
+
+        std::cout << "test_binary_mod()  boost compare with uintwide_t: round " << i << ",  digits2: " << this->get_digits2() << std::endl;
+        result_is_ok &= this->test_binary_mod();
+
+        std::cout << "test_binary_sqrt() boost compare with uintwide_t: round " << i << ",  digits2: " << this->get_digits2() << std::endl;
+        result_is_ok &= this->test_binary_sqrt();
+
+        std::cout << "test_binary_shr()  boost compare with uintwide_t: round " << i << ",  digits2: " << this->get_digits2() << std::endl;
+        result_is_ok &= this->test_binary_shr();
+      }
 
       return result_is_ok;
     }

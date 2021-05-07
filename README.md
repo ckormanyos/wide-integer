@@ -15,7 +15,7 @@ for May 2021. The reason for the change is strong community interest
 in the signed integer type.
   - The signed extension _will not_ be a breaking change.
   - Existing code using unsigned integer types will remain unchanged.
-  - Performance of the unsigned code will is not expected to be be significantly (or at all) degraded.
+  - Performance of the unsigned code is not expected to be be significantly (or at all) degraded.
 
 ---
 
@@ -47,7 +47,7 @@ as shown in the [examples](./examples).
   - Clean header-only C++11 design.
   - Seamless portability to any modern C++11, 14, 17, 20 compiler.
   - Scalability with small memory footprint and efficiency suitable for both PC/workstation systems as well as _bare-metal_ embedded systems.
-  - Support C++20 `constexpr`-ness for construction, binary arithmetic and comparison operations, and some elementary functions.
+  - C++20 `constexpr`-ness for construction, binary arithmetic, comparison operations, some elementary functions and more.
 
 ## Quick start
 Easy application follows via a traditional C-style typedef or C++11 alias.
