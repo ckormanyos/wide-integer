@@ -1123,7 +1123,9 @@
       else
       {
         // Unary division function.
-        eval_divide_knuth(other, nullptr);
+        const bool denom_was_neg = is_neg(other);
+
+        eval_divide_knuth(denom_was_neg == false ? other : -other, nullptr, denom_was_neg);
       }
 
       return *this;
@@ -1140,7 +1142,9 @@
         // Unary modulus function.
         uintwide_t remainder;
 
-        eval_divide_knuth(other, &remainder);
+        const bool denom_was_neg = is_neg(other);
+
+        eval_divide_knuth(denom_was_neg == false ? other : -other, &remainder, denom_was_neg);
 
         values = remainder.values;
       }
@@ -2526,13 +2530,38 @@
     }
     #endif
 
-    WIDE_INTEGER_CONSTEXPR void eval_divide_knuth(const uintwide_t& other, uintwide_t* remainder)
+    WIDE_INTEGER_CONSTEXPR void eval_divide_knuth(const uintwide_t& other,
+                                                        uintwide_t* remainder,
+                                                  const bool        denom_was_neg = false)
     {
       // Use Knuth's long division algorithm.
       // The loop-ordering of indexes in Knuth's original
       // algorithm has been reversed due to the data format
       // used here. Several optimizations and combinations
       // of logic have been carried out in the source code.
+
+      bool bNegQuot = false;
+      bool bNegRem  = false;
+
+      // Make u (the dividend) positive. The sign of the remainder will match the
+      // sign of the dividend.
+      if(is_neg(*this))
+      {
+        bNegRem = true;
+
+        negate();
+      }
+
+      // Make v (the divisor) positive. The sign of the quotient will be negative
+      // if the sign of the divisor and dividend do not match, else positive.
+      if(denom_was_neg)
+      {
+        bNegQuot = !bNegRem;
+      }
+      else
+      {
+        bNegQuot = bNegRem;
+      }
 
       // See also:
       // D.E. Knuth, "The Art of Computer Programming, Volume 2:
@@ -2604,6 +2633,9 @@
           const limb_type short_denominator = other.values[0U];
 
           eval_divide_by_single_limb(short_denominator, u_offset, remainder);
+
+          if(bNegQuot) { negate(); }
+          if(bNegRem && remainder != nullptr)  { remainder->negate(); }
         }
         else
         {
@@ -2738,6 +2770,9 @@
                       remainder->values.end(),
                       limb_type(0U));
           }
+
+          if(bNegQuot) { negate(); }
+          if(bNegRem && remainder != nullptr)  { remainder->negate(); }
         }
       }
     }

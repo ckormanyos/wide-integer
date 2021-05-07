@@ -174,6 +174,26 @@
     {
       bool result_is_ok = true;
 
+      std::atomic_flag test_lock = ATOMIC_FLAG_INIT;
+
+      my_concurrency::parallel_for
+      (
+        std::size_t(0U),
+        size(),
+        [&test_lock, &result_is_ok, this](std::size_t i)
+        {
+          const boost_sint_type c_boost_signed = a_boost_signed[i] / b_boost_signed[i];
+          const local_sint_type c_local_signed = a_local_signed[i] / b_local_signed[i];
+
+          const std::string str_boost_signed = hexlexical_cast((boost_uint_type) c_boost_signed);
+          const std::string str_local_signed = hexlexical_cast((local_uint_type) c_local_signed);
+
+          while(test_lock.test_and_set()) { ; }
+          result_is_ok &= (str_boost_signed == str_local_signed);
+          test_lock.clear();
+        }
+      );
+
       return result_is_ok;
     }
 
@@ -277,10 +297,13 @@
           const native_sint_type c_native_signed   =
             c_native_unsigned < UINT64_C(0x8000000000000000) ? (native_sint_type) c_native_unsigned : -(native_sint_type) (~c_native_unsigned + 1U);
 
-          const local_sint_type  c_local_signed  = a_local_signed [i] + b_local_signed [i];
+          const local_sint_type  c_local_signed  = a_local_signed[i] + b_local_signed[i];
+
+          const std::string str_native_signed = declexical_cast(c_native_signed);
+          const std::string str_local_signed  = declexical_cast(c_local_signed);
 
           while(test_lock.test_and_set()) { ; }
-          result_is_ok &= (c_native_signed == (std::int64_t) c_local_signed);
+          result_is_ok &= (str_native_signed == str_local_signed);
           test_lock.clear();
         }
       );
@@ -306,10 +329,13 @@
           const native_sint_type c_native_signed   =
             c_native_unsigned < UINT64_C(0x8000000000000000) ? (native_sint_type) c_native_unsigned : -(native_sint_type) (~c_native_unsigned + 1U);
 
-          const local_sint_type  c_local_signed  = a_local_signed [i] - b_local_signed [i];
+          const local_sint_type  c_local_signed    = a_local_signed[i] - b_local_signed[i];
+
+          const std::string str_native_signed = declexical_cast(c_native_signed);
+          const std::string str_local_signed  = declexical_cast(c_local_signed);
 
           while(test_lock.test_and_set()) { ; }
-          result_is_ok &= (c_native_signed == (std::int64_t) c_local_signed);
+          result_is_ok &= (str_native_signed == str_local_signed);
           test_lock.clear();
         }
       );
@@ -335,10 +361,13 @@
           const native_sint_type c_native_signed   =
             c_native_unsigned < UINT64_C(0x8000000000000000) ? (native_sint_type) c_native_unsigned : -(native_sint_type) (~c_native_unsigned + 1U);
 
-          const local_sint_type  c_local_signed  = a_local_signed [i] * b_local_signed [i];
+          const local_sint_type  c_local_signed    = a_local_signed[i] * b_local_signed[i];
+
+          const std::string str_native_signed = declexical_cast(c_native_signed);
+          const std::string str_local_signed  = declexical_cast(c_local_signed);
 
           while(test_lock.test_and_set()) { ; }
-          result_is_ok &= (c_native_signed == (std::int64_t) c_local_signed);
+          result_is_ok &= (str_native_signed == str_local_signed);
           test_lock.clear();
         }
       );
@@ -349,6 +378,26 @@
     virtual bool test_binary_div() const
     {
       bool result_is_ok = true;
+
+      std::atomic_flag test_lock = ATOMIC_FLAG_INIT;
+
+      my_concurrency::parallel_for
+      (
+        std::size_t(0U),
+        size(),
+        [&test_lock, &result_is_ok, this](std::size_t i)
+        {
+          const native_sint_type c_native_signed = a_native_signed[i] / b_native_signed[i];
+          const local_sint_type  c_local_signed  = a_local_signed [i] / b_local_signed[i];
+
+          const std::string str_native_signed = declexical_cast(c_native_signed);
+          const std::string str_local_signed  = declexical_cast(c_local_signed);
+
+          while(test_lock.test_and_set()) { ; }
+          result_is_ok &= (str_native_signed == str_local_signed);
+          test_lock.clear();
+        }
+      );
 
       return result_is_ok;
     }

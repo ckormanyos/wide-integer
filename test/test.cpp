@@ -156,7 +156,7 @@ bool test_uintwide_t_0000064()
 bool test_uintwide_t_0000064_signed()
 {
   std::cout << "running: test_uintwide_t_0000064_signed" << std::endl;
-  test_uintwide_t_n_binary_ops_template_signed<64U, std::uint16_t> test_uintwide_t_n_binary_ops_template_instance(1UL << 18U);
+  test_uintwide_t_n_binary_ops_template_signed<64U, std::uint16_t> test_uintwide_t_n_binary_ops_template_instance(1UL << 16U);
   const bool result_is_ok =
     test_uintwide_t_n_binary_ops_template_instance.do_test(test_uintwide_t_n_binary_ops_rounds);
   return result_is_ok;

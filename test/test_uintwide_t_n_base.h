@@ -43,6 +43,16 @@
       return ss.str();
     }
 
+    template<typename IntegralType>
+    static std::string declexical_cast(const IntegralType& n)
+    {
+      std::stringstream ss;
+
+      ss << std::dec << n;
+
+      return ss.str();
+    }
+
     template<typename OtherLocalUintType,
              typename OtherBoostUintType,
              typename AllocatorType = void>
