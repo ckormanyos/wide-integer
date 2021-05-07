@@ -362,16 +362,16 @@
 
       bool result_is_ok = true;
 
+      std::uint32_t u_shr = distrib(gen);
+
       std::atomic_flag test_lock = ATOMIC_FLAG_INIT;
 
       my_concurrency::parallel_for
       (
         std::size_t(0U),
         size(),
-        [&test_lock, &result_is_ok, this, &distrib, &gen, &rd](std::size_t i)
+        [&test_lock, &result_is_ok, this, &distrib, &gen, &rd, &u_shr](std::size_t i)
         {
-          const std::uint32_t u_shr = distrib(gen);
-
           const native_sint_type c_native_signed = a_native_signed[i] >> u_shr;
           const local_sint_type  c_local_signed  = a_local_signed [i] >> u_shr;
 
@@ -380,6 +380,7 @@
 
           while(test_lock.test_and_set()) { ; }
           result_is_ok &= current_result_is_ok;
+          u_shr         = distrib(gen);
           test_lock.clear();
         }
       );
