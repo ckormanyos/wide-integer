@@ -369,15 +369,9 @@
 
     virtual bool test_binary_shr() const
     {
-      std::minstd_rand eng(std::clock());
-
-      std::random_device rd;
-      std::mt19937 gen(rd());
-      std::uniform_int_distribution<> distrib(0, 63);
+      my_gen.seed(std::clock());
 
       bool result_is_ok = true;
-
-      std::uint32_t u_shr = distrib(gen);
 
       std::atomic_flag test_lock = ATOMIC_FLAG_INIT;
 
@@ -385,8 +379,12 @@
       (
         std::size_t(0U),
         size(),
-        [&test_lock, &result_is_ok, this, &distrib, &gen, &rd, &u_shr](std::size_t i)
+        [&test_lock, &result_is_ok, this](std::size_t i)
         {
+          while(test_lock.test_and_set()) { ; }
+          const std::uint32_t u_shr = my_distrib_0_to_63(my_eng);
+          test_lock.clear();
+
           const native_sint_type c_native_signed = a_native_signed[i] >> u_shr;
           const local_sint_type  c_local_signed  = a_local_signed [i] >> u_shr;
 
@@ -395,7 +393,6 @@
 
           while(test_lock.test_and_set()) { ; }
           result_is_ok &= current_result_is_ok;
-          u_shr         = distrib(gen);
           test_lock.clear();
         }
       );
@@ -438,11 +435,17 @@
     }
 
   private:
+    static std::minstd_rand                my_eng;
+    static std::uniform_int_distribution<> my_distrib_0_to_63;
+
     std::vector<local_sint_type> a_local_signed;
     std::vector<local_sint_type> b_local_signed;
 
     std::vector<native_sint_type> a_native_signed;
     std::vector<native_sint_type> b_native_signed;
   };
+
+  template<typename AllocatorType> std::minstd_rand                test_uintwide_t_n_binary_ops_template_signed<64U, std::uint16_t, AllocatorType>::my_eng;
+  template<typename AllocatorType> std::uniform_int_distribution<> test_uintwide_t_n_binary_ops_template_signed<64U, std::uint16_t, AllocatorType>::my_distrib_0_to_63(0, 63);
 
 #endif // TEST_UINTWIDE_T_N_BINARY_OPS_TEMPLATE_SIGNED_2021_06_05_H_
