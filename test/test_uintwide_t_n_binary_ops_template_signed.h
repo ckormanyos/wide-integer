@@ -271,7 +271,12 @@
         size(),
         [&test_lock, &result_is_ok, this](std::size_t i)
         {
-          const native_sint_type c_native_signed = a_native_signed[i] + b_native_signed[i];
+          const native_uint_type c_native_unsigned =
+            (native_uint_type) a_native_signed[i] + (native_uint_type) b_native_signed[i];
+
+          const native_sint_type c_native_signed   =
+            c_native_unsigned < UINT64_C(0x8000000000000000) ? (native_sint_type) c_native_unsigned : -(native_sint_type) (~c_native_unsigned + 1U);
+
           const local_sint_type  c_local_signed  = a_local_signed [i] + b_local_signed [i];
 
           while(test_lock.test_and_set()) { ; }
@@ -295,7 +300,12 @@
         size(),
         [&test_lock, &result_is_ok, this](std::size_t i)
         {
-          const native_sint_type c_native_signed = a_native_signed[i] - b_native_signed[i];
+          const native_uint_type c_native_unsigned =
+            (native_uint_type) a_native_signed[i] - (native_uint_type) b_native_signed[i];
+
+          const native_sint_type c_native_signed   =
+            c_native_unsigned < UINT64_C(0x8000000000000000) ? (native_sint_type) c_native_unsigned : -(native_sint_type) (~c_native_unsigned + 1U);
+
           const local_sint_type  c_local_signed  = a_local_signed [i] - b_local_signed [i];
 
           while(test_lock.test_and_set()) { ; }
@@ -319,7 +329,12 @@
         size(),
         [&test_lock, &result_is_ok, this](std::size_t i)
         {
-          const native_sint_type c_native_signed = a_native_signed[i] * b_native_signed[i];
+          const native_uint_type c_native_unsigned =
+            (native_uint_type) a_native_signed[i] * (native_uint_type) b_native_signed[i];
+
+          const native_sint_type c_native_signed   =
+            c_native_unsigned < UINT64_C(0x8000000000000000) ? (native_sint_type) c_native_unsigned : -(native_sint_type) (~c_native_unsigned + 1U);
+
           const local_sint_type  c_local_signed  = a_local_signed [i] * b_local_signed [i];
 
           while(test_lock.test_and_set()) { ; }
@@ -358,7 +373,7 @@
 
       std::random_device rd;
       std::mt19937 gen(rd());
-      std::uniform_int_distribution<> distrib(0, 64);
+      std::uniform_int_distribution<> distrib(0, 63);
 
       bool result_is_ok = true;
 
