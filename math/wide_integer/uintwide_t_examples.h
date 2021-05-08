@@ -12,6 +12,7 @@
 
   namespace math { namespace wide_integer {
 
+  bool example000_numeric_limits     ();
   bool example001_mul_div            ();
   bool example001a_div_mod           ();
   bool example002_shl_shr            ();
