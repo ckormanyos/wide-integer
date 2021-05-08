@@ -2,28 +2,13 @@ Wide-integer
 [![Build Status](https://github.com/ckormanyos/wide-integer/actions/workflows/wide_integer.yml/badge.svg)](https://github.com/ckormanyos/wide-integer/actions)
 ==================
 
----
-
-## ANNOUNCEMENT: May 2021
-
-Signed integer type expected in May 2021.
-
-A signed integer extension of the wide_integer library
-enabling types such as `int256_t`, `int1024_t`, etc. is under construction.
-A tested implementation with a first preliminary release is scheduled
-for May 2021. The reason for the change is strong community interest
-in the signed integer type.
-  - The signed extension _will not_ be a breaking change.
-  - Existing code using unsigned integer types will remain unchanged.
-  - Performance of the unsigned code is not expected to be be significantly (or at all) degraded.
-
----
-
-Wide-integer implements a generic C++ template for extended width unsigned integral types.
+Wide-integer implements a generic C++ template for extended width
+unsigned and signed integral types.
 
 This C++ template header-only library implements drop-in big integer types
 such as `uint128_t`, `uint256_t`, `uint384_t`, `uint512_t`, `uint1024_t`, `uint1536_t`, etc.
 These can be used essentially like regular built-in integers.
+Corresponding signed types such as `int128_t`, `int256_t`, etc. can also be used.
 
 Wide-integer supports unsigned integral types having bit counts
 of <img src="https://render.githubusercontent.com/render/math?math=1{\ldots}63{\times}2^{N}">
@@ -452,3 +437,18 @@ These complicated proprocessor queries are not complete (in the sense of
 detecting all world-wide compiler/target systems). If you have
 a specific compiler/target system needing `constexpr` detection,
 please feel free to contact me directly so that this can be implemented.
+
+## Signed integer Support
+
+Signed big integers are also supported in the wide_integer library.
+Use a fourth template partameter to indicate the signed-ness
+of `uintwide_t`. The code below, for instance, uses an
+aliased version of `int256_t`.
+
+```C
+#include <math/wide_integer/uintwide_t.h>
+
+using int256_t = math::wide_integer::uintwide_t<256U, std::uint32_t, void, true>;
+
+const int256_t n(-3);
+```

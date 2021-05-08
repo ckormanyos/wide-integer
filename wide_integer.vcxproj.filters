@@ -150,6 +150,9 @@
     <ClCompile Include="examples\example009b_timed_mul_8_by_8.cpp">
       <Filter>Source Files\examples</Filter>
     </ClCompile>
+    <ClCompile Include="examples\example000_numeric_limits.cpp">
+      <Filter>Source Files\examples</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include=".github\workflows\wide_integer.yml">

@@ -753,8 +753,7 @@
     #endif
 
     // Helper constants for the digit characteristics.
-    static constexpr std::uint_fast32_t my_digits   = Digits2;
-    static constexpr std::uint_fast32_t my_digits10 = static_cast<int>((std::uintmax_t(my_digits) * UINTMAX_C(301)) / 1000U);
+    static constexpr std::uint_fast32_t my_digits = Digits2;
 
     // The number of limbs.
     static constexpr std::uint_fast32_t number_of_limbs =
@@ -1344,9 +1343,26 @@
     constexpr bool operator>=(const uintwide_t& other) const { return (compare(other) >= std::int_fast8_t( 0)); }
 
     // Helper functions for supporting std::numeric_limits<>.
-    static constexpr uintwide_t limits_helper_max()
+    static WIDE_INTEGER_CONSTEXPR uintwide_t limits_helper_max(bool is_signed)
     {
-      return uintwide_t(representation_type(number_of_limbs, (std::numeric_limits<limb_type>::max)()));
+      return
+      is_signed == false
+        ? uintwide_t
+          (
+            representation_type
+            (
+              number_of_limbs, (std::numeric_limits<limb_type>::max)()
+            )
+          )
+        :   uintwide_t
+            (
+              representation_type
+              (
+                number_of_limbs, (std::numeric_limits<limb_type>::max)()
+              )
+            )
+          ^ (uintwide_t(1U) << (my_digits - 1))
+        ;
     }
 
     static constexpr uintwide_t limits_helper_min()
@@ -2583,7 +2599,7 @@
       {
         // The denominator is zero. Set the maximum value and return.
         // This also catches (0 / 0) and sets the maximum value for it.
-        operator=(limits_helper_max());
+        operator=(limits_helper_max(IsSigned));
 
         if(remainder != nullptr)
         {
@@ -3014,21 +3030,42 @@
   using uint16384_t = uintwide_t<16384U, std::uint32_t>;
   using uint32768_t = uintwide_t<32768U, std::uint32_t>;
 
+  using  int64_t    = uintwide_t<   64U, std::uint16_t, void, true>;
+  using  int128_t   = uintwide_t<  128U, std::uint32_t, void, true>;
+  using  int256_t   = uintwide_t<  256U, std::uint32_t, void, true>;
+  using  int512_t   = uintwide_t<  512U, std::uint32_t, void, true>;
+  using  int1024_t  = uintwide_t< 1024U, std::uint32_t, void, true>;
+  using  int2048_t  = uintwide_t< 2048U, std::uint32_t, void, true>;
+  using  int4096_t  = uintwide_t< 4096U, std::uint32_t, void, true>;
+  using  int8192_t  = uintwide_t< 8192U, std::uint32_t, void, true>;
+  using  int16384_t = uintwide_t<16384U, std::uint32_t, void, true>;
+  using  int32768_t = uintwide_t<32768U, std::uint32_t, void, true>;
+
   // Insert a base class for numeric_limits<> support.
   // This class inherits from std::numeric_limits<unsigned int>
   // in order to provide limits for a non-specific unsigned type.
 
-  template<typename WideUnsignedIntegerType>
-  class numeric_limits_uintwide_t_base : public std::numeric_limits<unsigned int>
+  template<const std::uint_fast32_t Digits2,
+           typename LimbType,
+           typename AllocatorType,
+           const bool IsSigned>
+  class numeric_limits_uintwide_t_base
+    : public std::numeric_limits<typename std::conditional<IsSigned == false, unsigned int, signed int>::type>
   {
   private:
-    using local_wide_integer_type = WideUnsignedIntegerType;
+    using local_wide_integer_type = uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>;
 
   public:
-    static constexpr int digits   = static_cast<int>(local_wide_integer_type::my_digits);
-    static constexpr int digits10 = static_cast<int>(local_wide_integer_type::my_digits10);
+    static constexpr int digits          = (IsSigned == false)
+                                             ? static_cast<int>(local_wide_integer_type::my_digits)
+                                             : static_cast<int>(local_wide_integer_type::my_digits - 1U);
 
-    static constexpr local_wide_integer_type (max)() { return local_wide_integer_type::limits_helper_max(); }
+    static constexpr int digits10        = static_cast<int>((std::uintmax_t(digits)       * UINTMAX_C(75257499)) / UINTMAX_C(250000000));
+    static constexpr int max_digits10    = digits10;
+    static constexpr int max_exponent    = digits;
+    static constexpr int max_exponent10  = static_cast<int>((std::uintmax_t(max_exponent) * UINTMAX_C(75257499)) / UINTMAX_C(250000000));
+
+    static constexpr local_wide_integer_type (max)() { return local_wide_integer_type::limits_helper_max(IsSigned); }
     static constexpr local_wide_integer_type (min)() { return local_wide_integer_type::limits_helper_min(); }
   };
 
@@ -3052,7 +3089,7 @@
              typename AllocatorType,
              const bool IsSigned>
     class numeric_limits<math::wide_integer::uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>>
-      : public math::wide_integer::numeric_limits_uintwide_t_base<math::wide_integer::uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>> { };
+      : public math::wide_integer::numeric_limits_uintwide_t_base<Digits2, LimbType, AllocatorType, IsSigned> { };
   }
 
   namespace math { namespace wide_integer {
