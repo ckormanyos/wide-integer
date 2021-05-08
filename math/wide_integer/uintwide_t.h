@@ -1708,9 +1708,6 @@
       return (it == values.cend());
     }
 
-  private:
-    representation_type values { };
-
     template<const bool RePhraseIsSigned = IsSigned,
              typename std::enable_if<(RePhraseIsSigned == false)>::type const* = nullptr>
     static constexpr bool is_neg(uintwide_t<Digits2, LimbType, AllocatorType, RePhraseIsSigned>)
@@ -1724,6 +1721,9 @@
     {
       return (std::uint_fast8_t(std::uint_fast8_t(a.values.back() >> (std::numeric_limits<typename uintwide_t<Digits2, LimbType, AllocatorType, RePhraseIsSigned>::limb_type>::digits - 1)) & 1U) != 0U);
     }
+
+  private:
+    representation_type values { };
 
     static WIDE_INTEGER_CONSTEXPR std::int_fast8_t compare_ranges(const limb_type*         a,
                                                                   const limb_type*         b,
@@ -2543,8 +2543,8 @@
       bool bNegQuot = false;
       bool bNegRem  = false;
 
-      // Make u (the dividend) positive. The sign of the remainder will match the
-      // sign of the dividend.
+      // Make *this (the numerator) positive. The sign of the
+      // remainder will match the sign of the denominator.
       if(is_neg(*this))
       {
         bNegRem = true;
@@ -2552,8 +2552,10 @@
         negate();
       }
 
-      // Make v (the divisor) positive. The sign of the quotient will be negative
-      // if the sign of the divisor and dividend do not match, else positive.
+      // The denominator has (already) been made positive and its sign has
+      // been provided in the denom_was_neg flag. The sign of the quotient
+      // will be negative if the sign of the divisor and dividend do not match,
+      // else positive.
       if(denom_was_neg)
       {
         bNegQuot = !bNegRem;
@@ -2611,6 +2613,8 @@
           if(remainder != nullptr)
           {
             *remainder = *this;
+
+            if(bNegRem) { remainder->negate(); }
           }
 
           operator=(std::uint8_t(0U));
@@ -3104,13 +3108,20 @@
                                                   && (std::numeric_limits<IntegralType>::digits <= std::numeric_limits<LimbType>::digits)), typename uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>::limb_type>::type
   operator%(const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& u, const IntegralType& v)
   {
+    const bool u_is_neg = uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>::is_neg(u);
+
     uintwide_t<Digits2, LimbType, AllocatorType, IsSigned> remainder;
 
-    uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>(u).eval_divide_by_single_limb(v, 0U, &remainder);
+    uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>
+    (
+      (u_is_neg == false) ? u : -u
+    ).eval_divide_by_single_limb(v, 0U, &remainder);
 
     using local_limb_type = typename uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>::limb_type;
 
-    return local_limb_type(remainder);
+    local_limb_type u_rem = (local_limb_type) remainder;
+
+    return ((u_is_neg == false) ? u_rem : local_limb_type(~local_limb_type(u_rem) + 1U));
   }
 
   template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType, const bool IsSigned>
@@ -3553,7 +3564,7 @@
 
     local_wide_integer_type s;
 
-    if(m.is_zero())
+    if(m.is_zero() || local_wide_integer_type::is_neg(m))
     {
       s = local_wide_integer_type(std::uint_fast8_t(0U));
     }

@@ -201,12 +201,53 @@
     {
       bool result_is_ok = true;
 
+      std::atomic_flag test_lock = ATOMIC_FLAG_INIT;
+
+      my_concurrency::parallel_for
+      (
+        std::size_t(0U),
+        size(),
+        [&test_lock, &result_is_ok, this](std::size_t i)
+        {
+          const boost_sint_type c_boost_signed = a_boost_signed[i] % b_boost_signed[i];
+          const local_sint_type c_local_signed = a_local_signed[i] % b_local_signed[i];
+
+          const std::string str_boost_signed = hexlexical_cast((boost_uint_type) c_boost_signed);
+          const std::string str_local_signed = hexlexical_cast((local_uint_type) c_local_signed);
+
+          while(test_lock.test_and_set()) { ; }
+          result_is_ok &= (str_boost_signed == str_local_signed);
+          test_lock.clear();
+        }
+      );
+
       return result_is_ok;
     }
 
-    virtual bool test_binary_sqrt() const
+    virtual bool do_test(const std::size_t rounds)
     {
       bool result_is_ok = true;
+
+      for(std::size_t i = 0U; i < rounds; ++i)
+      {
+        std::cout << "initialize()       boost compare with uintwide_t: round " << i << ",  digits2: " << this->get_digits2() << std::endl;
+        this->initialize();
+
+        std::cout << "test_binary_add()  boost compare with uintwide_t: round " << i << ",  digits2: " << this->get_digits2() << std::endl;
+        result_is_ok &= this->test_binary_add();
+
+        std::cout << "test_binary_sub()  boost compare with uintwide_t: round " << i << ",  digits2: " << this->get_digits2() << std::endl;
+        result_is_ok &= this->test_binary_sub();
+
+        std::cout << "test_binary_mul()  boost compare with uintwide_t: round " << i << ",  digits2: " << this->get_digits2() << std::endl;
+        result_is_ok &= this->test_binary_mul();
+
+        std::cout << "test_binary_div()  boost compare with uintwide_t: round " << i << ",  digits2: " << this->get_digits2() << std::endl;
+        result_is_ok &= this->test_binary_div();
+
+        std::cout << "test_binary_mod()  boost compare with uintwide_t: round " << i << ",  digits2: " << this->get_digits2() << std::endl;
+        result_is_ok &= this->test_binary_mod();
+      }
 
       return result_is_ok;
     }
@@ -406,12 +447,53 @@
     {
       bool result_is_ok = true;
 
+      std::atomic_flag test_lock = ATOMIC_FLAG_INIT;
+
+      my_concurrency::parallel_for
+      (
+        std::size_t(0U),
+        size(),
+        [&test_lock, &result_is_ok, this](std::size_t i)
+        {
+          const native_sint_type c_native_signed = a_native_signed[i] % b_native_signed[i];
+          const local_sint_type  c_local_signed  = a_local_signed [i] % b_local_signed[i];
+
+          const std::string str_native_signed = declexical_cast(c_native_signed);
+          const std::string str_local_signed  = declexical_cast(c_local_signed);
+
+          while(test_lock.test_and_set()) { ; }
+          result_is_ok &= (str_native_signed == str_local_signed);
+          test_lock.clear();
+        }
+      );
+
       return result_is_ok;
     }
 
-    virtual bool test_binary_sqrt() const
+    virtual bool test_binary_mod1() const
     {
       bool result_is_ok = true;
+
+      std::atomic_flag test_lock = ATOMIC_FLAG_INIT;
+
+      my_concurrency::parallel_for
+      (
+        std::size_t(0U),
+        size(),
+        [&test_lock, &result_is_ok, this](std::size_t i)
+        {
+          while(test_lock.test_and_set()) { ; }
+          const typename local_sint_type::limb_type u = my_distrib_1_to_0xFFFF(my_eng);
+          test_lock.clear();
+
+          const typename local_sint_type::limb_type c_n = a_native_signed[i] % u;
+          const typename local_sint_type::limb_type c_l = a_local_signed [i] % u;
+
+          while(test_lock.test_and_set()) { ; }
+          result_is_ok &= (c_n == c_l);
+          test_lock.clear();
+        }
+      );
 
       return result_is_ok;
     }
@@ -473,8 +555,8 @@
         std::cout << "test_binary_mod()  boost compare with uintwide_t: round " << i << ",  digits2: " << this->get_digits2() << std::endl;
         result_is_ok &= this->test_binary_mod();
 
-        std::cout << "test_binary_sqrt() boost compare with uintwide_t: round " << i << ",  digits2: " << this->get_digits2() << std::endl;
-        result_is_ok &= this->test_binary_sqrt();
+        std::cout << "test_binary_mod1() boost compare with uintwide_t: round " << i << ",  digits2: " << this->get_digits2() << std::endl;
+        result_is_ok &= this->test_binary_mod1();
 
         std::cout << "test_binary_shr()  boost compare with uintwide_t: round " << i << ",  digits2: " << this->get_digits2() << std::endl;
         result_is_ok &= this->test_binary_shr();
@@ -486,6 +568,7 @@
   private:
     static std::minstd_rand                my_eng;
     static std::uniform_int_distribution<> my_distrib_0_to_63;
+    static std::uniform_int_distribution<> my_distrib_1_to_0xFFFF;
 
     std::vector<local_sint_type> a_local_signed;
     std::vector<local_sint_type> b_local_signed;
@@ -495,6 +578,7 @@
   };
 
   template<typename AllocatorType> std::minstd_rand                test_uintwide_t_n_binary_ops_template_signed<64U, std::uint16_t, AllocatorType>::my_eng;
-  template<typename AllocatorType> std::uniform_int_distribution<> test_uintwide_t_n_binary_ops_template_signed<64U, std::uint16_t, AllocatorType>::my_distrib_0_to_63(0, 63);
+  template<typename AllocatorType> std::uniform_int_distribution<> test_uintwide_t_n_binary_ops_template_signed<64U, std::uint16_t, AllocatorType>::my_distrib_0_to_63(UINT16_C(0), UINT16_C(63));
+  template<typename AllocatorType> std::uniform_int_distribution<> test_uintwide_t_n_binary_ops_template_signed<64U, std::uint16_t, AllocatorType>::my_distrib_1_to_0xFFFF(UINT16_C(1), UINT16_C(0xFFFF));
 
 #endif // TEST_UINTWIDE_T_N_BINARY_OPS_TEMPLATE_SIGNED_2021_06_05_H_
