@@ -472,6 +472,8 @@
 
     virtual bool test_binary_mod1() const
     {
+      using local_signed_limb_type = typename local_sint_type::limb_type;
+
       bool result_is_ok = true;
 
       std::atomic_flag test_lock = ATOMIC_FLAG_INIT;
@@ -483,11 +485,11 @@
         [&test_lock, &result_is_ok, this](std::size_t i)
         {
           while(test_lock.test_and_set()) { ; }
-          const typename local_sint_type::limb_type u = my_distrib_1_to_0xFFFF(my_eng);
+          const local_signed_limb_type u = (local_signed_limb_type) my_distrib_1_to_0xFFFF(my_eng);
           test_lock.clear();
 
-          const typename local_sint_type::limb_type c_n = a_native_signed[i] % u;
-          const typename local_sint_type::limb_type c_l = a_local_signed [i] % u;
+          const local_signed_limb_type c_n = (local_signed_limb_type) (a_native_signed[i] % u);
+          const local_signed_limb_type c_l = (local_signed_limb_type) (a_local_signed [i] % u);
 
           while(test_lock.test_and_set()) { ; }
           result_is_ok &= (c_n == c_l);
