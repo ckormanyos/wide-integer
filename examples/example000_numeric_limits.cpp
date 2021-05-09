@@ -16,9 +16,11 @@ bool math::wide_integer::example000_numeric_limits()
     using uint256_t = math::wide_integer::uint256_t;
 
     WIDE_INTEGER_CONSTEXPR uint256_t my_max("0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF");
+    WIDE_INTEGER_CONSTEXPR uint256_t my_min(0U);
 
     WIDE_INTEGER_CONSTEXPR bool result_uint256_t_is_ok =
          ((std::numeric_limits<uint256_t>::max)()   == my_max)
+      && ((std::numeric_limits<uint256_t>::min)()   == my_min)
       && ( std::numeric_limits<uint256_t>::digits   == 256)
       && ( std::numeric_limits<uint256_t>::digits10 == 77)
       ;
@@ -34,9 +36,11 @@ bool math::wide_integer::example000_numeric_limits()
     using int256_t = math::wide_integer::int256_t;
 
     WIDE_INTEGER_CONSTEXPR int256_t my_max("0x7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF");
+    WIDE_INTEGER_CONSTEXPR int256_t my_min("-57896044618658097711785492504343953926634992332820282019728792003956564819968");
 
     WIDE_INTEGER_CONSTEXPR bool result_int256_t_is_ok =
          ((std::numeric_limits<int256_t>::max)()   == my_max)
+      && ((std::numeric_limits<int256_t>::min)()   == my_min)
       && ( std::numeric_limits<int256_t>::digits   == 255)
       && ( std::numeric_limits<int256_t>::digits10 == 76)
       ;
