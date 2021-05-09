@@ -10,11 +10,11 @@ such as `uint128_t`, `uint256_t`, `uint384_t`, `uint512_t`, `uint1024_t`, `uint1
 These can be used essentially like regular built-in integers.
 Corresponding signed types such as `int128_t`, `int256_t`, etc. can also be used.
 
-Wide-integer supports unsigned integral types having bit counts
+Wide-integer supports unsigned and signed integral types having bit counts
 of <img src="https://render.githubusercontent.com/render/math?math=1{\ldots}63{\times}2^{N}">
 while being 16, 24, 32 or larger.
-In addition, small integer types such as software synthesized versions
-of `uint24_t` or `uint48_t` can also be crafted with wide-integer.
+In addition, small integer types such as of `uint24_t` or `uint48_t`
+can also be created with wide-integer.
 
 Wide-integer also features basic realizations of several
 elementary and number theoretical functions such as root finding,
@@ -27,6 +27,7 @@ as shown in the [examples](./examples).
 
 ## Implementation goals
 
+  - Signed and unsigned versions of `uintwide_t` behave as closely as possible as signed and unsigned versions of `int`.
   - Relatively wide precision range from 24, 32, 64 bits up to tens of thousands of bits.
   - Moderately good efficiency over the entire wide precision range.
   - Clean header-only C++11 design.
@@ -35,6 +36,7 @@ as shown in the [examples](./examples).
   - C++20 `constexpr`-ness for construction, binary arithmetic, comparison operations, some elementary functions and more.
 
 ## Quick start
+
 Easy application follows via a traditional C-style typedef or C++11 alias.
 The defined type can be used very much like a built-in unsinged integral type.
 In the following example, the static `uint512_t` variable `x` is initialized
@@ -71,13 +73,14 @@ Various interesting and algorithmically challenging
 It is hoped that the examples provide inspiration and guidance on
 how to use wide-integer.
 
+  - ![`example000_numeric_limits.cpp`](./examples/example000_numeric_limits.cpp) verifies parts of the specialization of `std::numeric_limits` for `uint266_t`and `int256_t`.
   - ![`example001_mul_div.cpp`](./examples/example001_mul_div.cpp) performs multiplication and division.
   - ![`example001a_div_mod.cpp`](./examples/example001a_div_mod.cpp) exercises division and modulus calculations.
   - ![`example002_shl_shr.cpp`](./examples/example002_shl_shr.cpp) does a few left and right shift operations.
   - ![`example003_sqrt.cpp`](./examples/example003_sqrt.cpp) computes a square root.
   - ![`example003a_cbrt`](./examples/example003a_cbrt.cpp) computes a cube root.
   - ![`example004_rootk_pow.cpp`](./examples/example004_rootk_pow.cpp) computes an integral seventh root and its corresponding power.
-  - ![`example005_powm.cpp`](./examples/example005_powm.cpp) tests the power-modulus function.
+  - ![`example005_powm.cpp`](./examples/example005_powm.cpp) tests `powm`, the power-modulus function.
   - ![`example006_gcd.cpp`](./examples/example006_gcd.cpp) tests the computation of a greatest common divisor.
   - ![`example007_random_generator.cpp`](./examples/example007_random_generator.cpp) computes some large pseudo-random integers.
   - ![`example008_miller_rabin_prime.cpp`](./examples/example008_miller_rabin_prime.cpp) implements primality testing via Miller-Rabin.
@@ -93,7 +96,9 @@ how to use wide-integer.
 ### Build Status
 [![Build Status](https://github.com/ckormanyos/wide-integer/actions/workflows/wide_integer.yml/badge.svg)](https://github.com/ckormanyos/wide-integer/actions)
 
-Building and running the tests can be accomplished using the provided Microsoft VisualStudio solution workspace.
+Building and running the tests can be accomplished using
+Microsoft VisualStudio solution workspace provided in
+`wide_integer.sln` in the project's root directory.
 
 You can also build and run tests from an empty directory using CMake:
 
@@ -103,22 +108,67 @@ cmake --build .
 ctest --verbose
 ```
 
-Alternatively building with native GCC (i.e., on *nix) can be executed with a simple command line.
-Consider, for instance, building in Linux with GCC in the presence of `unsigned __int128`.
-Boost is used for some examples and tests.
+Alternatively building with native GCC (i.e., on *nix) can be
+executed with a simple, but rather lengthy, command line
+entered manually from the command shell.
+Consider, for instance, building in Linux with GCC in the presence of `unsigned` `__int128`.
+Furthermore, the Boost.Multiprecision library is used for some examples and tests.
 In this build example, Boost intended to be located in the made-up directory `../boost-root`,
 which needs to be adapted according to the actual location of Boost.
+The command line below illustrates how to build all wide_integer
+tests and examples directly from the *nix command line.
 
-```C
-cd wide_integer
-g++ -finline-functions -finline-limit=32 -march=native -mtune=native -O3 -Wall -Wextra -Wno-maybe-uninitialized -Wno-cast-function-type -std=gnu++11 -DWIDE_INTEGER_HAS_LIMB_TYPE_UINT64 -I. -I../boost-root -pthread -lpthread  test/test.cpp test/test_uintwide_t_boost_backend.cpp test/test_uintwide_t_edge_cases.cpp test/test_uintwide_t_examples.cpp test/test_uintwide_t_n_base.cpp test/test_uintwide_t_n_binary_ops_base.cpp test/test_uintwide_t_spot_values.cpp examples/example001a_div_mod.cpp examples/example001_mul_div.cpp examples/example002_shl_shr.cpp examples/example003a_cbrt.cpp examples/example003_sqrt.cpp examples/example004_rootk_pow.cpp examples/example005_powm.cpp examples/example006_gcd.cpp examples/example007_random_generator.cpp examples/example008_miller_rabin_prime.cpp examples/example008a_miller_rabin_prime.cpp examples/example009_timed_mul.cpp examples/example009a_timed_mul_4_by_4.cpp examples/example009b_timed_mul_8_by_8.cpp examples/example010_uint48_t.cpp examples/example011_uint24_t.cpp -o wide_integer.exe
+```sh
+cd wide_integer                             \
+g++                                         \
+-finline-functions                          \
+-finline-limit=32                           \
+-march=native                               \
+-mtune=native                               \
+-O3                                         \
+-Wall                                       \
+-Wextra                                     \
+-Wno-maybe-uninitialized                    \
+-Wno-cast-function-type                     \
+-std=gnu++11                                \
+-DWIDE_INTEGER_HAS_LIMB_TYPE_UINT64         \
+-I.                                         \
+-I../boost-root                             \
+-pthread                                    \
+-lpthread                                   \
+test/test.cpp                               \
+test/test_uintwide_t_boost_backend.cpp      \
+test/test_uintwide_t_edge_cases.cpp         \
+test/test_uintwide_t_examples.cpp           \
+test/test_uintwide_t_n_base.cpp             \
+test/test_uintwide_t_n_binary_ops_base.cpp  \
+test/test_uintwide_t_spot_values.cpp        \
+examples/example000_numeric_limits.cpp      \
+examples/example001_mul_div.cpp             \
+examples/example001a_div_mod.cpp            \
+examples/example002_shl_shr.cpp             \
+examples/example003a_cbrt.cpp               \
+examples/example003_sqrt.cpp                \
+examples/example004_rootk_pow.cpp           \
+examples/example005_powm.cpp                \
+examples/example006_gcd.cpp                 \
+examples/example007_random_generator.cpp    \
+examples/example008_miller_rabin_prime.cpp  \
+examples/example008a_miller_rabin_prime.cpp \
+examples/example009_timed_mul.cpp           \
+examples/example009a_timed_mul_4_by_4.cpp   \
+examples/example009b_timed_mul_8_by_8.cpp   \
+examples/example010_uint48_t.cpp            \
+examples/example011_uint24_t.cpp            \
+-o wide_integer.exe
 ```
-
 
 Testing is a big issue and a growing test suite is in continued progress
 providing for tested, efficient functionality on the PC and workstation.
-The GitHub code is delivered with an affiliated MSVC project that uses easy-to-understand
-subroutines called from `main()` that exercise various test cases.
+The GitHub code is, as mentioned above, delivered with an affiliated MSVC
+project or a variety of other build/make options that use easy-to-understand
+subroutines called from `main()` to exercise the various
+examples and full suite of test cases.
 
 Continuous integration runs on push using GitHub Actions.
 Various compilers, operating systems, and C++ standards
@@ -207,7 +257,7 @@ by manually unrolling the multiplication loop(s) for
 `uintwide_t` instances having 8 limbs. This macro is disabled
 by default.
 
-## Detailed Examples
+## Detailed examples
 
 We will now present various straightforward detailed examples.
 
@@ -251,8 +301,9 @@ int main()
 
 Wide-integer also supports a small selection of number-theoretical
 functions such as least and most significant bit, square root,
-_k_'th root, power, power-modulus, greatest common denominator
-and random number generation. Most of these functions can be found via ADL.
+<img src="https://render.githubusercontent.com/render/math?math=k^{th}"> root,
+power, power-modulus, greatest common denominator
+and random number generation. These functions are be found via ADL.
 
 The example below calculates an integer square root.
 
@@ -438,7 +489,7 @@ detecting all world-wide compiler/target systems). If you have
 a specific compiler/target system needing `constexpr` detection,
 please feel free to contact me directly so that this can be implemented.
 
-## Signed integer Support
+## Signed integer support
 
 Signed big integers are also supported in the wide_integer library.
 Use a fourth template partameter to indicate the signed-ness

@@ -1360,8 +1360,28 @@
               (
                 number_of_limbs, (std::numeric_limits<limb_type>::max)()
               )
+            ) ^ (uintwide_t(1U) << (my_digits - 1))
+        ;
+    }
+
+    static WIDE_INTEGER_CONSTEXPR uintwide_t limits_helper_min(bool is_signed)
+    {
+      return
+      is_signed == false
+        ? uintwide_t
+          (
+            representation_type
+            (
+              number_of_limbs, limb_type(0U)
             )
-          ^ (uintwide_t(1U) << (my_digits - 1))
+          )
+        :   uintwide_t
+            (
+              representation_type
+              (
+                number_of_limbs, limb_type(0U)
+              )
+            ) | (uintwide_t(1U) << (my_digits - 1))
         ;
     }
 
@@ -3066,7 +3086,7 @@
     static constexpr int max_exponent10  = static_cast<int>((std::uintmax_t(max_exponent) * UINTMAX_C(75257499)) / UINTMAX_C(250000000));
 
     static constexpr local_wide_integer_type (max)() { return local_wide_integer_type::limits_helper_max(IsSigned); }
-    static constexpr local_wide_integer_type (min)() { return local_wide_integer_type::limits_helper_min(); }
+    static constexpr local_wide_integer_type (min)() { return local_wide_integer_type::limits_helper_min(IsSigned); }
   };
 
   template<class T>
