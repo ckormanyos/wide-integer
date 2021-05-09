@@ -7,10 +7,10 @@ add_subdirectory("examples")
 include(CTest)
 add_subdirectory("test")
 
-add_library(wide-integer INTERFACE)
-target_compile_features(wide-integer INTERFACE cxx_std_11)
+add_library(WideInteger INTERFACE)
+target_compile_features(WideInteger INTERFACE cxx_std_11)
 
 target_include_directories(
-  wide-integer INTERFACE
+  WideInteger INTERFACE
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>
   $<INSTALL_INTERFACE:include>)

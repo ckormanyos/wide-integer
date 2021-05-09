@@ -1,5 +1,5 @@
 find_package(Boost REQUIRED)
-add_library(examples
+add_library(Examples
   example000_numeric_limits.cpp
   example001_mul_div.cpp
   example001a_div_mod.cpp
@@ -17,6 +17,6 @@ add_library(examples
   example009b_timed_mul_8_by_8.cpp
   example010_uint48_t.cpp
   example011_uint24_t.cpp)
-target_compile_features(examples PRIVATE cxx_std_11)
-target_include_directories(examples PRIVATE ${PROJECT_SOURCE_DIR})
-target_include_directories(examples SYSTEM PUBLIC ${Boost_INCLUDE_DIRS})
+target_compile_features(Examples PRIVATE cxx_std_11)
+target_include_directories(Examples PRIVATE ${PROJECT_SOURCE_DIR})
+target_include_directories(Examples SYSTEM PUBLIC ${Boost_INCLUDE_DIRS})
