@@ -572,7 +572,7 @@
         || verify_power_of_two<Width2 / 61U>::conditional_value || verify_power_of_two<Width2 / 63U>::conditional_value);
   };
 
-  template<const std::uint_fast32_t BitCount,
+  template<const std::uint32_t BitCount,
            typename EnableType = void>
   struct uint_type_helper
   {
@@ -589,12 +589,12 @@
     using exact_unsigned_type = std::uintmax_t;
   };
 
-  template<const std::uint_fast32_t BitCount> struct uint_type_helper<BitCount, typename std::enable_if<                     (BitCount <=   8U)>::type> { using exact_unsigned_type = std::uint8_t;  };
-  template<const std::uint_fast32_t BitCount> struct uint_type_helper<BitCount, typename std::enable_if<(BitCount >=  9U) && (BitCount <=  16U)>::type> { using exact_unsigned_type = std::uint16_t; };
-  template<const std::uint_fast32_t BitCount> struct uint_type_helper<BitCount, typename std::enable_if<(BitCount >= 17U) && (BitCount <=  32U)>::type> { using exact_unsigned_type = std::uint32_t; };
-  template<const std::uint_fast32_t BitCount> struct uint_type_helper<BitCount, typename std::enable_if<(BitCount >= 33U) && (BitCount <=  64U)>::type> { using exact_unsigned_type = std::uint64_t; };
+  template<const std::uint32_t BitCount> struct uint_type_helper<BitCount, typename std::enable_if<                     (BitCount <=   8U)>::type> { using exact_unsigned_type = std::uint8_t;  };
+  template<const std::uint32_t BitCount> struct uint_type_helper<BitCount, typename std::enable_if<(BitCount >=  9U) && (BitCount <=  16U)>::type> { using exact_unsigned_type = std::uint16_t; };
+  template<const std::uint32_t BitCount> struct uint_type_helper<BitCount, typename std::enable_if<(BitCount >= 17U) && (BitCount <=  32U)>::type> { using exact_unsigned_type = std::uint32_t; };
+  template<const std::uint32_t BitCount> struct uint_type_helper<BitCount, typename std::enable_if<(BitCount >= 33U) && (BitCount <=  64U)>::type> { using exact_unsigned_type = std::uint64_t; };
   #if defined(WIDE_INTEGER_HAS_LIMB_TYPE_UINT64)
-  template<const std::uint_fast32_t BitCount> struct uint_type_helper<BitCount, typename std::enable_if<(BitCount >= 65U) && (BitCount <= 128U)>::type> { using exact_unsigned_type = unsigned __int128; };
+  template<const std::uint32_t BitCount> struct uint_type_helper<BitCount, typename std::enable_if<(BitCount >= 65U) && (BitCount <= 128U)>::type> { using exact_unsigned_type = unsigned __int128; };
   #endif
 
   template<typename UnsignedIntegralType>
@@ -631,7 +631,7 @@
   }
 
   template<typename UnsignedShortType,
-           typename UnsignedLargeType = typename detail::uint_type_helper<std::uint_fast32_t(std::numeric_limits<UnsignedShortType>::digits * 2)>::exact_unsigned_type>
+           typename UnsignedLargeType = typename detail::uint_type_helper<std::uint32_t(std::numeric_limits<UnsignedShortType>::digits * 2)>::exact_unsigned_type>
   constexpr UnsignedShortType make_lo(const UnsignedLargeType& u)
   {
     // From an unsigned integral input parameter of type UnsignedLargeType,
@@ -658,7 +658,7 @@
   }
 
   template<typename UnsignedShortType,
-           typename UnsignedLargeType = typename detail::uint_type_helper<std::uint_fast32_t(std::numeric_limits<UnsignedShortType>::digits * 2)>::exact_unsigned_type>
+           typename UnsignedLargeType = typename detail::uint_type_helper<std::uint32_t(std::numeric_limits<UnsignedShortType>::digits * 2)>::exact_unsigned_type>
   constexpr UnsignedShortType make_hi(const UnsignedLargeType& u)
   {
     // From an unsigned integral input parameter of type UnsignedLargeType,
@@ -685,7 +685,7 @@
   }
 
   template<typename UnsignedShortType,
-           typename UnsignedLargeType = typename detail::uint_type_helper<std::uint_fast32_t(std::numeric_limits<UnsignedShortType>::digits * 2)>::exact_unsigned_type>
+           typename UnsignedLargeType = typename detail::uint_type_helper<std::uint32_t(std::numeric_limits<UnsignedShortType>::digits * 2)>::exact_unsigned_type>
   constexpr UnsignedLargeType make_large(const UnsignedShortType& lo, const UnsignedShortType& hi)
   {
     // Create a composite unsigned integral value having type UnsignedLargeType.
@@ -722,7 +722,7 @@
   class uintwide_t
   {
   public:
-    template<const std::uint_fast32_t OtherWidth2,
+    template<const std::uint32_t OtherWidth2,
              typename OtherLimbType,
              typename OtherAllocatorType,
              const bool OtherIsSigned>
@@ -732,7 +732,7 @@
     using limb_type = LimbType;
 
     using double_limb_type =
-      typename detail::uint_type_helper<std::uint_fast32_t(std::numeric_limits<limb_type>::digits * 2)>::exact_unsigned_type;
+      typename detail::uint_type_helper<std::uint32_t(std::numeric_limits<limb_type>::digits * 2)>::exact_unsigned_type;
 
     // Legacy ularge and ushort types. These are no longer used
     // in the class, but provided for legacy compatibility.
@@ -831,7 +831,8 @@
                                         && (std::is_signed     <SignedIntegralType>::value == true))>::type* = nullptr)
     {
       using local_signed_integral_type   = SignedIntegralType;
-      using local_unsigned_integral_type = typename detail::uint_type_helper<std::numeric_limits<local_signed_integral_type>::digits + 1>::exact_unsigned_type;
+      using local_unsigned_integral_type =
+        typename detail::uint_type_helper<std::uint32_t(std::numeric_limits<local_signed_integral_type>::digits + 1)>::exact_unsigned_type;
 
       const bool v_is_neg = (v < local_signed_integral_type(0));
 
@@ -879,7 +880,7 @@
 
     // Constructor from the another type having a different width but the same limb type.
     // This constructor is explicit because it is a non-trivial conversion.
-    template<const std::uint_fast32_t OtherWidth2>
+    template<const std::uint32_t OtherWidth2>
     WIDE_INTEGER_CONSTEXPR uintwide_t(const uintwide_t<OtherWidth2, LimbType>& v)
     {
       const std::uint_fast32_t sz =
@@ -963,8 +964,8 @@
       using local_unsigned_integral_type =
         typename detail::uint_type_helper<
           std::numeric_limits<local_unknown_integral_type>::is_signed
-            ? std::numeric_limits<local_unknown_integral_type>::digits + 1
-            : std::numeric_limits<local_unknown_integral_type>::digits + 0>::exact_unsigned_type;
+            ? std::uint32_t(std::numeric_limits<local_unknown_integral_type>::digits + 1)
+            : std::uint32_t(std::numeric_limits<local_unknown_integral_type>::digits + 0)>::exact_unsigned_type;
 
       local_unsigned_integral_type cast_result;
 
@@ -1779,7 +1780,7 @@
       return n_return;
     }
 
-    template<const std::uint_fast32_t OtherWidth2>
+    template<const std::uint32_t OtherWidth2>
     static WIDE_INTEGER_CONSTEXPR void eval_mul_unary(      uintwide_t<OtherWidth2, LimbType, AllocatorType, IsSigned>& u,
                                                       const uintwide_t<OtherWidth2, LimbType, AllocatorType, IsSigned>& v,
                                                       typename std::enable_if<((OtherWidth2 / std::numeric_limits<LimbType>::digits) < number_of_limbs_karatsuba_threshold)>::type* = nullptr)
@@ -1803,7 +1804,7 @@
                 u.values.begin());
     }
 
-    template<const std::uint_fast32_t OtherWidth2>
+    template<const std::uint32_t OtherWidth2>
     static WIDE_INTEGER_CONSTEXPR void eval_mul_unary(      uintwide_t<OtherWidth2, LimbType, AllocatorType, IsSigned>& u,
                                                       const uintwide_t<OtherWidth2, LimbType, AllocatorType, IsSigned>& v,
                                                       typename std::enable_if<((OtherWidth2 / std::numeric_limits<LimbType>::digits) >= number_of_limbs_karatsuba_threshold)>::type* = nullptr)
@@ -3949,7 +3950,7 @@
     // adaptation of existing code from Boost.Multiprecision.
 
     using local_ularge_type = UnsignedLargeType;
-    using local_ushort_type = typename detail::uint_type_helper<std::uint_fast32_t(std::numeric_limits<local_ularge_type>::digits / 2)>::exact_unsigned_type;
+    using local_ushort_type = typename detail::uint_type_helper<std::uint32_t(std::numeric_limits<local_ularge_type>::digits / 2)>::exact_unsigned_type;
 
     for(;;)
     {
