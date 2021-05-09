@@ -1,4 +1,3 @@
-find_package(Boost REQUIRED)
 add_library(Examples
   example000_numeric_limits.cpp
   example000a_builtin_convert.cpp
