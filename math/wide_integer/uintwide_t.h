@@ -24,8 +24,7 @@
   #include <limits>
   #include <type_traits>
 
-  #if defined(WIDE_INTEGER_DISABLE_IOSTREAM)
-  #else
+  #if !defined(WIDE_INTEGER_DISABLE_IOSTREAM)
   #include <iomanip>
   #include <istream>
   #include <ostream>
@@ -34,10 +33,40 @@
 
   #include <util/utility/util_dynamic_array.h>
 
-  #if defined(__cpp_lib_constexpr_algorithms) && (__cpp_lib_constexpr_algorithms>=201806)
-    #define WIDE_INTEGER_CONSTEXPR constexpr
+  #if defined(_MSC_VER)
+    #if (_MSC_VER >= 1900) && defined(_HAS_CXX20) && (_HAS_CXX20 != 0)
+      #define WIDE_INTEGER_CONSTEXPR constexpr
+      #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 1
+    #else
+      #define WIDE_INTEGER_CONSTEXPR
+      #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 0
+    #endif
   #else
-    #define WIDE_INTEGER_CONSTEXPR
+    #if (defined(__cplusplus) && (__cplusplus >= 201402L))
+      #if defined(__AVR__) && (!defined(__GNUC__) || (defined(__GNUC__) && (__GNUC__ > 6)))
+      #define WIDE_INTEGER_CONSTEXPR constexpr
+      #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 1
+      #elif (defined(__cpp_lib_constexpr_algorithms) && (__cpp_lib_constexpr_algorithms>=201806))
+        #if defined(__clang__)
+          #if (__clang_major__ > 9)
+          #define WIDE_INTEGER_CONSTEXPR constexpr
+          #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 1
+          #else
+          #define WIDE_INTEGER_CONSTEXPR
+          #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 0
+          #endif
+        #else
+        #define WIDE_INTEGER_CONSTEXPR constexpr
+        #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 1
+        #endif
+      #else
+      #define WIDE_INTEGER_CONSTEXPR
+      #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 0
+      #endif
+    #else
+      #define WIDE_INTEGER_CONSTEXPR
+      #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 0
+    #endif
   #endif
 
   namespace math { namespace wide_integer {
@@ -45,277 +74,290 @@
   // Forward declaration of the uintwide_t template class.
   template<const std::uint_fast32_t Digits2,
            typename LimbType = std::uint32_t,
-           typename AllocatorType = void>
+           typename AllocatorType = void,
+           const bool IsSigned = false>
   class uintwide_t;
 
   // Forward declarations of non-member binary add, sub, mul, div, mod of (uintwide_t op uintwide_t).
-  template<const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType> constexpr uintwide_t<Digits2, LimbType, AllocatorType> operator+(const uintwide_t<Digits2, LimbType, AllocatorType>& u, const uintwide_t<Digits2, LimbType, AllocatorType>& v);
-  template<const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType> constexpr uintwide_t<Digits2, LimbType, AllocatorType> operator-(const uintwide_t<Digits2, LimbType, AllocatorType>& u, const uintwide_t<Digits2, LimbType, AllocatorType>& v);
-  template<const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType> constexpr uintwide_t<Digits2, LimbType, AllocatorType> operator*(const uintwide_t<Digits2, LimbType, AllocatorType>& u, const uintwide_t<Digits2, LimbType, AllocatorType>& v);
-  template<const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType> constexpr uintwide_t<Digits2, LimbType, AllocatorType> operator/(const uintwide_t<Digits2, LimbType, AllocatorType>& u, const uintwide_t<Digits2, LimbType, AllocatorType>& v);
-  template<const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType> constexpr uintwide_t<Digits2, LimbType, AllocatorType> operator%(const uintwide_t<Digits2, LimbType, AllocatorType>& u, const uintwide_t<Digits2, LimbType, AllocatorType>& v);
+  template<const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType, const bool IsSigned> constexpr uintwide_t<Digits2, LimbType, AllocatorType, IsSigned> operator+(const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& u, const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& v);
+  template<const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType, const bool IsSigned> constexpr uintwide_t<Digits2, LimbType, AllocatorType, IsSigned> operator-(const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& u, const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& v);
+  template<const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType, const bool IsSigned> constexpr uintwide_t<Digits2, LimbType, AllocatorType, IsSigned> operator*(const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& u, const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& v);
+  template<const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType, const bool IsSigned> constexpr uintwide_t<Digits2, LimbType, AllocatorType, IsSigned> operator/(const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& u, const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& v);
+  template<const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType, const bool IsSigned> constexpr uintwide_t<Digits2, LimbType, AllocatorType, IsSigned> operator%(const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& u, const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& v);
 
   // Forward declarations of non-member binary add, sub, mul, div, mod of (uintwide_t op IntegralType).
-  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType>
-  typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
-                           && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType, AllocatorType>>::type
-  constexpr operator+(const uintwide_t<Digits2, LimbType, AllocatorType>& u, const IntegralType& v);
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType, const bool IsSigned>
+  constexpr typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
+                                     && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>>::type
+  operator+(const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& u, const IntegralType& v);
 
-  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType>
-  typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
-                           && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType, AllocatorType>>::type
-  constexpr operator-(const uintwide_t<Digits2, LimbType, AllocatorType>& u, const IntegralType& v);
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType, const bool IsSigned>
+  constexpr typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
+                                     && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>>::type
+  operator-(const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& u, const IntegralType& v);
 
-  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType>
-  typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
-                           && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType, AllocatorType>>::type
-  constexpr operator*(const uintwide_t<Digits2, LimbType, AllocatorType>& u, const IntegralType& v);
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType, const bool IsSigned>
+  constexpr typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
+                                     && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>>::type
+  operator*(const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& u, const IntegralType& v);
 
-  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType>
-  typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
-                           && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType, AllocatorType>>::type
-  constexpr operator/(const uintwide_t<Digits2, LimbType, AllocatorType>& u, const IntegralType& v);
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType, const bool IsSigned>
+  constexpr typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
+                                     && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>>::type
+  operator/(const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& u, const IntegralType& v);
 
-  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType>
-  typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
-                           && (std::is_integral   <IntegralType>::value == true)
-                           && (std::is_unsigned   <IntegralType>::value == false)), uintwide_t<Digits2, LimbType, AllocatorType>>::type
-  constexpr operator%(const uintwide_t<Digits2, LimbType, AllocatorType>& u, const IntegralType& v);
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType, const bool IsSigned>
+  constexpr typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
+                                     && (std::is_integral   <IntegralType>::value == true)
+                           && (std::is_unsigned   <IntegralType>::value == false)), uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>>::type
+  operator%(const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& u, const IntegralType& v);
 
-  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType>
-  typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
-                           && (std::is_integral   <IntegralType>::value == true)
-                           && (std::is_unsigned   <IntegralType>::value == true)
-                           && (std::numeric_limits<IntegralType>::digits <= std::numeric_limits<LimbType>::digits)), typename uintwide_t<Digits2, LimbType, AllocatorType>::limb_type>::type
-  constexpr operator%(const uintwide_t<Digits2, LimbType, AllocatorType>& u, const IntegralType& v);
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType, const bool IsSigned>
+  WIDE_INTEGER_CONSTEXPR typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
+                                                  && (std::is_integral   <IntegralType>::value == true)
+                                                  && (std::is_unsigned   <IntegralType>::value == true)
+                                                  && (std::numeric_limits<IntegralType>::digits <= std::numeric_limits<LimbType>::digits)), typename uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>::limb_type>::type
+  operator%(const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& u, const IntegralType& v);
 
-  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType>
-  typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
-                           && (std::is_integral   <IntegralType>::value == true)
-                           && (std::is_unsigned   <IntegralType>::value == true)
-                           && (std::numeric_limits<IntegralType>::digits > std::numeric_limits<LimbType>::digits)), uintwide_t<Digits2, LimbType, AllocatorType>>::type
-  constexpr operator%(const uintwide_t<Digits2, LimbType, AllocatorType>& u, const IntegralType& v);
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType, const bool IsSigned>
+  constexpr typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
+                                     && (std::is_integral   <IntegralType>::value == true)
+                                     && (std::is_unsigned   <IntegralType>::value == true)
+                                     && (std::numeric_limits<IntegralType>::digits > std::numeric_limits<LimbType>::digits)), uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>>::type
+  operator%(const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& u, const IntegralType& v);
 
   // Forward declarations of non-member binary add, sub, mul, div, mod of (IntegralType op uintwide_t).
-  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType>
-  typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
-                           && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType, AllocatorType>>::type
-  constexpr operator+(const IntegralType& u, const uintwide_t<Digits2, LimbType, AllocatorType>& v);
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType, const bool IsSigned>
+  constexpr typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
+                                     && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>>::type
+  operator+(const IntegralType& u, const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& v);
 
-  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType>
-  typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
-                           && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType, AllocatorType>>::type
-  constexpr operator-(const IntegralType& u, const uintwide_t<Digits2, LimbType, AllocatorType>& v);
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType, const bool IsSigned>
+  constexpr typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
+                                     && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>>::type
+  operator-(const IntegralType& u, const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& v);
 
-  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType>
-  typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
-                           && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType, AllocatorType>>::type
-  constexpr operator*(const IntegralType& u, const uintwide_t<Digits2, LimbType, AllocatorType>& v);
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType, const bool IsSigned>
+  constexpr typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
+                                     && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>>::type
+  operator*(const IntegralType& u, const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& v);
 
-  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType>
-  typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
-                           && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType, AllocatorType>>::type
-  constexpr operator/(const IntegralType& u, const uintwide_t<Digits2, LimbType, AllocatorType>& v);
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType, const bool IsSigned>
+  constexpr typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
+                                     && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>>::type
+  operator/(const IntegralType& u, const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& v);
 
-  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType>
-  typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
-                           && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType, AllocatorType>>::type
-  constexpr operator%(const IntegralType& u, const uintwide_t<Digits2, LimbType, AllocatorType>& v);
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType, const bool IsSigned>
+  constexpr typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
+                                     && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>>::type
+  operator%(const IntegralType& u, const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& v);
 
   // Forward declarations of non-member binary logic operations of (uintwide_t op uintwide_t).
-  template<const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType> constexpr uintwide_t<Digits2, LimbType, AllocatorType> operator|(const uintwide_t<Digits2, LimbType, AllocatorType>& u, const uintwide_t<Digits2, LimbType, AllocatorType>& v);
-  template<const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType> constexpr uintwide_t<Digits2, LimbType, AllocatorType> operator^(const uintwide_t<Digits2, LimbType, AllocatorType>& u, const uintwide_t<Digits2, LimbType, AllocatorType>& v);
-  template<const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType> constexpr uintwide_t<Digits2, LimbType, AllocatorType> operator&(const uintwide_t<Digits2, LimbType, AllocatorType>& u, const uintwide_t<Digits2, LimbType, AllocatorType>& v);
+  template<const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType, const bool IsSigned> constexpr uintwide_t<Digits2, LimbType, AllocatorType, IsSigned> operator|(const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& u, const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& v);
+  template<const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType, const bool IsSigned> constexpr uintwide_t<Digits2, LimbType, AllocatorType, IsSigned> operator^(const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& u, const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& v);
+  template<const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType, const bool IsSigned> constexpr uintwide_t<Digits2, LimbType, AllocatorType, IsSigned> operator&(const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& u, const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& v);
 
   // Forward declarations of non-member binary logic operations of (uintwide_t op IntegralType).
-  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType, const bool IsSigned>
   constexpr typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
-                                     && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType, AllocatorType>>::type
-  operator|(const uintwide_t<Digits2, LimbType, AllocatorType>& u, const IntegralType& v);
+                                     && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>>::type
+  operator|(const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& u, const IntegralType& v);
 
-  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType, const bool IsSigned>
   constexpr typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
-                                     && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType, AllocatorType>>::type
-  operator^(const uintwide_t<Digits2, LimbType, AllocatorType>& u, const IntegralType& v);
+                                     && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>>::type
+  operator^(const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& u, const IntegralType& v);
 
-  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType, const bool IsSigned>
   constexpr typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
-                                     && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType, AllocatorType>>::type
-  operator&(const uintwide_t<Digits2, LimbType, AllocatorType>& u, const IntegralType& v);
+                                     && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>>::type
+  operator&(const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& u, const IntegralType& v);
 
   // Forward declarations of non-member binary binary logic operations of (IntegralType op uintwide_t).
-  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType, const bool IsSigned>
   constexpr typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
-                                     && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType, AllocatorType>>::type
-  operator|(const IntegralType& u, const uintwide_t<Digits2, LimbType, AllocatorType>& v);
+                                     && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>>::type
+  operator|(const IntegralType& u, const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& v);
 
-  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType, const bool IsSigned>
   constexpr typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
-                                     && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType, AllocatorType>>::type
-  operator^(const IntegralType& u, const uintwide_t<Digits2, LimbType, AllocatorType>& v);
+                                     && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>>::type
+  operator^(const IntegralType& u, const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& v);
 
-  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType, const bool IsSigned>
   constexpr typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
-                                     && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType, AllocatorType>>::type
-  operator&(const IntegralType& u, const uintwide_t<Digits2, LimbType, AllocatorType>& v);
+                                     && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>>::type
+  operator&(const IntegralType& u, const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& v);
 
   // Forward declarations of non-member shift functions of (uintwide_t shift IntegralType).
-  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType, const bool IsSigned>
   constexpr typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
-                                     && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType, AllocatorType>>::type
-  operator<<(const uintwide_t<Digits2, LimbType, AllocatorType>& u, const IntegralType n);
+                                     && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>>::type
+  operator<<(const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& u, const IntegralType n);
 
-  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType, const bool IsSigned>
   constexpr typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
-                                     && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType, AllocatorType>>::type
-  operator>>(const uintwide_t<Digits2, LimbType, AllocatorType>& u, const IntegralType n);
+                                     && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>>::type
+  operator>>(const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& u, const IntegralType n);
 
   // Forward declarations of non-member comparison functions of (uintwide_t cmp uintwide_t).
-  template<const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType> constexpr bool operator==(const uintwide_t<Digits2, LimbType, AllocatorType>& u, const uintwide_t<Digits2, LimbType, AllocatorType>& v);
-  template<const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType> constexpr bool operator!=(const uintwide_t<Digits2, LimbType, AllocatorType>& u, const uintwide_t<Digits2, LimbType, AllocatorType>& v);
-  template<const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType> constexpr bool operator> (const uintwide_t<Digits2, LimbType, AllocatorType>& u, const uintwide_t<Digits2, LimbType, AllocatorType>& v);
-  template<const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType> constexpr bool operator< (const uintwide_t<Digits2, LimbType, AllocatorType>& u, const uintwide_t<Digits2, LimbType, AllocatorType>& v);
-  template<const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType> constexpr bool operator>=(const uintwide_t<Digits2, LimbType, AllocatorType>& u, const uintwide_t<Digits2, LimbType, AllocatorType>& v);
-  template<const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType> constexpr bool operator<=(const uintwide_t<Digits2, LimbType, AllocatorType>& u, const uintwide_t<Digits2, LimbType, AllocatorType>& v);
+  template<const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType, const bool IsSigned> constexpr bool operator==(const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& u, const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& v);
+  template<const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType, const bool IsSigned> constexpr bool operator!=(const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& u, const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& v);
+  template<const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType, const bool IsSigned> constexpr bool operator> (const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& u, const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& v);
+  template<const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType, const bool IsSigned> constexpr bool operator< (const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& u, const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& v);
+  template<const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType, const bool IsSigned> constexpr bool operator>=(const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& u, const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& v);
+  template<const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType, const bool IsSigned> constexpr bool operator<=(const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& u, const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& v);
 
   // Forward declarations of non-member comparison functions of (uintwide_t cmp IntegralType).
-  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType, const bool IsSigned>
   constexpr typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
                                      && (std::is_integral   <IntegralType>::value == true)), bool>::type
-  operator==(const uintwide_t<Digits2, LimbType, AllocatorType>& u, const IntegralType& v);
+  operator==(const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& u, const IntegralType& v);
 
-  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType, const bool IsSigned>
   constexpr typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
                                      && (std::is_integral   <IntegralType>::value == true)), bool>::type
-  operator!=(const uintwide_t<Digits2, LimbType, AllocatorType>& u, const IntegralType& v);
+  operator!=(const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& u, const IntegralType& v);
 
-  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType, const bool IsSigned>
   constexpr typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
                                      && (std::is_integral   <IntegralType>::value == true)), bool>::type
-  operator> (const uintwide_t<Digits2, LimbType, AllocatorType>& u, const IntegralType& v);
+  operator> (const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& u, const IntegralType& v);
 
-  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType, const bool IsSigned>
   constexpr typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
                                      && (std::is_integral   <IntegralType>::value == true)), bool>::type
-  operator< (const uintwide_t<Digits2, LimbType, AllocatorType>& u, const IntegralType& v);
+  operator< (const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& u, const IntegralType& v);
 
-  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType, const bool IsSigned>
   constexpr typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
                                      && (std::is_integral   <IntegralType>::value == true)), bool>::type
-  operator>=(const uintwide_t<Digits2, LimbType, AllocatorType>& u, const IntegralType& v);
+  operator>=(const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& u, const IntegralType& v);
 
-  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType, const bool IsSigned>
   constexpr typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
                                      && (std::is_integral   <IntegralType>::value == true)), bool>::type
-  operator<=(const uintwide_t<Digits2, LimbType, AllocatorType>& u, const IntegralType& v);
+  operator<=(const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& u, const IntegralType& v);
 
   // Forward declarations of non-member comparison functions of (IntegralType cmp uintwide_t).
-  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType, const bool IsSigned>
   constexpr typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
                                      && (std::is_integral   <IntegralType>::value == true)), bool>::type
-  operator==(const IntegralType& u, const uintwide_t<Digits2, LimbType, AllocatorType>& v);
+  operator==(const IntegralType& u, const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& v);
 
-  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType, const bool IsSigned>
   constexpr typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
                                      && (std::is_integral   <IntegralType>::value == true)), bool>::type
-  operator!=(const IntegralType& u, const uintwide_t<Digits2, LimbType, AllocatorType>& v);
+  operator!=(const IntegralType& u, const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& v);
 
-  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType, const bool IsSigned>
   constexpr typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
                                      && (std::is_integral   <IntegralType>::value == true)), bool>::type
-  operator> (const IntegralType& u, const uintwide_t<Digits2, LimbType, AllocatorType>& v);
+  operator> (const IntegralType& u, const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& v);
 
-  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType, const bool IsSigned>
   constexpr typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
                                      && (std::is_integral   <IntegralType>::value == true)), bool>::type
-  operator< (const IntegralType& u, const uintwide_t<Digits2, LimbType, AllocatorType>& v);
+  operator< (const IntegralType& u, const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& v);
 
-  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType, const bool IsSigned>
   constexpr typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
                                      && (std::is_integral   <IntegralType>::value == true)), bool>::type
-  operator>=(const IntegralType& u, const uintwide_t<Digits2, LimbType, AllocatorType>& v);
+  operator>=(const IntegralType& u, const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& v);
 
-  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType, const bool IsSigned>
   constexpr typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
                                      && (std::is_integral   <IntegralType>::value == true)), bool>::type
-  operator<=(const IntegralType& u, const uintwide_t<Digits2, LimbType, AllocatorType>& v);
+  operator<=(const IntegralType& u, const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& v);
 
-  #if defined(WIDE_INTEGER_DISABLE_IOSTREAM)
-  #else
+  #if !defined(WIDE_INTEGER_DISABLE_IOSTREAM)
 
   // Forward declarations of I/O streaming functions.
   template<typename char_type,
            typename traits_type,
            const std::uint_fast32_t Digits2,
-           typename LimbType, typename AllocatorType>
+           typename LimbType,
+           typename AllocatorType,
+           const bool IsSigned>
   std::basic_ostream<char_type,
                      traits_type>& operator<<(std::basic_ostream<char_type, traits_type>& out,
-                                              const uintwide_t<Digits2, LimbType, AllocatorType>& x);
+                                              const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& x);
 
   template<typename char_type,
            typename traits_type,
            const std::uint_fast32_t Digits2,
-           typename LimbType, typename AllocatorType>
+           typename LimbType,
+           typename AllocatorType,
+           const bool IsSigned>
   std::basic_istream<char_type,
                      traits_type>& operator>>(std::basic_istream<char_type, traits_type>& in,
-                                              uintwide_t<Digits2, LimbType, AllocatorType>& x);
+                                              uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& x);
 
   #endif
 
   // Forward declarations of various number-theoretical tools.
   template<const std::uint_fast32_t Digits2,
            typename LimbType,
-           typename AllocatorType>
-  WIDE_INTEGER_CONSTEXPR void swap(uintwide_t<Digits2, LimbType, AllocatorType>& x,
-                                   uintwide_t<Digits2, LimbType, AllocatorType>& y);
+           typename AllocatorType,
+           const bool IsSigned>
+  WIDE_INTEGER_CONSTEXPR void swap(uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& x,
+                                   uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& y);
 
   template<const std::uint_fast32_t Digits2,
            typename LimbType,
-           typename AllocatorType>
-  WIDE_INTEGER_CONSTEXPR std::uint_fast32_t lsb(const uintwide_t<Digits2, LimbType, AllocatorType>& x);
+           typename AllocatorType,
+           const bool IsSigned>
+  WIDE_INTEGER_CONSTEXPR std::uint_fast32_t lsb(const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& x);
 
   template<const std::uint_fast32_t Digits2,
            typename LimbType,
-           typename AllocatorType>
-  WIDE_INTEGER_CONSTEXPR std::uint_fast32_t msb(const uintwide_t<Digits2, LimbType, AllocatorType>& x);
+           typename AllocatorType,
+           const bool IsSigned>
+  WIDE_INTEGER_CONSTEXPR std::uint_fast32_t msb(const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& x);
 
   template<const std::uint_fast32_t Digits2,
            typename LimbType,
-           typename AllocatorType>
-  WIDE_INTEGER_CONSTEXPR uintwide_t<Digits2, LimbType, AllocatorType> sqrt(const uintwide_t<Digits2, LimbType, AllocatorType>& m);
+           typename AllocatorType,
+           const bool IsSigned>
+  WIDE_INTEGER_CONSTEXPR uintwide_t<Digits2, LimbType, AllocatorType, IsSigned> sqrt(const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& m);
 
   template<const std::uint_fast32_t Digits2,
            typename LimbType,
-           typename AllocatorType>
-  WIDE_INTEGER_CONSTEXPR uintwide_t<Digits2, LimbType, AllocatorType> cbrt(const uintwide_t<Digits2, LimbType, AllocatorType>& m);
+           typename AllocatorType,
+           const bool IsSigned>
+  WIDE_INTEGER_CONSTEXPR uintwide_t<Digits2, LimbType, AllocatorType, IsSigned> cbrt(const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& m);
 
   template<const std::uint_fast32_t Digits2,
            typename LimbType,
-           typename AllocatorType>
-  WIDE_INTEGER_CONSTEXPR uintwide_t<Digits2, LimbType, AllocatorType> rootk(const uintwide_t<Digits2, LimbType, AllocatorType>& m,
+           typename AllocatorType,
+           const bool IsSigned>
+  WIDE_INTEGER_CONSTEXPR uintwide_t<Digits2, LimbType, AllocatorType, IsSigned> rootk(const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& m,
                                                                             const std::uint_fast8_t k);
 
   template<typename OtherUnsignedIntegralTypeP,
            const std::uint_fast32_t Digits2,
            typename LimbType,
-           typename AllocatorType>
-  WIDE_INTEGER_CONSTEXPR uintwide_t<Digits2, LimbType, AllocatorType> pow(const uintwide_t<Digits2, LimbType, AllocatorType>& b,
+           typename AllocatorType,
+           const bool IsSigned>
+  WIDE_INTEGER_CONSTEXPR uintwide_t<Digits2, LimbType, AllocatorType, IsSigned> pow(const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& b,
                                                                           const OtherUnsignedIntegralTypeP&    p);
 
   template<typename OtherUnsignedIntegralTypeP,
            typename OtherUnsignedIntegralTypeM,
            const std::uint_fast32_t Digits2,
            typename LimbType,
-           typename AllocatorType>
-  WIDE_INTEGER_CONSTEXPR uintwide_t<Digits2, LimbType, AllocatorType> powm(const uintwide_t<Digits2, LimbType, AllocatorType>& b,
+           typename AllocatorType,
+           const bool IsSigned>
+  WIDE_INTEGER_CONSTEXPR uintwide_t<Digits2, LimbType, AllocatorType, IsSigned> powm(const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& b,
                                                                            const OtherUnsignedIntegralTypeP&    p,
                                                                            const OtherUnsignedIntegralTypeM&    m);
 
   template<const std::uint_fast32_t Digits2,
            typename LimbType,
-           typename AllocatorType>
-  WIDE_INTEGER_CONSTEXPR uintwide_t<Digits2, LimbType, AllocatorType> gcd(const uintwide_t<Digits2, LimbType, AllocatorType>& a,
-                                                                          const uintwide_t<Digits2, LimbType, AllocatorType>& b);
+           typename AllocatorType,
+           const bool IsSigned>
+  WIDE_INTEGER_CONSTEXPR uintwide_t<Digits2, LimbType, AllocatorType, IsSigned> gcd(const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& a,
+                                                                          const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& b);
 
   template<typename UnsignedShortType>
   WIDE_INTEGER_CONSTEXPR typename std::enable_if<(   (std::is_fundamental<UnsignedShortType>::value == true)
@@ -325,32 +367,37 @@
 
   template<const std::uint_fast32_t Digits2,
            typename LimbType,
-           typename AllocatorType = void>
+           typename AllocatorType = void,
+           const bool IsSigned = false>
   class default_random_engine;
 
   template<const std::uint_fast32_t Digits2,
            typename LimbType,
-           typename AllocatorType = void>
+           typename AllocatorType = void,
+           const bool IsSigned = false>
   class uniform_int_distribution;
 
   template<const std::uint_fast32_t Digits2,
            typename LimbType,
-           typename AllocatorType>
-  constexpr bool operator==(const uniform_int_distribution<Digits2, LimbType, AllocatorType>& lhs,
-                                         const uniform_int_distribution<Digits2, LimbType, AllocatorType>& rhs);
+           typename AllocatorType,
+           const bool IsSigned>
+  constexpr bool operator==(const uniform_int_distribution<Digits2, LimbType, AllocatorType, IsSigned>& lhs,
+                                         const uniform_int_distribution<Digits2, LimbType, AllocatorType, IsSigned>& rhs);
 
   template<const std::uint_fast32_t Digits2,
            typename LimbType,
-           typename AllocatorType>
-  constexpr bool operator!=(const uniform_int_distribution<Digits2, LimbType, AllocatorType>& lhs,
-                            const uniform_int_distribution<Digits2, LimbType, AllocatorType>& rhs);
+           typename AllocatorType,
+           const bool IsSigned>
+  constexpr bool operator!=(const uniform_int_distribution<Digits2, LimbType, AllocatorType, IsSigned>& lhs,
+                            const uniform_int_distribution<Digits2, LimbType, AllocatorType, IsSigned>& rhs);
 
   template<typename DistributionType,
            typename GeneratorType,
            const std::uint_fast32_t Digits2,
            typename LimbType,
-           typename AllocatorType>
-  bool miller_rabin(const uintwide_t<Digits2, LimbType, AllocatorType>& n,
+           typename AllocatorType,
+           const bool IsSigned>
+  bool miller_rabin(const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& n,
                     const std::uint_fast32_t             number_of_trials,
                     DistributionType&                    distribution,
                     GeneratorType&                       generator);
@@ -362,8 +409,9 @@
     // Forward declaration of specialization of std::numeric_limits<uintwide_t>.
     template<const std::uint_fast32_t Digits2,
              typename LimbType,
-             typename AllocatorType>
-    class numeric_limits<math::wide_integer::uintwide_t<Digits2, LimbType, AllocatorType>>;
+             typename AllocatorType,
+             const bool IsSigned>
+    class numeric_limits<math::wide_integer::uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>>;
   }
 
   namespace math { namespace wide_integer { namespace detail {
@@ -549,8 +597,23 @@
   template<const std::uint_fast32_t BitCount> struct uint_type_helper<BitCount, typename std::enable_if<(BitCount >= 65U) && (BitCount <= 128U)>::type> { using exact_unsigned_type = unsigned __int128; };
   #endif
 
+  template<typename UnsignedIntegralType>
+  inline WIDE_INTEGER_CONSTEXPR std::uint_fast32_t lsb_helper(const UnsignedIntegralType& x);
+
+  template<typename UnsignedIntegralType>
+  inline WIDE_INTEGER_CONSTEXPR std::uint_fast32_t msb_helper(const UnsignedIntegralType& x);
+
+  template<>
+  inline WIDE_INTEGER_CONSTEXPR std::uint_fast32_t msb_helper<std::uint32_t>(const std::uint32_t& x);
+
+  template<>
+  inline WIDE_INTEGER_CONSTEXPR std::uint_fast32_t msb_helper<std::uint16_t>(const std::uint16_t& x);
+
+  template<>
+  inline WIDE_INTEGER_CONSTEXPR std::uint_fast32_t msb_helper<std::uint8_t>(const std::uint8_t& x);
+
   // Use a local implementation of string copy.
-  inline char* strcpy_unsafe(char* dst, const char* src)
+  inline WIDE_INTEGER_CONSTEXPR char* strcpy_unsafe(char* dst, const char* src)
   {
     while((*dst++ = *src++) != char('\0')) { ; }
 
@@ -654,10 +717,17 @@
 
   template<const std::uint_fast32_t Digits2,
            typename LimbType,
-           typename AllocatorType>
+           typename AllocatorType,
+           const bool IsSigned>
   class uintwide_t
   {
   public:
+    template<const std::uint_fast32_t OtherDigits2,
+             typename OtherLimbType,
+             typename OtherAllocatorType,
+             const bool OtherIsSigned>
+    friend class uintwide_t;
+
     // Class-local type definitions.
     using limb_type = LimbType;
 
@@ -683,8 +753,7 @@
     #endif
 
     // Helper constants for the digit characteristics.
-    static constexpr std::uint_fast32_t my_digits   = Digits2;
-    static constexpr std::uint_fast32_t my_digits10 = static_cast<int>((std::uintmax_t(my_digits) * UINTMAX_C(301)) / 1000U);
+    static constexpr std::uint_fast32_t my_digits = Digits2;
 
     // The number of limbs.
     static constexpr std::uint_fast32_t number_of_limbs =
@@ -742,7 +811,9 @@
       std::uint_fast32_t right_shift_amount_v = 0U;
       std::uint_fast8_t  index_u              = 0U;
 
-      for( ; (index_u < values.size()) && (right_shift_amount_v < std::uint_fast32_t(std::numeric_limits<UnsignedIntegralType>::digits)); ++index_u)
+      for( ; (   (index_u < values.size())
+              && (right_shift_amount_v < std::uint_fast32_t(std::numeric_limits<UnsignedIntegralType>::digits)));
+             ++index_u)
       {
         values[index_u] = limb_type(v >> (int) right_shift_amount_v);
 
@@ -762,14 +833,14 @@
       using local_signed_integral_type   = SignedIntegralType;
       using local_unsigned_integral_type = typename detail::uint_type_helper<std::numeric_limits<local_signed_integral_type>::digits + 1>::exact_unsigned_type;
 
-      const bool is_neg = (v < local_signed_integral_type(0));
+      const bool v_is_neg = (v < local_signed_integral_type(0));
 
       const local_unsigned_integral_type u =
-        ((is_neg == false) ? local_unsigned_integral_type(v) : local_unsigned_integral_type(-v));
+        ((v_is_neg == false) ? local_unsigned_integral_type(v) : local_unsigned_integral_type(-v));
 
       operator=(uintwide_t(u));
 
-      if(is_neg) { negate(); }
+      if(v_is_neg) { negate(); }
     }
 
     // Constructor from the internal data representation.
@@ -787,13 +858,19 @@
     // Copy constructor.
     constexpr uintwide_t(const uintwide_t& other) : values(other.values) { }
 
+    // Copy-like constructor from the other signed-ness type.
+    template<const bool OtherIsSigned,
+             typename std::enable_if<(OtherIsSigned != IsSigned)>::type const* = nullptr>
+    constexpr uintwide_t(const uintwide_t<Digits2, LimbType, AllocatorType, OtherIsSigned>& other)
+      : values(other.values) { }
+
     // Constructor from the double-width type.
     // This constructor is explicit because it
     // is a narrowing conversion.
     template<typename UnknownUnsignedWideIntegralType = double_width_type>
-    explicit uintwide_t(const UnknownUnsignedWideIntegralType& v,
-                        typename std::enable_if<(   (std::is_same<UnknownUnsignedWideIntegralType, double_width_type>::value == true)
-                                                 && (128U <= my_digits))>::type* = nullptr)
+    explicit WIDE_INTEGER_CONSTEXPR uintwide_t(const UnknownUnsignedWideIntegralType& v,
+                                               typename std::enable_if<(   (std::is_same<UnknownUnsignedWideIntegralType, double_width_type>::value == true)
+                                                                        && (128U <= my_digits))>::type* = nullptr)
     {
       std::copy(v.crepresentation().cbegin(),
                 v.crepresentation().cbegin() + (v.crepresentation().size() / 2U),
@@ -828,6 +905,12 @@
     // Move constructor.
     constexpr uintwide_t(uintwide_t&& other) : values(static_cast<representation_type&&>(other.values)) { }
 
+    // Move-like constructor from the other signed-ness type.
+    template<const bool OtherIsSigned,
+             typename std::enable_if<(OtherIsSigned != IsSigned)>::type const* = nullptr>
+    constexpr uintwide_t(uintwide_t<Digits2, LimbType, AllocatorType, OtherIsSigned>&& other)
+      : values(static_cast<representation_type&&>(other.values)) { }
+
     // Assignment operator.
     WIDE_INTEGER_CONSTEXPR uintwide_t& operator=(const uintwide_t& other)
     {
@@ -839,8 +922,28 @@
       return *this;
     }
 
+    // Assignment operator from the other signed-ness type.
+    template<const bool OtherIsSigned,
+             typename std::enable_if<(OtherIsSigned != IsSigned)>::type const* = nullptr>
+    WIDE_INTEGER_CONSTEXPR uintwide_t& operator=(const uintwide_t<Digits2, LimbType, AllocatorType, OtherIsSigned>& other)
+    {
+      values = other.values;
+
+      return *this;
+    }
+
     // Trivial move assignment operator.
     WIDE_INTEGER_CONSTEXPR uintwide_t& operator=(uintwide_t&& other)
+    {
+      values = static_cast<representation_type&&>(other.values);
+
+      return *this;
+    }
+
+    // Trivial move assignment operator from the other signed-ness type.
+    template<const bool OtherIsSigned,
+             typename std::enable_if<(OtherIsSigned != IsSigned)>::type const* = nullptr>
+    WIDE_INTEGER_CONSTEXPR uintwide_t& operator=(uintwide_t<Digits2, LimbType, AllocatorType, OtherIsSigned>&& other)
     {
       values = static_cast<representation_type&&>(other.values);
 
@@ -912,6 +1015,14 @@
                 limb_type(0U));
 
       return local_double_width_instance;
+    }
+
+    // Implement a cast operator that casts to a uintwide_t having the other signed-ness type.
+    template<const bool OtherIsSigned,
+             typename std::enable_if<(OtherIsSigned != IsSigned)>::type const* = nullptr>
+    explicit WIDE_INTEGER_CONSTEXPR operator uintwide_t<Digits2, LimbType, AllocatorType, OtherIsSigned>() const
+    {
+      return uintwide_t<Digits2, LimbType, AllocatorType, OtherIsSigned>(values);
     }
 
     // Provide a user interface to the internal data representation.
@@ -1011,7 +1122,9 @@
       else
       {
         // Unary division function.
-        eval_divide_knuth(other, nullptr);
+        const bool denom_was_neg = is_neg(other);
+
+        eval_divide_knuth(denom_was_neg == false ? other : -other, nullptr, denom_was_neg);
       }
 
       return *this;
@@ -1028,7 +1141,9 @@
         // Unary modulus function.
         uintwide_t remainder;
 
-        eval_divide_knuth(other, &remainder);
+        const bool denom_was_neg = is_neg(other);
+
+        eval_divide_knuth(denom_was_neg == false ? other : -other, &remainder, denom_was_neg);
 
         values = remainder.values;
       }
@@ -1037,14 +1152,14 @@
     }
 
     // Operators pre-increment and pre-decrement.
-    uintwide_t& operator++() { preincrement(); return *this; }
-    uintwide_t& operator--() { predecrement(); return *this; }
+    WIDE_INTEGER_CONSTEXPR uintwide_t& operator++() { preincrement(); return *this; }
+    WIDE_INTEGER_CONSTEXPR uintwide_t& operator--() { predecrement(); return *this; }
 
     // Operators post-increment and post-decrement.
-    uintwide_t operator++(int) { const uintwide_t w(*this); preincrement(); return w; }
-    uintwide_t operator--(int) { const uintwide_t w(*this); predecrement(); return w; }
+    WIDE_INTEGER_CONSTEXPR uintwide_t operator++(int) { const uintwide_t w(*this); preincrement(); return w; }
+    WIDE_INTEGER_CONSTEXPR uintwide_t operator--(int) { const uintwide_t w(*this); predecrement(); return w; }
 
-    uintwide_t& operator~()
+    WIDE_INTEGER_CONSTEXPR uintwide_t& operator~()
     {
       // Bitwise NOT.
       bitwise_not();
@@ -1052,7 +1167,7 @@
       return *this;
     }
 
-    uintwide_t& operator|=(const uintwide_t& other)
+    WIDE_INTEGER_CONSTEXPR uintwide_t& operator|=(const uintwide_t& other)
     {
       if(this != &other)
       {
@@ -1066,7 +1181,7 @@
       return *this;
     }
 
-    uintwide_t& operator^=(const uintwide_t& other)
+    WIDE_INTEGER_CONSTEXPR uintwide_t& operator^=(const uintwide_t& other)
     {
       if(this == &other)
       {
@@ -1084,7 +1199,7 @@
       return *this;
     }
 
-    uintwide_t& operator&=(const uintwide_t& other)
+    WIDE_INTEGER_CONSTEXPR uintwide_t& operator&=(const uintwide_t& other)
     {
       if(this != &other)
       {
@@ -1119,8 +1234,8 @@
       }
       else
       {
-        const std::uint_fast32_t offset            = std::uint_fast32_t(n) / std::uint_fast32_t(std::numeric_limits<limb_type>::digits);
-        const std::uint_fast32_t left_shift_amount = std::uint_fast32_t(n) % std::uint_fast32_t(std::numeric_limits<limb_type>::digits);
+        const std::uint_fast32_t offset            =                    std::uint_fast32_t(n) / std::uint_fast32_t(std::numeric_limits<limb_type>::digits);
+        const std::uint_fast16_t left_shift_amount = std::uint_fast16_t(std::uint_fast32_t(n) % std::uint_fast32_t(std::numeric_limits<limb_type>::digits));
 
         shl(offset, left_shift_amount);
       }
@@ -1145,8 +1260,8 @@
       }
       else
       {
-        const std::uint_fast32_t offset            = std::uint_fast32_t(n) / std::uint_fast32_t(std::numeric_limits<limb_type>::digits);
-        const std::uint_fast32_t left_shift_amount = std::uint_fast32_t(n) % std::uint_fast32_t(std::numeric_limits<limb_type>::digits);
+        const std::uint_fast32_t offset            =                    std::uint_fast32_t(n) / std::uint_fast32_t(std::numeric_limits<limb_type>::digits);
+        const std::uint_fast16_t left_shift_amount = std::uint_fast16_t(std::uint_fast32_t(n) % std::uint_fast32_t(std::numeric_limits<limb_type>::digits));
 
         shl(offset, left_shift_amount);
       }
@@ -1171,12 +1286,21 @@
       }
       else if(std::uint_fast32_t(n) >= my_digits)
       {
-        std::fill(values.begin(), values.end(), limb_type(0U));
+        // Fill with either 0's or 1's. Note also the implementation-defined
+        // behavior of excessive right-shift of negative value.
+        if(is_neg(*this) == false)
+        {
+          std::fill(values.begin(), values.end(), limb_type(0U));
+        }
+        else
+        {
+          std::fill(values.begin(), values.end(), (std::numeric_limits<limb_type>::max)());
+        }
       }
       else
       {
-        const std::uint_fast32_t offset             = std::uint_fast32_t(n) / std::uint_fast32_t(std::numeric_limits<limb_type>::digits);
-        const std::uint_fast32_t right_shift_amount = std::uint_fast32_t(n) % std::uint_fast32_t(std::numeric_limits<limb_type>::digits);
+        const std::uint_fast32_t offset             =                    std::uint_fast32_t(n) / std::uint_fast32_t(std::numeric_limits<limb_type>::digits);
+        const std::uint_fast16_t right_shift_amount = std::uint_fast16_t(std::uint_fast32_t(n) % std::uint_fast32_t(std::numeric_limits<limb_type>::digits));
 
         shr(offset, right_shift_amount);
       }
@@ -1201,8 +1325,8 @@
       }
       else
       {
-        const std::uint_fast32_t offset             = std::uint_fast32_t(n) / std::uint_fast32_t(std::numeric_limits<limb_type>::digits);
-        const std::uint_fast32_t right_shift_amount = std::uint_fast32_t(n) % std::uint_fast32_t(std::numeric_limits<limb_type>::digits);
+        const std::uint_fast32_t offset             =                    std::uint_fast32_t(n) / std::uint_fast32_t(std::numeric_limits<limb_type>::digits);
+        const std::uint_fast16_t right_shift_amount = std::uint_fast16_t(std::uint_fast32_t(n) % std::uint_fast32_t(std::numeric_limits<limb_type>::digits));
 
         shr(offset, right_shift_amount);
       }
@@ -1219,9 +1343,46 @@
     constexpr bool operator>=(const uintwide_t& other) const { return (compare(other) >= std::int_fast8_t( 0)); }
 
     // Helper functions for supporting std::numeric_limits<>.
-    static constexpr uintwide_t limits_helper_max()
+    static WIDE_INTEGER_CONSTEXPR uintwide_t limits_helper_max(bool is_signed)
     {
-      return uintwide_t(representation_type(number_of_limbs, (std::numeric_limits<limb_type>::max)()));
+      return
+      is_signed == false
+        ? uintwide_t
+          (
+            representation_type
+            (
+              number_of_limbs, (std::numeric_limits<limb_type>::max)()
+            )
+          )
+        :   uintwide_t
+            (
+              representation_type
+              (
+                number_of_limbs, (std::numeric_limits<limb_type>::max)()
+              )
+            ) ^ (uintwide_t(1U) << (my_digits - 1))
+        ;
+    }
+
+    static WIDE_INTEGER_CONSTEXPR uintwide_t limits_helper_min(bool is_signed)
+    {
+      return
+      is_signed == false
+        ? uintwide_t
+          (
+            representation_type
+            (
+              number_of_limbs, limb_type(0U)
+            )
+          )
+        :   uintwide_t
+            (
+              representation_type
+              (
+                number_of_limbs, limb_type(0U)
+              )
+            ) | (uintwide_t(1U) << (my_digits - 1))
+        ;
     }
 
     static constexpr uintwide_t limits_helper_min()
@@ -1244,12 +1405,12 @@
                          std::uint_fast32_t field_width  = 0U,
                    const char               fill_char    = char('0')) const
     {
-      uintwide_t t(*this);
-
       bool wr_string_is_ok = true;
 
       if(base_rep == 8U)
       {
+        uintwide_t t(*this);
+
         const limb_type mask(std::uint8_t(0x7U));
 
         char str_temp[wr_string_max_buffer_size_oct];
@@ -1264,17 +1425,37 @@
         }
         else
         {
-          while(t.is_zero() == false)
+          if(is_neg(t) == false)
           {
-            char c = char(t.values[0U] & mask);
+            while(t.is_zero() == false)
+            {
+              char c = char(t.values[0U] & mask);
 
-            if(c <= 8) { c += char(0x30); }
+              if(c <= 8) { c += char(0x30); }
 
-            --pos;
+              --pos;
 
-            str_temp[pos] = c;
+              str_temp[pos] = c;
 
-            t >>= 3;
+              t >>= 3;
+            }
+          }
+          else
+          {
+            uintwide_t<my_digits, limb_type, AllocatorType, false> tu(t);
+
+            while(tu.is_zero() == false)
+            {
+              char c = char(tu.values[0U] & mask);
+
+              if(c <= 8) { c += char(0x30); }
+
+              --pos;
+
+              str_temp[pos] = c;
+
+              tu >>= 3;
+            }
           }
         }
 
@@ -1310,6 +1491,15 @@
       }
       else if(base_rep == 10U)
       {
+        uintwide_t t(*this);
+
+        const bool str_has_neg_sign = is_neg(t);
+
+        if(str_has_neg_sign)
+        {
+          t.negate();
+        }
+
         char str_temp[wr_string_max_buffer_size_dec];
 
         std::uint_fast32_t pos = (sizeof(str_temp) - 1U);
@@ -1334,11 +1524,17 @@
           }
         }
 
-        if(show_pos)
+        if(show_pos && (!str_has_neg_sign))
         {
           --pos;
 
           str_temp[pos] = char('+');
+        }
+        else if(str_has_neg_sign)
+        {
+          --pos;
+
+          str_temp[pos] = char('-');
         }
 
         if(field_width != 0U)
@@ -1359,6 +1555,8 @@
       }
       else if(base_rep == 16U)
       {
+        uintwide_t t(*this);
+
         const limb_type mask(std::uint8_t(0xFU));
 
         char str_temp[wr_string_max_buffer_size_hex];
@@ -1373,18 +1571,39 @@
         }
         else
         {
-          while(t.is_zero() == false)
+          if(is_neg(t) == false)
           {
-            char c(t.values[0U] & mask);
+            while(t.is_zero() == false)
+            {
+              char c(t.values[0U] & mask);
 
-            if      (c <= char(  9))                      { c += char(0x30); }
-            else if((c >= char(0xA)) && (c <= char(0xF))) { c += (is_uppercase ? char(55) : char(87)); }
+              if      (c <= char(  9))                      { c += char(0x30); }
+              else if((c >= char(0xA)) && (c <= char(0xF))) { c += (is_uppercase ? char(55) : char(87)); }
 
-            --pos;
+              --pos;
 
-            str_temp[pos] = c;
+              str_temp[pos] = c;
 
-            t >>= 4;
+              t >>= 4;
+            }
+          }
+          else
+          {
+            uintwide_t<my_digits, limb_type, AllocatorType, false> tu(t);
+
+            while(tu.is_zero() == false)
+            {
+              char c(tu.values[0U] & mask);
+
+              if      (c <= char(  9))                      { c += char(0x30); }
+              else if((c >= char(0xA)) && (c <= char(0xF))) { c += (is_uppercase ? char(55) : char(87)); }
+
+              --pos;
+
+              str_temp[pos] = c;
+
+              tu >>= 4;
+            }
           }
         }
 
@@ -1430,14 +1649,52 @@
       return wr_string_is_ok;
     }
 
-    WIDE_INTEGER_CONSTEXPR std::int_fast8_t compare(const uintwide_t& other) const
+    template<const bool RePhraseIsSigned = IsSigned,
+             typename std::enable_if<(RePhraseIsSigned == false)>::type const* = nullptr>
+    WIDE_INTEGER_CONSTEXPR std::int_fast8_t compare(const uintwide_t<Digits2, LimbType, AllocatorType, RePhraseIsSigned>& other) const
     {
-      const std::int_fast8_t cmp_result = compare_ranges(values.data(), other.values.data(), number_of_limbs);
+      constexpr std::uint_fast32_t local_number_of_limbs =
+        uintwide_t<Digits2, LimbType, AllocatorType, RePhraseIsSigned>::number_of_limbs;
 
-      return cmp_result;
+      return compare_ranges(values.data(), other.values.data(), local_number_of_limbs);
     }
 
-    void negate()
+    template<const bool RePhraseIsSigned = IsSigned,
+             typename std::enable_if<(RePhraseIsSigned == true)>::type const* = nullptr>
+    WIDE_INTEGER_CONSTEXPR std::int_fast8_t compare(const uintwide_t<Digits2, LimbType, AllocatorType, RePhraseIsSigned>& other) const
+    {
+      constexpr std::uint_fast32_t local_number_of_limbs =
+        uintwide_t<Digits2, LimbType, AllocatorType, RePhraseIsSigned>::number_of_limbs;
+
+      std::int_fast8_t n_result;
+
+      if(is_neg(*this))
+      {
+        if(is_neg(other))
+        {
+          n_result = compare_ranges(values.data(), other.values.data(), local_number_of_limbs);
+        }
+        else
+        {
+          n_result = INT8_C(-1);
+        }
+      }
+      else
+      {
+        if(is_neg(other))
+        {
+          n_result = INT8_C(1);
+        }
+        else
+        {
+          n_result = compare_ranges(values.data(), other.values.data(), local_number_of_limbs);
+        }
+      }
+
+      return n_result;
+    }
+
+    WIDE_INTEGER_CONSTEXPR void negate()
     {
       bitwise_not();
 
@@ -1475,50 +1732,64 @@
       }
     }
 
+    WIDE_INTEGER_CONSTEXPR bool is_zero() const
+    {
+      auto it = values.cbegin();
+
+      while((it != values.cend()) && (*it == limb_type(0U)))
+      {
+        ++it;
+      }
+
+      return (it == values.cend());
+    }
+
+    template<const bool RePhraseIsSigned = IsSigned,
+             typename std::enable_if<(RePhraseIsSigned == false)>::type const* = nullptr>
+    static constexpr bool is_neg(uintwide_t<Digits2, LimbType, AllocatorType, RePhraseIsSigned>)
+    {
+      return false;
+    }
+
+    template<const bool RePhraseIsSigned = IsSigned,
+             typename std::enable_if<(RePhraseIsSigned == true)>::type const* = nullptr>
+    static constexpr bool is_neg(uintwide_t<Digits2, LimbType, AllocatorType, RePhraseIsSigned> a)
+    {
+      return (std::uint_fast8_t(std::uint_fast8_t(a.values.back() >> (std::numeric_limits<typename uintwide_t<Digits2, LimbType, AllocatorType, RePhraseIsSigned>::limb_type>::digits - 1)) & 1U) != 0U);
+    }
+
   private:
-    representation_type values{};
+    representation_type values { };
 
     static WIDE_INTEGER_CONSTEXPR std::int_fast8_t compare_ranges(const limb_type*         a,
                                                                   const limb_type*         b,
                                                                   const std::uint_fast32_t count)
     {
-      using local_const_reverse_iterator_type = std::reverse_iterator<const limb_type*>;
+      std::int_fast8_t n_return = 0;
 
-      local_const_reverse_iterator_type rcbegin_a(a + count);
-      local_const_reverse_iterator_type rcend_a  (a);
-      local_const_reverse_iterator_type rcbegin_b(b + count);
-      local_const_reverse_iterator_type rcend_b  (b);
+      std::reverse_iterator<const limb_type*> pa(a + count);
+      std::reverse_iterator<const limb_type*> pb(b + count);
 
-      const auto mismatch_pair = std::mismatch(rcbegin_a, rcend_a, rcbegin_b);
-
-      std::int_fast8_t n_return{};
-
-      if((mismatch_pair.first != rcend_a) || (mismatch_pair.second != rcend_b))
+      for( ; pa != std::reverse_iterator<const limb_type*>(a); ++pa, ++pb)
       {
-        const limb_type left  = *mismatch_pair.first;
-        const limb_type right = *mismatch_pair.second;
-
-        n_return = ((left > right) ? static_cast<std::int_fast8_t>( 1)
-                                   : static_cast<std::int_fast8_t>(-1));
-      }
-      else
-      {
-        n_return = static_cast<std::int_fast8_t>(0);
+        if     (*pa > *pb) { n_return =  1; break; }
+        else if(*pa < *pb) { n_return = -1; break; }
       }
 
       return n_return;
     }
 
     template<const std::uint_fast32_t OtherDigits2>
-    static WIDE_INTEGER_CONSTEXPR void eval_mul_unary(      uintwide_t<OtherDigits2, LimbType, AllocatorType>& u,
-                                                      const uintwide_t<OtherDigits2, LimbType, AllocatorType>& v,
+    static WIDE_INTEGER_CONSTEXPR void eval_mul_unary(      uintwide_t<OtherDigits2, LimbType, AllocatorType, IsSigned>& u,
+                                                      const uintwide_t<OtherDigits2, LimbType, AllocatorType, IsSigned>& v,
                                                       typename std::enable_if<((OtherDigits2 / std::numeric_limits<LimbType>::digits) < number_of_limbs_karatsuba_threshold)>::type* = nullptr)
     {
       // Unary multiplication function using schoolbook multiplication,
       // but we only need to retain the low half of the n*n algorithm.
       // In other words, this is an n*n->n bit multiplication.
 
-      constexpr std::uint_fast32_t local_number_of_limbs = uintwide_t<OtherDigits2, LimbType, AllocatorType>::number_of_limbs;
+      constexpr std::uint_fast32_t local_number_of_limbs =
+        uintwide_t<OtherDigits2, LimbType, AllocatorType, IsSigned>::number_of_limbs;
 
       representation_type result{};
 
@@ -1533,13 +1804,14 @@
     }
 
     template<const std::uint_fast32_t OtherDigits2>
-    static WIDE_INTEGER_CONSTEXPR void eval_mul_unary(      uintwide_t<OtherDigits2, LimbType, AllocatorType>& u,
-                                                      const uintwide_t<OtherDigits2, LimbType, AllocatorType>& v,
+    static WIDE_INTEGER_CONSTEXPR void eval_mul_unary(      uintwide_t<OtherDigits2, LimbType, AllocatorType, IsSigned>& u,
+                                                      const uintwide_t<OtherDigits2, LimbType, AllocatorType, IsSigned>& v,
                                                       typename std::enable_if<((OtherDigits2 / std::numeric_limits<LimbType>::digits) >= number_of_limbs_karatsuba_threshold)>::type* = nullptr)
     {
       // Unary multiplication function using Karatsuba multiplication.
 
-      constexpr std::uint_fast32_t local_number_of_limbs = uintwide_t<OtherDigits2, LimbType, AllocatorType>::number_of_limbs;
+      constexpr std::uint_fast32_t local_number_of_limbs =
+        uintwide_t<OtherDigits2, LimbType, AllocatorType, IsSigned>::number_of_limbs;
 
       // TBD: Can use specialized allocator or memory pool for these arrays.
       // Good examples for this (both threaded as well as non-threaded)
@@ -1604,7 +1876,7 @@
     }
 
     template<const std::uint_fast32_t RePhraseDigits2 = Digits2,
-             typename std::enable_if<(uintwide_t<RePhraseDigits2, LimbType, AllocatorType>::number_of_limbs == 4U)>::type const* = nullptr>
+             typename std::enable_if<(uintwide_t<RePhraseDigits2, LimbType, AllocatorType, IsSigned>::number_of_limbs == 4U)>::type const* = nullptr>
     static WIDE_INTEGER_CONSTEXPR void eval_multiply_n_by_n_to_lo_part(      LimbType*          r,
                                                                        const LimbType*          a,
                                                                        const LimbType*          b,
@@ -1612,8 +1884,8 @@
     {
       static_cast<void>(count);
 
-      using local_limb_type        = typename uintwide_t<RePhraseDigits2, LimbType, AllocatorType>::limb_type;
-      using local_double_limb_type = typename uintwide_t<RePhraseDigits2, LimbType, AllocatorType>::double_limb_type;
+      using local_limb_type        = typename uintwide_t<RePhraseDigits2, LimbType, AllocatorType, IsSigned>::limb_type;
+      using local_double_limb_type = typename uintwide_t<RePhraseDigits2, LimbType, AllocatorType, IsSigned>::double_limb_type;
 
       // The algorithm has been derived from the polynomial multiplication.
       // After the multiplication terms of equal order are grouped
@@ -1693,10 +1965,10 @@
                 + detail::make_hi<local_limb_type>(a0b1)
                 ;
         r[3U] =   detail::make_hi<local_limb_type>(r2)
-                + static_cast<local_limb_type>    (a[3U] * b[0U])
-                + static_cast<local_limb_type>    (a[2U] * b[1U])
-                + static_cast<local_limb_type>    (a[1U] * b[2U])
-                + static_cast<local_limb_type>    (a[0U] * b[3U])
+                + static_cast<local_limb_type>    (a[3U] * local_double_limb_type(b[0U]))
+                + static_cast<local_limb_type>    (a[2U] * local_double_limb_type(b[1U]))
+                + static_cast<local_limb_type>    (a[1U] * local_double_limb_type(b[2U]))
+                + static_cast<local_limb_type>    (a[0U] * local_double_limb_type(b[3U]))
                 + detail::make_hi<local_limb_type>(a2b0)
                 + detail::make_hi<local_limb_type>(a1b1)
                 + detail::make_hi<local_limb_type>(a0b2)
@@ -1710,7 +1982,7 @@
 
     #if defined(WIDE_INTEGER_HAS_MUL_8_BY_8_UNROLL)
     template<const std::uint_fast32_t RePhraseDigits2 = Digits2,
-             typename std::enable_if<(uintwide_t<RePhraseDigits2, LimbType, AllocatorType>::number_of_limbs == 8U)>::type const* = nullptr>
+             typename std::enable_if<(uintwide_t<RePhraseDigits2, LimbType, AllocatorType, IsSigned>::number_of_limbs == 8U)>::type const* = nullptr>
     static WIDE_INTEGER_CONSTEXPR void eval_multiply_n_by_n_to_lo_part(      LimbType*          r,
                                                                        const LimbType*          a,
                                                                        const LimbType*          b,
@@ -1718,8 +1990,8 @@
     {
       static_cast<void>(count);
 
-      using local_limb_type        = typename uintwide_t<RePhraseDigits2, LimbType, AllocatorType>::limb_type;
-      using local_double_limb_type = typename uintwide_t<RePhraseDigits2, LimbType, AllocatorType>::double_limb_type;
+      using local_limb_type        = typename uintwide_t<RePhraseDigits2, LimbType, AllocatorType, IsSigned>::limb_type;
+      using local_double_limb_type = typename uintwide_t<RePhraseDigits2, LimbType, AllocatorType, IsSigned>::double_limb_type;
 
       // The algorithm has been derived from the polynomial multiplication.
       // After the multiplication terms of equal order are grouped
@@ -1959,14 +2231,14 @@
                 (
                   detail::make_hi<local_limb_type>(rd6)
                 )
-                + static_cast<local_limb_type>    (a[7U] * b[0U])
-                + static_cast<local_limb_type>    (a[6U] * b[1U])
-                + static_cast<local_limb_type>    (a[5U] * b[2U])
-                + static_cast<local_limb_type>    (a[4U] * b[3U])
-                + static_cast<local_limb_type>    (a[3U] * b[4U])
-                + static_cast<local_limb_type>    (a[2U] * b[5U])
-                + static_cast<local_limb_type>    (a[1U] * b[6U])
-                + static_cast<local_limb_type>    (a[0U] * b[7U])
+                + static_cast<local_limb_type>    (a[7U] * local_double_limb_type(b[0U]))
+                + static_cast<local_limb_type>    (a[6U] * local_double_limb_type(b[1U]))
+                + static_cast<local_limb_type>    (a[5U] * local_double_limb_type(b[2U]))
+                + static_cast<local_limb_type>    (a[4U] * local_double_limb_type(b[3U]))
+                + static_cast<local_limb_type>    (a[3U] * local_double_limb_type(b[4U]))
+                + static_cast<local_limb_type>    (a[2U] * local_double_limb_type(b[5U]))
+                + static_cast<local_limb_type>    (a[1U] * local_double_limb_type(b[6U]))
+                + static_cast<local_limb_type>    (a[0U] * local_double_limb_type(b[7U]))
                 + detail::make_hi<local_limb_type>(a6b0)
                 + detail::make_hi<local_limb_type>(a5b1)
                 + detail::make_hi<local_limb_type>(a4b2)
@@ -2001,7 +2273,7 @@
       using local_limb_type        = typename uintwide_t<RePhraseDigits2, LimbType, AllocatorType>::limb_type;
       using local_double_limb_type = typename uintwide_t<RePhraseDigits2, LimbType, AllocatorType>::double_limb_type;
 
-      std::fill_n(r, count, 0);
+      std::fill_n(r, count, local_limb_type(0U));
 
       for(std::uint_fast32_t i = 0U; i < count; ++i)
       {
@@ -2021,12 +2293,12 @@
       }
     }
 
-    static void eval_multiply_n_by_n_to_2n(      limb_type*         r,
-                                           const limb_type*         a,
-                                           const limb_type*         b,
-                                           const std::uint_fast32_t count)
+    static WIDE_INTEGER_CONSTEXPR void eval_multiply_n_by_n_to_2n(      limb_type*         r,
+                                                                  const limb_type*         a,
+                                                                  const limb_type*         b,
+                                                                  const std::uint_fast32_t count)
     {
-      std::memset(r, 0, (count * 2U) * sizeof(limb_type));
+      std::fill_n(r, (count * 2U), limb_type(0U));
 
       for(std::uint_fast32_t i = 0U; i < count; ++i)
       {
@@ -2294,13 +2566,40 @@
     }
     #endif
 
-    WIDE_INTEGER_CONSTEXPR void eval_divide_knuth(const uintwide_t& other, uintwide_t* remainder)
+    WIDE_INTEGER_CONSTEXPR void eval_divide_knuth(const uintwide_t& other,
+                                                        uintwide_t* remainder,
+                                                  const bool        denom_was_neg = false)
     {
       // Use Knuth's long division algorithm.
       // The loop-ordering of indexes in Knuth's original
       // algorithm has been reversed due to the data format
       // used here. Several optimizations and combinations
       // of logic have been carried out in the source code.
+
+      bool bNegQuot = false;
+      bool bNegRem  = false;
+
+      // Make *this (the numerator) positive. The sign of the
+      // remainder will match the sign of the denominator.
+      if(is_neg(*this))
+      {
+        bNegRem = true;
+
+        negate();
+      }
+
+      // The denominator has (already) been made positive and its sign has
+      // been provided in the denom_was_neg flag. The sign of the quotient
+      // will be negative if the sign of the divisor and dividend do not match,
+      // else positive.
+      if(denom_was_neg)
+      {
+        bNegQuot = !bNegRem;
+      }
+      else
+      {
+        bNegQuot = bNegRem;
+      }
 
       // See also:
       // D.E. Knuth, "The Art of Computer Programming, Volume 2:
@@ -2320,7 +2619,7 @@
       {
         // The denominator is zero. Set the maximum value and return.
         // This also catches (0 / 0) and sets the maximum value for it.
-        operator=(limits_helper_max());
+        operator=(limits_helper_max(IsSigned));
 
         if(remainder != nullptr)
         {
@@ -2350,6 +2649,8 @@
           if(remainder != nullptr)
           {
             *remainder = *this;
+
+            if(bNegRem) { remainder->negate(); }
           }
 
           operator=(std::uint8_t(0U));
@@ -2372,6 +2673,9 @@
           const limb_type short_denominator = other.values[0U];
 
           eval_divide_by_single_limb(short_denominator, u_offset, remainder);
+
+          if(bNegQuot) { negate(); }
+          if(bNegRem && remainder != nullptr)  { remainder->negate(); }
         }
         else
         {
@@ -2506,11 +2810,15 @@
                       remainder->values.end(),
                       limb_type(0U));
           }
+
+          if(bNegQuot) { negate(); }
+          if(bNegRem && remainder != nullptr)  { remainder->negate(); }
         }
       }
     }
 
-    WIDE_INTEGER_CONSTEXPR void shl(const std::uint_fast32_t offset, const std::uint_fast32_t left_shift_amount)
+    WIDE_INTEGER_CONSTEXPR void shl(const std::uint_fast32_t offset,
+                                    const std::uint_fast16_t left_shift_amount)
     {
       if(offset > 0U)
       {
@@ -2521,12 +2829,12 @@
         std::fill(values.begin(), values.begin() + offset, limb_type(0U));
       }
 
-      limb_type part_from_previous_value = limb_type(0U);
-
       using local_integral_type = std::uint_fast32_t;
 
       if(left_shift_amount != local_integral_type(0U))
       {
+        limb_type part_from_previous_value = limb_type(0U);
+
         for(std::uint_fast32_t i = offset; i < number_of_limbs; ++i)
         {
           const limb_type t = values[i];
@@ -2538,7 +2846,8 @@
       }
     }
 
-    WIDE_INTEGER_CONSTEXPR void shr(const std::uint_fast32_t offset, const std::uint_fast32_t right_shift_amount)
+    WIDE_INTEGER_CONSTEXPR void shr(const std::uint_fast32_t offset,
+                                    const std::uint_fast16_t right_shift_amount)
     {
       if(offset > 0U)
       {
@@ -2546,15 +2855,20 @@
                   values.begin() + number_of_limbs,
                   values.begin());
 
-        std::fill(values.end() - offset, values.end(), limb_type(0U));
+        std::fill(values.end() - offset,
+                  values.end(),
+                  (is_neg(*this) == false) ? limb_type(0U) : limb_type((std::numeric_limits<limb_type>::max)()));
       }
-
-      limb_type part_from_previous_value = limb_type(0U);
 
       using local_integral_type = std::uint_fast32_t;
 
       if(right_shift_amount != local_integral_type(0U))
       {
+        limb_type part_from_previous_value =
+          (is_neg(*this) == false)
+            ? limb_type(0U)
+            : limb_type((std::numeric_limits<limb_type>::max)() << std::uint_fast16_t(std::uint_fast16_t(std::numeric_limits<limb_type>::digits) - right_shift_amount));
+
         for(std::int_fast32_t i = std::int_fast32_t((number_of_limbs - 1U) - offset); i >= 0; --i)
         {
           const limb_type t = values[std::uint_fast32_t(i)];
@@ -2577,9 +2891,21 @@
 
       std::uint_fast32_t pos = 0U;
 
-      // Skip over a potential plus sign.
+      // Detect: Is there a plus sign?
+      // And if there is a plus sign, skip over the plus sign.
       if((str_length > 0U) && (str_input[0U] == char('+')))
       {
+        ++pos;
+      }
+
+      bool str_has_neg_sign = false;
+
+      // Detect: Is there a minus sign?
+      // And if there is a minus sign, skip over the minus sign.
+      if((str_length > 0U) && (str_input[0U] == char('-')))
+      {
+        str_has_neg_sign = true;
+
         ++pos;
       }
 
@@ -2663,6 +2989,11 @@
         }
       }
 
+      if(str_has_neg_sign)
+      {
+        negate();
+      }
+
       return char_is_valid;
     }
 
@@ -2705,16 +3036,6 @@
         --values[i];
       }
     }
-
-    constexpr bool is_zero() const
-    {
-      return std::all_of(values.cbegin(),
-                         values.cend(),
-                         [](const limb_type& u) -> bool
-                         {
-                           return (u == limb_type(0U));
-                         });
-    }
   };
 
   // Define some convenient unsigned wide integer types.
@@ -2729,30 +3050,53 @@
   using uint16384_t = uintwide_t<16384U, std::uint32_t>;
   using uint32768_t = uintwide_t<32768U, std::uint32_t>;
 
+  using  int64_t    = uintwide_t<   64U, std::uint16_t, void, true>;
+  using  int128_t   = uintwide_t<  128U, std::uint32_t, void, true>;
+  using  int256_t   = uintwide_t<  256U, std::uint32_t, void, true>;
+  using  int512_t   = uintwide_t<  512U, std::uint32_t, void, true>;
+  using  int1024_t  = uintwide_t< 1024U, std::uint32_t, void, true>;
+  using  int2048_t  = uintwide_t< 2048U, std::uint32_t, void, true>;
+  using  int4096_t  = uintwide_t< 4096U, std::uint32_t, void, true>;
+  using  int8192_t  = uintwide_t< 8192U, std::uint32_t, void, true>;
+  using  int16384_t = uintwide_t<16384U, std::uint32_t, void, true>;
+  using  int32768_t = uintwide_t<32768U, std::uint32_t, void, true>;
+
   // Insert a base class for numeric_limits<> support.
   // This class inherits from std::numeric_limits<unsigned int>
   // in order to provide limits for a non-specific unsigned type.
 
-  template<typename WideUnsignedIntegerType>
-  class numeric_limits_uintwide_t_base : public std::numeric_limits<unsigned int>
+  template<const std::uint_fast32_t Digits2,
+           typename LimbType,
+           typename AllocatorType,
+           const bool IsSigned>
+  class numeric_limits_uintwide_t_base
+    : public std::numeric_limits<typename std::conditional<IsSigned == false, unsigned int, signed int>::type>
   {
   private:
-    using local_wide_integer_type = WideUnsignedIntegerType;
+    using local_wide_integer_type = uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>;
 
   public:
-    static constexpr int digits   = static_cast<int>(local_wide_integer_type::my_digits);
-    static constexpr int digits10 = static_cast<int>(local_wide_integer_type::my_digits10);
+    static constexpr int digits          = (IsSigned == false)
+                                             ? static_cast<int>(local_wide_integer_type::my_digits)
+                                             : static_cast<int>(local_wide_integer_type::my_digits - 1U);
 
-    static constexpr local_wide_integer_type (max)() { return local_wide_integer_type::limits_helper_max(); }
-    static constexpr local_wide_integer_type (min)() { return local_wide_integer_type::limits_helper_min(); }
+    static constexpr int digits10        = static_cast<int>((std::uintmax_t(digits)       * UINTMAX_C(75257499)) / UINTMAX_C(250000000));
+    static constexpr int max_digits10    = digits10;
+    static constexpr int max_exponent    = digits;
+    static constexpr int max_exponent10  = static_cast<int>((std::uintmax_t(max_exponent) * UINTMAX_C(75257499)) / UINTMAX_C(250000000));
+
+    static constexpr local_wide_integer_type (max)() { return local_wide_integer_type::limits_helper_max(IsSigned); }
+    static constexpr local_wide_integer_type (min)() { return local_wide_integer_type::limits_helper_min(IsSigned); }
   };
 
   template<class T>
   struct is_integral : public std::is_integral<T> { };
 
   template<const std::uint_fast32_t Digits2,
-           typename LimbType, typename AllocatorType>
-  struct is_integral<math::wide_integer::uintwide_t<Digits2, LimbType, AllocatorType>>
+           typename LimbType,
+           typename AllocatorType,
+           const bool IsSigned>
+  struct is_integral<math::wide_integer::uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>>
     : public std::integral_constant<bool, true> { };
 
   } } // namespace math::wide_integer
@@ -2761,236 +3105,245 @@
   {
     // Specialization of std::numeric_limits<uintwide_t>.
     template<const std::uint_fast32_t Digits2,
-             typename LimbType, typename AllocatorType>
-    class numeric_limits<math::wide_integer::uintwide_t<Digits2, LimbType, AllocatorType>>
-      : public math::wide_integer::numeric_limits_uintwide_t_base<math::wide_integer::uintwide_t<Digits2, LimbType, AllocatorType>> { };
+             typename LimbType,
+             typename AllocatorType,
+             const bool IsSigned>
+    class numeric_limits<math::wide_integer::uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>>
+      : public math::wide_integer::numeric_limits_uintwide_t_base<Digits2, LimbType, AllocatorType, IsSigned> { };
   }
 
   namespace math { namespace wide_integer {
 
   // Non-member binary add, sub, mul, div, mod of (uintwide_t op uintwide_t).
-  template<const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType> constexpr uintwide_t<Digits2, LimbType, AllocatorType> operator+ (const uintwide_t<Digits2, LimbType, AllocatorType>& left, const uintwide_t<Digits2, LimbType, AllocatorType>& right) { return uintwide_t<Digits2, LimbType, AllocatorType>(left).operator+=(right); }
-  template<const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType> constexpr uintwide_t<Digits2, LimbType, AllocatorType> operator- (const uintwide_t<Digits2, LimbType, AllocatorType>& left, const uintwide_t<Digits2, LimbType, AllocatorType>& right) { return uintwide_t<Digits2, LimbType, AllocatorType>(left).operator-=(right); }
-  template<const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType> constexpr uintwide_t<Digits2, LimbType, AllocatorType> operator* (const uintwide_t<Digits2, LimbType, AllocatorType>& left, const uintwide_t<Digits2, LimbType, AllocatorType>& right) { return uintwide_t<Digits2, LimbType, AllocatorType>(left).operator*=(right); }
-  template<const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType> constexpr uintwide_t<Digits2, LimbType, AllocatorType> operator/ (const uintwide_t<Digits2, LimbType, AllocatorType>& left, const uintwide_t<Digits2, LimbType, AllocatorType>& right) { return uintwide_t<Digits2, LimbType, AllocatorType>(left).operator/=(right); }
-  template<const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType> constexpr uintwide_t<Digits2, LimbType, AllocatorType> operator% (const uintwide_t<Digits2, LimbType, AllocatorType>& left, const uintwide_t<Digits2, LimbType, AllocatorType>& right) { return uintwide_t<Digits2, LimbType, AllocatorType>(left).operator%=(right); }
+  template<const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType, const bool IsSigned> constexpr uintwide_t<Digits2, LimbType, AllocatorType, IsSigned> operator+ (const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& left, const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& right) { return uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>(left).operator+=(right); }
+  template<const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType, const bool IsSigned> constexpr uintwide_t<Digits2, LimbType, AllocatorType, IsSigned> operator- (const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& left, const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& right) { return uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>(left).operator-=(right); }
+  template<const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType, const bool IsSigned> constexpr uintwide_t<Digits2, LimbType, AllocatorType, IsSigned> operator* (const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& left, const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& right) { return uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>(left).operator*=(right); }
+  template<const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType, const bool IsSigned> constexpr uintwide_t<Digits2, LimbType, AllocatorType, IsSigned> operator/ (const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& left, const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& right) { return uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>(left).operator/=(right); }
+  template<const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType, const bool IsSigned> constexpr uintwide_t<Digits2, LimbType, AllocatorType, IsSigned> operator% (const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& left, const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& right) { return uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>(left).operator%=(right); }
 
   // Non-member binary logic operations of (uintwide_t op uintwide_t).
-  template<const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType> constexpr uintwide_t<Digits2, LimbType, AllocatorType> operator| (const uintwide_t<Digits2, LimbType, AllocatorType>& left, const uintwide_t<Digits2, LimbType, AllocatorType>& right) { return uintwide_t<Digits2, LimbType, AllocatorType>(left).operator|=(right); }
-  template<const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType> constexpr uintwide_t<Digits2, LimbType, AllocatorType> operator^ (const uintwide_t<Digits2, LimbType, AllocatorType>& left, const uintwide_t<Digits2, LimbType, AllocatorType>& right) { return uintwide_t<Digits2, LimbType, AllocatorType>(left).operator^=(right); }
-  template<const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType> constexpr uintwide_t<Digits2, LimbType, AllocatorType> operator& (const uintwide_t<Digits2, LimbType, AllocatorType>& left, const uintwide_t<Digits2, LimbType, AllocatorType>& right) { return uintwide_t<Digits2, LimbType, AllocatorType>(left).operator&=(right); }
+  template<const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType, const bool IsSigned> constexpr uintwide_t<Digits2, LimbType, AllocatorType, IsSigned> operator| (const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& left, const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& right) { return uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>(left).operator|=(right); }
+  template<const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType, const bool IsSigned> constexpr uintwide_t<Digits2, LimbType, AllocatorType, IsSigned> operator^ (const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& left, const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& right) { return uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>(left).operator^=(right); }
+  template<const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType, const bool IsSigned> constexpr uintwide_t<Digits2, LimbType, AllocatorType, IsSigned> operator& (const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& left, const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& right) { return uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>(left).operator&=(right); }
 
   // Non-member binary add, sub, mul, div, mod of (uintwide_t op IntegralType).
-  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType, const bool IsSigned>
   constexpr typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
-                                     && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType, AllocatorType>>::type
-  operator+(const uintwide_t<Digits2, LimbType, AllocatorType>& u, const IntegralType& v) { return uintwide_t<Digits2, LimbType, AllocatorType>(u).operator+=(uintwide_t<Digits2, LimbType, AllocatorType>(v)); }
+                                     && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>>::type
+  operator+(const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& u, const IntegralType& v) { return uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>(u).operator+=(uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>(v)); }
 
-  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType, const bool IsSigned>
   constexpr typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
-                                     && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType, AllocatorType>>::type
-  operator-(const uintwide_t<Digits2, LimbType, AllocatorType>& u, const IntegralType& v) { return uintwide_t<Digits2, LimbType, AllocatorType>(u).operator-=(uintwide_t<Digits2, LimbType, AllocatorType>(v)); }
+                                     && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>>::type
+  operator-(const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& u, const IntegralType& v) { return uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>(u).operator-=(uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>(v)); }
 
-  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType, const bool IsSigned>
   constexpr typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
-                                     && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType, AllocatorType>>::type
-  operator*(const uintwide_t<Digits2, LimbType, AllocatorType>& u, const IntegralType& v)
+                                     && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>>::type
+  operator*(const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& u, const IntegralType& v)
   {
     // TBD: Make separate functions for signed/unsigned IntegralType.
     // TBD: And subsequently use the optimized mul_by_limb function where appropriate.
-    return uintwide_t<Digits2, LimbType, AllocatorType>(u).operator*=(uintwide_t<Digits2, LimbType, AllocatorType>(v));
+    return uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>(u).operator*=(uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>(v));
   }
 
-  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType, const bool IsSigned>
   constexpr typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
-                                     && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType, AllocatorType>>::type
-  operator/(const uintwide_t<Digits2, LimbType, AllocatorType>& u, const IntegralType& v) { return uintwide_t<Digits2, LimbType, AllocatorType>(u).operator/=(uintwide_t<Digits2, LimbType, AllocatorType>(v)); }
+                                     && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>>::type
+  operator/(const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& u, const IntegralType& v) { return uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>(u).operator/=(uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>(v)); }
 
-  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType, const bool IsSigned>
   constexpr typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
                                      && (std::is_integral   <IntegralType>::value == true)
-                                     && (std::is_unsigned   <IntegralType>::value == false)), uintwide_t<Digits2, LimbType, AllocatorType>>::type
-  operator%(const uintwide_t<Digits2, LimbType, AllocatorType>& u, const IntegralType& v) { return uintwide_t<Digits2, LimbType, AllocatorType>(u).operator%=(uintwide_t<Digits2, LimbType, AllocatorType>(v)); }
+                                     && (std::is_unsigned   <IntegralType>::value == false)), uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>>::type
+  operator%(const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& u, const IntegralType& v) { return uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>(u).operator%=(uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>(v)); }
 
-  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType>
-  constexpr typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
-                                     && (std::is_integral   <IntegralType>::value == true)
-                                     && (std::is_unsigned   <IntegralType>::value == true)
-                                     && (std::numeric_limits<IntegralType>::digits <= std::numeric_limits<LimbType>::digits)), typename uintwide_t<Digits2, LimbType, AllocatorType>::limb_type>::type
-  operator%(const uintwide_t<Digits2, LimbType, AllocatorType>& u, const IntegralType& v)
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType, const bool IsSigned>
+  WIDE_INTEGER_CONSTEXPR typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
+                                                  && (std::is_integral   <IntegralType>::value == true)
+                                                  && (std::is_unsigned   <IntegralType>::value == true)
+                                                  && (std::numeric_limits<IntegralType>::digits <= std::numeric_limits<LimbType>::digits)), typename uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>::limb_type>::type
+  operator%(const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& u, const IntegralType& v)
   {
-    uintwide_t<Digits2, LimbType, AllocatorType> remainder;
+    const bool u_is_neg = uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>::is_neg(u);
 
-    uintwide_t<Digits2, LimbType, AllocatorType>(u).eval_divide_by_single_limb(v, 0U, &remainder);
+    uintwide_t<Digits2, LimbType, AllocatorType, IsSigned> remainder;
 
-    using local_limb_type = typename uintwide_t<Digits2, LimbType, AllocatorType>::limb_type;
+    uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>
+    (
+      (u_is_neg == false) ? u : -u
+    ).eval_divide_by_single_limb(v, 0U, &remainder);
 
-    return local_limb_type(remainder);
+    using local_limb_type = typename uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>::limb_type;
+
+    local_limb_type u_rem = (local_limb_type) remainder;
+
+    return ((u_is_neg == false) ? u_rem : local_limb_type(~local_limb_type(u_rem) + 1U));
   }
 
-  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType, const bool IsSigned>
   constexpr typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
                                      && (std::is_integral   <IntegralType>::value == true)
                                      && (std::is_unsigned   <IntegralType>::value == true)
-                                     && (std::numeric_limits<IntegralType>::digits > std::numeric_limits<LimbType>::digits)), uintwide_t<Digits2, LimbType, AllocatorType>>::type
-  operator%(const uintwide_t<Digits2, LimbType, AllocatorType>& u, const IntegralType& v) { return uintwide_t<Digits2, LimbType, AllocatorType>(u).operator%=(uintwide_t<Digits2, LimbType, AllocatorType>(v)); }
+                                     && (std::numeric_limits<IntegralType>::digits > std::numeric_limits<LimbType>::digits)), uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>>::type
+  operator%(const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& u, const IntegralType& v) { return uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>(u).operator%=(uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>(v)); }
 
   // Non-member binary add, sub, mul, div, mod of (IntegralType op uintwide_t).
-  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType, const bool IsSigned>
   constexpr typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
-                                     && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType, AllocatorType>>::type
-  operator+(const IntegralType& u, const uintwide_t<Digits2, LimbType, AllocatorType>& v) { return uintwide_t<Digits2, LimbType, AllocatorType>(u).operator+=(v); }
+                                     && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>>::type
+  operator+(const IntegralType& u, const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& v) { return uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>(u).operator+=(v); }
 
-  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType, const bool IsSigned>
   constexpr typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
-                                     && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType, AllocatorType>>::type
-  operator-(const IntegralType& u, const uintwide_t<Digits2, LimbType, AllocatorType>& v) { return uintwide_t<Digits2, LimbType, AllocatorType>(u).operator-=(v); }
+                                     && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>>::type
+  operator-(const IntegralType& u, const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& v) { return uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>(u).operator-=(v); }
 
-  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType, const bool IsSigned>
   constexpr typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
-                                     && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType, AllocatorType>>::type
-  operator*(const IntegralType& u, const uintwide_t<Digits2, LimbType, AllocatorType>& v)
+                                     && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>>::type
+  operator*(const IntegralType& u, const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& v)
   {
     // TBD: Make separate functions for signed/unsigned IntegralType.
     // TBD: And subsequently use the optimized mul_by_limb function where appropriate.
-    return uintwide_t<Digits2, LimbType, AllocatorType>(u).operator*=(v);
+    return uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>(u).operator*=(v);
   }
 
-  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType, const bool IsSigned>
   constexpr typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
-                                     && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType, AllocatorType>>::type
-  operator/(const IntegralType& u, const uintwide_t<Digits2, LimbType, AllocatorType>& v) { return uintwide_t<Digits2, LimbType, AllocatorType>(u).operator/=(v); }
+                                     && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>>::type
+  operator/(const IntegralType& u, const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& v) { return uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>(u).operator/=(v); }
 
-  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType, const bool IsSigned>
   constexpr typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
-                                     && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType, AllocatorType>>::type
-  operator%(const IntegralType& u, const uintwide_t<Digits2, LimbType, AllocatorType>& v) { return uintwide_t<Digits2, LimbType, AllocatorType>(u).operator%=(v); }
+                                     && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>>::type
+  operator%(const IntegralType& u, const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& v) { return uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>(u).operator%=(v); }
 
   // Non-member binary logic operations of (uintwide_t op IntegralType).
-  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType, const bool IsSigned>
   constexpr typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
-                                     && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType, AllocatorType>>::type
-  operator|(const uintwide_t<Digits2, LimbType, AllocatorType>& u, const IntegralType& v) { return uintwide_t<Digits2, LimbType, AllocatorType>(u).operator|=(uintwide_t<Digits2, LimbType, AllocatorType>(v)); }
+                                     && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>>::type
+  operator|(const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& u, const IntegralType& v) { return uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>(u).operator|=(uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>(v)); }
 
-  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType, const bool IsSigned>
   constexpr typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
-                                     && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType, AllocatorType>>::type
-  operator^(const uintwide_t<Digits2, LimbType, AllocatorType>& u, const IntegralType& v) { return uintwide_t<Digits2, LimbType, AllocatorType>(u).operator^=(uintwide_t<Digits2, LimbType, AllocatorType>(v)); }
+                                     && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>>::type
+  operator^(const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& u, const IntegralType& v) { return uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>(u).operator^=(uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>(v)); }
 
-  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType, const bool IsSigned>
   constexpr typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
-                                     && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType, AllocatorType>>::type
-  operator&(const uintwide_t<Digits2, LimbType, AllocatorType>& u, const IntegralType& v) { return uintwide_t<Digits2, LimbType, AllocatorType>(u).operator&=(uintwide_t<Digits2, LimbType, AllocatorType>(v)); }
+                                     && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>>::type
+  operator&(const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& u, const IntegralType& v) { return uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>(u).operator&=(uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>(v)); }
 
   // Non-member binary binary logic operations of (IntegralType op uintwide_t).
-  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType, const bool IsSigned>
   constexpr typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
-                                     && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType, AllocatorType>>::type
-  operator|(const IntegralType& u, const uintwide_t<Digits2, LimbType, AllocatorType>& v) { return uintwide_t<Digits2, LimbType, AllocatorType>(u).operator|=(v); }
+                                     && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>>::type
+  operator|(const IntegralType& u, const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& v) { return uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>(u).operator|=(v); }
 
-  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType, const bool IsSigned>
   constexpr typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
-                                     && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType, AllocatorType>>::type
-  operator^(const IntegralType& u, const uintwide_t<Digits2, LimbType, AllocatorType>& v) { return uintwide_t<Digits2, LimbType, AllocatorType>(u).operator^=(v); }
+                                     && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>>::type
+  operator^(const IntegralType& u, const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& v) { return uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>(u).operator^=(v); }
 
-  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType, const bool IsSigned>
   constexpr typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
-                                     && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType, AllocatorType>>::type
-  operator&(const IntegralType& u, const uintwide_t<Digits2, LimbType, AllocatorType>& v) { return uintwide_t<Digits2, LimbType, AllocatorType>(u).operator&=(v); }
+                                     && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>>::type
+  operator&(const IntegralType& u, const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& v) { return uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>(u).operator&=(v); }
 
   // Non-member shift functions of (uintwide_t shift IntegralType).
-  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType, const bool IsSigned>
   constexpr typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
-                                     && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType, AllocatorType>>::type
-  operator<<(const uintwide_t<Digits2, LimbType, AllocatorType>& u, const IntegralType n) { return uintwide_t<Digits2, LimbType, AllocatorType>(u).operator<<=(n); }
+                                     && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>>::type
+  operator<<(const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& u, const IntegralType n) { return uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>(u).operator<<=(n); }
 
-  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType, const bool IsSigned>
   constexpr typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
-                                     && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType, AllocatorType>>::type
-  operator>>(const uintwide_t<Digits2, LimbType, AllocatorType>& u, const IntegralType n) { return uintwide_t<Digits2, LimbType, AllocatorType>(u).operator>>=(n); }
+                                     && (std::is_integral   <IntegralType>::value == true)), uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>>::type
+  operator>>(const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& u, const IntegralType n) { return uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>(u).operator>>=(n); }
 
   // Non-member comparison functions of (uintwide_t cmp uintwide_t).
-  template<const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType> constexpr bool operator==(const uintwide_t<Digits2, LimbType, AllocatorType>& u, const uintwide_t<Digits2, LimbType, AllocatorType>& v) { return u.operator==(v); }
-  template<const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType> constexpr bool operator!=(const uintwide_t<Digits2, LimbType, AllocatorType>& u, const uintwide_t<Digits2, LimbType, AllocatorType>& v) { return u.operator!=(v); }
-  template<const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType> constexpr bool operator> (const uintwide_t<Digits2, LimbType, AllocatorType>& u, const uintwide_t<Digits2, LimbType, AllocatorType>& v) { return u.operator> (v); }
-  template<const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType> constexpr bool operator< (const uintwide_t<Digits2, LimbType, AllocatorType>& u, const uintwide_t<Digits2, LimbType, AllocatorType>& v) { return u.operator< (v); }
-  template<const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType> constexpr bool operator>=(const uintwide_t<Digits2, LimbType, AllocatorType>& u, const uintwide_t<Digits2, LimbType, AllocatorType>& v) { return u.operator>=(v); }
-  template<const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType> constexpr bool operator<=(const uintwide_t<Digits2, LimbType, AllocatorType>& u, const uintwide_t<Digits2, LimbType, AllocatorType>& v) { return u.operator<=(v); }
+  template<const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType, const bool IsSigned> constexpr bool operator==(const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& u, const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& v) { return u.operator==(v); }
+  template<const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType, const bool IsSigned> constexpr bool operator!=(const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& u, const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& v) { return u.operator!=(v); }
+  template<const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType, const bool IsSigned> constexpr bool operator> (const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& u, const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& v) { return u.operator> (v); }
+  template<const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType, const bool IsSigned> constexpr bool operator< (const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& u, const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& v) { return u.operator< (v); }
+  template<const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType, const bool IsSigned> constexpr bool operator>=(const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& u, const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& v) { return u.operator>=(v); }
+  template<const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType, const bool IsSigned> constexpr bool operator<=(const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& u, const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& v) { return u.operator<=(v); }
 
   // Non-member comparison functions of (uintwide_t cmp IntegralType).
-  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType, const bool IsSigned>
   constexpr typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
                                      && (std::is_integral   <IntegralType>::value == true)), bool>::type
-  operator==(const uintwide_t<Digits2, LimbType, AllocatorType>& u, const IntegralType& v) { return u.operator==(uintwide_t<Digits2, LimbType, AllocatorType>(v)); }
+  operator==(const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& u, const IntegralType& v) { return u.operator==(uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>(v)); }
 
-  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType, const bool IsSigned>
   constexpr typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
                                      && (std::is_integral   <IntegralType>::value == true)), bool>::type
-  operator!=(const uintwide_t<Digits2, LimbType, AllocatorType>& u, const IntegralType& v) { return u.operator!=(uintwide_t<Digits2, LimbType, AllocatorType>(v)); }
+  operator!=(const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& u, const IntegralType& v) { return u.operator!=(uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>(v)); }
 
-  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType, const bool IsSigned>
   constexpr typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
                                      && (std::is_integral   <IntegralType>::value == true)), bool>::type
-  operator> (const uintwide_t<Digits2, LimbType, AllocatorType>& u, const IntegralType& v) { return u.operator> (uintwide_t<Digits2, LimbType, AllocatorType>(v)); }
+  operator> (const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& u, const IntegralType& v) { return u.operator> (uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>(v)); }
 
-  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType, const bool IsSigned>
   constexpr typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
                                      && (std::is_integral   <IntegralType>::value == true)), bool>::type
-  operator< (const uintwide_t<Digits2, LimbType, AllocatorType>& u, const IntegralType& v) { return u.operator< (uintwide_t<Digits2, LimbType, AllocatorType>(v)); }
+  operator< (const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& u, const IntegralType& v) { return u.operator< (uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>(v)); }
 
-  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType, const bool IsSigned>
   constexpr typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
                                      && (std::is_integral   <IntegralType>::value == true)), bool>::type
-  operator>=(const uintwide_t<Digits2, LimbType, AllocatorType>& u, const IntegralType& v) { return u.operator>=(uintwide_t<Digits2, LimbType, AllocatorType>(v)); }
+  operator>=(const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& u, const IntegralType& v) { return u.operator>=(uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>(v)); }
 
-  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType, const bool IsSigned>
   constexpr typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
                                      && (std::is_integral   <IntegralType>::value == true)), bool>::type
-  operator<=(const uintwide_t<Digits2, LimbType, AllocatorType>& u, const IntegralType& v) { return u.operator<=(uintwide_t<Digits2, LimbType, AllocatorType>(v)); }
+  operator<=(const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& u, const IntegralType& v) { return u.operator<=(uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>(v)); }
 
   // Non-member comparison functions of (IntegralType cmp uintwide_t).
-  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType, const bool IsSigned>
   constexpr typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
                                      && (std::is_integral   <IntegralType>::value == true)), bool>::type
-  operator==(const IntegralType& u, const uintwide_t<Digits2, LimbType, AllocatorType>& v) { return uintwide_t<Digits2, LimbType, AllocatorType>(u).operator==(v); }
+  operator==(const IntegralType& u, const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& v) { return uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>(u).operator==(v); }
 
-  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType, const bool IsSigned>
   constexpr typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
                                      && (std::is_integral   <IntegralType>::value == true)), bool>::type
-  operator!=(const IntegralType& u, const uintwide_t<Digits2, LimbType, AllocatorType>& v) { return uintwide_t<Digits2, LimbType, AllocatorType>(u).operator!=(v); }
+  operator!=(const IntegralType& u, const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& v) { return uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>(u).operator!=(v); }
 
-  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType, const bool IsSigned>
   constexpr typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
                                      && (std::is_integral   <IntegralType>::value == true)), bool>::type
-  operator> (const IntegralType& u, const uintwide_t<Digits2, LimbType, AllocatorType>& v) { return uintwide_t<Digits2, LimbType, AllocatorType>(u).operator> (v); }
+  operator> (const IntegralType& u, const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& v) { return uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>(u).operator> (v); }
 
-  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType, const bool IsSigned>
   constexpr typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
                                      && (std::is_integral   <IntegralType>::value == true)), bool>::type
-  operator< (const IntegralType& u, const uintwide_t<Digits2, LimbType, AllocatorType>& v) { return uintwide_t<Digits2, LimbType, AllocatorType>(u).operator< (v); }
+  operator< (const IntegralType& u, const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& v) { return uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>(u).operator< (v); }
 
-  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType, const bool IsSigned>
   constexpr typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
                                      && (std::is_integral   <IntegralType>::value == true)), bool>::type
-  operator>=(const IntegralType& u, const uintwide_t<Digits2, LimbType, AllocatorType>& v) { return uintwide_t<Digits2, LimbType, AllocatorType>(u).operator>=(v); }
+  operator>=(const IntegralType& u, const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& v) { return uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>(u).operator>=(v); }
 
-  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType>
+  template<typename IntegralType, const std::uint_fast32_t Digits2, typename LimbType, typename AllocatorType, const bool IsSigned>
   constexpr typename std::enable_if<(   (std::is_fundamental<IntegralType>::value == true)
                                      && (std::is_integral   <IntegralType>::value == true)), bool>::type
-  operator<=(const IntegralType& u, const uintwide_t<Digits2, LimbType, AllocatorType>& v) { return uintwide_t<Digits2, LimbType, AllocatorType>(u).operator<=(v); }
+  operator<=(const IntegralType& u, const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& v) { return uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>(u).operator<=(v); }
 
-  #if defined(WIDE_INTEGER_DISABLE_IOSTREAM)
-  #else
+  #if !defined(WIDE_INTEGER_DISABLE_IOSTREAM)
 
   // I/O streaming functions.
   template<typename char_type,
            typename traits_type,
            const std::uint_fast32_t Digits2,
            typename LimbType,
-           typename AllocatorType>
+           typename AllocatorType,
+           const bool IsSigned>
   std::basic_ostream<char_type, traits_type>&
   operator<<(std::basic_ostream<char_type, traits_type>& out,
-             const uintwide_t<Digits2, LimbType, AllocatorType>& x)
+             const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& x)
   {
     std::basic_ostringstream<char_type, traits_type> ostr;
 
@@ -3009,7 +3362,7 @@
     const std::uint_fast32_t field_width = std::uint_fast32_t(out.width());
     const char               fill_char   = out.fill();
 
-    using local_wide_integer_type = uintwide_t<Digits2, LimbType, AllocatorType>;
+    using local_wide_integer_type = uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>;
 
     if(base_rep == 8U)
     {
@@ -3043,16 +3396,17 @@
            typename traits_type,
            const std::uint_fast32_t Digits2,
            typename LimbType,
-           typename AllocatorType>
+           typename AllocatorType,
+           const bool IsSigned>
   std::basic_istream<char_type, traits_type>&
   operator>>(std::basic_istream<char_type, traits_type>& in,
-             uintwide_t<Digits2, LimbType, AllocatorType>& x)
+             uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& x)
   {
     std::string str_in;
 
     in >> str_in;
 
-    using local_wide_integer_type = uintwide_t<Digits2, LimbType, AllocatorType>;
+    using local_wide_integer_type = uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>;
 
     x = local_wide_integer_type(str_in.c_str());
 
@@ -3109,7 +3463,7 @@
 
     using local_unsigned_integral_type = UnsignedIntegralType;
 
-    std::int_fast32_t i;
+    std::int_fast32_t i { };
 
     // TBD: This could potentially be improved with a binary
     // search for the highest bit position in the type.
@@ -3126,7 +3480,7 @@
   }
 
   template<>
-  inline WIDE_INTEGER_CONSTEXPR std::uint_fast32_t msb_helper(const std::uint32_t& u)
+  inline WIDE_INTEGER_CONSTEXPR std::uint_fast32_t msb_helper<std::uint32_t>(const std::uint32_t& u)
   {
     std::uint_fast32_t r(0);
 
@@ -3143,7 +3497,7 @@
   }
 
   template<>
-  inline WIDE_INTEGER_CONSTEXPR std::uint_fast32_t msb_helper(const std::uint16_t& u)
+  inline WIDE_INTEGER_CONSTEXPR std::uint_fast32_t msb_helper<std::uint16_t>(const std::uint16_t& u)
   {
     std::uint_fast32_t r(0);
 
@@ -3159,7 +3513,7 @@
   }
 
   template<>
-  inline WIDE_INTEGER_CONSTEXPR std::uint_fast32_t msb_helper(const std::uint8_t& u)
+  inline WIDE_INTEGER_CONSTEXPR std::uint_fast32_t msb_helper<std::uint8_t>(const std::uint8_t& u)
   {
     std::uint_fast32_t r(0);
 
@@ -3177,13 +3531,14 @@
 
   template<const std::uint_fast32_t Digits2,
            typename LimbType,
-           typename AllocatorType>
-  WIDE_INTEGER_CONSTEXPR void swap(uintwide_t<Digits2, LimbType, AllocatorType>& x,
-                                   uintwide_t<Digits2, LimbType, AllocatorType>& y)
+           typename AllocatorType,
+           const bool IsSigned>
+  WIDE_INTEGER_CONSTEXPR void swap(uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& x,
+                                   uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& y)
   {
     if(&x != &y)
     {
-      using local_wide_integer_type = uintwide_t<Digits2, LimbType, AllocatorType>;
+      using local_wide_integer_type = uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>;
 
       const local_wide_integer_type tmp_x(x);
 
@@ -3194,13 +3549,14 @@
 
   template<const std::uint_fast32_t Digits2,
            typename LimbType,
-           typename AllocatorType>
-  WIDE_INTEGER_CONSTEXPR std::uint_fast32_t lsb(const uintwide_t<Digits2, LimbType, AllocatorType>& x)
+           typename AllocatorType,
+           const bool IsSigned>
+  inline WIDE_INTEGER_CONSTEXPR std::uint_fast32_t lsb(const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& x)
   {
     // Calculate the position of the least-significant bit.
     // Use a linear search starting from the least significant limbs.
 
-    using local_wide_integer_type   = uintwide_t<Digits2, LimbType, AllocatorType>;
+    using local_wide_integer_type   = uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>;
     using local_const_iterator_type = typename local_wide_integer_type::const_iterator;
     using local_value_type          = typename local_wide_integer_type::limb_type;
 
@@ -3224,13 +3580,14 @@
 
   template<const std::uint_fast32_t Digits2,
            typename LimbType,
-           typename AllocatorType>
-  WIDE_INTEGER_CONSTEXPR std::uint_fast32_t msb(const uintwide_t<Digits2, LimbType, AllocatorType>& x)
+           typename AllocatorType,
+           const bool IsSigned>
+  WIDE_INTEGER_CONSTEXPR std::uint_fast32_t msb(const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& x)
   {
     // Calculate the position of the most-significant bit.
     // Use a linear search starting from the most significant limbs.
 
-    using local_wide_integer_type           = uintwide_t<Digits2, LimbType, AllocatorType>;
+    using local_wide_integer_type           = uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>;
     using local_const_reverse_iterator_type = typename local_wide_integer_type::const_reverse_iterator;
     using local_value_type                  = typename local_wide_integer_type::limb_type;
 
@@ -3254,24 +3611,17 @@
 
   template<const std::uint_fast32_t Digits2,
            typename LimbType,
-           typename AllocatorType>
-  WIDE_INTEGER_CONSTEXPR uintwide_t<Digits2, LimbType, AllocatorType> sqrt(const uintwide_t<Digits2, LimbType, AllocatorType>& m)
+           typename AllocatorType,
+           const bool IsSigned>
+  WIDE_INTEGER_CONSTEXPR uintwide_t<Digits2, LimbType, AllocatorType, IsSigned> sqrt(const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& m)
   {
     // Calculate the square root.
 
-    using local_wide_integer_type = uintwide_t<Digits2, LimbType, AllocatorType>;
-    using local_limb_type         = typename local_wide_integer_type::limb_type;
-
-    const bool argument_is_zero = std::all_of(m.crepresentation().cbegin(),
-                                              m.crepresentation().cend(),
-                                              [](const local_limb_type& a) -> bool
-                                              {
-                                                return (a == 0U);
-                                              });
+    using local_wide_integer_type = uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>;
 
     local_wide_integer_type s;
 
-    if(argument_is_zero)
+    if(m.is_zero() || local_wide_integer_type::is_neg(m))
     {
       s = local_wide_integer_type(std::uint_fast8_t(0U));
     }
@@ -3312,24 +3662,17 @@
 
   template<const std::uint_fast32_t Digits2,
            typename LimbType,
-           typename AllocatorType>
-  WIDE_INTEGER_CONSTEXPR uintwide_t<Digits2, LimbType, AllocatorType> cbrt(const uintwide_t<Digits2, LimbType, AllocatorType>& m)
+           typename AllocatorType,
+           const bool IsSigned>
+  WIDE_INTEGER_CONSTEXPR uintwide_t<Digits2, LimbType, AllocatorType, IsSigned> cbrt(const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& m)
   {
     // Calculate the cube root.
 
-    using local_wide_integer_type = uintwide_t<Digits2, LimbType, AllocatorType>;
-    using local_limb_type         = typename local_wide_integer_type::limb_type;
+    using local_wide_integer_type = uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>;
 
     local_wide_integer_type s;
 
-    const bool argument_is_zero = std::all_of(m.crepresentation().cbegin(),
-                                              m.crepresentation().cend(),
-                                              [](const local_limb_type& a) -> bool
-                                              {
-                                                return (a == 0U);
-                                              });
-
-    if(argument_is_zero)
+    if(m.is_zero())
     {
       s = local_wide_integer_type(std::uint_fast8_t(0U));
     }
@@ -3384,14 +3727,14 @@
 
   template<const std::uint_fast32_t Digits2,
            typename LimbType,
-           typename AllocatorType>
-  WIDE_INTEGER_CONSTEXPR uintwide_t<Digits2, LimbType, AllocatorType> rootk(const uintwide_t<Digits2, LimbType, AllocatorType>& m,
-                                                                            const std::uint_fast8_t k)
+           typename AllocatorType,
+           const bool IsSigned>
+  WIDE_INTEGER_CONSTEXPR uintwide_t<Digits2, LimbType, AllocatorType, IsSigned> rootk(const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& m,
+                                                                                      const std::uint_fast8_t k)
   {
     // Calculate the k'th root.
 
-    using local_wide_integer_type = uintwide_t<Digits2, LimbType, AllocatorType>;
-    using local_limb_type         = typename local_wide_integer_type::limb_type;
+    using local_wide_integer_type = uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>;
 
     local_wide_integer_type s;
 
@@ -3405,14 +3748,7 @@
     }
     else
     {
-      const bool argument_is_zero = std::all_of(m.crepresentation().cbegin(),
-                                                m.crepresentation().cend(),
-                                                [](const local_limb_type& a) -> bool
-                                                {
-                                                  return (a == 0U);
-                                                });
-
-      if(argument_is_zero)
+      if(m.is_zero())
       {
         s = local_wide_integer_type(std::uint_fast8_t(0U));
       }
@@ -3469,13 +3805,14 @@
   template<typename OtherUnsignedIntegralTypeP,
            const std::uint_fast32_t Digits2,
            typename LimbType,
-           typename AllocatorType>
-  WIDE_INTEGER_CONSTEXPR uintwide_t<Digits2, LimbType, AllocatorType> pow(const uintwide_t<Digits2, LimbType, AllocatorType>& b,
+           typename AllocatorType,
+           const bool IsSigned>
+  WIDE_INTEGER_CONSTEXPR uintwide_t<Digits2, LimbType, AllocatorType, IsSigned> pow(const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& b,
                                                                           const OtherUnsignedIntegralTypeP&    p)
   {
     // Calculate (b ^ p).
 
-    using local_wide_integer_type = uintwide_t<Digits2, LimbType, AllocatorType>;
+    using local_wide_integer_type = uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>;
     using local_limb_type         = typename local_wide_integer_type::limb_type;
 
     local_wide_integer_type result;
@@ -3521,21 +3858,22 @@
            typename OtherUnsignedIntegralTypeM,
            const std::uint_fast32_t Digits2,
            typename LimbType,
-           typename AllocatorType>
-  WIDE_INTEGER_CONSTEXPR uintwide_t<Digits2, LimbType, AllocatorType> powm(const uintwide_t<Digits2, LimbType, AllocatorType>& b,
-                                                                           const OtherUnsignedIntegralTypeP&    p,
-                                                                           const OtherUnsignedIntegralTypeM&    m)
+           typename AllocatorType,
+           const bool IsSigned>
+  WIDE_INTEGER_CONSTEXPR uintwide_t<Digits2, LimbType, AllocatorType, IsSigned> powm(const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& b,
+                                                                                     const OtherUnsignedIntegralTypeP& p,
+                                                                                     const OtherUnsignedIntegralTypeM& m)
   {
     // Calculate (b ^ p) % m.
 
-    using local_normal_width_type = uintwide_t<Digits2, LimbType, AllocatorType>;
+    using local_normal_width_type = uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>;
     using local_double_width_type = typename local_normal_width_type::double_width_type;
     using local_limb_type         = typename local_normal_width_type::limb_type;
 
-          local_normal_width_type    result;
-          local_double_width_type    y      (b);
-    const local_double_width_type    m_local(m);
-          local_limb_type            p0(p);
+          local_normal_width_type result;
+          local_double_width_type y      (b);
+    const local_double_width_type m_local(m);
+          local_limb_type         p0     (p);
 
     if((p0 == 0U) && (p == 0U))
     {
@@ -3648,14 +3986,15 @@
 
   template<const std::uint_fast32_t Digits2,
            typename LimbType,
-           typename AllocatorType>
-  WIDE_INTEGER_CONSTEXPR uintwide_t<Digits2, LimbType, AllocatorType> gcd(const uintwide_t<Digits2, LimbType, AllocatorType>& a,
-                                                                          const uintwide_t<Digits2, LimbType, AllocatorType>& b)
+           typename AllocatorType,
+           const bool IsSigned>
+  WIDE_INTEGER_CONSTEXPR uintwide_t<Digits2, LimbType, AllocatorType, IsSigned> gcd(const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& a,
+                                                                                    const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& b)
   {
     // This implementation of GCD is an adaptation
     // of existing code from Boost.Multiprecision.
 
-    using local_wide_integer_type = uintwide_t<Digits2, LimbType, AllocatorType>;
+    using local_wide_integer_type = uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>;
     using local_ushort_type       = typename local_wide_integer_type::limb_type;
     using local_ularge_type       = typename local_wide_integer_type::double_limb_type;
 
@@ -3686,17 +4025,13 @@
       // Let shift := lg K, where K is the greatest
       // power of 2 dividing both u and v.
 
-      std::uint_fast32_t left_shift_amount;
+      const std::uint_fast32_t u_shift = lsb(u);
+      const std::uint_fast32_t v_shift = lsb(v);
 
-      {
-        const std::uint_fast32_t u_shift = lsb(u);
-        const std::uint_fast32_t v_shift = lsb(v);
+      const std::uint_fast32_t left_shift_amount = (std::min)(u_shift, v_shift);
 
-        left_shift_amount = (std::min)(u_shift, v_shift);
-
-        u >>= u_shift;
-        v >>= v_shift;
-      }
+      u >>= u_shift;
+      v >>= v_shift;
 
       for(;;)
       {
@@ -3783,11 +4118,12 @@
 
   template<const std::uint_fast32_t Digits2,
            typename LimbType,
-           typename AllocatorType>
+           typename AllocatorType,
+           const bool IsSigned>
   class uniform_int_distribution
   {
   public:
-    using result_type = uintwide_t<Digits2, LimbType, AllocatorType>;
+    using result_type = uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>;
 
     struct param_type
     {
@@ -3865,15 +4201,15 @@
 
     template<typename GeneratorType,
              const int GeneratorResultBits = std::numeric_limits<typename GeneratorType::result_type>::digits>
-    constexpr result_type operator()(GeneratorType& generator)
+    WIDE_INTEGER_CONSTEXPR result_type operator()(GeneratorType& generator)
     {
       return generate<GeneratorType, GeneratorResultBits>(generator, my_params);
     }
 
     template<typename GeneratorType,
              const int GeneratorResultBits = std::numeric_limits<typename GeneratorType::result_type>::digits>
-    result_type operator()(GeneratorType& input_generator,
-                           const param_type& input_params)
+    WIDE_INTEGER_CONSTEXPR result_type operator()(GeneratorType& input_generator,
+                                                  const param_type& input_params)
     {
       return generate<GeneratorType, GeneratorResultBits>(input_generator, input_params);
     }
@@ -3947,18 +4283,20 @@
 
   template<const std::uint_fast32_t Digits2,
            typename LimbType,
-           typename AllocatorType>
-  constexpr bool operator==(const uniform_int_distribution<Digits2, LimbType, AllocatorType>& lhs,
-                            const uniform_int_distribution<Digits2, LimbType, AllocatorType>& rhs)
+           typename AllocatorType,
+           const bool IsSigned>
+  constexpr bool operator==(const uniform_int_distribution<Digits2, LimbType, AllocatorType, IsSigned>& lhs,
+                            const uniform_int_distribution<Digits2, LimbType, AllocatorType, IsSigned>& rhs)
   {
     return (lhs.param() == rhs.param());
   }
 
   template<const std::uint_fast32_t Digits2,
            typename LimbType,
-           typename AllocatorType>
-  constexpr bool operator!=(const uniform_int_distribution<Digits2, LimbType, AllocatorType>& lhs,
-                            const uniform_int_distribution<Digits2, LimbType, AllocatorType>& rhs)
+           typename AllocatorType,
+           const bool IsSigned>
+  constexpr bool operator!=(const uniform_int_distribution<Digits2, LimbType, AllocatorType, IsSigned>& lhs,
+                            const uniform_int_distribution<Digits2, LimbType, AllocatorType, IsSigned>& rhs)
   {
     return (lhs.param() != rhs.param());
   }
@@ -3967,8 +4305,9 @@
            typename GeneratorType,
            const std::uint_fast32_t Digits2,
            typename LimbType,
-           typename AllocatorType>
-  bool miller_rabin(const uintwide_t<Digits2, LimbType, AllocatorType>& n,
+           typename AllocatorType,
+           const bool IsSigned>
+  bool miller_rabin(const uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>& n,
                     const std::uint_fast32_t                            number_of_trials,
                     DistributionType&                                   distribution,
                     GeneratorType&                                      generator)
@@ -3980,7 +4319,7 @@
 
     // Note: Some comments in this subroutine use the Wolfram Language(TM).
 
-    using local_wide_integer_type = uintwide_t<Digits2, LimbType, AllocatorType>;
+    using local_wide_integer_type = uintwide_t<Digits2, LimbType, AllocatorType, IsSigned>;
     using local_limb_type         = typename local_wide_integer_type::limb_type;
 
     {

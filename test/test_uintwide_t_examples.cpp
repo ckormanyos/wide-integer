@@ -10,11 +10,13 @@
 
 #include <math/wide_integer/uintwide_t.h>
 #include <math/wide_integer/uintwide_t_examples.h>
+#include <math/wide_integer/uintwide_t_test.h>
 
-bool test_uintwide_t_examples()
+bool math::wide_integer::test_uintwide_t_examples()
 {
   bool result_is_ok = true;
 
+  result_is_ok &= math::wide_integer::example000_numeric_limits     (); std::cout << "result_is_ok after example000_numeric_limits     : " << std::boolalpha << result_is_ok << std::endl;
   result_is_ok &= math::wide_integer::example001_mul_div            (); std::cout << "result_is_ok after example001_mul_div            : " << std::boolalpha << result_is_ok << std::endl;
   result_is_ok &= math::wide_integer::example001a_div_mod           (); std::cout << "result_is_ok after example001a_div_mod           : " << std::boolalpha << result_is_ok << std::endl;
   result_is_ok &= math::wide_integer::example002_shl_shr            (); std::cout << "result_is_ok after example002_shl_shr            : " << std::boolalpha << result_is_ok << std::endl;

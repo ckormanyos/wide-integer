@@ -10,14 +10,9 @@
 
   // This file contains function prototypes of the uintwide_t examples.
 
-  #if defined(__cpp_lib_constexpr_algorithms) && (__cpp_lib_constexpr_algorithms>=201806)
-    #define UINTWIDE_T_TEST_CONSTEXPR constexpr
-  #else
-    #define UINTWIDE_T_TEST_CONSTEXPR const
-  #endif
-
   namespace math { namespace wide_integer {
 
+  bool example000_numeric_limits     ();
   bool example001_mul_div            ();
   bool example001a_div_mod           ();
   bool example002_shl_shr            ();

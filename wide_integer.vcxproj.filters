@@ -40,9 +40,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="test\test_uintwide_t.h">
-      <Filter>Source Files\test</Filter>
-    </ClInclude>
     <ClInclude Include="boost\multiprecision\uintwide_t_backend.hpp">
       <Filter>Source Files\boost\multiprecision</Filter>
     </ClInclude>
@@ -75,6 +72,12 @@
     </ClInclude>
     <ClInclude Include="math\wide_integer\uintwide_t_examples.h">
       <Filter>Source Files\math\wide_integer</Filter>
+    </ClInclude>
+    <ClInclude Include="math\wide_integer\uintwide_t_test.h">
+      <Filter>Source Files\math\wide_integer</Filter>
+    </ClInclude>
+    <ClInclude Include="test\test_uintwide_t_n_binary_ops_template_signed.h">
+      <Filter>Source Files\test</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -147,6 +150,9 @@
     <ClCompile Include="examples\example009b_timed_mul_8_by_8.cpp">
       <Filter>Source Files\examples</Filter>
     </ClCompile>
+    <ClCompile Include="examples\example000_numeric_limits.cpp">
+      <Filter>Source Files\examples</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include=".github\workflows\wide_integer.yml">
@@ -163,5 +169,6 @@
     <Text Include="test\CMakeLists.txt">
       <Filter>Source Files\test</Filter>
     </Text>
+    <Text Include="CMakeLists.txt" />
   </ItemGroup>
 </Project>
