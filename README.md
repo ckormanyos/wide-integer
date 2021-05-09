@@ -10,7 +10,7 @@ such as `uint128_t`, `uint256_t`, `uint384_t`, `uint512_t`, `uint1024_t`, `uint1
 These can be used essentially like regular built-in integers.
 Corresponding integer signed types such as `int128_t`, `int256_t`, etc. can also be used.
 
-Wide-integer supports both unsigned as well as signed integral types having bit counts
+Wide-integer supports both unsigned as well as signed integral types having width
 of <img src="https://render.githubusercontent.com/render/math?math=1{\ldots}63{\times}2^{N}">
 while being 16, 24, 32 or larger.
 In addition, small integer types such as software-synthesized versions of
@@ -62,7 +62,7 @@ the default limb type is 32 bits in width and unsigned.
 The template signature of the `uintwide_t` class is shown below.
 
 ```C
-template<const std::uint_fast32_t Digits2,
+template<const std::uint32_t Width2,
          typename LimbType = std::uint32_t,
          typename AllocatorType = void,
          const bool IsSigned = false>

@@ -10,12 +10,12 @@
 
   #include <test/test_uintwide_t_n_base.h>
 
-  template<const std::size_t MyDigits2,
+  template<const std::size_t MyWidth2,
            typename MyLimbType = std::uint32_t>
   class test_uintwide_t_n_number_theory_funcs_template : public test_uintwide_t_n_base
   {
   public:
-    static constexpr std::size_t digits2 = MyDigits2;
+    static constexpr std::size_t digits2 = MyWidth2;
 
     test_uintwide_t_n_number_theory_funcs_template(const std::size_t count)
       : test_uintwide_t_n_base(count) { }
