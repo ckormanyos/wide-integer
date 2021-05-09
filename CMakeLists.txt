@@ -2,10 +2,13 @@ project(wide-integer)
 
 cmake_minimum_required(VERSION 3.16.3)
 
-add_subdirectory("examples")
+find_package(Boost)
+if (Boost_FOUND)
+  include(CTest)
 
-include(CTest)
-add_subdirectory("test")
+  add_subdirectory("examples")
+  add_subdirectory("test")
+endif()
 
 add_library(WideInteger INTERFACE)
 target_compile_features(WideInteger INTERFACE cxx_std_11)

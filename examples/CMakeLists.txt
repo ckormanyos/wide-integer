@@ -1,4 +1,3 @@
-find_package(Boost REQUIRED)
 add_library(Examples
   example000_numeric_limits.cpp
   example001_mul_div.cpp
