@@ -844,18 +844,6 @@
       if(v_is_neg) { negate(); }
     }
 
-    // Constructor from the internal data representation.
-    constexpr uintwide_t(const representation_type& other_rep) : values(other_rep) { }
-
-    // Constructor from initializer list of limbs.
-    constexpr uintwide_t(std::initializer_list<limb_type> lst)
-      : values(lst) { }
-
-    // Constructor from a C-style array.
-    template<const std::uint_fast32_t N>
-    constexpr uintwide_t(const limb_type(&init)[N])
-      : values(init, init + (std::min)(N, number_of_limbs), values.begin()) { }
-
     // Copy constructor.
     constexpr uintwide_t(const uintwide_t& other) : values(other.values) { }
 
@@ -865,23 +853,10 @@
     constexpr uintwide_t(const uintwide_t<Width2, LimbType, AllocatorType, OtherIsSigned>& other)
       : values(other.values) { }
 
-    // Constructor from the double-width type.
-    // This constructor is explicit because it
-    // is a narrowing conversion.
-    template<typename UnknownUnsignedWideIntegralType = double_width_type>
-    explicit WIDE_INTEGER_CONSTEXPR uintwide_t(const UnknownUnsignedWideIntegralType& v,
-                                               typename std::enable_if<(   (std::is_same<UnknownUnsignedWideIntegralType, double_width_type>::value == true)
-                                                                        && (128U <= my_digits))>::type* = nullptr)
-    {
-      std::copy(v.crepresentation().cbegin(),
-                v.crepresentation().cbegin() + (v.crepresentation().size() / 2U),
-                values.begin());
-    }
-
     // Constructor from the another type having a different width but the same limb type.
     // This constructor is explicit because it is a non-trivial conversion.
     template<const std::uint32_t OtherWidth2>
-    WIDE_INTEGER_CONSTEXPR uintwide_t(const uintwide_t<OtherWidth2, LimbType>& v)
+    WIDE_INTEGER_CONSTEXPR uintwide_t(const uintwide_t<OtherWidth2, LimbType, AllocatorType, IsSigned>& v)
     {
       const std::uint_fast32_t sz =
         (std::min)(std::uint_fast32_t(v.crepresentation().size()),
@@ -1348,14 +1323,14 @@
     {
       return
       is_signed == false
-        ? uintwide_t
+        ? from_rep
           (
             representation_type
             (
               number_of_limbs, (std::numeric_limits<limb_type>::max)()
             )
           )
-        :   uintwide_t
+        :   from_rep
             (
               representation_type
               (
@@ -1369,14 +1344,14 @@
     {
       return
       is_signed == false
-        ? uintwide_t
+        ? from_rep
           (
             representation_type
             (
               number_of_limbs, limb_type(0U)
             )
           )
-        :   uintwide_t
+        :   from_rep
             (
               representation_type
               (
@@ -1761,6 +1736,16 @@
 
   private:
     representation_type values { };
+
+    // Constructor from the internal data representation.
+    static WIDE_INTEGER_CONSTEXPR uintwide_t from_rep(const representation_type& other_rep)
+    {
+      uintwide_t a;
+
+      a.values = other_rep;
+
+      return a;
+    }
 
     static WIDE_INTEGER_CONSTEXPR std::int_fast8_t compare_ranges(const limb_type*         a,
                                                                   const limb_type*         b,
