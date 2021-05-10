@@ -171,7 +171,7 @@
       test_uintwide_t_n_base::my_random_generator.seed(std::clock());
 
       using distribution_type =
-        math::wide_integer::uniform_int_distribution<other_local_uint_type::my_digits, typename other_local_uint_type::limb_type>;
+        math::wide_integer::uniform_int_distribution<other_local_uint_type::my_width2, typename other_local_uint_type::limb_type>;
 
       distribution_type distribution;
 

@@ -332,7 +332,7 @@
            typename AllocatorType,
            const bool IsSigned>
   WIDE_INTEGER_CONSTEXPR uintwide_t<Width2, LimbType, AllocatorType, IsSigned> rootk(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& m,
-                                                                            const std::uint_fast8_t k);
+                                                                                     const std::uint_fast8_t k);
 
   template<typename OtherUnsignedIntegralTypeP,
            const std::uint32_t Width2,
@@ -340,7 +340,7 @@
            typename AllocatorType,
            const bool IsSigned>
   WIDE_INTEGER_CONSTEXPR uintwide_t<Width2, LimbType, AllocatorType, IsSigned> pow(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& b,
-                                                                          const OtherUnsignedIntegralTypeP&    p);
+                                                                                   const OtherUnsignedIntegralTypeP& p);
 
   template<typename OtherUnsignedIntegralTypeP,
            typename OtherUnsignedIntegralTypeM,
@@ -349,15 +349,15 @@
            typename AllocatorType,
            const bool IsSigned>
   WIDE_INTEGER_CONSTEXPR uintwide_t<Width2, LimbType, AllocatorType, IsSigned> powm(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& b,
-                                                                           const OtherUnsignedIntegralTypeP&    p,
-                                                                           const OtherUnsignedIntegralTypeM&    m);
+                                                                                    const OtherUnsignedIntegralTypeP&    p,
+                                                                                    const OtherUnsignedIntegralTypeM&    m);
 
   template<const std::uint32_t Width2,
            typename LimbType,
            typename AllocatorType,
            const bool IsSigned>
   WIDE_INTEGER_CONSTEXPR uintwide_t<Width2, LimbType, AllocatorType, IsSigned> gcd(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& a,
-                                                                          const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& b);
+                                                                                   const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& b);
 
   template<typename UnsignedShortType>
   WIDE_INTEGER_CONSTEXPR typename std::enable_if<(   (std::is_fundamental<UnsignedShortType>::value == true)
@@ -382,7 +382,7 @@
            typename AllocatorType,
            const bool IsSigned>
   constexpr bool operator==(const uniform_int_distribution<Width2, LimbType, AllocatorType, IsSigned>& lhs,
-                                         const uniform_int_distribution<Width2, LimbType, AllocatorType, IsSigned>& rhs);
+                            const uniform_int_distribution<Width2, LimbType, AllocatorType, IsSigned>& rhs);
 
   template<const std::uint32_t Width2,
            typename LimbType,
@@ -753,21 +753,21 @@
     #endif
 
     // Helper constants for the digit characteristics.
-    static constexpr std::uint_fast32_t my_digits = Width2;
+    static constexpr std::uint_fast32_t my_width2 = Width2;
 
     // The number of limbs.
     static constexpr std::uint_fast32_t number_of_limbs =
-      std::uint_fast32_t(my_digits / std::uint_fast32_t(std::numeric_limits<limb_type>::digits));
+      std::uint_fast32_t(my_width2 / std::uint_fast32_t(std::numeric_limits<limb_type>::digits));
 
     static constexpr std::uint_fast32_t number_of_limbs_karatsuba_threshold = std::uint_fast32_t(128U + 1U);
 
-    // Verify that the Width2 template parameter (my_digits):
+    // Verify that the Width2 template parameter (mirrored with my_width2):
     //   * Is equal to 2^n times 1...63.
     //   * And that there are at least 16, 24 or 32 binary digits, or more.
     //   * And that the number of binary digits is an exact multiple of the number of limbs.
-    static_assert(   (detail::verify_power_of_two_times_granularity_one_sixty_fourth<my_digits>::conditional_value == true)
-                  && ((my_digits >= 16U) || (my_digits >= 24U) || (my_digits >= 32U))
-                  && (my_digits == (number_of_limbs * std::uint_fast32_t(std::numeric_limits<limb_type>::digits))),
+    static_assert(   (detail::verify_power_of_two_times_granularity_one_sixty_fourth<my_width2>::conditional_value == true)
+                  && ((my_width2 >= 16U) || (my_width2 >= 24U) || (my_width2 >= 32U))
+                  && (my_width2 == (number_of_limbs * std::uint_fast32_t(std::numeric_limits<limb_type>::digits))),
                   "Error: Width2 must be 2^n times 1...63 (with n >= 3), while being 16, 24, 32 or larger, and exactly divisible by limb count");
 
     // The type of the internal data representation.
@@ -783,7 +783,7 @@
     using const_reverse_iterator = typename representation_type::const_reverse_iterator;
 
     // Define a class-local type that has double the width of *this.
-    using double_width_type = uintwide_t<my_digits * 2U, limb_type>;
+    using double_width_type = uintwide_t<my_width2 * 2U, limb_type>;
 
     // Default constructor.
     constexpr uintwide_t() { }
@@ -844,18 +844,6 @@
       if(v_is_neg) { negate(); }
     }
 
-    // Constructor from the internal data representation.
-    constexpr uintwide_t(const representation_type& other_rep) : values(other_rep) { }
-
-    // Constructor from initializer list of limbs.
-    constexpr uintwide_t(std::initializer_list<limb_type> lst)
-      : values(lst) { }
-
-    // Constructor from a C-style array.
-    template<const std::uint_fast32_t N>
-    constexpr uintwide_t(const limb_type(&init)[N])
-      : values(init, init + (std::min)(N, number_of_limbs), values.begin()) { }
-
     // Copy constructor.
     constexpr uintwide_t(const uintwide_t& other) : values(other.values) { }
 
@@ -865,23 +853,10 @@
     constexpr uintwide_t(const uintwide_t<Width2, LimbType, AllocatorType, OtherIsSigned>& other)
       : values(other.values) { }
 
-    // Constructor from the double-width type.
-    // This constructor is explicit because it
-    // is a narrowing conversion.
-    template<typename UnknownUnsignedWideIntegralType = double_width_type>
-    explicit WIDE_INTEGER_CONSTEXPR uintwide_t(const UnknownUnsignedWideIntegralType& v,
-                                               typename std::enable_if<(   (std::is_same<UnknownUnsignedWideIntegralType, double_width_type>::value == true)
-                                                                        && (128U <= my_digits))>::type* = nullptr)
-    {
-      std::copy(v.crepresentation().cbegin(),
-                v.crepresentation().cbegin() + (v.crepresentation().size() / 2U),
-                values.begin());
-    }
-
     // Constructor from the another type having a different width but the same limb type.
     // This constructor is explicit because it is a non-trivial conversion.
     template<const std::uint32_t OtherWidth2>
-    WIDE_INTEGER_CONSTEXPR uintwide_t(const uintwide_t<OtherWidth2, LimbType>& v)
+    WIDE_INTEGER_CONSTEXPR uintwide_t(const uintwide_t<OtherWidth2, LimbType, AllocatorType, IsSigned>& v)
     {
       const std::uint_fast32_t sz =
         (std::min)(std::uint_fast32_t(v.crepresentation().size()),
@@ -1229,7 +1204,7 @@
       {
         ;
       }
-      else if(std::uint_fast32_t(n) >= my_digits)
+      else if(std::uint_fast32_t(n) >= my_width2)
       {
         std::fill(values.begin(), values.end(), limb_type(0U));
       }
@@ -1255,7 +1230,7 @@
       {
         ;
       }
-      else if(std::uint_fast32_t(n) >= my_digits)
+      else if(std::uint_fast32_t(n) >= my_width2)
       {
         std::fill(values.begin(), values.end(), limb_type(0U));
       }
@@ -1285,7 +1260,7 @@
       {
         ;
       }
-      else if(std::uint_fast32_t(n) >= my_digits)
+      else if(std::uint_fast32_t(n) >= my_width2)
       {
         // Fill with either 0's or 1's. Note also the implementation-defined
         // behavior of excessive right-shift of negative value.
@@ -1320,7 +1295,7 @@
       {
         ;
       }
-      else if(std::uint_fast32_t(n) >= my_digits)
+      else if(std::uint_fast32_t(n) >= my_width2)
       {
         std::fill(values.begin(), values.end(), limb_type(0U));
       }
@@ -1348,20 +1323,20 @@
     {
       return
       is_signed == false
-        ? uintwide_t
+        ? from_rep
           (
             representation_type
             (
               number_of_limbs, (std::numeric_limits<limb_type>::max)()
             )
           )
-        :   uintwide_t
+        :   from_rep
             (
               representation_type
               (
                 number_of_limbs, (std::numeric_limits<limb_type>::max)()
               )
-            ) ^ (uintwide_t(1U) << (my_digits - 1))
+            ) ^ (uintwide_t(1U) << (my_width2 - 1))
         ;
     }
 
@@ -1369,20 +1344,20 @@
     {
       return
       is_signed == false
-        ? uintwide_t
+        ? from_rep
           (
             representation_type
             (
               number_of_limbs, limb_type(0U)
             )
           )
-        :   uintwide_t
+        :   from_rep
             (
               representation_type
               (
                 number_of_limbs, limb_type(0U)
               )
-            ) | (uintwide_t(1U) << (my_digits - 1))
+            ) | (uintwide_t(1U) << (my_width2 - 1))
         ;
     }
 
@@ -1393,9 +1368,9 @@
 
     // Define the maximum buffer sizes for extracting
     // octal, decimal and hexadecimal string representations.
-    static constexpr std::uint_fast32_t wr_string_max_buffer_size_oct = (16U + (my_digits / 3U)) + std::uint_fast32_t(((my_digits % 3U) != 0U) ? 1U : 0U) + 1U;
-    static constexpr std::uint_fast32_t wr_string_max_buffer_size_hex = (32U + (my_digits / 4U)) + 1U;
-    static constexpr std::uint_fast32_t wr_string_max_buffer_size_dec = (20U + std::uint_fast32_t((std::uintmax_t(my_digits) * UINTMAX_C(301)) / UINTMAX_C(1000))) + 1U;
+    static constexpr std::uint_fast32_t wr_string_max_buffer_size_oct = (16U + (my_width2 / 3U)) + std::uint_fast32_t(((my_width2 % 3U) != 0U) ? 1U : 0U) + 1U;
+    static constexpr std::uint_fast32_t wr_string_max_buffer_size_hex = (32U + (my_width2 / 4U)) + 1U;
+    static constexpr std::uint_fast32_t wr_string_max_buffer_size_dec = (20U + std::uint_fast32_t((std::uintmax_t(my_width2) * UINTMAX_C(301)) / UINTMAX_C(1000))) + 1U;
 
     // Write string function.
     bool wr_string(      char*              str_result,
@@ -1443,7 +1418,7 @@
           }
           else
           {
-            uintwide_t<my_digits, limb_type, AllocatorType, false> tu(t);
+            uintwide_t<my_width2, limb_type, AllocatorType, false> tu(t);
 
             while(tu.is_zero() == false)
             {
@@ -1590,7 +1565,7 @@
           }
           else
           {
-            uintwide_t<my_digits, limb_type, AllocatorType, false> tu(t);
+            uintwide_t<my_width2, limb_type, AllocatorType, false> tu(t);
 
             while(tu.is_zero() == false)
             {
@@ -1761,6 +1736,16 @@
 
   private:
     representation_type values { };
+
+    // Constructor from the internal data representation.
+    static WIDE_INTEGER_CONSTEXPR uintwide_t from_rep(const representation_type& other_rep)
+    {
+      uintwide_t a;
+
+      a.values = other_rep;
+
+      return a;
+    }
 
     static WIDE_INTEGER_CONSTEXPR std::int_fast8_t compare_ranges(const limb_type*         a,
                                                                   const limb_type*         b,
@@ -3078,8 +3063,8 @@
 
   public:
     static constexpr int digits          = (IsSigned == false)
-                                             ? static_cast<int>(local_wide_integer_type::my_digits)
-                                             : static_cast<int>(local_wide_integer_type::my_digits - 1U);
+                                             ? static_cast<int>(local_wide_integer_type::my_width2)
+                                             : static_cast<int>(local_wide_integer_type::my_width2 - 1U);
 
     static constexpr int digits10        = static_cast<int>((std::uintmax_t(digits)       * UINTMAX_C(75257499)) / UINTMAX_C(250000000));
     static constexpr int max_digits10    = digits10;

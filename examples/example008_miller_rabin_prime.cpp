@@ -18,7 +18,7 @@
 bool math::wide_integer::example008_miller_rabin_prime()
 {
   using wide_integer_type  = math::wide_integer::uintwide_t<256U>;
-  using distribution_type  = math::wide_integer::uniform_int_distribution<wide_integer_type::my_digits, typename wide_integer_type::limb_type>;
+  using distribution_type  = math::wide_integer::uniform_int_distribution<wide_integer_type::my_width2, typename wide_integer_type::limb_type>;
   using random_engine_type = std::linear_congruential_engine<std::uint32_t, UINT32_C(48271), UINT32_C(0), UINT32_C(2147483647)>;
 
   // Use a fixed seed in order to obtain deterministic
