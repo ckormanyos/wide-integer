@@ -670,7 +670,12 @@ jobs:
         working-directory: ${{runner.workspace}}/build
         run: |
           export BOOST_ROOT=${{runner.workspace}}/boost-root
-          cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=g++-10 -DCMAKE_CXX_FLAGS="-Werror -Wall -Wextra -Wconversion" -DCMAKE_CXX_STANDARD=20 $GITHUB_WORKSPACE
+          cmake \
+              -DCMAKE_BUILD_TYPE=Release \
+              -DCMAKE_CXX_COMPILER=g++-10 \
+              -DCMAKE_CXX_FLAGS="-Werror -Wall -Wextra -Wconversion" \
+              -DCMAKE_CXX_STANDARD=20 \
+              $GITHUB_WORKSPACE
           cmake --build .
 
       - name: build-windows
