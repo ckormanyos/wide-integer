@@ -33,7 +33,7 @@ namespace
                                                             UINT64_C(6364136223846793005)>;
 
     using wide_integer_type  = math::wide_integer::uintwide_t<256U, std::uint32_t, AllocatorType>;
-    using distribution_type  = math::wide_integer::uniform_int_distribution<wide_integer_type::my_digits, typename wide_integer_type::limb_type>;
+    using distribution_type  = math::wide_integer::uniform_int_distribution<wide_integer_type::my_width2, typename wide_integer_type::limb_type>;
 
     // Generate a random number with wide_integer_type having limbs of type LimbType.
     random_engine_type generator;
