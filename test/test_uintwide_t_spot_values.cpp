@@ -13,6 +13,13 @@ bool math::wide_integer::test_uintwide_t_spot_values()
   bool result_is_ok = true;
 
   {
+    // See also https://github.com/ckormanyos/wide-integer/issues/63
+    auto input{math::wide_integer::uintwide_t<320, std::uint32_t, void, true>{1729348762983LL}};
+
+    result_is_ok &= (static_cast<long long>(input) == 1729348762983LL);
+  }
+
+  {
     using uint512_t = math::wide_integer::uint512_t;
 
     const uint512_t a("698937339790347543053797400564366118744312537138445607919548628175822115805812983955794321304304417541511379093392776018867245622409026835324102460829431");
@@ -62,47 +69,11 @@ bool math::wide_integer::test_uintwide_t_spot_values()
     // Modulus:
     //   a % b = 0x14998D5CA3DB6385F7DEDF4621DE48A9104AC13797C6567713D7ABC216D7AB4C
 
-    WIDE_INTEGER_CONSTEXPR uint256_t a
-    (
-      {
-        UINT32_C(0x410065DE),
-        UINT32_C(0x3BDEED78),
-        UINT32_C(0x80AF54D5),
-        UINT32_C(0xCFC456CB),
-        UINT32_C(0x026EF9CB),
-        UINT32_C(0x37F18372),
-        UINT32_C(0xE58BCB2F),
-        UINT32_C(0xF4DF741D)
-      }
-    );
+    WIDE_INTEGER_CONSTEXPR uint256_t a("0xF4DF741DE58BCB2F37F18372026EF9CBCFC456CB80AF54D53BDEED78410065DE");
 
-    WIDE_INTEGER_CONSTEXPR uint256_t b
-    (
-      {
-        UINT32_C(0x9DD0DF75),
-        UINT32_C(0x3733ECF8),
-        UINT32_C(0x974A7FD6),
-        UINT32_C(0x4658F55B),
-        UINT32_C(0x6341AB50),
-        UINT32_C(0xECCEAA04),
-        UINT32_C(0x202B3D90),
-        UINT32_C(0x166D63E0)
-      }
-    );
+    WIDE_INTEGER_CONSTEXPR uint256_t b("0x166D63E0202B3D90ECCEAA046341AB504658F55B974A7FD63733ECF89DD0DF75");
 
-    WIDE_INTEGER_CONSTEXPR uint256_t c
-    (
-      {
-        UINT32_C(0xF84AF076),
-        UINT32_C(0x92D5AE70),
-        UINT32_C(0xD2D71C55),
-        UINT32_C(0xBE3676AA),
-        UINT32_C(0x4F7F7D99),
-        UINT32_C(0x6C61F9A0),
-        UINT32_C(0xC57EB430),
-        UINT32_C(0xE491A360)
-      }
-    );
+    WIDE_INTEGER_CONSTEXPR uint256_t c("0xE491A360C57EB4306C61F9A04F7F7D99BE3676AAD2D71C5592D5AE70F84AF076");
 
     result_is_ok &= ((a * b) == c);
 
@@ -110,19 +81,7 @@ bool math::wide_integer::test_uintwide_t_spot_values()
 
     result_is_ok &= ((a / b) == q);
 
-    WIDE_INTEGER_CONSTEXPR uint256_t m
-    (
-      {
-        UINT32_C(0x16D7AB4C),
-        UINT32_C(0x13D7ABC2),
-        UINT32_C(0x97C65677),
-        UINT32_C(0x104AC137),
-        UINT32_C(0x21DE48A9),
-        UINT32_C(0xF7DEDF46),
-        UINT32_C(0xA3DB6385),
-        UINT32_C(0x14998D5C)
-      }
-    );
+    WIDE_INTEGER_CONSTEXPR uint256_t m("0x14998D5CA3DB6385F7DEDF4621DE48A9104AC13797C6567713D7ABC216D7AB4C");
 
     result_is_ok &= ((a % b) == m);
   }

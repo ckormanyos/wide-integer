@@ -8,13 +8,14 @@ unsigned and signed integral types.
 This C++ template header-only library implements drop-in big integer types
 such as `uint128_t`, `uint256_t`, `uint384_t`, `uint512_t`, `uint1024_t`, `uint1536_t`, etc.
 These can be used essentially like regular built-in integers.
-Corresponding signed types such as `int128_t`, `int256_t`, etc. can also be used.
+Corresponding integer signed types such as `int128_t`, `int256_t`, etc. can also be used.
 
-Wide-integer supports unsigned and signed integral types having bit counts
+Wide-integer supports both unsigned as well as signed integral types having width
 of <img src="https://render.githubusercontent.com/render/math?math=1{\ldots}63{\times}2^{N}">
 while being 16, 24, 32 or larger.
-In addition, small integer types such as of `uint24_t` or `uint48_t`
-can also be created with wide-integer.
+In addition, small integer types such as software-synthesized versions of
+`uint24_t`, `uint48_t`, `uint64_t`, `uint96_t`, `uint128_t`, etc.
+(or signed counterparts of these) can also be created with wide-integer.
 
 Wide-integer also features basic realizations of several
 elementary and number theoretical functions such as root finding,
@@ -27,7 +28,7 @@ as shown in the [examples](./examples).
 
 ## Implementation goals
 
-  - Signed and unsigned versions of `uintwide_t` behave as closely as possible as signed and unsigned versions of `int`.
+  - Signed and unsigned versions of `uintwide_t` should behave as closely as possible as signed and unsigned versions of built-in `int`.
   - Relatively wide precision range from 24, 32, 64 bits up to tens of thousands of bits.
   - Moderately good efficiency over the entire wide precision range.
   - Clean header-only C++11 design.
@@ -37,7 +38,7 @@ as shown in the [examples](./examples).
 
 ## Quick start
 
-Easy application follows via a traditional C-style typedef or C++11 alias.
+Easy application follows via traditional C-style typedef or C++11 alias.
 The defined type can be used very much like a built-in unsinged integral type.
 In the following example, the static `uint512_t` variable `x` is initialized
 with unsigned value `3U`.
@@ -58,13 +59,27 @@ count while the second optional template parameter `std::uint32_t`
 sets the internal _limb_ _type_. If the second template parameter is left blank,
 the default limb type is 32 bits in width and unsigned.
 
+The template signature of the `uintwide_t` class is shown below.
+
+```C
+template<const std::uint32_t Width2,
+         typename LimbType = std::uint32_t,
+         typename AllocatorType = void,
+         const bool IsSigned = false>
+class uintwide_t;
+```
+
 `uintwide_t` also has a third optional template paramter that
-can be used to set the allocator type for internal storage of the
-big integer type. This optional parameter can help to reduce
+can be used to set the _allocator_ _type_ used for internal storage of the
+big integer type. This optional parameter can optionally help to reduce
 stack consumption, especially when using higher digit counts.
-If left blank, the default allocator type is `void`
-and stack allocation is used with an `array`-like
-internal representation.
+If left blank, the default `AllocatorType` is `void`
+allocation on the stack is used with an `array`-like
+internal storage representation.
+
+The fourth template parameter `IsSigned` can be set to `true`
+to activate a signed integer type. The default value `false`
+is used for unsigned integer types.
 
 ## Examples
 
@@ -73,21 +88,21 @@ Various interesting and algorithmically challenging
 It is hoped that the examples provide inspiration and guidance on
 how to use wide-integer.
 
-  - ![`example000_numeric_limits.cpp`](./examples/example000_numeric_limits.cpp) verifies parts of the specialization of `std::numeric_limits` for `uint266_t`and `int256_t`.
+  - ![`example000_numeric_limits.cpp`](./examples/example000_numeric_limits.cpp) verifies parts of the specializations of `std::numeric_limits` for (unsigned) `uint256_t`and (signed) `int256_t`.
   - ![`example001_mul_div.cpp`](./examples/example001_mul_div.cpp) performs multiplication and division.
   - ![`example001a_div_mod.cpp`](./examples/example001a_div_mod.cpp) exercises division and modulus calculations.
   - ![`example002_shl_shr.cpp`](./examples/example002_shl_shr.cpp) does a few left and right shift operations.
   - ![`example003_sqrt.cpp`](./examples/example003_sqrt.cpp) computes a square root.
   - ![`example003a_cbrt`](./examples/example003a_cbrt.cpp) computes a cube root.
   - ![`example004_rootk_pow.cpp`](./examples/example004_rootk_pow.cpp) computes an integral seventh root and its corresponding power.
-  - ![`example005_powm.cpp`](./examples/example005_powm.cpp) tests `powm`, the power-modulus function.
-  - ![`example006_gcd.cpp`](./examples/example006_gcd.cpp) tests the computation of a greatest common divisor.
+  - ![`example005_powm.cpp`](./examples/example005_powm.cpp) tests the power-modulus function `powm`.
+  - ![`example006_gcd.cpp`](./examples/example006_gcd.cpp) tests the computation of a greatest common divisor `gcd`.
   - ![`example007_random_generator.cpp`](./examples/example007_random_generator.cpp) computes some large pseudo-random integers.
   - ![`example008_miller_rabin_prime.cpp`](./examples/example008_miller_rabin_prime.cpp) implements primality testing via Miller-Rabin.
-  - ![`example008a_miller_rabin_prime.cpp`](./examples/example008a_miller_rabin_prime.cpp) tests Boost interaction with Miller-Rabin primality checks.
+  - ![`example008a_miller_rabin_prime.cpp`](./examples/example008a_miller_rabin_prime.cpp) verifies Boost's interpretation of Miller-Rabin primality testing using `uintwide_t`-based types.
   - ![`example009_timed_mul.cpp`](./examples/example009_timed_mul.cpp) measures multiplication timings.
   - ![`example009a_timed_mul_4_by_4.cpp`](./examples/example009a_timed_mul_4_by_4.cpp) also measures multiplication timings for the special case of wide integers having 4 limbs.
-  - ![`example009b_timed_mul_8_by_8.cpp`](./examples/example009b_timed_mul_8_by_8.cpp) yet again measures multiplication timings for the special case of wide integers having 8 limbs.
+  - ![`example009b_timed_mul_8_by_8.cpp`](./examples/example009b_timed_mul_8_by_8.cpp) measures, yet again, multiplication timings for the special case of wide integers having 8 limbs.
   - ![`example010_uint48_t.cpp`](./examples/example010_uint48_t.cpp) verifies 48-bit integer caluclations.
   - ![`example011_uint24_t.cpp`](./examples/example011_uint24_t.cpp) performs calculations with 24-bits, which is definitely on the small side of the range of wide-integer.
 
@@ -96,9 +111,13 @@ how to use wide-integer.
 ### Build Status
 [![Build Status](https://github.com/ckormanyos/wide-integer/actions/workflows/wide_integer.yml/badge.svg)](https://github.com/ckormanyos/wide-integer/actions)
 
+### Build with Microsoft Visual Studio
+
 Building and running the tests can be accomplished using
 Microsoft VisualStudio solution workspace provided in
 `wide_integer.sln` in the project's root directory.
+
+### Build with CMake
 
 You can also build and run tests from an empty directory using CMake:
 
@@ -107,6 +126,8 @@ cmake /path/to/wide-integer
 cmake --build .
 ctest --verbose
 ```
+
+### Build on the *nix command line
 
 Alternatively building with native GCC (i.e., on *nix) can be
 executed with a simple, but rather lengthy, command line
@@ -119,7 +140,7 @@ The command line below illustrates how to build all wide_integer
 tests and examples directly from the *nix command line.
 
 ```sh
-cd wide_integer                             \
+cd wide_integer
 g++                                         \
 -finline-functions                          \
 -finline-limit=32                           \
@@ -162,6 +183,8 @@ examples/example010_uint48_t.cpp            \
 examples/example011_uint24_t.cpp            \
 -o wide_integer.exe
 ```
+
+### Testing
 
 Testing is a big issue and a growing test suite is in continued progress
 providing for tested, efficient functionality on the PC and workstation.
@@ -492,14 +515,19 @@ please feel free to contact me directly so that this can be implemented.
 ## Signed integer support
 
 Signed big integers are also supported in the wide_integer library.
-Use a fourth template partameter to indicate the signed-ness
-of `uintwide_t`. The code below, for instance, uses an
-aliased version of `int256_t`.
+Use the fourth template partameter `IsSigned` to indicate the
+signed-ness (or unsigned-ness) of `uintwide_t`.
+The code below, for instance, uses an aliased version of
+signed `int256_t`.
 
 ```C
 #include <math/wide_integer/uintwide_t.h>
 
 using int256_t = math::wide_integer::uintwide_t<256U, std::uint32_t, void, true>;
 
-const int256_t n(-3);
+const int256_t n1(-3);
+const int256_t n2(-3);
+
+// 9
+const int256_t n3 = n1 * n2;
 ```

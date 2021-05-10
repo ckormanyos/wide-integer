@@ -13,24 +13,24 @@
   #include <math/wide_integer/uintwide_t.h>
   #include <test/test_uintwide_t_n_base.h>
 
-  template<const std::size_t MyDigits2,
+  template<const std::size_t MyWidth2,
            typename MyLimbType,
            typename EnableType = void>
   class test_uintwide_t_n_binary_ops_mul_div_4_by_4_template;
 
-  template<const std::size_t MyDigits2,
+  template<const std::size_t MyWidth2,
            typename MyLimbType>
   class test_uintwide_t_n_binary_ops_mul_div_4_by_4_template
-    <MyDigits2,
+    <MyWidth2,
      MyLimbType,
-     typename std::enable_if<(   (std::numeric_limits<MyLimbType>::digits * 4 == MyDigits2)
+     typename std::enable_if<(   (std::numeric_limits<MyLimbType>::digits * 4 == MyWidth2)
                               && (std::is_fundamental<MyLimbType>::value == true)
                               && (std::is_integral   <MyLimbType>::value == true)
                               && (std::is_unsigned   <MyLimbType>::value == true))>::type>
     : public test_uintwide_t_n_binary_ops_base
   {
   private:
-    static constexpr std::size_t digits2 = MyDigits2;
+    static constexpr std::size_t digits2 = MyWidth2;
 
     virtual std::size_t get_digits2 () const { return digits2; }
 
@@ -171,7 +171,7 @@
       test_uintwide_t_n_base::my_random_generator.seed(std::clock());
 
       using distribution_type =
-        math::wide_integer::uniform_int_distribution<other_local_uint_type::my_digits, typename other_local_uint_type::limb_type>;
+        math::wide_integer::uniform_int_distribution<other_local_uint_type::my_width2, typename other_local_uint_type::limb_type>;
 
       distribution_type distribution;
 
