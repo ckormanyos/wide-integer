@@ -19,7 +19,7 @@ bool math::wide_integer::test_uintwide_t_spot_values()
 
   {
     // See also https://github.com/ckormanyos/wide-integer/issues/63
-    auto input{math::wide_integer::uintwide_t<320, std::uint32_t, void, true>{1729348762983LL}};
+    auto input{math::wide_integer::uintwide_t<320U, std::uint32_t, void, true>{1729348762983LL}};
 
     result_is_ok &= (static_cast<long long>(input) == 1729348762983LL);
   }

@@ -71,7 +71,15 @@
 
   namespace math { namespace wide_integer {
 
-  using size_t = std::uint32_t;
+  namespace detail {
+
+  using size_t    = std::uint32_t;
+  using ptrdiff_t = std::int32_t;
+
+  }
+
+  using detail::size_t;
+  using detail::ptrdiff_t;
 
   // Forward declaration of the uintwide_t template class.
   template<const size_t Width2,
@@ -367,14 +375,14 @@
                                                   && (std::is_unsigned   <UnsignedShortType>::value == true)), UnsignedShortType>::type
   gcd(const UnsignedShortType& u, const UnsignedShortType& v);
 
-  template<const size_t Width2,
-           typename LimbType,
+  template<const math::wide_integer::size_t Width2,
+           typename LimbType = std::uint32_t,
            typename AllocatorType = void,
            const bool IsSigned = false>
   class default_random_engine;
 
   template<const size_t Width2,
-           typename LimbType,
+           typename LimbType = std::uint32_t,
            typename AllocatorType = void,
            const bool IsSigned = false>
   class uniform_int_distribution;
@@ -400,16 +408,16 @@
            typename AllocatorType,
            const bool IsSigned>
   bool miller_rabin(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& n,
-                    const size_t             number_of_trials,
-                    DistributionType&                    distribution,
-                    GeneratorType&                       generator);
+                    const size_t                                                 number_of_trials,
+                    DistributionType&                                            distribution,
+                    GeneratorType&                                               generator);
 
   } } // namespace math::wide_integer
 
   namespace std
   {
     // Forward declaration of specialization of std::numeric_limits<uintwide_t>.
-    template<const size_t Width2,
+    template<const math::wide_integer::size_t Width2,
              typename LimbType,
              typename AllocatorType,
              const bool IsSigned>
@@ -421,10 +429,10 @@
   template<typename MyType,
            const size_t MySize,
            typename MyAlloc>
-  class fixed_dynamic_array final : public util::dynamic_array<MyType, MyAlloc>
+  class fixed_dynamic_array final : public util::dynamic_array<MyType, MyAlloc, size_t, ptrdiff_t>
   {
   private:
-    using base_class_type = util::dynamic_array<MyType, MyAlloc>;
+    using base_class_type = util::dynamic_array<MyType, MyAlloc, size_t, ptrdiff_t>;
 
   public:
     static constexpr size_t static_size() { return MySize; }
@@ -3092,7 +3100,7 @@
   namespace std
   {
     // Specialization of std::numeric_limits<uintwide_t>.
-    template<const size_t Width2,
+    template<const math::wide_integer::size_t Width2,
              typename LimbType,
              typename AllocatorType,
              const bool IsSigned>
