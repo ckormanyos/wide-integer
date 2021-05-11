@@ -22,11 +22,6 @@
 #include <iomanip>
 #include <iostream>
 
-#if defined(__GNUC__)
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wconversion"
-#endif
-
 #include <math/wide_integer/uintwide_t_test.h>
 #include <test/test_uintwide_t_n_binary_ops_template.h>
 #include <test/test_uintwide_t_n_binary_ops_template_signed.h>
@@ -379,6 +374,3 @@ int main()
 
   return (result_is_ok ? 0 : -1);
 }
-#if defined(__GNUC__)
-#pragma GCC diagnostic pop
-#endif

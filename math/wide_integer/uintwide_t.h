@@ -73,8 +73,8 @@
 
   namespace detail {
 
-  using size_t    = std::uint_fast32_t;
-  using ptrdiff_t =  std::int_fast32_t;
+  using size_t    = std::uint32_t;
+  using ptrdiff_t =  std::int32_t;
 
   }
 
@@ -317,13 +317,13 @@
            typename LimbType,
            typename AllocatorType,
            const bool IsSigned>
-  WIDE_INTEGER_CONSTEXPR size_t lsb(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& x);
+  WIDE_INTEGER_CONSTEXPR std::uint_fast32_t lsb(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& x);
 
   template<const size_t Width2,
            typename LimbType,
            typename AllocatorType,
            const bool IsSigned>
-  WIDE_INTEGER_CONSTEXPR size_t msb(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& x);
+  WIDE_INTEGER_CONSTEXPR std::uint_fast32_t msb(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& x);
 
   template<const size_t Width2,
            typename LimbType,
@@ -408,7 +408,7 @@
            typename AllocatorType,
            const bool IsSigned>
   bool miller_rabin(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& n,
-                    const size_t                                                 number_of_trials,
+                    const std::uint_fast32_t                                     number_of_trials,
                     DistributionType&                                            distribution,
                     GeneratorType&                                               generator);
 
@@ -427,15 +427,15 @@
   namespace math { namespace wide_integer { namespace detail {
 
   template<typename MyType,
-           const size_t MySize,
+           const std::uint_fast32_t MySize,
            typename MyAlloc>
-  class fixed_dynamic_array final : public util::dynamic_array<MyType, MyAlloc, size_t, ptrdiff_t>
+  class fixed_dynamic_array final : public util::dynamic_array<MyType, MyAlloc, std::uint_fast32_t, std::int_fast32_t>
   {
   private:
-    using base_class_type = util::dynamic_array<MyType, MyAlloc, size_t, ptrdiff_t>;
+    using base_class_type = util::dynamic_array<MyType, MyAlloc, std::uint_fast32_t, std::int_fast32_t>;
 
   public:
-    static constexpr size_t static_size() { return MySize; }
+    static constexpr std::uint_fast32_t static_size() { return MySize; }
 
     fixed_dynamic_array(const typename base_class_type::size_type       s = MySize,
                         const typename base_class_type::value_type&     v = typename base_class_type::value_type(),
@@ -443,7 +443,7 @@
       : base_class_type(MySize, typename base_class_type::value_type(), a)
     {
       std::fill(base_class_type::begin(),
-                base_class_type::begin() + (std::min)(MySize, (size_t) s),
+                base_class_type::begin() + (std::min)(MySize, (std::uint_fast32_t) s),
                 v);
     }
 
@@ -454,7 +454,7 @@
       : base_class_type(MySize)
     {
       std::copy(lst.begin(),
-                lst.begin() + (std::min)((size_t) lst.size(), MySize),
+                lst.begin() + (std::min)((std::uint_fast32_t) lst.size(), MySize),
                 base_class_type::begin());
     }
 
@@ -479,14 +479,14 @@
   };
 
   template<typename MyType,
-           const size_t MySize>
+           const std::uint_fast32_t MySize>
   class fixed_static_array final : public std::array<MyType, MySize>
   {
   private:
     using base_class_type = std::array<MyType, MySize>;
 
   public:
-    static constexpr size_t static_size() { return MySize; }
+    static constexpr std::uint_fast32_t static_size() { return MySize; }
 
     constexpr fixed_static_array() { }
 
@@ -494,10 +494,10 @@
                                               const typename base_class_type::value_type& v = typename base_class_type::value_type())
     {
       std::fill(base_class_type::begin(),
-                base_class_type::begin() + (std::min)(MySize, (size_t) s),
+                base_class_type::begin() + (std::min)(MySize, (std::uint_fast32_t) s),
                 v);
 
-      std::fill(base_class_type::begin() + (std::min)(MySize, (size_t) s),
+      std::fill(base_class_type::begin() + (std::min)(MySize, (std::uint_fast32_t) s),
                 base_class_type::end(),
                 typename base_class_type::value_type());
     }
@@ -505,8 +505,8 @@
     constexpr fixed_static_array(const fixed_static_array& other_array)
       : base_class_type(static_cast<const base_class_type&>(other_array)) { }
 
-    template<const size_t OtherSize>
-    WIDE_INTEGER_CONSTEXPR fixed_static_array(const fixed_static_array<size_t, OtherSize>& other_array)
+    template<const std::uint_fast32_t OtherSize>
+    WIDE_INTEGER_CONSTEXPR fixed_static_array(const fixed_static_array<std::uint_fast32_t, OtherSize>& other_array)
     {
       std::copy(other_array.cbegin(),
                 other_array.cbegin() + (std::min)(OtherSize, MySize),
@@ -520,10 +520,10 @@
     explicit WIDE_INTEGER_CONSTEXPR fixed_static_array(std::initializer_list<typename base_class_type::value_type> lst)
     {
       std::copy(lst.begin(),
-                lst.begin() + (std::min)((size_t) lst.size(), MySize),
+                lst.begin() + (std::min)((std::uint_fast32_t) lst.size(), MySize),
                 base_class_type::begin());
 
-      std::fill(base_class_type::begin() + (std::min)((size_t) lst.size(), MySize),
+      std::fill(base_class_type::begin() + (std::min)((std::uint_fast32_t) lst.size(), MySize),
                 base_class_type::end(),
                 typename base_class_type::value_type());
     }
@@ -608,19 +608,19 @@
   #endif
 
   template<typename UnsignedIntegralType>
-  inline WIDE_INTEGER_CONSTEXPR size_t lsb_helper(const UnsignedIntegralType& x);
+  inline WIDE_INTEGER_CONSTEXPR std::uint_fast32_t lsb_helper(const UnsignedIntegralType& x);
 
   template<typename UnsignedIntegralType>
-  inline WIDE_INTEGER_CONSTEXPR size_t msb_helper(const UnsignedIntegralType& x);
+  inline WIDE_INTEGER_CONSTEXPR std::uint_fast32_t msb_helper(const UnsignedIntegralType& x);
 
   template<>
-  inline WIDE_INTEGER_CONSTEXPR size_t msb_helper<std::uint32_t>(const std::uint32_t& x);
+  inline WIDE_INTEGER_CONSTEXPR std::uint_fast32_t msb_helper<std::uint32_t>(const std::uint32_t& x);
 
   template<>
-  inline WIDE_INTEGER_CONSTEXPR size_t msb_helper<std::uint16_t>(const std::uint16_t& x);
+  inline WIDE_INTEGER_CONSTEXPR std::uint_fast32_t msb_helper<std::uint16_t>(const std::uint16_t& x);
 
   template<>
-  inline WIDE_INTEGER_CONSTEXPR size_t msb_helper<std::uint8_t>(const std::uint8_t& x);
+  inline WIDE_INTEGER_CONSTEXPR std::uint_fast32_t msb_helper<std::uint8_t>(const std::uint8_t& x);
 
   // Use a local implementation of string copy.
   inline WIDE_INTEGER_CONSTEXPR char* strcpy_unsafe(char* dst, const char* src)
@@ -631,13 +631,13 @@
   }
 
   // Use a local implementation of string length.
-  inline WIDE_INTEGER_CONSTEXPR size_t strlen_unsafe(const char* p_str)
+  inline WIDE_INTEGER_CONSTEXPR std::uint_fast32_t strlen_unsafe(const char* p_str)
   {
     const char* p_str_copy{};
 
     for(p_str_copy = p_str; (*p_str_copy != char('\0')); ++p_str_copy) { ; }
 
-    return size_t(p_str_copy - p_str);
+    return std::uint_fast32_t(p_str_copy - p_str);
   }
 
   template<typename UnsignedShortType,
@@ -818,16 +818,16 @@
                                         && (std::is_unsigned   <UnsignedIntegralType>::value == true)
                                         && (std::numeric_limits<UnsignedIntegralType>::digits > std::numeric_limits<limb_type>::digits))>::type* = nullptr)
     {
-      size_t right_shift_amount_v = 0U;
-      std::uint_fast8_t  index_u  = 0U;
+      std::uint_fast32_t right_shift_amount_v = 0U;
+      std::uint_fast8_t  index_u              = 0U;
 
       for( ; (   (index_u < values.size())
-              && (right_shift_amount_v < size_t(std::numeric_limits<UnsignedIntegralType>::digits)));
+              && (right_shift_amount_v < std::uint_fast32_t(std::numeric_limits<UnsignedIntegralType>::digits)));
              ++index_u)
       {
         values[index_u] = limb_type(v >> (int) right_shift_amount_v);
 
-        right_shift_amount_v += size_t(std::numeric_limits<limb_type>::digits);
+        right_shift_amount_v += std::uint_fast32_t(std::numeric_limits<limb_type>::digits);
       }
 
       std::fill(values.begin() + index_u, values.end(), limb_type(0U));
@@ -868,9 +868,9 @@
     template<const size_t OtherWidth2>
     WIDE_INTEGER_CONSTEXPR uintwide_t(const uintwide_t<OtherWidth2, LimbType, AllocatorType, IsSigned>& v)
     {
-      const size_t sz =
-        (std::min)(size_t(v.crepresentation().size()),
-                   size_t(number_of_limbs));
+      const std::uint_fast32_t sz =
+        (std::min)(std::uint_fast32_t(v.crepresentation().size()),
+                   std::uint_fast32_t(number_of_limbs));
 
       std::copy(v.crepresentation().cbegin(),
                 v.crepresentation().cbegin() + sz,
@@ -1158,7 +1158,7 @@
       if(this != &other)
       {
         // Bitwise OR.
-        for(size_t i = 0U; i < number_of_limbs; ++i)
+        for(std::uint_fast32_t i = 0U; i < number_of_limbs; ++i)
         {
           values[i] |= other.values[i];
         }
@@ -1176,7 +1176,7 @@
       else
       {
         // Bitwise XOR.
-        for(size_t i = 0U; i < number_of_limbs; ++i)
+        for(std::uint_fast32_t i = 0U; i < number_of_limbs; ++i)
         {
           values[i] ^= other.values[i];
         }
@@ -1190,7 +1190,7 @@
       if(this != &other)
       {
         // Bitwise AND.
-        for(size_t i = 0U; i < number_of_limbs; ++i)
+        for(std::uint_fast32_t i = 0U; i < number_of_limbs; ++i)
         {
           values[i] &= other.values[i];
         }
@@ -1214,14 +1214,14 @@
       {
         ;
       }
-      else if(size_t(n) >= my_width2)
+      else if(std::uint_fast32_t(n) >= my_width2)
       {
         std::fill(values.begin(), values.end(), limb_type(0U));
       }
       else
       {
-        const size_t offset            = size_t(n) / size_t(std::numeric_limits<limb_type>::digits);
-        const size_t left_shift_amount = size_t(n) % size_t(std::numeric_limits<limb_type>::digits);
+        const std::uint_fast32_t offset            =                    std::uint_fast32_t(n) / std::uint_fast32_t(std::numeric_limits<limb_type>::digits);
+        const std::uint_fast16_t left_shift_amount = std::uint_fast16_t(std::uint_fast32_t(n) % std::uint_fast32_t(std::numeric_limits<limb_type>::digits));
 
         shl(offset, left_shift_amount);
       }
@@ -1240,14 +1240,14 @@
       {
         ;
       }
-      else if(size_t(n) >= my_width2)
+      else if(std::uint_fast32_t(n) >= my_width2)
       {
         std::fill(values.begin(), values.end(), limb_type(0U));
       }
       else
       {
-        const size_t offset            = size_t(n) / size_t(std::numeric_limits<limb_type>::digits);
-        const size_t left_shift_amount = size_t(n) % size_t(std::numeric_limits<limb_type>::digits);
+        const std::uint_fast32_t offset            =                    std::uint_fast32_t(n) / std::uint_fast32_t(std::numeric_limits<limb_type>::digits);
+        const std::uint_fast16_t left_shift_amount = std::uint_fast16_t(std::uint_fast32_t(n) % std::uint_fast32_t(std::numeric_limits<limb_type>::digits));
 
         shl(offset, left_shift_amount);
       }
@@ -1270,7 +1270,7 @@
       {
         ;
       }
-      else if(size_t(n) >= my_width2)
+      else if(std::uint_fast32_t(n) >= my_width2)
       {
         // Fill with either 0's or 1's. Note also the implementation-defined
         // behavior of excessive right-shift of negative value.
@@ -1285,8 +1285,8 @@
       }
       else
       {
-        const size_t offset             = size_t(n) / size_t(std::numeric_limits<limb_type>::digits);
-        const size_t right_shift_amount = size_t(n) % size_t(std::numeric_limits<limb_type>::digits);
+        const std::uint_fast32_t offset             =                    std::uint_fast32_t(n) / std::uint_fast32_t(std::numeric_limits<limb_type>::digits);
+        const std::uint_fast16_t right_shift_amount = std::uint_fast16_t(std::uint_fast32_t(n) % std::uint_fast32_t(std::numeric_limits<limb_type>::digits));
 
         shr(offset, right_shift_amount);
       }
@@ -1305,14 +1305,14 @@
       {
         ;
       }
-      else if(size_t(n) >= my_width2)
+      else if(std::uint_fast32_t(n) >= my_width2)
       {
         std::fill(values.begin(), values.end(), limb_type(0U));
       }
       else
       {
-        const size_t offset             = size_t(n) / size_t(std::numeric_limits<limb_type>::digits);
-        const size_t right_shift_amount = size_t(n) % size_t(std::numeric_limits<limb_type>::digits);
+        const std::uint_fast32_t offset             =                    std::uint_fast32_t(n) / std::uint_fast32_t(std::numeric_limits<limb_type>::digits);
+        const std::uint_fast16_t right_shift_amount = std::uint_fast16_t(std::uint_fast32_t(n) % std::uint_fast32_t(std::numeric_limits<limb_type>::digits));
 
         shr(offset, right_shift_amount);
       }
@@ -1388,7 +1388,7 @@
                    const bool               show_base    = true,
                    const bool               show_pos     = false,
                    const bool               is_uppercase = true,
-                         size_t             field_width  = 0U,
+                         std::uint_fast32_t field_width  = 0U,
                    const char               fill_char    = char('0')) const
     {
       bool wr_string_is_ok = true;
@@ -1401,7 +1401,7 @@
 
         char str_temp[wr_string_max_buffer_size_oct];
 
-        size_t pos = (sizeof(str_temp) - 1U);
+        std::uint_fast32_t pos = (sizeof(str_temp) - 1U);
 
         if(t.is_zero())
         {
@@ -1461,7 +1461,7 @@
 
         if(field_width != 0U)
         {
-          field_width = (std::min)(field_width, size_t(sizeof(str_temp) - 1U));
+          field_width = (std::min)(field_width, std::uint_fast32_t(sizeof(str_temp) - 1U));
 
           while(std::int_fast32_t(pos) > std::int_fast32_t((sizeof(str_temp) - 1U) - field_width))
           {
@@ -1488,7 +1488,7 @@
 
         char str_temp[wr_string_max_buffer_size_dec];
 
-        size_t pos = (sizeof(str_temp) - 1U);
+        std::uint_fast32_t pos = (sizeof(str_temp) - 1U);
 
         if(t.is_zero() == true)
         {
@@ -1525,7 +1525,7 @@
 
         if(field_width != 0U)
         {
-          field_width = (std::min)(field_width, size_t(sizeof(str_temp) - 1U));
+          field_width = (std::min)(field_width, std::uint_fast32_t(sizeof(str_temp) - 1U));
 
           while(std::int_fast32_t(pos) > std::int_fast32_t((sizeof(str_temp) - 1U) - field_width))
           {
@@ -1547,7 +1547,7 @@
 
         char str_temp[wr_string_max_buffer_size_hex];
 
-        size_t pos = (sizeof(str_temp) - 1U);
+        std::uint_fast32_t pos = (sizeof(str_temp) - 1U);
 
         if(t.is_zero() == true)
         {
@@ -1613,7 +1613,7 @@
 
         if(field_width != 0U)
         {
-          field_width = (std::min)(field_width, size_t(sizeof(str_temp) - 1U));
+          field_width = (std::min)(field_width, std::uint_fast32_t(sizeof(str_temp) - 1U));
 
           while(std::int_fast32_t(pos) > std::int_fast32_t((sizeof(str_temp) - 1U) - field_width))
           {
@@ -1687,9 +1687,9 @@
       preincrement();
     }
 
-    WIDE_INTEGER_CONSTEXPR void eval_divide_by_single_limb(const limb_type   short_denominator,
-                                                           const size_t      u_offset,
-                                                                 uintwide_t* remainder)
+    WIDE_INTEGER_CONSTEXPR void eval_divide_by_single_limb(const limb_type          short_denominator,
+                                                           const std::uint_fast32_t u_offset,
+                                                                 uintwide_t*        remainder)
     {
       // The denominator has one single limb.
       // Use a one-dimensional division algorithm.
@@ -1701,13 +1701,13 @@
       for(std::int_fast32_t i = std::int_fast32_t((number_of_limbs - 1U) - u_offset); std::int_fast32_t(i) >= 0; --i)
       {
         long_numerator =
-            double_limb_type(values[size_t(i)])
+            double_limb_type(values[std::uint_fast32_t(i)])
           + ((long_numerator - double_limb_type(double_limb_type(short_denominator) * hi_part)) << std::numeric_limits<limb_type>::digits);
 
-        values[size_t(i)] =
+        values[std::uint_fast32_t(i)] =
           detail::make_lo<limb_type>(double_limb_type(long_numerator / short_denominator));
 
-        hi_part = values[size_t(i)];
+        hi_part = values[std::uint_fast32_t(i)];
       }
 
       if(remainder != nullptr)
@@ -1757,9 +1757,9 @@
       return a;
     }
 
-    static WIDE_INTEGER_CONSTEXPR std::int_fast8_t compare_ranges(const limb_type* a,
-                                                                  const limb_type* b,
-                                                                  const size_t     count)
+    static WIDE_INTEGER_CONSTEXPR std::int_fast8_t compare_ranges(const limb_type*         a,
+                                                                  const limb_type*         b,
+                                                                  const std::uint_fast32_t count)
     {
       std::int_fast8_t n_return = 0;
 
@@ -1831,15 +1831,15 @@
                 u.values.begin());
     }
 
-    static WIDE_INTEGER_CONSTEXPR limb_type eval_add_n(      limb_type* r,
-                                                       const limb_type* u,
-                                                       const limb_type* v,
-                                                       const size_t     count,
-                                                       const limb_type  carry_in = 0U)
+    static WIDE_INTEGER_CONSTEXPR limb_type eval_add_n(      limb_type*          r,
+                                                       const limb_type*          u,
+                                                       const limb_type*          v,
+                                                       const std::uint_fast32_t  count,
+                                                       const limb_type           carry_in = 0U)
     {
       std::uint_fast8_t carry_out = static_cast<std::uint_fast8_t>(carry_in);
 
-      for(size_t i = 0U; i < count; ++i)
+      for(std::uint_fast32_t i = 0U; i < count; ++i)
       {
         const double_limb_type uv_as_ularge = double_limb_type(double_limb_type(u[i]) + v[i]) + carry_out;
 
@@ -1851,15 +1851,15 @@
       return static_cast<limb_type>(carry_out);
     }
 
-    static WIDE_INTEGER_CONSTEXPR bool eval_subtract_n(      limb_type* r,
-                                                       const limb_type* u,
-                                                       const limb_type* v,
-                                                       const size_t     count,
-                                                       const bool       has_borrow_in = false)
+    static WIDE_INTEGER_CONSTEXPR bool eval_subtract_n(      limb_type*         r,
+                                                       const limb_type*         u,
+                                                       const limb_type*         v,
+                                                       const std::uint_fast32_t count,
+                                                       const bool               has_borrow_in = false)
     {
       std::uint_fast8_t has_borrow_out = (has_borrow_in ? 1U : 0U);
 
-      for(size_t i = 0U; i < count; ++i)
+      for(std::uint_fast32_t i = 0U; i < count; ++i)
       {
         const double_limb_type uv_as_ularge = double_limb_type(double_limb_type(u[i]) - v[i]) - has_borrow_out;
 
@@ -1873,10 +1873,10 @@
 
     template<const size_t RePhraseWidth2 = Width2,
              typename std::enable_if<(uintwide_t<RePhraseWidth2, LimbType, AllocatorType, IsSigned>::number_of_limbs == 4U)>::type const* = nullptr>
-    static WIDE_INTEGER_CONSTEXPR void eval_multiply_n_by_n_to_lo_part(      LimbType* r,
-                                                                       const LimbType* a,
-                                                                       const LimbType* b,
-                                                                       const size_t    count)
+    static WIDE_INTEGER_CONSTEXPR void eval_multiply_n_by_n_to_lo_part(      LimbType*          r,
+                                                                       const LimbType*          a,
+                                                                       const LimbType*          b,
+                                                                       const std::uint_fast32_t count)
     {
       static_cast<void>(count);
 
@@ -1979,10 +1979,10 @@
     #if defined(WIDE_INTEGER_HAS_MUL_8_BY_8_UNROLL)
     template<const size_t RePhraseWidth2 = Width2,
              typename std::enable_if<(uintwide_t<RePhraseWidth2, LimbType, AllocatorType, IsSigned>::number_of_limbs == 8U)>::type const* = nullptr>
-    static WIDE_INTEGER_CONSTEXPR void eval_multiply_n_by_n_to_lo_part(      LimbType* r,
-                                                                       const LimbType* a,
-                                                                       const LimbType* b,
-                                                                       const size_t    count)
+    static WIDE_INTEGER_CONSTEXPR void eval_multiply_n_by_n_to_lo_part(      LimbType*          r,
+                                                                       const LimbType*          a,
+                                                                       const LimbType*          b,
+                                                                       const std::uint_fast32_t count)
     {
       static_cast<void>(count);
 
@@ -2114,11 +2114,13 @@
                 + detail::make_hi<local_limb_type>(a2b3)
                 ;
 
-        r[7U] = local_double_limb_type
-                (
-                  detail::make_hi<local_limb_type>(rd6)
+        r[7U] = local_limb_type
+                (local_double_limb_type
+                  (
+                    detail::make_hi<local_limb_type>(rd6)
+                  )
+                  + detail::make_hi<local_limb_type>(a3b3)
                 )
-                + detail::make_hi<local_limb_type>(a3b3)
                 ;
       }
       else
@@ -2223,25 +2225,28 @@
                 + detail::make_hi<local_limb_type>(a0b5)
                 ;
 
-        r[7U] = local_double_limb_type
+        r[7U] = local_limb_type
                 (
-                  detail::make_hi<local_limb_type>(rd6)
+                  local_double_limb_type
+                  (
+                    detail::make_hi<local_limb_type>(rd6)
+                  )
+                  + static_cast<local_limb_type>    (a[7U] * local_double_limb_type(b[0U]))
+                  + static_cast<local_limb_type>    (a[6U] * local_double_limb_type(b[1U]))
+                  + static_cast<local_limb_type>    (a[5U] * local_double_limb_type(b[2U]))
+                  + static_cast<local_limb_type>    (a[4U] * local_double_limb_type(b[3U]))
+                  + static_cast<local_limb_type>    (a[3U] * local_double_limb_type(b[4U]))
+                  + static_cast<local_limb_type>    (a[2U] * local_double_limb_type(b[5U]))
+                  + static_cast<local_limb_type>    (a[1U] * local_double_limb_type(b[6U]))
+                  + static_cast<local_limb_type>    (a[0U] * local_double_limb_type(b[7U]))
+                  + detail::make_hi<local_limb_type>(a6b0)
+                  + detail::make_hi<local_limb_type>(a5b1)
+                  + detail::make_hi<local_limb_type>(a4b2)
+                  + detail::make_hi<local_limb_type>(a3b3)
+                  + detail::make_hi<local_limb_type>(a2b4)
+                  + detail::make_hi<local_limb_type>(a1b5)
+                  + detail::make_hi<local_limb_type>(a0b6)
                 )
-                + static_cast<local_limb_type>    (a[7U] * local_double_limb_type(b[0U]))
-                + static_cast<local_limb_type>    (a[6U] * local_double_limb_type(b[1U]))
-                + static_cast<local_limb_type>    (a[5U] * local_double_limb_type(b[2U]))
-                + static_cast<local_limb_type>    (a[4U] * local_double_limb_type(b[3U]))
-                + static_cast<local_limb_type>    (a[3U] * local_double_limb_type(b[4U]))
-                + static_cast<local_limb_type>    (a[2U] * local_double_limb_type(b[5U]))
-                + static_cast<local_limb_type>    (a[1U] * local_double_limb_type(b[6U]))
-                + static_cast<local_limb_type>    (a[0U] * local_double_limb_type(b[7U]))
-                + detail::make_hi<local_limb_type>(a6b0)
-                + detail::make_hi<local_limb_type>(a5b1)
-                + detail::make_hi<local_limb_type>(a4b2)
-                + detail::make_hi<local_limb_type>(a3b3)
-                + detail::make_hi<local_limb_type>(a2b4)
-                + detail::make_hi<local_limb_type>(a1b5)
-                + detail::make_hi<local_limb_type>(a0b6)
                 ;
       }
 
@@ -2261,23 +2266,23 @@
                                       && (uintwide_t<RePhraseWidth2, LimbType, AllocatorType>::number_of_limbs != 8U)
     #endif
                                      )>::type const* = nullptr>
-    static WIDE_INTEGER_CONSTEXPR void eval_multiply_n_by_n_to_lo_part(      LimbType* r,
-                                                                       const LimbType* a,
-                                                                       const LimbType* b,
-                                                                       const size_t    count)
+    static WIDE_INTEGER_CONSTEXPR void eval_multiply_n_by_n_to_lo_part(      LimbType*          r,
+                                                                       const LimbType*          a,
+                                                                       const LimbType*          b,
+                                                                       const std::uint_fast32_t count)
     {
       using local_limb_type        = typename uintwide_t<RePhraseWidth2, LimbType, AllocatorType>::limb_type;
       using local_double_limb_type = typename uintwide_t<RePhraseWidth2, LimbType, AllocatorType>::double_limb_type;
 
       std::fill_n(r, count, local_limb_type(0U));
 
-      for(size_t i = 0U; i < count; ++i)
+      for(std::uint_fast32_t i = 0U; i < count; ++i)
       {
         if(a[i] != local_limb_type(0U))
         {
           local_double_limb_type carry = 0U;
 
-          for(size_t j = 0U; j < (count - i); ++j)
+          for(std::uint_fast32_t j = 0U; j < (count - i); ++j)
           {
             carry += local_double_limb_type(local_double_limb_type(a[i]) * b[j]);
             carry += r[i + j];
@@ -2289,18 +2294,18 @@
       }
     }
 
-    static WIDE_INTEGER_CONSTEXPR void eval_multiply_n_by_n_to_2n(      limb_type* r,
-                                                                  const limb_type* a,
-                                                                  const limb_type* b,
-                                                                  const size_t     count)
+    static WIDE_INTEGER_CONSTEXPR void eval_multiply_n_by_n_to_2n(      limb_type*         r,
+                                                                  const limb_type*         a,
+                                                                  const limb_type*         b,
+                                                                  const std::uint_fast32_t count)
     {
       std::fill_n(r, (count * 2U), limb_type(0U));
 
-      for(size_t i = 0U; i < count; ++i)
+      for(std::uint_fast32_t i = 0U; i < count; ++i)
       {
         if(a[i] != limb_type(0U))
         {
-          size_t j = 0U;
+          std::uint_fast32_t j = 0U;
 
           double_limb_type carry = 0U;
 
@@ -2318,10 +2323,10 @@
       }
     }
 
-    static WIDE_INTEGER_CONSTEXPR limb_type eval_multiply_1d(      limb_type* r,
-                                                             const limb_type* a,
-                                                             const limb_type  b,
-                                                             const size_t     count)
+    static WIDE_INTEGER_CONSTEXPR limb_type eval_multiply_1d(      limb_type*         r,
+                                                             const limb_type*         a,
+                                                             const limb_type          b,
+                                                             const std::uint_fast32_t count)
     {
       double_limb_type carry = 0U;
 
@@ -2331,7 +2336,7 @@
       }
       else
       {
-        for(size_t i = 0U ; i < count; ++i)
+        for(std::uint_fast32_t i = 0U ; i < count; ++i)
         {
           carry += double_limb_type(double_limb_type(a[i]) * b);
 
@@ -2343,9 +2348,9 @@
       return limb_type(carry);
     }
 
-    static void eval_multiply_kara_propagate_carry(limb_type* t, const size_t n, const limb_type carry)
+    static void eval_multiply_kara_propagate_carry(limb_type* t, const std::uint_fast32_t n, const limb_type carry)
     {
-      size_t i = 0U;
+      std::uint_fast32_t i = 0U;
 
       limb_type carry_out = carry;
 
@@ -2361,9 +2366,9 @@
       }
     }
 
-    static void eval_multiply_kara_propagate_borrow(limb_type* t, const size_t n, const bool has_borrow)
+    static void eval_multiply_kara_propagate_borrow(limb_type* t, const std::uint_fast32_t n, const bool has_borrow)
     {
-      size_t i = 0U;
+      std::uint_fast32_t i = 0U;
 
       bool has_borrow_out = has_borrow;
 
@@ -2384,11 +2389,11 @@
       }
     }
 
-    static void eval_multiply_kara_n_by_n_to_2n(      limb_type* r,
-                                                const limb_type* a,
-                                                const limb_type* b,
-                                                const size_t     n,
-                                                      limb_type* t)
+    static void eval_multiply_kara_n_by_n_to_2n(      limb_type*         r,
+                                                const limb_type*         a,
+                                                const limb_type*         b,
+                                                const std::uint_fast32_t n,
+                                                      limb_type*         t)
     {
       if(n <= 48U)
       {
@@ -2431,7 +2436,7 @@
         // Check the borrow signs. If a1-a0 and b0-b1 have the same signs,
         // then add |a1-a0|*|b0-b1| to r1, otherwise subtract it from r1.
 
-        const size_t  nh = n / 2U;
+        const std::uint_fast32_t  nh = n / 2U;
 
         const limb_type* a0 = a + 0U;
         const limb_type* a1 = a + nh;
@@ -2515,11 +2520,11 @@
     }
 
     #if 0
-    static void eval_multiply_toomcook3(      limb_type* r,
-                                        const limb_type* u,
-                                        const limb_type* v,
-                                        const size_t     n,
-                                              limb_type* t)
+    static void eval_multiply_toomcook3(      limb_type*         r,
+                                        const limb_type*         u,
+                                        const limb_type*         v,
+                                        const std::uint_fast32_t n,
+                                              limb_type*         t)
     {
       if(n == 3072U)
       {
@@ -2540,11 +2545,11 @@
       }
     }
 
-    static void eval_multiply_toomcook4(      limb_type* r,
-                                        const limb_type* u,
-                                        const limb_type* v,
-                                        const size_t     n,
-                                              limb_type* t)
+    static void eval_multiply_toomcook4(      limb_type*         r,
+                                        const limb_type*         u,
+                                        const limb_type*         v,
+                                        const std::uint_fast32_t n,
+                                              limb_type*         t)
     {
       if(n == 2048U)
       {
@@ -2602,7 +2607,7 @@
       // Seminumerical Algorithms", Addison-Wesley (1998),
       // Section 4.3.1 Algorithm D and Exercise 16.
 
-      using local_uint_index_type = size_t;
+      using local_uint_index_type = std::uint_fast32_t;
 
       local_uint_index_type u_offset = local_uint_index_type(0U);
       local_uint_index_type v_offset = local_uint_index_type(0U);
@@ -2794,11 +2799,11 @@
               for(std::int_fast32_t rl = std::int_fast32_t(n - 1U), ul = std::int_fast32_t(number_of_limbs - (v_offset + 1U)); rl >= 0; --rl, --ul)
               {
                 const double_limb_type t =
-                  double_limb_type(  uu[size_t(ul)]
+                  double_limb_type(  uu[std::uint_fast32_t(ul)]
                                    + double_limb_type(double_limb_type(previous_u) << std::numeric_limits<limb_type>::digits));
 
-                remainder->values[size_t(rl)] = limb_type(double_limb_type(t / d));
-                previous_u                                = limb_type(double_limb_type(t - double_limb_type(double_limb_type(d) * remainder->values[size_t(rl)])));
+                remainder->values[std::uint_fast32_t(rl)] = limb_type(double_limb_type(t / d));
+                previous_u                                = limb_type(double_limb_type(t - double_limb_type(double_limb_type(d) * remainder->values[std::uint_fast32_t(rl)])));
               }
             }
 
@@ -2813,8 +2818,8 @@
       }
     }
 
-    WIDE_INTEGER_CONSTEXPR void shl(const size_t offset,
-                                    const size_t left_shift_amount)
+    WIDE_INTEGER_CONSTEXPR void shl(const std::uint_fast32_t offset,
+                                    const std::uint_fast16_t left_shift_amount)
     {
       if(offset > 0U)
       {
@@ -2825,25 +2830,25 @@
         std::fill(values.begin(), values.begin() + offset, limb_type(0U));
       }
 
-      using local_integral_type = size_t;
+      using local_integral_type = std::uint_fast32_t;
 
       if(left_shift_amount != local_integral_type(0U))
       {
         limb_type part_from_previous_value = limb_type(0U);
 
-        for(size_t i = offset; i < number_of_limbs; ++i)
+        for(std::uint_fast32_t i = offset; i < number_of_limbs; ++i)
         {
           const limb_type t = values[i];
 
           values[i] = (t << local_integral_type(left_shift_amount)) | part_from_previous_value;
 
-          part_from_previous_value = limb_type(t >> local_integral_type(size_t(std::numeric_limits<limb_type>::digits - left_shift_amount)));
+          part_from_previous_value = limb_type(t >> local_integral_type(std::uint_fast32_t(std::numeric_limits<limb_type>::digits - left_shift_amount)));
         }
       }
     }
 
-    WIDE_INTEGER_CONSTEXPR void shr(const size_t offset,
-                                    const size_t right_shift_amount)
+    WIDE_INTEGER_CONSTEXPR void shr(const std::uint_fast32_t offset,
+                                    const std::uint_fast16_t right_shift_amount)
     {
       if(offset > 0U)
       {
@@ -2856,7 +2861,7 @@
                   (is_neg(*this) == false) ? limb_type(0U) : limb_type((std::numeric_limits<limb_type>::max)()));
       }
 
-      using local_integral_type = size_t;
+      using local_integral_type = std::uint_fast32_t;
 
       if(right_shift_amount != local_integral_type(0U))
       {
@@ -2867,11 +2872,11 @@
 
         for(std::int_fast32_t i = std::int_fast32_t((number_of_limbs - 1U) - offset); i >= 0; --i)
         {
-          const limb_type t = values[size_t(i)];
+          const limb_type t = values[std::uint_fast32_t(i)];
 
-          values[size_t(i)] = (t >> local_integral_type(right_shift_amount)) | part_from_previous_value;
+          values[std::uint_fast32_t(i)] = (t >> local_integral_type(right_shift_amount)) | part_from_previous_value;
 
-          part_from_previous_value = limb_type(t << local_integral_type(size_t(std::numeric_limits<limb_type>::digits - right_shift_amount)));
+          part_from_previous_value = limb_type(t << local_integral_type(std::uint_fast32_t(std::numeric_limits<limb_type>::digits - right_shift_amount)));
         }
       }
     }
@@ -2881,11 +2886,11 @@
     {
       std::fill(values.begin(), values.end(), limb_type(0U));
 
-      const size_t str_length = detail::strlen_unsafe(str_input);
+      const std::uint_fast32_t str_length = detail::strlen_unsafe(str_input);
 
       std::uint_fast8_t base = 10U;
 
-      size_t pos = 0U;
+      std::uint_fast32_t pos = 0U;
 
       // Detect: Is there a plus sign?
       // And if there is a plus sign, skip over the plus sign.
@@ -2995,7 +3000,7 @@
 
     WIDE_INTEGER_CONSTEXPR void bitwise_not()
     {
-      for(size_t i = 0U; i < number_of_limbs; ++i)
+      for(std::uint_fast32_t i = 0U; i < number_of_limbs; ++i)
       {
         values[i] = limb_type(~values[i]);
       }
@@ -3004,14 +3009,14 @@
     WIDE_INTEGER_CONSTEXPR void preincrement()
     {
       // Implement pre-increment.
-      size_t i = 0U;
+      std::uint_fast32_t i = 0U;
 
-      for( ; (i < size_t(values.size() - 1U)) && (++values[i] == limb_type(0U)); ++i)
+      for( ; (i < std::uint_fast32_t(values.size() - 1U)) && (++values[i] == limb_type(0U)); ++i)
       {
         ;
       }
 
-      if(i == size_t(values.size() - 1U))
+      if(i == std::uint_fast32_t(values.size() - 1U))
       {
         ++values[i];
       }
@@ -3020,14 +3025,14 @@
     WIDE_INTEGER_CONSTEXPR void predecrement()
     {
       // Implement pre-decrement.
-      size_t i = 0U;
+      std::uint_fast32_t i = 0U;
 
-      for( ; (i < size_t(values.size() - 1U)) && (values[i]-- == limb_type(0U)); ++i)
+      for( ; (i < std::uint_fast32_t(values.size() - 1U)) && (values[i]-- == limb_type(0U)); ++i)
       {
         ;
       }
 
-      if(i == size_t(values.size() - 1U))
+      if(i == std::uint_fast32_t(values.size() - 1U))
       {
         --values[i];
       }
@@ -3046,7 +3051,6 @@
   using uint16384_t = uintwide_t<16384U, std::uint32_t>;
   using uint32768_t = uintwide_t<32768U, std::uint32_t>;
 
-  // Define some convenient signed wide integer types.
   using  int64_t    = uintwide_t<   64U, std::uint16_t, void, true>;
   using  int128_t   = uintwide_t<  128U, std::uint32_t, void, true>;
   using  int256_t   = uintwide_t<  256U, std::uint32_t, void, true>;
@@ -3356,8 +3360,8 @@
     else if((my_flags & std::ios::hex) == std::ios::hex) { base_rep = 16U; }
     else                                                 { base_rep = 10U; }
 
-    const size_t field_width = size_t(out.width());
-    const char   fill_char   = out.fill();
+    const std::uint_fast32_t field_width = std::uint_fast32_t(out.width());
+    const char               fill_char   = out.fill();
 
     using local_wide_integer_type = uintwide_t<Width2, LimbType, AllocatorType, IsSigned>;
 
@@ -3421,7 +3425,7 @@
   namespace detail {
 
   template<typename UnsignedIntegralType>
-  inline WIDE_INTEGER_CONSTEXPR size_t lsb_helper(const UnsignedIntegralType& x)
+  inline WIDE_INTEGER_CONSTEXPR std::uint_fast32_t lsb_helper(const UnsignedIntegralType& x)
   {
     // Compile-time checks.
     static_assert((   (std::is_fundamental<UnsignedIntegralType>::value == true)
@@ -3429,7 +3433,7 @@
                    && (std::is_unsigned<UnsignedIntegralType>::value    == true)),
                    "Error: Please check the characteristics of UnsignedIntegralType");
 
-    size_t result = 0U;
+    std::uint_fast32_t result = 0U;
 
     UnsignedIntegralType mask(x);
 
@@ -3439,7 +3443,7 @@
     // Naive and basic LSB search.
     // TBD: This could be improved with a binary search
     // on the lowest bit position of the fundamental type.
-    while((size_t(mask) & 1U) == 0U)
+    while((std::uint_fast32_t(mask) & 1U) == 0U)
     {
       mask >>= 1U;
 
@@ -3450,7 +3454,7 @@
   }
 
   template<typename UnsignedIntegralType>
-  inline WIDE_INTEGER_CONSTEXPR size_t msb_helper(const UnsignedIntegralType& u)
+  inline WIDE_INTEGER_CONSTEXPR std::uint_fast32_t msb_helper(const UnsignedIntegralType& u)
   {
     // Compile-time checks.
     static_assert((   (std::is_fundamental<UnsignedIntegralType>::value == true)
@@ -3473,13 +3477,13 @@
       }
     }
 
-    return size_t((std::max)(std::int_fast32_t(0), i));
+    return std::uint_fast32_t((std::max)(std::int_fast32_t(0), i));
   }
 
   template<>
-  inline WIDE_INTEGER_CONSTEXPR size_t msb_helper<std::uint32_t>(const std::uint32_t& u)
+  inline WIDE_INTEGER_CONSTEXPR std::uint_fast32_t msb_helper<std::uint32_t>(const std::uint32_t& u)
   {
-    size_t r(0);
+    std::uint_fast32_t r(0);
 
     std::uint32_t x = u;
 
@@ -3490,13 +3494,13 @@
     if((x & UINT32_C(0x0000000C)) != UINT32_C(0)) { x >>=  2U; r |= UINT8_C( 2); }
     if((x & UINT32_C(0x00000002)) != UINT32_C(0)) { x >>=  1U; r |= UINT8_C( 1); }
 
-    return size_t(r);
+    return std::uint_fast32_t(r);
   }
 
   template<>
-  inline WIDE_INTEGER_CONSTEXPR size_t msb_helper<std::uint16_t>(const std::uint16_t& u)
+  inline WIDE_INTEGER_CONSTEXPR std::uint_fast32_t msb_helper<std::uint16_t>(const std::uint16_t& u)
   {
-    size_t r(0);
+    std::uint_fast32_t r(0);
 
     std::uint16_t x = u;
 
@@ -3506,13 +3510,13 @@
     if((x & UINT16_C(0x000C)) != UINT16_C(0)) { x >>= 2U; r |= UINT8_C(2); }
     if((x & UINT16_C(0x0002)) != UINT16_C(0)) { x >>= 1U; r |= UINT8_C(1); }
 
-    return size_t(r);
+    return std::uint_fast32_t(r);
   }
 
   template<>
-  inline WIDE_INTEGER_CONSTEXPR size_t msb_helper<std::uint8_t>(const std::uint8_t& u)
+  inline WIDE_INTEGER_CONSTEXPR std::uint_fast32_t msb_helper<std::uint8_t>(const std::uint8_t& u)
   {
-    size_t r(0);
+    std::uint_fast32_t r(0);
 
     std::uint8_t x = u;
 
@@ -3521,12 +3525,12 @@
     if((x & UINT8_C(0x0C)) != UINT8_C(0)) { x >>= 2U; r |= UINT8_C(2); }
     if((x & UINT8_C(0x02)) != UINT8_C(0)) { x >>= 1U; r |= UINT8_C(1); }
 
-    return size_t(r);
+    return std::uint_fast32_t(r);
   }
 
   }
 
-  template<const size_t Width2,
+  template<const std::uint32_t Width2,
            typename LimbType,
            typename AllocatorType,
            const bool IsSigned>
@@ -3548,7 +3552,7 @@
            typename LimbType,
            typename AllocatorType,
            const bool IsSigned>
-  inline WIDE_INTEGER_CONSTEXPR size_t lsb(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& x)
+  inline WIDE_INTEGER_CONSTEXPR std::uint_fast32_t lsb(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& x)
   {
     // Calculate the position of the least-significant bit.
     // Use a linear search starting from the least significant limbs.
@@ -3557,16 +3561,16 @@
     using local_const_iterator_type = typename local_wide_integer_type::const_iterator;
     using local_value_type          = typename local_wide_integer_type::limb_type;
 
-    size_t bpos = 0U;
+    std::uint_fast32_t bpos = 0U;
 
     for(local_const_iterator_type it = x.crepresentation().cbegin(); it != x.crepresentation().cend(); ++it)
     {
       if((*it & (std::numeric_limits<local_value_type>::max)()) != 0U)
       {
-        const size_t offset = size_t(it - x.crepresentation().cbegin());
+        const std::uint_fast32_t offset = std::uint_fast32_t(it - x.crepresentation().cbegin());
 
         bpos =   detail::lsb_helper(*it)
-               + size_t(size_t(std::numeric_limits<local_value_type>::digits) * offset);
+               + std::uint_fast32_t(std::uint_fast32_t(std::numeric_limits<local_value_type>::digits) * offset);
 
         break;
       }
@@ -3579,7 +3583,7 @@
            typename LimbType,
            typename AllocatorType,
            const bool IsSigned>
-  WIDE_INTEGER_CONSTEXPR size_t msb(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& x)
+  WIDE_INTEGER_CONSTEXPR std::uint_fast32_t msb(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& x)
   {
     // Calculate the position of the most-significant bit.
     // Use a linear search starting from the most significant limbs.
@@ -3588,16 +3592,16 @@
     using local_const_reverse_iterator_type = typename local_wide_integer_type::const_reverse_iterator;
     using local_value_type                  = typename local_wide_integer_type::limb_type;
 
-    size_t bpos = 0U;
+    std::uint_fast32_t bpos = 0U;
 
     for(local_const_reverse_iterator_type ri = x.crepresentation().crbegin(); ri != x.crepresentation().crend(); ++ri)
     {
       if((*ri & (std::numeric_limits<local_value_type>::max)()) != 0U)
       {
-        const size_t offset = size_t((x.crepresentation().crend() - 1U) - ri);
+        const std::uint_fast32_t offset = std::uint_fast32_t((x.crepresentation().crend() - 1U) - ri);
 
         bpos =   detail::msb_helper(*ri)
-               + size_t(size_t(std::numeric_limits<local_value_type>::digits) * offset);
+               + std::uint_fast32_t(std::uint_fast32_t(std::numeric_limits<local_value_type>::digits) * offset);
 
         break;
       }
@@ -3606,7 +3610,7 @@
     return bpos;
   }
 
-  template<const size_t Width2,
+  template<const std::uint32_t Width2,
            typename LimbType,
            typename AllocatorType,
            const bool IsSigned>
@@ -3626,13 +3630,13 @@
     {
       // Obtain the initial guess via algorithms
       // involving the position of the msb.
-      const size_t msb_pos = msb(m);
+      const std::uint_fast32_t msb_pos = msb(m);
 
       // Obtain the initial value.
-      const size_t left_shift_amount =
-        ((size_t(msb_pos % 2U) == 0U)
-          ? 1U + size_t((msb_pos + 0U) / 2U)
-          : 1U + size_t((msb_pos + 1U) / 2U));
+      const std::uint_fast32_t left_shift_amount =
+        ((std::uint_fast32_t(msb_pos % 2U) == 0U)
+          ? 1U + std::uint_fast32_t((msb_pos + 0U) / 2U)
+          : 1U + std::uint_fast32_t((msb_pos + 1U) / 2U));
 
       local_wide_integer_type u(local_wide_integer_type(std::uint_fast8_t(1U)) << left_shift_amount);
 
@@ -3641,7 +3645,7 @@
       // in R.P. Brent and Paul Zimmermann, "Modern Computer Arithmetic",
       // Cambridge University Press, 2011.
 
-      for(size_t i = 0U; i < 64U; ++i)
+      for(std::uint_fast32_t i = 0U; i < 64U; ++i)
       {
         s = u;
 
@@ -3677,15 +3681,15 @@
     {
       // Obtain the initial guess via algorithms
       // involving the position of the msb.
-      const size_t msb_pos = msb(m);
+      const std::uint_fast32_t msb_pos = msb(m);
 
       // Obtain the initial value.
-      const size_t msb_pos_mod_3 = msb_pos % 3;
+      const std::uint_fast32_t msb_pos_mod_3 = msb_pos % 3;
 
-      const size_t left_shift_amount =
+      const std::uint_fast32_t left_shift_amount =
         ((msb_pos_mod_3 == 0U)
-          ? 1U + size_t((msb_pos +                  0U ) / 3U)
-          : 1U + size_t((msb_pos + (3U - msb_pos_mod_3)) / 3U));
+          ? 1U + std::uint_fast32_t((msb_pos +                  0U ) / 3U)
+          : 1U + std::uint_fast32_t((msb_pos + (3U - msb_pos_mod_3)) / 3U));
 
       local_wide_integer_type u(local_wide_integer_type(std::uint_fast8_t(1U)) << left_shift_amount);
 
@@ -3694,15 +3698,15 @@
       // in R.P. Brent and Paul Zimmermann, "Modern Computer Arithmetic",
       // Cambridge University Press, 2011.
 
-      const size_t three_minus_one(3U - 1U);
+      const std::uint_fast32_t three_minus_one(3U - 1U);
 
-      for(size_t i = 0U; i < 64U; ++i)
+      for(std::uint_fast32_t i = 0U; i < 64U; ++i)
       {
         s = u;
 
         local_wide_integer_type m_over_s_pow_3_minus_one = m;
 
-        for(size_t j = 0U; j < 3U - 1U; ++j)
+        for(std::uint_fast32_t j = 0U; j < 3U - 1U; ++j)
         {
           // Use a loop here to divide by s^(3 - 1) because
           // without a loop, s^(3 - 1) is likely to overflow.
@@ -3753,15 +3757,15 @@
       {
         // Obtain the initial guess via algorithms
         // involving the position of the msb.
-        const size_t msb_pos = msb(m);
+        const std::uint_fast32_t msb_pos = msb(m);
 
         // Obtain the initial value.
-        const size_t msb_pos_mod_k = msb_pos % k;
+        const std::uint_fast32_t msb_pos_mod_k = msb_pos % k;
 
-        const size_t left_shift_amount =
+        const std::uint_fast32_t left_shift_amount =
           ((msb_pos_mod_k == 0U)
-            ? 1U + size_t((msb_pos +                 0U ) / k)
-            : 1U + size_t((msb_pos + (k - msb_pos_mod_k)) / k));
+            ? 1U + std::uint_fast32_t((msb_pos +                 0U ) / k)
+            : 1U + std::uint_fast32_t((msb_pos + (k - msb_pos_mod_k)) / k));
 
         local_wide_integer_type u(local_wide_integer_type(std::uint_fast8_t(1U)) << left_shift_amount);
 
@@ -3770,15 +3774,15 @@
         // in R.P. Brent and Paul Zimmermann, "Modern Computer Arithmetic",
         // Cambridge University Press, 2011.
 
-        const size_t k_minus_one(k - 1U);
+        const std::uint_fast32_t k_minus_one(k - 1U);
 
-        for(size_t i = 0U; i < 64U; ++i)
+        for(std::uint_fast32_t i = 0U; i < 64U; ++i)
         {
           s = u;
 
           local_wide_integer_type m_over_s_pow_k_minus_one = m;
 
-          for(size_t j = 0U; j < k - 1U; ++j)
+          for(std::uint_fast32_t j = 0U; j < k - 1U; ++j)
           {
             // Use a loop here to divide by s^(k - 1) because
             // without a loop, s^(k - 1) is likely to overflow.
@@ -3986,7 +3990,7 @@
            typename AllocatorType,
            const bool IsSigned>
   WIDE_INTEGER_CONSTEXPR uintwide_t<Width2, LimbType, AllocatorType, IsSigned> gcd(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& a,
-                                                                                   const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& b)
+                                                                                    const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& b)
   {
     // This implementation of GCD is an adaptation
     // of existing code from Boost.Multiprecision.
@@ -4022,10 +4026,10 @@
       // Let shift := lg K, where K is the greatest
       // power of 2 dividing both u and v.
 
-      const size_t u_shift = lsb(u);
-      const size_t v_shift = lsb(v);
+      const std::uint_fast32_t u_shift = lsb(u);
+      const std::uint_fast32_t v_shift = lsb(v);
 
-      const size_t left_shift_amount = (std::min)(u_shift, v_shift);
+      const std::uint_fast32_t left_shift_amount = (std::min)(u_shift, v_shift);
 
       u >>= u_shift;
       v >>= v_shift;
@@ -4241,7 +4245,7 @@
 
       auto it = result.representation().begin();
 
-      size_t j = 0U;
+      std::uint_fast32_t j = 0U;
 
       while(it < result.representation().end())
       {
@@ -4305,7 +4309,7 @@
            typename AllocatorType,
            const bool IsSigned>
   bool miller_rabin(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& n,
-                    const size_t                            number_of_trials,
+                    const std::uint_fast32_t                            number_of_trials,
                     DistributionType&                                   distribution,
                     GeneratorType&                                      generator)
   {
@@ -4450,7 +4454,7 @@
       }
     }
 
-    const size_t k = lsb(nm1);
+    const std::uint_fast32_t k = lsb(nm1);
 
     const local_wide_integer_type q = nm1 >> k;
 
@@ -4460,7 +4464,7 @@
 
     bool is_probably_prime = true;
 
-    size_t i = 0U;
+    std::uint_fast32_t i = 0U;
 
     local_wide_integer_type x;
     local_wide_integer_type y;
@@ -4471,7 +4475,7 @@
       x = distribution(generator, params);
       y = powm(x, q, n);
 
-      size_t j = 0U;
+      std::uint_fast32_t j = 0U;
 
       while(y != nm1)
       {

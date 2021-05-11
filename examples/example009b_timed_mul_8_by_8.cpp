@@ -28,8 +28,7 @@ namespace
     using local_uint_type = typename std::iterator_traits<UnsignedIntegralIteratorType>::value_type;
 
     using distribution_type =
-      math::wide_integer::uniform_int_distribution<std::numeric_limits<local_uint_type>::digits,
-                                                   typename local_uint_type::limb_type>;
+      math::wide_integer::uniform_int_distribution<std::numeric_limits<local_uint_type>::digits, typename local_uint_type::limb_type>;
 
     distribution_type distribution;
 
