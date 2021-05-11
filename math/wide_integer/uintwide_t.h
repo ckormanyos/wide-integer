@@ -974,8 +974,8 @@
           {
             const local_unsigned_integral_type u =
               ((typename representation_type::size_type(i) < values.size())
-                ? local_unsigned_integral_type(local_unsigned_integral_type(values[i]) << (std::numeric_limits<limb_type>::digits * int(i)))
-                : 0U);
+                ? local_unsigned_integral_type(local_unsigned_integral_type(values[i]) << unsigned(std::numeric_limits<limb_type>::digits * int(i)))
+                : local_unsigned_integral_type(0U));
 
             cast_result |= u;
           }
@@ -4251,7 +4251,7 @@
 
       generator_result_type value = generator_result_type();
 
-      auto it = result.representation().begin();
+      typename result_type::iterator it = result.representation().begin();
 
       std::uint_fast32_t j = 0U;
 
@@ -4262,9 +4262,13 @@
           value = input_generator();
         }
 
-        const std::uint8_t next_byte = std::uint8_t(value >> ((j % digits_gtor_ratio) * 8U));
+        const std::uint8_t next_byte = std::uint8_t(value >> unsigned((j % digits_gtor_ratio) * 8U));
 
-        *it |= (local_limb_type(next_byte) << ((j % digits_limb_ratio) * 8U));
+        *it =
+          static_cast<typename result_type::limb_type>
+          (
+            *it | local_limb_type(local_limb_type(next_byte) << unsigned((j % digits_limb_ratio) * 8U))
+          );
 
         ++j;
 
@@ -4277,7 +4281,8 @@
       if(   (input_params.get_a() != (std::numeric_limits<result_type>::min)())
          || (input_params.get_b() != (std::numeric_limits<result_type>::max)()))
       {
-        // r = {[input_generator() % ((b - a) + 1)] + a}
+        // Note that this restricts the range r to:
+        //   r = {[input_generator() % ((b - a) + 1)] + a}
 
         result_type range(input_params.get_b() - input_params.get_a());
         ++range;

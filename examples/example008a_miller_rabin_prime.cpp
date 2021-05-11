@@ -18,7 +18,7 @@
 #pragma GCC diagnostic ignored "-Wconversion"
 #endif
 
-#if defined(__clang__)
+#if defined(__clang__) && !defined(__APPLE__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-copy"
 #endif
