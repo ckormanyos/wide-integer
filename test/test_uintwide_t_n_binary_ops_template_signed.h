@@ -306,7 +306,7 @@
       a_native_signed.resize(size());
       b_native_signed.resize(size());
 
-      std::mt19937_64 eng64(std::clock());
+      std::mt19937_64 eng64(static_cast<typename std::mt19937_64::result_type>(std::clock()));
 
       std::uniform_int_distribution<std::uint64_t> dst_u64(UINT64_C(1), UINT64_C(0xFFFFFFFFFFFFFFFF));
 
@@ -515,7 +515,7 @@
         [&test_lock, &result_is_ok, this](std::size_t i)
         {
           while(test_lock.test_and_set()) { ; }
-          const std::uint32_t u_shr = my_distrib_0_to_63(my_eng);
+          const std::uint32_t u_shr = static_cast<std::uint32_t>(my_distrib_0_to_63(my_eng));
           test_lock.clear();
 
           const native_sint_type c_native_signed = a_native_signed[i] >> u_shr;
