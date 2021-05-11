@@ -73,8 +73,8 @@
 
   namespace detail {
 
-  using size_t    = std::uint32_t;
-  using ptrdiff_t = std::int32_t;
+  using size_t    = std::uint_fast32_t;
+  using ptrdiff_t =  std::int_fast32_t;
 
   }
 
@@ -375,7 +375,7 @@
                                                   && (std::is_unsigned   <UnsignedShortType>::value == true)), UnsignedShortType>::type
   gcd(const UnsignedShortType& u, const UnsignedShortType& v);
 
-  template<const math::wide_integer::size_t Width2,
+  template<const size_t Width2,
            typename LimbType = std::uint32_t,
            typename AllocatorType = void,
            const bool IsSigned = false>
@@ -819,7 +819,7 @@
                                         && (std::numeric_limits<UnsignedIntegralType>::digits > std::numeric_limits<limb_type>::digits))>::type* = nullptr)
     {
       size_t right_shift_amount_v = 0U;
-      std::uint_fast8_t  index_u              = 0U;
+      std::uint_fast8_t  index_u  = 0U;
 
       for( ; (   (index_u < values.size())
               && (right_shift_amount_v < size_t(std::numeric_limits<UnsignedIntegralType>::digits)));
@@ -1220,8 +1220,8 @@
       }
       else
       {
-        const size_t offset            =                    size_t(n) / size_t(std::numeric_limits<limb_type>::digits);
-        const std::uint_fast16_t left_shift_amount = std::uint_fast16_t(size_t(n) % size_t(std::numeric_limits<limb_type>::digits));
+        const size_t offset            = size_t(n) / size_t(std::numeric_limits<limb_type>::digits);
+        const size_t left_shift_amount = size_t(n) % size_t(std::numeric_limits<limb_type>::digits);
 
         shl(offset, left_shift_amount);
       }
@@ -1246,8 +1246,8 @@
       }
       else
       {
-        const size_t offset            =                    size_t(n) / size_t(std::numeric_limits<limb_type>::digits);
-        const std::uint_fast16_t left_shift_amount = std::uint_fast16_t(size_t(n) % size_t(std::numeric_limits<limb_type>::digits));
+        const size_t offset            = size_t(n) / size_t(std::numeric_limits<limb_type>::digits);
+        const size_t left_shift_amount = size_t(n) % size_t(std::numeric_limits<limb_type>::digits);
 
         shl(offset, left_shift_amount);
       }
@@ -1285,8 +1285,8 @@
       }
       else
       {
-        const size_t offset             =                    size_t(n) / size_t(std::numeric_limits<limb_type>::digits);
-        const std::uint_fast16_t right_shift_amount = std::uint_fast16_t(size_t(n) % size_t(std::numeric_limits<limb_type>::digits));
+        const size_t offset             = size_t(n) / size_t(std::numeric_limits<limb_type>::digits);
+        const size_t right_shift_amount = size_t(n) % size_t(std::numeric_limits<limb_type>::digits);
 
         shr(offset, right_shift_amount);
       }
@@ -1311,8 +1311,8 @@
       }
       else
       {
-        const size_t offset             =                    size_t(n) / size_t(std::numeric_limits<limb_type>::digits);
-        const std::uint_fast16_t right_shift_amount = std::uint_fast16_t(size_t(n) % size_t(std::numeric_limits<limb_type>::digits));
+        const size_t offset             = size_t(n) / size_t(std::numeric_limits<limb_type>::digits);
+        const size_t right_shift_amount = size_t(n) % size_t(std::numeric_limits<limb_type>::digits);
 
         shr(offset, right_shift_amount);
       }
@@ -1388,7 +1388,7 @@
                    const bool               show_base    = true,
                    const bool               show_pos     = false,
                    const bool               is_uppercase = true,
-                         size_t field_width  = 0U,
+                         size_t             field_width  = 0U,
                    const char               fill_char    = char('0')) const
     {
       bool wr_string_is_ok = true;
@@ -1687,9 +1687,9 @@
       preincrement();
     }
 
-    WIDE_INTEGER_CONSTEXPR void eval_divide_by_single_limb(const limb_type          short_denominator,
-                                                           const size_t u_offset,
-                                                                 uintwide_t*        remainder)
+    WIDE_INTEGER_CONSTEXPR void eval_divide_by_single_limb(const limb_type   short_denominator,
+                                                           const size_t      u_offset,
+                                                                 uintwide_t* remainder)
     {
       // The denominator has one single limb.
       // Use a one-dimensional division algorithm.
@@ -1757,9 +1757,9 @@
       return a;
     }
 
-    static WIDE_INTEGER_CONSTEXPR std::int_fast8_t compare_ranges(const limb_type*         a,
-                                                                  const limb_type*         b,
-                                                                  const size_t count)
+    static WIDE_INTEGER_CONSTEXPR std::int_fast8_t compare_ranges(const limb_type* a,
+                                                                  const limb_type* b,
+                                                                  const size_t     count)
     {
       std::int_fast8_t n_return = 0;
 
@@ -1831,11 +1831,11 @@
                 u.values.begin());
     }
 
-    static WIDE_INTEGER_CONSTEXPR limb_type eval_add_n(      limb_type*          r,
-                                                       const limb_type*          u,
-                                                       const limb_type*          v,
-                                                       const size_t  count,
-                                                       const limb_type           carry_in = 0U)
+    static WIDE_INTEGER_CONSTEXPR limb_type eval_add_n(      limb_type* r,
+                                                       const limb_type* u,
+                                                       const limb_type* v,
+                                                       const size_t     count,
+                                                       const limb_type  carry_in = 0U)
     {
       std::uint_fast8_t carry_out = static_cast<std::uint_fast8_t>(carry_in);
 
@@ -1851,11 +1851,11 @@
       return static_cast<limb_type>(carry_out);
     }
 
-    static WIDE_INTEGER_CONSTEXPR bool eval_subtract_n(      limb_type*         r,
-                                                       const limb_type*         u,
-                                                       const limb_type*         v,
-                                                       const size_t count,
-                                                       const bool               has_borrow_in = false)
+    static WIDE_INTEGER_CONSTEXPR bool eval_subtract_n(      limb_type* r,
+                                                       const limb_type* u,
+                                                       const limb_type* v,
+                                                       const size_t     count,
+                                                       const bool       has_borrow_in = false)
     {
       std::uint_fast8_t has_borrow_out = (has_borrow_in ? 1U : 0U);
 
@@ -1873,10 +1873,10 @@
 
     template<const size_t RePhraseWidth2 = Width2,
              typename std::enable_if<(uintwide_t<RePhraseWidth2, LimbType, AllocatorType, IsSigned>::number_of_limbs == 4U)>::type const* = nullptr>
-    static WIDE_INTEGER_CONSTEXPR void eval_multiply_n_by_n_to_lo_part(      LimbType*          r,
-                                                                       const LimbType*          a,
-                                                                       const LimbType*          b,
-                                                                       const size_t count)
+    static WIDE_INTEGER_CONSTEXPR void eval_multiply_n_by_n_to_lo_part(      LimbType* r,
+                                                                       const LimbType* a,
+                                                                       const LimbType* b,
+                                                                       const size_t    count)
     {
       static_cast<void>(count);
 
@@ -1979,10 +1979,10 @@
     #if defined(WIDE_INTEGER_HAS_MUL_8_BY_8_UNROLL)
     template<const size_t RePhraseWidth2 = Width2,
              typename std::enable_if<(uintwide_t<RePhraseWidth2, LimbType, AllocatorType, IsSigned>::number_of_limbs == 8U)>::type const* = nullptr>
-    static WIDE_INTEGER_CONSTEXPR void eval_multiply_n_by_n_to_lo_part(      LimbType*          r,
-                                                                       const LimbType*          a,
-                                                                       const LimbType*          b,
-                                                                       const size_t count)
+    static WIDE_INTEGER_CONSTEXPR void eval_multiply_n_by_n_to_lo_part(      LimbType* r,
+                                                                       const LimbType* a,
+                                                                       const LimbType* b,
+                                                                       const size_t    count)
     {
       static_cast<void>(count);
 
@@ -2261,10 +2261,10 @@
                                       && (uintwide_t<RePhraseWidth2, LimbType, AllocatorType>::number_of_limbs != 8U)
     #endif
                                      )>::type const* = nullptr>
-    static WIDE_INTEGER_CONSTEXPR void eval_multiply_n_by_n_to_lo_part(      LimbType*          r,
-                                                                       const LimbType*          a,
-                                                                       const LimbType*          b,
-                                                                       const size_t count)
+    static WIDE_INTEGER_CONSTEXPR void eval_multiply_n_by_n_to_lo_part(      LimbType* r,
+                                                                       const LimbType* a,
+                                                                       const LimbType* b,
+                                                                       const size_t    count)
     {
       using local_limb_type        = typename uintwide_t<RePhraseWidth2, LimbType, AllocatorType>::limb_type;
       using local_double_limb_type = typename uintwide_t<RePhraseWidth2, LimbType, AllocatorType>::double_limb_type;
@@ -2289,10 +2289,10 @@
       }
     }
 
-    static WIDE_INTEGER_CONSTEXPR void eval_multiply_n_by_n_to_2n(      limb_type*         r,
-                                                                  const limb_type*         a,
-                                                                  const limb_type*         b,
-                                                                  const size_t count)
+    static WIDE_INTEGER_CONSTEXPR void eval_multiply_n_by_n_to_2n(      limb_type* r,
+                                                                  const limb_type* a,
+                                                                  const limb_type* b,
+                                                                  const size_t     count)
     {
       std::fill_n(r, (count * 2U), limb_type(0U));
 
@@ -2318,10 +2318,10 @@
       }
     }
 
-    static WIDE_INTEGER_CONSTEXPR limb_type eval_multiply_1d(      limb_type*         r,
-                                                             const limb_type*         a,
-                                                             const limb_type          b,
-                                                             const size_t count)
+    static WIDE_INTEGER_CONSTEXPR limb_type eval_multiply_1d(      limb_type* r,
+                                                             const limb_type* a,
+                                                             const limb_type  b,
+                                                             const size_t     count)
     {
       double_limb_type carry = 0U;
 
@@ -2384,11 +2384,11 @@
       }
     }
 
-    static void eval_multiply_kara_n_by_n_to_2n(      limb_type*         r,
-                                                const limb_type*         a,
-                                                const limb_type*         b,
-                                                const size_t n,
-                                                      limb_type*         t)
+    static void eval_multiply_kara_n_by_n_to_2n(      limb_type* r,
+                                                const limb_type* a,
+                                                const limb_type* b,
+                                                const size_t     n,
+                                                      limb_type* t)
     {
       if(n <= 48U)
       {
@@ -2515,11 +2515,11 @@
     }
 
     #if 0
-    static void eval_multiply_toomcook3(      limb_type*         r,
-                                        const limb_type*         u,
-                                        const limb_type*         v,
-                                        const size_t n,
-                                              limb_type*         t)
+    static void eval_multiply_toomcook3(      limb_type* r,
+                                        const limb_type* u,
+                                        const limb_type* v,
+                                        const size_t     n,
+                                              limb_type* t)
     {
       if(n == 3072U)
       {
@@ -2540,11 +2540,11 @@
       }
     }
 
-    static void eval_multiply_toomcook4(      limb_type*         r,
-                                        const limb_type*         u,
-                                        const limb_type*         v,
-                                        const size_t n,
-                                              limb_type*         t)
+    static void eval_multiply_toomcook4(      limb_type* r,
+                                        const limb_type* u,
+                                        const limb_type* v,
+                                        const size_t     n,
+                                              limb_type* t)
     {
       if(n == 2048U)
       {
@@ -2814,7 +2814,7 @@
     }
 
     WIDE_INTEGER_CONSTEXPR void shl(const size_t offset,
-                                    const std::uint_fast16_t left_shift_amount)
+                                    const size_t left_shift_amount)
     {
       if(offset > 0U)
       {
@@ -2843,7 +2843,7 @@
     }
 
     WIDE_INTEGER_CONSTEXPR void shr(const size_t offset,
-                                    const std::uint_fast16_t right_shift_amount)
+                                    const size_t right_shift_amount)
     {
       if(offset > 0U)
       {
@@ -3046,6 +3046,7 @@
   using uint16384_t = uintwide_t<16384U, std::uint32_t>;
   using uint32768_t = uintwide_t<32768U, std::uint32_t>;
 
+  // Define some convenient signed wide integer types.
   using  int64_t    = uintwide_t<   64U, std::uint16_t, void, true>;
   using  int128_t   = uintwide_t<  128U, std::uint32_t, void, true>;
   using  int256_t   = uintwide_t<  256U, std::uint32_t, void, true>;
@@ -3356,7 +3357,7 @@
     else                                                 { base_rep = 10U; }
 
     const size_t field_width = size_t(out.width());
-    const char               fill_char   = out.fill();
+    const char   fill_char   = out.fill();
 
     using local_wide_integer_type = uintwide_t<Width2, LimbType, AllocatorType, IsSigned>;
 
@@ -3985,7 +3986,7 @@
            typename AllocatorType,
            const bool IsSigned>
   WIDE_INTEGER_CONSTEXPR uintwide_t<Width2, LimbType, AllocatorType, IsSigned> gcd(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& a,
-                                                                                    const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& b)
+                                                                                   const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& b)
   {
     // This implementation of GCD is an adaptation
     // of existing code from Boost.Multiprecision.
