@@ -13,12 +13,12 @@
   #include <math/wide_integer/uintwide_t.h>
   #include <test/test_uintwide_t_n_base.h>
 
-  template<const std::size_t MyWidth2,
+  template<const math::wide_integer::size_t MyWidth2,
            typename MyLimbType,
            typename EnableType = void>
   class test_uintwide_t_n_binary_ops_mul_div_4_by_4_template;
 
-  template<const std::size_t MyWidth2,
+  template<const math::wide_integer::size_t MyWidth2,
            typename MyLimbType>
   class test_uintwide_t_n_binary_ops_mul_div_4_by_4_template
     <MyWidth2,
@@ -30,9 +30,9 @@
     : public test_uintwide_t_n_binary_ops_base
   {
   private:
-    static constexpr std::size_t digits2 = MyWidth2;
+    static constexpr math::wide_integer::size_t digits2 = MyWidth2;
 
-    virtual std::size_t get_digits2 () const { return digits2; }
+    virtual math::wide_integer::size_t get_digits2 () const { return digits2; }
 
     using native_uint_cntrl_type =
       typename math::wide_integer::detail::uint_type_helper<digits2>::exact_unsigned_type;
@@ -122,7 +122,7 @@
     {
       std::atomic_flag test_lock = ATOMIC_FLAG_INIT;
 
-      test_uintwide_t_n_binary_ops_base::my_gen.seed(std::clock());
+      test_uintwide_t_n_binary_ops_base::my_gen.seed(static_cast<typename random_generator_type::result_type>(std::clock()));
       std::uniform_int_distribution<> dis(1, static_cast<int>(digits2 - 1U));
 
       bool result_is_ok = true;
@@ -168,7 +168,7 @@
       using other_local_uint_type = OtherLocalUintType;
       using other_cntrl_uint_type = OtherCntrlUintType;
 
-      test_uintwide_t_n_base::my_random_generator.seed(std::clock());
+      test_uintwide_t_n_base::my_random_generator.seed(static_cast<typename std::linear_congruential_engine<std::uint32_t, 48271, 0, 2147483647>::result_type>(std::clock()));
 
       using distribution_type =
         math::wide_integer::uniform_int_distribution<other_local_uint_type::my_width2, typename other_local_uint_type::limb_type>;
