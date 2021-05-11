@@ -1340,13 +1340,13 @@
               number_of_limbs, (std::numeric_limits<limb_type>::max)()
             )
           )
-        :   from_rep
+        : from_rep
+          (
+            representation_type
             (
-              representation_type
-              (
-                number_of_limbs, (std::numeric_limits<limb_type>::max)()
-              )
-            ) ^ (uintwide_t(1U) << (my_width2 - 1))
+              number_of_limbs, (std::numeric_limits<limb_type>::max)()
+            )
+          ) ^ (uintwide_t(1U) << (my_width2 - 1))
         ;
     }
 
@@ -1361,13 +1361,13 @@
               number_of_limbs, limb_type(0U)
             )
           )
-        :   from_rep
+        : from_rep
+          (
+            representation_type
             (
-              representation_type
-              (
-                number_of_limbs, limb_type(0U)
-              )
-            ) | (uintwide_t(1U) << (my_width2 - 1))
+              number_of_limbs, limb_type(0U)
+            )
+          ) | (uintwide_t(1U) << (my_width2 - 1))
         ;
     }
 
