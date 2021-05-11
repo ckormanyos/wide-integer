@@ -12,18 +12,18 @@
 
   #include <test/test_uintwide_t_n_base.h>
 
-  template<const std::size_t MyDigits2A,
-           const std::size_t MyDigits2B,
+  template<const math::wide_integer::size_t MyDigits2A,
+           const math::wide_integer::size_t MyDigits2B,
            typename MyLimbType = std::uint32_t>
   class test_uintwide_t_n_binary_ops_mul_n_by_m_template : public test_uintwide_t_n_binary_ops_base
   {
   private:
-    static constexpr std::size_t digits2a = MyDigits2A;
-    static constexpr std::size_t digits2b = MyDigits2B;
+    static constexpr math::wide_integer::size_t digits2a = MyDigits2A;
+    static constexpr math::wide_integer::size_t digits2b = MyDigits2B;
 
-            std::size_t get_digits2a() const { return digits2a; }
-            std::size_t get_digits2b() const { return digits2b; }
-    virtual std::size_t get_digits2 () const { return digits2a + digits2b; }
+            math::wide_integer::size_t get_digits2a() const { return digits2a; }
+            math::wide_integer::size_t get_digits2b() const { return digits2b; }
+    virtual math::wide_integer::size_t get_digits2 () const { return digits2a + digits2b; }
 
     using boost_uint_backend_a_type =
       boost::multiprecision::cpp_int_backend<digits2a,

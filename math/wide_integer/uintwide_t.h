@@ -1160,7 +1160,7 @@
         // Bitwise OR.
         for(std::uint_fast32_t i = 0U; i < number_of_limbs; ++i)
         {
-          values[i] |= other.values[i];
+          values[i] = limb_type(values[i] | other.values[i]);
         }
       }
 
@@ -1178,7 +1178,7 @@
         // Bitwise XOR.
         for(std::uint_fast32_t i = 0U; i < number_of_limbs; ++i)
         {
-          values[i] ^= other.values[i];
+          values[i] = limb_type(values[i] ^ other.values[i]);
         }
       }
 
@@ -1192,7 +1192,7 @@
         // Bitwise AND.
         for(std::uint_fast32_t i = 0U; i < number_of_limbs; ++i)
         {
-          values[i] &= other.values[i];
+          values[i] = limb_type(values[i] & other.values[i]);
         }
       }
 
@@ -1701,8 +1701,11 @@
       for(std::int_fast32_t i = std::int_fast32_t((number_of_limbs - 1U) - u_offset); std::int_fast32_t(i) >= 0; --i)
       {
         long_numerator =
-            double_limb_type(values[std::uint_fast32_t(i)])
-          + ((long_numerator - double_limb_type(double_limb_type(short_denominator) * hi_part)) << std::numeric_limits<limb_type>::digits);
+          double_limb_type
+          (
+             double_limb_type(values[std::uint_fast32_t(i)])
+           + double_limb_type(double_limb_type(long_numerator - double_limb_type(double_limb_type(short_denominator) * hi_part)) << std::numeric_limits<limb_type>::digits)
+          );
 
         values[std::uint_fast32_t(i)] =
           detail::make_lo<limb_type>(double_limb_type(long_numerator / short_denominator));
@@ -1712,7 +1715,12 @@
 
       if(remainder != nullptr)
       {
-        long_numerator = double_limb_type(values[0U]) + ((long_numerator - double_limb_type(double_limb_type(short_denominator) * hi_part)) << std::numeric_limits<limb_type>::digits);
+        long_numerator =
+          double_limb_type
+          (
+             double_limb_type(values[0U])
+           + double_limb_type(double_limb_type(long_numerator - double_limb_type(double_limb_type(short_denominator) * hi_part)) << std::numeric_limits<limb_type>::digits)
+          );
 
         *remainder = limb_type(long_numerator >> std::numeric_limits<limb_type>::digits);
       }
@@ -1841,7 +1849,7 @@
 
       for(std::uint_fast32_t i = 0U; i < count; ++i)
       {
-        const double_limb_type uv_as_ularge = double_limb_type(double_limb_type(u[i]) + v[i]) + carry_out;
+        const double_limb_type uv_as_ularge = double_limb_type(double_limb_type(double_limb_type(u[i]) + v[i]) + carry_out);
 
         carry_out = static_cast<std::uint_fast8_t>(detail::make_hi<limb_type>(uv_as_ularge));
 
@@ -1861,7 +1869,7 @@
 
       for(std::uint_fast32_t i = 0U; i < count; ++i)
       {
-        const double_limb_type uv_as_ularge = double_limb_type(double_limb_type(u[i]) - v[i]) - has_borrow_out;
+        const double_limb_type uv_as_ularge = double_limb_type(double_limb_type(double_limb_type(u[i]) - v[i]) - has_borrow_out);
 
         has_borrow_out = (detail::make_hi<limb_type>(uv_as_ularge) != limb_type(0U)) ? 1U : 0U;
 
@@ -2284,8 +2292,8 @@
 
           for(std::uint_fast32_t j = 0U; j < (count - i); ++j)
           {
-            carry += local_double_limb_type(local_double_limb_type(a[i]) * b[j]);
-            carry += r[i + j];
+            carry = local_double_limb_type(carry + local_double_limb_type(local_double_limb_type(a[i]) * b[j]));
+            carry = local_double_limb_type(carry + r[i + j]);
 
             r[i + j] = local_limb_type(carry);
             carry    = detail::make_hi<local_limb_type>(carry);
@@ -2311,8 +2319,8 @@
 
           for( ; j < count; ++j)
           {
-            carry += double_limb_type(double_limb_type(a[i]) * b[j]);
-            carry += r[i + j];
+            carry    = double_limb_type(carry + double_limb_type(double_limb_type(a[i]) * b[j]));
+            carry    = double_limb_type(carry + r[i + j]);
 
             r[i + j] = limb_type(carry);
             carry    = detail::make_hi<limb_type>(carry);
@@ -2338,7 +2346,7 @@
       {
         for(std::uint_fast32_t i = 0U ; i < count; ++i)
         {
-          carry += double_limb_type(double_limb_type(a[i]) * b);
+          carry = double_limb_type(carry + double_limb_type(double_limb_type(a[i]) * b));
 
           r[i]  = limb_type(carry);
           carry = detail::make_hi<limb_type>(carry);
@@ -2730,7 +2738,7 @@
             //     set q_hat = (u[j] * b + u[j + 1]) / v[1]
 
             const local_uint_index_type uj     = (((number_of_limbs + 1U) - 1U) - u_offset) - j;
-            const double_limb_type      u_j_j1 = (double_limb_type(uu[uj]) << std::numeric_limits<limb_type>::digits) + uu[uj - 1U];
+            const double_limb_type      u_j_j1 = double_limb_type(double_limb_type(double_limb_type(uu[uj]) << std::numeric_limits<limb_type>::digits) + uu[uj - 1U]);
 
             limb_type q_hat = ((uu[uj] == vv[vj0]) ? (std::numeric_limits<limb_type>::max)()
                                                    : limb_type(u_j_j1 / vv[vj0]));
@@ -2740,7 +2748,7 @@
             // expression [(u[uj] * b + u[uj - 1] - q_hat * v[vj0 - 1]) * b]
             // exceeds the range of uintwide_t.
 
-            for(double_limb_type t = u_j_j1 - double_limb_type(q_hat * double_limb_type(vv[vj0])); ; --q_hat, t += vv[vj0])
+            for(double_limb_type t = double_limb_type(u_j_j1 - double_limb_type(q_hat * double_limb_type(vv[vj0]))); ; --q_hat, t = double_limb_type(t + vv[vj0]))
             {
               if(   (detail::make_hi<limb_type>(t) != limb_type(0U))
                  || (   double_limb_type(double_limb_type(vv[vj0 - 1U]) * q_hat)
@@ -2763,7 +2771,7 @@
 
 
             // Get the result data.
-            values[m - j] = q_hat - (has_borrow ? 1U : 0U);
+            values[m - j] = limb_type(q_hat - (has_borrow ? 1U : 0U));
 
             // Step D5: Test the remainder.
             // Set the result value: Set result.m_data[m - j] = q_hat.
@@ -2840,7 +2848,7 @@
         {
           const limb_type t = values[i];
 
-          values[i] = (t << local_integral_type(left_shift_amount)) | part_from_previous_value;
+          values[i] = limb_type(limb_type(t << local_integral_type(left_shift_amount)) | part_from_previous_value);
 
           part_from_previous_value = limb_type(t >> local_integral_type(std::uint_fast32_t(std::numeric_limits<limb_type>::digits - left_shift_amount)));
         }
@@ -2951,7 +2959,7 @@
         {
           if(base == 8U)
           {
-            if  ((c >= char('0')) && (c <= char('8'))) { c -= std::uint8_t(0x30U); }
+            if  ((c >= char('0')) && (c <= char('8'))) { c = std::uint8_t(c - std::uint8_t(0x30U)); }
             else                                       { char_is_valid = false; }
 
             if(char_is_valid)
@@ -2963,7 +2971,7 @@
           }
           else if(base == 10U)
           {
-            if   ((c >= std::uint8_t('0')) && (c <= std::uint8_t('9'))) { c -= std::uint8_t(0x30U); }
+            if   ((c >= std::uint8_t('0')) && (c <= std::uint8_t('9'))) { c = std::uint8_t(c - std::uint8_t(0x30U)); }
             else                                                        { char_is_valid = false; }
 
             if(char_is_valid)
@@ -2975,9 +2983,9 @@
           }
           else if(base == 16U)
           {
-            if     ((c >= std::uint8_t('a')) && (c <= std::uint8_t('f'))) { c -= std::uint8_t(  87U); }
-            else if((c >= std::uint8_t('A')) && (c <= std::uint8_t('F'))) { c -= std::uint8_t(  55U); }
-            else if((c >= std::uint8_t('0')) && (c <= std::uint8_t('9'))) { c -= std::uint8_t(0x30U); }
+            if     ((c >= std::uint8_t('a')) && (c <= std::uint8_t('f'))) { c = std::uint8_t(c - std::uint8_t(  87U)); }
+            else if((c >= std::uint8_t('A')) && (c <= std::uint8_t('F'))) { c = std::uint8_t(c - std::uint8_t(  55U)); }
+            else if((c >= std::uint8_t('0')) && (c <= std::uint8_t('9'))) { c = std::uint8_t(c - std::uint8_t(0x30U)); }
             else                                                          { char_is_valid = false; }
 
             if(char_is_valid)
@@ -3488,11 +3496,11 @@
     std::uint32_t x = u;
 
     // Use O(log2[N]) binary-halving in an unrolled loop to find the msb.
-    if((x & UINT32_C(0xFFFF0000)) != UINT32_C(0)) { x >>= 16U; r |= UINT8_C(16); }
-    if((x & UINT32_C(0x0000FF00)) != UINT32_C(0)) { x >>=  8U; r |= UINT8_C( 8); }
-    if((x & UINT32_C(0x000000F0)) != UINT32_C(0)) { x >>=  4U; r |= UINT8_C( 4); }
-    if((x & UINT32_C(0x0000000C)) != UINT32_C(0)) { x >>=  2U; r |= UINT8_C( 2); }
-    if((x & UINT32_C(0x00000002)) != UINT32_C(0)) { x >>=  1U; r |= UINT8_C( 1); }
+    if((x & UINT32_C(0xFFFF0000)) != UINT32_C(0)) { x = std::uint32_t(x >> 16U); r |= UINT8_C(16); }
+    if((x & UINT32_C(0x0000FF00)) != UINT32_C(0)) { x = std::uint32_t(x >>  8U); r |= UINT8_C( 8); }
+    if((x & UINT32_C(0x000000F0)) != UINT32_C(0)) { x = std::uint32_t(x >>  4U); r |= UINT8_C( 4); }
+    if((x & UINT32_C(0x0000000C)) != UINT32_C(0)) { x = std::uint32_t(x >>  2U); r |= UINT8_C( 2); }
+    if((x & UINT32_C(0x00000002)) != UINT32_C(0)) { x = std::uint32_t(x >>  1U); r |= UINT8_C( 1); }
 
     return std::uint_fast32_t(r);
   }
@@ -3505,10 +3513,10 @@
     std::uint16_t x = u;
 
     // Use O(log2[N]) binary-halving in an unrolled loop to find the msb.
-    if((x & UINT16_C(0xFF00)) != UINT16_C(0)) { x >>= 8U; r |= UINT8_C(8); }
-    if((x & UINT16_C(0x00F0)) != UINT16_C(0)) { x >>= 4U; r |= UINT8_C(4); }
-    if((x & UINT16_C(0x000C)) != UINT16_C(0)) { x >>= 2U; r |= UINT8_C(2); }
-    if((x & UINT16_C(0x0002)) != UINT16_C(0)) { x >>= 1U; r |= UINT8_C(1); }
+    if((x & UINT16_C(0xFF00)) != UINT16_C(0)) { x = std::uint16_t(x >> 8U); r |= UINT8_C(8); }
+    if((x & UINT16_C(0x00F0)) != UINT16_C(0)) { x = std::uint16_t(x >> 4U); r |= UINT8_C(4); }
+    if((x & UINT16_C(0x000C)) != UINT16_C(0)) { x = std::uint16_t(x >> 2U); r |= UINT8_C(2); }
+    if((x & UINT16_C(0x0002)) != UINT16_C(0)) { x = std::uint16_t(x >> 1U); r |= UINT8_C(1); }
 
     return std::uint_fast32_t(r);
   }
@@ -3521,9 +3529,9 @@
     std::uint8_t x = u;
 
     // Use O(log2[N]) binary-halving in an unrolled loop to find the msb.
-    if((x & UINT8_C(0xF0)) != UINT8_C(0)) { x >>= 4U; r |= UINT8_C(4); }
-    if((x & UINT8_C(0x0C)) != UINT8_C(0)) { x >>= 2U; r |= UINT8_C(2); }
-    if((x & UINT8_C(0x02)) != UINT8_C(0)) { x >>= 1U; r |= UINT8_C(1); }
+    if((x & UINT8_C(0xF0)) != UINT8_C(0)) { x = std::uint8_t(x >> 4U); r |= UINT8_C(4); }
+    if((x & UINT8_C(0x0C)) != UINT8_C(0)) { x = std::uint8_t(x >> 2U); r |= UINT8_C(2); }
+    if((x & UINT8_C(0x02)) != UINT8_C(0)) { x = std::uint8_t(x >> 1U); r |= UINT8_C(1); }
 
     return std::uint_fast32_t(r);
   }

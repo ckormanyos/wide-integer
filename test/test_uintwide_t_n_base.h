@@ -28,7 +28,7 @@
   public:
     virtual ~test_uintwide_t_n_base() = default;
 
-    virtual std::size_t get_digits2() const = 0;
+    virtual math::wide_integer::size_t get_digits2() const = 0;
 
     std::size_t size() const { return number_of_cases; }
 
@@ -68,7 +68,7 @@
       using other_local_uint_type = OtherLocalUintType;
       using other_boost_uint_type = OtherBoostUintType;
 
-      my_random_generator.seed(std::clock());
+      my_random_generator.seed(static_cast<typename std::linear_congruential_engine<std::uint32_t, 48271, 0, 2147483647>::result_type>(std::clock()));
 
       using distribution_type =
         math::wide_integer::uniform_int_distribution<other_local_uint_type::my_width2, typename other_local_uint_type::limb_type, AllocatorType>;

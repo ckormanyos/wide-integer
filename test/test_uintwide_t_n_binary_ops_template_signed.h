@@ -16,13 +16,13 @@
 
   #include <test/test_uintwide_t_n_binary_ops_base.h>
 
-  template<const std::size_t MyDigits2,
+  template<const math::wide_integer::size_t MyDigits2,
            typename MyLimbType = std::uint32_t,
            typename AllocatorType = void>
   class test_uintwide_t_n_binary_ops_template_signed : public test_uintwide_t_n_binary_ops_base
   {
   private:
-    static constexpr std::size_t digits2 = MyDigits2;
+    static constexpr math::wide_integer::size_t digits2 = MyDigits2;
 
     using boost_uint_backend_type =
       boost::multiprecision::cpp_int_backend<digits2,
@@ -55,7 +55,7 @@
 
     virtual ~test_uintwide_t_n_binary_ops_template_signed() = default;
 
-    virtual std::size_t get_digits2() const { return digits2; }
+    virtual math::wide_integer::size_t get_digits2() const { return digits2; }
 
     virtual void initialize()
     {
@@ -266,11 +266,11 @@
 
 
   template<typename AllocatorType>
-  class test_uintwide_t_n_binary_ops_template_signed<64U, std::uint16_t, AllocatorType>
+  class test_uintwide_t_n_binary_ops_template_signed<math::wide_integer::size_t(64U), std::uint16_t, AllocatorType>
     : public test_uintwide_t_n_binary_ops_base
   {
   private:
-    static constexpr std::size_t digits2 = 64U;
+    static constexpr math::wide_integer::size_t digits2 = 64U;
 
     using native_uint_type = std::uint64_t;
     using native_sint_type = std::int64_t;
@@ -290,7 +290,7 @@
 
     virtual ~test_uintwide_t_n_binary_ops_template_signed() = default;
 
-    virtual std::size_t get_digits2() const { return digits2; }
+    virtual math::wide_integer::size_t get_digits2() const { return digits2; }
 
     virtual void initialize()
     {
@@ -502,7 +502,7 @@
 
     virtual bool test_binary_shr() const
     {
-      my_gen.seed(std::clock());
+      my_gen.seed(static_cast<typename random_generator_type::result_type>(std::clock()));
 
       bool result_is_ok = true;
 

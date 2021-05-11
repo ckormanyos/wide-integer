@@ -48,7 +48,7 @@ bool math::wide_integer::example009b_timed_mul_8_by_8()
 
   random_engine_type rng;
 
-  rng.seed(std::clock());
+  rng.seed(static_cast<typename random_engine_type::result_type>(std::clock()));
 
   for(auto i = 0U; i < local_a.size(); ++i)
   {

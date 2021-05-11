@@ -51,9 +51,9 @@ constexpr std::size_t test_uintwide_t_n_binary_ops_rounds = 1U;
 #endif
 
 #if !defined(UINTWIDE_T_REDUCE_TEST_DEPTH)
-constexpr std::uint32_t test_uintwide_t_n_binary_ops_4_by_4_cases = std::uint32_t(1UL << 16U);
+constexpr std::size_t test_uintwide_t_n_binary_ops_4_by_4_cases = std::uint32_t(1UL << 16U);
 #else
-constexpr std::uint32_t test_uintwide_t_n_binary_ops_4_by_4_cases = std::uint32_t(1UL << 14U);
+constexpr std::size_t test_uintwide_t_n_binary_ops_4_by_4_cases = std::uint32_t(1UL << 14U);
 #endif
 
 bool test_uintwide_t_small_bits()
