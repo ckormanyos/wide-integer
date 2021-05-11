@@ -13,6 +13,16 @@
 #include <ctime>
 #include <random>
 
+#if defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wconversion"
+#endif
+
+#if defined(__clang__) && !defined(__APPLE__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-copy"
+#endif
+
 #include <boost/multiprecision/miller_rabin.hpp>
 #include <boost/multiprecision/uintwide_t_backend.hpp>
 #include <math/wide_integer/uintwide_t_examples.h>
@@ -82,4 +92,12 @@ int main()
   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
 }
 
+#endif
+
+#if defined(__clang__) && !defined(__APPLE__)
+#pragma GCC diagnostic pop
+#endif
+
+#if defined(__GNUC__)
+#pragma GCC diagnostic pop
 #endif

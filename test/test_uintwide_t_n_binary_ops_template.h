@@ -16,13 +16,13 @@
 
   #include <test/test_uintwide_t_n_binary_ops_base.h>
 
-  template<const std::size_t MyDigits2,
+  template<const math::wide_integer::size_t MyDigits2,
            typename MyLimbType = std::uint32_t,
            typename AllocatorType = void>
   class test_uintwide_t_n_binary_ops_template : public test_uintwide_t_n_binary_ops_base
   {
   private:
-    static constexpr std::size_t digits2 = MyDigits2;
+    static constexpr math::wide_integer::size_t digits2 = MyDigits2;
 
     using boost_uint_backend_type =
       boost::multiprecision::cpp_int_backend<digits2,
@@ -45,7 +45,7 @@
 
     virtual ~test_uintwide_t_n_binary_ops_template() = default;
 
-    virtual std::size_t get_digits2() const { return digits2; }
+    virtual math::wide_integer::size_t get_digits2() const { return digits2; }
 
     virtual void initialize()
     {
@@ -150,7 +150,7 @@
     {
       std::atomic_flag test_lock = ATOMIC_FLAG_INIT;
 
-      my_gen.seed(std::clock());
+      my_gen.seed(static_cast<typename random_generator_type::result_type>(std::clock()));
       std::uniform_int_distribution<> dis(1, static_cast<int>(digits2 - 1U));
 
       bool result_is_ok = true;
@@ -184,7 +184,7 @@
     {
       std::atomic_flag test_lock = ATOMIC_FLAG_INIT;
 
-      my_gen.seed(std::clock());
+      my_gen.seed(static_cast<typename random_generator_type::result_type>(std::clock()));
       std::uniform_int_distribution<> dis(1, static_cast<int>(digits2 - 1U));
 
       bool result_is_ok = true;
