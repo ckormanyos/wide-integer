@@ -5,6 +5,11 @@
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
 
+#if defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wconversion"
+#endif
+
 #include <math/wide_integer/uintwide_t.h>
 #include <math/wide_integer/uintwide_t_test.h>
 
@@ -88,3 +93,7 @@ bool math::wide_integer::test_uintwide_t_spot_values()
 
   return result_is_ok;
 }
+
+#if defined(__GNUC__)
+#pragma GCC diagnostic pop
+#endif

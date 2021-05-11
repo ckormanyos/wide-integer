@@ -13,6 +13,11 @@
   #include <string>
   #include <type_traits>
 
+  #if defined(__GNUC__)
+  #pragma GCC diagnostic push
+  #pragma GCC diagnostic ignored "-Wconversion"
+  #endif
+
   #include <boost/config.hpp>
   #include <boost/multiprecision/number.hpp>
 
@@ -606,5 +611,9 @@
     #endif // !BOOST_NO_INCLASS_MEMBER_INITIALIZATION
 
   } // namespace std
+
+  #if defined(__GNUC__)
+  #pragma GCC diagnostic pop
+  #endif
 
 #endif // UINTWIDE_T_BACKEND_2019_12_15_HPP_

@@ -12,6 +12,11 @@
   #include <random>
   #include <sstream>
 
+  #if defined(__GNUC__)
+  #pragma GCC diagnostic push
+  #pragma GCC diagnostic ignored "-Wconversion"
+  #endif
+
   #include <boost/multiprecision/cpp_int.hpp>
   #include <boost/noncopyable.hpp>
 
@@ -96,5 +101,9 @@
 
     test_uintwide_t_n_base() = delete;
   };
+
+  #if defined(__GNUC__)
+  #pragma GCC diagnostic pop
+  #endif
 
 #endif // TEST_UINTWIDE_T_N_BASE_2019_12_29_H_

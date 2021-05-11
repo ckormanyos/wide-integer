@@ -31,7 +31,8 @@
       index_type n = index_type(end - start) + index_type(1);
 
       index_type slice =
-        static_cast<index_type>(std::round(n / static_cast<double> (number_of_threads)));
+        static_cast<index_type>(std::round(  static_cast<float>(static_cast<std::int16_t>(n))
+                                           / static_cast<float>(static_cast<std::int16_t>(number_of_threads))));
 
       slice = (std::max)(slice, index_type(1));
 
