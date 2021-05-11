@@ -55,8 +55,8 @@ bool math::wide_integer::example009a_timed_mul_4_by_4()
         i < local_a.size();
       ++i)
   {
-    get_random_big_uint(rng, local_a.begin() + i);
-    get_random_big_uint(rng, local_b.begin() + i);
+    get_random_big_uint(rng, local_a.begin() + static_cast<typename std::vector<big_uint_type>::difference_type>(i));
+    get_random_big_uint(rng, local_b.begin() + static_cast<typename std::vector<big_uint_type>::difference_type>(i));
   }
 
   std::uint64_t count = 0U;
