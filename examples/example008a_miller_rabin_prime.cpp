@@ -94,7 +94,7 @@ int main()
 
 #endif
 
-#if defined(__clang__)
+#if defined(__clang__) && !defined(__APPLE__)
 #pragma GCC diagnostic pop
 #endif
 
