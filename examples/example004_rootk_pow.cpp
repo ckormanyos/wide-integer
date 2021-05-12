@@ -10,11 +10,11 @@
 
 bool math::wide_integer::example004_rootk_pow()
 {
-  using uint256_t = math::wide_integer::uint256_t;
-
   bool result_is_ok = true;
 
   {
+    using uint256_t = math::wide_integer::uint256_t;
+
     WIDE_INTEGER_CONSTEXPR uint256_t x("0x95E0E51079E1D11737D3FD01429AA745582FEB4381D61FA56948C1A949E43C32");
     WIDE_INTEGER_CONSTEXPR uint256_t r = rootk(x, 7U);
 
@@ -28,6 +28,8 @@ bool math::wide_integer::example004_rootk_pow()
   }
 
   {
+    using uint256_t = math::wide_integer::uint256_t;
+
     WIDE_INTEGER_CONSTEXPR uint256_t r(UINT64_C(0x16067D1894));
     WIDE_INTEGER_CONSTEXPR uint256_t p = pow(r, 7U);
 
@@ -37,6 +39,36 @@ bool math::wide_integer::example004_rootk_pow()
 
     #if defined(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST) && (WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST != 0)
     static_assert(result_is_ok_pow == true, "Error: example004_rootk_pow not OK!");
+    #endif
+  }
+
+  {
+    using int256_t = math::wide_integer::int256_t;
+
+    WIDE_INTEGER_CONSTEXPR int256_t x("-17791969125525294590007745776736486317864490689865550963808715359713140948018");
+    WIDE_INTEGER_CONSTEXPR int256_t r = cbrt(x);
+
+    WIDE_INTEGER_CONSTEXPR bool result_is_ok_root = (r == int256_t("-26106060416733621800766427"));
+
+    result_is_ok &= result_is_ok_root;
+
+    #if defined(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST) && (WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST != 0)
+    static_assert(result_is_ok_root == true, "Error: example004_rootk_pow not OK!");
+    #endif
+  }
+
+  {
+    using int256_t = math::wide_integer::int256_t;
+
+    WIDE_INTEGER_CONSTEXPR int256_t x("-17791969125525294590007745776736486317864490689865550963808715359713140948018");
+    WIDE_INTEGER_CONSTEXPR int256_t r = rootk(x, 3);
+
+    WIDE_INTEGER_CONSTEXPR bool result_is_ok_root = (r == int256_t("-26106060416733621800766427"));
+
+    result_is_ok &= result_is_ok_root;
+
+    #if defined(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST) && (WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST != 0)
+    static_assert(result_is_ok_root == true, "Error: example004_rootk_pow not OK!");
     #endif
   }
 
