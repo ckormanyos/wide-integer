@@ -62,11 +62,25 @@ the default limb type is 32 bits in width and unsigned.
 The template signature of the `uintwide_t` class is shown below.
 
 ```C
-template<const std::uint32_t Width2,
+namespace math { namespace wide_integer {
+
+namespace detail {
+
+using size_t    = std::uint32_t;
+using ptrdiff_t = std::int32_t;
+
+}
+
+using detail::size_t;
+
+// Forward declaration of the uintwide_t template class.
+template<const size_t Width2,
          typename LimbType = std::uint32_t,
          typename AllocatorType = void,
          const bool IsSigned = false>
 class uintwide_t;
+
+} }
 ```
 
 `uintwide_t` also has a third optional template paramter that
