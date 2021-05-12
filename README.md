@@ -8,7 +8,7 @@ unsigned and signed integral types.
 This C++ template header-only library implements drop-in big integer types
 such as `uint128_t`, `uint256_t`, `uint384_t`, `uint512_t`, `uint1024_t`, `uint1536_t`, etc.
 These can be used essentially like regular built-in integers.
-Corresponding integer signed types such as `int128_t`, `int256_t`, etc. can also be used.
+Corresponding _signed_ integer types such as `int128_t`, `int256_t`, etc. can also be used.
 
 Wide-integer supports both unsigned as well as signed integral types having width
 of <img src="https://render.githubusercontent.com/render/math?math=1{\ldots}63{\times}2^{N}">
@@ -79,22 +79,33 @@ class uintwide_t;
 
 `uintwide_t` also has a third optional template paramter that
 can be used to set the _allocator_ _type_ used for internal storage of the
-big integer type. This optional parameter can optionally help to reduce
-stack consumption, especially when using higher digit counts.
-If left blank, the default `AllocatorType` is `void`
-allocation on the stack is used with an `array`-like
+big integer type. This optional parameter can reduce stack consumption
+and might be especially useful for high digit counts.
+If the `AllocatorType` template parameter is `void`, allocation
+is performed on the stack using an `array`-like, statically-sized
 internal storage representation.
 
+A custom allocator type can be used.
+Consider a custom allocator such as, let's say,
+`custom_allocator_type`. Setting the `AllocatorType` template parameter
+to `custom_allocator_type<void>` or optionally
+`custom_allocator_type<LimbType>` uses this custom allocator
+for internal storage.
+
+If left blank, the default `AllocatorType` is `void`
+and stack storage is used.
+
 The fourth template parameter `IsSigned` can be set to `true`
-to activate a signed integer type. The default value `false`
-is used for unsigned integer types.
+to activate a signed integer type. If left blank,
+the default value of `IsSigned` is  `false`
+and the integer type will be unsigned.
 
 ## Examples
 
 Various interesting and algorithmically challenging
 [examples](./examples) have been implemented.
-It is hoped that the examples provide inspiration and guidance on
-how to use wide-integer.
+It is hoped that the examples provide inspiration and guidance
+on how to use wide-integer.
 
   - ![`example000_numeric_limits.cpp`](./examples/example000_numeric_limits.cpp) verifies parts of the specializations of `std::numeric_limits` for (unsigned) `uint256_t`and (signed) `int256_t`.
   - ![`example001_mul_div.cpp`](./examples/example001_mul_div.cpp) performs multiplication and division.
@@ -102,7 +113,7 @@ how to use wide-integer.
   - ![`example002_shl_shr.cpp`](./examples/example002_shl_shr.cpp) does a few left and right shift operations.
   - ![`example003_sqrt.cpp`](./examples/example003_sqrt.cpp) computes a square root.
   - ![`example003a_cbrt`](./examples/example003a_cbrt.cpp) computes a cube root.
-  - ![`example004_rootk_pow.cpp`](./examples/example004_rootk_pow.cpp) computes an integral seventh root and its corresponding power.
+  - ![`example004_rootk_pow.cpp`](./examples/example004_rootk_pow.cpp) computes an integral seventh root and its corresponding power. A negative-valued cube root is also tested.
   - ![`example005_powm.cpp`](./examples/example005_powm.cpp) tests the power-modulus function `powm`.
   - ![`example006_gcd.cpp`](./examples/example006_gcd.cpp) tests the computation of a greatest common divisor `gcd`.
   - ![`example007_random_generator.cpp`](./examples/example007_random_generator.cpp) computes some large pseudo-random integers.
@@ -545,9 +556,11 @@ const int256_t n3 = n1 * n2;
 The following design choices have been implemented when handling
 negative arguments in number theoretical functions.
 
+  - Right shift by `n` bits `operator>>(n)` performs a so-called arithmetic right shift. For signed integers having negative value, right-shift fills in the sign bit(s) with 1's while shifting right.
   - `sqrt` of `x` negative returns zero.
   - `cbrt` of `x` nexative integer returns `-cbrt(-x)`.
-  - <img src="https://render.githubusercontent.com/render/math?math=k^{th}"> root of `x` negative retunrs zero unless the cube root is being computed, in which case `-cbrt(-x)` is returned.
+  - <img src="https://render.githubusercontent.com/render/math?math=k^{th}"> root of `x` negative returns zero unless the cube root is being computed, in which case `-cbrt(-x)` is returned.
   - GCD of `a`, `b` signed converts both arguments to positive and negates the result for `a`, `b` having opposite signs.
   - Miller-Rabin primality testing treats negative inetegers as positive when testing for prime, thus extending the set of primes <img src="https://render.githubusercontent.com/render/math?math=p\,\in\,\mathbb{Z}">.
   - MSB/LSB (most/least significant bit) do not differentiate between positive or negative argument such that MSB of a negative integer will be the highest bit of the corresponding unsigned type.
+  - Printing both positive-valued and negative-valued signed integers in hexadecimal format is supported. In the negative case, the sign bit and all other bits are treated as if the integer were unsigned. The negative sign is not shown when using hexadecimal format, even if the underlying integer is signed and negatively-valued. A potential positive sign, however, will be shown for positive-valued signed integers in hexadecimal form in the presence of `std::showpos`.
