@@ -1,9 +1,6 @@
 name: wide_integer
-on: 
+on:
   push:
-    branches:
-      - '**'
-  pull_request:
     branches:
       - '**'
   schedule:

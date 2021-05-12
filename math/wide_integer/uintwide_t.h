@@ -74,7 +74,7 @@
   namespace detail {
 
   using size_t    = std::uint32_t;
-  using ptrdiff_t =  std::int32_t;
+  using ptrdiff_t = std::int32_t;
 
   }
 
