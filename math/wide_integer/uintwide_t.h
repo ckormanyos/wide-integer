@@ -782,9 +782,16 @@
 
     // The type of the internal data representation.
     using representation_type =
-      typename std::conditional<std::is_same<AllocatorType, void>::value,
-                                detail::fixed_static_array <limb_type, number_of_limbs>,
-                                detail::fixed_dynamic_array<limb_type, number_of_limbs, AllocatorType>>::type;
+      typename std::conditional
+        <std::is_same<AllocatorType, void>::value,
+         detail::fixed_static_array <limb_type,
+                                     number_of_limbs>,
+         detail::fixed_dynamic_array<limb_type,
+                                     number_of_limbs,
+                                     typename std::allocator_traits<typename std::conditional<std::is_same<AllocatorType, void>::value,
+                                                                                              std::allocator<void>,
+                                                                                              AllocatorType>::type>::template rebind_alloc<limb_type>>
+      >::type;
 
     // The iterator types of the internal data representation.
     using iterator               = typename representation_type::iterator;
