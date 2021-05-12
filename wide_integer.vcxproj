@@ -214,6 +214,7 @@
     <ClCompile Include="test\test_uintwide_t_boost_backend.cpp" />
     <ClCompile Include="test\test_uintwide_t_edge_cases.cpp" />
     <ClCompile Include="test\test_uintwide_t_examples.cpp" />
+    <ClCompile Include="test\test_uintwide_t_float_convert.cpp" />
     <ClCompile Include="test\test_uintwide_t_n_base.cpp" />
     <ClCompile Include="test\test_uintwide_t_spot_values.cpp" />
     <ClCompile Include="test\test_uintwide_t_n_binary_ops_base.cpp" />
