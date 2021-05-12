@@ -85,15 +85,20 @@ If the `AllocatorType` template parameter is `void`, allocation
 is performed on the stack using an `array`-like, statically-sized
 internal storage representation.
 
-A custom allocator type can be used.
+If left blank, the default `AllocatorType` is `void`
+and stack storage is used.
+
+The standard allocator (i.e., `std::allocator<void>`)
+or a custom allocator type can be used if using stack memory
+is insufficient or not well-suited to the application.
 Consider a custom allocator such as, let's say,
 `custom_allocator_type`. Setting the `AllocatorType` template parameter
 to `custom_allocator_type<void>` or optionally
 `custom_allocator_type<LimbType>` uses this custom allocator
-for internal storage.
-
-If left blank, the default `AllocatorType` is `void`
-and stack storage is used.
+for internal storage. An allocator supplied as
+`AllocatorType` template parameter itself having any
+granularity other than `LimbType` (such as `void`, etc.)
+will internally use `allocator_traits` to `rebind_alloc` to `LimbType`.
 
 The fourth template parameter `IsSigned` can be set to `true`
 to activate a signed integer type. If left blank,
@@ -556,11 +561,11 @@ const int256_t n3 = n1 * n2;
 The following design choices have been implemented when handling
 negative arguments in number theoretical functions.
 
-  - Right shift by `n` bits `operator>>(n)` performs a so-called arithmetic right shift. For signed integers having negative value, right-shift fills in the sign bit(s) with 1's while shifting right.
+  - Right shift by `n` bits `operator>>(n)` performs a so-called arithmetic right shift. For signed integers having negative value, right-shift continually fills the sign bit with 1 while shifting right. The result is similar to signed division and closely mimics common compiler behavior for right-shift of negative-valued built-in signed `int`.
   - `sqrt` of `x` negative returns zero.
   - `cbrt` of `x` nexative integer returns `-cbrt(-x)`.
   - <img src="https://render.githubusercontent.com/render/math?math=k^{th}"> root of `x` negative returns zero unless the cube root is being computed, in which case `-cbrt(-x)` is returned.
   - GCD of `a`, `b` signed converts both arguments to positive and negates the result for `a`, `b` having opposite signs.
   - Miller-Rabin primality testing treats negative inetegers as positive when testing for prime, thus extending the set of primes <img src="https://render.githubusercontent.com/render/math?math=p\,\in\,\mathbb{Z}">.
   - MSB/LSB (most/least significant bit) do not differentiate between positive or negative argument such that MSB of a negative integer will be the highest bit of the corresponding unsigned type.
-  - Printing both positive-valued and negative-valued signed integers in hexadecimal format is supported. In the negative case, the sign bit and all other bits are treated as if the integer were unsigned. The negative sign is not shown when using hexadecimal format, even if the underlying integer is signed and negatively-valued. A potential positive sign, however, will be shown for positive-valued signed integers in hexadecimal form in the presence of `std::showpos`.
+  - Printing both positive-valued and negative-valued signed integers in hexadecimal format is supported. In the negative case, the sign bit and all other bits are treated as if the integer were unsigned. The negative sign is not shown when using hexadecimal format, even if the underlying integer is signed and negative-valued. A potential positive sign, however, will be shown for positive-valued signed integers in hexadecimal form in the presence of `std::showpos`.
