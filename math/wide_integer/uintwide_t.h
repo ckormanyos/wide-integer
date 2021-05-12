@@ -3765,7 +3765,7 @@
     }
     else
     {
-      if(m.is_zero())
+      if(m.is_zero() || local_wide_integer_type::is_neg(m))
       {
         s = local_wide_integer_type(std::uint_fast8_t(0U));
       }
