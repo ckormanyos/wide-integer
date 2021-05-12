@@ -3681,7 +3681,11 @@
 
     local_wide_integer_type s;
 
-    if(m.is_zero())
+    if(local_wide_integer_type::is_neg(m))
+    {
+      s = -cbrt(-m);
+    }
+    else if(m.is_zero())
     {
       s = local_wide_integer_type(std::uint_fast8_t(0U));
     }
@@ -3739,7 +3743,7 @@
            typename AllocatorType,
            const bool IsSigned>
   WIDE_INTEGER_CONSTEXPR uintwide_t<Width2, LimbType, AllocatorType, IsSigned> rootk(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& m,
-                                                                                      const std::uint_fast8_t k)
+                                                                                     const std::uint_fast8_t k)
   {
     // Calculate the k'th root.
 
@@ -3755,9 +3759,13 @@
     {
       s = sqrt(m);
     }
+    else if(k == 3U)
+    {
+      s = cbrt(m);
+    }
     else
     {
-      if(m.is_zero())
+      if(m.is_zero() || local_wide_integer_type::is_neg(m))
       {
         s = local_wide_integer_type(std::uint_fast8_t(0U));
       }
@@ -3817,7 +3825,7 @@
            typename AllocatorType,
            const bool IsSigned>
   WIDE_INTEGER_CONSTEXPR uintwide_t<Width2, LimbType, AllocatorType, IsSigned> pow(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& b,
-                                                                          const OtherUnsignedIntegralTypeP&    p)
+                                                                                   const OtherUnsignedIntegralTypeP&    p)
   {
     // Calculate (b ^ p).
 
@@ -3998,7 +4006,7 @@
            typename AllocatorType,
            const bool IsSigned>
   WIDE_INTEGER_CONSTEXPR uintwide_t<Width2, LimbType, AllocatorType, IsSigned> gcd(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& a,
-                                                                                    const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& b)
+                                                                                   const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& b)
   {
     // This implementation of GCD is an adaptation
     // of existing code from Boost.Multiprecision.
@@ -4007,8 +4015,11 @@
     using local_ushort_type       = typename local_wide_integer_type::limb_type;
     using local_ularge_type       = typename local_wide_integer_type::double_limb_type;
 
-    local_wide_integer_type u(a);
-    local_wide_integer_type v(b);
+    const bool u_is_neg = local_wide_integer_type::is_neg(a);
+    const bool v_is_neg = local_wide_integer_type::is_neg(b);
+
+    local_wide_integer_type u((u_is_neg == false) ? a : -a);
+    local_wide_integer_type v((v_is_neg == false) ? b : -b);
 
     local_wide_integer_type result;
 
@@ -4087,7 +4098,7 @@
       result = (u << left_shift_amount);
     }
 
-    return result;
+    return ((u_is_neg == v_is_neg) ? result : -result);
   }
 
   template<typename UnsignedShortType>
@@ -4322,9 +4333,9 @@
            typename AllocatorType,
            const bool IsSigned>
   bool miller_rabin(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& n,
-                    const std::uint_fast32_t                            number_of_trials,
-                    DistributionType&                                   distribution,
-                    GeneratorType&                                      generator)
+                    const std::uint_fast32_t                                     number_of_trials,
+                    DistributionType&                                            distribution,
+                    GeneratorType&                                               generator)
   {
     // This Miller-Rabin primality test is loosely based on
     // an adaptation of some code from Boost.Multiprecision.
@@ -4336,8 +4347,10 @@
     using local_wide_integer_type = uintwide_t<Width2, LimbType, AllocatorType, IsSigned>;
     using local_limb_type         = typename local_wide_integer_type::limb_type;
 
+    const local_wide_integer_type np((local_wide_integer_type::is_neg(n) == false) ? n : -n);
+
     {
-      const local_limb_type n0(n);
+      const local_limb_type n0(np);
 
       if((n0 & 1U) == 0U)
       {
@@ -4345,9 +4358,9 @@
         return false;
       }
 
-      if((n0 <= 227U) && (n <= 227U))
+      if((n0 <= 227U) && (np <= 227U))
       {
-        if((n0 == 2U) && (n == 2U))
+        if((n0 == 2U) && (np == 2U))
         {
           // Trivial special case of (n = 2).
           return true;
@@ -4386,7 +4399,7 @@
       // Exclude small prime factors from { 3 ...  53 }.
       constexpr std::uint64_t pp0 = UINT64_C(16294579238595022365);
 
-      const std::uint64_t m0(n % pp0);
+      const std::uint64_t m0(np % pp0);
 
       if(detail::integer_gcd_reduce_large(m0, pp0) != 1U)
       {
@@ -4399,7 +4412,7 @@
       // Exclude small prime factors from { 59 ... 101 }.
       constexpr std::uint64_t pp1 = UINT64_C(7145393598349078859);
 
-      const std::uint64_t m1(n % pp1);
+      const std::uint64_t m1(np % pp1);
 
       if(detail::integer_gcd_reduce_large(m1, pp1) != 1U)
       {
@@ -4412,7 +4425,7 @@
       // Exclude small prime factors from { 103 ... 149 }.
       constexpr std::uint64_t pp2 = UINT64_C(6408001374760705163);
 
-      const std::uint64_t m2(n % pp2);
+      const std::uint64_t m2(np % pp2);
 
       if(detail::integer_gcd_reduce_large(m2, pp2) != 1U)
       {
@@ -4425,7 +4438,7 @@
       // Exclude small prime factors from { 151 ... 191 }.
       constexpr std::uint64_t pp3 = UINT64_C(690862709424854779);
 
-      const std::uint64_t m3(n % pp3);
+      const std::uint64_t m3(np % pp3);
 
       if(detail::integer_gcd_reduce_large(m3, pp3) != 1U)
       {
@@ -4438,7 +4451,7 @@
       // Exclude small prime factors from { 193 ... 227 }.
       constexpr std::uint64_t pp4 = UINT64_C(80814592450549);
 
-      const std::uint64_t m4(n % pp4);
+      const std::uint64_t m4(np % pp4);
 
       if(detail::integer_gcd_reduce_large(m4, pp4) != 1U)
       {
@@ -4446,7 +4459,7 @@
       }
     }
 
-    const local_wide_integer_type nm1(n - 1U);
+    const local_wide_integer_type nm1(np - 1U);
 
     // Since we have already excluded all small factors
     // up to and including 227, n is greater than 227.
@@ -4457,7 +4470,7 @@
 
       static const local_wide_integer_type n228(local_limb_type(228U));
 
-      const local_wide_integer_type fn = powm(n228, nm1, n);
+      const local_wide_integer_type fn = powm(n228, nm1, np);
 
       const local_limb_type fn0 = static_cast<local_limb_type>(fn);
 
@@ -4473,7 +4486,7 @@
 
     using local_param_type = typename DistributionType::param_type;
 
-    const local_param_type params(local_wide_integer_type(2U), n - 2U);
+    const local_param_type params(local_wide_integer_type(2U), np - 2U);
 
     bool is_probably_prime = true;
 
@@ -4486,7 +4499,7 @@
     do
     {
       x = distribution(generator, params);
-      y = powm(x, q, n);
+      y = powm(x, q, np);
 
       std::uint_fast32_t j = 0U;
 
@@ -4515,7 +4528,7 @@
           }
           else
           {
-            y = powm(y, 2U, n);
+            y = powm(y, 2U, np);
           }
         }
       }

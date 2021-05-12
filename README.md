@@ -64,12 +64,7 @@ The template signature of the `uintwide_t` class is shown below.
 ```C
 namespace math { namespace wide_integer {
 
-namespace detail {
-
-using size_t    = std::uint32_t;
-using ptrdiff_t = std::int32_t;
-
-}
+namespace detail { using size_t = std::uint32_t; }
 
 using detail::size_t;
 
@@ -79,7 +74,6 @@ template<const size_t Width2,
          typename AllocatorType = void,
          const bool IsSigned = false>
 class uintwide_t;
-
 } }
 ```
 
@@ -545,3 +539,15 @@ const int256_t n2(-3);
 // 9
 const int256_t n3 = n1 * n2;
 ```
+
+### Negative arguments in number theoretical functions
+
+The following design choices have been implemented when handling
+negative arguments in number theoretical functions.
+
+  - `sqrt` of `x` negative returns zero.
+  - `cbrt` of `x` nexative integer returns `-cbrt(-x)`.
+  - <img src="https://render.githubusercontent.com/render/math?math=k^{th}"> root of `x` negative retunrs zero unless the cube root is being computed, in which case `-cbrt(-x)` is returned.
+  - GCD of `a`, `b` signed converts both arguments to positive and negates the result for `a`, `b` having opposite signs.
+  - Miller-Rabin primality testing treats negative inetegers as positive when testing for prime, thus extending the set of primes <img src="https://render.githubusercontent.com/render/math?math=p\,\in\,\mathbb{Z}">.
+  - MSB/LSB (most/least significant bit) do not differentiate between positive or negative argument such that MSB of a negative integer will be the highest bit of the corresponding unsigned type.
