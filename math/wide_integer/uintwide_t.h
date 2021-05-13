@@ -24,6 +24,10 @@
   #include <limits>
   #include <type_traits>
 
+  #if !defined(WIDE_INTEGER_DISABLE_FLOAT_INTEROP)
+  #include <cmath>
+  #endif
+
   #if !defined(WIDE_INTEGER_DISABLE_IOSTREAM)
   #include <iomanip>
   #include <istream>
@@ -721,6 +725,94 @@
     return local_ularge_type(local_ularge_type(static_cast<local_ularge_type>(hi) << std::numeric_limits<UnsignedShortType>::digits) | lo);
   }
 
+  struct uint64_extra { uint64_t extra, v; };
+
+  template<typename UnsignedIntegralType>
+  constexpr typename std::enable_if<   (std::is_integral<UnsignedIntegralType>::value == true)
+                                    && (std::is_unsigned<UnsignedIntegralType>::value == true), UnsignedIntegralType>::type
+  negate(UnsignedIntegralType u)
+  {
+    return (UnsignedIntegralType) (((UnsignedIntegralType) ~u) + 1U);
+  }
+
+  template<typename SignedIntegralType>
+  constexpr typename std::enable_if<   (std::is_integral<SignedIntegralType>::value == true)
+                                    && (std::is_signed  <SignedIntegralType>::value == true), SignedIntegralType>::type
+  negate(SignedIntegralType n)
+  {
+    return (SignedIntegralType) -n;
+  }
+
+  #if !defined(WIDE_INTEGER_DISABLE_FLOAT_INTEROP)
+  template<typename FloatingPointType>
+  class native_float_parts final
+  {
+  public:
+    // Emphasize: This template class can be used with native floating-point
+    // types like float, double and long double. Note: For long double,
+    // you need to verify that the mantissa fits in unsigned long long.
+    WIDE_INTEGER_CONSTEXPR native_float_parts(const FloatingPointType f)
+      : my_mantissa_part(0ULL),
+        my_exponent_part(0)
+    {
+      using native_float_type = FloatingPointType;
+
+      static_assert(std::numeric_limits<native_float_type>::digits <= std::numeric_limits<unsigned long long>::digits,
+                    "Error: The width of the mantissa does not fit in unsigned long long");
+
+      const native_float_type ff = ((f < static_cast<native_float_type>(0)) ? -f : f);
+
+      if(ff < (std::numeric_limits<native_float_type>::min)())
+      {
+        return;
+      }
+
+      using std::frexp;
+
+      // Get the fraction and base-2 exponent.
+      native_float_type man = (native_float_type) frexp(f, &my_exponent_part);
+
+      unsigned n2 = 0U;
+
+      for(std::uint_fast16_t i = static_cast<std::uint_fast16_t>(0U); i < static_cast<std::uint_fast16_t>(std::numeric_limits<native_float_type>::digits); ++i)
+      {
+        // Extract the mantissa of the floating-point type in base-2
+        // (one bit at a time) and store it in an unsigned long long.
+        man *= 2;
+
+        n2   = static_cast<unsigned>(man);
+        man -= static_cast<native_float_type>(n2);
+
+        if(n2 != static_cast<unsigned>(0U))
+        {
+          my_mantissa_part |= 1U;
+        }
+
+        if(i < static_cast<unsigned>(std::numeric_limits<native_float_type>::digits - 1))
+        {
+          my_mantissa_part <<= 1U;
+        }
+      }
+
+      // Ensure that the value is normalized and adjust the exponent.
+      my_mantissa_part |= static_cast<unsigned long long>(1ULL << (std::numeric_limits<native_float_type>::digits - 1));
+      my_exponent_part -= 1;
+    }
+
+    WIDE_INTEGER_CONSTEXPR unsigned long long get_mantissa() const { return my_mantissa_part; }
+    WIDE_INTEGER_CONSTEXPR int                get_exponent() const { return my_exponent_part; }
+
+  private:
+    WIDE_INTEGER_CONSTEXPR native_float_parts() = delete;
+    WIDE_INTEGER_CONSTEXPR native_float_parts(const native_float_parts&) = delete;
+
+    WIDE_INTEGER_CONSTEXPR const native_float_parts& operator=(const native_float_parts&) = delete;
+
+    unsigned long long my_mantissa_part;
+    int                my_exponent_part;
+  };
+  #endif
+
   } } } // namespace math::wide_integer::detail
 
   namespace math { namespace wide_integer {
@@ -843,9 +935,9 @@
     // Constructors from built-in signed integral types.
     template<typename SignedIntegralType>
     WIDE_INTEGER_CONSTEXPR uintwide_t(const SignedIntegralType v,
-               typename std::enable_if<(   (std::is_fundamental<SignedIntegralType>::value == true)
-                                        && (std::is_integral   <SignedIntegralType>::value == true)
-                                        && (std::is_signed     <SignedIntegralType>::value == true))>::type* = nullptr)
+                                       typename std::enable_if<(   (std::is_fundamental<SignedIntegralType>::value == true)
+                                                                && (std::is_integral   <SignedIntegralType>::value == true)
+                                                                && (std::is_signed     <SignedIntegralType>::value == true))>::type* = nullptr)
     {
       using local_signed_integral_type   = SignedIntegralType;
       using local_unsigned_integral_type =
@@ -860,6 +952,57 @@
 
       if(v_is_neg) { negate(); }
     }
+
+    #if !defined(WIDE_INTEGER_DISABLE_FLOAT_INTEROP)
+    template<typename FloatingPointType,
+             typename std::enable_if<std::is_floating_point<FloatingPointType>::value == true>::type const* = nullptr>
+    WIDE_INTEGER_CONSTEXPR uintwide_t(const FloatingPointType f)
+    {
+      using std::isfinite;
+
+      using local_builtin_float_type = FloatingPointType;
+
+      const bool f_is_finite = isfinite(f);
+
+      if(f_is_finite == false)
+      {
+      }
+      else
+      {
+        const bool f_is_neg = (f < local_builtin_float_type(0.0F));
+
+        const local_builtin_float_type a = ((f_is_neg == false) ? f : -f);
+
+        const bool a_is_zero = (a < local_builtin_float_type(1.0F));
+
+        if(a_is_zero == false)
+        {
+          const detail::native_float_parts<local_builtin_float_type> ld_parts(a);
+
+          // Create a decwide_t from the fractional part of the
+          // mantissa expressed as an unsigned long long.
+          *this = uintwide_t(ld_parts.get_mantissa());
+
+          // Scale the unsigned long long representation to the fractional
+          // part of the long double and multiply with the base-2 exponent.
+          const int p2 = ld_parts.get_exponent() - (std::numeric_limits<FloatingPointType>::digits - 1);
+
+          if     (p2 <   0) { *this >>= (unsigned) -p2; }
+          else if(p2 ==  0) { ; }
+          else              { *this <<= (unsigned) p2; }
+
+          if(f_is_neg)
+          {
+            negate();
+          }
+        }
+        else
+        {
+          operator=(0U);
+        }
+      }
+    }
+    #endif
 
     // Copy constructor.
     constexpr uintwide_t(const uintwide_t& other) : values(other.values) { }
