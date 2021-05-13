@@ -70,6 +70,72 @@ namespace
     return f;
   }
 
+  template<const std::size_t MaxDigitsToGet,
+           const std::size_t MinDigitsToGet = 2U>
+  void get_random_digit_string(std::string& str)
+  {
+    static_assert(MinDigitsToGet >=  2U, "Error: The minimum number of digits to get must be  2 or more");
+    static_assert(MaxDigitsToGet <= 31U, "Error: The maximum number of digits to get must be 31 or less");
+
+    static std::uniform_int_distribution<unsigned>
+    dist_sgn
+    (
+      0,
+      1
+    );
+
+    static std::uniform_int_distribution<unsigned>
+    dist_len
+    (
+      MinDigitsToGet,
+      MaxDigitsToGet
+    );
+
+    static std::uniform_int_distribution<unsigned>
+    dist_first
+    (
+      1,
+      9
+    );
+
+    static std::uniform_int_distribution<unsigned>
+    dist_following
+    (
+      0,
+      9
+    );
+
+    const bool is_neg = (dist_sgn(engine_sgn) != 0);
+
+    const std::string::size_type len = static_cast<std::string::size_type>(dist_len(engine_e10));
+
+    std::string::size_type pos = 0U;
+
+    if(is_neg)
+    {
+      str.resize(len + 1U);
+
+      str.at(pos) = char('-');
+
+      ++pos;
+    }
+    else
+    {
+      str.resize(len);
+    }
+
+    str.at(pos) = static_cast<char>(dist_first(engine_man) + 0x30U);
+
+    ++pos;
+
+    while(pos < str.length())
+    {
+      str.at(pos) = static_cast<char>(dist_following(engine_man) + 0x30U);
+
+      ++pos;
+    }
+  }
+
   template<typename UnsignedIntegralType>
   static std::string hexlexical_cast(const UnsignedIntegralType& u)
   {
@@ -108,7 +174,7 @@ bool math::wide_integer::test_uintwide_t_float_convert()
 
   bool result_is_ok = true;
 
-  for(std::size_t i = 0U; i < 0x10000U; ++i)
+  for(std::size_t i = 0U; i < 0x40000U; ++i)
   {
     const float f = get_random_float<float, -1, 27>();
 
@@ -121,7 +187,7 @@ bool math::wide_integer::test_uintwide_t_float_convert()
     result_is_ok &= (str_boost_signed == str_local_signed);
   }
 
-  for(std::size_t i = 0U; i < 0x10000U; ++i)
+  for(std::size_t i = 0U; i < 0x40000U; ++i)
   {
     const double d = get_random_float<double, -1, 75>();
 
@@ -132,6 +198,30 @@ bool math::wide_integer::test_uintwide_t_float_convert()
     const std::string str_local_signed = hexlexical_cast((local_uint_type) n_local);
 
     result_is_ok &= (str_boost_signed == str_local_signed);
+  }
+
+  engine_man.seed(static_cast<typename std::mt19937::result_type>(std::clock()));
+
+  for(std::size_t i = 0U; i < 0x40000U; ++i)
+  {
+    std::string str_digits;
+
+    get_random_digit_string<31U>(str_digits);
+
+    const boost_sint_type n_boost = boost_sint_type(str_digits.c_str());
+    const local_sint_type n_local = local_sint_type(str_digits.c_str());
+
+    const float f_boost = (float) n_boost;
+    const float f_local = (float) n_local;
+
+    using std::fabs;
+
+    // TBD: As soon as the rounding agrees with that used in Boost.Multiprecision,
+    // this should be an exact comparison.
+    const float closeness      = fabs(1.0F - fabs(f_boost / f_local));
+    const bool  result_f_is_ok = (closeness < std::numeric_limits<float>::epsilon() * 2.0F);
+
+    result_is_ok &= result_f_is_ok;
   }
 
   return result_is_ok;

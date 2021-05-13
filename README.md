@@ -250,6 +250,7 @@ enabled or disabled with the compiler switches:
 
 ```C
 #define WIDE_INTEGER_DISABLE_IOSTREAM
+#define WIDE_INTEGER_DISABLE_FLOAT_INTEROP
 #define WIDE_INTEGER_HAS_LIMB_TYPE_UINT64
 #define WIDE_INTEGER_HAS_MUL_8_BY_8_UNROLL
 ```
@@ -259,6 +260,15 @@ I/O streaming can optionally be disabled with the compiler switch:
 
 ```C
 #define WIDE_INTEGER_DISABLE_IOSTREAM
+```
+
+Interoperability with built-in floating-point types
+such as construct-from, cast-to, binary arithmetic with
+built-in floating-point types can be
+optionally disabled by defining:
+
+```C
+#define WIDE_INTEGER_DISABLE_FLOAT_INTEROP
 ```
 
 When working on high-performance systems having `unsigned __int128`
