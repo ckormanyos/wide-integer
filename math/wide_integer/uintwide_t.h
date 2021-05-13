@@ -1888,18 +1888,18 @@
         u.negate();
       }
 
-      const     size_t my_msb = static_cast<size_t>(msb(u));
-      const     size_t ilim   = size_t
-                                (
-                                   size_t(  size_t(my_msb + 1U) / size_t(std::numeric_limits<limb_type>::digits))
-                                 + size_t(((size_t(my_msb + 1U) % size_t(std::numeric_limits<limb_type>::digits)) != 0U) ? size_t(1U) : size_t(0U))
-                                );
+      const size_t my_msb = static_cast<size_t>(msb(u));
+      const size_t ilim   = size_t
+                            (
+                               size_t(  size_t(my_msb + 1U) / size_t(std::numeric_limits<limb_type>::digits))
+                             + size_t(((size_t(my_msb + 1U) % size_t(std::numeric_limits<limb_type>::digits)) != 0U) ? size_t(1U) : size_t(0U))
+                            );
 
-      constexpr size_t jlim   = (std::max)
-                                (
-                                  size_t(size_t(std::numeric_limits<limb_type>::digits) / size_t(std::numeric_limits<std::uint8_t>::digits)),
-                                  size_t(1U)
-                                );
+      const size_t jlim   = (std::max)
+                            (
+                              size_t(size_t(std::numeric_limits<limb_type>::digits) / size_t(std::numeric_limits<std::uint8_t>::digits)),
+                              size_t(1U)
+                            );
 
       local_builtin_float_type a = local_builtin_float_type(0.0F);
 
