@@ -1889,7 +1889,7 @@
         u.negate();
       }
 
-      const size_t my_msb = msb(u);
+      const size_t my_msb = static_cast<size_t>(msb(u));
 
       // TBD: This behaves very slightly different than Boost.Multiprecision's
       // backend integer to float conversion.
