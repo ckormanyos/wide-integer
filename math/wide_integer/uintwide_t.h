@@ -1878,7 +1878,6 @@
     {
       using local_unsigned_wide_integer_type = uintwide_t<Width2, limb_type, AllocatorType, false>;
       using local_builtin_float_type         = FloatingPointType;
-      using local_unsigned_dest_type         = typename detail::uint_type_helper<size_t(std::numeric_limits<local_builtin_float_type>::digits)>::exact_unsigned_type;
 
       const bool u_is_neg = is_neg(*this);
 
@@ -1889,20 +1888,44 @@
         u.negate();
       }
 
-      const size_t my_msb = static_cast<size_t>(msb(u));
+      const     size_t my_msb = static_cast<size_t>(msb(u));
+      const     size_t ilim   = size_t
+                                (
+                                   size_t(  size_t(my_msb + 1U) / size_t(std::numeric_limits<limb_type>::digits))
+                                 + size_t(((size_t(my_msb + 1U) % size_t(std::numeric_limits<limb_type>::digits)) != 0U) ? size_t(1U) : size_t(0U))
+                                );
 
-      // TBD: This behaves very slightly different than Boost.Multiprecision's
-      // backend integer to float conversion.
-      // TBD: Make this cast operator to round the same way as Boost.Multiprecision.
-      const size_t right_shift_amount =
-        ((my_msb > size_t((std::max)(std::numeric_limits<local_unsigned_dest_type>::digits, 1) - 1))
-           ? size_t(my_msb - size_t((std::max)(std::numeric_limits<local_unsigned_dest_type>::digits, 1) - 1))
-           : size_t(0U));
+      constexpr size_t jlim   = (std::max)
+                                (
+                                  size_t(size_t(std::numeric_limits<limb_type>::digits) / size_t(std::numeric_limits<std::uint8_t>::digits)),
+                                  size_t(1U)
+                                );
 
-      const local_unsigned_dest_type ul = (local_unsigned_dest_type) (u >> right_shift_amount);
+      local_builtin_float_type a = local_builtin_float_type(0.0F);
 
-      using std::ldexp;
-      const local_builtin_float_type a = ldexp((local_builtin_float_type) ul, (int) right_shift_amount);
+      size_t e2 = 0U;
+
+      for(size_t i = size_t(0U); i < ilim; ++i)
+      {
+        limb_type lm = u.values[i];
+
+        long double ld = 0.0L;
+
+        for(size_t j = size_t(0U); j < jlim; ++j)
+        {
+          using std::ldexp;
+
+          const long double f8 = ldexp((long double) static_cast<std::uint8_t>(lm), (int) e2);
+
+          ld += f8;
+
+          lm = limb_type(lm >> 8U);
+
+          e2 = size_t(e2 + 8U);
+        }
+
+        a += (local_builtin_float_type) ld;
+      }
 
       const local_builtin_float_type f = ((u_is_neg == false) ? a : -a);
 

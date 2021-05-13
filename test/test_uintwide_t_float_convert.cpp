@@ -200,9 +200,11 @@ bool math::wide_integer::test_uintwide_t_float_convert()
     result_is_ok &= (str_boost_signed == str_local_signed);
   }
 
-  engine_man.seed(static_cast<typename std::mt19937::result_type>(std::clock()));
+  engine_man.seed(static_cast<typename std::mt19937::result_type>                                                        (std::clock()));
+  engine_sgn.seed(static_cast<typename std::ranlux24_base::result_type>                                                  (std::clock()));
+  engine_e10.seed(static_cast<typename std::linear_congruential_engine<std::uint32_t, 48271, 0, 2147483647>::result_type>(std::clock()));
 
-  for(std::size_t i = 0U; i < 0x40000U; ++i)
+  for(std::size_t i = 0U; i < 0x100000U; ++i)
   {
     std::string str_digits;
 
@@ -216,10 +218,8 @@ bool math::wide_integer::test_uintwide_t_float_convert()
 
     using std::fabs;
 
-    // TBD: As soon as the rounding agrees with that used in Boost.Multiprecision,
-    // this should be an exact comparison.
     const float closeness      = fabs(1.0F - fabs(f_boost / f_local));
-    const bool  result_f_is_ok = (closeness < std::numeric_limits<float>::epsilon() * 2.0F);
+    const bool  result_f_is_ok = (closeness < (std::numeric_limits<float>::epsilon() * 2.0F));
 
     result_is_ok &= result_f_is_ok;
   }
