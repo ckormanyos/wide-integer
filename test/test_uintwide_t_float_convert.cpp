@@ -75,7 +75,6 @@ namespace
   void get_random_digit_string(std::string& str)
   {
     static_assert(MinDigitsToGet >=  2U, "Error: The minimum number of digits to get must be  2 or more");
-    static_assert(MaxDigitsToGet <= 31U, "Error: The maximum number of digits to get must be 31 or less");
 
     static std::uniform_int_distribution<unsigned>
     dist_sgn
@@ -163,7 +162,11 @@ bool math::wide_integer::test_uintwide_t_float_convert()
   using boost_uint_type = boost::multiprecision::number<boost_uint_backend_type, boost::multiprecision::et_on>;
   using boost_sint_type = boost::multiprecision::number<boost_sint_backend_type, boost::multiprecision::et_on>;
 
-  using local_limb_type = std::uint32_t;
+  using boost_uint_limb_pointer_type =
+    typename boost_uint_backend_type::cpp_int_backend::base_type::cpp_int_base::limb_pointer;
+
+  using local_limb_type =
+    typename std::iterator_traits<boost_uint_limb_pointer_type>::value_type;
 
   using local_uint_type = math::wide_integer::uintwide_t<digits2, local_limb_type, void>;
   using local_sint_type = math::wide_integer::uintwide_t<digits2, local_limb_type, void, true>;
@@ -219,7 +222,27 @@ bool math::wide_integer::test_uintwide_t_float_convert()
     using std::fabs;
 
     const float closeness      = fabs(1.0F - fabs(f_boost / f_local));
-    const bool  result_f_is_ok = (closeness < (std::numeric_limits<float>::epsilon() * 2.0F));
+    const bool  result_f_is_ok = (closeness < std::numeric_limits<float>::epsilon());
+
+    result_is_ok &= result_f_is_ok;
+  }
+
+  for(std::size_t i = 0U; i < 0x40000U; ++i)
+  {
+    std::string str_digits;
+
+    get_random_digit_string<71U>(str_digits);
+
+    const boost_sint_type n_boost = boost_sint_type(str_digits.c_str());
+    const local_sint_type n_local = local_sint_type(str_digits.c_str());
+
+    const double d_boost = (double) n_boost;
+    const double d_local = (double) n_local;
+
+    using std::fabs;
+
+    const double closeness      = fabs(1.0 - fabs(d_boost / d_local));
+    const bool   result_f_is_ok = (closeness < std::numeric_limits<double>::epsilon());
 
     result_is_ok &= result_f_is_ok;
   }
