@@ -10,6 +10,9 @@ such as `uint128_t`, `uint256_t`, `uint384_t`, `uint512_t`, `uint1024_t`, `uint1
 These can be used essentially like regular built-in integers.
 Corresponding _signed_ integer types such as `int128_t`, `int256_t`, etc. can also be used.
 
+The big integer class is called `math::wide_integer::uintwide_t`
+(i.e., `uintwide_t` residing in the `namespace` `math::wide_integer`).
+
 Wide-integer supports both unsigned as well as signed integral types having width
 of <img src="https://render.githubusercontent.com/render/math?math=1{\ldots}63{\times}2^{N}">
 while being 16, 24, 32 or larger.
@@ -185,10 +188,12 @@ test/test.cpp                               \
 test/test_uintwide_t_boost_backend.cpp      \
 test/test_uintwide_t_edge_cases.cpp         \
 test/test_uintwide_t_examples.cpp           \
+test/test_uintwide_t_float_convert.cpp      \
 test/test_uintwide_t_n_base.cpp             \
 test/test_uintwide_t_n_binary_ops_base.cpp  \
 test/test_uintwide_t_spot_values.cpp        \
 examples/example000_numeric_limits.cpp      \
+examples/example000a_builtin_convert.cpp    \
 examples/example001_mul_div.cpp             \
 examples/example001a_div_mod.cpp            \
 examples/example002_shl_shr.cpp             \
@@ -250,6 +255,7 @@ enabled or disabled with the compiler switches:
 
 ```C
 #define WIDE_INTEGER_DISABLE_IOSTREAM
+#define WIDE_INTEGER_DISABLE_FLOAT_INTEROP
 #define WIDE_INTEGER_HAS_LIMB_TYPE_UINT64
 #define WIDE_INTEGER_HAS_MUL_8_BY_8_UNROLL
 ```
@@ -259,6 +265,15 @@ I/O streaming can optionally be disabled with the compiler switch:
 
 ```C
 #define WIDE_INTEGER_DISABLE_IOSTREAM
+```
+
+Interoperability with built-in floating-point types
+such as construct-from, cast-to, binary arithmetic with
+built-in floating-point types can be
+optionally disabled by defining:
+
+```C
+#define WIDE_INTEGER_DISABLE_FLOAT_INTEROP
 ```
 
 When working on high-performance systems having `unsigned __int128`

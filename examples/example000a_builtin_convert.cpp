@@ -14,11 +14,26 @@ bool math::wide_integer::example000a_builtin_convert()
 
   using int256_t = math::wide_integer::int256_t;
 
-  const int256_t n = -1234567.89;
+  {
+    const int256_t n = -1234567.89;
 
-  const bool result_n_is_ok = (n == -1234567);
+    const bool result_n_is_ok = (n == -1234567);
 
-  result_is_ok &= result_n_is_ok;
+    result_is_ok &= result_n_is_ok;
+  }
+
+  {
+    const int256_t n = "-12345678900000000000000000000000";
+
+    const float    f = (float) n;
+
+    using std::fabs;
+
+    const float closeness     = fabs(1.0F - fabs(f / -1.23456789E31F));
+    const bool result_f_is_ok = (closeness < std::numeric_limits<float>::epsilon());
+
+    result_is_ok &= result_f_is_ok;
+  }
 
   return result_is_ok;
 }
