@@ -1881,12 +1881,7 @@
 
       const bool u_is_neg = is_neg(*this);
 
-      local_unsigned_wide_integer_type u(*this);
-
-      if(u_is_neg)
-      {
-        u.negate();
-      }
+      const local_unsigned_wide_integer_type u((u_is_neg == false) ? *this : -*this);
 
       const size_t my_msb = static_cast<size_t>(msb(u));
       const size_t ilim   = size_t
@@ -1895,41 +1890,30 @@
                              + size_t(((size_t(my_msb + 1U) % size_t(std::numeric_limits<limb_type>::digits)) != 0U) ? size_t(1U) : size_t(0U))
                             );
 
-      const size_t jlim   = (std::max)
-                            (
-                              size_t(size_t(std::numeric_limits<limb_type>::digits) / size_t(std::numeric_limits<std::uint8_t>::digits)),
-                              size_t(1U)
-                            );
-
       local_builtin_float_type a = local_builtin_float_type(0.0F);
 
-      size_t e2 = 0U;
+      long double ldexp_runner = 1.0L;
 
       for(size_t i = size_t(0U); i < ilim; ++i)
       {
-        limb_type lm = u.values[i];
+        long double ld      = 0.0L;
+        limb_type   lm_mask = limb_type(1ULL);
 
-        long double ld = 0.0L;
-
-        for(size_t j = size_t(0U); j < jlim; ++j)
+        for(size_t j = size_t(0U); j < size_t(std::numeric_limits<limb_type>::digits); ++j)
         {
-          using std::ldexp;
+          if(limb_type(u.values[i] & lm_mask) != limb_type(0U))
+          {
+            ld = static_cast<long double>(ld + ldexp_runner);
+          }
 
-          const long double f8 = ldexp((long double) static_cast<std::uint8_t>(lm), (int) e2);
-
-          ld += f8;
-
-          lm = limb_type(lm >> 8U);
-
-          e2 = size_t(e2 + 8U);
+          lm_mask      = limb_type(lm_mask << 1U);
+          ldexp_runner = static_cast<long double>(ldexp_runner * 2.0L);
         }
 
         a += (local_builtin_float_type) ld;
       }
 
-      const local_builtin_float_type f = ((u_is_neg == false) ? a : -a);
-
-      return f;
+      return local_builtin_float_type((u_is_neg == false) ? a : -a);
     }
     #endif
 

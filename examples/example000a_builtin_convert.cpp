@@ -8,6 +8,15 @@
 #include <math/wide_integer/uintwide_t.h>
 #include <math/wide_integer/uintwide_t_examples.h>
 
+namespace local
+{
+  template<typename NumericType>
+  WIDE_INTEGER_CONSTEXPR NumericType fabs(NumericType a)
+  {
+    return ((a < NumericType(0)) ? -a : a);
+  }
+}
+
 bool math::wide_integer::example000a_builtin_convert()
 {
   bool result_is_ok = true;
@@ -23,14 +32,18 @@ bool math::wide_integer::example000a_builtin_convert()
   }
 
   {
-    const int256_t n = "-12345678900000000000000000000000";
+    WIDE_INTEGER_CONSTEXPR int256_t n = "-12345678900000000000000000000000";
 
-    const float    f = (float) n;
+    WIDE_INTEGER_CONSTEXPR float    f = (float) n;
 
-    using std::fabs;
+    using local::fabs;
 
-    const float closeness     = fabs(1.0F - fabs(f / -1.23456789E31F));
-    const bool result_f_is_ok = (closeness < std::numeric_limits<float>::epsilon());
+    WIDE_INTEGER_CONSTEXPR float closeness     = fabs(1.0F - fabs(f / -1.23456789E31F));
+    WIDE_INTEGER_CONSTEXPR bool result_f_is_ok = (closeness < std::numeric_limits<float>::epsilon());
+
+    #if defined(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST) && (WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST != 0)
+    static_assert(result_f_is_ok == true, "Error: example000a_builtin_convert not OK!");
+    #endif
 
     result_is_ok &= result_f_is_ok;
   }
