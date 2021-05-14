@@ -162,11 +162,14 @@ bool math::wide_integer::test_uintwide_t_float_convert()
   using boost_uint_type = boost::multiprecision::number<boost_uint_backend_type, boost::multiprecision::et_on>;
   using boost_sint_type = boost::multiprecision::number<boost_sint_backend_type, boost::multiprecision::et_on>;
 
-  using boost_uint_limb_pointer_type =
-    typename boost_uint_backend_type::cpp_int_backend::base_type::cpp_int_base::limb_pointer;
+  using boost_limb_type =
+    typename std::iterator_traits<typename boost_uint_backend_type::cpp_int_backend::base_type::cpp_int_base::limb_pointer>::value_type;
 
-  using local_limb_type =
-    typename std::iterator_traits<boost_uint_limb_pointer_type>::value_type;
+  #if defined(WIDE_INTEGER_HAS_LIMB_TYPE_UINT64)
+  using local_limb_type = std::uint64_t;
+  #else
+  using local_limb_type = std::uint32_t;
+  #endif
 
   using local_uint_type = math::wide_integer::uintwide_t<digits2, local_limb_type, void>;
   using local_sint_type = math::wide_integer::uintwide_t<digits2, local_limb_type, void, true>;
@@ -221,8 +224,12 @@ bool math::wide_integer::test_uintwide_t_float_convert()
 
     using std::fabs;
 
+    constexpr float cast_tol_float   = ((std::is_same<boost_limb_type, local_limb_type>::value == true)
+                                         ? std::numeric_limits<float>::epsilon()
+                                         : std::numeric_limits<float>::epsilon() * 2.0F);
+
     const float closeness      = fabs(1.0F - fabs(f_boost / f_local));
-    const bool  result_f_is_ok = (closeness < std::numeric_limits<float>::epsilon());
+    const bool  result_f_is_ok = (closeness < cast_tol_float);
 
     result_is_ok &= result_f_is_ok;
   }
@@ -241,8 +248,12 @@ bool math::wide_integer::test_uintwide_t_float_convert()
 
     using std::fabs;
 
+    constexpr double cast_tol_double = ((std::is_same<boost_limb_type, local_limb_type>::value == true)
+                                         ? std::numeric_limits<double>::epsilon()
+                                         : std::numeric_limits<double>::epsilon() * 2.0);
+
     const double closeness      = fabs(1.0 - fabs(d_boost / d_local));
-    const bool   result_f_is_ok = (closeness < std::numeric_limits<double>::epsilon());
+    const bool   result_f_is_ok = (closeness < cast_tol_double);
 
     result_is_ok &= result_f_is_ok;
   }
