@@ -112,21 +112,23 @@
     using exact_unsigned_type = std::uintmax_t;
   };
 
-  template<const size_t BitCount> struct uint_type_helper<BitCount, typename std::enable_if<                     (BitCount <=   8U)>::type> { using exact_unsigned_type = std::uint8_t;      using fast_unsigned_type = std::uint_fast8_t;  };
-  template<const size_t BitCount> struct uint_type_helper<BitCount, typename std::enable_if<(BitCount >=  9U) && (BitCount <=  16U)>::type> { using exact_unsigned_type = std::uint16_t;     using fast_unsigned_type = std::uint_fast16_t; };
-  template<const size_t BitCount> struct uint_type_helper<BitCount, typename std::enable_if<(BitCount >= 17U) && (BitCount <=  32U)>::type> { using exact_unsigned_type = std::uint32_t;     using fast_unsigned_type = std::uint_fast32_t; };
-  template<const size_t BitCount> struct uint_type_helper<BitCount, typename std::enable_if<(BitCount >= 33U) && (BitCount <=  64U)>::type> { using exact_unsigned_type = std::uint64_t;     using fast_unsigned_type = std::uint_fast64_t; };
+  template<const size_t BitCount> struct uint_type_helper<BitCount, typename std::enable_if<                     (BitCount <=   8U)>::type> { using exact_unsigned_type = std::uint8_t;      using fast_unsigned_type = std::uint_fast8_t;  using fast_signed_type = std::int_fast8_t;  };
+  template<const size_t BitCount> struct uint_type_helper<BitCount, typename std::enable_if<(BitCount >=  9U) && (BitCount <=  16U)>::type> { using exact_unsigned_type = std::uint16_t;     using fast_unsigned_type = std::uint_fast16_t; using fast_signed_type = std::int_fast16_t; };
+  template<const size_t BitCount> struct uint_type_helper<BitCount, typename std::enable_if<(BitCount >= 17U) && (BitCount <=  32U)>::type> { using exact_unsigned_type = std::uint32_t;     using fast_unsigned_type = std::uint_fast32_t; using fast_signed_type = std::int_fast32_t; };
+  template<const size_t BitCount> struct uint_type_helper<BitCount, typename std::enable_if<(BitCount >= 33U) && (BitCount <=  64U)>::type> { using exact_unsigned_type = std::uint64_t;     using fast_unsigned_type = std::uint_fast64_t; using fast_signed_type = std::int_fast64_t; };
   #if defined(WIDE_INTEGER_HAS_LIMB_TYPE_UINT64)
-  template<const size_t BitCount> struct uint_type_helper<BitCount, typename std::enable_if<(BitCount >= 65U) && (BitCount <= 128U)>::type> { using exact_unsigned_type = unsigned __int128; using fast_unsigned_type = unsigned __int128;  };
+  template<const size_t BitCount> struct uint_type_helper<BitCount, typename std::enable_if<(BitCount >= 65U) && (BitCount <= 128U)>::type> { using exact_unsigned_type = unsigned __int128; using fast_unsigned_type = unsigned __int128;  using fast_signed_type = signed __int128;  };
   #endif
 
-  using unsinged_fast_type = typename uint_type_helper<size_t(std::numeric_limits<size_t>::digits)>::fast_unsigned_type;
+  using unsinged_fast_type = typename uint_type_helper<size_t(std::numeric_limits<size_t   >::digits)    >::fast_unsigned_type;
+  using   singed_fast_type = typename uint_type_helper<size_t(std::numeric_limits<ptrdiff_t>::digits + 1)>::fast_signed_type;
 
   }
 
   using detail::size_t;
   using detail::ptrdiff_t;
   using detail::unsinged_fast_type;
+  using detail::singed_fast_type;
 
   // Forward declaration of the uintwide_t template class.
   template<const size_t Width2,
@@ -1508,7 +1510,7 @@
         {
           field_width = (std::min)(field_width, unsinged_fast_type(sizeof(str_temp) - 1U));
 
-          while(std::int_fast32_t(pos) > std::int_fast32_t((sizeof(str_temp) - 1U) - field_width))
+          while(singed_fast_type(pos) > singed_fast_type((sizeof(str_temp) - 1U) - field_width))
           {
             --pos;
 
@@ -1572,7 +1574,7 @@
         {
           field_width = (std::min)(field_width, unsinged_fast_type(sizeof(str_temp) - 1U));
 
-          while(std::int_fast32_t(pos) > std::int_fast32_t((sizeof(str_temp) - 1U) - field_width))
+          while(singed_fast_type(pos) > singed_fast_type((sizeof(str_temp) - 1U) - field_width))
           {
             --pos;
 
@@ -1660,7 +1662,7 @@
         {
           field_width = (std::min)(field_width, unsinged_fast_type(sizeof(str_temp) - 1U));
 
-          while(std::int_fast32_t(pos) > std::int_fast32_t((sizeof(str_temp) - 1U) - field_width))
+          while(singed_fast_type(pos) > singed_fast_type((sizeof(str_temp) - 1U) - field_width))
           {
             --pos;
 
@@ -1743,7 +1745,7 @@
 
       limb_type hi_part = limb_type(0U);
 
-      for(std::int_fast32_t i = std::int_fast32_t((number_of_limbs - 1U) - u_offset); std::int_fast32_t(i) >= 0; --i)
+      for(singed_fast_type i = singed_fast_type((number_of_limbs - 1U) - u_offset); singed_fast_type(i) >= 0; --i)
       {
         long_numerator =
           double_limb_type
@@ -2940,7 +2942,7 @@
             {
               limb_type previous_u = limb_type(0U);
 
-              for(std::int_fast32_t rl = std::int_fast32_t(n - 1U), ul = std::int_fast32_t(number_of_limbs - (v_offset + 1U)); rl >= 0; --rl, --ul)
+              for(singed_fast_type rl = singed_fast_type(n - 1U), ul = singed_fast_type(number_of_limbs - (v_offset + 1U)); rl >= 0; --rl, --ul)
               {
                 const double_limb_type t =
                   double_limb_type(  uu[unsinged_fast_type(ul)]
@@ -3014,7 +3016,7 @@
             ? limb_type(0U)
             : limb_type((std::numeric_limits<limb_type>::max)() << std::uint_fast16_t(std::uint_fast16_t(std::numeric_limits<limb_type>::digits) - right_shift_amount));
 
-        for(std::int_fast32_t i = std::int_fast32_t((number_of_limbs - 1U) - offset); i >= 0; --i)
+        for(singed_fast_type i = singed_fast_type((number_of_limbs - 1U) - offset); i >= 0; --i)
         {
           const limb_type t = values[unsinged_fast_type(i)];
 
@@ -3523,12 +3525,12 @@
 
     using local_unsigned_integral_type = UnsignedIntegralType;
 
-    std::int_fast32_t i { };
+    singed_fast_type i { };
 
     // TBD: This could potentially be improved with a binary
     // search for the highest bit position in the type.
 
-    for(i = std::int_fast32_t(std::numeric_limits<local_unsigned_integral_type>::digits - 1); i >= 0; --i)
+    for(i = singed_fast_type(std::numeric_limits<local_unsigned_integral_type>::digits - 1); i >= 0; --i)
     {
       if((u & UnsignedIntegralType(local_unsigned_integral_type(1U) << i)) != 0U)
       {
@@ -3536,7 +3538,7 @@
       }
     }
 
-    return unsinged_fast_type((std::max)(std::int_fast32_t(0), i));
+    return unsinged_fast_type((std::max)(singed_fast_type(0), i));
   }
 
   template<>
