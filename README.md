@@ -11,7 +11,8 @@ These can be used essentially like regular built-in integers.
 Corresponding _signed_ integer types such as `int128_t`, `int256_t`, etc. can also be used.
 
 The big integer class is called `math::wide_integer::uintwide_t`
-(i.e., `uintwide_t` residing in the `namespace` `math::wide_integer`).
+(i.e., `uintwide_t` residing in the `namespace` `math::wide_integer`),
+as shown in greater detail below.
 
 Wide-integer supports both unsigned as well as signed integral types having width
 of <img src="https://render.githubusercontent.com/render/math?math=1{\ldots}63{\times}2^{N}">
@@ -37,7 +38,7 @@ as shown in the [examples](./examples).
   - Clean header-only C++11 design.
   - Seamless portability to any modern C++11, 14, 17, 20 compiler.
   - Scalability with small memory footprint and efficiency suitable for both PC/workstation systems as well as _bare-metal_ embedded systems.
-  - C++20 `constexpr`-ness for construction, binary arithmetic, comparison operations, some elementary functions and more.
+  - C++20 `constexpr`-ness for construction, cast to built-in types, binary arithmetic, comparison operations, some elementary functions and more.
 
 ## Quick start
 
@@ -82,8 +83,8 @@ class uintwide_t;
 
 `uintwide_t` also has a third optional template paramter that
 can be used to set the _allocator_ _type_ used for internal storage of the
-big integer type. This optional parameter can reduce stack consumption
-and might be especially useful for high digit counts.
+big integer type. This template parameter can reduce stack consumption
+and can be especially useful for high digit counts.
 If the `AllocatorType` template parameter is `void`, allocation
 is performed on the stack using an `array`-like, statically-sized
 internal storage representation.
@@ -248,10 +249,10 @@ Portability of the code is another key point of focus. Special care
 has been taken to test in certain high-performance embedded real-time
 programming environments.
 
-### Compiler switches
+### Configuration macros (compile-time)
 
 Various configuration features can optionally be
-enabled or disabled with the compiler switches:
+enabled or disabled at compile time with the compiler switches:
 
 ```C
 #define WIDE_INTEGER_DISABLE_IOSTREAM
@@ -267,6 +268,9 @@ I/O streaming can optionally be disabled with the compiler switch:
 #define WIDE_INTEGER_DISABLE_IOSTREAM
 ```
 
+The default setting is `WIDE_INTEGER_DISABLE_IOSTREAM` not set
+and I/O streaming operations are enabled.
+
 Interoperability with built-in floating-point types
 such as construct-from, cast-to, binary arithmetic with
 built-in floating-point types can be
@@ -275,6 +279,11 @@ optionally disabled by defining:
 ```C
 #define WIDE_INTEGER_DISABLE_FLOAT_INTEROP
 ```
+
+The default setting is `WIDE_INTEGER_DISABLE_FLOAT_INTEROP` not set
+and all available functions implementing construction-from,
+cast-to, binary arithmetic with built-in floating-point types
+are enabled.
 
 When working on high-performance systems having `unsigned __int128`
 (an extended-width, yet non-standard data type),
@@ -308,7 +317,7 @@ using uint_fast256_t = math::wide_integer::uintwide_t<256U, std::uint64_t>;
 static uint_fast256_t x = 42U;
 ```
 
-Another potential optimization macro can be activated with
+Another potential optimization macro can be activated with:
 
 ```C
 #define WIDE_INTEGER_HAS_MUL_8_BY_8_UNROLL
