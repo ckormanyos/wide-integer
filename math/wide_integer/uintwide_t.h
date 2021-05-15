@@ -2257,10 +2257,8 @@
                 ;
 
         r[7U] = local_limb_type
-                (local_double_limb_type
-                  (
+                (
                     detail::make_hi<local_limb_type>(rd6)
-                  )
                   + detail::make_hi<local_limb_type>(a3b3)
                 )
                 ;
@@ -2369,10 +2367,7 @@
 
         r[7U] = local_limb_type
                 (
-                  local_double_limb_type
-                  (
                     detail::make_hi<local_limb_type>(rd6)
-                  )
                   + static_cast<local_limb_type>    (a[7U] * local_double_limb_type(b[0U]))
                   + static_cast<local_limb_type>    (a[6U] * local_double_limb_type(b[1U]))
                   + static_cast<local_limb_type>    (a[5U] * local_double_limb_type(b[2U]))
