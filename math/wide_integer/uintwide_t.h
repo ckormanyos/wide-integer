@@ -1464,7 +1464,7 @@
             {
               char c = char(t.values[0U] & mask);
 
-              if(c <= 8) { c += char(0x30); }
+              if(c <= 8) { c = char(c + char(0x30)); }
 
               --pos;
 
@@ -1481,7 +1481,7 @@
             {
               char c = char(tu.values[0U] & mask);
 
-              if(c <= 8) { c += char(0x30); }
+              if(c <= 8) { c = char(c + char(0x30)); }
 
               --pos;
 
@@ -1610,8 +1610,8 @@
             {
               char c(t.values[0U] & mask);
 
-              if      (c <= char(  9))                      { c += char(0x30); }
-              else if((c >= char(0xA)) && (c <= char(0xF))) { c += (is_uppercase ? char(55) : char(87)); }
+              if      (c <= char(  9))                      { c = char(c + char(0x30)); }
+              else if((c >= char(0xA)) && (c <= char(0xF))) { c = char(c + (is_uppercase ? char(55) : char(87))); }
 
               --pos;
 
@@ -1628,8 +1628,8 @@
             {
               char c(tu.values[0U] & mask);
 
-              if      (c <= char(  9))                      { c += char(0x30); }
-              else if((c >= char(0xA)) && (c <= char(0xF))) { c += (is_uppercase ? char(55) : char(87)); }
+              if      (c <= char(  9))                      { c = char(c + char(0x30)); }
+              else if((c >= char(0xA)) && (c <= char(0xF))) { c = char(c + (is_uppercase ? char(55) : char(87))); }
 
               --pos;
 
@@ -3591,7 +3591,7 @@
 
   }
 
-  template<const std::uint32_t Width2,
+  template<const size_t Width2,
            typename LimbType,
            typename AllocatorType,
            const bool IsSigned>
@@ -3671,7 +3671,7 @@
     return bpos;
   }
 
-  template<const std::uint32_t Width2,
+  template<const size_t Width2,
            typename LimbType,
            typename AllocatorType,
            const bool IsSigned>
@@ -4019,7 +4019,7 @@
     // adaptation of existing code from Boost.Multiprecision.
 
     using local_ularge_type = UnsignedLargeType;
-    using local_ushort_type = typename detail::uint_type_helper<std::uint32_t(std::numeric_limits<local_ularge_type>::digits / 2)>::exact_unsigned_type;
+    using local_ushort_type = typename detail::uint_type_helper<size_t(std::numeric_limits<local_ularge_type>::digits / 2)>::exact_unsigned_type;
 
     for(;;)
     {
