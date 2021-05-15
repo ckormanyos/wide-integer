@@ -1207,7 +1207,7 @@
         // Bitwise OR.
         for(unsinged_fast_type i = 0U; i < number_of_limbs; ++i)
         {
-          values[i] = limb_type(values[i] | other.values[i]);
+          values[size_t(i)] = limb_type(values[size_t(i)] | other.values[size_t(i)]);
         }
       }
 
@@ -1225,7 +1225,7 @@
         // Bitwise XOR.
         for(unsinged_fast_type i = 0U; i < number_of_limbs; ++i)
         {
-          values[i] = limb_type(values[i] ^ other.values[i]);
+          values[size_t(i)] = limb_type(values[size_t(i)] ^ other.values[size_t(i)]);
         }
       }
 
@@ -1239,7 +1239,7 @@
         // Bitwise AND.
         for(unsinged_fast_type i = 0U; i < number_of_limbs; ++i)
         {
-          values[i] = limb_type(values[i] & other.values[i]);
+          values[size_t(i)] = limb_type(values[size_t(i)] & other.values[size_t(i)]);
         }
       }
 
@@ -2855,7 +2855,7 @@
           {
             std::copy(values.cbegin(), values.cend(), uu.begin());
 
-            uu[number_of_limbs - u_offset] = limb_type(0U);
+            uu[size_t(local_uint_index_type(number_of_limbs) - u_offset)] = limb_type(0U);
 
             vv = other.values;
           }
@@ -2902,14 +2902,14 @@
             // Set nv = q_hat * (v[1, ... n]).
             uu_array_type nv;
 
-            nv[n] = eval_multiply_1d(nv.data(), vv.data(), q_hat, n);
+            nv[size_t(n)] = eval_multiply_1d(nv.data(), vv.data(), q_hat, n);
 
             const bool has_borrow =
               eval_subtract_n(uu.data() + (uj - n), uu.data() + (uj - n), nv.data(), n + 1U);
 
 
             // Get the result data.
-            values[m - j] = limb_type(q_hat - (has_borrow ? 1U : 0U));
+            values[size_t(m - j)] = limb_type(q_hat - (has_borrow ? 1U : 0U));
 
             // Step D5: Test the remainder.
             // Set the result value: Set result.m_data[m - j] = q_hat.
@@ -2949,7 +2949,7 @@
                                    + double_limb_type(double_limb_type(previous_u) << std::numeric_limits<limb_type>::digits));
 
                 remainder->values[size_t(rl)] = limb_type(double_limb_type(t / d));
-                previous_u                    = limb_type(double_limb_type(t - double_limb_type(double_limb_type(d) * remainder->values[unsinged_fast_type(rl)])));
+                previous_u                    = limb_type(double_limb_type(t - double_limb_type(double_limb_type(d) * remainder->values[size_t(rl)])));
               }
             }
 
@@ -2984,9 +2984,9 @@
 
         for(unsinged_fast_type i = offset; i < number_of_limbs; ++i)
         {
-          const limb_type t = values[i];
+          const limb_type t = values[size_t(i)];
 
-          values[i] = limb_type(limb_type(t << local_integral_type(left_shift_amount)) | part_from_previous_value);
+          values[size_t(i)] = limb_type(limb_type(t << local_integral_type(left_shift_amount)) | part_from_previous_value);
 
           part_from_previous_value = limb_type(t >> local_integral_type(unsinged_fast_type(std::numeric_limits<limb_type>::digits - left_shift_amount)));
         }
@@ -3148,7 +3148,7 @@
     {
       for(unsinged_fast_type i = 0U; i < number_of_limbs; ++i)
       {
-        values[i] = limb_type(~values[size_t(i)]);
+        values[size_t(i)] = limb_type(~values[size_t(i)]);
       }
     }
 
@@ -3164,7 +3164,7 @@
 
       if(i == unsinged_fast_type(values.size() - 1U))
       {
-        ++values[i];
+        ++values[size_t(i)];
       }
     }
 
