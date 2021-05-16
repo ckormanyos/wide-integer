@@ -8,7 +8,11 @@ unsigned and signed integral types.
 This C++ template header-only library implements drop-in big integer types
 such as `uint128_t`, `uint256_t`, `uint384_t`, `uint512_t`, `uint1024_t`, `uint1536_t`, etc.
 These can be used essentially like regular built-in integers.
-Corresponding integer signed types such as `int128_t`, `int256_t`, etc. can also be used.
+Corresponding _signed_ integer types such as `int128_t`, `int256_t`, etc. can also be used.
+
+The big integer class is called `math::wide_integer::uintwide_t`
+(i.e., `uintwide_t` residing in the `namespace` `math::wide_integer`),
+as shown in greater detail below.
 
 Wide-integer supports both unsigned as well as signed integral types having width
 of <img src="https://render.githubusercontent.com/render/math?math=1{\ldots}63{\times}2^{N}">
@@ -34,14 +38,14 @@ as shown in the [examples](./examples).
   - Clean header-only C++11 design.
   - Seamless portability to any modern C++11, 14, 17, 20 compiler.
   - Scalability with small memory footprint and efficiency suitable for both PC/workstation systems as well as _bare-metal_ embedded systems.
-  - C++20 `constexpr`-ness for construction, binary arithmetic, comparison operations, some elementary functions and more.
+  - C++20 `constexpr`-_ness_ for construction, cast to built-in types, binary arithmetic, comparison operations, some elementary functions and more.
 
 ## Quick start
 
-Easy application follows via traditional C-style typedef or C++11 alias.
-The defined type can be used very much like a built-in unsinged integral type.
-In the following example, the static `uint512_t` variable `x` is initialized
-with unsigned value `3U`.
+Easy application follows via traditional C-style typedef or C++11 alias
+such as `uint512_t`. An instance of the defined type can be used very much
+like a built-in integral type. In the following code, for example,
+the static `uint512_t` variable `x` is initialized with unsigned value `3U`.
 
 In particular,
 
@@ -54,47 +58,74 @@ static uint512_t x = 3U;
 ```
 
 The code sequence above defines the local data type `uint512_t` with
-a C++11 alias. The first template parameter `512U` sets the binary digit
-count while the second optional template parameter `std::uint32_t`
-sets the internal _limb_ _type_. If the second template parameter is left blank,
+a C++11 alias. The first template parameter `512U` sets the binary width
+(or bit count) while the second optional template parameter `std::uint32_t`
+sets the internal _limb_ _type_. The limb type must be unsigned and one of
+`std::uint8_t`, `std::uint16_t`, `std::uint32_t` or on some systems
+`std::uint64_t`. If the second template parameter `LimbType` is left blank,
 the default limb type is 32 bits in width and unsigned.
 
-The template signature of the `uintwide_t` class is shown below.
+The complete template signature of the `uintwide_t` class is shown below.
 
 ```C
-template<const std::uint32_t Width2,
+namespace math { namespace wide_integer {
+
+namespace detail { using size_t = std::uint32_t; }
+
+using detail::size_t;
+
+// Forward declaration of the uintwide_t template class.
+template<const size_t Width2,
          typename LimbType = std::uint32_t,
          typename AllocatorType = void,
          const bool IsSigned = false>
 class uintwide_t;
+} }
 ```
 
 `uintwide_t` also has a third optional template paramter that
 can be used to set the _allocator_ _type_ used for internal storage of the
-big integer type. This optional parameter can optionally help to reduce
-stack consumption, especially when using higher digit counts.
-If left blank, the default `AllocatorType` is `void`
-allocation on the stack is used with an `array`-like
+big integer type. This template parameter can reduce stack consumption
+and can be especially useful for high digit counts.
+If the `AllocatorType` template parameter is `void`, allocation
+is performed on the stack using an `array`-like, statically-sized
 internal storage representation.
 
+If left blank, the default `AllocatorType` is `void`
+and stack storage is used.
+
+The standard allocator (i.e., `std::allocator<void>`)
+or a custom allocator type can be used if using stack memory
+is insufficient or not well-suited to the application.
+Consider a custom allocator such as, let's say,
+`custom_allocator_type`. Setting the `AllocatorType` template parameter
+to `custom_allocator_type<void>` or optionally
+`custom_allocator_type<LimbType>` uses this custom allocator
+for internal storage. An allocator supplied as
+`AllocatorType` template parameter itself having any
+granularity other than `LimbType` (such as `void`, etc.)
+will internally use `allocator_traits` to `rebind_alloc` to `LimbType`.
+
 The fourth template parameter `IsSigned` can be set to `true`
-to activate a signed integer type. The default value `false`
-is used for unsigned integer types.
+to activate a signed integer type. If left blank,
+the default value of `IsSigned` is  `false`
+and the integer type will be unsigned.
 
 ## Examples
 
 Various interesting and algorithmically challenging
 [examples](./examples) have been implemented.
-It is hoped that the examples provide inspiration and guidance on
-how to use wide-integer.
+It is hoped that the examples provide inspiration and guidance
+on how to use wide-integer.
 
   - ![`example000_numeric_limits.cpp`](./examples/example000_numeric_limits.cpp) verifies parts of the specializations of `std::numeric_limits` for (unsigned) `uint256_t`and (signed) `int256_t`.
+  - ![`example000a_builtin_convert.cpp`](./examples/example000a_builtin_convert.cpp) exercises some conversions to/from (signed) `int256_t`and (signed) `int256_t`.
   - ![`example001_mul_div.cpp`](./examples/example001_mul_div.cpp) performs multiplication and division.
   - ![`example001a_div_mod.cpp`](./examples/example001a_div_mod.cpp) exercises division and modulus calculations.
   - ![`example002_shl_shr.cpp`](./examples/example002_shl_shr.cpp) does a few left and right shift operations.
   - ![`example003_sqrt.cpp`](./examples/example003_sqrt.cpp) computes a square root.
   - ![`example003a_cbrt`](./examples/example003a_cbrt.cpp) computes a cube root.
-  - ![`example004_rootk_pow.cpp`](./examples/example004_rootk_pow.cpp) computes an integral seventh root and its corresponding power.
+  - ![`example004_rootk_pow.cpp`](./examples/example004_rootk_pow.cpp) computes an integral seventh root and its corresponding power. A negative-valued cube root is also tested.
   - ![`example005_powm.cpp`](./examples/example005_powm.cpp) tests the power-modulus function `powm`.
   - ![`example006_gcd.cpp`](./examples/example006_gcd.cpp) tests the computation of a greatest common divisor `gcd`.
   - ![`example007_random_generator.cpp`](./examples/example007_random_generator.cpp) computes some large pseudo-random integers.
@@ -161,10 +192,12 @@ test/test.cpp                               \
 test/test_uintwide_t_boost_backend.cpp      \
 test/test_uintwide_t_edge_cases.cpp         \
 test/test_uintwide_t_examples.cpp           \
+test/test_uintwide_t_float_convert.cpp      \
 test/test_uintwide_t_n_base.cpp             \
 test/test_uintwide_t_n_binary_ops_base.cpp  \
 test/test_uintwide_t_spot_values.cpp        \
 examples/example000_numeric_limits.cpp      \
+examples/example000a_builtin_convert.cpp    \
 examples/example001_mul_div.cpp             \
 examples/example001a_div_mod.cpp            \
 examples/example002_shl_shr.cpp             \
@@ -219,13 +252,14 @@ Portability of the code is another key point of focus. Special care
 has been taken to test in certain high-performance embedded real-time
 programming environments.
 
-### Compiler switches
+### Configuration macros (compile-time)
 
 Various configuration features can optionally be
-enabled or disabled with the compiler switches:
+enabled or disabled at compile time with the compiler switches:
 
 ```C
 #define WIDE_INTEGER_DISABLE_IOSTREAM
+#define WIDE_INTEGER_DISABLE_FLOAT_INTEROP
 #define WIDE_INTEGER_HAS_LIMB_TYPE_UINT64
 #define WIDE_INTEGER_HAS_MUL_8_BY_8_UNROLL
 ```
@@ -236,6 +270,23 @@ I/O streaming can optionally be disabled with the compiler switch:
 ```C
 #define WIDE_INTEGER_DISABLE_IOSTREAM
 ```
+
+The default setting is `WIDE_INTEGER_DISABLE_IOSTREAM` not set
+and I/O streaming operations are enabled.
+
+Interoperability with built-in floating-point types
+such as construct-from, cast-to, binary arithmetic with
+built-in floating-point types can be
+optionally disabled by defining:
+
+```C
+#define WIDE_INTEGER_DISABLE_FLOAT_INTEROP
+```
+
+The default setting is `WIDE_INTEGER_DISABLE_FLOAT_INTEROP` not set
+and all available functions implementing construction-from,
+cast-to, binary arithmetic with built-in floating-point types
+are enabled.
 
 When working on high-performance systems having `unsigned __int128`
 (an extended-width, yet non-standard data type),
@@ -269,7 +320,7 @@ using uint_fast256_t = math::wide_integer::uintwide_t<256U, std::uint64_t>;
 static uint_fast256_t x = 42U;
 ```
 
-Another potential optimization macro can be activated with
+Another potential optimization macro can be activated with:
 
 ```C
 #define WIDE_INTEGER_HAS_MUL_8_BY_8_UNROLL
@@ -381,10 +432,10 @@ int main()
   const uint48_t c_mul = (a * b);
   const uint48_t c_div = (a / b);
 
-  const bool result_is_ok = (   (c_add == ((a64 + b64) & 0x0000FFFFFFFFFFFFULL))
-                             && (c_sub == ((a64 - b64) & 0x0000FFFFFFFFFFFFULL))
-                             && (c_mul == ((a64 * b64) & 0x0000FFFFFFFFFFFFULL))
-                             && (c_div == ((a64 / b64) & 0x0000FFFFFFFFFFFFULL)));
+  const bool result_is_ok = (   (c_add == ((a64 + b64) & UINT64_C(0x0000FFFFFFFFFFFF)))
+                             && (c_sub == ((a64 - b64) & UINT64_C(0x0000FFFFFFFFFFFF)))
+                             && (c_mul == ((a64 * b64) & UINT64_C(0x0000FFFFFFFFFFFF)))
+                             && (c_div == ((a64 / b64) & UINT64_C(0x0000FFFFFFFFFFFF))));
 
   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
 }
@@ -476,15 +527,15 @@ constexpr bool result_is_ok = (   (c == "0xE491A360C57EB4306C61F9A04F7F7D99BE367
 static_assert(result_is_ok == true, "Error: example is not OK!");
 ```
 
-`constexpr`-ness has been checked on GCC 10, clang 10
+`constexpr`-_ness_ of `uintwide_t`has been checked on GCC 10, clang 10
 (with `-std=c++20`) and VC 14.2 (with `/std:c++latest`),
 also for various embedded compilers such as `avr-gcc` 10,
 `arm-non-eabi-gcc` 10, and more. In addition,
-less modern compiler versions,
-some with standards such as C++14, 17, 2a have also been checked
+less modern compiler versions in addition to some other compilers
+having standards such as C++14, 17, 2a have also been checked
 for `constexpr` usage of `uintwide_t`. If you have an older
 compiler, you might have to check the compiler's
-ability to use `constexpr` with wide_integer.
+ability to obtain the entire benefit of `constexpr` with `uintwide_t`.
 
 If full `constexpr` compliance is not available or its
 availability is unknown, the preprocessor symbols below can be useful.
@@ -516,7 +567,7 @@ please feel free to contact me directly so that this can be implemented.
 
 Signed big integers are also supported in the wide_integer library.
 Use the fourth template partameter `IsSigned` to indicate the
-signed-ness (or unsigned-ness) of `uintwide_t`.
+signed-_ness_ (or unsigned-_ness_) of `uintwide_t`.
 The code below, for instance, uses an aliased version of
 signed `int256_t`.
 
@@ -531,3 +582,17 @@ const int256_t n2(-3);
 // 9
 const int256_t n3 = n1 * n2;
 ```
+
+### Negative arguments in number theoretical functions
+
+The following design choices have been implemented when handling
+negative arguments in number theoretical functions.
+
+  - Right shift by `n` bits via `operator>>(n)` performs a so-called _arithmetic_ right shift (ASHR). For signed integers having negative value, right-shift continually fills the sign bit with 1 while shifting right. The result is similar to signed division and closely mimics common compiler behavior for right-shift of negative-valued built-in signed `int`.
+  - `sqrt` of `x` negative returns zero.
+  - `cbrt` of `x` nexative integer returns `-cbrt(-x)`.
+  - <img src="https://render.githubusercontent.com/render/math?math=k^{th}"> root of `x` negative returns zero unless the cube root is being computed, in which case `-cbrt(-x)` is returned.
+  - GCD of `a`, `b` signed converts both arguments to positive and negates the result for `a`, `b` having opposite signs.
+  - Miller-Rabin primality testing treats negative inetegers as positive when testing for prime, thus extending the set of primes <img src="https://render.githubusercontent.com/render/math?math=p\,\in\,\mathbb{Z}">.
+  - MSB/LSB (most/least significant bit) do not differentiate between positive or negative argument such that MSB of a negative integer will be the highest bit of the corresponding unsigned type.
+  - Printing both positive-valued and negative-valued signed integers in hexadecimal format is supported. When printing negative-valued, signed  `uintwide_t` integers hexadecimal format, the sign bit and all other bits are treated as if the integer were unsigned. The negative sign is not explicitly shown when using hexadecimal format, even if the underlying integer is signed and negative-valued. A potential positive sign, however, will be shown for positive-valued signed integers in hexadecimal form in the presence of `std::showpos`.

@@ -1,6 +1,7 @@
 find_package(Boost REQUIRED)
 add_library(examples
   example000_numeric_limits.cpp
+  example000a_builtin_convert.cpp
   example001_mul_div.cpp
   example001a_div_mod.cpp
   example002_shl_shr.cpp

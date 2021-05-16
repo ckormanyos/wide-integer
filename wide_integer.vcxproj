@@ -192,6 +192,7 @@
     <ClInclude Include="util\utility\util_dynamic_array.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="examples\example000a_builtin_convert.cpp" />
     <ClCompile Include="examples\example000_numeric_limits.cpp" />
     <ClCompile Include="examples\example001a_div_mod.cpp" />
     <ClCompile Include="examples\example001_mul_div.cpp" />
@@ -213,6 +214,7 @@
     <ClCompile Include="test\test_uintwide_t_boost_backend.cpp" />
     <ClCompile Include="test\test_uintwide_t_edge_cases.cpp" />
     <ClCompile Include="test\test_uintwide_t_examples.cpp" />
+    <ClCompile Include="test\test_uintwide_t_float_convert.cpp" />
     <ClCompile Include="test\test_uintwide_t_n_base.cpp" />
     <ClCompile Include="test\test_uintwide_t_spot_values.cpp" />
     <ClCompile Include="test\test_uintwide_t_n_binary_ops_base.cpp" />

@@ -13,6 +13,7 @@
   bool test_uintwide_t_boost_backend();
   bool test_uintwide_t_examples     ();
   bool test_uintwide_t_edge_cases   ();
+  bool test_uintwide_t_float_convert();
   bool test_uintwide_t_spot_values  ();
 
   } } // namespace math::wide_integer
