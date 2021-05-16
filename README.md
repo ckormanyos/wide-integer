@@ -38,14 +38,14 @@ as shown in the [examples](./examples).
   - Clean header-only C++11 design.
   - Seamless portability to any modern C++11, 14, 17, 20 compiler.
   - Scalability with small memory footprint and efficiency suitable for both PC/workstation systems as well as _bare-metal_ embedded systems.
-  - C++20 `constexpr`-ness for construction, cast to built-in types, binary arithmetic, comparison operations, some elementary functions and more.
+  - C++20 `constexpr`-_ness_ for construction, cast to built-in types, binary arithmetic, comparison operations, some elementary functions and more.
 
 ## Quick start
 
-Easy application follows via traditional C-style typedef or C++11 alias.
-The defined type can be used very much like a built-in unsinged integral type.
-In the following example, the static `uint512_t` variable `x` is initialized
-with unsigned value `3U`.
+Easy application follows via traditional C-style typedef or C++11 alias
+such as `uint512_t`. An instance of the defined type can be used very much
+like a built-in integral type. In the following code, for example,
+the static `uint512_t` variable `x` is initialized with unsigned value `3U`.
 
 In particular,
 
@@ -58,12 +58,14 @@ static uint512_t x = 3U;
 ```
 
 The code sequence above defines the local data type `uint512_t` with
-a C++11 alias. The first template parameter `512U` sets the binary digit
-count while the second optional template parameter `std::uint32_t`
-sets the internal _limb_ _type_. If the second template parameter is left blank,
+a C++11 alias. The first template parameter `512U` sets the binary width
+(or bit count) while the second optional template parameter `std::uint32_t`
+sets the internal _limb_ _type_. The limb type must be unsigned and one of
+`std::uint8_t`, `std::uint16_t`, `std::uint32_t` or on some systems
+`std::uint64_t`. If the second template parameter `LimbType` is left blank,
 the default limb type is 32 bits in width and unsigned.
 
-The template signature of the `uintwide_t` class is shown below.
+The complete template signature of the `uintwide_t` class is shown below.
 
 ```C
 namespace math { namespace wide_integer {
@@ -117,6 +119,7 @@ It is hoped that the examples provide inspiration and guidance
 on how to use wide-integer.
 
   - ![`example000_numeric_limits.cpp`](./examples/example000_numeric_limits.cpp) verifies parts of the specializations of `std::numeric_limits` for (unsigned) `uint256_t`and (signed) `int256_t`.
+  - ![`example000a_builtin_convert.cpp`](./examples/example000a_builtin_convert.cpp) exercises some conversions to/from (signed) `int256_t`and (signed) `int256_t`.
   - ![`example001_mul_div.cpp`](./examples/example001_mul_div.cpp) performs multiplication and division.
   - ![`example001a_div_mod.cpp`](./examples/example001a_div_mod.cpp) exercises division and modulus calculations.
   - ![`example002_shl_shr.cpp`](./examples/example002_shl_shr.cpp) does a few left and right shift operations.
@@ -429,10 +432,10 @@ int main()
   const uint48_t c_mul = (a * b);
   const uint48_t c_div = (a / b);
 
-  const bool result_is_ok = (   (c_add == ((a64 + b64) & 0x0000FFFFFFFFFFFFULL))
-                             && (c_sub == ((a64 - b64) & 0x0000FFFFFFFFFFFFULL))
-                             && (c_mul == ((a64 * b64) & 0x0000FFFFFFFFFFFFULL))
-                             && (c_div == ((a64 / b64) & 0x0000FFFFFFFFFFFFULL)));
+  const bool result_is_ok = (   (c_add == ((a64 + b64) & UINT64_C(0x0000FFFFFFFFFFFF)))
+                             && (c_sub == ((a64 - b64) & UINT64_C(0x0000FFFFFFFFFFFF)))
+                             && (c_mul == ((a64 * b64) & UINT64_C(0x0000FFFFFFFFFFFF)))
+                             && (c_div == ((a64 / b64) & UINT64_C(0x0000FFFFFFFFFFFF))));
 
   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
 }
@@ -524,15 +527,15 @@ constexpr bool result_is_ok = (   (c == "0xE491A360C57EB4306C61F9A04F7F7D99BE367
 static_assert(result_is_ok == true, "Error: example is not OK!");
 ```
 
-`constexpr`-ness has been checked on GCC 10, clang 10
+`constexpr`-_ness_ of `uintwide_t`has been checked on GCC 10, clang 10
 (with `-std=c++20`) and VC 14.2 (with `/std:c++latest`),
 also for various embedded compilers such as `avr-gcc` 10,
 `arm-non-eabi-gcc` 10, and more. In addition,
-less modern compiler versions,
-some with standards such as C++14, 17, 2a have also been checked
+less modern compiler versions in addition to some other compilers
+having standards such as C++14, 17, 2a have also been checked
 for `constexpr` usage of `uintwide_t`. If you have an older
 compiler, you might have to check the compiler's
-ability to use `constexpr` with wide_integer.
+ability to obtain the entire benefit of `constexpr` with `uintwide_t`.
 
 If full `constexpr` compliance is not available or its
 availability is unknown, the preprocessor symbols below can be useful.
@@ -564,7 +567,7 @@ please feel free to contact me directly so that this can be implemented.
 
 Signed big integers are also supported in the wide_integer library.
 Use the fourth template partameter `IsSigned` to indicate the
-signed-ness (or unsigned-ness) of `uintwide_t`.
+signed-_ness_ (or unsigned-_ness_) of `uintwide_t`.
 The code below, for instance, uses an aliased version of
 signed `int256_t`.
 
@@ -585,11 +588,11 @@ const int256_t n3 = n1 * n2;
 The following design choices have been implemented when handling
 negative arguments in number theoretical functions.
 
-  - Right shift by `n` bits `operator>>(n)` performs a so-called arithmetic right shift. For signed integers having negative value, right-shift continually fills the sign bit with 1 while shifting right. The result is similar to signed division and closely mimics common compiler behavior for right-shift of negative-valued built-in signed `int`.
+  - Right shift by `n` bits via `operator>>(n)` performs a so-called _arithmetic_ right shift (ASHR). For signed integers having negative value, right-shift continually fills the sign bit with 1 while shifting right. The result is similar to signed division and closely mimics common compiler behavior for right-shift of negative-valued built-in signed `int`.
   - `sqrt` of `x` negative returns zero.
   - `cbrt` of `x` nexative integer returns `-cbrt(-x)`.
   - <img src="https://render.githubusercontent.com/render/math?math=k^{th}"> root of `x` negative returns zero unless the cube root is being computed, in which case `-cbrt(-x)` is returned.
   - GCD of `a`, `b` signed converts both arguments to positive and negates the result for `a`, `b` having opposite signs.
   - Miller-Rabin primality testing treats negative inetegers as positive when testing for prime, thus extending the set of primes <img src="https://render.githubusercontent.com/render/math?math=p\,\in\,\mathbb{Z}">.
   - MSB/LSB (most/least significant bit) do not differentiate between positive or negative argument such that MSB of a negative integer will be the highest bit of the corresponding unsigned type.
-  - Printing both positive-valued and negative-valued signed integers in hexadecimal format is supported. In the negative case, the sign bit and all other bits are treated as if the integer were unsigned. The negative sign is not shown when using hexadecimal format, even if the underlying integer is signed and negative-valued. A potential positive sign, however, will be shown for positive-valued signed integers in hexadecimal form in the presence of `std::showpos`.
+  - Printing both positive-valued and negative-valued signed integers in hexadecimal format is supported. When printing negative-valued, signed  `uintwide_t` integers hexadecimal format, the sign bit and all other bits are treated as if the integer were unsigned. The negative sign is not explicitly shown when using hexadecimal format, even if the underlying integer is signed and negative-valued. A potential positive sign, however, will be shown for positive-valued signed integers in hexadecimal form in the presence of `std::showpos`.
