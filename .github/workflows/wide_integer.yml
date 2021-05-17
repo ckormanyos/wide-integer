@@ -31,7 +31,9 @@ jobs:
           git submodule update --init libs/iterator
           git submodule update --init libs/lexical_cast
           git submodule update --init libs/math
+          git submodule update --init libs/mpl
           git submodule update --init libs/multiprecision
+          git submodule update --init libs/preprocessor
           git submodule update --init libs/random
           git submodule update --init libs/range
           git submodule update --init libs/type_traits
@@ -72,7 +74,9 @@ jobs:
           git submodule update --init libs/iterator
           git submodule update --init libs/lexical_cast
           git submodule update --init libs/math
+          git submodule update --init libs/mpl
           git submodule update --init libs/multiprecision
+          git submodule update --init libs/preprocessor
           git submodule update --init libs/random
           git submodule update --init libs/range
           git submodule update --init libs/type_traits
@@ -115,7 +119,9 @@ jobs:
           git submodule update --init libs/iterator
           git submodule update --init libs/lexical_cast
           git submodule update --init libs/math
+          git submodule update --init libs/mpl
           git submodule update --init libs/multiprecision
+          git submodule update --init libs/preprocessor
           git submodule update --init libs/random
           git submodule update --init libs/range
           git submodule update --init libs/type_traits
@@ -158,7 +164,9 @@ jobs:
           git submodule update --init libs/iterator
           git submodule update --init libs/lexical_cast
           git submodule update --init libs/math
+          git submodule update --init libs/mpl
           git submodule update --init libs/multiprecision
+          git submodule update --init libs/preprocessor
           git submodule update --init libs/random
           git submodule update --init libs/range
           git submodule update --init libs/type_traits
@@ -199,7 +207,9 @@ jobs:
           git submodule update --init libs/iterator
           git submodule update --init libs/lexical_cast
           git submodule update --init libs/math
+          git submodule update --init libs/mpl
           git submodule update --init libs/multiprecision
+          git submodule update --init libs/preprocessor
           git submodule update --init libs/random
           git submodule update --init libs/range
           git submodule update --init libs/type_traits
@@ -240,7 +250,9 @@ jobs:
           git submodule update --init libs/iterator
           git submodule update --init libs/lexical_cast
           git submodule update --init libs/math
+          git submodule update --init libs/mpl
           git submodule update --init libs/multiprecision
+          git submodule update --init libs/preprocessor
           git submodule update --init libs/random
           git submodule update --init libs/range
           git submodule update --init libs/type_traits
@@ -281,7 +293,9 @@ jobs:
           git submodule update --init libs/iterator
           git submodule update --init libs/lexical_cast
           git submodule update --init libs/math
+          git submodule update --init libs/mpl
           git submodule update --init libs/multiprecision
+          git submodule update --init libs/preprocessor
           git submodule update --init libs/random
           git submodule update --init libs/range
           git submodule update --init libs/type_traits
@@ -322,7 +336,9 @@ jobs:
           git submodule update --init libs/iterator
           git submodule update --init libs/lexical_cast
           git submodule update --init libs/math
+          git submodule update --init libs/mpl
           git submodule update --init libs/multiprecision
+          git submodule update --init libs/preprocessor
           git submodule update --init libs/random
           git submodule update --init libs/range
           git submodule update --init libs/type_traits
@@ -363,7 +379,9 @@ jobs:
           git submodule update --init libs/iterator
           git submodule update --init libs/lexical_cast
           git submodule update --init libs/math
+          git submodule update --init libs/mpl
           git submodule update --init libs/multiprecision
+          git submodule update --init libs/preprocessor
           git submodule update --init libs/random
           git submodule update --init libs/range
           git submodule update --init libs/type_traits
@@ -396,7 +414,9 @@ jobs:
           git submodule update --init libs/iterator
           git submodule update --init libs/lexical_cast
           git submodule update --init libs/math
+          git submodule update --init libs/mpl
           git submodule update --init libs/multiprecision
+          git submodule update --init libs/preprocessor
           git submodule update --init libs/random
           git submodule update --init libs/range
           git submodule update --init libs/type_traits
@@ -435,7 +455,9 @@ jobs:
           git submodule update --init libs/iterator
           git submodule update --init libs/lexical_cast
           git submodule update --init libs/math
+          git submodule update --init libs/mpl
           git submodule update --init libs/multiprecision
+          git submodule update --init libs/preprocessor
           git submodule update --init libs/random
           git submodule update --init libs/range
           git submodule update --init libs/type_traits
