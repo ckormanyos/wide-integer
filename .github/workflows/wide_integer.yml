@@ -28,8 +28,10 @@ jobs:
           git submodule update --init libs/config
           git submodule update --init libs/core
           git submodule update --init libs/exception
+          git submodule update --init libs/lexical_cast
           git submodule update --init libs/math
           git submodule update --init libs/multiprecision
+          git submodule update --init libs/random
           ./bootstrap.sh
           ./b2 headers
       - name: gcc-clang-native
@@ -64,8 +66,10 @@ jobs:
           git submodule update --init libs/config
           git submodule update --init libs/core
           git submodule update --init libs/exception
+          git submodule update --init libs/lexical_cast
           git submodule update --init libs/math
           git submodule update --init libs/multiprecision
+          git submodule update --init libs/random
           ./bootstrap.sh
           ./b2 headers
       - name: gcc-clang-native-limb_type_uint64_t
@@ -102,8 +106,10 @@ jobs:
           git submodule update --init libs/config
           git submodule update --init libs/core
           git submodule update --init libs/exception
+          git submodule update --init libs/lexical_cast
           git submodule update --init libs/math
           git submodule update --init libs/multiprecision
+          git submodule update --init libs/random
           ./bootstrap.sh
           ./b2 headers
       - name: gcc-clang-native-x86
@@ -140,8 +146,10 @@ jobs:
           git submodule update --init libs/config
           git submodule update --init libs/core
           git submodule update --init libs/exception
+          git submodule update --init libs/lexical_cast
           git submodule update --init libs/math
           git submodule update --init libs/multiprecision
+          git submodule update --init libs/random
           ./bootstrap.sh
           ./b2 headers
       - name: gcc-clang-10
@@ -176,8 +184,10 @@ jobs:
           git submodule update --init libs/config
           git submodule update --init libs/core
           git submodule update --init libs/exception
+          git submodule update --init libs/lexical_cast
           git submodule update --init libs/math
           git submodule update --init libs/multiprecision
+          git submodule update --init libs/random
           ./bootstrap.sh
           ./b2 headers
       - name: gcc-clang-native-asan
@@ -212,8 +222,10 @@ jobs:
           git submodule update --init libs/config
           git submodule update --init libs/core
           git submodule update --init libs/exception
+          git submodule update --init libs/lexical_cast
           git submodule update --init libs/math
           git submodule update --init libs/multiprecision
+          git submodule update --init libs/random
           ./bootstrap.sh
           ./b2 headers
       - name: gcc-clang-native-ubsan
@@ -248,8 +260,10 @@ jobs:
           git submodule update --init libs/config
           git submodule update --init libs/core
           git submodule update --init libs/exception
+          git submodule update --init libs/lexical_cast
           git submodule update --init libs/math
           git submodule update --init libs/multiprecision
+          git submodule update --init libs/random
           ./bootstrap.sh
           ./b2 headers
       - name: gcc-clang-native-ubsan-limb_type_uint64_t
@@ -284,8 +298,10 @@ jobs:
           git submodule update --init libs/config
           git submodule update --init libs/core
           git submodule update --init libs/exception
+          git submodule update --init libs/lexical_cast
           git submodule update --init libs/math
           git submodule update --init libs/multiprecision
+          git submodule update --init libs/random
           ./bootstrap.sh
           ./b2 headers
       - name: gcc-clang-native-tsan
@@ -320,8 +336,10 @@ jobs:
           git submodule update --init libs/config
           git submodule update --init libs/core
           git submodule update --init libs/exception
+          git submodule update --init libs/lexical_cast
           git submodule update --init libs/math
           git submodule update --init libs/multiprecision
+          git submodule update --init libs/random
           ./bootstrap.sh
           ./b2 headers
       - name: apple-gcc-clang-native
@@ -348,8 +366,10 @@ jobs:
           git submodule update --init libs/config
           git submodule update --init libs/core
           git submodule update --init libs/exception
+          git submodule update --init libs/lexical_cast
           git submodule update --init libs/math
           git submodule update --init libs/multiprecision
+          git submodule update --init libs/random
           ./bootstrap.bat
           ./b2 headers
       - uses: actions/checkout@v1
@@ -382,8 +402,10 @@ jobs:
           git submodule update --init libs/config
           git submodule update --init libs/core
           git submodule update --init libs/exception
+          git submodule update --init libs/lexical_cast
           git submodule update --init libs/math
           git submodule update --init libs/multiprecision
+          git submodule update --init libs/random
           ./bootstrap.bat
           ./b2 headers
       - name: mingw-winhost-x64
