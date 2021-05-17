@@ -43,6 +43,7 @@ jobs:
           git submodule update --init libs/mpl
           git submodule update --init libs/multiprecision
           git submodule update --init libs/numeric/conversion
+          git submodule update --init libs/predef
           git submodule update --init libs/preprocessor
           git submodule update --init libs/random
           git submodule update --init libs/range
@@ -98,6 +99,7 @@ jobs:
           git submodule update --init libs/mpl
           git submodule update --init libs/multiprecision
           git submodule update --init libs/numeric/conversion
+          git submodule update --init libs/predef
           git submodule update --init libs/preprocessor
           git submodule update --init libs/random
           git submodule update --init libs/range
@@ -155,6 +157,7 @@ jobs:
           git submodule update --init libs/mpl
           git submodule update --init libs/multiprecision
           git submodule update --init libs/numeric/conversion
+          git submodule update --init libs/predef
           git submodule update --init libs/preprocessor
           git submodule update --init libs/random
           git submodule update --init libs/range
@@ -212,6 +215,7 @@ jobs:
           git submodule update --init libs/mpl
           git submodule update --init libs/multiprecision
           git submodule update --init libs/numeric/conversion
+          git submodule update --init libs/predef
           git submodule update --init libs/preprocessor
           git submodule update --init libs/random
           git submodule update --init libs/range
@@ -267,6 +271,7 @@ jobs:
           git submodule update --init libs/mpl
           git submodule update --init libs/multiprecision
           git submodule update --init libs/numeric/conversion
+          git submodule update --init libs/predef
           git submodule update --init libs/preprocessor
           git submodule update --init libs/random
           git submodule update --init libs/range
@@ -322,6 +327,7 @@ jobs:
           git submodule update --init libs/mpl
           git submodule update --init libs/multiprecision
           git submodule update --init libs/numeric/conversion
+          git submodule update --init libs/predef
           git submodule update --init libs/preprocessor
           git submodule update --init libs/random
           git submodule update --init libs/range
@@ -377,6 +383,7 @@ jobs:
           git submodule update --init libs/mpl
           git submodule update --init libs/multiprecision
           git submodule update --init libs/numeric/conversion
+          git submodule update --init libs/predef
           git submodule update --init libs/preprocessor
           git submodule update --init libs/random
           git submodule update --init libs/range
@@ -432,6 +439,7 @@ jobs:
           git submodule update --init libs/mpl
           git submodule update --init libs/multiprecision
           git submodule update --init libs/numeric/conversion
+          git submodule update --init libs/predef
           git submodule update --init libs/preprocessor
           git submodule update --init libs/random
           git submodule update --init libs/range
@@ -487,6 +495,7 @@ jobs:
           git submodule update --init libs/mpl
           git submodule update --init libs/multiprecision
           git submodule update --init libs/numeric/conversion
+          git submodule update --init libs/predef
           git submodule update --init libs/preprocessor
           git submodule update --init libs/random
           git submodule update --init libs/range
@@ -534,6 +543,7 @@ jobs:
           git submodule update --init libs/mpl
           git submodule update --init libs/multiprecision
           git submodule update --init libs/numeric/conversion
+          git submodule update --init libs/predef
           git submodule update --init libs/preprocessor
           git submodule update --init libs/random
           git submodule update --init libs/range
@@ -587,6 +597,7 @@ jobs:
           git submodule update --init libs/mpl
           git submodule update --init libs/multiprecision
           git submodule update --init libs/numeric/conversion
+          git submodule update --init libs/predef
           git submodule update --init libs/preprocessor
           git submodule update --init libs/random
           git submodule update --init libs/range
