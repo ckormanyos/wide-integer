@@ -4,8 +4,6 @@ on:
     branches:
       - '**'
   pull_request:
-  schedule:
-    - cron: '0 2 * * *' # run at 2 AM UTC
 jobs:
   gcc-clang-native:
     runs-on: ubuntu-20.04
