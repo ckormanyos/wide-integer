@@ -49,6 +49,7 @@ jobs:
           git submodule update --init libs/static_assert
           git submodule update --init libs/throw_exception
           git submodule update --init libs/type_traits
+          git submodule update --init libs/utility
           ./bootstrap.sh
           ./b2 headers
       - name: gcc-clang-native
@@ -102,6 +103,7 @@ jobs:
           git submodule update --init libs/static_assert
           git submodule update --init libs/throw_exception
           git submodule update --init libs/type_traits
+          git submodule update --init libs/utility
           ./bootstrap.sh
           ./b2 headers
       - name: gcc-clang-native-limb_type_uint64_t
@@ -157,6 +159,7 @@ jobs:
           git submodule update --init libs/static_assert
           git submodule update --init libs/throw_exception
           git submodule update --init libs/type_traits
+          git submodule update --init libs/utility
           ./bootstrap.sh
           ./b2 headers
       - name: gcc-clang-native-x86
@@ -212,6 +215,7 @@ jobs:
           git submodule update --init libs/static_assert
           git submodule update --init libs/throw_exception
           git submodule update --init libs/type_traits
+          git submodule update --init libs/utility
           ./bootstrap.sh
           ./b2 headers
       - name: gcc-clang-10
@@ -265,6 +269,7 @@ jobs:
           git submodule update --init libs/static_assert
           git submodule update --init libs/throw_exception
           git submodule update --init libs/type_traits
+          git submodule update --init libs/utility
           ./bootstrap.sh
           ./b2 headers
       - name: gcc-clang-native-asan
@@ -318,6 +323,7 @@ jobs:
           git submodule update --init libs/static_assert
           git submodule update --init libs/throw_exception
           git submodule update --init libs/type_traits
+          git submodule update --init libs/utility
           ./bootstrap.sh
           ./b2 headers
       - name: gcc-clang-native-ubsan
@@ -371,6 +377,7 @@ jobs:
           git submodule update --init libs/static_assert
           git submodule update --init libs/throw_exception
           git submodule update --init libs/type_traits
+          git submodule update --init libs/utility
           ./bootstrap.sh
           ./b2 headers
       - name: gcc-clang-native-ubsan-limb_type_uint64_t
@@ -424,6 +431,7 @@ jobs:
           git submodule update --init libs/static_assert
           git submodule update --init libs/throw_exception
           git submodule update --init libs/type_traits
+          git submodule update --init libs/utility
           ./bootstrap.sh
           ./b2 headers
       - name: gcc-clang-native-tsan
@@ -477,6 +485,7 @@ jobs:
           git submodule update --init libs/static_assert
           git submodule update --init libs/throw_exception
           git submodule update --init libs/type_traits
+          git submodule update --init libs/utility
           ./bootstrap.sh
           ./b2 headers
       - name: apple-gcc-clang-native
@@ -522,6 +531,7 @@ jobs:
           git submodule update --init libs/static_assert
           git submodule update --init libs/throw_exception
           git submodule update --init libs/type_traits
+          git submodule update --init libs/utility
           ./bootstrap.bat
           ./b2 headers
       - uses: actions/checkout@v1
@@ -573,6 +583,7 @@ jobs:
           git submodule update --init libs/static_assert
           git submodule update --init libs/throw_exception
           git submodule update --init libs/type_traits
+          git submodule update --init libs/utility
           ./bootstrap.bat
           ./b2 headers
       - name: mingw-winhost-x64
