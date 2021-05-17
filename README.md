@@ -527,7 +527,7 @@ constexpr bool result_is_ok = (   (c == "0xE491A360C57EB4306C61F9A04F7F7D99BE367
 static_assert(result_is_ok == true, "Error: example is not OK!");
 ```
 
-`constexpr`-_ness_ of `uintwide_t`has been checked on GCC 10, clang 10
+`constexpr`-_ness_ of `uintwide_t` has been checked on GCC 10, clang 10
 (with `-std=c++20`) and VC 14.2 (with `/std:c++latest`),
 also for various embedded compilers such as `avr-gcc` 10,
 `arm-non-eabi-gcc` 10, and more. In addition,
