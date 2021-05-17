@@ -119,7 +119,7 @@ It is hoped that the examples provide inspiration and guidance
 on how to use wide-integer.
 
   - ![`example000_numeric_limits.cpp`](./examples/example000_numeric_limits.cpp) verifies parts of the specializations of `std::numeric_limits` for (unsigned) `uint256_t`and (signed) `int256_t`.
-  - ![`example000a_builtin_convert.cpp`](./examples/example000a_builtin_convert.cpp) exercises some conversions to/from (signed) `int256_t`and (signed) `int256_t`.
+  - ![`example000a_builtin_convert.cpp`](./examples/example000a_builtin_convert.cpp) exercises some conversions to/from built-in types/`uintwide_t`.
   - ![`example001_mul_div.cpp`](./examples/example001_mul_div.cpp) performs multiplication and division.
   - ![`example001a_div_mod.cpp`](./examples/example001a_div_mod.cpp) exercises division and modulus calculations.
   - ![`example002_shl_shr.cpp`](./examples/example002_shl_shr.cpp) does a few left and right shift operations.
