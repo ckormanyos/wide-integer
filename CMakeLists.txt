@@ -17,3 +17,10 @@ target_include_directories(
   WideInteger INTERFACE
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>
   $<INSTALL_INTERFACE:include>)
+
+install(TARGETS WideInteger EXPORT WideIntegerTargets)
+install(DIRECTORY include/ DESTINATION include)
+install(EXPORT WideIntegerTargets
+  FILE WideIntegerConfig.cmake
+  NAMESPACE WideInteger::
+  DESTINATION lib/cmake/wide-integer)
