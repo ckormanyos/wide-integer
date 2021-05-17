@@ -28,6 +28,7 @@ jobs:
           git submodule update --init libs/config
           git submodule update --init libs/core
           git submodule update --init libs/exception
+          git submodule update --init libs/iterator
           git submodule update --init libs/lexical_cast
           git submodule update --init libs/math
           git submodule update --init libs/multiprecision
@@ -66,6 +67,7 @@ jobs:
           git submodule update --init libs/config
           git submodule update --init libs/core
           git submodule update --init libs/exception
+          git submodule update --init libs/iterator
           git submodule update --init libs/lexical_cast
           git submodule update --init libs/math
           git submodule update --init libs/multiprecision
@@ -106,6 +108,7 @@ jobs:
           git submodule update --init libs/config
           git submodule update --init libs/core
           git submodule update --init libs/exception
+          git submodule update --init libs/iterator
           git submodule update --init libs/lexical_cast
           git submodule update --init libs/math
           git submodule update --init libs/multiprecision
@@ -146,6 +149,7 @@ jobs:
           git submodule update --init libs/config
           git submodule update --init libs/core
           git submodule update --init libs/exception
+          git submodule update --init libs/iterator
           git submodule update --init libs/lexical_cast
           git submodule update --init libs/math
           git submodule update --init libs/multiprecision
@@ -184,6 +188,7 @@ jobs:
           git submodule update --init libs/config
           git submodule update --init libs/core
           git submodule update --init libs/exception
+          git submodule update --init libs/iterator
           git submodule update --init libs/lexical_cast
           git submodule update --init libs/math
           git submodule update --init libs/multiprecision
@@ -222,6 +227,7 @@ jobs:
           git submodule update --init libs/config
           git submodule update --init libs/core
           git submodule update --init libs/exception
+          git submodule update --init libs/iterator
           git submodule update --init libs/lexical_cast
           git submodule update --init libs/math
           git submodule update --init libs/multiprecision
@@ -260,6 +266,7 @@ jobs:
           git submodule update --init libs/config
           git submodule update --init libs/core
           git submodule update --init libs/exception
+          git submodule update --init libs/iterator
           git submodule update --init libs/lexical_cast
           git submodule update --init libs/math
           git submodule update --init libs/multiprecision
@@ -298,6 +305,7 @@ jobs:
           git submodule update --init libs/config
           git submodule update --init libs/core
           git submodule update --init libs/exception
+          git submodule update --init libs/iterator
           git submodule update --init libs/lexical_cast
           git submodule update --init libs/math
           git submodule update --init libs/multiprecision
@@ -336,6 +344,7 @@ jobs:
           git submodule update --init libs/config
           git submodule update --init libs/core
           git submodule update --init libs/exception
+          git submodule update --init libs/iterator
           git submodule update --init libs/lexical_cast
           git submodule update --init libs/math
           git submodule update --init libs/multiprecision
@@ -366,6 +375,7 @@ jobs:
           git submodule update --init libs/config
           git submodule update --init libs/core
           git submodule update --init libs/exception
+          git submodule update --init libs/iterator
           git submodule update --init libs/lexical_cast
           git submodule update --init libs/math
           git submodule update --init libs/multiprecision
@@ -402,6 +412,7 @@ jobs:
           git submodule update --init libs/config
           git submodule update --init libs/core
           git submodule update --init libs/exception
+          git submodule update --init libs/iterator
           git submodule update --init libs/lexical_cast
           git submodule update --init libs/math
           git submodule update --init libs/multiprecision
