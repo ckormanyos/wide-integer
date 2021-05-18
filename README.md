@@ -142,15 +142,27 @@ on how to use wide-integer.
 ### Build Status
 [![Build Status](https://github.com/ckormanyos/wide-integer/actions/workflows/wide_integer.yml/badge.svg)](https://github.com/ckormanyos/wide-integer/actions)
 
+The recent status of building and executing the tests and examples
+in Continuous Integration (CI) is always shown in the Build Status banner.
+
+Simply using the [`uintwide-t.h` header](./math/wide_integer/uintwide_t.h)
+can be accomplished by identifying the header within
+its directory, including the header path and header in the normal C++ way.
+
+It is also possible, if desired, to build and execute
+the tests and examples using various different OS/compiler
+combinations.
+
 ### Build with Microsoft Visual Studio
 
-Building and running the tests can be accomplished using
-Microsoft VisualStudio solution workspace provided in
-`wide_integer.sln` in the project's root directory.
+Building and running the tests and examples can be accomplished
+using the Microsoft VisualStudio solution workspace provided
+in `wide_integer.sln` located in the project's root directory.
 
 ### Build with CMake
 
-You can also build and run tests from an empty directory using CMake:
+You can also build and run tests and examples from an empty directory
+using CMake. Follow the CMake pattern:
 
 ```sh
 cmake /path/to/wide-integer
@@ -160,12 +172,13 @@ ctest --verbose
 
 ### Build on the *nix command line
 
-Alternatively building with native GCC (i.e., on *nix) can be
-executed with a simple, but rather lengthy, command line
+Alternatively building the tests and examples with native GCC (i.e., on *nix)
+can be executed with a simple, but rather lengthy, command line
 entered manually from the command shell.
 Consider, for instance, building in Linux with GCC in the presence of `unsigned` `__int128`.
 Furthermore, the Boost.Multiprecision library is used for some examples and tests.
-In this build example, Boost intended to be located in the made-up directory `../boost-root`,
+In this build example, Boost intended to be located
+in the made-up directory `../boost-root`,
 which needs to be adapted according to the actual location of Boost.
 The command line below illustrates how to build all wide_integer
 tests and examples directly from the *nix command line.
@@ -219,14 +232,15 @@ examples/example011_uint24_t.cpp            \
 
 ### Testing
 
-Testing is a big issue and a growing test suite is in continued progress
+Testing is definitely a big issue. A growing test suite in
+continuous support improves conficence in the library,
 providing for tested, efficient functionality on the PC and workstation.
 The GitHub code is, as mentioned above, delivered with an affiliated MSVC
 project or a variety of other build/make options that use easy-to-understand
 subroutines called from `main()` to exercise the various
-examples and full suite of test cases.
+examples and the full suite of test cases.
 
-Continuous integration runs on push using GitHub Actions.
+CI runs on push and pull request using GitHub Actions.
 Various compilers, operating systems, and C++ standards
 ranging from C++11, 14, 17, 20 are included in CI.
 

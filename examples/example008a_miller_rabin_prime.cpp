@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////
-//  Copyright Christopher Kormanyos 2018 - 2020.                 //
+//  Copyright Christopher Kormanyos 2018 - 2021.                 //
 //  Distributed under the Boost Software License,                //
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt          //
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)             //
@@ -8,7 +8,7 @@
 // This Miller-Rabin primality test is loosely based on
 // an adaptation of some code from Boost.Multiprecision.
 // The Boost.Multiprecision code can be found here:
-// https://www.boost.org/doc/libs/1_73_0/libs/multiprecision/doc/html/boost_multiprecision/tut/primetest.html
+// https://www.boost.org/doc/libs/1_76_0/libs/multiprecision/doc/html/boost_multiprecision/tut/primetest.html
 
 #include <ctime>
 #include <random>
@@ -29,17 +29,20 @@
 
 bool math::wide_integer::example008a_miller_rabin_prime()
 {
-  using wide_integer_type = boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<256U>,
+  using wide_integer_type = boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<512U>,
                                                           boost::multiprecision::et_off>;
 
-  boost::random::mt11213b base_gen(std::clock());
+  boost::random::mt11213b base_gen(static_cast<typename boost::random::mt11213b::result_type>(std::clock()));
 
   boost::random::independent_bits_engine<boost::random::mt11213b,
                                          std::numeric_limits<wide_integer_type>::digits,
                                          wide_integer_type>
   gen(base_gen);
 
-  std::linear_congruential_engine<std::uint32_t, UINT32_C(48271), UINT32_C(0), UINT32_C(2147483647)> gen2(std::clock());
+  using random_engine2_type =
+    std::linear_congruential_engine<std::uint32_t, UINT32_C(48271), UINT32_C(0), UINT32_C(2147483647)>;
+
+  random_engine2_type gen2(static_cast<typename random_engine2_type::result_type>(std::clock()));
 
   wide_integer_type p0;
   wide_integer_type p1;
@@ -68,13 +71,12 @@ bool math::wide_integer::example008a_miller_rabin_prime()
     }
   }
 
-
-  const wide_integer_type d = gcd(p0, p1);
+  const wide_integer_type gd = gcd(p0, p1);
 
   const bool result_is_ok = (   (p0 != 0U)
                              && (p1 != 0U)
                              && (p0 != p1)
-                             && (d  == 1U));
+                             && (gd == 1U));
 
   return result_is_ok;
 }
