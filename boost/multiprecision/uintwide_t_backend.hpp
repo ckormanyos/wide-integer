@@ -155,7 +155,7 @@
       m_value.negate();
     }
 
-    constexpr int compare(const uintwide_t_backend& other_mp_cpp_backend) const
+    WIDE_INTEGER_CONSTEXPR int compare(const uintwide_t_backend& other_mp_cpp_backend) const
     {
       return static_cast<int>(m_value.compare(other_mp_cpp_backend.crepresentation()));
     }
