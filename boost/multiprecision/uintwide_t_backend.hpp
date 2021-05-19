@@ -150,19 +150,19 @@
       return str_result;
     }
 
-    WIDE_INTEGER_CONSTEXPR  void negate()
+    WIDE_INTEGER_CONSTEXPR void negate()
     {
       m_value.negate();
     }
 
-    constexpr int compare(const uintwide_t_backend& other_mp_cpp_backend) const
+    WIDE_INTEGER_CONSTEXPR int compare(const uintwide_t_backend& other_mp_cpp_backend) const
     {
       return static_cast<int>(m_value.compare(other_mp_cpp_backend.crepresentation()));
     }
 
     template<typename ArithmeticType,
              typename std::enable_if<std::is_arithmetic<ArithmeticType>::value == true>::type const* = nullptr>
-    constexpr int compare(ArithmeticType x) const
+    WIDE_INTEGER_CONSTEXPR int compare(ArithmeticType x)
     {
       return static_cast<int>(m_value.compare(representation_type(x)));
     }
