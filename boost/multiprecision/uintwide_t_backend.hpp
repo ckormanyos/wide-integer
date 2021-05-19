@@ -132,7 +132,7 @@
     WIDE_INTEGER_CONSTEXPR const representation_type&  representation() const { return m_value; }
     WIDE_INTEGER_CONSTEXPR const representation_type& crepresentation() const { return m_value; }
 
-    WIDE_INTEGER_CONSTEXPR std::string str(std::streamsize number_of_digits, const std::ios::fmtflags format_flags) const
+    std::string str(std::streamsize number_of_digits, const std::ios::fmtflags format_flags) const
     {
       (void) number_of_digits;
 
@@ -155,14 +155,14 @@
       m_value.negate();
     }
 
-    WIDE_INTEGER_CONSTEXPR int compare(const uintwide_t_backend& other_mp_cpp_backend) const
+    constexpr int compare(const uintwide_t_backend& other_mp_cpp_backend) const
     {
       return static_cast<int>(m_value.compare(other_mp_cpp_backend.crepresentation()));
     }
 
     template<typename ArithmeticType,
              typename std::enable_if<std::is_arithmetic<ArithmeticType>::value == true>::type const* = nullptr>
-    WIDE_INTEGER_CONSTEXPR int compare(ArithmeticType x)
+    constexpr int compare(ArithmeticType x) const
     {
       return static_cast<int>(m_value.compare(representation_type(x)));
     }
