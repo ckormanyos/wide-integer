@@ -863,9 +863,9 @@
     // Constructors from built-in signed integral types.
     template<typename SignedIntegralType>
     WIDE_INTEGER_CONSTEXPR uintwide_t(const SignedIntegralType v,
-                                       typename std::enable_if<(   (std::is_fundamental<SignedIntegralType>::value == true)
-                                                                && (std::is_integral   <SignedIntegralType>::value == true)
-                                                                && (std::is_signed     <SignedIntegralType>::value == true))>::type* = nullptr)
+                                      typename std::enable_if<(   (std::is_fundamental<SignedIntegralType>::value == true)
+                                                               && (std::is_integral   <SignedIntegralType>::value == true)
+                                                               && (std::is_signed     <SignedIntegralType>::value == true))>::type* = nullptr)
     {
       using local_signed_integral_type   = SignedIntegralType;
       using local_unsigned_integral_type =
@@ -883,7 +883,61 @@
 
     #if !defined(WIDE_INTEGER_DISABLE_FLOAT_INTEROP)
     template<typename FloatingPointType,
-             typename std::enable_if<std::is_floating_point<FloatingPointType>::value == true>::type const* = nullptr>
+             typename std::enable_if<(   (std::is_floating_point<FloatingPointType>::value == true)
+                                      && (std::numeric_limits<FloatingPointType>::is_iec559 == true))>::type const* = nullptr>
+    WIDE_INTEGER_CONSTEXPR uintwide_t(const FloatingPointType f)
+    {
+      // TBD make this constructor constexpr in the C++20 sense.
+      // Making use of the "known" floating-point format is mandatory
+      // for this purpose.
+      using std::isfinite;
+
+      using local_builtin_float_type = FloatingPointType;
+
+      const bool f_is_finite = isfinite(f);
+
+      if(f_is_finite == false)
+      {
+      }
+      else
+      {
+        const bool f_is_neg = (f < local_builtin_float_type(0.0F));
+
+        const local_builtin_float_type a = ((f_is_neg == false) ? f : -f);
+
+        const bool a_is_zero = (a < local_builtin_float_type(1.0F));
+
+        if(a_is_zero == false)
+        {
+          const detail::native_float_parts<local_builtin_float_type> ld_parts(a);
+
+          // Create a decwide_t from the fractional part of the
+          // mantissa expressed as an unsigned long long.
+          *this = uintwide_t(ld_parts.get_mantissa());
+
+          // Scale the unsigned long long representation to the fractional
+          // part of the long double and multiply with the base-2 exponent.
+          const int p2 = ld_parts.get_exponent() - (std::numeric_limits<FloatingPointType>::digits - 1);
+
+          if     (p2 <   0) { *this >>= (unsigned) -p2; }
+          else if(p2 ==  0) { ; }
+          else              { *this <<= (unsigned) p2; }
+
+          if(f_is_neg)
+          {
+            negate();
+          }
+        }
+        else
+        {
+          operator=(0U);
+        }
+      }
+    }
+
+    template<typename FloatingPointType,
+             typename std::enable_if<(   (std::is_floating_point<FloatingPointType>::value == true)
+                                      && (std::numeric_limits<FloatingPointType>::is_iec559 == false))>::type const* = nullptr>
     WIDE_INTEGER_CONSTEXPR uintwide_t(const FloatingPointType f)
     {
       using std::isfinite;
