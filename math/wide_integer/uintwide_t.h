@@ -123,6 +123,13 @@
   using unsinged_fast_type = typename uint_type_helper<size_t(std::numeric_limits<size_t   >::digits)    >::fast_unsigned_type;
   using   singed_fast_type = typename uint_type_helper<size_t(std::numeric_limits<ptrdiff_t>::digits + 1)>::fast_signed_type;
 
+  namespace my_own {
+
+  template<typename FloatingPointType> WIDE_INTEGER_CONSTEXPR typename std::enable_if<((std::is_floating_point<FloatingPointType>::value == true) && (std::numeric_limits<FloatingPointType>::is_iec559 == true )), FloatingPointType>::type frexp(FloatingPointType f, int* expptr);
+  template<typename FloatingPointType> WIDE_INTEGER_CONSTEXPR typename std::enable_if<((std::is_floating_point<FloatingPointType>::value == true) && (std::numeric_limits<FloatingPointType>::is_iec559 == false)), FloatingPointType>::type frexp(FloatingPointType f, int* expptr);
+
+  }
+
   }
 
   using detail::size_t;
@@ -695,10 +702,8 @@
         return;
       }
 
-      using std::frexp;
-
       // Get the fraction and base-2 exponent.
-      native_float_type man = (native_float_type) frexp(f, &my_exponent_part);
+      native_float_type man = (native_float_type) my_own::frexp(f, &my_exponent_part);
 
       unsigned n2 = 0U;
 
@@ -3538,6 +3543,28 @@
   namespace math { namespace wide_integer {
 
   namespace detail {
+
+  namespace my_own {
+
+  template<typename FloatingPointType> WIDE_INTEGER_CONSTEXPR typename std::enable_if<((std::is_floating_point<FloatingPointType>::value == true) && (std::numeric_limits<FloatingPointType>::is_iec559 == true)), FloatingPointType>::type frexp(FloatingPointType f, int* expptr)
+  {
+    // TBD make this implementation of frexp constexpr in the C++20 sense.
+    // Making use of the "known" floating-point format is mandatory
+    // for this purpose.
+    using std::frexp;
+
+    return frexp(f, expptr);
+  }
+
+  template<typename FloatingPointType> WIDE_INTEGER_CONSTEXPR typename std::enable_if<((std::is_floating_point<FloatingPointType>::value == true) && (std::numeric_limits<FloatingPointType>::is_iec559 == false)), FloatingPointType>::type frexp(FloatingPointType f, int* expptr)
+  {
+    using std::frexp;
+
+    return frexp(f, expptr);
+  }
+
+  }
+
 
   template<typename UnsignedIntegralType>
   inline WIDE_INTEGER_CONSTEXPR unsinged_fast_type lsb_helper(const UnsignedIntegralType& x)
