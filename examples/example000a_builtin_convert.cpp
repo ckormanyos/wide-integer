@@ -24,9 +24,13 @@ bool math::wide_integer::example000a_builtin_convert()
   using int256_t = math::wide_integer::int256_t;
 
   {
-    const int256_t n = -1234567.89;
+    WIDE_INTEGER_CONSTEXPR int256_t n = -1234567.89;
 
-    const bool result_n_is_ok = (n == -1234567);
+    WIDE_INTEGER_CONSTEXPR bool result_n_is_ok = (n == -1234567);
+
+    #if defined(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST) && (WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST != 0)
+    static_assert(result_n_is_ok == true, "Error: example000a_builtin_convert not OK!");
+    #endif
 
     result_is_ok &= result_n_is_ok;
   }
