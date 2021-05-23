@@ -123,12 +123,16 @@
   using unsinged_fast_type = typename uint_type_helper<size_t(std::numeric_limits<size_t   >::digits)    >::fast_unsigned_type;
   using   singed_fast_type = typename uint_type_helper<size_t(std::numeric_limits<ptrdiff_t>::digits + 1)>::fast_signed_type;
 
+  #if !defined(WIDE_INTEGER_DISABLE_FLOAT_INTEROP)
   namespace my_own {
 
-  template<typename FloatingPointType> WIDE_INTEGER_CONSTEXPR typename std::enable_if<((std::is_floating_point<FloatingPointType>::value == true) && (std::numeric_limits<FloatingPointType>::is_iec559 == true )), FloatingPointType>::type frexp(FloatingPointType x, int* expptr);
-  template<typename FloatingPointType> WIDE_INTEGER_CONSTEXPR typename std::enable_if<((std::is_floating_point<FloatingPointType>::value == true) && (std::numeric_limits<FloatingPointType>::is_iec559 == false)), FloatingPointType>::type frexp(FloatingPointType x, int* expptr);
+  template<typename FloatingPointType> WIDE_INTEGER_CONSTEXPR typename std::enable_if<((std::is_floating_point<FloatingPointType>::value == true) && (std::numeric_limits<FloatingPointType>::is_iec559 == true )), FloatingPointType>::type frexp   (FloatingPointType x, int* expptr);
+  template<typename FloatingPointType> WIDE_INTEGER_CONSTEXPR typename std::enable_if<((std::is_floating_point<FloatingPointType>::value == true) && (std::numeric_limits<FloatingPointType>::is_iec559 == false)), FloatingPointType>::type frexp   (FloatingPointType x, int* expptr);
+  template<typename FloatingPointType> WIDE_INTEGER_CONSTEXPR typename std::enable_if<((std::is_floating_point<FloatingPointType>::value == true) && (std::numeric_limits<FloatingPointType>::is_iec559 == true )), bool>::type              isfinite(FloatingPointType x);
+  template<typename FloatingPointType> WIDE_INTEGER_CONSTEXPR typename std::enable_if<((std::is_floating_point<FloatingPointType>::value == true) && (std::numeric_limits<FloatingPointType>::is_iec559 == false)), bool>::type              isfinite(FloatingPointType x);
 
   }
+  #endif
 
   }
 
@@ -702,8 +706,10 @@
         return;
       }
 
+      using my_own::frexp;
+
       // Get the fraction and base-2 exponent.
-      native_float_type man = (native_float_type) my_own::frexp(f, &my_exponent_part);
+      native_float_type man = (native_float_type) frexp(f, &my_exponent_part);
 
       unsigned n2 = 0U;
 
@@ -888,60 +894,16 @@
 
     #if !defined(WIDE_INTEGER_DISABLE_FLOAT_INTEROP)
     template<typename FloatingPointType,
-             typename std::enable_if<(   (std::is_floating_point<FloatingPointType>::value == true)
-                                      && (std::numeric_limits<FloatingPointType>::is_iec559 == true))>::type const* = nullptr>
+             typename std::enable_if<(std::is_floating_point<FloatingPointType>::value == true)>::type const* = nullptr>
     WIDE_INTEGER_CONSTEXPR uintwide_t(const FloatingPointType f)
     {
       using local_builtin_float_type = FloatingPointType;
 
+      using detail::my_own::isfinite;
+
+      if(isfinite(f) == false)
       {
-        const bool f_is_neg = (f < local_builtin_float_type(0.0F));
-
-        const local_builtin_float_type a = ((f_is_neg == false) ? f : -f);
-
-        const bool a_is_zero = (a < local_builtin_float_type(1.0F));
-
-        if(a_is_zero == false)
-        {
-          const detail::native_float_parts<local_builtin_float_type> ld_parts(a);
-
-          // Create a decwide_t from the fractional part of the
-          // mantissa expressed as an unsigned long long.
-          *this = uintwide_t(ld_parts.get_mantissa());
-
-          // Scale the unsigned long long representation to the fractional
-          // part of the long double and multiply with the base-2 exponent.
-          const int p2 = ld_parts.get_exponent() - (std::numeric_limits<FloatingPointType>::digits - 1);
-
-          if     (p2 <   0) { *this >>= (unsigned) -p2; }
-          else if(p2 ==  0) { ; }
-          else              { *this <<= (unsigned) p2; }
-
-          if(f_is_neg)
-          {
-            negate();
-          }
-        }
-        else
-        {
-          operator=(0U);
-        }
-      }
-    }
-
-    template<typename FloatingPointType,
-             typename std::enable_if<(   (std::is_floating_point<FloatingPointType>::value == true)
-                                      && (std::numeric_limits<FloatingPointType>::is_iec559 == false))>::type const* = nullptr>
-    WIDE_INTEGER_CONSTEXPR uintwide_t(const FloatingPointType f)
-    {
-      using std::isfinite;
-
-      using local_builtin_float_type = FloatingPointType;
-
-      const bool f_is_finite = isfinite(f);
-
-      if(f_is_finite == false)
-      {
+        operator=(0U);
       }
       else
       {
@@ -3533,6 +3495,7 @@
 
   namespace detail {
 
+  #if !defined(WIDE_INTEGER_DISABLE_FLOAT_INTEROP)
   namespace my_own {
 
   template<typename FloatingPointType>
@@ -3540,16 +3503,6 @@
 
   template<typename FloatingPointType> WIDE_INTEGER_CONSTEXPR typename std::enable_if<((std::is_floating_point<FloatingPointType>::value == true) && (std::numeric_limits<FloatingPointType>::is_iec559 == true)), FloatingPointType>::type frexp(FloatingPointType x, int* expptr)
   {
-    // TBD: This does not handle or deal with subnormals in any way.
-    // Functions such as std::isfinite will be non-constexpr,
-    // so these can't be used in this particular subroutine,
-    // which is intended to be constexpr. As a result, some kind
-    // of portable, yet constexpr way of dealing with subnormals
-    // would be required here, if this is done at all.
-    // TBD: There is the old trick of NaN != NaN. Positive and negative
-    // values of infinity are also detectable if some format details
-    // are known.
-
     using local_floating_point_type = FloatingPointType;
 
     const bool x_is_neg = (x < local_floating_point_type(0.0L));
@@ -3591,7 +3544,41 @@
     return frexp(x, expptr);
   }
 
+  template<typename FloatingPointType> WIDE_INTEGER_CONSTEXPR typename std::enable_if<((std::is_floating_point<FloatingPointType>::value == true) && (std::numeric_limits<FloatingPointType>::is_iec559 == true)), bool>::type isfinite(FloatingPointType x)
+  {
+    using local_floating_point_type = FloatingPointType;
+
+    bool x_is_finite = true;
+
+    const bool x_is_nan = (x != x);
+
+    if(x_is_nan)
+    {
+      x_is_finite = false;
+    }
+    else
+    {
+      const bool x_is_inf_pos = (x > (std::numeric_limits<local_floating_point_type>::max)());
+      const bool x_is_inf_neg = (x < (std::numeric_limits<local_floating_point_type>::lowest)());
+
+      if(x_is_inf_pos || x_is_inf_neg)
+      {
+        x_is_finite = false;
+      }
+    }
+
+    return x_is_finite;
   }
+
+  template<typename FloatingPointType> WIDE_INTEGER_CONSTEXPR typename std::enable_if<((std::is_floating_point<FloatingPointType>::value == true) && (std::numeric_limits<FloatingPointType>::is_iec559 == false)), bool>::type isfinite(FloatingPointType x)
+  {
+    using std::isfinite;
+
+    return isfinite(x);
+  }
+
+  } // namespace math::wide_integer::detail::my_own
+  #endif
 
   template<typename UnsignedIntegralType>
   inline WIDE_INTEGER_CONSTEXPR unsinged_fast_type lsb_helper(const UnsignedIntegralType& x)
