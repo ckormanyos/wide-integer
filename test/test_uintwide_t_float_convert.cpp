@@ -180,7 +180,7 @@ bool math::wide_integer::test_uintwide_t_float_convert()
 
   bool result_is_ok = true;
 
-  for(std::size_t i = 0U; i < 0x40000U; ++i)
+  for(std::size_t i = 0U; i < 0x80000U; ++i)
   {
     const float f = get_random_float<float, -1, 27>();
 
@@ -193,7 +193,7 @@ bool math::wide_integer::test_uintwide_t_float_convert()
     result_is_ok &= (str_boost_signed == str_local_signed);
   }
 
-  for(std::size_t i = 0U; i < 0x40000U; ++i)
+  for(std::size_t i = 0U; i < 0x80000U; ++i)
   {
     const double d = get_random_float<double, -1, 75>();
 

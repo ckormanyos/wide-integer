@@ -3535,6 +3535,9 @@
 
   namespace my_own {
 
+  template<typename FloatingPointType>
+  constexpr FloatingPointType pow2(int n) { return n == 0 ? FloatingPointType(1.0L) : pow2<FloatingPointType>(n - 1) * FloatingPointType(2.0L); }
+
   template<typename FloatingPointType> WIDE_INTEGER_CONSTEXPR typename std::enable_if<((std::is_floating_point<FloatingPointType>::value == true) && (std::numeric_limits<FloatingPointType>::is_iec559 == true)), FloatingPointType>::type frexp(FloatingPointType x, int* expptr)
   {
     // TBD: This does not handle or deal with subnormals in any way.
@@ -3553,18 +3556,29 @@
 
     local_floating_point_type f = (x_is_neg ? -x : x);
 
-    std::uint16_t e2 = 0U;
+    int e2 = 0;
 
-    while(f > local_floating_point_type(1.0L))
+    constexpr long double two_pow32 = pow2<long double>(32);
+
+    while(f >= local_floating_point_type(two_pow32))
     {
-      f = local_floating_point_type(f) / local_floating_point_type(2.0L);
+      // TBD: Maybe optimize this exponent reduction
+      // with a more clever kind of binary searching.
 
-      e2 = std::uint16_t(e2 + UINT16_C(1));
+      f   = local_floating_point_type(f / local_floating_point_type(two_pow32));
+      e2 += 32;
+    }
+
+    while(f >= local_floating_point_type(1.0L))
+    {
+      f = local_floating_point_type(f / local_floating_point_type(2.0L));
+
+      ++e2;
     }
 
     if(expptr != nullptr)
     {
-      *expptr = static_cast<int>(e2);
+      *expptr = e2;
     }
 
     return ((x_is_neg == false) ? f : -f);
