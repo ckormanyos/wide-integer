@@ -125,8 +125,8 @@
 
   namespace my_own {
 
-  template<typename FloatingPointType> WIDE_INTEGER_CONSTEXPR typename std::enable_if<((std::is_floating_point<FloatingPointType>::value == true) && (std::numeric_limits<FloatingPointType>::is_iec559 == true )), FloatingPointType>::type frexp(FloatingPointType f, int* expptr);
-  template<typename FloatingPointType> WIDE_INTEGER_CONSTEXPR typename std::enable_if<((std::is_floating_point<FloatingPointType>::value == true) && (std::numeric_limits<FloatingPointType>::is_iec559 == false)), FloatingPointType>::type frexp(FloatingPointType f, int* expptr);
+  template<typename FloatingPointType> WIDE_INTEGER_CONSTEXPR typename std::enable_if<((std::is_floating_point<FloatingPointType>::value == true) && (std::numeric_limits<FloatingPointType>::is_iec559 == true )), FloatingPointType>::type frexp(FloatingPointType x, int* expptr);
+  template<typename FloatingPointType> WIDE_INTEGER_CONSTEXPR typename std::enable_if<((std::is_floating_point<FloatingPointType>::value == true) && (std::numeric_limits<FloatingPointType>::is_iec559 == false)), FloatingPointType>::type frexp(FloatingPointType x, int* expptr);
 
   }
 
@@ -892,19 +892,8 @@
                                       && (std::numeric_limits<FloatingPointType>::is_iec559 == true))>::type const* = nullptr>
     WIDE_INTEGER_CONSTEXPR uintwide_t(const FloatingPointType f)
     {
-      // TBD make this constructor constexpr in the C++20 sense.
-      // Making use of the "known" floating-point format is mandatory
-      // for this purpose.
-      using std::isfinite;
-
       using local_builtin_float_type = FloatingPointType;
 
-      const bool f_is_finite = isfinite(f);
-
-      if(f_is_finite == false)
-      {
-      }
-      else
       {
         const bool f_is_neg = (f < local_builtin_float_type(0.0F));
 
@@ -3546,25 +3535,49 @@
 
   namespace my_own {
 
-  template<typename FloatingPointType> WIDE_INTEGER_CONSTEXPR typename std::enable_if<((std::is_floating_point<FloatingPointType>::value == true) && (std::numeric_limits<FloatingPointType>::is_iec559 == true)), FloatingPointType>::type frexp(FloatingPointType f, int* expptr)
+  template<typename FloatingPointType> WIDE_INTEGER_CONSTEXPR typename std::enable_if<((std::is_floating_point<FloatingPointType>::value == true) && (std::numeric_limits<FloatingPointType>::is_iec559 == true)), FloatingPointType>::type frexp(FloatingPointType x, int* expptr)
   {
-    // TBD make this implementation of frexp constexpr in the C++20 sense.
-    // Making use of the "known" floating-point format is mandatory
-    // for this purpose.
+    // TBD: This does not handle or deal with subnormals in any way.
+    // Functions such as std::isfinite will be non-constexpr,
+    // so these can't be used in this particular subroutine,
+    // which is intended to be constexpr. As a result, some kind
+    // of portable, yet constexpr way of dealing with subnormals
+    // would be required here, if this is done at all.
+    // TBD: There is the old trick of NaN != NaN. Positive and negative
+    // values of infinity are also detectable if some format details
+    // are known.
+
+    using local_floating_point_type = FloatingPointType;
+
+    const bool x_is_neg = (x < local_floating_point_type(0.0L));
+
+    local_floating_point_type f = (x_is_neg ? -x : x);
+
+    std::uint16_t e2 = 0U;
+
+    while(f > local_floating_point_type(1.0L))
+    {
+      f = local_floating_point_type(f) / local_floating_point_type(2.0L);
+
+      e2 = std::uint16_t(e2 + UINT16_C(1));
+    }
+
+    if(expptr != nullptr)
+    {
+      *expptr = static_cast<int>(e2);
+    }
+
+    return ((x_is_neg == false) ? f : -f);
+  }
+
+  template<typename FloatingPointType> WIDE_INTEGER_CONSTEXPR typename std::enable_if<((std::is_floating_point<FloatingPointType>::value == true) && (std::numeric_limits<FloatingPointType>::is_iec559 == false)), FloatingPointType>::type frexp(FloatingPointType x, int* expptr)
+  {
     using std::frexp;
 
-    return frexp(f, expptr);
-  }
-
-  template<typename FloatingPointType> WIDE_INTEGER_CONSTEXPR typename std::enable_if<((std::is_floating_point<FloatingPointType>::value == true) && (std::numeric_limits<FloatingPointType>::is_iec559 == false)), FloatingPointType>::type frexp(FloatingPointType f, int* expptr)
-  {
-    using std::frexp;
-
-    return frexp(f, expptr);
+    return frexp(x, expptr);
   }
 
   }
-
 
   template<typename UnsignedIntegralType>
   inline WIDE_INTEGER_CONSTEXPR unsinged_fast_type lsb_helper(const UnsignedIntegralType& x)
