@@ -851,10 +851,10 @@
     // same width as limb_type.
     template<typename UnsignedIntegralType>
     WIDE_INTEGER_CONSTEXPR uintwide_t(const UnsignedIntegralType v,
-               typename std::enable_if<(   (std::is_fundamental<UnsignedIntegralType>::value == true)
-                                        && (std::is_integral   <UnsignedIntegralType>::value == true)
-                                        && (std::is_unsigned   <UnsignedIntegralType>::value == true)
-                                        && (std::numeric_limits<UnsignedIntegralType>::digits > std::numeric_limits<limb_type>::digits))>::type* = nullptr)
+                                      typename std::enable_if<(   (std::is_fundamental<UnsignedIntegralType>::value == true)
+                                                               && (std::is_integral   <UnsignedIntegralType>::value == true)
+                                                               && (std::is_unsigned   <UnsignedIntegralType>::value == true)
+                                                               && (std::numeric_limits<UnsignedIntegralType>::digits > std::numeric_limits<limb_type>::digits))>::type* = nullptr)
     {
       unsinged_fast_type right_shift_amount_v = 0U;
       std::uint_fast8_t  index_u              = 0U;
@@ -1167,7 +1167,7 @@
         // Unary division function.
         const bool denom_was_neg = is_neg(other);
 
-        eval_divide_knuth(denom_was_neg == false ? other : -other, nullptr, denom_was_neg);
+        eval_divide_knuth((denom_was_neg == false) ? other : -other, nullptr, denom_was_neg);
       }
 
       return *this;
@@ -1186,7 +1186,7 @@
 
         const bool denom_was_neg = is_neg(other);
 
-        eval_divide_knuth(denom_was_neg == false ? other : -other, &remainder, denom_was_neg);
+        eval_divide_knuth((denom_was_neg == false) ? other : -other, &remainder, denom_was_neg);
 
         values = remainder.values;
       }
@@ -1389,7 +1389,7 @@
     static WIDE_INTEGER_CONSTEXPR uintwide_t limits_helper_max(bool is_signed)
     {
       return
-      is_signed == false
+      (is_signed == false)
         ? from_rep
           (
             representation_type
@@ -1410,7 +1410,7 @@
     static WIDE_INTEGER_CONSTEXPR uintwide_t limits_helper_min(bool is_signed)
     {
       return
-      is_signed == false
+      (is_signed == false)
         ? from_rep
           (
             representation_type
@@ -1696,45 +1696,24 @@
              typename std::enable_if<(RePhraseIsSigned == false)>::type const* = nullptr>
     WIDE_INTEGER_CONSTEXPR std::int_fast8_t compare(const uintwide_t<Width2, LimbType, AllocatorType, RePhraseIsSigned>& other) const
     {
-      constexpr size_t local_number_of_limbs =
-        uintwide_t<Width2, LimbType, AllocatorType, RePhraseIsSigned>::number_of_limbs;
-
-      return compare_ranges(values.data(), other.values.data(), local_number_of_limbs);
+      return compare_ranges(values.data(),
+                            other.values.data(),
+                            uintwide_t<Width2, LimbType, AllocatorType, RePhraseIsSigned>::number_of_limbs);
     }
 
     template<const bool RePhraseIsSigned = IsSigned,
              typename std::enable_if<(RePhraseIsSigned == true)>::type const* = nullptr>
     WIDE_INTEGER_CONSTEXPR std::int_fast8_t compare(const uintwide_t<Width2, LimbType, AllocatorType, RePhraseIsSigned>& other) const
     {
-      constexpr size_t local_number_of_limbs =
-        uintwide_t<Width2, LimbType, AllocatorType, RePhraseIsSigned>::number_of_limbs;
+      const bool other_is_neg = is_neg(other);
 
-      std::int_fast8_t n_result;
-
-      if(is_neg(*this))
-      {
-        if(is_neg(other))
-        {
-          n_result = compare_ranges(values.data(), other.values.data(), local_number_of_limbs);
-        }
-        else
-        {
-          n_result = INT8_C(-1);
-        }
-      }
-      else
-      {
-        if(is_neg(other))
-        {
-          n_result = INT8_C(1);
-        }
-        else
-        {
-          n_result = compare_ranges(values.data(), other.values.data(), local_number_of_limbs);
-        }
-      }
-
-      return n_result;
+      return
+      is_neg(*this)
+        ? (other_is_neg ? compare_ranges(values.data(), other.values.data(), uintwide_t<Width2, LimbType, AllocatorType, RePhraseIsSigned>::number_of_limbs)
+                        : INT8_C(-1))
+        : (other_is_neg ? INT8_C(1)
+                        : compare_ranges(values.data(), other.values.data(), uintwide_t<Width2, LimbType, AllocatorType, RePhraseIsSigned>::number_of_limbs))
+      ;
     }
 
     WIDE_INTEGER_CONSTEXPR void negate()
@@ -1812,9 +1791,10 @@
   private:
     representation_type values { };
 
-    // Constructor from the internal data representation.
     static WIDE_INTEGER_CONSTEXPR uintwide_t from_rep(const representation_type& other_rep)
     {
+      // Factory-like creator from the internal data representation.
+
       uintwide_t a;
 
       a.values = other_rep;
@@ -1948,7 +1928,7 @@
       constexpr size_t local_number_of_limbs =
         uintwide_t<OtherWidth2, LimbType, AllocatorType, IsSigned>::number_of_limbs;
 
-      representation_type result{};
+      representation_type result { };
 
       eval_multiply_n_by_n_to_lo_part(result.data(),
                                       u.values.data(),
@@ -1973,13 +1953,26 @@
       // TBD: Can use specialized allocator or memory pool for these arrays.
       // Good examples for this (both threaded as well as non-threaded)
       // can be found in the wide_decimal project.
-      typename std::conditional<std::is_same<AllocatorType, void>::value,
-                                detail::fixed_static_array <limb_type, local_number_of_limbs * 2U>,
-                                detail::fixed_dynamic_array<limb_type, local_number_of_limbs * 2U, AllocatorType>>::type result;
+      using result_array_type =
+        typename std::conditional<std::is_same<AllocatorType, void>::value,
+                                  detail::fixed_static_array <limb_type, number_of_limbs * 2U>,
+                                  detail::fixed_dynamic_array<limb_type,
+                                                              number_of_limbs * 2U,
+                                                              typename std::allocator_traits<typename std::conditional<std::is_same<AllocatorType, void>::value,
+                                                                                                                       std::allocator<void>,
+                                                                                                                       AllocatorType>::type>::template rebind_alloc<limb_type>>>::type;
 
-      typename std::conditional<std::is_same<AllocatorType, void>::value,
-                                detail::fixed_static_array <limb_type, local_number_of_limbs * 4U>,
-                                detail::fixed_dynamic_array<limb_type, local_number_of_limbs * 4U, AllocatorType>>::type t;
+      using storage_array_type =
+        typename std::conditional<std::is_same<AllocatorType, void>::value,
+                                  detail::fixed_static_array <limb_type, number_of_limbs * 4U>,
+                                  detail::fixed_dynamic_array<limb_type,
+                                                              number_of_limbs * 4U,
+                                                              typename std::allocator_traits<typename std::conditional<std::is_same<AllocatorType, void>::value,
+                                                                                                                       std::allocator<void>,
+                                                                                                                       AllocatorType>::type>::template rebind_alloc<limb_type>>>::type;
+
+      result_array_type  result;
+      storage_array_type t;
 
       eval_multiply_kara_n_by_n_to_2n(result.data(),
                                       u.values.data(),
@@ -2849,7 +2842,11 @@
           using uu_array_type =
             typename std::conditional<std::is_same<AllocatorType, void>::value,
                                       detail::fixed_static_array <limb_type, number_of_limbs + 1U>,
-                                      detail::fixed_dynamic_array<limb_type, number_of_limbs + 1U, AllocatorType>>::type;
+                                      detail::fixed_dynamic_array<limb_type,
+                                                                  number_of_limbs + 1U,
+                                                                  typename std::allocator_traits<typename std::conditional<std::is_same<AllocatorType, void>::value,
+                                                                                                                           std::allocator<void>,
+                                                                                                                           AllocatorType>::type>::template rebind_alloc<limb_type>>>::type;
 
           uu_array_type       uu;
           representation_type vv;
@@ -4444,6 +4441,7 @@
         //   r = {[input_generator() % ((b - a) + 1)] + a}
 
         result_type range(input_params.get_b() - input_params.get_a());
+
         ++range;
 
         result %= range;
