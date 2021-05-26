@@ -674,7 +674,10 @@
                                     && (std::is_signed  <SignedIntegralType>::value == true), SignedIntegralType>::type
   negate(SignedIntegralType n)
   {
-    return (SignedIntegralType) -n;
+    using local_unsigned_type =
+      typename detail::uint_type_helper<size_t(std::numeric_limits<SignedIntegralType>::digits + 1)>::exact_unsigned_type;
+
+    return (SignedIntegralType) negate((local_unsigned_type) n);
   }
 
   #if !defined(WIDE_INTEGER_DISABLE_FLOAT_INTEROP)
