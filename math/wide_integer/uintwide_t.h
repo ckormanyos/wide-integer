@@ -1423,6 +1423,27 @@
       return uintwide_t(representation_type(number_of_limbs, limb_type(0U)));
     }
 
+    static WIDE_INTEGER_CONSTEXPR uintwide_t limits_helper_lowest(bool is_signed)
+    {
+      return
+      (is_signed == false)
+        ? from_rep
+          (
+            representation_type
+            (
+              number_of_limbs, limb_type(0U)
+            )
+          )
+        : from_rep
+          (
+            representation_type
+            (
+              number_of_limbs, limb_type(0U)
+            )
+          ) | (uintwide_t(1U) << (my_width2 - 1))
+        ;
+    }
+
     // Define the maximum buffer sizes for extracting
     // octal, decimal and hexadecimal string representations.
     static constexpr size_t wr_string_max_buffer_size_oct = (16U + (my_width2 / 3U)) + size_t(((my_width2 % 3U) != 0U) ? 1U : 0U) + 1U;
@@ -3227,8 +3248,9 @@
     static constexpr int max_exponent    = digits;
     static constexpr int max_exponent10  = static_cast<int>((std::uintmax_t(max_exponent) * UINTMAX_C(75257499)) / UINTMAX_C(250000000));
 
-    static constexpr local_wide_integer_type (max)() { return local_wide_integer_type::limits_helper_max(IsSigned); }
-    static constexpr local_wide_integer_type (min)() { return local_wide_integer_type::limits_helper_min(IsSigned); }
+    static constexpr local_wide_integer_type (max) () { return local_wide_integer_type::limits_helper_max   (IsSigned); }
+    static constexpr local_wide_integer_type (min) () { return local_wide_integer_type::limits_helper_min   (IsSigned); }
+    static constexpr local_wide_integer_type lowest() { return local_wide_integer_type::limits_helper_lowest(IsSigned); }
   };
 
   template<class T>
