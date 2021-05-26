@@ -661,8 +661,6 @@
     return local_ularge_type(local_ularge_type(static_cast<local_ularge_type>(hi) << std::numeric_limits<UnsignedShortType>::digits) | lo);
   }
 
-  struct uint64_extra { uint64_t extra, v; };
-
   template<typename UnsignedIntegralType>
   constexpr typename std::enable_if<   (std::is_integral<UnsignedIntegralType>::value == true)
                                     && (std::is_unsigned<UnsignedIntegralType>::value == true), UnsignedIntegralType>::type
@@ -879,7 +877,7 @@
       const bool v_is_neg = (v < local_signed_integral_type(0));
 
       const local_unsigned_integral_type u =
-        ((v_is_neg == false) ? local_unsigned_integral_type(v) : local_unsigned_integral_type(-v));
+        ((v_is_neg == false) ? local_unsigned_integral_type(v) : local_unsigned_integral_type(detail::negate(v)));
 
       operator=(uintwide_t(u));
 
