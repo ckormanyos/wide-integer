@@ -134,7 +134,7 @@
   }
   #endif
 
-  }
+  } // namespace math::wide_integer::detail
 
   using detail::size_t;
   using detail::ptrdiff_t;
@@ -384,7 +384,7 @@
            typename AllocatorType,
            const bool IsSigned>
   bool miller_rabin(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& n,
-                    const std::uint_fast32_t                                     number_of_trials,
+                    const unsinged_fast_type                                     number_of_trials,
                     DistributionType&                                            distribution,
                     GeneratorType&                                               generator);
 
@@ -3503,9 +3503,6 @@
   #if !defined(WIDE_INTEGER_DISABLE_FLOAT_INTEROP)
   namespace my_own {
 
-  template<typename FloatingPointType>
-  constexpr FloatingPointType pow2(int n) { return n == 0 ? FloatingPointType(1.0L) : pow2<FloatingPointType>(n - 1) * FloatingPointType(2.0L); }
-
   template<typename FloatingPointType> WIDE_INTEGER_CONSTEXPR typename std::enable_if<((std::is_floating_point<FloatingPointType>::value == true) && (std::numeric_limits<FloatingPointType>::is_iec559 == true)), FloatingPointType>::type frexp(FloatingPointType x, int* expptr)
   {
     using local_floating_point_type = FloatingPointType;
@@ -3516,7 +3513,8 @@
 
     int e2 = 0;
 
-    constexpr long double two_pow32 = pow2<long double>(32);
+    constexpr long double two_pow32 =
+      static_cast<long double>(0x10000) * static_cast<long double>(0x10000);
 
     while(f >= local_floating_point_type(two_pow32))
     {
@@ -4491,9 +4489,10 @@
     // This Miller-Rabin primality test is loosely based on
     // an adaptation of some code from Boost.Multiprecision.
     // The Boost.Multiprecision code can be found here:
-    // https://www.boost.org/doc/libs/1_73_0/libs/multiprecision/doc/html/boost_multiprecision/tut/primetest.html
+    // https://www.boost.org/doc/libs/1_76_0/libs/multiprecision/doc/html/boost_multiprecision/tut/primetest.html
 
     // Note: Some comments in this subroutine use the Wolfram Language(TM).
+    // These can be exercised at the web links to WolframAlpha(R) provided
 
     using local_wide_integer_type = uintwide_t<Width2, LimbType, AllocatorType, IsSigned>;
     using local_limb_type         = typename local_wide_integer_type::limb_type;
@@ -4517,6 +4516,7 @@
           return true;
         }
 
+        // Exclude pure small primes from 3...227.
         // Table[Prime[i], {i, 2, 49}] =
         // {
         //     3,   5,   7,  11,  13,  17,  19,  23,
@@ -4526,8 +4526,9 @@
         //   139, 149, 151, 157, 163, 167, 173, 179,
         //   181, 191, 193, 197, 199, 211, 223, 227
         // }
+        // See also:
+        // https://www.wolframalpha.com/input/?i=Table%5BPrime%5Bi%5D%2C+%7Bi%2C+2%2C+49%7D%5D
 
-        // Exclude pure small primes from 3...227.
         constexpr std::array<local_limb_type, 48U> small_primes = 
         {{
           UINT8_C(  3), UINT8_C(  5), UINT8_C(  7), UINT8_C( 11), UINT8_C( 13), UINT8_C( 17), UINT8_C( 19), UINT8_C( 23),
@@ -4545,9 +4546,11 @@
     }
 
     // Check small factors.
+
+    // Exclude small prime factors from { 3 ...  53 }.
+    // Product[Prime[i], {i, 2, 16}] = 16294579238595022365
+    // See also: https://www.wolframalpha.com/input/?i=Product%5BPrime%5Bi%5D%2C+%7Bi%2C+2%2C+16%7D%5D
     {
-      // Product[Prime[i], {i, 2, 16}] = 16294579238595022365
-      // Exclude small prime factors from { 3 ...  53 }.
       constexpr std::uint64_t pp0 = UINT64_C(16294579238595022365);
 
       const std::uint64_t m0(np % pp0);
@@ -4558,9 +4561,10 @@
       }
     }
 
+    // Exclude small prime factors from { 59 ... 101 }.
+    // Product[Prime[i], {i, 17, 26}] = 7145393598349078859
+    // See also: https://www.wolframalpha.com/input/?i=Product%5BPrime%5Bi%5D%2C+%7Bi%2C+17%2C+26%7D%5D
     {
-      // Product[Prime[i], {i, 17, 26}] = 7145393598349078859
-      // Exclude small prime factors from { 59 ... 101 }.
       constexpr std::uint64_t pp1 = UINT64_C(7145393598349078859);
 
       const std::uint64_t m1(np % pp1);
@@ -4571,9 +4575,10 @@
       }
     }
 
+    // Exclude small prime factors from { 103 ... 149 }.
+    // Product[Prime[i], {i, 27, 35}] = 6408001374760705163
+    // See also: https://www.wolframalpha.com/input/?i=Product%5BPrime%5Bi%5D%2C+%7Bi%2C+27%2C+35%7D%5D
     {
-      // Product[Prime[i], {i, 27, 35}] = 6408001374760705163
-      // Exclude small prime factors from { 103 ... 149 }.
       constexpr std::uint64_t pp2 = UINT64_C(6408001374760705163);
 
       const std::uint64_t m2(np % pp2);
@@ -4584,9 +4589,10 @@
       }
     }
 
+    // Exclude small prime factors from { 151 ... 191 }.
+    // Product[Prime[i], {i, 36, 43}] = 690862709424854779
+    // See also: https://www.wolframalpha.com/input/?i=Product%5BPrime%5Bi%5D%2C+%7Bi%2C+36%2C+43%7D%5D
     {
-      // Product[Prime[i], {i, 36, 43}] = 690862709424854779
-      // Exclude small prime factors from { 151 ... 191 }.
       constexpr std::uint64_t pp3 = UINT64_C(690862709424854779);
 
       const std::uint64_t m3(np % pp3);
@@ -4597,9 +4603,10 @@
       }
     }
 
+    // Exclude small prime factors from { 193 ... 227 }.
+    // Product[Prime[i], {i, 44, 49}] = 80814592450549
+    // See also: https://www.wolframalpha.com/input/?i=Product%5BPrime%5Bi%5D%2C+%7Bi%2C+44%2C+49%7D%5D
     {
-      // Product[Prime[i], {i, 44, 49}] = 80814592450549
-      // Exclude small prime factors from { 193 ... 227 }.
       constexpr std::uint64_t pp4 = UINT64_C(80814592450549);
 
       const std::uint64_t m4(np % pp4);
@@ -4619,9 +4626,7 @@
       // Perform a single Fermat test which will
       // exclude many non-prime candidates.
 
-      static const local_wide_integer_type n228(local_limb_type(228U));
-
-      const local_wide_integer_type fn = powm(n228, nm1, np);
+      const local_wide_integer_type fn = powm(local_wide_integer_type(local_limb_type(228U)), nm1, np);
 
       const local_limb_type fn0 = static_cast<local_limb_type>(fn);
 
@@ -4688,7 +4693,7 @@
     }
     while((i < number_of_trials) && is_probably_prime);
 
-    // Probably prime.
+    // The prime candidate is probably prime.
     return is_probably_prime;
   }
 
