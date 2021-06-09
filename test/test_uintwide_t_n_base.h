@@ -15,6 +15,13 @@
   #if defined(__GNUC__)
   #pragma GCC diagnostic push
   #pragma GCC diagnostic ignored "-Wconversion"
+  #pragma GCC diagnostic push
+  #pragma GCC diagnostic ignored "-Wsign-conversion"
+  #endif
+
+  #if defined(__clang__) && !defined(__APPLE__)
+  #pragma GCC diagnostic push
+  #pragma GCC diagnostic ignored "-Wdeprecated-copy"
   #endif
 
   #include <boost/multiprecision/cpp_int.hpp>
@@ -102,7 +109,12 @@
     test_uintwide_t_n_base() = delete;
   };
 
+  #if defined(__clang__) && !defined(__APPLE__)
+  #pragma GCC diagnostic pop
+  #endif
+
   #if defined(__GNUC__)
+  #pragma GCC diagnostic pop
   #pragma GCC diagnostic pop
   #endif
 

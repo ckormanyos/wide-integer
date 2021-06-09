@@ -10,6 +10,13 @@
 #if defined(__GNUC__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wconversion"
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsign-conversion"
+#endif
+
+#if defined(__clang__) && !defined(__APPLE__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-copy"
 #endif
 
 #include <boost/lexical_cast.hpp>
@@ -132,6 +139,11 @@ bool math::wide_integer::test_uintwide_t_edge_cases()
   return result_is_ok;
 }
 
+#if defined(__clang__) && !defined(__APPLE__)
+#pragma GCC diagnostic pop
+#endif
+
 #if defined(__GNUC__)
+#pragma GCC diagnostic pop
 #pragma GCC diagnostic pop
 #endif

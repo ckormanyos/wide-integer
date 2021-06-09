@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright Christopher Kormanyos 2017 - 2018.
+//  Copyright Christopher Kormanyos 2017 - 2021.
 //  Distributed under the Boost Software License,
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -21,8 +21,7 @@
                       callable_function_type parallel_function)
     {
       // Estimate the number of threads available.
-      static const unsigned int number_of_threads_hint =
-        std::thread::hardware_concurrency();
+      static const unsigned int number_of_threads_hint = std::thread::hardware_concurrency();
 
       static const unsigned int number_of_threads =
         ((number_of_threads_hint == 0U) ? 4U : number_of_threads_hint);

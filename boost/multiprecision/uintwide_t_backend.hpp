@@ -16,6 +16,13 @@
   #if defined(__GNUC__)
   #pragma GCC diagnostic push
   #pragma GCC diagnostic ignored "-Wconversion"
+  #pragma GCC diagnostic push
+  #pragma GCC diagnostic ignored "-Wsign-conversion"
+  #endif
+
+  #if defined(__clang__) && !defined(__APPLE__)
+  #pragma GCC diagnostic push
+  #pragma GCC diagnostic ignored "-Wdeprecated-copy"
   #endif
 
   #include <boost/config.hpp>
@@ -614,7 +621,12 @@
 
   } // namespace std
 
+  #if defined(__clang__) && !defined(__APPLE__)
+  #pragma GCC diagnostic pop
+  #endif
+
   #if defined(__GNUC__)
+  #pragma GCC diagnostic pop
   #pragma GCC diagnostic pop
   #endif
 
