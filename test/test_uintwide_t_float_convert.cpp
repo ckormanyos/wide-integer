@@ -16,6 +16,8 @@
 #pragma GCC diagnostic ignored "-Wconversion"
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wsign-conversion"
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
 #endif
 
 #if defined(__clang__) && !defined(__APPLE__)
@@ -273,6 +275,7 @@ bool math::wide_integer::test_uintwide_t_float_convert()
 #endif
 
 #if defined(__GNUC__)
+#pragma GCC diagnostic pop
 #pragma GCC diagnostic pop
 #pragma GCC diagnostic pop
 #endif
