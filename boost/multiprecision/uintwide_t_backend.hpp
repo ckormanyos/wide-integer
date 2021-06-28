@@ -13,11 +13,15 @@
   #include <string>
   #include <type_traits>
 
+  // testing develop on its way to 1.77
+
   #if defined(__GNUC__)
   #pragma GCC diagnostic push
   #pragma GCC diagnostic ignored "-Wconversion"
   #pragma GCC diagnostic push
   #pragma GCC diagnostic ignored "-Wsign-conversion"
+  #pragma GCC diagnostic push
+  #pragma GCC diagnostic ignored "-Wunused-parameter"
   #endif
 
   #if defined(__clang__) && !defined(__APPLE__)
@@ -626,6 +630,7 @@
   #endif
 
   #if defined(__GNUC__)
+  #pragma GCC diagnostic pop
   #pragma GCC diagnostic pop
   #pragma GCC diagnostic pop
   #endif
