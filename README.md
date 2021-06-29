@@ -87,24 +87,22 @@ class uintwide_t;
 can be used to set the _allocator_ _type_ used for internal storage of the
 big integer type. This template parameter can reduce stack consumption
 and can be especially useful for high digit counts.
-If the `AllocatorType` template parameter is `void`, allocation
+The default `AllocatorType` is `void` and allocation
 is performed on the stack using an `array`-like, statically-sized
 internal storage representation.
 
-If left blank, the default `AllocatorType` is `void`
-and stack storage is used.
-
 The standard allocator (i.e., `std::allocator<void>`)
-or a custom allocator type can be used if using stack memory
+or a custom allocator type can be explicitly specified if using stack memory
 is insufficient or not well-suited to the application.
 Consider a custom allocator such as, let's say,
-`custom_allocator_type`. Setting the `AllocatorType` template parameter
+`custom_allocator_type`. In this case, setting `AllocatorType`
 to `custom_allocator_type<void>` or optionally
-`custom_allocator_type<LimbType>` uses this custom allocator
-for internal storage. An allocator supplied as
-`AllocatorType` template parameter itself having any
-granularity other than `LimbType` (such as `void`, etc.)
-will internally use `allocator_traits` to `rebind_alloc` to `LimbType`.
+to `custom_allocator_type<LimbType>` uses this custom allocator
+for internal storage. An allocator supplied
+with any granularity other than `LimbType`
+(such as `std::allocator<void>`, `custom_allocator_type<char>`, etc.)
+will internally be re-bound to the granularity and unsigned-ness
+of `LimbType` using `std::allocator_traits` to `rebind_alloc`.
 
 The fourth template parameter `IsSigned` can be set to `true`
 to activate a signed integer type. If left blank,
@@ -145,9 +143,12 @@ on how to use wide-integer.
 The recent status of building and executing the tests and examples
 in Continuous Integration (CI) is always shown in the Build Status banner.
 
-Simply using the [`uintwide-t.h` header](./math/wide_integer/uintwide_t.h)
-can be accomplished by identifying the header within
-its directory, including the header path and header in the normal C++ way.
+When working in your own project with wide-integer,
+using the [`uintwide_t.h` header](./math/wide_integer/uintwide_t.h)
+is straightforward. Identify the header within
+its directory. Include this header path to the compiler's set
+of include paths or in your project.
+Then simply `#include <uintwide_t.h>` the normal C++ way.
 
 It is also possible, if desired, to build and execute
 the tests and examples using various different OS/compiler
@@ -609,4 +610,4 @@ negative arguments in number theoretical functions.
   - GCD of `a`, `b` signed converts both arguments to positive and negates the result for `a`, `b` having opposite signs.
   - Miller-Rabin primality testing treats negative inetegers as positive when testing for prime, thus extending the set of primes <img src="https://render.githubusercontent.com/render/math?math=p\,\in\,\mathbb{Z}">.
   - MSB/LSB (most/least significant bit) do not differentiate between positive or negative argument such that MSB of a negative integer will be the highest bit of the corresponding unsigned type.
-  - Printing both positive-valued and negative-valued signed integers in hexadecimal format is supported. When printing negative-valued, signed  `uintwide_t` integers hexadecimal format, the sign bit and all other bits are treated as if the integer were unsigned. The negative sign is not explicitly shown when using hexadecimal format, even if the underlying integer is signed and negative-valued. A potential positive sign, however, will be shown for positive-valued signed integers in hexadecimal form in the presence of `std::showpos`.
+  - Printing both positive-valued and negative-valued signed integers in hexadecimal format is supported. When printing negative-valued, signed  `uintwide_t` in hexadecimal format, the sign bit and all other bits are treated as if the integer were unsigned. The negative sign is not explicitly shown when using hexadecimal format, even if the underlying integer is signed and negative-valued. A potential positive sign, however, will be shown for positive-valued signed integers in hexadecimal form in the presence of `std::showpos`.
