@@ -180,7 +180,7 @@ jobs:
           echo "ls ./wide_integer.exe"
           ls -la ./wide_integer.exe
           ./wide_integer.exe
-  gcc-clang-10:
+  gcc-clang-10_up:
     runs-on: ubuntu-20.04
     defaults:
       run:
@@ -189,13 +189,13 @@ jobs:
       fail-fast: false
       matrix:
         standard: [ c++11, c++14, c++17, c++20 ]
-        compiler: [ g++-10, clang++-10 ]
+        compiler: [ g++-10, g++-11, clang++-10 ]
     steps:
       - uses: actions/checkout@v2
         with:
           fetch-depth: '0'
       - name: update-tools
-        run: sudo apt install gcc-10 clang-10
+        run: sudo apt install gcc-10 g++-10 gcc-11 g++-11 clang-10
       - name: clone-submods-bootstrap-headers-boost-develop
         run: |
           git clone -b develop --depth 1 https://github.com/boostorg/boost.git ../boost-root
@@ -230,7 +230,7 @@ jobs:
           git submodule update --init libs/utility
           ./bootstrap.sh
           ./b2 headers
-      - name: gcc-clang-10
+      - name: gcc-clang-10_up
         run: |
           grep BOOST_VERSION ../boost-root/boost/version.hpp
           echo "compile ./wide_integer.exe"
