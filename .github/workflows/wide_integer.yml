@@ -189,13 +189,13 @@ jobs:
       fail-fast: false
       matrix:
         standard: [ c++11, c++14, c++17, c++20 ]
-        compiler: [ g++-10, g++-11, clang++-10 ]
+        compiler: [ g++-10, g++-11, clang++-10 clang++-11 ]
     steps:
       - uses: actions/checkout@v2
         with:
           fetch-depth: '0'
       - name: update-tools
-        run: sudo apt install gcc-10 g++-10 gcc-11 g++-11 clang-10
+        run: sudo apt install gcc-10 g++-10 gcc-11 g++-11 clang-10 clang-11
       - name: clone-submods-bootstrap-headers-boost-develop
         run: |
           git clone -b develop --depth 1 https://github.com/boostorg/boost.git ../boost-root
