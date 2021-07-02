@@ -85,18 +85,22 @@ class uintwide_t;
 
 `uintwide_t` also has a third optional template paramter that
 is used to set the _allocator_ _type_ employed for internal storage of the
-big integer type. The default allocator type is `std::allocator<limb_type>`.
-Using allocator storage can reduce stack consumption and is
-especially beneficial for higher digit counts.
+big integer's data. The default allocator type is `void`
+and `uintwide_t` uses stack allocation with an `std::array`-like internal representation.
+Setting the allocator type to an actual allocator such as,
+for instance, `std::allocator<limb_type>` activates allocator-based
+internal storage for `uintwide_t`.
+Using allocator-based storage reduces stack consumption and
+can be especially beneficial for higher digit counts.
 If low digit counts are used, the allocator type can be
-either or left at its default setting of `void` or explicitly
+either left at its default setting of `void` or explicitly
 set to `void` and stack allocation is used
 with an `std::array`-like internal representation.
 
 If an allocator is supplied with any granularity other than `limb_type`
 (in other words `LimbType`) such as `std::allocator<void>`, `custom_allocator_type<char>`, etc.,
-then the `uintwide_t` class internally _rebinds_ the allocator
-to the granularity and unsigned-ness of `limb_type` using `rebind_alloc`
+then the `uintwide_t` class will internally _rebind_ the allocator
+to the granularity and `unsigned`-ness of `limb_type` using `rebind_alloc`
 from `std::allocator_traits`.
 
 The fourth template parameter `IsSigned` can be set to `true`
