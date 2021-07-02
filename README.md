@@ -32,7 +32,7 @@ as shown in the [examples](./examples).
 
 ## Implementation goals
 
-  - Signed and unsigned versions of `uintwide_t` should behave as closely as possible as signed and unsigned versions of built-in `int`.
+  - Signed and unsigned versions of `uintwide_t` should behave as closely as possible to the behaviors of signed and unsigned versions of built-in `int`.
   - Relatively wide precision range from 24, 32, 64 bits up to tens of thousands of bits.
   - Moderately good efficiency over the entire wide precision range.
   - Clean header-only C++11 design.
@@ -84,25 +84,20 @@ class uintwide_t;
 ```
 
 `uintwide_t` also has a third optional template paramter that
-can be used to set the _allocator_ _type_ used for internal storage of the
-big integer type. This template parameter can reduce stack consumption
-and can be especially useful for high digit counts.
-The default `AllocatorType` is `void` and allocation
-is performed on the stack using an `array`-like, statically-sized
-internal storage representation.
+is used to set the _allocator_ _type_ employed for internal storage of the
+big integer type. The default allocator type is `std::allocator<limb_type>`.
+Using allocator storage can reduce stack consumption and is
+especially beneficial for higher digit counts.
+If low digit counts are used, the allocator type can be
+either or left at its default setting of `void` or explicitly
+set to `void` and stack allocation is used
+with an `std::array`-like internal representation.
 
-The standard allocator (i.e., `std::allocator<void>`)
-or a custom allocator type can be explicitly specified if using stack memory
-is insufficient or not well-suited to the application.
-Consider a custom allocator such as, let's say,
-`custom_allocator_type`. In this case, setting `AllocatorType`
-to `custom_allocator_type<void>` or optionally
-to `custom_allocator_type<LimbType>` uses this custom allocator
-for internal storage. An allocator supplied
-with any granularity other than `LimbType`
-(such as `std::allocator<void>`, `custom_allocator_type<char>`, etc.)
-will internally be re-bound to the granularity and unsigned-ness
-of `LimbType` using `std::allocator_traits` to `rebind_alloc`.
+If an allocator is supplied with any granularity other than `limb_type`
+(in other words `LimbType`) such as `std::allocator<void>`, `custom_allocator_type<char>`, etc.,
+then the `uintwide_t` class internally _rebinds_ the allocator
+to the granularity and unsigned-ness of `limb_type` using `rebind_alloc`
+from `std::allocator_traits`.
 
 The fourth template parameter `IsSigned` can be set to `true`
 to activate a signed integer type. If left blank,
@@ -542,9 +537,9 @@ constexpr bool result_is_ok = (   (c == "0xE491A360C57EB4306C61F9A04F7F7D99BE367
 static_assert(result_is_ok == true, "Error: example is not OK!");
 ```
 
-`constexpr`-_ness_ of `uintwide_t` has been checked on GCC 10, clang 10
+`constexpr`-_ness_ of `uintwide_t` has been checked on GCC 10, GCC 11, clang 10
 (with `-std=c++20`) and VC 14.2 (with `/std:c++latest`),
-also for various embedded compilers such as `avr-gcc` 10,
+also for various embedded compilers such as `avr-gcc` 10 and 11,
 `arm-non-eabi-gcc` 10, and more. In addition,
 less modern compiler versions in addition to some other compilers
 having standards such as C++14, 17, 2a have also been checked
