@@ -92,10 +92,10 @@ for instance, `std::allocator<limb_type>` activates allocator-based
 internal storage for `uintwide_t`.
 Using allocator-based storage reduces stack consumption and
 can be especially beneficial for higher digit counts.
-If low digit counts are used, the allocator type can be
-either left at its default setting of `void` or explicitly
-set to `void` and stack allocation is used
-with an `std::array`-like internal representation.
+For low digit counts, the allocator type can
+simply be left blank (thus defaulting to `void`)
+or explicitly be set to `void` and stack allocation
+will be used in either case.
 
 If an allocator is supplied with any granularity other than `limb_type`
 (in other words `LimbType`) such as `std::allocator<void>`, `custom_allocator_type<char>`, etc.,
