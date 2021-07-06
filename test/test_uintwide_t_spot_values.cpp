@@ -16,28 +16,55 @@ bool math::wide_integer::test_uintwide_t_spot_values()
 
   {
     // See also https://github.com/ckormanyos/wide-integer/issues/108
-    using w_t  = math::wide_integer::uintwide_t<32U, std::uint32_t, void, true>;
-    using ww_t = math::wide_integer::uintwide_t<64U, std::uint32_t, void, true>;
+    {
+      using w_t  = math::wide_integer::uintwide_t<32U, std::uint32_t, void, true>;
+      using ww_t = math::wide_integer::uintwide_t<64U, std::uint32_t, void, true>;
 
-    w_t  neg     (-2);
-    ww_t neg_wide(-2);
-    ww_t neg_wide_cast = ww_t(neg);
+      w_t  neg     (-2);
+      ww_t neg_wide(-2);
+      ww_t neg_wide_cast = ww_t(neg);
 
-    std::string str_neg;
-    std::string str_neg_wide;
-    std::string str_neg_wide_cast;
+      std::string str_neg;
+      std::string str_neg_wide;
+      std::string str_neg_wide_cast;
 
-    { std::stringstream strm; strm << neg;           str_neg           = strm.str(); }
-    { std::stringstream strm; strm << neg_wide;      str_neg_wide      = strm.str(); }
-    { std::stringstream strm; strm << neg_wide_cast; str_neg_wide_cast = strm.str(); }
+      { std::stringstream strm; strm << neg;           str_neg           = strm.str(); }
+      { std::stringstream strm; strm << neg_wide;      str_neg_wide      = strm.str(); }
+      { std::stringstream strm; strm << neg_wide_cast; str_neg_wide_cast = strm.str(); }
 
-    const bool result_neg_is_ok           = (str_neg           == "-2");
-    const bool result_neg_wide_is_ok      = (str_neg_wide      == "-2");
-    const bool result_neg_wide_cast_is_ok = (str_neg_wide_cast == "-2");
+      const bool result_neg_is_ok           = (str_neg           == "-2");
+      const bool result_neg_wide_is_ok      = (str_neg_wide      == "-2");
+      const bool result_neg_wide_cast_is_ok = (str_neg_wide_cast == "-2");
 
-    result_is_ok &= (   result_neg_is_ok
-                     && result_neg_wide_is_ok
-                     && result_neg_wide_cast_is_ok);
+      result_is_ok &= (   result_neg_is_ok
+                       && result_neg_wide_is_ok
+                       && result_neg_wide_cast_is_ok);
+    }
+
+    {
+      using w_t  = math::wide_integer::uintwide_t<32U, std::uint8_t, void, true>;
+      using ww_t = math::wide_integer::uintwide_t<64U, std::uint8_t, void, true>;
+
+      w_t  neg     (-2);
+      ww_t neg_wide(-2);
+      ww_t neg_wide_cast = ww_t(neg);
+
+      std::string str_neg;
+      std::string str_neg_wide;
+      std::string str_neg_wide_cast;
+
+      { std::stringstream strm; strm << neg;           str_neg           = strm.str(); }
+      { std::stringstream strm; strm << neg_wide;      str_neg_wide      = strm.str(); }
+      { std::stringstream strm; strm << neg_wide_cast; str_neg_wide_cast = strm.str(); }
+
+      const bool result_neg_is_ok           = (str_neg           == "-2");
+      const bool result_neg_wide_is_ok      = (str_neg_wide      == "-2");
+      const bool result_neg_wide_cast_is_ok = (str_neg_wide_cast == "-2");
+
+      result_is_ok &= (   result_neg_is_ok
+                       && result_neg_wide_is_ok
+                       && result_neg_wide_cast_is_ok);
+    }
   }
 
   {
