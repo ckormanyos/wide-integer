@@ -3035,7 +3035,7 @@
         {
           const limb_type t = values[size_t(i)];
 
-          values[size_t(i)] = (t >> local_integral_type(right_shift_amount)) | part_from_previous_value;
+          values[size_t(i)] = limb_type(limb_type(t >> local_integral_type(right_shift_amount)) | part_from_previous_value);
 
           part_from_previous_value = limb_type(t << local_integral_type(unsinged_fast_type(std::numeric_limits<limb_type>::digits - right_shift_amount)));
         }
