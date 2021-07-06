@@ -938,15 +938,34 @@
     template<const size_t OtherWidth2>
     WIDE_INTEGER_CONSTEXPR uintwide_t(const uintwide_t<OtherWidth2, LimbType, AllocatorType, IsSigned>& v)
     {
+      using other_wide_integer_type = uintwide_t<OtherWidth2, LimbType, AllocatorType, IsSigned>;
+
+      const bool v_is_neg = (other_wide_integer_type::is_neg(v));
+
       const size_t sz =
         (std::min)(size_t(v.crepresentation().size()),
                    size_t(number_of_limbs));
 
-      std::copy(v.crepresentation().cbegin(),
-                v.crepresentation().cbegin() + sz,
-                values.begin());
+      if(v_is_neg == false)
+      {
+        std::copy(v.crepresentation().cbegin(),
+                  v.crepresentation().cbegin() + sz,
+                  values.begin());
 
-      std::fill(values.begin() + sz, values.end(), limb_type(0U));
+        std::fill(values.begin() + sz, values.end(), limb_type(0U));
+      }
+      else
+      {
+        const other_wide_integer_type uv(-v);
+
+        std::copy(uv.crepresentation().cbegin(),
+                  uv.crepresentation().cbegin() + sz,
+                  values.begin());
+
+        std::fill(values.begin() + sz, values.end(), limb_type(0U));
+
+        negate();
+      }
     }
 
     // Constructor from a constant character string.
