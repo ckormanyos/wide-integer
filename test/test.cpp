@@ -298,20 +298,16 @@ bool test_uintwide_t_0032768()
   return result_is_ok;
 }
 
+#if !defined(UINTWIDE_T_REDUCE_TEST_DEPTH)
 bool test_uintwide_t_0065536_alloc()
 {
-  #if !defined(UINTWIDE_T_REDUCE_TEST_DEPTH)
-  constexpr std::size_t count = std::size_t(1UL << 5U);
-  #else
-  constexpr std::size_t count = std::size_t(1UL << 6U);
-  #endif
-
   std::cout << "running: test_uintwide_t_0065536_alloc" << std::endl;
-  test_uintwide_t_n_binary_ops_template<65536U, std::uint32_t, std::allocator<std::uint32_t>> test_uintwide_t_n_binary_ops_template_instance(count);
+  test_uintwide_t_n_binary_ops_template<65536U, std::uint32_t, std::allocator<std::uint32_t>> test_uintwide_t_n_binary_ops_template_instance(1UL << 6U);
   const bool result_is_ok =
     test_uintwide_t_n_binary_ops_template_instance.do_test(test_uintwide_t_n_binary_ops_rounds);
   return result_is_ok;
 }
+#endif
 
 bool test_uintwide_t_0008192_by_0012288()
 {
@@ -397,7 +393,9 @@ int main()
   #endif
   result_is_ok &= local::test_uintwide_t_0012288();                      std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
   result_is_ok &= local::test_uintwide_t_0032768();                      std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
+  #if !defined(UINTWIDE_T_REDUCE_TEST_DEPTH)
   result_is_ok &= local::test_uintwide_t_0065536_alloc();                std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
+  #endif
   result_is_ok &= local::test_uintwide_t_0008192_by_0012288();           std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
   result_is_ok &= local::test_uintwide_t_0012288_by_0008192();           std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
   result_is_ok &= local::test_uintwide_t_0000032_by_0000032_4_by_4();    std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
