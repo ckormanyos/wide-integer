@@ -816,7 +816,7 @@
     using const_reverse_iterator = typename representation_type::const_reverse_iterator;
 
     // Define a class-local type that has double the width of *this.
-    using double_width_type = uintwide_t<size_t(Width2 * 2U), LimbType, AllocatorType, IsSigned>;
+    using double_width_type = uintwide_t<size_t(Width2 * 2U), limb_type, AllocatorType, IsSigned>;
 
     // Default constructor.
     constexpr uintwide_t() { }
@@ -1148,14 +1148,28 @@
       }
       else if(other.is_zero())
       {
-        values.fill((std::numeric_limits<limb_type>::max)());
+        *this = limits_helper_max(IsSigned);
       }
       else
       {
         // Unary division function.
-        const bool denom_was_neg = is_neg(other);
 
-        eval_divide_knuth((denom_was_neg == false) ? other : -other, nullptr, denom_was_neg);
+        using local_unsigned_wide_type = uintwide_t<Width2, limb_type, AllocatorType, false>;
+
+        const bool denom_was_neg = is_neg(other);
+        const bool numer_was_neg = is_neg(*this);
+
+        local_unsigned_wide_type a(*this);
+        local_unsigned_wide_type b(other);
+
+        if(numer_was_neg) { a.negate(); }
+        if(denom_was_neg) { b.negate(); }
+
+        a.eval_divide_knuth(b, nullptr);
+
+        if(numer_was_neg != denom_was_neg) { a.negate(); }
+
+        values = a.values;
       }
 
       return *this;
@@ -1170,11 +1184,26 @@
       else
       {
         // Unary modulus function.
-        uintwide_t remainder;
+        using local_unsigned_wide_type = uintwide_t<Width2, limb_type, AllocatorType, false>;
 
         const bool denom_was_neg = is_neg(other);
+        const bool numer_was_neg = is_neg(*this);
 
-        eval_divide_knuth((denom_was_neg == false) ? other : -other, &remainder, denom_was_neg);
+        local_unsigned_wide_type a(*this);
+        local_unsigned_wide_type b(other);
+
+        if(numer_was_neg) { a.negate(); }
+        if(denom_was_neg) { b.negate(); }
+
+        local_unsigned_wide_type remainder;
+
+        a.eval_divide_knuth(b, &remainder);
+
+        // The denominator has (already) been made positive and its sign has
+        // been provided in the denom_was_neg flag. The sign of the quotient
+        // will be negative if the sign of the divisor and dividend do not match,
+        // else positive.
+        if(numer_was_neg) { remainder.negate(); }
 
         values = remainder.values;
       }
@@ -2725,39 +2754,13 @@
     #endif
 
     WIDE_INTEGER_CONSTEXPR void eval_divide_knuth(const uintwide_t& other,
-                                                        uintwide_t* remainder,
-                                                  const bool        denom_was_neg = false)
+                                                        uintwide_t* remainder)
     {
       // Use Knuth's long division algorithm.
       // The loop-ordering of indexes in Knuth's original
       // algorithm has been reversed due to the data format
       // used here. Several optimizations and combinations
       // of logic have been carried out in the source code.
-
-      bool bNegQuot = false;
-      bool bNegRem  = false;
-
-      // Make *this (the numerator) positive. The sign of the
-      // remainder will match the sign of the denominator.
-      if(is_neg(*this))
-      {
-        bNegRem = true;
-
-        negate();
-      }
-
-      // The denominator has (already) been made positive and its sign has
-      // been provided in the denom_was_neg flag. The sign of the quotient
-      // will be negative if the sign of the divisor and dividend do not match,
-      // else positive.
-      if(denom_was_neg)
-      {
-        bNegQuot = !bNegRem;
-      }
-      else
-      {
-        bNegQuot = bNegRem;
-      }
 
       // See also:
       // D.E. Knuth, "The Art of Computer Programming, Volume 2:
@@ -2807,8 +2810,6 @@
           if(remainder != nullptr)
           {
             *remainder = *this;
-
-            if(bNegRem) { remainder->negate(); }
           }
 
           operator=(std::uint8_t(0U));
@@ -2831,9 +2832,6 @@
           const limb_type short_denominator = other.values[0U];
 
           eval_divide_by_single_limb(short_denominator, u_offset, remainder);
-
-          if(bNegQuot) { negate(); }
-          if(bNegRem && remainder != nullptr)  { remainder->negate(); }
         }
         else
         {
@@ -2972,9 +2970,6 @@
                       remainder->values.end(),
                       limb_type(0U));
           }
-
-          if(bNegQuot) { negate(); }
-          if(bNegRem && remainder != nullptr)  { remainder->negate(); }
         }
       }
     }

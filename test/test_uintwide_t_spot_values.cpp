@@ -15,6 +15,45 @@ bool math::wide_integer::test_uintwide_t_spot_values()
   bool result_is_ok = true;
 
   {
+    // See also https://github.com/ckormanyos/wide-integer/issues/111
+
+    {
+      using int256_t = math::wide_integer::uintwide_t<256U, std::uint32_t, void, true>;
+
+      int256_t a("-578960446186580977117854925043439539266349923328202820197287920"
+                 "03956564819968");
+
+      int256_t a_itself = (std::numeric_limits<int256_t>::min)();
+
+      result_is_ok &= (a == (std::numeric_limits<int256_t>::min)());
+
+      int256_t b("1");
+
+      const int256_t a_div_b = a / b;
+
+      result_is_ok &= (a_div_b == a);
+      result_is_ok &= (a / a_itself == b);
+    }
+
+    {
+      using my_int32_t = math::wide_integer::uintwide_t<32U, std::uint32_t, void, true>;
+
+      my_int32_t c("-2147483648");
+
+      my_int32_t c_itself = (std::numeric_limits<my_int32_t>::min)();
+
+      result_is_ok &= (c == (std::numeric_limits<my_int32_t>::min)());
+
+      my_int32_t d("1");
+
+      const my_int32_t c_div_d = c / d;
+      result_is_ok &= (c / c_itself == d);
+
+      result_is_ok &= (c_div_d == c);
+    }
+  }
+
+  {
     // See also https://github.com/ckormanyos/wide-integer/issues/108
     {
       using w_t  = math::wide_integer::uintwide_t<32U, std::uint32_t, void, true>;
@@ -69,6 +108,7 @@ bool math::wide_integer::test_uintwide_t_spot_values()
 
   {
     // See also https://github.com/ckormanyos/wide-integer/issues/63
+
     WIDE_INTEGER_CONSTEXPR auto
     input
     {
