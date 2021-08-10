@@ -1153,10 +1153,11 @@
       else
       {
         // Unary division function.
-        const bool denom_was_neg = is_neg(other);
-        const bool numer_was_neg = is_neg(*this);
 
         using local_unsigned_wide_type = uintwide_t<Width2, limb_type, AllocatorType, false>;
+
+        const bool denom_was_neg = is_neg(other);
+        const bool numer_was_neg = is_neg(*this);
 
         local_unsigned_wide_type a(*this);
         local_unsigned_wide_type b(other);
@@ -1183,10 +1184,10 @@
       else
       {
         // Unary modulus function.
+        using local_unsigned_wide_type = uintwide_t<Width2, limb_type, AllocatorType, false>;
+
         const bool denom_was_neg = is_neg(other);
         const bool numer_was_neg = is_neg(*this);
-
-        using local_unsigned_wide_type = uintwide_t<Width2, limb_type, AllocatorType, false>;
 
         local_unsigned_wide_type a(*this);
         local_unsigned_wide_type b(other);
@@ -1198,30 +1199,11 @@
 
         a.eval_divide_knuth(b, &remainder);
 
-        bool bNegQuot = false;
-        bool bNegRem  = false;
-
-        // Make *this (the numerator) positive. The sign of the
-        // remainder will match the sign of the denominator.
-        if(numer_was_neg)
-        {
-          bNegRem = true;
-        }
-
         // The denominator has (already) been made positive and its sign has
         // been provided in the denom_was_neg flag. The sign of the quotient
         // will be negative if the sign of the divisor and dividend do not match,
         // else positive.
-        if(denom_was_neg)
-        {
-          bNegQuot = !bNegRem;
-        }
-        else
-        {
-          bNegQuot = bNegRem;
-        }
-
-        if(bNegRem) { remainder.negate(); }
+        if(numer_was_neg) { remainder.negate(); }
 
         values = remainder.values;
       }
