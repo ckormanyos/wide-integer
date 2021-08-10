@@ -1154,22 +1154,29 @@
       {
         // Unary division function.
 
-        using local_unsigned_wide_type = uintwide_t<Width2, limb_type, AllocatorType, false>;
+        const bool numererator_was_neg = is_neg(*this);
+        const bool denominator_was_neg = is_neg(other);
 
-        const bool denom_was_neg = is_neg(other);
-        const bool numer_was_neg = is_neg(*this);
+        if(numererator_was_neg || denominator_was_neg)
+        {
+          using local_unsigned_wide_type = uintwide_t<Width2, limb_type, AllocatorType, false>;
 
-        local_unsigned_wide_type a(*this);
-        local_unsigned_wide_type b(other);
+          local_unsigned_wide_type a(*this);
+          local_unsigned_wide_type b(other);
 
-        if(numer_was_neg) { a.negate(); }
-        if(denom_was_neg) { b.negate(); }
+          if(numererator_was_neg) { a.negate(); }
+          if(denominator_was_neg) { b.negate(); }
 
-        a.eval_divide_knuth(b, nullptr);
+          a.eval_divide_knuth(b, nullptr);
 
-        if(numer_was_neg != denom_was_neg) { a.negate(); }
+          if(numererator_was_neg != denominator_was_neg) { a.negate(); }
 
-        values = a.values;
+          values = a.values;
+        }
+        else
+        {
+          eval_divide_knuth(other, nullptr);
+        }
       }
 
       return *this;
@@ -1184,28 +1191,37 @@
       else
       {
         // Unary modulus function.
-        using local_unsigned_wide_type = uintwide_t<Width2, limb_type, AllocatorType, false>;
+        const bool numererator_was_neg = is_neg(*this);
+        const bool denominator_was_neg = is_neg(other);
 
-        const bool denom_was_neg = is_neg(other);
-        const bool numer_was_neg = is_neg(*this);
+        if(numererator_was_neg || denominator_was_neg)
+        {
+          using local_unsigned_wide_type = uintwide_t<Width2, limb_type, AllocatorType, false>;
 
-        local_unsigned_wide_type a(*this);
-        local_unsigned_wide_type b(other);
+          local_unsigned_wide_type a(*this);
+          local_unsigned_wide_type b(other);
 
-        if(numer_was_neg) { a.negate(); }
-        if(denom_was_neg) { b.negate(); }
+          if(numererator_was_neg) { a.negate(); }
+          if(denominator_was_neg) { b.negate(); }
 
-        local_unsigned_wide_type remainder;
+          local_unsigned_wide_type remainder;
 
-        a.eval_divide_knuth(b, &remainder);
+          a.eval_divide_knuth(b, &remainder);
 
-        // The denominator has (already) been made positive and its sign has
-        // been provided in the denom_was_neg flag. The sign of the quotient
-        // will be negative if the sign of the divisor and dividend do not match,
-        // else positive.
-        if(numer_was_neg) { remainder.negate(); }
+          // The sign of the remainder follows the sign of the denominator.
+          // TBD: Verify if this is always the correct sign of the remainder.
+          if(numererator_was_neg) { remainder.negate(); }
 
-        values = remainder.values;
+          values = remainder.values;
+        }
+        else
+        {
+          uintwide_t remainder;
+
+          eval_divide_knuth(other, &remainder);
+
+          values = remainder.values;
+        }
       }
 
       return *this;
