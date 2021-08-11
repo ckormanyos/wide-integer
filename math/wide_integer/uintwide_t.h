@@ -1415,7 +1415,7 @@
     constexpr bool operator>=(const uintwide_t& other) const { return (compare(other) >= std::int_fast8_t( 0)); }
 
     // Helper functions for supporting std::numeric_limits<>.
-    static WIDE_INTEGER_CONSTEXPR uintwide_t limits_helper_max(bool is_signed)
+    static constexpr uintwide_t limits_helper_max(bool is_signed)
     {
       return
       (is_signed == false)
@@ -1436,7 +1436,7 @@
         ;
     }
 
-    static WIDE_INTEGER_CONSTEXPR uintwide_t limits_helper_min(bool is_signed)
+    static constexpr uintwide_t limits_helper_min(bool is_signed)
     {
       return
       (is_signed == false)
@@ -1462,7 +1462,7 @@
       return uintwide_t(representation_type(number_of_limbs, limb_type(0U)));
     }
 
-    static WIDE_INTEGER_CONSTEXPR uintwide_t limits_helper_lowest(bool is_signed)
+    static constexpr uintwide_t limits_helper_lowest(bool is_signed)
     {
       return
       (is_signed == false)
@@ -1841,15 +1841,18 @@
   private:
     representation_type values { };
 
-    static WIDE_INTEGER_CONSTEXPR uintwide_t from_rep(const representation_type& other_rep)
+    static constexpr uintwide_t from_rep(const representation_type& other_rep)
     {
       // Factory-like creator from the internal data representation.
 
-      uintwide_t a;
+      return [&other_rep]() -> uintwide_t
+      {
+        uintwide_t a;
 
-      a.values = other_rep;
+        a.values = other_rep;
 
-      return a;
+        return a;
+      }();
     }
 
     template<typename InputIteratorLeftType,
@@ -4730,7 +4733,8 @@
     }
     while((i < number_of_trials) && is_probably_prime);
 
-    // The prime candidate is probably prime.
+    // The prime candidate is probably prime in the sense
+    // of the very high probability resulting from Miller-Rabin.
     return is_probably_prime;
   }
 
