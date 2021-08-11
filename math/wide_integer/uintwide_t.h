@@ -37,6 +37,12 @@
 
   #include <util/utility/util_dynamic_array.h>
 
+  #if (defined(__clang__) && (__clang_major__ <= 9))
+  #define WIDE_INTEGER_NUM_LIMITS_CLASS_TYPE struct
+  #else
+  #define WIDE_INTEGER_NUM_LIMITS_CLASS_TYPE class
+  #endif
+
   #if defined(_MSC_VER)
     #if (_MSC_VER >= 1900) && defined(_HAS_CXX20) && (_HAS_CXX20 != 0)
       #define WIDE_INTEGER_CONSTEXPR constexpr
@@ -397,7 +403,7 @@
              typename LimbType,
              typename AllocatorType,
              const bool IsSigned>
-    class numeric_limits<math::wide_integer::uintwide_t<Width2, LimbType, AllocatorType, IsSigned>>;
+    WIDE_INTEGER_NUM_LIMITS_CLASS_TYPE numeric_limits<math::wide_integer::uintwide_t<Width2, LimbType, AllocatorType, IsSigned>>;
   }
 
   namespace math { namespace wide_integer { namespace detail {
@@ -3273,7 +3279,7 @@
            typename LimbType,
            typename AllocatorType,
            const bool IsSigned>
-  class numeric_limits_uintwide_t_base
+  WIDE_INTEGER_NUM_LIMITS_CLASS_TYPE numeric_limits_uintwide_t_base
     : public std::numeric_limits<typename std::conditional<IsSigned == false, unsigned int, signed int>::type>
   {
   private:
@@ -3313,7 +3319,7 @@
              typename LimbType,
              typename AllocatorType,
              const bool IsSigned>
-    class numeric_limits<math::wide_integer::uintwide_t<Width2, LimbType, AllocatorType, IsSigned>>
+    WIDE_INTEGER_NUM_LIMITS_CLASS_TYPE numeric_limits<math::wide_integer::uintwide_t<Width2, LimbType, AllocatorType, IsSigned>>
       : public math::wide_integer::numeric_limits_uintwide_t_base<Width2, LimbType, AllocatorType, IsSigned> { };
   }
 
