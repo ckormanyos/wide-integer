@@ -37,6 +37,12 @@
 
   #include <util/utility/util_dynamic_array.h>
 
+  #if (defined(__clang__) && (__clang_major__ <= 9))
+  #define WIDE_INTEGER_NUM_LIMITS_CLASS_TYPE struct
+  #else
+  #define WIDE_INTEGER_NUM_LIMITS_CLASS_TYPE class
+  #endif
+
   #if defined(_MSC_VER)
     #if (_MSC_VER >= 1900) && defined(_HAS_CXX20) && (_HAS_CXX20 != 0)
       #define WIDE_INTEGER_CONSTEXPR constexpr
@@ -397,7 +403,7 @@
              typename LimbType,
              typename AllocatorType,
              const bool IsSigned>
-    class numeric_limits<math::wide_integer::uintwide_t<Width2, LimbType, AllocatorType, IsSigned>>;
+    WIDE_INTEGER_NUM_LIMITS_CLASS_TYPE numeric_limits<math::wide_integer::uintwide_t<Width2, LimbType, AllocatorType, IsSigned>>;
   }
 
   namespace math { namespace wide_integer { namespace detail {
@@ -1415,7 +1421,7 @@
     constexpr bool operator>=(const uintwide_t& other) const { return (compare(other) >= std::int_fast8_t( 0)); }
 
     // Helper functions for supporting std::numeric_limits<>.
-    static WIDE_INTEGER_CONSTEXPR uintwide_t limits_helper_max(bool is_signed)
+    static constexpr uintwide_t limits_helper_max(bool is_signed)
     {
       return
       (is_signed == false)
@@ -1436,7 +1442,7 @@
         ;
     }
 
-    static WIDE_INTEGER_CONSTEXPR uintwide_t limits_helper_min(bool is_signed)
+    static constexpr uintwide_t limits_helper_min(bool is_signed)
     {
       return
       (is_signed == false)
@@ -1462,7 +1468,7 @@
       return uintwide_t(representation_type(number_of_limbs, limb_type(0U)));
     }
 
-    static WIDE_INTEGER_CONSTEXPR uintwide_t limits_helper_lowest(bool is_signed)
+    static constexpr uintwide_t limits_helper_lowest(bool is_signed)
     {
       return
       (is_signed == false)
@@ -1490,13 +1496,13 @@
     static constexpr size_t wr_string_max_buffer_size_dec = (20U + size_t((std::uintmax_t(my_width2) * UINTMAX_C(301)) / UINTMAX_C(1000))) + 1U;
 
     // Write string function.
-    bool wr_string(      char*              str_result,
-                   const std::uint_fast8_t  base_rep     = 0x10U,
-                   const bool               show_base    = true,
-                   const bool               show_pos     = false,
-                   const bool               is_uppercase = true,
-                         unsinged_fast_type field_width  = 0U,
-                   const char               fill_char    = char('0')) const
+    WIDE_INTEGER_CONSTEXPR bool wr_string(      char*              str_result,
+                                          const std::uint_fast8_t  base_rep     = 0x10U,
+                                          const bool               show_base    = true,
+                                          const bool               show_pos     = false,
+                                          const bool               is_uppercase = true,
+                                                unsinged_fast_type field_width  = 0U,
+                                          const char               fill_char    = char('0')) const
     {
       bool wr_string_is_ok = true;
 
@@ -1841,15 +1847,18 @@
   private:
     representation_type values { };
 
-    static WIDE_INTEGER_CONSTEXPR uintwide_t from_rep(const representation_type& other_rep)
+    static constexpr uintwide_t from_rep(const representation_type& other_rep)
     {
       // Factory-like creator from the internal data representation.
 
-      uintwide_t a;
+      return [&other_rep]() -> uintwide_t
+      {
+        uintwide_t a;
 
-      a.values = other_rep;
+        a.values = other_rep;
 
-      return a;
+        return a;
+      }();
     }
 
     template<typename InputIteratorLeftType,
@@ -3270,7 +3279,7 @@
            typename LimbType,
            typename AllocatorType,
            const bool IsSigned>
-  class numeric_limits_uintwide_t_base
+  WIDE_INTEGER_NUM_LIMITS_CLASS_TYPE numeric_limits_uintwide_t_base
     : public std::numeric_limits<typename std::conditional<IsSigned == false, unsigned int, signed int>::type>
   {
   private:
@@ -3310,7 +3319,7 @@
              typename LimbType,
              typename AllocatorType,
              const bool IsSigned>
-    class numeric_limits<math::wide_integer::uintwide_t<Width2, LimbType, AllocatorType, IsSigned>>
+    WIDE_INTEGER_NUM_LIMITS_CLASS_TYPE numeric_limits<math::wide_integer::uintwide_t<Width2, LimbType, AllocatorType, IsSigned>>
       : public math::wide_integer::numeric_limits_uintwide_t_base<Width2, LimbType, AllocatorType, IsSigned> { };
   }
 
@@ -4730,7 +4739,8 @@
     }
     while((i < number_of_trials) && is_probably_prime);
 
-    // The prime candidate is probably prime.
+    // The prime candidate is probably prime in the sense
+    // of the very high probability resulting from Miller-Rabin.
     return is_probably_prime;
   }
 

@@ -14,7 +14,7 @@
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 #endif
 
-#if defined(__clang__) && !defined(__APPLE__)
+#if (defined(__clang__) && (__clang_major__ > 9)) && !defined(__APPLE__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-copy"
 #endif
@@ -25,7 +25,7 @@ std::random_device test_uintwide_t_n_binary_ops_base::my_rnd;
 
 test_uintwide_t_n_binary_ops_base::random_generator_type test_uintwide_t_n_binary_ops_base::my_gen(my_rnd());
 
-#if defined(__clang__) && !defined(__APPLE__)
+#if (defined(__clang__) && (__clang_major__ > 9)) && !defined(__APPLE__)
 #pragma GCC diagnostic pop
 #endif
 
