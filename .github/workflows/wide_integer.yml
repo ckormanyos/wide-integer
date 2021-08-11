@@ -240,7 +240,7 @@ jobs:
           ls -la ./wide_integer.exe
           ./wide_integer.exe
   gcc-clang-8_down:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-18.04
     defaults:
       run:
         shell: bash
