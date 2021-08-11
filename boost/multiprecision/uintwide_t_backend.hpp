@@ -44,29 +44,25 @@
            typename MyLimbType>
   class uintwide_t_backend;
 
-  } }
-
   // Define the number category as an integer number kind
   // for the uintwide_t_backend. This is needed for properly
   // interacting as a backend with boost::muliprecision.
   #if (BOOST_VERSION <= 107200)
   template<const ::math::wide_integer::size_t MyWidth2,
            typename MyLimbType>
-  struct boost::multiprecision::number_category<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType>>
-    : public boost::mpl::int_<boost::multiprecision::number_kind_integer> { };
+  struct number_category<uintwide_t_backend<MyWidth2, MyLimbType>>
+    : public boost::mpl::int_<number_kind_integer> { };
   #elif (BOOST_VERSION <= 107500)
   template<const ::math::wide_integer::size_t MyWidth2,
            typename MyLimbType>
-  struct boost::multiprecision::number_category<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType>>
-    : public boost::integral_constant<int, boost::multiprecision::number_kind_integer> { };
+  struct number_category<uintwide_t_backend<MyWidth2, MyLimbType>>
+    : public boost::integral_constant<int, number_kind_integer> { };
   #else
   template<const ::math::wide_integer::size_t MyWidth2,
            typename MyLimbType>
-  struct boost::multiprecision::number_category<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType>>
-    : public std::integral_constant<int, boost::multiprecision::number_kind_integer> { };
+  struct number_category<uintwide_t_backend<MyWidth2, MyLimbType>>
+    : public std::integral_constant<int, number_kind_integer> { };
   #endif
-
-  namespace boost { namespace multiprecision {
 
   // This is the uintwide_t_backend multiple precision class.
   template<const ::math::wide_integer::size_t MyWidth2,
@@ -625,7 +621,7 @@
 
   } // namespace std
 
-  #if defined(__clang__) && !defined(__APPLE__)
+  #if (defined(__clang__) && (__clang_major__ > 9)) && !defined(__APPLE__)
   #pragma GCC diagnostic pop
   #endif
 
