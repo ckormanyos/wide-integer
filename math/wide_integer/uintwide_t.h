@@ -1490,13 +1490,13 @@
     static constexpr size_t wr_string_max_buffer_size_dec = (20U + size_t((std::uintmax_t(my_width2) * UINTMAX_C(301)) / UINTMAX_C(1000))) + 1U;
 
     // Write string function.
-    bool wr_string(      char*              str_result,
-                   const std::uint_fast8_t  base_rep     = 0x10U,
-                   const bool               show_base    = true,
-                   const bool               show_pos     = false,
-                   const bool               is_uppercase = true,
-                         unsinged_fast_type field_width  = 0U,
-                   const char               fill_char    = char('0')) const
+    WIDE_INTEGER_CONSTEXPR bool wr_string(      char*              str_result,
+                                          const std::uint_fast8_t  base_rep     = 0x10U,
+                                          const bool               show_base    = true,
+                                          const bool               show_pos     = false,
+                                          const bool               is_uppercase = true,
+                                                unsinged_fast_type field_width  = 0U,
+                                          const char               fill_char    = char('0')) const
     {
       bool wr_string_is_ok = true;
 
