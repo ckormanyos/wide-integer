@@ -206,6 +206,7 @@ test/test_uintwide_t_boost_backend.cpp      \
 test/test_uintwide_t_edge_cases.cpp         \
 test/test_uintwide_t_examples.cpp           \
 test/test_uintwide_t_float_convert.cpp      \
+test/test_uintwide_t_int_convert.cpp        \
 test/test_uintwide_t_n_base.cpp             \
 test/test_uintwide_t_n_binary_ops_base.cpp  \
 test/test_uintwide_t_spot_values.cpp        \

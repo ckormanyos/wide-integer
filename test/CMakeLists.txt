@@ -6,6 +6,7 @@ if (Boost_FOUND)
     test_uintwide_t_edge_cases.cpp
     test_uintwide_t_examples.cpp
     test_uintwide_t_float_convert.cpp
+    test_uintwide_t_int_convert.cpp
     test_uintwide_t_n_base.cpp
     test_uintwide_t_n_binary_ops_base.cpp
     test_uintwide_t_spot_values.cpp
