@@ -1019,21 +1019,21 @@
     }
 
     #if !defined(WIDE_INTEGER_DISABLE_FLOAT_INTEROP)
-    explicit WIDE_INTEGER_CONSTEXPR operator long double       () const { return extract_builtin_floating_point_type<long double>(); }
-    explicit WIDE_INTEGER_CONSTEXPR operator double            () const { return extract_builtin_floating_point_type<double>     (); }
-    explicit WIDE_INTEGER_CONSTEXPR operator float             () const { return extract_builtin_floating_point_type<float>      (); }
+    explicit constexpr operator long double       () const { return extract_builtin_floating_point_type<long double>(); }
+    explicit constexpr operator double            () const { return extract_builtin_floating_point_type<double>     (); }
+    explicit constexpr operator float             () const { return extract_builtin_floating_point_type<float>      (); }
     #endif
 
-    explicit WIDE_INTEGER_CONSTEXPR operator signed char       () const { return extract_builtin_integral_type<signed char>       (); }
-    explicit WIDE_INTEGER_CONSTEXPR operator unsigned char     () const { return extract_builtin_integral_type<unsigned char>     (); }
-    explicit WIDE_INTEGER_CONSTEXPR operator signed short      () const { return extract_builtin_integral_type<signed short>      (); }
-    explicit WIDE_INTEGER_CONSTEXPR operator unsigned short    () const { return extract_builtin_integral_type<unsigned short>    (); }
-    explicit WIDE_INTEGER_CONSTEXPR operator signed int        () const { return extract_builtin_integral_type<signed int>        (); }
-    explicit WIDE_INTEGER_CONSTEXPR operator unsigned int      () const { return extract_builtin_integral_type<unsigned int>      (); }
-    explicit WIDE_INTEGER_CONSTEXPR operator signed long       () const { return extract_builtin_integral_type<signed long >      (); }
-    explicit WIDE_INTEGER_CONSTEXPR operator unsigned long     () const { return extract_builtin_integral_type<unsigned long>     (); }
-    explicit WIDE_INTEGER_CONSTEXPR operator signed long long  () const { return extract_builtin_integral_type<signed long long>  (); }
-    explicit WIDE_INTEGER_CONSTEXPR operator unsigned long long() const { return extract_builtin_integral_type<unsigned long long>(); }
+    explicit constexpr operator signed char       () const { return extract_builtin_integral_type<signed char>       (); }
+    explicit constexpr operator unsigned char     () const { return extract_builtin_integral_type<unsigned char>     (); }
+    explicit constexpr operator signed short      () const { return extract_builtin_integral_type<signed short>      (); }
+    explicit constexpr operator unsigned short    () const { return extract_builtin_integral_type<unsigned short>    (); }
+    explicit constexpr operator signed int        () const { return extract_builtin_integral_type<signed int>        (); }
+    explicit constexpr operator unsigned int      () const { return extract_builtin_integral_type<unsigned int>      (); }
+    explicit constexpr operator signed long       () const { return extract_builtin_integral_type<signed long >      (); }
+    explicit constexpr operator unsigned long     () const { return extract_builtin_integral_type<unsigned long>     (); }
+    explicit constexpr operator signed long long  () const { return extract_builtin_integral_type<signed long long>  (); }
+    explicit constexpr operator unsigned long long() const { return extract_builtin_integral_type<unsigned long long>(); }
 
 
     // Implement the cast operator that casts to the double-width type.
@@ -1884,52 +1884,51 @@
       return n_return;
     }
 
-    // Implement a function that extracts any built-in signed or unsigned integral type.
-    template<typename UnknownBuiltInIntegralType,
-             typename = typename std::enable_if<std::is_integral<UnknownBuiltInIntegralType>::value == true>::type>
-    WIDE_INTEGER_CONSTEXPR UnknownBuiltInIntegralType extract_builtin_integral_type() const
+    template<typename UnknownBuiltInIntegralType>
+    struct digits_ratio
     {
       using local_unknown_integral_type  = UnknownBuiltInIntegralType;
 
-      using local_unsigned_integral_type =
+      using local_unsigned_conversion_type =
         typename detail::uint_type_helper<
           std::numeric_limits<local_unknown_integral_type>::is_signed
             ? size_t(std::numeric_limits<local_unknown_integral_type>::digits + 1)
             : size_t(std::numeric_limits<local_unknown_integral_type>::digits + 0)>::exact_unsigned_type;
 
-      local_unsigned_integral_type cast_result;
+      static constexpr std::uint_fast32_t value = 
+        std::uint_fast32_t(  std::numeric_limits<local_unsigned_conversion_type>::digits
+                           / std::numeric_limits<limb_type>::digits);
 
-      const std::uint_fast8_t digits_ratio = 
-        std::uint_fast8_t(  std::numeric_limits<local_unsigned_integral_type>::digits
-                          / std::numeric_limits<limb_type>::digits);
-
-      switch(digits_ratio)
+      static WIDE_INTEGER_CONSTEXPR local_unknown_integral_type extract(const limb_type* p_limb, std::uint_fast32_t limb_count)
       {
-        case 0:
-        case 1:
-          // The input parameter is less wide or equally as wide as the limb width.
-          cast_result = static_cast<local_unsigned_integral_type>(values[0U]);
-          break;
+        local_unsigned_conversion_type u = 0U;
 
-        default:
-          // The input parameter is wider than the limb width.
-          cast_result = 0U;
+        for(std::uint_fast32_t i = 0U; i < limb_count; ++i)
+        {
+          u = local_unsigned_conversion_type(u | local_unsigned_conversion_type(local_unsigned_conversion_type(p_limb[i]) << unsigned(std::numeric_limits<limb_type>::digits * int(i))));
+        }
 
-          for(std::uint_fast8_t i = 0U; i < digits_ratio; ++i)
-          {
-            const local_unsigned_integral_type u =
-              ((typename representation_type::size_type(i) < values.size())
-                ? local_unsigned_integral_type(local_unsigned_integral_type(values[i]) << unsigned(std::numeric_limits<limb_type>::digits * int(i)))
-                : local_unsigned_integral_type(0U));
-
-            cast_result |= u;
-          }
-          break;
+        return local_unknown_integral_type(u);
       }
+    };
 
-      return local_unknown_integral_type(cast_result);
+    // Implement a function that extracts any built-in signed or unsigned integral type.
+    template<typename UnknownBuiltInIntegralType,
+             typename = typename std::enable_if<std::is_integral<UnknownBuiltInIntegralType>::value == true>::type>
+    WIDE_INTEGER_CONSTEXPR UnknownBuiltInIntegralType extract_builtin_integral_type() const
+    {
+      using local_unknown_integral_type = UnknownBuiltInIntegralType;
+      using digits_ratio_type           = digits_ratio<local_unknown_integral_type>;
+
+      const std::uint_fast32_t ilim = (std::min)(std::uint_fast32_t(digits_ratio_type::value),
+                                                 std::uint_fast32_t(values.size()));
+
+      // Handle cases for which the input parameter is less wide
+      // or equally as wide as the limb width or wider than the limb width.
+      return ((digits_ratio_type::value < 2U)
+               ? static_cast<local_unknown_integral_type>(values[0U])
+               : digits_ratio_type::extract(values.data(), ilim));
     }
-
 
     #if !defined(WIDE_INTEGER_DISABLE_FLOAT_INTEROP)
     // Implement a function that extracts any built-in floating-point type.

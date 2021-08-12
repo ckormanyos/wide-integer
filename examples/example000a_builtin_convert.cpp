@@ -52,6 +52,20 @@ bool math::wide_integer::example000a_builtin_convert()
     result_is_ok &= result_f_is_ok;
   }
 
+  {
+    WIDE_INTEGER_CONSTEXPR int256_t     n   = "-123456789000000000";
+
+    WIDE_INTEGER_CONSTEXPR std::int64_t n64 = (std::int64_t) n;
+
+    WIDE_INTEGER_CONSTEXPR bool result_n_is_ok = (n64 == INT64_C(-123456789000000000));
+
+    #if defined(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST) && (WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST != 0)
+    static_assert((n64 == INT64_C(-123456789000000000)), "Error: example000a_builtin_convert not OK!");
+    #endif
+
+    result_is_ok &= result_n_is_ok;
+  }
+
   return result_is_ok;
 }
 
