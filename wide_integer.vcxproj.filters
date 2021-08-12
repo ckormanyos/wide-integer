@@ -159,6 +159,9 @@
     <ClCompile Include="test\test_uintwide_t_float_convert.cpp">
       <Filter>Source Files\test</Filter>
     </ClCompile>
+    <ClCompile Include="test\test_uintwide_t_int_convert.cpp">
+      <Filter>Source Files\test</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include=".github\workflows\wide_integer.yml">
