@@ -2750,7 +2750,7 @@
         // R.P. Brent and P. Zimmermann, "Modern Computer Arithmetic",
         // Cambridge University Press (2011).
 
-        // TBD: Toom-Cook3
+        // TBD: Toom-Cook3 is not yet implemented. Use Karatsuba at the moment.
         eval_multiply_kara_n_by_n_to_2n(r, u, v, n, t);
       }
     }
@@ -2771,7 +2771,7 @@
       }
       else
       {
-        // TBD: Toom-Cook4
+        // TBD: Toom-Cook4 is not yet implemented. Use Karatsuba at the moment.
         eval_multiply_kara_n_by_n_to_2n(r, u, v, n, t);
       }
     }
@@ -3343,26 +3343,25 @@
   template<typename IntegralType, const size_t Width2, typename LimbType, typename AllocatorType, const bool IsSigned> constexpr typename std::enable_if<std::is_integral<IntegralType>::value == true, uintwide_t<Width2, LimbType, AllocatorType, IsSigned>>::type operator/(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& u, const IntegralType& v) { return uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(u).operator/=(uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(v)); }
 
   template<typename IntegralType, const size_t Width2, typename LimbType, typename AllocatorType, const bool IsSigned>
-  constexpr typename std::enable_if<(   (std::is_integral   <IntegralType>::value == true)
-                                     && (std::is_unsigned   <IntegralType>::value == false)), uintwide_t<Width2, LimbType, AllocatorType, IsSigned>>::type
+  constexpr typename std::enable_if<(   (std::is_integral<IntegralType>::value == true)
+                                     && (std::is_unsigned<IntegralType>::value == false)), uintwide_t<Width2, LimbType, AllocatorType, IsSigned>>::type
   operator%(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& u, const IntegralType& v) { return uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(u).operator%=(uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(v)); }
 
   template<typename IntegralType, const size_t Width2, typename LimbType, typename AllocatorType, const bool IsSigned>
-  WIDE_INTEGER_CONSTEXPR typename std::enable_if<(   (std::is_integral   <IntegralType>::value == true)
-                                                  && (std::is_unsigned   <IntegralType>::value == true)
+  WIDE_INTEGER_CONSTEXPR typename std::enable_if<(   (std::is_integral<IntegralType>::value == true)
+                                                  && (std::is_unsigned<IntegralType>::value == true)
                                                   && (std::numeric_limits<IntegralType>::digits <= std::numeric_limits<LimbType>::digits)), typename uintwide_t<Width2, LimbType, AllocatorType, IsSigned>::limb_type>::type
   operator%(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& u, const IntegralType& v)
   {
-    const bool u_is_neg = uintwide_t<Width2, LimbType, AllocatorType, IsSigned>::is_neg(u);
+    using local_wide_integer_type = uintwide_t<Width2, LimbType, AllocatorType, IsSigned>;
 
-    uintwide_t<Width2, LimbType, AllocatorType, IsSigned> remainder;
+    const bool u_is_neg = local_wide_integer_type::is_neg(u);
 
-    uintwide_t<Width2, LimbType, AllocatorType, IsSigned>
-    (
-      (u_is_neg == false) ? u : -u
-    ).eval_divide_by_single_limb(v, 0U, &remainder);
+    local_wide_integer_type remainder;
 
-    using local_limb_type = typename uintwide_t<Width2, LimbType, AllocatorType, IsSigned>::limb_type;
+    local_wide_integer_type((u_is_neg == false) ? u : -u).eval_divide_by_single_limb(v, 0U, &remainder);
+
+    using local_limb_type = typename local_wide_integer_type::limb_type;
 
     local_limb_type u_rem = (local_limb_type) remainder;
 
@@ -3370,8 +3369,8 @@
   }
 
   template<typename IntegralType, const size_t Width2, typename LimbType, typename AllocatorType, const bool IsSigned>
-  constexpr typename std::enable_if<(   (std::is_integral   <IntegralType>::value == true)
-                                     && (std::is_unsigned   <IntegralType>::value == true)
+  constexpr typename std::enable_if<(   (std::is_integral<IntegralType>::value == true)
+                                     && (std::is_unsigned<IntegralType>::value == true)
                                      && (std::numeric_limits<IntegralType>::digits > std::numeric_limits<LimbType>::digits)), uintwide_t<Width2, LimbType, AllocatorType, IsSigned>>::type
   operator%(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& u, const IntegralType& v) { return uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(u).operator%=(uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(v)); }
 
