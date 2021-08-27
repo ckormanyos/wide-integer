@@ -4020,31 +4020,22 @@
   WIDE_INTEGER_CONSTEXPR uintwide_t<Width2, LimbType, AllocatorType, IsSigned> pow(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& b,
                                                                                    const OtherIntegralTypeP&    p)
   {
-    static_assert((std::is_integral<OtherIntegralTypeP>::value == true),
-                  "Error: Other intagral type of P must be built-in");
-
     // Calculate (b ^ p).
-
-    using local_other_unsigned_integral_type_p =
-      typename std::conditional<std::is_unsigned<OtherIntegralTypeP>::value == true,
-                                typename detail::uint_type_helper<size_t(std::numeric_limits<OtherIntegralTypeP>::digits + 0)>::exact_unsigned_type,
-                                typename detail::uint_type_helper<size_t(std::numeric_limits<OtherIntegralTypeP>::digits + 1)>::exact_unsigned_type>::type;
-
     using local_wide_integer_type = uintwide_t<Width2, LimbType, AllocatorType, IsSigned>;
     using local_limb_type         = typename local_wide_integer_type::limb_type;
 
     local_wide_integer_type result;
-    local_limb_type         p0(static_cast<local_other_unsigned_integral_type_p>(p));
+    local_limb_type         p0(static_cast<local_limb_type>(p));
 
-    if((p0 == 0U) && (p == 0U))
+    if((p0 == 0U) && (p == OtherIntegralTypeP(0)))
     {
       result = local_wide_integer_type(std::uint8_t(1U));
     }
-    else if((p0 == 1U) && (p == 1U))
+    else if((p0 == 1U) && (p == OtherIntegralTypeP(1)))
     {
       result = b;
     }
-    else if((p0 == 2U) && (p == 2U))
+    else if((p0 == 2U) && (p == OtherIntegralTypeP(2)))
     {
       result  = b;
       result *= b;
@@ -4072,15 +4063,15 @@
     return result;
   }
 
-  template<typename OtherUnsignedIntegralTypeP,
-           typename OtherUnsignedIntegralTypeM,
+  template<typename OtherIntegralTypeP,
+           typename OtherIntegralTypeM,
            const size_t Width2,
            typename LimbType,
            typename AllocatorType,
            const bool IsSigned>
   WIDE_INTEGER_CONSTEXPR uintwide_t<Width2, LimbType, AllocatorType, IsSigned> powm(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& b,
-                                                                                     const OtherUnsignedIntegralTypeP& p,
-                                                                                     const OtherUnsignedIntegralTypeM& m)
+                                                                                    const OtherIntegralTypeP& p,
+                                                                                    const OtherIntegralTypeM& m)
   {
     // Calculate (b ^ p) % m.
 
@@ -4091,17 +4082,17 @@
           local_normal_width_type result;
           local_double_width_type y      (b);
     const local_double_width_type m_local(m);
-          local_limb_type         p0     (p);
+          local_limb_type         p0     (static_cast<local_limb_type>(p));
 
-    if((p0 == 0U) && (p == 0U))
+    if((p0 == 0U) && (p == OtherIntegralTypeP(0)))
     {
       result = local_normal_width_type((m != 1U) ? std::uint8_t(1U) : std::uint8_t(0U));
     }
-    else if((p0 == 1U) && (p == 1U))
+    else if((p0 == 1U) && (p == OtherIntegralTypeP(1)))
     {
       result = b % m;
     }
-    else if((p0 == 2U) && (p == 2U))
+    else if((p0 == 2U) && (p == OtherIntegralTypeP(2)))
     {
       y *= y;
       y %= m_local;
@@ -4110,8 +4101,8 @@
     }
     else
     {
-      local_double_width_type    x      (std::uint8_t(1U));
-      OtherUnsignedIntegralTypeP p_local(p);
+      local_double_width_type x      (std::uint8_t(1U));
+      OtherIntegralTypeP      p_local(p);
 
       while(((p0 = local_limb_type(p_local)) != 0U) || (p_local != 0U))
       {
