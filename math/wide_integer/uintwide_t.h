@@ -4012,21 +4012,29 @@
     return s;
   }
 
-  template<typename OtherUnsignedIntegralTypeP,
+  template<typename OtherIntegralTypeP,
            const size_t Width2,
            typename LimbType,
            typename AllocatorType,
            const bool IsSigned>
   WIDE_INTEGER_CONSTEXPR uintwide_t<Width2, LimbType, AllocatorType, IsSigned> pow(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& b,
-                                                                                   const OtherUnsignedIntegralTypeP&    p)
+                                                                                   const OtherIntegralTypeP&    p)
   {
+    static_assert((std::is_integral<OtherIntegralTypeP>::value == true),
+                  "Error: Other intagral type of P must be built-in");
+
     // Calculate (b ^ p).
+
+    using local_other_unsigned_integral_type_p =
+      typename std::conditional<std::is_unsigned<OtherIntegralTypeP>::value == true,
+                                typename detail::uint_type_helper<size_t(std::numeric_limits<OtherIntegralTypeP>::digits + 0)>::exact_unsigned_type,
+                                typename detail::uint_type_helper<size_t(std::numeric_limits<OtherIntegralTypeP>::digits + 1)>::exact_unsigned_type>::type;
 
     using local_wide_integer_type = uintwide_t<Width2, LimbType, AllocatorType, IsSigned>;
     using local_limb_type         = typename local_wide_integer_type::limb_type;
 
     local_wide_integer_type result;
-    local_limb_type         p0(p);
+    local_limb_type         p0(static_cast<local_other_unsigned_integral_type_p>(p));
 
     if((p0 == 0U) && (p == 0U))
     {
