@@ -124,6 +124,7 @@ on how to use wide-integer.
   - ![`example003a_cbrt`](./examples/example003a_cbrt.cpp) computes a cube root.
   - ![`example004_rootk_pow.cpp`](./examples/example004_rootk_pow.cpp) computes an integral seventh root and its corresponding power. A negative-valued cube root is also tested.
   - ![`example005_powm.cpp`](./examples/example005_powm.cpp) tests the power-modulus function `powm`.
+  - ![`example005a_pow_factors_of_p99.cpp`](./examples/example005a_pow_factors_of_p99.cpp) verifies a beautiful, known prime factorization result from a classic tabulated value.
   - ![`example006_gcd.cpp`](./examples/example006_gcd.cpp) tests the computation of a greatest common divisor `gcd`.
   - ![`example007_random_generator.cpp`](./examples/example007_random_generator.cpp) computes some large pseudo-random integers.
   - ![`example008_miller_rabin_prime.cpp`](./examples/example008_miller_rabin_prime.cpp) implements primality testing via Miller-Rabin.

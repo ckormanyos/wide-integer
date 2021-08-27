@@ -8,6 +8,7 @@ add_library(Examples
   example003a_cbrt.cpp
   example004_rootk_pow.cpp
   example005_powm.cpp
+  example005a_pow_factors_of_p99.cpp
   example006_gcd.cpp
   example007_random_generator.cpp
   example008_miller_rabin_prime.cpp
