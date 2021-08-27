@@ -21,6 +21,7 @@
   bool example003a_cbrt              ();
   bool example004_rootk_pow          ();
   bool example005_powm               ();
+  bool example005a_pow_factors_of_p99();
   bool example006_gcd                ();
   bool example007_random_generator   ();
   bool example008_miller_rabin_prime ();

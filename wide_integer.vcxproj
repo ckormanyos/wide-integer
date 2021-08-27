@@ -204,6 +204,7 @@
     <ClCompile Include="examples\example003a_cbrt.cpp" />
     <ClCompile Include="examples\example003_sqrt.cpp" />
     <ClCompile Include="examples\example004_rootk_pow.cpp" />
+    <ClCompile Include="examples\example005a_pow_factors_of_p99.cpp" />
     <ClCompile Include="examples\example005_powm.cpp" />
     <ClCompile Include="examples\example006_gcd.cpp" />
     <ClCompile Include="examples\example007_random_generator.cpp" />

@@ -162,6 +162,9 @@
     <ClCompile Include="test\test_uintwide_t_int_convert.cpp">
       <Filter>Source Files\test</Filter>
     </ClCompile>
+    <ClCompile Include="examples\example005a_pow_factors_of_p99.cpp">
+      <Filter>Source Files\examples</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include=".github\workflows\wide_integer.yml">
