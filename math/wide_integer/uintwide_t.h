@@ -312,6 +312,12 @@
            typename LimbType,
            typename AllocatorType,
            const bool IsSigned>
+  constexpr uintwide_t<Width2, LimbType, AllocatorType, IsSigned> abs(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& x);
+
+  template<const size_t Width2,
+           typename LimbType,
+           typename AllocatorType,
+           const bool IsSigned>
   WIDE_INTEGER_CONSTEXPR uintwide_t<Width2, LimbType, AllocatorType, IsSigned> sqrt(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& m);
 
   template<const size_t Width2,
@@ -353,9 +359,21 @@
                                                                                    const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& b);
 
   template<typename UnsignedShortType>
-  WIDE_INTEGER_CONSTEXPR typename std::enable_if<(   (std::is_integral   <UnsignedShortType>::value == true)
-                                                  && (std::is_unsigned   <UnsignedShortType>::value == true)), UnsignedShortType>::type
+  WIDE_INTEGER_CONSTEXPR typename std::enable_if<(   (std::is_integral<UnsignedShortType>::value == true)
+                                                  && (std::is_unsigned<UnsignedShortType>::value == true)), UnsignedShortType>::type
   gcd(const UnsignedShortType& u, const UnsignedShortType& v);
+
+  template<const size_t Width2,
+           typename LimbType,
+           typename AllocatorType,
+           const bool IsSigned>
+  WIDE_INTEGER_CONSTEXPR uintwide_t<Width2, LimbType, AllocatorType, IsSigned> lcm(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& a,
+                                                                                   const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& b);
+
+  template<typename UnsignedShortType>
+  WIDE_INTEGER_CONSTEXPR typename std::enable_if<(   (std::is_integral<UnsignedShortType>::value == true)
+                                                  && (std::is_unsigned<UnsignedShortType>::value == true)), UnsignedShortType>::type
+  lcm(const UnsignedShortType& a, const UnsignedShortType& b);
 
   template<const size_t Width2,
            typename LimbType = std::uint32_t,
@@ -3815,6 +3833,17 @@
            typename LimbType,
            typename AllocatorType,
            const bool IsSigned>
+  constexpr uintwide_t<Width2, LimbType, AllocatorType, IsSigned> abs(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& x)
+  {
+    using local_wide_integer_type = uintwide_t<Width2, LimbType, AllocatorType, IsSigned>;
+
+    return ((local_wide_integer_type::is_neg(x) == false) ? x : -x);
+  }
+
+  template<const size_t Width2,
+           typename LimbType,
+           typename AllocatorType,
+           const bool IsSigned>
   WIDE_INTEGER_CONSTEXPR uintwide_t<Width2, LimbType, AllocatorType, IsSigned> sqrt(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& m)
   {
     // Calculate the square root.
@@ -4325,6 +4354,46 @@
     }
 
     return result;
+  }
+
+  namespace detail {
+
+  template<typename IntegerType>
+  WIDE_INTEGER_CONSTEXPR IntegerType lcm_impl(const IntegerType& a, const IntegerType& b)
+  {
+    using local_integer_type = IntegerType;
+
+    using std::abs;
+
+    const local_integer_type ap = abs(a);
+    const local_integer_type bp = abs(b);
+
+    const bool a_is_greater_than_b = (ap > bp);
+
+    const local_integer_type gcd_of_ab = gcd(a, b);
+
+    return (a_is_greater_than_b ? ap * (bp / gcd_of_ab)
+                                : bp * (ap / gcd_of_ab));
+  }
+
+  }
+
+  template<const size_t Width2,
+           typename LimbType,
+           typename AllocatorType,
+           const bool IsSigned>
+  WIDE_INTEGER_CONSTEXPR uintwide_t<Width2, LimbType, AllocatorType, IsSigned> lcm(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& a,
+                                                                                   const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& b)
+  {
+    return detail::lcm_impl(a, b);
+  }
+
+  template<typename UnsignedShortType>
+  WIDE_INTEGER_CONSTEXPR typename std::enable_if<(   (std::is_integral<UnsignedShortType>::value == true)
+                                                  && (std::is_unsigned<UnsignedShortType>::value == true)), UnsignedShortType>::type
+  lcm(const UnsignedShortType& a, const UnsignedShortType& b)
+  {
+    return detail::lcm_impl(a, b);
   }
 
   template<const size_t Width2,
