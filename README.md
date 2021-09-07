@@ -216,10 +216,11 @@ examples/example000a_builtin_convert.cpp    \
 examples/example001_mul_div.cpp             \
 examples/example001a_div_mod.cpp            \
 examples/example002_shl_shr.cpp             \
-examples/example003a_cbrt.cpp               \
 examples/example003_sqrt.cpp                \
+examples/example003a_cbrt.cpp               \
 examples/example004_rootk_pow.cpp           \
 examples/example005_powm.cpp                \
+examples/example005a_pow_factors_of_p99     \
 examples/example006_gcd.cpp                 \
 examples/example007_random_generator.cpp    \
 examples/example008_miller_rabin_prime.cpp  \

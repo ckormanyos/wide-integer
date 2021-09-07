@@ -15,6 +15,27 @@ bool math::wide_integer::test_uintwide_t_spot_values()
   bool result_is_ok = true;
 
   {
+    using uint256_t = math::wide_integer::uintwide_t<256U>;
+
+    // FromDigits["C9DD3EA24800F584CB28C25CC0E6FF1",16]
+    // 16770224695321632575655872732632870897
+    const uint256_t a("0xC9DD3EA24800F584CB28C25CC0E6FF1");
+
+    // FromDigits["1E934A2EEA60A2AD14ECCAE7AD82C069",16]
+    // 40641612127094559121321599356729737321
+    const uint256_t b("0x1E934A2EEA60A2AD14ECCAE7AD82C069");
+
+    const uint256_t lm = lcm(a - 1U, b - 1U);
+    const uint256_t gd = gcd(a - 1U, b - 1U);
+
+    // LCM[16770224695321632575655872732632870897 - 1, 40641612127094559121321599356729737321 - 1]
+    result_is_ok &= (lm == uint256_t("28398706972978513348490390087175345493497748446743697820448222113648043280"));
+
+    // GCD[16770224695321632575655872732632870897 - 1, 40641612127094559121321599356729737321 - 1]
+    result_is_ok &= (gd == 24U);
+  }
+
+  {
     // See also https://github.com/ckormanyos/wide-integer/issues/111
 
     {
