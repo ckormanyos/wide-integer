@@ -31,6 +31,7 @@
   bool example009b_timed_mul_8_by_8  ();
   bool example010_uint48_t           ();
   bool example011_uint24_t           ();
+  bool example012_rsa_crypto         ();
 
   } } // namespace math::wide_integer
 
