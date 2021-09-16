@@ -17,7 +17,8 @@ add_library(Examples
   example009a_timed_mul_4_by_4.cpp
   example009b_timed_mul_8_by_8.cpp
   example010_uint48_t.cpp
-  example011_uint24_t.cpp)
+  example011_uint24_t.cpp
+  example012_rsa_crypto.cpp)
 target_compile_features(Examples PRIVATE cxx_std_11)
 target_include_directories(Examples PRIVATE ${PROJECT_SOURCE_DIR})
 target_include_directories(Examples SYSTEM PUBLIC ${Boost_INCLUDE_DIRS})
