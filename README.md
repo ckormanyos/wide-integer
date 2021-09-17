@@ -134,6 +134,7 @@ on how to use wide-integer.
   - ![`example009b_timed_mul_8_by_8.cpp`](./examples/example009b_timed_mul_8_by_8.cpp) measures, yet again, multiplication timings for the special case of wide integers having 8 limbs.
   - ![`example010_uint48_t.cpp`](./examples/example010_uint48_t.cpp) verifies 48-bit integer caluclations.
   - ![`example011_uint24_t.cpp`](./examples/example011_uint24_t.cpp) performs calculations with 24-bits, which is definitely on the small side of the range of wide-integer.
+  - ![`example012_rsa_crypto.cpp`](./examples/example012_rsa_crypto.cpp) performs cryptographic calculations with 2048-bits, exploring a standardized test case.
 
 ## Building, testing and CI
 
@@ -230,6 +231,7 @@ examples/example009a_timed_mul_4_by_4.cpp   \
 examples/example009b_timed_mul_8_by_8.cpp   \
 examples/example010_uint48_t.cpp            \
 examples/example011_uint24_t.cpp            \
+examples/example012_rsa_crypto.cpp          \
 -o wide_integer.exe
 ```
 
