@@ -7,46 +7,51 @@
 
 #include <random>
 #include <string>
-#include <vector>
 
 #include <math/wide_integer/uintwide_t.h>
 #include <math/wide_integer/uintwide_t_examples.h>
+#include <util/utility/util_dynamic_array.h>
 
 namespace local_rsa
 {
   template<const std::size_t RsaBitCount,
-           typename LimbType = std::uint32_t>
+           typename LimbType = std::uint32_t,
+           typename AllocatorType = std::allocator<void>>
   class rsa_base
   {
   public:
     static constexpr std::size_t bit_count = RsaBitCount;
 
-    using my_uintwide_t = ::math::wide_integer::uintwide_t< ::math::wide_integer::size_t(bit_count),
-                                                           LimbType>;
+    using allocator_type = typename std::allocator_traits<AllocatorType>::template rebind_alloc<LimbType>;
 
-    using limb_type = typename my_uintwide_t::limb_type;
+    using my_uintwide_t  = ::math::wide_integer::uintwide_t< ::math::wide_integer::size_t(bit_count),
+                                                            LimbType,
+                                                            allocator_type>;
 
-    using CryptoChar   = my_uintwide_t;
-    using CryptoString = std::vector<CryptoChar>;
+    using limb_type      = typename my_uintwide_t::limb_type;
 
-    typedef struct PrivateKey
+    using crypto_char    = my_uintwide_t;
+    using crypto_alloc   = typename std::allocator_traits<allocator_type>::template rebind_alloc<crypto_char>;
+    using crypto_string  = util::dynamic_array<crypto_char, crypto_alloc>;
+
+    typedef struct private_key_type
     {
       my_uintwide_t s;
       my_uintwide_t p;
       my_uintwide_t q;
     }
-    PrivateKey;
+    private_key_type;
 
-    typedef struct PublicKey
+    typedef struct public_key_type
     {
       my_uintwide_t r;
       my_uintwide_t m;
     }
-    PublicKey;
+    public_key_type;
 
     virtual ~rsa_base() = default;
 
-    struct Euclidean
+    struct euclidean
     {
       template<typename IntegerType>
       static IntegerType extended_euclidean(const IntegerType& a,
@@ -55,7 +60,6 @@ namespace local_rsa
                                                   IntegerType* y)
       {
         // Recursive extended Euclidean algorithm.
-
         using local_integer_type = IntegerType;
 
         if(a == 0)
@@ -78,68 +82,46 @@ namespace local_rsa
       }
     };
 
-    class Encryptor
+    class encryptor
     {
     public:
-      Encryptor(const PublicKey& key) : public_key(key),
-                                        text      ("") { }
+      encryptor(const public_key_type& key) : public_key(key) { }
 
-      CryptoString encrypt_string(const std::string& input)
+      template<typename InputIterator,
+               typename OutputIterator>
+      void encrypt(InputIterator in_first, const std::size_t count, OutputIterator out)
       {
-        CryptoString str_out(input.length());
-
-        for(std::size_t i = 0U; i < input.length(); ++i)
+        for(auto it = in_first; it != in_first + typename std::iterator_traits<InputIterator>::difference_type(count); ++it)
         {
-          str_out[i] = powm(my_uintwide_t(input.at(i)), public_key.r, public_key.m);
+          *out++ = powm(my_uintwide_t(*it), public_key.r, public_key.m);
         }
-
-        return str_out;
-      }
-
-      CryptoChar encrypt_char(const char c)
-      {
-        const CryptoChar res = powm(CryptoChar(unsigned(c)), public_key.r, public_key.m);
-
-        return res;
       }
 
     private:
-      const PublicKey&  public_key;
-      const std::string text;
+      const public_key_type& public_key;
     };
 
-    class Decryptor
+    class decryptor
     {
     public:
-      Decryptor(const PrivateKey& key) : private_key(key),
-                                         text       ("") { }
+      decryptor(const private_key_type& key) : private_key(key) { }
 
-      std::string decrypt_string(const CryptoString& input)
+      template<typename InputIterator,
+               typename OutputIterator>
+      void decrypt(InputIterator cry_in, const std::size_t count, OutputIterator cypher_out)
       {
-        std::string cypher(input.size(), char('\0'));
+        InputIterator cry_end(cry_in + typename std::iterator_traits<InputIterator>::difference_type(count));
 
-        for(std::size_t i = 0U; i < input.size(); ++i)
+        for(auto it = cry_in; it !=  cry_end; ++it)
         {
-          cypher.at(i) =
-          char
-          (
-            static_cast<limb_type>(powm(input[i], private_key.s, private_key.q * private_key.p))
-          );
+          const my_uintwide_t tmp = powm(*it, private_key.s, private_key.q * private_key.p);
+
+          *cypher_out++ = static_cast<typename std::iterator_traits<OutputIterator>::value_type>((limb_type) tmp);
         }
-
-        return cypher;
-      }
-
-      char decrypt_char(const CryptoChar& c)
-      {
-        const CryptoChar res = powm(c, private_key.s, private_key.q * private_key.p);
-
-        return char(static_cast<limb_type>(res));
       }
 
     private:
-      const PrivateKey& private_key;
-      const std::string text;
+      const private_key_type& private_key;
     };
 
     rsa_base(const rsa_base& other) : my_p       (other.my_p),
@@ -155,8 +137,8 @@ namespace local_rsa
                                  my_r       ((my_uintwide_t&&) other.my_r),
                                  my_m       ((my_uintwide_t&&) other.my_m),
                                  phi_of_m   ((my_uintwide_t&&) other.phi_of_m),
-                                 public_key ((PublicKey&&)     other.public_key),
-                                 private_key((PrivateKey&&)    other.private_key) { }
+                                 public_key ((public_key_type&&)     other.public_key),
+                                 private_key((private_key_type&&)    other.private_key) { }
 
     rsa_base& operator=(const rsa_base& other)
     {
@@ -181,30 +163,34 @@ namespace local_rsa
       my_r        = (my_uintwide_t&&) other.my_r;
       my_m        = (my_uintwide_t&&) other.my_m;
       phi_of_m    = (my_uintwide_t&&) other.phi_of_m;
-      public_key  = (PublicKey&&)     other.public_key;
-      private_key = (PrivateKey&&)    other.private_key;
+      public_key  = (public_key_type&&)     other.public_key;
+      private_key = (private_key_type&&)    other.private_key;
 
       return *this;
     }
 
-    const PublicKey&  getPublicKey () const { return public_key; }
-    const PrivateKey& getPrivateKey() const { return private_key; }
+    const public_key_type&  getPublicKey () const { return public_key; }
+    const private_key_type& getPrivateKey() const { return private_key; }
 
-    const CryptoChar& get_p() const { return getPrivateKey().p; }
-    const CryptoChar& get_q() const { return getPrivateKey().q; }
-    const CryptoChar& get_d() const { return getPrivateKey().s; }
-    const CryptoChar& get_n() const { return getPublicKey().m; }
+    const crypto_char& get_p() const { return getPrivateKey().p; }
+    const crypto_char& get_q() const { return getPrivateKey().q; }
+    const crypto_char& get_d() const { return getPrivateKey().s; }
+    const crypto_char& get_n() const { return getPublicKey().m; }
 
-    CryptoString encrypt(const std::string& str) const
+    crypto_string encrypt(const std::string& str) const
     {
-      const CryptoString out = Encryptor(public_key).encrypt_string(str);
+      crypto_string str_out(str.length());
 
-      return out;
+      encryptor(public_key).encrypt(str.cbegin(), str.length(), str_out.begin());
+
+      return str_out;
     }
 
-    std::string decrypt(const CryptoString& str) const
+    std::string decrypt(const crypto_string& str) const
     {
-      const std::string res = Decryptor(private_key).decrypt_string(str);
+      std::string res(str.size(), char('\0'));
+
+      decryptor(private_key).decrypt(str.cbegin(), str.size(), res.begin());
 
       return res;
     }
@@ -214,7 +200,7 @@ namespace local_rsa
                          const RandomEngineType& generator = RandomEngineType(static_cast<typename RandomEngineType::result_type>(std::clock())))
     {
       using local_distribution_type =
-        ::math::wide_integer::uniform_int_distribution< :: math::wide_integer::size_t(bit_count), limb_type>;
+        ::math::wide_integer::uniform_int_distribution< :: math::wide_integer::size_t(bit_count), limb_type, allocator_type>;
 
       local_distribution_type distribution;
 
@@ -231,8 +217,8 @@ namespace local_rsa
     my_uintwide_t my_r;
     my_uintwide_t my_m;
     my_uintwide_t phi_of_m;
-    PublicKey     public_key;
-    PrivateKey    private_key;
+    public_key_type     public_key;
+    private_key_type    private_key;
 
     rsa_base(const my_uintwide_t& p_in,
               const my_uintwide_t& q_in,
@@ -244,7 +230,7 @@ namespace local_rsa
                                           public_key (),
                                           private_key()
     {
-      public_key = PublicKey { my_r, my_m };
+      public_key = public_key_type { my_r, my_m };
     }
 
     void calculate_private_key()
@@ -255,11 +241,11 @@ namespace local_rsa
       my_uintwide_t x(0U);
       my_uintwide_t s(0U);
 
-      Euclidean::extended_euclidean(a, b, &x, &s);
+      euclidean::extended_euclidean(a, b, &x, &s);
 
       s = is_neg(s) ? make_positive(s, phi_of_m) : s;
 
-      private_key = PrivateKey { s, my_p, my_q };
+      private_key = private_key_type { s, my_p, my_q };
     }
 
   private:
@@ -412,7 +398,7 @@ bool math::wide_integer::example012_rsa_crypto()
   // Select "abc" as the sample string to encrypt.
   const std::string in_str("abc");
 
-  const typename rsa_type::CryptoString out_str = rsa.encrypt(in_str);
+  const typename rsa_type::crypto_string out_str = rsa.encrypt(in_str);
   const std::string                     res_str = rsa.decrypt(out_str);
 
   const char res_ch_a_manual = char(static_cast<typename rsa_integral_type::limb_type>(powm(out_str[0U], d, n)));
