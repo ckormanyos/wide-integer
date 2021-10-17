@@ -12,8 +12,8 @@
 
 #include <random>
 
+#include <examples/example_uintwide_t.h>
 #include <math/wide_integer/uintwide_t.h>
-#include <math/wide_integer/uintwide_t_examples.h>
 
 bool math::wide_integer::example008_miller_rabin_prime()
 {

@@ -36,8 +36,6 @@
   #include <sstream>
   #endif
 
-  #include <util/utility/util_dynamic_array.h>
-
   #if (defined(__clang__) && (__clang_major__ <= 9))
   #define WIDE_INTEGER_NUM_LIMITS_CLASS_TYPE struct
   #else
@@ -80,12 +78,354 @@
     #endif
   #endif
 
+  #if !defined(WIDE_INTEGER_DISABLE_IMPLEMENT_UTIL_DYNAMIC_ARRAY)
+
+  namespace util {
+
+  template<typename ValueType,
+            typename AllocatorType = std::allocator<ValueType>,
+            typename SizeType = std::size_t,
+            typename DiffType = std::ptrdiff_t>
+  class dynamic_array
+  {
+  public:
+    // Type definitions.
+    using allocator_type         =       AllocatorType;
+    using value_type             =       ValueType;
+    using reference              =       value_type&;
+    using const_reference        = const value_type&;
+    using iterator               =       value_type*;
+    using const_iterator         = const value_type*;
+    using pointer                =       value_type*;
+    using const_pointer          = const value_type*;
+    using size_type              =       SizeType;
+    using difference_type        =       DiffType;
+    using reverse_iterator       =       std::reverse_iterator<iterator>;
+    using const_reverse_iterator =       std::reverse_iterator<const_iterator>;
+
+    // Constructors.
+    constexpr dynamic_array() : elem_count(0U),
+                                elems     (nullptr) { }
+
+    dynamic_array(size_type count,
+                  const_reference v = value_type(),
+                  const allocator_type& a = allocator_type())
+      : elem_count(count),
+        elems     (nullptr)
+    {
+      allocator_type my_a(a);
+
+      if(elem_count > 0U)
+      {
+        elems = std::allocator_traits<allocator_type>::allocate(my_a, elem_count);
+      }
+
+      iterator it = begin();
+
+      while(it != end())
+      {
+        std::allocator_traits<AllocatorType>::construct(my_a, it, v);
+
+        ++it;
+      }
+    }
+
+    dynamic_array(const dynamic_array& other)
+      : elem_count(other.size()),
+        elems     (nullptr)
+    {
+      allocator_type my_a;
+
+      if(elem_count > 0U)
+      {
+        elems = std::allocator_traits<allocator_type>::allocate(my_a, elem_count);
+      }
+
+      std::copy(other.elems, other.elems + elem_count, elems);
+    }
+
+    template<typename input_iterator>
+    dynamic_array(input_iterator first,
+                  input_iterator last,
+                  const allocator_type& a = allocator_type())
+      : elem_count(static_cast<size_type>(std::distance(first, last))),
+        elems     (nullptr)
+    {
+      allocator_type my_a(a);
+
+      if(elem_count > 0U)
+      {
+        elems = std::allocator_traits<allocator_type>::allocate(my_a, elem_count);
+      }
+
+      std::copy(first, last, elems);
+    }
+
+    dynamic_array(std::initializer_list<value_type> lst,
+                  const allocator_type& a = allocator_type())
+      : elem_count(lst.size()),
+        elems     (nullptr)
+    {
+      allocator_type my_a(a);
+
+      if(elem_count > 0U)
+      {
+        elems = std::allocator_traits<allocator_type>::allocate(my_a, elem_count);
+      }
+
+      std::copy(lst.begin(), lst.end(), elems);
+    }
+
+    // Move constructor.
+    dynamic_array(dynamic_array&& other) : elem_count(other.elem_count),
+                                            elems     (other.elems)
+    {
+      other.elem_count = 0U;
+      other.elems      = nullptr;
+    }
+
+    // Destructor.
+    virtual ~dynamic_array()
+    {
+      pointer p = elems;
+
+      allocator_type my_a;
+
+      while(p != elems + elem_count)
+      {
+        std::allocator_traits<allocator_type>::destroy(my_a, p);
+
+        ++p;
+      }
+
+      // Destroy the elements and deallocate the range.
+      std::allocator_traits<allocator_type>::deallocate(my_a, elems, elem_count);
+    }
+
+    // Assignment operator.
+    dynamic_array& operator=(const dynamic_array& other)
+    {
+      if(this != &other)
+      {
+        std::copy(other.elems,
+                  other.elems + (std::min)(elem_count, other.elem_count),
+                  elems);
+      }
+
+      return *this;
+    }
+
+    // Move assignment operator.
+    dynamic_array& operator=(dynamic_array&& other)
+    {
+      // Destroy the elements and deallocate the range.
+      pointer p = elems;
+
+      allocator_type my_a;
+
+      while(p != elems + elem_count)
+      {
+        std::allocator_traits<allocator_type>::destroy(my_a, p);
+
+        ++p;
+      }
+
+      std::allocator_traits<allocator_type>::deallocate(my_a, elems, elem_count);
+
+      elem_count = other.elem_count;
+      elems      = other.elems;
+
+      other.elem_count = 0U;
+      other.elems      = nullptr;
+
+      return *this;
+    }
+
+    // Iterator members:
+    iterator               begin  ()       { return elems; }
+    iterator               end    ()       { return elems + elem_count; }
+    const_iterator         begin  () const { return elems; }
+    const_iterator         end    () const { return elems + elem_count; }
+    const_iterator         cbegin () const { return elems; }
+    const_iterator         cend   () const { return elems + elem_count; }
+    reverse_iterator       rbegin ()       { return reverse_iterator(elems + elem_count); }
+    reverse_iterator       rend   ()       { return reverse_iterator(elems); }
+    const_reverse_iterator rbegin () const { return const_reverse_iterator(elems + elem_count); }
+    const_reverse_iterator rend   () const { return const_reverse_iterator(elems); }
+    const_reverse_iterator crbegin() const { return const_reverse_iterator(elems + elem_count); }
+    const_reverse_iterator crend  () const { return const_reverse_iterator(elems); }
+
+    // Raw pointer access.
+    pointer       data()       { return elems; }
+    const_pointer data() const { return elems; }
+
+    // Size and capacity.
+    size_type size    () const { return  elem_count; }
+    size_type max_size() const { return  elem_count; }
+    bool      empty   () const { return (elem_count == 0U); }
+
+    // Element access members.
+    reference       operator[](const size_type i)       { return elems[i]; }
+    const_reference operator[](const size_type i) const { return elems[i]; }
+
+    reference       front()       { return elems[0U]; }
+    const_reference front() const { return elems[0U]; }
+
+    reference       back()        { return ((elem_count > size_type(0U)) ? elems[elem_count - 1U] : elems[0U]); }
+    const_reference back() const  { return ((elem_count > size_type(0U)) ? elems[elem_count - 1U] : elems[0U]); }
+
+    reference       at(const size_type i)       { return ((i < elem_count) ? elems[i] : elems[0U]); }
+    const_reference at(const size_type i) const { return ((i < elem_count) ? elems[i] : elems[0U]); }
+
+    // Element manipulation members.
+    void fill(const value_type& v)
+    {
+      std::fill_n(begin(), elem_count, v);
+    }
+
+    void swap(dynamic_array& other)
+    {
+      const size_type tmp_elem_count = elem_count;
+      const pointer   tmp_elems      = elems;
+
+      elem_count = other.elem_count;
+      elems      = other.elems;
+
+      other.elem_count = tmp_elem_count;
+      other.elems      = tmp_elems;
+    }
+
+    void swap(dynamic_array&& other)
+    {
+      const size_type tmp_elem_count = elem_count;
+      const pointer   tmp_elems      = elems;
+
+      elem_count = other.elem_count;
+      elems      = other.elems;
+
+      other.elem_count = tmp_elem_count;
+      other.elems      = tmp_elems;
+    }
+
+  protected:
+    mutable size_type elem_count;
+    pointer           elems;
+  };
+
+  template<typename ValueType, typename AllocatorType>
+  bool operator==(const dynamic_array<ValueType, AllocatorType>& lhs,
+                  const dynamic_array<ValueType, AllocatorType>& rhs)
+  {
+    bool left_and_right_are_equal;
+
+    const bool sizes_are_equal = (lhs.size() == rhs.size());
+
+    if(sizes_are_equal)
+    {
+      typedef typename dynamic_array<ValueType, AllocatorType>::size_type size_type;
+
+      const bool size_of_left_is_zero = (lhs.size() == size_type(0U));
+
+      left_and_right_are_equal =
+        (size_of_left_is_zero || std::equal(lhs.cbegin(), lhs.cend(), rhs.cbegin()));
+    }
+    else
+    {
+      left_and_right_are_equal = false;
+    }
+
+    return left_and_right_are_equal;
+  }
+
+  template<typename ValueType, typename AllocatorType>
+  bool operator<(const dynamic_array<ValueType, AllocatorType>& lhs,
+                  const dynamic_array<ValueType, AllocatorType>& rhs)
+  {
+    typedef typename dynamic_array<ValueType, AllocatorType>::size_type size_type;
+
+    const bool size_of_left_is_zero = (lhs.size() == size_type(0U));
+
+    if(size_of_left_is_zero)
+    {
+      const bool size_of_right_is_zero = (rhs.size() == size_type(0U));
+
+      return (size_of_right_is_zero ? false : true);
+    }
+    else
+    {
+      if(size_of_left_is_zero)
+      {
+        const bool size_of_right_is_zero = (rhs.size() == size_type(0U));
+
+        return (size_of_right_is_zero == false);
+      }
+      else
+      {
+        const size_type count = (std::min)(lhs.size(), rhs.size());
+
+        return std::lexicographical_compare(lhs.cbegin(),
+                                            lhs.cbegin() + count,
+                                            rhs.cbegin(),
+                                            rhs.cbegin() + count);
+      }
+    }
+  }
+
+  template<typename ValueType, typename AllocatorType>
+  bool operator!=(const dynamic_array<ValueType, AllocatorType>& lhs,
+                  const dynamic_array<ValueType, AllocatorType>& rhs)
+  {
+    return ((lhs == rhs) == false);
+  }
+
+  template<typename ValueType, typename AllocatorType>
+  bool operator>(const dynamic_array<ValueType, AllocatorType>& lhs,
+                  const dynamic_array<ValueType, AllocatorType>& rhs)
+  {
+    return (rhs < lhs);
+  }
+
+  template<typename ValueType, typename AllocatorType>
+  bool operator>=(const dynamic_array<ValueType, AllocatorType>& lhs,
+                  const dynamic_array<ValueType, AllocatorType>& rhs)
+  {
+    return ((lhs < rhs) == false);
+  }
+
+  template<typename ValueType, typename AllocatorType>
+  bool operator<=(const dynamic_array<ValueType, AllocatorType>& lhs,
+                  const dynamic_array<ValueType, AllocatorType>& rhs)
+  {
+    return ((rhs < lhs) == false);
+  }
+
+  template<typename ValueType, typename AllocatorType>
+  void swap(dynamic_array<ValueType, AllocatorType>& x,
+            dynamic_array<ValueType, AllocatorType>& y)
+  {
+    x.swap(y);
+  }
+
+  }
+
+  #else
+
+  #include <util/utility/util_dynamic_array.h>
+
+  #endif
+
   namespace math { namespace wide_integer {
 
   namespace detail {
 
+  using util::dynamic_array;
+
   using size_t    = std::uint32_t;
   using ptrdiff_t = std::int32_t;
+
+  static_assert((  (std::numeric_limits<size_t>::digits        >= 16)
+                && (std::numeric_limits<ptrdiff_t>::digits + 1 >= 16)),
+                "Error: size type and pointer difference type must be at least 16 bits in width (or wider)");
 
   template<const size_t Width2> struct verify_power_of_two
   {
@@ -430,10 +770,10 @@
   template<typename MyType,
            const size_t MySize,
            typename MyAlloc>
-  class fixed_dynamic_array final : public util::dynamic_array<MyType, MyAlloc, size_t, ptrdiff_t>
+  class fixed_dynamic_array final : public detail::dynamic_array<MyType, MyAlloc, size_t, ptrdiff_t>
   {
   private:
-    using base_class_type = util::dynamic_array<MyType, MyAlloc, size_t, ptrdiff_t>;
+    using base_class_type = detail::dynamic_array<MyType, MyAlloc, size_t, ptrdiff_t>;
 
   public:
     static constexpr typename base_class_type::size_type static_size() { return MySize; }
@@ -3251,7 +3591,6 @@
   using uint4096_t  = uintwide_t< 4096U, std::uint32_t>;
   using uint8192_t  = uintwide_t< 8192U, std::uint32_t>;
   using uint16384_t = uintwide_t<16384U, std::uint32_t>;
-  using uint32768_t = uintwide_t<32768U, std::uint32_t>;
 
   #if defined(__GNUC__) && defined(__AVR__)
   #else
@@ -3264,7 +3603,6 @@
   static_assert(std::is_trivially_copyable<uint4096_t >::value && std::is_standard_layout<uint4096_t >::value, "uintwide_t must be trivially copyable with standard layout.");
   static_assert(std::is_trivially_copyable<uint8192_t >::value && std::is_standard_layout<uint8192_t >::value, "uintwide_t must be trivially copyable with standard layout.");
   static_assert(std::is_trivially_copyable<uint16384_t>::value && std::is_standard_layout<uint16384_t>::value, "uintwide_t must be trivially copyable with standard layout.");
-  static_assert(std::is_trivially_copyable<uint32768_t>::value && std::is_standard_layout<uint32768_t>::value, "uintwide_t must be trivially copyable with standard layout.");
   #endif
 
   using  int64_t    = uintwide_t<   64U, std::uint16_t, void, true>;
@@ -3276,7 +3614,6 @@
   using  int4096_t  = uintwide_t< 4096U, std::uint32_t, void, true>;
   using  int8192_t  = uintwide_t< 8192U, std::uint32_t, void, true>;
   using  int16384_t = uintwide_t<16384U, std::uint32_t, void, true>;
-  using  int32768_t = uintwide_t<32768U, std::uint32_t, void, true>;
 
   #if defined(__GNUC__) && defined(__AVR__)
   #else
@@ -3289,7 +3626,6 @@
   static_assert(std::is_trivially_copyable<int4096_t >::value && std::is_standard_layout<int4096_t >::value, "uintwide_t must be trivially copyable with standard layout.");
   static_assert(std::is_trivially_copyable<int8192_t >::value && std::is_standard_layout<int8192_t >::value, "uintwide_t must be trivially copyable with standard layout.");
   static_assert(std::is_trivially_copyable<int16384_t>::value && std::is_standard_layout<int16384_t>::value, "uintwide_t must be trivially copyable with standard layout.");
-  static_assert(std::is_trivially_copyable<int32768_t>::value && std::is_standard_layout<int32768_t>::value, "uintwide_t must be trivially copyable with standard layout.");
   #endif
 
   // Insert a base class for numeric_limits<> support.

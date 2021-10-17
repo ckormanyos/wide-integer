@@ -26,8 +26,8 @@ elementary and number theoretical functions such as root finding,
 random distribution, Miller-Rabin primality testing,
 greatest common denominator (GCD) and more.
 
-Inclusion of a single C++11 header file (plus one additional
-utility header file) is all that is needed for using wide-integer,
+Inclusion of a single C++11 header file
+is all that is needed for using wide-integer,
 as shown in the [examples](./examples).
 
 ## Implementation goals
@@ -159,7 +159,8 @@ combinations.
 
 Building and running the tests and examples can be accomplished
 using the Microsoft VisualStudio solution workspace provided
-in `wide_integer.sln` located in the project's root directory.
+in `wide_integer.sln`. The MSVC solution file
+is located in the project's root directory.
 
 ### Build with CMake
 
@@ -179,11 +180,12 @@ can be executed with a simple, but rather lengthy, command line
 entered manually from the command shell.
 Consider, for instance, building in Linux with GCC in the presence of `unsigned` `__int128`.
 Furthermore, the Boost.Multiprecision library is used for some examples and tests.
-In this build example, Boost intended to be located
+In this build example, Boost is intended to be located
 in the made-up directory `../boost-root`,
 which needs to be adapted according to the actual location of Boost.
-The command line below illustrates how to build all wide_integer
-tests and examples directly from the *nix command line.
+The command line below illustrates how to build all
+of the wide_integer tests and examples directly
+from the *nix command line.
 
 ```sh
 cd wide_integer
@@ -237,12 +239,12 @@ examples/example012_rsa_crypto.cpp          \
 
 ### Testing
 
-Testing is definitely a big issue. A growing test suite in
-continuous support improves conficence in the library,
-providing for tested, efficient functionality on the PC and workstation.
+Testing is definitely a big issue. A growing, supported
+test suite improves confidence in the library.
+It provides for tested, efficient functionality on the PC and workstation.
 The GitHub code is, as mentioned above, delivered with an affiliated MSVC
 project or a variety of other build/make options that use easy-to-understand
-subroutines called from `main()` to exercise the various
+subroutines called from `main()`. These exercise the various
 examples and the full suite of test cases.
 
 CI runs on push and pull request using GitHub Actions.
@@ -349,6 +351,24 @@ This macro might improve performance on some target/compiler systems
 by manually unrolling the multiplication loop(s) for
 `uintwide_t` instances having 8 limbs. This macro is disabled
 by default.
+
+```C
+#define WIDE_INTEGER_DISABLE_IMPLEMENT_UTIL_DYNAMIC_ARRAY
+```
+
+This macro disables `uintwide_t.h`'s own local implementation
+of the `util::dynamic_array` template class.
+The logic of this macro is negated. Its default setting
+(of being disabled itself) ensures that standalone `uintwide_t.h`
+is free from any additional header dependencies.
+
+The template utility class `util::dynamic_array` is used
+as a storage container for certain instantiations of `uintwide_t`.
+This macro is disabled by default and `uintwide_t.h`
+does actually provide its own local implementation
+of the `util::dynamic_array` template class.
+Otherwise, the header file `<util/utility/util_dynamic_array.h>`
+must be found in the include path.
 
 ## Detailed examples
 

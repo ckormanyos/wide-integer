@@ -5,8 +5,8 @@
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)             //
 ///////////////////////////////////////////////////////////////////
 
-#ifndef UINTWIDE_T_EXAMPLES_2021_04_29_H_
-  #define UINTWIDE_T_EXAMPLES_2021_04_29_H_
+#ifndef EXAMPLE_UINTWIDE_T_2021_04_29_H_
+  #define EXAMPLE_UINTWIDE_T_2021_04_29_H_
 
   // This file contains function prototypes of the uintwide_t examples.
 
@@ -35,4 +35,4 @@
 
   } } // namespace math::wide_integer
 
-#endif // UINTWIDE_T_EXAMPLES_2021_04_29_H_
+#endif // EXAMPLE_UINTWIDE_T_2021_04_29_H_
