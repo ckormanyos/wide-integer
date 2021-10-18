@@ -8,7 +8,7 @@
 #include <sstream>
 
 #include <math/wide_integer/uintwide_t.h>
-#include <math/wide_integer/uintwide_t_test.h>
+#include <test/test_uintwide_t.h>
 
 bool math::wide_integer::test_uintwide_t_spot_values()
 {

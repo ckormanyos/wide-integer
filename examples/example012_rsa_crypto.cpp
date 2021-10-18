@@ -8,9 +8,9 @@
 #include <random>
 #include <string>
 
+#include <examples/example_uintwide_t.h>
 #include <math/wide_integer/uintwide_t.h>
-#include <math/wide_integer/uintwide_t_examples.h>
-#include <util/utility/util_dynamic_array.h>
+//#include <util/utility/util_dynamic_array.h>
 
 namespace local_rsa
 {
@@ -32,7 +32,7 @@ namespace local_rsa
 
     using crypto_char    = my_uintwide_t;
     using crypto_alloc   = typename std::allocator_traits<allocator_type>::template rebind_alloc<crypto_char>;
-    using crypto_string  = util::dynamic_array<crypto_char, crypto_alloc>;
+    using crypto_string  = math::wide_integer::detail::dynamic_array<crypto_char, crypto_alloc>;
 
     typedef struct private_key_type
     {
