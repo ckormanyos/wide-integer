@@ -281,6 +281,7 @@ enabled or disabled at compile time with the compiler switches:
 ```C
 #define WIDE_INTEGER_DISABLE_IOSTREAM
 #define WIDE_INTEGER_DISABLE_FLOAT_INTEROP
+#define WIDE_INTEGER_DISABLE_IMPLEMENT_UTIL_DYNAMIC_ARRAY
 #define WIDE_INTEGER_HAS_LIMB_TYPE_UINT64
 #define WIDE_INTEGER_HAS_MUL_8_BY_8_UNROLL
 ```
@@ -314,6 +315,24 @@ When working on high-performance systems having `unsigned __int128`
 a 64-bit limb of type `uint64_t` can be used.
 Enable the 64-bit limb type on such systems
 with the compiler switch:
+
+```C
+#define WIDE_INTEGER_DISABLE_IMPLEMENT_UTIL_DYNAMIC_ARRAY
+```
+
+This macro disables `uintwide_t.h`'s own local implementation
+of the `util::dynamic_array` template class.
+The logic of this macro is negated. Its default setting
+(of being disabled itself) ensures that standalone `uintwide_t.h`
+is free from any additional header dependencies.
+
+The template utility class `util::dynamic_array` is used
+as a storage container for certain instantiations of `uintwide_t`.
+This macro is disabled by default and `uintwide_t.h`
+does actually provide its own local implementation
+of the `util::dynamic_array` template class.
+Otherwise, the header file `<util/utility/util_dynamic_array.h>`
+must be found in the include path.
 
 ```C
 #define WIDE_INTEGER_HAS_LIMB_TYPE_UINT64
@@ -351,24 +370,6 @@ This macro might improve performance on some target/compiler systems
 by manually unrolling the multiplication loop(s) for
 `uintwide_t` instances having 8 limbs. This macro is disabled
 by default.
-
-```C
-#define WIDE_INTEGER_DISABLE_IMPLEMENT_UTIL_DYNAMIC_ARRAY
-```
-
-This macro disables `uintwide_t.h`'s own local implementation
-of the `util::dynamic_array` template class.
-The logic of this macro is negated. Its default setting
-(of being disabled itself) ensures that standalone `uintwide_t.h`
-is free from any additional header dependencies.
-
-The template utility class `util::dynamic_array` is used
-as a storage container for certain instantiations of `uintwide_t`.
-This macro is disabled by default and `uintwide_t.h`
-does actually provide its own local implementation
-of the `util::dynamic_array` template class.
-Otherwise, the header file `<util/utility/util_dynamic_array.h>`
-must be found in the include path.
 
 ## Detailed examples
 
