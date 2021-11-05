@@ -284,6 +284,7 @@ enabled or disabled at compile time with the compiler switches:
 #define WIDE_INTEGER_DISABLE_IMPLEMENT_UTIL_DYNAMIC_ARRAY
 #define WIDE_INTEGER_HAS_LIMB_TYPE_UINT64
 #define WIDE_INTEGER_HAS_MUL_8_BY_8_UNROLL
+#define WIDE_INTEGER_DISABLE_TRIVIAL_COPY_AND_STD_LAYOUT_CHECKS
 ```
 
 When working with even the most tiny microcontroller systems,
@@ -370,6 +371,21 @@ This macro might improve performance on some target/compiler systems
 by manually unrolling the multiplication loop(s) for
 `uintwide_t` instances having 8 limbs. This macro is disabled
 by default.
+
+```C
+#define WIDE_INTEGER_DISABLE_TRIVIAL_COPY_AND_STD_LAYOUT_CHECKS
+```
+
+This macro disables compile-time checks for `std::is_trivially_copyable`
+and `std::is_standard_layout`. These checks provide assurance
+(among other attributes) that `uintwide_t`'s constructor(s)
+satisfy rules needed for mixed-language C/C++ usage.
+Some older legacy target/compiler systems have have faulty or
+incomplete STL implementations that lack these compile-time
+templates. For such compilers, it makes sense to deactivate
+these compile-time checks via activation of this macro.
+This macro is disabled by default and both the trivially-copyable
+as well as the standard-layout compile-time checks are active.
 
 ## Detailed examples
 
