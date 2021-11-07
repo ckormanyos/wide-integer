@@ -10,9 +10,74 @@
 #include <math/wide_integer/uintwide_t.h>
 #include <test/test_uintwide_t.h>
 
+namespace local
+{
+  template<typename UnknownIntegerType>
+  bool test_uintwide_t_spot_values_from_pull_request_130()
+  {
+    // See also https://github.com/ckormanyos/wide-integer/pull/130
+
+    using local_unknown_integer_type = UnknownIntegerType;
+
+    using limits = std::numeric_limits<local_unknown_integer_type>;
+
+    auto expected
+    {
+      -1 - limits::max()
+    };
+
+    auto actual
+    {
+      limits::lowest()
+    };
+
+    const bool b_ok = (expected == actual);
+
+    return b_ok;
+  }
+}
+
 bool math::wide_integer::test_uintwide_t_spot_values()
 {
   bool result_is_ok = true;
+
+  {
+    // See also https://github.com/ckormanyos/wide-integer/pull/130
+
+    // The exact issue motivating this PR turned out to be
+    // an incorect report. The tests, however, are useful
+    // and these have been integrated into _spot_values().
+
+    {
+      using type = math::wide_integer::uintwide_t<64, std::uint32_t, void, true>;
+
+      result_is_ok &= local::test_uintwide_t_spot_values_from_pull_request_130<type>();
+    }
+
+    {
+      using type = math::wide_integer::uintwide_t<64, std::uint8_t, void, true>;
+
+      result_is_ok &= local::test_uintwide_t_spot_values_from_pull_request_130<type>();
+    }
+
+    {
+      using type = math::wide_integer::uintwide_t<256, std::uint32_t, void, true>;
+
+      result_is_ok &= local::test_uintwide_t_spot_values_from_pull_request_130<type>();
+    }
+
+    {
+      using type = std::int32_t;
+
+      result_is_ok &= local::test_uintwide_t_spot_values_from_pull_request_130<type>();
+    }
+
+    {
+      using type = std::int64_t;
+
+      result_is_ok &= local::test_uintwide_t_spot_values_from_pull_request_130<type>();
+    }
+  }
 
   {
     using uint256_t = math::wide_integer::uintwide_t<256U>;
