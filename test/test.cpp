@@ -65,6 +65,19 @@ constexpr std::size_t test_uintwide_t_n_binary_ops_4_by_4_cases = std::uint32_t(
 constexpr std::size_t test_uintwide_t_n_binary_ops_4_by_4_cases = std::uint32_t(1UL << 9U);
 #endif
 
+bool test_most_negative_number()
+{
+  std::cout << "running: test_most_negative_number" << std::endl;
+
+  using type = math::wide_integer::uintwide_t<64, unsigned, void, true>;
+  using limits = std::numeric_limits<type>;
+  auto expected{-1-limits::max()};
+  auto actual{limits::lowest()};
+
+  std::cout << "expected=" << expected << "==actual" << actual << std::endl;
+  return expected != actual;
+}
+
 bool test_uintwide_t_small_bits()
 {
   std::cout << "running: test_uintwide_t_small_bits" << std::endl;
@@ -378,6 +391,7 @@ int main()
 
   bool result_is_ok = true;
 
+  result_is_ok &= local::test_most_negative_number();                    std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
   result_is_ok &= local::test_uintwide_t_small_bits();                   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
   result_is_ok &= local::test_uintwide_t_boost_backend();                std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
   result_is_ok &= local::test_uintwide_t_examples();                     std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
