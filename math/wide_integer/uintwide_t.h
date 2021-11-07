@@ -68,7 +68,7 @@
         #define WIDE_INTEGER_CONSTEXPR constexpr
         #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 1
         #endif
-      #elif (defined(__clang__) && (__clang_major__ > 10)) && (defined(__cplusplus) && (__cplusplus > 201703L))
+      #elif (defined(__clang__) && (__clang_major__ >= 10)) && (defined(__cplusplus) && (__cplusplus > 201703L))
         #if defined(__x86_64__)
         #define WIDE_INTEGER_CONSTEXPR constexpr
         #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 1
