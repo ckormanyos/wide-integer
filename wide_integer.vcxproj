@@ -72,19 +72,19 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\boost\boost_1_76_0;$(ProjectDir);$(IncludePath)</IncludePath>
+    <IncludePath>C:\boost\boost_1_77_0;$(ProjectDir);$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\boost\boost_1_76_0;$(ProjectDir);$(IncludePath)</IncludePath>
+    <IncludePath>C:\boost\boost_1_77_0;$(ProjectDir);$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>C:\boost\boost_1_76_0;$(ProjectDir);$(IncludePath)</IncludePath>
+    <IncludePath>C:\boost\boost_1_77_0;$(ProjectDir);$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>C:\boost\boost_1_76_0;$(ProjectDir);$(IncludePath)</IncludePath>
+    <IncludePath>C:\boost\boost_1_77_0;$(ProjectDir);$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -182,10 +182,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="boost\multiprecision\uintwide_t_backend.hpp" />
+    <ClInclude Include="examples\example_uintwide_t.h" />
     <ClInclude Include="math\wide_integer\uintwide_t.h" />
-    <ClInclude Include="math\wide_integer\uintwide_t_examples.h" />
-    <ClInclude Include="math\wide_integer\uintwide_t_test.h" />
     <ClInclude Include="test\parallel_for.h" />
+    <ClInclude Include="test\test_uintwide_t.h" />
     <ClInclude Include="test\test_uintwide_t_n_base.h" />
     <ClInclude Include="test\test_uintwide_t_n_binary_ops_mul_div_4_by_4_template.h" />
     <ClInclude Include="test\test_uintwide_t_n_binary_ops_mul_n_by_m_template.h" />
@@ -193,7 +193,6 @@
     <ClInclude Include="test\test_uintwide_t_n_binary_ops_template_signed.h" />
     <ClInclude Include="test\test_uintwide_t_n_binary_ops_template.h" />
     <ClInclude Include="test\test_uintwide_t_n_number_theory_funcs_template.h" />
-    <ClInclude Include="util\utility\util_dynamic_array.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="examples\example000a_builtin_convert.cpp" />
@@ -204,6 +203,7 @@
     <ClCompile Include="examples\example003a_cbrt.cpp" />
     <ClCompile Include="examples\example003_sqrt.cpp" />
     <ClCompile Include="examples\example004_rootk_pow.cpp" />
+    <ClCompile Include="examples\example005a_pow_factors_of_p99.cpp" />
     <ClCompile Include="examples\example005_powm.cpp" />
     <ClCompile Include="examples\example006_gcd.cpp" />
     <ClCompile Include="examples\example007_random_generator.cpp" />
@@ -214,6 +214,7 @@
     <ClCompile Include="examples\example009a_timed_mul_4_by_4.cpp" />
     <ClCompile Include="examples\example010_uint48_t.cpp" />
     <ClCompile Include="examples\example011_uint24_t.cpp" />
+    <ClCompile Include="examples\example012_rsa_crypto.cpp" />
     <ClCompile Include="test\test.cpp" />
     <ClCompile Include="test\test_uintwide_t_boost_backend.cpp" />
     <ClCompile Include="test\test_uintwide_t_edge_cases.cpp" />

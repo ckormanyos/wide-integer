@@ -32,12 +32,6 @@
     <Filter Include="Source Files\math\wide_integer">
       <UniqueIdentifier>{8460bf03-d727-4c68-8f29-e2acf7b95386}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\util">
-      <UniqueIdentifier>{02427872-b7b8-4a03-b0ae-49204c85b102}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\util\utility">
-      <UniqueIdentifier>{57015fe8-47d9-4158-9386-ab373ea546e2}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="boost\multiprecision\uintwide_t_backend.hpp">
@@ -67,17 +61,14 @@
     <ClInclude Include="math\wide_integer\uintwide_t.h">
       <Filter>Source Files\math\wide_integer</Filter>
     </ClInclude>
-    <ClInclude Include="util\utility\util_dynamic_array.h">
-      <Filter>Source Files\util\utility</Filter>
-    </ClInclude>
-    <ClInclude Include="math\wide_integer\uintwide_t_examples.h">
-      <Filter>Source Files\math\wide_integer</Filter>
-    </ClInclude>
-    <ClInclude Include="math\wide_integer\uintwide_t_test.h">
-      <Filter>Source Files\math\wide_integer</Filter>
-    </ClInclude>
     <ClInclude Include="test\test_uintwide_t_n_binary_ops_template_signed.h">
       <Filter>Source Files\test</Filter>
+    </ClInclude>
+    <ClInclude Include="test\test_uintwide_t.h">
+      <Filter>Source Files\test</Filter>
+    </ClInclude>
+    <ClInclude Include="examples\example_uintwide_t.h">
+      <Filter>Source Files\examples</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -161,6 +152,12 @@
     </ClCompile>
     <ClCompile Include="test\test_uintwide_t_int_convert.cpp">
       <Filter>Source Files\test</Filter>
+    </ClCompile>
+    <ClCompile Include="examples\example005a_pow_factors_of_p99.cpp">
+      <Filter>Source Files\examples</Filter>
+    </ClCompile>
+    <ClCompile Include="examples\example012_rsa_crypto.cpp">
+      <Filter>Source Files\examples</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

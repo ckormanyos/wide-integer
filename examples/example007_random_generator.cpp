@@ -9,8 +9,8 @@
 #include <random>
 #include <string>
 
+#include <examples/example_uintwide_t.h>
 #include <math/wide_integer/uintwide_t.h>
-#include <math/wide_integer/uintwide_t_examples.h>
 
 namespace
 {

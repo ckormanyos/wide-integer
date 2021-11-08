@@ -28,7 +28,7 @@
 #include <boost/multiprecision/cpp_int.hpp>
 
 #include <math/wide_integer/uintwide_t.h>
-#include <math/wide_integer/uintwide_t_test.h>
+#include <test/test_uintwide_t.h>
 
 namespace
 {

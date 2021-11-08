@@ -18,6 +18,7 @@
   #include <array>
   #include <cstddef>
   #include <cstdint>
+  #include <cstdlib>
   #include <cstring>
   #include <initializer_list>
   #include <iterator>
@@ -34,8 +35,6 @@
   #include <ostream>
   #include <sstream>
   #endif
-
-  #include <util/utility/util_dynamic_array.h>
 
   #if (defined(__clang__) && (__clang_major__ <= 9))
   #define WIDE_INTEGER_NUM_LIMITS_CLASS_TYPE struct
@@ -79,12 +78,354 @@
     #endif
   #endif
 
+  #if !defined(WIDE_INTEGER_DISABLE_IMPLEMENT_UTIL_DYNAMIC_ARRAY)
+
+  namespace util {
+
+  template<typename ValueType,
+            typename AllocatorType = std::allocator<ValueType>,
+            typename SizeType = std::size_t,
+            typename DiffType = std::ptrdiff_t>
+  class dynamic_array
+  {
+  public:
+    // Type definitions.
+    using allocator_type         =       AllocatorType;
+    using value_type             =       ValueType;
+    using reference              =       value_type&;
+    using const_reference        = const value_type&;
+    using iterator               =       value_type*;
+    using const_iterator         = const value_type*;
+    using pointer                =       value_type*;
+    using const_pointer          = const value_type*;
+    using size_type              =       SizeType;
+    using difference_type        =       DiffType;
+    using reverse_iterator       =       std::reverse_iterator<iterator>;
+    using const_reverse_iterator =       std::reverse_iterator<const_iterator>;
+
+    // Constructors.
+    constexpr dynamic_array() : elem_count(0U),
+                                elems     (nullptr) { }
+
+    dynamic_array(size_type count,
+                  const_reference v = value_type(),
+                  const allocator_type& a = allocator_type())
+      : elem_count(count),
+        elems     (nullptr)
+    {
+      allocator_type my_a(a);
+
+      if(elem_count > 0U)
+      {
+        elems = std::allocator_traits<allocator_type>::allocate(my_a, elem_count);
+      }
+
+      iterator it = begin();
+
+      while(it != end())
+      {
+        std::allocator_traits<AllocatorType>::construct(my_a, it, v);
+
+        ++it;
+      }
+    }
+
+    dynamic_array(const dynamic_array& other)
+      : elem_count(other.size()),
+        elems     (nullptr)
+    {
+      allocator_type my_a;
+
+      if(elem_count > 0U)
+      {
+        elems = std::allocator_traits<allocator_type>::allocate(my_a, elem_count);
+      }
+
+      std::copy(other.elems, other.elems + elem_count, elems);
+    }
+
+    template<typename input_iterator>
+    dynamic_array(input_iterator first,
+                  input_iterator last,
+                  const allocator_type& a = allocator_type())
+      : elem_count(static_cast<size_type>(std::distance(first, last))),
+        elems     (nullptr)
+    {
+      allocator_type my_a(a);
+
+      if(elem_count > 0U)
+      {
+        elems = std::allocator_traits<allocator_type>::allocate(my_a, elem_count);
+      }
+
+      std::copy(first, last, elems);
+    }
+
+    dynamic_array(std::initializer_list<value_type> lst,
+                  const allocator_type& a = allocator_type())
+      : elem_count(lst.size()),
+        elems     (nullptr)
+    {
+      allocator_type my_a(a);
+
+      if(elem_count > 0U)
+      {
+        elems = std::allocator_traits<allocator_type>::allocate(my_a, elem_count);
+      }
+
+      std::copy(lst.begin(), lst.end(), elems);
+    }
+
+    // Move constructor.
+    dynamic_array(dynamic_array&& other) : elem_count(other.elem_count),
+                                            elems     (other.elems)
+    {
+      other.elem_count = 0U;
+      other.elems      = nullptr;
+    }
+
+    // Destructor.
+    virtual ~dynamic_array()
+    {
+      pointer p = elems;
+
+      allocator_type my_a;
+
+      while(p != elems + elem_count)
+      {
+        std::allocator_traits<allocator_type>::destroy(my_a, p);
+
+        ++p;
+      }
+
+      // Destroy the elements and deallocate the range.
+      std::allocator_traits<allocator_type>::deallocate(my_a, elems, elem_count);
+    }
+
+    // Assignment operator.
+    dynamic_array& operator=(const dynamic_array& other)
+    {
+      if(this != &other)
+      {
+        std::copy(other.elems,
+                  other.elems + (std::min)(elem_count, other.elem_count),
+                  elems);
+      }
+
+      return *this;
+    }
+
+    // Move assignment operator.
+    dynamic_array& operator=(dynamic_array&& other)
+    {
+      // Destroy the elements and deallocate the range.
+      pointer p = elems;
+
+      allocator_type my_a;
+
+      while(p != elems + elem_count)
+      {
+        std::allocator_traits<allocator_type>::destroy(my_a, p);
+
+        ++p;
+      }
+
+      std::allocator_traits<allocator_type>::deallocate(my_a, elems, elem_count);
+
+      elem_count = other.elem_count;
+      elems      = other.elems;
+
+      other.elem_count = 0U;
+      other.elems      = nullptr;
+
+      return *this;
+    }
+
+    // Iterator members:
+    iterator               begin  ()       { return elems; }
+    iterator               end    ()       { return elems + elem_count; }
+    const_iterator         begin  () const { return elems; }
+    const_iterator         end    () const { return elems + elem_count; }
+    const_iterator         cbegin () const { return elems; }
+    const_iterator         cend   () const { return elems + elem_count; }
+    reverse_iterator       rbegin ()       { return reverse_iterator(elems + elem_count); }
+    reverse_iterator       rend   ()       { return reverse_iterator(elems); }
+    const_reverse_iterator rbegin () const { return const_reverse_iterator(elems + elem_count); }
+    const_reverse_iterator rend   () const { return const_reverse_iterator(elems); }
+    const_reverse_iterator crbegin() const { return const_reverse_iterator(elems + elem_count); }
+    const_reverse_iterator crend  () const { return const_reverse_iterator(elems); }
+
+    // Raw pointer access.
+    pointer       data()       { return elems; }
+    const_pointer data() const { return elems; }
+
+    // Size and capacity.
+    size_type size    () const { return  elem_count; }
+    size_type max_size() const { return  elem_count; }
+    bool      empty   () const { return (elem_count == 0U); }
+
+    // Element access members.
+    reference       operator[](const size_type i)       { return elems[i]; }
+    const_reference operator[](const size_type i) const { return elems[i]; }
+
+    reference       front()       { return elems[0U]; }
+    const_reference front() const { return elems[0U]; }
+
+    reference       back()        { return ((elem_count > size_type(0U)) ? elems[elem_count - 1U] : elems[0U]); }
+    const_reference back() const  { return ((elem_count > size_type(0U)) ? elems[elem_count - 1U] : elems[0U]); }
+
+    reference       at(const size_type i)       { return ((i < elem_count) ? elems[i] : elems[0U]); }
+    const_reference at(const size_type i) const { return ((i < elem_count) ? elems[i] : elems[0U]); }
+
+    // Element manipulation members.
+    void fill(const value_type& v)
+    {
+      std::fill_n(begin(), elem_count, v);
+    }
+
+    void swap(dynamic_array& other)
+    {
+      const size_type tmp_elem_count = elem_count;
+      const pointer   tmp_elems      = elems;
+
+      elem_count = other.elem_count;
+      elems      = other.elems;
+
+      other.elem_count = tmp_elem_count;
+      other.elems      = tmp_elems;
+    }
+
+    void swap(dynamic_array&& other)
+    {
+      const size_type tmp_elem_count = elem_count;
+      const pointer   tmp_elems      = elems;
+
+      elem_count = other.elem_count;
+      elems      = other.elems;
+
+      other.elem_count = tmp_elem_count;
+      other.elems      = tmp_elems;
+    }
+
+  protected:
+    mutable size_type elem_count;
+    pointer           elems;
+  };
+
+  template<typename ValueType, typename AllocatorType>
+  bool operator==(const dynamic_array<ValueType, AllocatorType>& lhs,
+                  const dynamic_array<ValueType, AllocatorType>& rhs)
+  {
+    bool left_and_right_are_equal;
+
+    const bool sizes_are_equal = (lhs.size() == rhs.size());
+
+    if(sizes_are_equal)
+    {
+      typedef typename dynamic_array<ValueType, AllocatorType>::size_type size_type;
+
+      const bool size_of_left_is_zero = (lhs.size() == size_type(0U));
+
+      left_and_right_are_equal =
+        (size_of_left_is_zero || std::equal(lhs.cbegin(), lhs.cend(), rhs.cbegin()));
+    }
+    else
+    {
+      left_and_right_are_equal = false;
+    }
+
+    return left_and_right_are_equal;
+  }
+
+  template<typename ValueType, typename AllocatorType>
+  bool operator<(const dynamic_array<ValueType, AllocatorType>& lhs,
+                  const dynamic_array<ValueType, AllocatorType>& rhs)
+  {
+    typedef typename dynamic_array<ValueType, AllocatorType>::size_type size_type;
+
+    const bool size_of_left_is_zero = (lhs.size() == size_type(0U));
+
+    if(size_of_left_is_zero)
+    {
+      const bool size_of_right_is_zero = (rhs.size() == size_type(0U));
+
+      return (size_of_right_is_zero ? false : true);
+    }
+    else
+    {
+      if(size_of_left_is_zero)
+      {
+        const bool size_of_right_is_zero = (rhs.size() == size_type(0U));
+
+        return (size_of_right_is_zero == false);
+      }
+      else
+      {
+        const size_type count = (std::min)(lhs.size(), rhs.size());
+
+        return std::lexicographical_compare(lhs.cbegin(),
+                                            lhs.cbegin() + count,
+                                            rhs.cbegin(),
+                                            rhs.cbegin() + count);
+      }
+    }
+  }
+
+  template<typename ValueType, typename AllocatorType>
+  bool operator!=(const dynamic_array<ValueType, AllocatorType>& lhs,
+                  const dynamic_array<ValueType, AllocatorType>& rhs)
+  {
+    return ((lhs == rhs) == false);
+  }
+
+  template<typename ValueType, typename AllocatorType>
+  bool operator>(const dynamic_array<ValueType, AllocatorType>& lhs,
+                  const dynamic_array<ValueType, AllocatorType>& rhs)
+  {
+    return (rhs < lhs);
+  }
+
+  template<typename ValueType, typename AllocatorType>
+  bool operator>=(const dynamic_array<ValueType, AllocatorType>& lhs,
+                  const dynamic_array<ValueType, AllocatorType>& rhs)
+  {
+    return ((lhs < rhs) == false);
+  }
+
+  template<typename ValueType, typename AllocatorType>
+  bool operator<=(const dynamic_array<ValueType, AllocatorType>& lhs,
+                  const dynamic_array<ValueType, AllocatorType>& rhs)
+  {
+    return ((rhs < lhs) == false);
+  }
+
+  template<typename ValueType, typename AllocatorType>
+  void swap(dynamic_array<ValueType, AllocatorType>& x,
+            dynamic_array<ValueType, AllocatorType>& y)
+  {
+    x.swap(y);
+  }
+
+  }
+
+  #else
+
+  #include <util/utility/util_dynamic_array.h>
+
+  #endif
+
   namespace math { namespace wide_integer {
 
   namespace detail {
 
+  using util::dynamic_array;
+
   using size_t    = std::uint32_t;
   using ptrdiff_t = std::int32_t;
+
+  static_assert((  (std::numeric_limits<size_t>::digits        >= 16)
+                && (std::numeric_limits<ptrdiff_t>::digits + 1 >= 16)),
+                "Error: size type and pointer difference type must be at least 16 bits in width (or wider)");
 
   template<const size_t Width2> struct verify_power_of_two
   {
@@ -312,6 +653,12 @@
            typename LimbType,
            typename AllocatorType,
            const bool IsSigned>
+  constexpr uintwide_t<Width2, LimbType, AllocatorType, IsSigned> abs(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& x);
+
+  template<const size_t Width2,
+           typename LimbType,
+           typename AllocatorType,
+           const bool IsSigned>
   WIDE_INTEGER_CONSTEXPR uintwide_t<Width2, LimbType, AllocatorType, IsSigned> sqrt(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& m);
 
   template<const size_t Width2,
@@ -353,9 +700,21 @@
                                                                                    const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& b);
 
   template<typename UnsignedShortType>
-  WIDE_INTEGER_CONSTEXPR typename std::enable_if<(   (std::is_integral   <UnsignedShortType>::value == true)
-                                                  && (std::is_unsigned   <UnsignedShortType>::value == true)), UnsignedShortType>::type
+  WIDE_INTEGER_CONSTEXPR typename std::enable_if<(   (std::is_integral<UnsignedShortType>::value == true)
+                                                  && (std::is_unsigned<UnsignedShortType>::value == true)), UnsignedShortType>::type
   gcd(const UnsignedShortType& u, const UnsignedShortType& v);
+
+  template<const size_t Width2,
+           typename LimbType,
+           typename AllocatorType,
+           const bool IsSigned>
+  WIDE_INTEGER_CONSTEXPR uintwide_t<Width2, LimbType, AllocatorType, IsSigned> lcm(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& a,
+                                                                                   const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& b);
+
+  template<typename UnsignedShortType>
+  WIDE_INTEGER_CONSTEXPR typename std::enable_if<(   (std::is_integral<UnsignedShortType>::value == true)
+                                                  && (std::is_unsigned<UnsignedShortType>::value == true)), UnsignedShortType>::type
+  lcm(const UnsignedShortType& a, const UnsignedShortType& b);
 
   template<const size_t Width2,
            typename LimbType = std::uint32_t,
@@ -411,10 +770,10 @@
   template<typename MyType,
            const size_t MySize,
            typename MyAlloc>
-  class fixed_dynamic_array final : public util::dynamic_array<MyType, MyAlloc, size_t, ptrdiff_t>
+  class fixed_dynamic_array final : public detail::dynamic_array<MyType, MyAlloc, size_t, ptrdiff_t>
   {
   private:
-    using base_class_type = util::dynamic_array<MyType, MyAlloc, size_t, ptrdiff_t>;
+    using base_class_type = detail::dynamic_array<MyType, MyAlloc, size_t, ptrdiff_t>;
 
   public:
     static constexpr typename base_class_type::size_type static_size() { return MySize; }
@@ -516,6 +875,9 @@
 
     WIDE_INTEGER_CONSTEXPR fixed_static_array& operator=(const fixed_static_array& other_array) = default;
     WIDE_INTEGER_CONSTEXPR fixed_static_array& operator=(fixed_static_array&& other_array) = default;
+
+    WIDE_INTEGER_CONSTEXPR typename base_class_type::reference       operator[](const size_type i)       { return base_class_type::operator[](static_cast<typename base_class_type::size_type>(i)); }
+    WIDE_INTEGER_CONSTEXPR typename base_class_type::const_reference operator[](const size_type i) const { return base_class_type::operator[](static_cast<typename base_class_type::size_type>(i)); }
   };
 
   template<const size_t Width2> struct verify_power_of_two_times_granularity_one_sixty_fourth
@@ -1512,7 +1874,7 @@
 
         const limb_type mask(std::uint8_t(0x7U));
 
-        char str_temp[wr_string_max_buffer_size_oct];
+        char str_temp[std::size_t(wr_string_max_buffer_size_oct)];
 
         unsinged_fast_type pos = (sizeof(str_temp) - 1U);
 
@@ -1599,7 +1961,7 @@
           t.negate();
         }
 
-        char str_temp[wr_string_max_buffer_size_dec];
+        char str_temp[std::size_t(wr_string_max_buffer_size_dec)];
 
         unsinged_fast_type pos = (sizeof(str_temp) - 1U);
 
@@ -1658,7 +2020,7 @@
 
         const limb_type mask(std::uint8_t(0xFU));
 
-        char str_temp[wr_string_max_buffer_size_hex];
+        char str_temp[std::size_t(wr_string_max_buffer_size_hex)];
 
         unsinged_fast_type pos = (sizeof(str_temp) - 1U);
 
@@ -2750,7 +3112,7 @@
         // R.P. Brent and P. Zimmermann, "Modern Computer Arithmetic",
         // Cambridge University Press (2011).
 
-        // TBD: Toom-Cook3
+        // TBD: Toom-Cook3 is not yet implemented. Use Karatsuba at the moment.
         eval_multiply_kara_n_by_n_to_2n(r, u, v, n, t);
       }
     }
@@ -2771,7 +3133,7 @@
       }
       else
       {
-        // TBD: Toom-Cook4
+        // TBD: Toom-Cook4 is not yet implemented. Use Karatsuba at the moment.
         eval_multiply_kara_n_by_n_to_2n(r, u, v, n, t);
       }
     }
@@ -3229,10 +3591,9 @@
   using uint4096_t  = uintwide_t< 4096U, std::uint32_t>;
   using uint8192_t  = uintwide_t< 8192U, std::uint32_t>;
   using uint16384_t = uintwide_t<16384U, std::uint32_t>;
-  using uint32768_t = uintwide_t<32768U, std::uint32_t>;
 
-  #if defined(__GNUC__) && defined(__AVR__)
-  #else
+
+  #if !defined(WIDE_INTEGER_DISABLE_TRIVIAL_COPY_AND_STD_LAYOUT_CHECKS)
   static_assert(std::is_trivially_copyable<uint64_t   >::value && std::is_standard_layout<uint64_t   >::value, "uintwide_t must be trivially copyable with standard layout.");
   static_assert(std::is_trivially_copyable<uint128_t  >::value && std::is_standard_layout<uint128_t  >::value, "uintwide_t must be trivially copyable with standard layout.");
   static_assert(std::is_trivially_copyable<uint256_t  >::value && std::is_standard_layout<uint256_t  >::value, "uintwide_t must be trivially copyable with standard layout.");
@@ -3242,7 +3603,6 @@
   static_assert(std::is_trivially_copyable<uint4096_t >::value && std::is_standard_layout<uint4096_t >::value, "uintwide_t must be trivially copyable with standard layout.");
   static_assert(std::is_trivially_copyable<uint8192_t >::value && std::is_standard_layout<uint8192_t >::value, "uintwide_t must be trivially copyable with standard layout.");
   static_assert(std::is_trivially_copyable<uint16384_t>::value && std::is_standard_layout<uint16384_t>::value, "uintwide_t must be trivially copyable with standard layout.");
-  static_assert(std::is_trivially_copyable<uint32768_t>::value && std::is_standard_layout<uint32768_t>::value, "uintwide_t must be trivially copyable with standard layout.");
   #endif
 
   using  int64_t    = uintwide_t<   64U, std::uint16_t, void, true>;
@@ -3254,10 +3614,8 @@
   using  int4096_t  = uintwide_t< 4096U, std::uint32_t, void, true>;
   using  int8192_t  = uintwide_t< 8192U, std::uint32_t, void, true>;
   using  int16384_t = uintwide_t<16384U, std::uint32_t, void, true>;
-  using  int32768_t = uintwide_t<32768U, std::uint32_t, void, true>;
 
-  #if defined(__GNUC__) && defined(__AVR__)
-  #else
+  #if !defined(WIDE_INTEGER_DISABLE_TRIVIAL_COPY_AND_STD_LAYOUT_CHECKS)
   static_assert(std::is_trivially_copyable<int64_t   >::value && std::is_standard_layout<int64_t   >::value, "uintwide_t must be trivially copyable with standard layout.");
   static_assert(std::is_trivially_copyable<int128_t  >::value && std::is_standard_layout<int128_t  >::value, "uintwide_t must be trivially copyable with standard layout.");
   static_assert(std::is_trivially_copyable<int256_t  >::value && std::is_standard_layout<int256_t  >::value, "uintwide_t must be trivially copyable with standard layout.");
@@ -3267,7 +3625,6 @@
   static_assert(std::is_trivially_copyable<int4096_t >::value && std::is_standard_layout<int4096_t >::value, "uintwide_t must be trivially copyable with standard layout.");
   static_assert(std::is_trivially_copyable<int8192_t >::value && std::is_standard_layout<int8192_t >::value, "uintwide_t must be trivially copyable with standard layout.");
   static_assert(std::is_trivially_copyable<int16384_t>::value && std::is_standard_layout<int16384_t>::value, "uintwide_t must be trivially copyable with standard layout.");
-  static_assert(std::is_trivially_copyable<int32768_t>::value && std::is_standard_layout<int32768_t>::value, "uintwide_t must be trivially copyable with standard layout.");
   #endif
 
   // Insert a base class for numeric_limits<> support.
@@ -3343,26 +3700,25 @@
   template<typename IntegralType, const size_t Width2, typename LimbType, typename AllocatorType, const bool IsSigned> constexpr typename std::enable_if<std::is_integral<IntegralType>::value == true, uintwide_t<Width2, LimbType, AllocatorType, IsSigned>>::type operator/(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& u, const IntegralType& v) { return uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(u).operator/=(uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(v)); }
 
   template<typename IntegralType, const size_t Width2, typename LimbType, typename AllocatorType, const bool IsSigned>
-  constexpr typename std::enable_if<(   (std::is_integral   <IntegralType>::value == true)
-                                     && (std::is_unsigned   <IntegralType>::value == false)), uintwide_t<Width2, LimbType, AllocatorType, IsSigned>>::type
+  constexpr typename std::enable_if<(   (std::is_integral<IntegralType>::value == true)
+                                     && (std::is_unsigned<IntegralType>::value == false)), uintwide_t<Width2, LimbType, AllocatorType, IsSigned>>::type
   operator%(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& u, const IntegralType& v) { return uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(u).operator%=(uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(v)); }
 
   template<typename IntegralType, const size_t Width2, typename LimbType, typename AllocatorType, const bool IsSigned>
-  WIDE_INTEGER_CONSTEXPR typename std::enable_if<(   (std::is_integral   <IntegralType>::value == true)
-                                                  && (std::is_unsigned   <IntegralType>::value == true)
+  WIDE_INTEGER_CONSTEXPR typename std::enable_if<(   (std::is_integral<IntegralType>::value == true)
+                                                  && (std::is_unsigned<IntegralType>::value == true)
                                                   && (std::numeric_limits<IntegralType>::digits <= std::numeric_limits<LimbType>::digits)), typename uintwide_t<Width2, LimbType, AllocatorType, IsSigned>::limb_type>::type
   operator%(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& u, const IntegralType& v)
   {
-    const bool u_is_neg = uintwide_t<Width2, LimbType, AllocatorType, IsSigned>::is_neg(u);
+    using local_wide_integer_type = uintwide_t<Width2, LimbType, AllocatorType, IsSigned>;
 
-    uintwide_t<Width2, LimbType, AllocatorType, IsSigned> remainder;
+    const bool u_is_neg = local_wide_integer_type::is_neg(u);
 
-    uintwide_t<Width2, LimbType, AllocatorType, IsSigned>
-    (
-      (u_is_neg == false) ? u : -u
-    ).eval_divide_by_single_limb(v, 0U, &remainder);
+    local_wide_integer_type remainder;
 
-    using local_limb_type = typename uintwide_t<Width2, LimbType, AllocatorType, IsSigned>::limb_type;
+    local_wide_integer_type((u_is_neg == false) ? u : -u).eval_divide_by_single_limb(v, 0U, &remainder);
+
+    using local_limb_type = typename local_wide_integer_type::limb_type;
 
     local_limb_type u_rem = (local_limb_type) remainder;
 
@@ -3370,8 +3726,8 @@
   }
 
   template<typename IntegralType, const size_t Width2, typename LimbType, typename AllocatorType, const bool IsSigned>
-  constexpr typename std::enable_if<(   (std::is_integral   <IntegralType>::value == true)
-                                     && (std::is_unsigned   <IntegralType>::value == true)
+  constexpr typename std::enable_if<(   (std::is_integral<IntegralType>::value == true)
+                                     && (std::is_unsigned<IntegralType>::value == true)
                                      && (std::numeric_limits<IntegralType>::digits > std::numeric_limits<LimbType>::digits)), uintwide_t<Width2, LimbType, AllocatorType, IsSigned>>::type
   operator%(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& u, const IntegralType& v) { return uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(u).operator%=(uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(v)); }
 
@@ -3816,6 +4172,17 @@
            typename LimbType,
            typename AllocatorType,
            const bool IsSigned>
+  constexpr uintwide_t<Width2, LimbType, AllocatorType, IsSigned> abs(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& x)
+  {
+    using local_wide_integer_type = uintwide_t<Width2, LimbType, AllocatorType, IsSigned>;
+
+    return ((local_wide_integer_type::is_neg(x) == false) ? x : -x);
+  }
+
+  template<const size_t Width2,
+           typename LimbType,
+           typename AllocatorType,
+           const bool IsSigned>
   WIDE_INTEGER_CONSTEXPR uintwide_t<Width2, LimbType, AllocatorType, IsSigned> sqrt(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& m)
   {
     // Calculate the square root.
@@ -4013,31 +4380,30 @@
     return s;
   }
 
-  template<typename OtherUnsignedIntegralTypeP,
+  template<typename OtherIntegralTypeP,
            const size_t Width2,
            typename LimbType,
            typename AllocatorType,
            const bool IsSigned>
   WIDE_INTEGER_CONSTEXPR uintwide_t<Width2, LimbType, AllocatorType, IsSigned> pow(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& b,
-                                                                                   const OtherUnsignedIntegralTypeP&    p)
+                                                                                   const OtherIntegralTypeP&    p)
   {
     // Calculate (b ^ p).
-
     using local_wide_integer_type = uintwide_t<Width2, LimbType, AllocatorType, IsSigned>;
     using local_limb_type         = typename local_wide_integer_type::limb_type;
 
     local_wide_integer_type result;
-    local_limb_type         p0(p);
+    local_limb_type         p0(static_cast<local_limb_type>(p));
 
-    if((p0 == 0U) && (p == 0U))
+    if((p0 == 0U) && (p == OtherIntegralTypeP(0)))
     {
       result = local_wide_integer_type(std::uint8_t(1U));
     }
-    else if((p0 == 1U) && (p == 1U))
+    else if((p0 == 1U) && (p == OtherIntegralTypeP(1)))
     {
       result = b;
     }
-    else if((p0 == 2U) && (p == 2U))
+    else if((p0 == 2U) && (p == OtherIntegralTypeP(2)))
     {
       result  = b;
       result *= b;
@@ -4065,15 +4431,15 @@
     return result;
   }
 
-  template<typename OtherUnsignedIntegralTypeP,
-           typename OtherUnsignedIntegralTypeM,
+  template<typename OtherIntegralTypeP,
+           typename OtherIntegralTypeM,
            const size_t Width2,
            typename LimbType,
            typename AllocatorType,
            const bool IsSigned>
   WIDE_INTEGER_CONSTEXPR uintwide_t<Width2, LimbType, AllocatorType, IsSigned> powm(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& b,
-                                                                                     const OtherUnsignedIntegralTypeP& p,
-                                                                                     const OtherUnsignedIntegralTypeM& m)
+                                                                                    const OtherIntegralTypeP& p,
+                                                                                    const OtherIntegralTypeM& m)
   {
     // Calculate (b ^ p) % m.
 
@@ -4084,17 +4450,17 @@
           local_normal_width_type result;
           local_double_width_type y      (b);
     const local_double_width_type m_local(m);
-          local_limb_type         p0     (p);
+          local_limb_type         p0     (static_cast<local_limb_type>(p));
 
-    if((p0 == 0U) && (p == 0U))
+    if((p0 == 0U) && (p == OtherIntegralTypeP(0)))
     {
       result = local_normal_width_type((m != 1U) ? std::uint8_t(1U) : std::uint8_t(0U));
     }
-    else if((p0 == 1U) && (p == 1U))
+    else if((p0 == 1U) && (p == OtherIntegralTypeP(1)))
     {
       result = b % m;
     }
-    else if((p0 == 2U) && (p == 2U))
+    else if((p0 == 2U) && (p == OtherIntegralTypeP(2)))
     {
       y *= y;
       y %= m_local;
@@ -4103,8 +4469,8 @@
     }
     else
     {
-      local_double_width_type    x      (std::uint8_t(1U));
-      OtherUnsignedIntegralTypeP p_local(p);
+      local_double_width_type x      (std::uint8_t(1U));
+      OtherIntegralTypeP      p_local(p);
 
       while(((p0 = local_limb_type(p_local)) != 0U) || (p_local != 0U))
       {
@@ -4329,6 +4695,46 @@
     return result;
   }
 
+  namespace detail {
+
+  template<typename IntegerType>
+  WIDE_INTEGER_CONSTEXPR IntegerType lcm_impl(const IntegerType& a, const IntegerType& b)
+  {
+    using local_integer_type = IntegerType;
+
+    using std::abs;
+
+    const local_integer_type ap = abs(a);
+    const local_integer_type bp = abs(b);
+
+    const bool a_is_greater_than_b = (ap > bp);
+
+    const local_integer_type gcd_of_ab = gcd(a, b);
+
+    return (a_is_greater_than_b ? ap * (bp / gcd_of_ab)
+                                : bp * (ap / gcd_of_ab));
+  }
+
+  }
+
+  template<const size_t Width2,
+           typename LimbType,
+           typename AllocatorType,
+           const bool IsSigned>
+  WIDE_INTEGER_CONSTEXPR uintwide_t<Width2, LimbType, AllocatorType, IsSigned> lcm(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& a,
+                                                                                   const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& b)
+  {
+    return detail::lcm_impl(a, b);
+  }
+
+  template<typename UnsignedShortType>
+  WIDE_INTEGER_CONSTEXPR typename std::enable_if<(   (std::is_integral<UnsignedShortType>::value == true)
+                                                  && (std::is_unsigned<UnsignedShortType>::value == true)), UnsignedShortType>::type
+  lcm(const UnsignedShortType& a, const UnsignedShortType& b)
+  {
+    return detail::lcm_impl(a, b);
+  }
+
   template<const size_t Width2,
            typename LimbType,
            typename AllocatorType,
@@ -4341,10 +4747,10 @@
     struct param_type
     {
     public:
-      param_type(const result_type& a = (std::numeric_limits<result_type>::min)(),
-                 const result_type& b = (std::numeric_limits<result_type>::max)())
-        : param_a(a),
-          param_b(b) { }
+      param_type(const result_type& p_a = (std::numeric_limits<result_type>::min)(),
+                 const result_type& p_b = (std::numeric_limits<result_type>::max)())
+        : param_a(p_a),
+          param_b(p_b) { }
 
       ~param_type() = default;
 
@@ -4365,8 +4771,8 @@
       constexpr result_type get_a() const { return param_a; }
       constexpr result_type get_b() const { return param_b; }
 
-      void set_a(const result_type& a) { param_a = a; }
-      void set_b(const result_type& b) { param_b = b; }
+      void set_a(const result_type& p_a) { param_a = p_a; }
+      void set_b(const result_type& p_b) { param_b = p_b; }
 
     private:
       result_type param_a;
@@ -4389,9 +4795,9 @@
 
     uniform_int_distribution() : my_params() { }
 
-    explicit uniform_int_distribution(const result_type& a,
-                                      const result_type& b = (std::numeric_limits<result_type>::max)())
-        : my_params(param_type(a, b)) { }
+    explicit uniform_int_distribution(const result_type& p_a,
+                                      const result_type& p_b = (std::numeric_limits<result_type>::max)())
+        : my_params(param_type(p_a, p_b)) { }
 
     explicit uniform_int_distribution(const param_type& other_params)
       : my_params(other_params) { }

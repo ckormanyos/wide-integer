@@ -8,11 +8,97 @@
 #include <sstream>
 
 #include <math/wide_integer/uintwide_t.h>
-#include <math/wide_integer/uintwide_t_test.h>
+#include <test/test_uintwide_t.h>
+
+namespace local
+{
+  template<typename UnknownIntegerType>
+  bool test_uintwide_t_spot_values_from_pull_request_130()
+  {
+    // See also https://github.com/ckormanyos/wide-integer/pull/130
+
+    using local_unknown_integer_type = UnknownIntegerType;
+
+    using limits = std::numeric_limits<local_unknown_integer_type>;
+
+    auto expected
+    {
+      -1 - limits::max()
+    };
+
+    auto actual
+    {
+      limits::lowest()
+    };
+
+    const bool b_ok = (expected == actual);
+
+    return b_ok;
+  }
+}
 
 bool math::wide_integer::test_uintwide_t_spot_values()
 {
   bool result_is_ok = true;
+
+  {
+    // See also https://github.com/ckormanyos/wide-integer/pull/130
+
+    // The exact issue motivating this PR turned out to be
+    // an incorect report. The tests, however, are useful
+    // and these have been integrated into _spot_values().
+
+    {
+      using type = math::wide_integer::uintwide_t<64, std::uint32_t, void, true>;
+
+      result_is_ok &= local::test_uintwide_t_spot_values_from_pull_request_130<type>();
+    }
+
+    {
+      using type = math::wide_integer::uintwide_t<64, std::uint8_t, void, true>;
+
+      result_is_ok &= local::test_uintwide_t_spot_values_from_pull_request_130<type>();
+    }
+
+    {
+      using type = math::wide_integer::uintwide_t<256, std::uint32_t, void, true>;
+
+      result_is_ok &= local::test_uintwide_t_spot_values_from_pull_request_130<type>();
+    }
+
+    {
+      using type = std::int32_t;
+
+      result_is_ok &= local::test_uintwide_t_spot_values_from_pull_request_130<type>();
+    }
+
+    {
+      using type = std::int64_t;
+
+      result_is_ok &= local::test_uintwide_t_spot_values_from_pull_request_130<type>();
+    }
+  }
+
+  {
+    using uint256_t = math::wide_integer::uintwide_t<256U>;
+
+    // FromDigits["C9DD3EA24800F584CB28C25CC0E6FF1",16]
+    // 16770224695321632575655872732632870897
+    const uint256_t a("0xC9DD3EA24800F584CB28C25CC0E6FF1");
+
+    // FromDigits["1E934A2EEA60A2AD14ECCAE7AD82C069",16]
+    // 40641612127094559121321599356729737321
+    const uint256_t b("0x1E934A2EEA60A2AD14ECCAE7AD82C069");
+
+    const uint256_t lm = lcm(a - 1U, b - 1U);
+    const uint256_t gd = gcd(a - 1U, b - 1U);
+
+    // LCM[16770224695321632575655872732632870897 - 1, 40641612127094559121321599356729737321 - 1]
+    result_is_ok &= (lm == uint256_t("28398706972978513348490390087175345493497748446743697820448222113648043280"));
+
+    // GCD[16770224695321632575655872732632870897 - 1, 40641612127094559121321599356729737321 - 1]
+    result_is_ok &= (gd == 24U);
+  }
 
   {
     // See also https://github.com/ckormanyos/wide-integer/issues/111

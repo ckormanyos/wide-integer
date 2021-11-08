@@ -22,7 +22,7 @@
 #include <boost/multiprecision/cpp_int.hpp>
 #include <boost/multiprecision/uintwide_t_backend.hpp>
 
-#include <math/wide_integer/uintwide_t_test.h>
+#include <test/test_uintwide_t.h>
 
 typedef boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<1024U>,
                                       boost::multiprecision::et_off>
