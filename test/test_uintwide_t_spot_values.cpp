@@ -42,6 +42,16 @@ bool math::wide_integer::test_uintwide_t_spot_values()
   bool result_is_ok = true;
 
   {
+    // See also https://github.com/ckormanyos/wide-integer/pull/134
+
+    #if (defined(__cplusplus) && (__cplusplus >= 201402L))
+      #if defined(__clang__) && (__clang_major__ > 10)
+      static_assert(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST, 1);
+      #endif
+    #endif
+  }
+
+  {
     // See also https://github.com/ckormanyos/wide-integer/pull/130
 
     // The exact issue motivating this PR turned out to be
