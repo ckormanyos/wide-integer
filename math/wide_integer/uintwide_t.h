@@ -68,7 +68,7 @@
         #define WIDE_INTEGER_CONSTEXPR constexpr
         #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 1
         #endif
-      #elif defined(__clang__) && (__clang_major__ > 11)
+      #elif (defined(__clang__) && (__clang_major__ > 10)) && (defined(__cplusplus) && (__cplusplus > 201703L))
         #define WIDE_INTEGER_CONSTEXPR constexpr
         #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 1
       #else
@@ -1399,7 +1399,6 @@
     explicit constexpr operator unsigned long     () const { return ((is_neg(*this) == false) ? extract_builtin_integral_type<unsigned long>     () : detail::negate(uintwide_t(-*this).extract_builtin_integral_type<unsigned long>     ())); }
     explicit constexpr operator signed long long  () const { return ((is_neg(*this) == false) ? extract_builtin_integral_type<signed long long>  () : detail::negate(uintwide_t(-*this).extract_builtin_integral_type<signed long long>  ())); }
     explicit constexpr operator unsigned long long() const { return ((is_neg(*this) == false) ? extract_builtin_integral_type<unsigned long long>() : detail::negate(uintwide_t(-*this).extract_builtin_integral_type<unsigned long long>())); }
-
 
     // Implement the cast operator that casts to the double-width type.
     template<typename UnknownUnsignedWideIntegralType,
