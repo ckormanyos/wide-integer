@@ -69,8 +69,13 @@
         #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 1
         #endif
       #elif (defined(__clang__) && (__clang_major__ > 10)) && (defined(__cplusplus) && (__cplusplus > 201703L))
+        #if defined(__x86_64__)
         #define WIDE_INTEGER_CONSTEXPR constexpr
         #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 1
+        #else
+        #define WIDE_INTEGER_CONSTEXPR
+        #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 0
+        #endif
       #else
       #define WIDE_INTEGER_CONSTEXPR
       #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 0
@@ -1306,6 +1311,10 @@
 
     // Constructor from the another type having a different width but the same limb type.
     // This constructor is explicit because it is a non-trivial conversion.
+
+    // TBD: The keyword "explicit" is missing and the code at the moment does not agree with the comment.
+    // TBD: Figure out if the keyword "explicit" is needed/wanted or not and correct code/comment to agree
+    // with each other.
     template<const size_t OtherWidth2>
     WIDE_INTEGER_CONSTEXPR uintwide_t(const uintwide_t<OtherWidth2, LimbType, AllocatorType, IsSigned>& v)
     {
