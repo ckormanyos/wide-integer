@@ -44,7 +44,7 @@ bool math::wide_integer::test_uintwide_t_spot_values()
   {
     // See also https://github.com/ckormanyos/wide-integer/pull/134
 
-    #if (defined(__clang__) && (__clang_major__ > 10)) && (defined(__cplusplus) && (__cplusplus > 201703L))
+    #if (defined(__clang__) && (__clang_major__ >= 10)) && (defined(__cplusplus) && (__cplusplus > 201703L))
       #if defined(__x86_64__)
       static_assert(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST == 1, "Error: clang constexpr is not properly configured");
       #endif
