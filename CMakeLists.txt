@@ -14,7 +14,7 @@ add_library(WideInteger INTERFACE)
 target_compile_features(WideInteger INTERFACE cxx_std_11)
 
 target_include_directories(
-  WideInteger INTERFACE
+  WideInteger SYSTEM INTERFACE
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>
   $<INSTALL_INTERFACE:include>)
 
