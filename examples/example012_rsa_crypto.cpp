@@ -10,7 +10,6 @@
 
 #include <examples/example_uintwide_t.h>
 #include <math/wide_integer/uintwide_t.h>
-//#include <util/utility/util_dynamic_array.h>
 
 namespace local_rsa
 {
