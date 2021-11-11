@@ -22,9 +22,6 @@ install(TARGETS WideInteger EXPORT WideIntegerTargets)
 install(
   FILES math/wide_integer/uintwide_t.h
   DESTINATION include/math/wide_integer/)
-install(
-  FILES util/utility/util_dynamic_array.h
-  DESTINATION include/util/utility/)
 install(EXPORT WideIntegerTargets
   FILE WideIntegerConfig.cmake
   NAMESPACE WideInteger::
