@@ -311,12 +311,6 @@ and all available functions implementing construction-from,
 cast-to, binary arithmetic with built-in floating-point types
 are enabled.
 
-When working on high-performance systems having `unsigned __int128`
-(an extended-width, yet non-standard data type),
-a 64-bit limb of type `uint64_t` can be used.
-Enable the 64-bit limb type on such systems
-with the compiler switch:
-
 ```C
 #define WIDE_INTEGER_DISABLE_IMPLEMENT_UTIL_DYNAMIC_ARRAY
 ```
@@ -334,6 +328,12 @@ does actually provide its own local implementation
 of the `util::dynamic_array` template class.
 Otherwise, the header file `<util/utility/util_dynamic_array.h>`
 must be found in the include path.
+
+When working on high-performance systems having `unsigned __int128`
+(an extended-width, yet non-standard data type),
+a 64-bit limb of type `uint64_t` can be used.
+Enable the 64-bit limb type on such systems
+with the compiler switch:
 
 ```C
 #define WIDE_INTEGER_HAS_LIMB_TYPE_UINT64
