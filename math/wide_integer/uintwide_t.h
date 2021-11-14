@@ -2416,9 +2416,9 @@
     template<typename ResultIterator,
              typename InputIteratorLeft,
              typename InputIteratorRight>
-    static WIDE_INTEGER_CONSTEXPR limb_type eval_add_n(ResultIterator           r,
-                                                       InputIteratorLeft        u,
-                                                       InputIteratorRight       v,
+    static WIDE_INTEGER_CONSTEXPR limb_type eval_add_n(      ResultIterator     r,
+                                                             InputIteratorLeft  u,
+                                                             InputIteratorRight v,
                                                        const unsinged_fast_type count,
                                                        const limb_type          carry_in = limb_type(0U))
     {
@@ -2453,37 +2453,72 @@
       return static_cast<limb_type>(carry_out);
     }
 
-    static WIDE_INTEGER_CONSTEXPR bool eval_subtract_n(      limb_type*         r,
-                                                       const limb_type*         u,
-                                                       const limb_type*         v,
+    template<typename ResultIterator,
+             typename InputIteratorLeft,
+             typename InputIteratorRight>
+    static WIDE_INTEGER_CONSTEXPR bool eval_subtract_n(      ResultIterator     r,
+                                                             InputIteratorLeft  u,
+                                                             InputIteratorRight v,
                                                        const unsinged_fast_type count,
                                                        const bool               has_borrow_in = false)
     {
       std::uint_fast8_t has_borrow_out = (has_borrow_in ? 1U : 0U);
 
+      static_assert
+      (
+           (std::numeric_limits<typename std::iterator_traits<ResultIterator>::value_type>::digits == std::numeric_limits<typename std::iterator_traits<InputIteratorLeft>::value_type>::digits)
+        && (std::numeric_limits<typename std::iterator_traits<ResultIterator>::value_type>::digits == std::numeric_limits<typename std::iterator_traits<InputIteratorRight>::value_type>::digits),
+        "Error: Internals require same widths for left-right-result limb_types at the moment"
+      );
+
+      using local_limb_type = typename std::iterator_traits<ResultIterator>::value_type;
+
+      using local_double_limb_type =
+        typename detail::uint_type_helper<size_t(std::numeric_limits<local_limb_type>::digits * 2)>::exact_unsigned_type;
+
+      using result_difference_type = typename std::iterator_traits<ResultIterator>::difference_type;
+      using left_difference_type   = typename std::iterator_traits<InputIteratorLeft>::difference_type;
+      using right_difference_type  = typename std::iterator_traits<InputIteratorRight>::difference_type;
+
       for(unsinged_fast_type i = 0U; i < count; ++i)
       {
-        const double_limb_type uv_as_ularge = double_limb_type(double_limb_type(double_limb_type(u[i]) - v[i]) - has_borrow_out);
+        const local_double_limb_type uv_as_ularge = local_double_limb_type(local_double_limb_type(local_double_limb_type(*(u + left_difference_type(i))) - *(v + right_difference_type(i))) - has_borrow_out);
 
-        has_borrow_out = (detail::make_hi<limb_type>(uv_as_ularge) != limb_type(0U)) ? 1U : 0U;
+        has_borrow_out = (detail::make_hi<local_limb_type>(uv_as_ularge) != local_limb_type(0U)) ? 1U : 0U;
 
-        r[i] = limb_type(uv_as_ularge);
+        *(r + result_difference_type(i)) = local_limb_type(uv_as_ularge);
       }
 
       return (has_borrow_out != 0U);
     }
 
-    template<const size_t RePhraseWidth2 = Width2,
+    template<typename ResultIterator,
+             typename InputIteratorLeft,
+             typename InputIteratorRight,
+             const size_t RePhraseWidth2 = Width2,
              typename std::enable_if<(uintwide_t<RePhraseWidth2, LimbType, AllocatorType, IsSigned>::number_of_limbs == 4U)>::type const* = nullptr>
-    static WIDE_INTEGER_CONSTEXPR void eval_multiply_n_by_n_to_lo_part(      LimbType*          r,
-                                                                       const LimbType*          a,
-                                                                       const LimbType*          b,
+    static WIDE_INTEGER_CONSTEXPR void eval_multiply_n_by_n_to_lo_part(      ResultIterator     r,
+                                                                             InputIteratorLeft  a,
+                                                                             InputIteratorRight b,
                                                                        const unsinged_fast_type count)
     {
       static_cast<void>(count);
 
-      using local_limb_type        = typename uintwide_t<RePhraseWidth2, LimbType, AllocatorType, IsSigned>::limb_type;
-      using local_double_limb_type = typename uintwide_t<RePhraseWidth2, LimbType, AllocatorType, IsSigned>::double_limb_type;
+      static_assert
+      (
+           (std::numeric_limits<typename std::iterator_traits<ResultIterator>::value_type>::digits == std::numeric_limits<typename std::iterator_traits<InputIteratorLeft>::value_type>::digits)
+        && (std::numeric_limits<typename std::iterator_traits<ResultIterator>::value_type>::digits == std::numeric_limits<typename std::iterator_traits<InputIteratorRight>::value_type>::digits),
+        "Error: Internals require same widths for left-right-result limb_types at the moment"
+      );
+
+      using local_limb_type = typename std::iterator_traits<ResultIterator>::value_type;
+
+      using local_double_limb_type =
+        typename detail::uint_type_helper<size_t(std::numeric_limits<local_limb_type>::digits * 2)>::exact_unsigned_type;
+
+      using result_difference_type = typename std::iterator_traits<ResultIterator>::difference_type;
+      using left_difference_type   = typename std::iterator_traits<InputIteratorLeft>::difference_type;
+      using right_difference_type  = typename std::iterator_traits<InputIteratorRight>::difference_type;
 
       // The algorithm has been derived from the polynomial multiplication.
       // After the multiplication terms of equal order are grouped
@@ -2509,17 +2544,17 @@
       local_double_limb_type r1;
       local_double_limb_type r2;
 
-      const local_double_limb_type a0b0 = a[0U] * local_double_limb_type(b[0U]);
-      const local_double_limb_type a0b1 = a[0U] * local_double_limb_type(b[1U]);
-      const local_double_limb_type a1b0 = a[1U] * local_double_limb_type(b[0U]);
-      const local_double_limb_type a1b1 = a[1U] * local_double_limb_type(b[1U]);
+      const local_double_limb_type a0b0 = *(a + left_difference_type(0)) * local_double_limb_type(*(b + right_difference_type(0)));
+      const local_double_limb_type a0b1 = *(a + left_difference_type(0)) * local_double_limb_type(*(b + right_difference_type(1)));
+      const local_double_limb_type a1b0 = *(a + left_difference_type(1)) * local_double_limb_type(*(b + right_difference_type(0)));
+      const local_double_limb_type a1b1 = *(a + left_difference_type(1)) * local_double_limb_type(*(b + right_difference_type(1)));
 
       // One special case is considered, the case of multiplication
       // of the form BITS/2 * BITS/2 = BITS. In this case, the algorithm
       // can be significantly simplified by using only the 'lower-halves'
       // of the data.
-      if(    (a[2U] == 0U) && (b[2U] == 0U)
-          && (a[3U] == 0U) && (b[3U] == 0U))
+      if(    (*(a + left_difference_type(2)) == 0U) && (*(b + right_difference_type(2)) == 0U)
+          && (*(a + left_difference_type(3)) == 0U) && (*(b + right_difference_type(3)) == 0U))
       {
         r1    = local_double_limb_type
                 (
@@ -2536,14 +2571,15 @@
                 + detail::make_hi<local_limb_type>(a0b1)
                 + detail::make_hi<local_limb_type>(a1b0)
                 ;
-        r[3U] =   detail::make_hi<local_limb_type>(r2)
+        *(r + result_difference_type(3))
+              =   detail::make_hi<local_limb_type>(r2)
                 + detail::make_hi<local_limb_type>(a1b1)
                 ;
       }
       else
       {
-        const local_double_limb_type a0b2 = a[0U] * local_double_limb_type(b[2U]);
-        const local_double_limb_type a2b0 = a[2U] * local_double_limb_type(b[0U]);
+        const local_double_limb_type a0b2 = *(a + left_difference_type(0)) * local_double_limb_type(*(b + right_difference_type(2)));
+        const local_double_limb_type a2b0 = *(a + left_difference_type(2)) * local_double_limb_type(*(b + right_difference_type(0)));
 
         r1    = local_double_limb_type
                 (
@@ -2562,34 +2598,51 @@
                 + detail::make_hi<local_limb_type>(a1b0)
                 + detail::make_hi<local_limb_type>(a0b1)
                 ;
-        r[3U] =   detail::make_hi<local_limb_type>(r2)
-                + static_cast<local_limb_type>    (a[3U] * local_double_limb_type(b[0U]))
-                + static_cast<local_limb_type>    (a[2U] * local_double_limb_type(b[1U]))
-                + static_cast<local_limb_type>    (a[1U] * local_double_limb_type(b[2U]))
-                + static_cast<local_limb_type>    (a[0U] * local_double_limb_type(b[3U]))
+        *(r + result_difference_type(3))
+              =   detail::make_hi<local_limb_type>(r2)
+                + static_cast<local_limb_type>    (*(a + left_difference_type(3)) * local_double_limb_type(*(b + right_difference_type(0))))
+                + static_cast<local_limb_type>    (*(a + left_difference_type(2)) * local_double_limb_type(*(b + right_difference_type(1))))
+                + static_cast<local_limb_type>    (*(a + left_difference_type(1)) * local_double_limb_type(*(b + right_difference_type(2))))
+                + static_cast<local_limb_type>    (*(a + left_difference_type(0)) * local_double_limb_type(*(b + right_difference_type(3))))
                 + detail::make_hi<local_limb_type>(a2b0)
                 + detail::make_hi<local_limb_type>(a1b1)
                 + detail::make_hi<local_limb_type>(a0b2)
                 ;
       }
 
-      r[0U] = local_limb_type(a0b0);
-      r[1U] = local_limb_type(r1);
-      r[2U] = local_limb_type(r2);
+      *(r + result_difference_type(0)) = local_limb_type(a0b0);
+      *(r + result_difference_type(1)) = local_limb_type(r1);
+      *(r + result_difference_type(2)) = local_limb_type(r2);
     }
 
     #if defined(WIDE_INTEGER_HAS_MUL_8_BY_8_UNROLL)
-    template<const size_t RePhraseWidth2 = Width2,
+    template<typename ResultIterator,
+             typename InputIteratorLeft,
+             typename InputIteratorRight,
+             const size_t RePhraseWidth2 = Width2,
              typename std::enable_if<(uintwide_t<RePhraseWidth2, LimbType, AllocatorType, IsSigned>::number_of_limbs == 8U)>::type const* = nullptr>
-    static WIDE_INTEGER_CONSTEXPR void eval_multiply_n_by_n_to_lo_part(      LimbType*          r,
-                                                                       const LimbType*          a,
-                                                                       const LimbType*          b,
+    static WIDE_INTEGER_CONSTEXPR void eval_multiply_n_by_n_to_lo_part(      ResultIterator     r,
+                                                                             InputIteratorLeft  a,
+                                                                             InputIteratorRight b,
                                                                        const unsinged_fast_type count)
     {
       static_cast<void>(count);
 
-      using local_limb_type        = typename uintwide_t<RePhraseWidth2, LimbType, AllocatorType, IsSigned>::limb_type;
-      using local_double_limb_type = typename uintwide_t<RePhraseWidth2, LimbType, AllocatorType, IsSigned>::double_limb_type;
+      static_assert
+      (
+           (std::numeric_limits<typename std::iterator_traits<ResultIterator>::value_type>::digits == std::numeric_limits<typename std::iterator_traits<InputIteratorLeft>::value_type>::digits)
+        && (std::numeric_limits<typename std::iterator_traits<ResultIterator>::value_type>::digits == std::numeric_limits<typename std::iterator_traits<InputIteratorRight>::value_type>::digits),
+        "Error: Internals require same widths for left-right-result limb_types at the moment"
+      );
+
+      using local_limb_type = typename std::iterator_traits<ResultIterator>::value_type;
+
+      using local_double_limb_type =
+        typename detail::uint_type_helper<size_t(std::numeric_limits<local_limb_type>::digits * 2)>::exact_unsigned_type;
+
+      using result_difference_type = typename std::iterator_traits<ResultIterator>::difference_type;
+      using left_difference_type   = typename std::iterator_traits<InputIteratorLeft>::difference_type;
+      using right_difference_type  = typename std::iterator_traits<InputIteratorRight>::difference_type;
 
       // The algorithm has been derived from the polynomial multiplication.
       // After the multiplication terms of equal order are grouped
@@ -2612,28 +2665,28 @@
       // https://www.wolframalpha.com/input/?i=Column%5BCoefficientList%5B+++Expand%5B%28a0+%2B+a1+x+%2B+a2+x%5E2+%2B+a3+x%5E3%29+%28b0+%2B+b1+x+%2B+b2+x%5E2+%2B+b3+x%5E3%29%5D%2C++++x%5D%5D
       // ... and take the upper half of the pyramid.
 
-      const local_double_limb_type a0b0 = a[0U] * local_double_limb_type(b[0U]);
+      const local_double_limb_type a0b0 = *(a + left_difference_type(0)) * local_double_limb_type(*(b + right_difference_type(0)));
 
-      const local_double_limb_type a1b0 = a[1U] * local_double_limb_type(b[0U]);
-      const local_double_limb_type a0b1 = a[0U] * local_double_limb_type(b[1U]);
+      const local_double_limb_type a1b0 = *(a + left_difference_type(1)) * local_double_limb_type(*(b + right_difference_type(0)));
+      const local_double_limb_type a0b1 = *(a + left_difference_type(0)) * local_double_limb_type(*(b + right_difference_type(1)));
 
-      const local_double_limb_type a2b0 = a[2U] * local_double_limb_type(b[0U]);
-      const local_double_limb_type a1b1 = a[1U] * local_double_limb_type(b[1U]);
-      const local_double_limb_type a0b2 = a[0U] * local_double_limb_type(b[2U]);
+      const local_double_limb_type a2b0 = *(a + left_difference_type(2)) * local_double_limb_type(*(b + right_difference_type(0)));
+      const local_double_limb_type a1b1 = *(a + left_difference_type(1)) * local_double_limb_type(*(b + right_difference_type(1)));
+      const local_double_limb_type a0b2 = *(a + left_difference_type(0)) * local_double_limb_type(*(b + right_difference_type(2)));
 
-      const local_double_limb_type a3b0 = a[3U] * local_double_limb_type(b[0U]);
-      const local_double_limb_type a2b1 = a[2U] * local_double_limb_type(b[1U]);
-      const local_double_limb_type a1b2 = a[1U] * local_double_limb_type(b[2U]);
-      const local_double_limb_type a0b3 = a[0U] * local_double_limb_type(b[3U]);
+      const local_double_limb_type a3b0 = *(a + left_difference_type(3)) * local_double_limb_type(*(b + right_difference_type(0)));
+      const local_double_limb_type a2b1 = *(a + left_difference_type(2)) * local_double_limb_type(*(b + right_difference_type(1)));
+      const local_double_limb_type a1b2 = *(a + left_difference_type(1)) * local_double_limb_type(*(b + right_difference_type(2)));
+      const local_double_limb_type a0b3 = *(a + left_difference_type(0)) * local_double_limb_type(*(b + right_difference_type(3)));
 
-      const local_double_limb_type a3b1 = a[3U] * local_double_limb_type(b[1U]);
-      const local_double_limb_type a2b2 = a[2U] * local_double_limb_type(b[2U]);
-      const local_double_limb_type a1b3 = a[1U] * local_double_limb_type(b[3U]);
+      const local_double_limb_type a3b1 = *(a + left_difference_type(3)) * local_double_limb_type(*(b + right_difference_type(1)));
+      const local_double_limb_type a2b2 = *(a + left_difference_type(2)) * local_double_limb_type(*(b + right_difference_type(2)));
+      const local_double_limb_type a1b3 = *(a + left_difference_type(1)) * local_double_limb_type(*(b + right_difference_type(3)));
 
-      const local_double_limb_type a3b2 = a[3U] * local_double_limb_type(b[2U]);
-      const local_double_limb_type a2b3 = a[2U] * local_double_limb_type(b[3U]);
+      const local_double_limb_type a3b2 = *(a + left_difference_type(3)) * local_double_limb_type(*(b + right_difference_type(2)));
+      const local_double_limb_type a2b3 = *(a + left_difference_type(2)) * local_double_limb_type(*(b + right_difference_type(3)));
 
-      const local_double_limb_type a3b3 = a[3U] * local_double_limb_type(b[3U]);
+      const local_double_limb_type a3b3 = *(a + left_difference_type(3)) * local_double_limb_type(*(b + right_difference_type(3)));
 
             local_double_limb_type rd1;
             local_double_limb_type rd2;
@@ -2646,10 +2699,10 @@
       // of the form BITS/2 * BITS/2 = BITS. In this case, the algorithm
       // can be significantly simplified by using only the 'lower-halves'
       // of the data.
-      if(    (a[7U] == 0U) && (b[7U] == 0U)
-          && (a[6U] == 0U) && (b[6U] == 0U)
-          && (a[5U] == 0U) && (b[5U] == 0U)
-          && (a[4U] == 0U) && (b[4U] == 0U))
+      if(    (*(a + left_difference_type(7)) == 0U) && (*(b + right_difference_type(7)) == 0U)
+          && (*(a + left_difference_type(6)) == 0U) && (*(b + right_difference_type(6)) == 0U)
+          && (*(a + left_difference_type(5)) == 0U) && (*(b + right_difference_type(5)) == 0U)
+          && (*(a + left_difference_type(4)) == 0U) && (*(b + right_difference_type(4)) == 0U))
       {
         rd1   = local_double_limb_type
                 (
@@ -2716,7 +2769,8 @@
                 + detail::make_hi<local_limb_type>(a2b3)
                 ;
 
-        r[7U] = local_limb_type
+        *(r + result_difference_type(7))
+              = local_limb_type
                 (
                     detail::make_hi<local_limb_type>(rd6)
                   + detail::make_hi<local_limb_type>(a3b3)
@@ -2725,22 +2779,22 @@
       }
       else
       {
-        const local_double_limb_type a4b0 = a[4U] * local_double_limb_type(b[0U]);
-        const local_double_limb_type a0b4 = a[0U] * local_double_limb_type(b[4U]);
+        const local_double_limb_type a4b0 = *(a + left_difference_type(4)) * local_double_limb_type(*(b + right_difference_type(0)));
+        const local_double_limb_type a0b4 = *(a + left_difference_type(0)) * local_double_limb_type(*(b + right_difference_type(4)));
 
-        const local_double_limb_type a5b0 = a[5U] * local_double_limb_type(b[0U]);
-        const local_double_limb_type a4b1 = a[4U] * local_double_limb_type(b[1U]);
+        const local_double_limb_type a5b0 = *(a + left_difference_type(5)) * local_double_limb_type(*(b + right_difference_type(0)));
+        const local_double_limb_type a4b1 = *(a + left_difference_type(4)) * local_double_limb_type(*(b + right_difference_type(1)));
 
-        const local_double_limb_type a1b4 = a[1U] * local_double_limb_type(b[4U]);
-        const local_double_limb_type a0b5 = a[0U] * local_double_limb_type(b[5U]);
+        const local_double_limb_type a1b4 = *(a + left_difference_type(1)) * local_double_limb_type(*(b + right_difference_type(4)));
+        const local_double_limb_type a0b5 = *(a + left_difference_type(0)) * local_double_limb_type(*(b + right_difference_type(5)));
 
-        const local_double_limb_type a6b0 = a[6U] * local_double_limb_type(b[0U]);
-        const local_double_limb_type a5b1 = a[5U] * local_double_limb_type(b[1U]);
-        const local_double_limb_type a4b2 = a[4U] * local_double_limb_type(b[2U]);
+        const local_double_limb_type a6b0 = *(a + left_difference_type(6)) * local_double_limb_type(*(b + right_difference_type(0)));
+        const local_double_limb_type a5b1 = *(a + left_difference_type(5)) * local_double_limb_type(*(b + right_difference_type(1)));
+        const local_double_limb_type a4b2 = *(a + left_difference_type(4)) * local_double_limb_type(*(b + right_difference_type(2)));
 
-        const local_double_limb_type a2b4 = a[2U] * local_double_limb_type(b[4U]);
-        const local_double_limb_type a1b5 = a[1U] * local_double_limb_type(b[5U]);
-        const local_double_limb_type a0b6 = a[0U] * local_double_limb_type(b[6U]);
+        const local_double_limb_type a2b4 = *(a + left_difference_type(2)) * local_double_limb_type(*(b + right_difference_type(4)));
+        const local_double_limb_type a1b5 = *(a + left_difference_type(1)) * local_double_limb_type(*(b + right_difference_type(5)));
+        const local_double_limb_type a0b6 = *(a + left_difference_type(0)) * local_double_limb_type(*(b + right_difference_type(6)));
 
         rd1   = local_double_limb_type
                 (
@@ -2825,17 +2879,18 @@
                 + detail::make_hi<local_limb_type>(a0b5)
                 ;
 
-        r[7U] = local_limb_type
+        *(r + result_difference_type(7))
+              = local_limb_type
                 (
                     detail::make_hi<local_limb_type>(rd6)
-                  + static_cast<local_limb_type>    (a[7U] * local_double_limb_type(b[0U]))
-                  + static_cast<local_limb_type>    (a[6U] * local_double_limb_type(b[1U]))
-                  + static_cast<local_limb_type>    (a[5U] * local_double_limb_type(b[2U]))
-                  + static_cast<local_limb_type>    (a[4U] * local_double_limb_type(b[3U]))
-                  + static_cast<local_limb_type>    (a[3U] * local_double_limb_type(b[4U]))
-                  + static_cast<local_limb_type>    (a[2U] * local_double_limb_type(b[5U]))
-                  + static_cast<local_limb_type>    (a[1U] * local_double_limb_type(b[6U]))
-                  + static_cast<local_limb_type>    (a[0U] * local_double_limb_type(b[7U]))
+                  + static_cast<local_limb_type>    (*(a + left_difference_type(7)) * local_double_limb_type(*(b + right_difference_type(0))))
+                  + static_cast<local_limb_type>    (*(a + left_difference_type(6)) * local_double_limb_type(*(b + right_difference_type(1))))
+                  + static_cast<local_limb_type>    (*(a + left_difference_type(5)) * local_double_limb_type(*(b + right_difference_type(2))))
+                  + static_cast<local_limb_type>    (*(a + left_difference_type(4)) * local_double_limb_type(*(b + right_difference_type(3))))
+                  + static_cast<local_limb_type>    (*(a + left_difference_type(3)) * local_double_limb_type(*(b + right_difference_type(4))))
+                  + static_cast<local_limb_type>    (*(a + left_difference_type(2)) * local_double_limb_type(*(b + right_difference_type(5))))
+                  + static_cast<local_limb_type>    (*(a + left_difference_type(1)) * local_double_limb_type(*(b + right_difference_type(6))))
+                  + static_cast<local_limb_type>    (*(a + left_difference_type(0)) * local_double_limb_type(*(b + right_difference_type(7))))
                   + detail::make_hi<local_limb_type>(a6b0)
                   + detail::make_hi<local_limb_type>(a5b1)
                   + detail::make_hi<local_limb_type>(a4b2)
@@ -2847,13 +2902,13 @@
                 ;
       }
 
-      r[0U] = static_cast<local_limb_type>(a0b0);
-      r[1U] = static_cast<local_limb_type>(rd1);
-      r[2U] = static_cast<local_limb_type>(rd2);
-      r[3U] = static_cast<local_limb_type>(rd3);
-      r[4U] = static_cast<local_limb_type>(rd4);
-      r[5U] = static_cast<local_limb_type>(rd5);
-      r[6U] = static_cast<local_limb_type>(rd6);
+      *(r + result_difference_type(0)) = static_cast<local_limb_type>(a0b0);
+      *(r + result_difference_type(1)) = static_cast<local_limb_type>(rd1);
+      *(r + result_difference_type(2)) = static_cast<local_limb_type>(rd2);
+      *(r + result_difference_type(3)) = static_cast<local_limb_type>(rd3);
+      *(r + result_difference_type(4)) = static_cast<local_limb_type>(rd4);
+      *(r + result_difference_type(5)) = static_cast<local_limb_type>(rd5);
+      *(r + result_difference_type(6)) = static_cast<local_limb_type>(rd6);
     }
     #endif
 
@@ -3116,59 +3171,11 @@
       }
     }
 
-    #if 0
-    static void eval_multiply_toomcook3(      limb_type*         r,
-                                        const limb_type*         u,
-                                        const limb_type*         v,
-                                        const unsinged_fast_type n,
-                                              limb_type*         t)
-    {
-      if(n == 3072U)
-      {
-        // TBD: Tune the threshold for the transition
-        // from Toom-Cook3 back to base case Karatsuba.
-
-        // Base case Karatsuba multiplication.
-        eval_multiply_kara_n_by_n_to_2n(r, u, v, n, t);
-      }
-      else
-      {
-        // Based on "Algorithm 1.4 ToomCook3", Sect. 1.3.3, page 7 of
-        // R.P. Brent and P. Zimmermann, "Modern Computer Arithmetic",
-        // Cambridge University Press (2011).
-
-        // TBD: Toom-Cook3 is not yet implemented. Use Karatsuba at the moment.
-        eval_multiply_kara_n_by_n_to_2n(r, u, v, n, t);
-      }
-    }
-
-    static void eval_multiply_toomcook4(      limb_type*         r,
-                                        const limb_type*         u,
-                                        const limb_type*         v,
-                                        const unsinged_fast_type n,
-                                              limb_type*         t)
-    {
-      if(n == 2048U)
-      {
-        // TBD: Tune the threshold for the transition
-        // from Toom-Cook4 back to base case Karatsuba.
-
-        // Base case Karatsuba multiplication.
-        eval_multiply_kara_n_by_n_to_2n(r, u, v, n, t);
-      }
-      else
-      {
-        // TBD: Toom-Cook4 is not yet implemented. Use Karatsuba at the moment.
-        eval_multiply_kara_n_by_n_to_2n(r, u, v, n, t);
-      }
-    }
-    #endif
-
     WIDE_INTEGER_CONSTEXPR void eval_divide_knuth(const uintwide_t& other,
                                                         uintwide_t* remainder)
     {
       // Use Knuth's long division algorithm.
-      // The loop-ordering of indexes in Knuth's original
+      // The loop-ordering of indices in Knuth's original
       // algorithm has been reversed due to the data format
       // used here. Several optimizations and combinations
       // of logic have been carried out in the source code.
