@@ -3022,10 +3022,10 @@
 
     template<typename ResultIterator,
              typename InputIteratorLeft>
-    static WIDE_INTEGER_CONSTEXPR limb_type eval_multiply_1d(      ResultIterator     r,
-                                                                   InputIteratorLeft  a,
-                                                             const limb_type          b,
-                                                             const unsinged_fast_type count)
+    static WIDE_INTEGER_CONSTEXPR limb_type eval_multiply_1d(      ResultIterator                                               r,
+                                                                   InputIteratorLeft                                            a,
+                                                             const typename std::iterator_traits<InputIteratorLeft>::value_type b,
+                                                             const unsinged_fast_type                                           count)
     {
       static_assert
       (
@@ -3061,56 +3061,76 @@
       return local_limb_type(carry);
     }
 
-    static void eval_multiply_kara_propagate_carry(      limb_type*         t,
-                                                   const unsinged_fast_type n,
-                                                   const limb_type          carry)
+    template<typename InputIteratorLeft>
+    static void eval_multiply_kara_propagate_carry(      InputIteratorLeft                                            t,
+                                                   const unsinged_fast_type                                           n,
+                                                   const typename std::iterator_traits<InputIteratorLeft>::value_type carry)
     {
+      using local_limb_type = typename std::iterator_traits<InputIteratorLeft>::value_type;
+
+      using local_double_limb_type =
+        typename detail::uint_type_helper<size_t(std::numeric_limits<local_limb_type>::digits * 2)>::exact_unsigned_type;
+
+      using left_difference_type   = typename std::iterator_traits<InputIteratorLeft>::difference_type;
+
       unsinged_fast_type i = 0U;
 
-      limb_type carry_out = carry;
+      local_limb_type carry_out = carry;
 
-      while((i < n) && (carry_out != 0U))
+      while((i < n) && (carry_out != local_limb_type(0U)))
       {
-        const double_limb_type uv_as_ularge = double_limb_type(t[i]) + carry_out;
+        const local_double_limb_type uv_as_ularge = local_double_limb_type(*(t + left_difference_type(i))) + carry_out;
 
-        carry_out = detail::make_hi<limb_type>(uv_as_ularge);
+        carry_out = detail::make_hi<local_limb_type>(uv_as_ularge);
 
-        t[i] = limb_type(uv_as_ularge);
+        *(t + left_difference_type(i)) = local_limb_type(uv_as_ularge);
 
         ++i;
       }
     }
 
-    static void eval_multiply_kara_propagate_borrow(      limb_type*         t,
+    template<typename InputIteratorLeft>
+    static void eval_multiply_kara_propagate_borrow(      InputIteratorLeft  t,
                                                     const unsinged_fast_type n,
                                                     const bool               has_borrow)
     {
+      using local_limb_type = typename std::iterator_traits<InputIteratorLeft>::value_type;
+
+      using local_double_limb_type =
+        typename detail::uint_type_helper<size_t(std::numeric_limits<local_limb_type>::digits * 2)>::exact_unsigned_type;
+
+      using left_difference_type   = typename std::iterator_traits<InputIteratorLeft>::difference_type;
+
       unsinged_fast_type i = 0U;
 
       bool has_borrow_out = has_borrow;
 
       while((i < n) && (has_borrow_out == true))
       {
-        double_limb_type uv_as_ularge = double_limb_type(t[i]);
+        local_double_limb_type uv_as_ularge = local_double_limb_type(*(t + left_difference_type(i)));
 
         if(has_borrow_out)
         {
           --uv_as_ularge;
         }
 
-        has_borrow_out = (detail::make_hi<limb_type>(uv_as_ularge) != limb_type(0U));
+        has_borrow_out = (detail::make_hi<local_limb_type>(uv_as_ularge) != local_limb_type(0U));
 
-        t[i] = limb_type(uv_as_ularge);
+        *(t + left_difference_type(i)) = local_limb_type(uv_as_ularge);
 
         ++i;
       }
     }
 
-    static void eval_multiply_kara_n_by_n_to_2n(      limb_type*         r,
-                                                const limb_type*         a,
-                                                const limb_type*         b,
+    template<typename ResultIterator,
+             typename InputIteratorLeft,
+             typename InputIteratorRight,
+             typename InputIteratorTemp>
+    static void eval_multiply_kara_n_by_n_to_2n(      ResultIterator     r,
+                                                const InputIteratorLeft  a,
+                                                const InputIteratorRight b,
                                                 const unsinged_fast_type n,
-                                                      limb_type*         t)
+                                                      InputIteratorTemp  t)
     {
       if(n <= 48U)
       {
@@ -3120,6 +3140,21 @@
       }
       else
       {
+        static_assert
+        (
+             (std::numeric_limits<typename std::iterator_traits<ResultIterator>::value_type>::digits == std::numeric_limits<typename std::iterator_traits<InputIteratorLeft>::value_type>::digits)
+          && (std::numeric_limits<typename std::iterator_traits<ResultIterator>::value_type>::digits == std::numeric_limits<typename std::iterator_traits<InputIteratorRight>::value_type>::digits)
+          && (std::numeric_limits<typename std::iterator_traits<ResultIterator>::value_type>::digits == std::numeric_limits<typename std::iterator_traits<InputIteratorTemp>::value_type>::digits),
+          "Error: Internals require same widths for left-right-result limb_types at the moment"
+        );
+
+        using local_limb_type = typename std::iterator_traits<ResultIterator>::value_type;
+
+        using result_difference_type = typename std::iterator_traits<ResultIterator>::difference_type;
+        using left_difference_type   = typename std::iterator_traits<InputIteratorLeft>::difference_type;
+        using right_difference_type  = typename std::iterator_traits<InputIteratorRight>::difference_type;
+        using temp_difference_type   = typename std::iterator_traits<InputIteratorTemp>::difference_type;
+
         // Based on "Algorithm 1.3 KaratsubaMultiply", Sect. 1.3.2, page 5
         // of R.P. Brent and P. Zimmermann, "Modern Computer Arithmetic",
         // Cambridge University Press (2011).
@@ -3155,21 +3190,21 @@
 
         const unsinged_fast_type  nh = n / 2U;
 
-        const limb_type* a0 = a + 0U;
-        const limb_type* a1 = a + nh;
+        const InputIteratorLeft   a0 = a + left_difference_type(0);
+        const InputIteratorLeft   a1 = a + left_difference_type(nh);
 
-        const limb_type* b0 = b + 0U;
-        const limb_type* b1 = b + nh;
+        const InputIteratorRight  b0 = b + right_difference_type(0);
+        const InputIteratorRight  b1 = b + right_difference_type(nh);
 
-              limb_type* r0 = r + 0U;
-              limb_type* r1 = r + nh;
-              limb_type* r2 = r + n;
-              limb_type* r3 = r + (n + nh);
+              ResultIterator      r0 = r + result_difference_type(0);
+              ResultIterator      r1 = r + result_difference_type(nh);
+              ResultIterator      r2 = r + result_difference_type(n);
+              ResultIterator      r3 = r + result_difference_type(n + nh);
 
-              limb_type* t0 = t + 0U;
-              limb_type* t1 = t + nh;
-              limb_type* t2 = t + n;
-              limb_type* t4 = t + (n + n);
+              InputIteratorTemp   t0 = t + temp_difference_type(0);
+              InputIteratorTemp   t1 = t + temp_difference_type(nh);
+              InputIteratorTemp   t2 = t + temp_difference_type(n);
+              InputIteratorTemp   t4 = t + temp_difference_type(n + n);
 
         // Step 1
         //   a1*b1 -> r2
@@ -3179,10 +3214,11 @@
         eval_multiply_kara_n_by_n_to_2n(r0, a0, b0, nh, t0);
         std::copy(r0, r0 + (2U * n), t0);
 
+        local_limb_type carry;
+
         // Step 2
         //   r1 += a1*b1
         //   r1 += a0*b0
-        limb_type carry;
         carry = eval_add_n(r1, r1, t2, n);
         eval_multiply_kara_propagate_carry(r3, nh, carry);
         carry = eval_add_n(r1, r1, t0, n);
