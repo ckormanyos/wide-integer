@@ -2266,13 +2266,23 @@
         unsinged_fast_type(  std::numeric_limits<local_unsigned_conversion_type>::digits
                            / std::numeric_limits<limb_type>::digits);
 
-      static WIDE_INTEGER_CONSTEXPR local_unknown_integral_type extract(const limb_type* p_limb, unsinged_fast_type limb_count)
+      template<typename InputIteratorLeft>
+      static WIDE_INTEGER_CONSTEXPR local_unknown_integral_type extract(InputIteratorLeft  p_limb,
+                                                                        unsinged_fast_type limb_count)
       {
+        using local_limb_type      = typename std::iterator_traits<InputIteratorLeft>::value_type;
+        using left_difference_type = typename std::iterator_traits<InputIteratorLeft>::difference_type;
+
         local_unsigned_conversion_type u = 0U;
 
         for(unsinged_fast_type i = 0U; i < limb_count; ++i)
         {
-          u = local_unsigned_conversion_type(u | local_unsigned_conversion_type(local_unsigned_conversion_type(p_limb[i]) << unsigned(std::numeric_limits<limb_type>::digits * int(i))));
+          u =
+            local_unsigned_conversion_type
+            (
+                u
+              | local_unsigned_conversion_type(local_unsigned_conversion_type(*(p_limb + left_difference_type(i))) << unsigned(std::numeric_limits<local_limb_type>::digits * int(i)))
+            );
         }
 
         return local_unknown_integral_type(u);
@@ -2912,75 +2922,126 @@
     }
     #endif
 
-    template<const size_t RePhraseWidth2 = Width2,
+    template<typename ResultIterator,
+             typename InputIteratorLeft,
+             typename InputIteratorRight,
+             const size_t RePhraseWidth2 = Width2,
              typename std::enable_if<(   (uintwide_t<RePhraseWidth2, LimbType, AllocatorType>::number_of_limbs != 4U)
     #if defined(WIDE_INTEGER_HAS_MUL_8_BY_8_UNROLL)
                                       && (uintwide_t<RePhraseWidth2, LimbType, AllocatorType>::number_of_limbs != 8U)
     #endif
                                      )>::type const* = nullptr>
-    static WIDE_INTEGER_CONSTEXPR void eval_multiply_n_by_n_to_lo_part(      LimbType*          r,
-                                                                       const LimbType*          a,
-                                                                       const LimbType*          b,
+    static WIDE_INTEGER_CONSTEXPR void eval_multiply_n_by_n_to_lo_part(      ResultIterator     r,
+                                                                             InputIteratorLeft  a,
+                                                                             InputIteratorRight b,
                                                                        const unsinged_fast_type count)
     {
-      using local_limb_type        = typename uintwide_t<RePhraseWidth2, LimbType, AllocatorType>::limb_type;
-      using local_double_limb_type = typename uintwide_t<RePhraseWidth2, LimbType, AllocatorType>::double_limb_type;
+      static_assert
+      (
+           (std::numeric_limits<typename std::iterator_traits<ResultIterator>::value_type>::digits == std::numeric_limits<typename std::iterator_traits<InputIteratorLeft>::value_type>::digits)
+        && (std::numeric_limits<typename std::iterator_traits<ResultIterator>::value_type>::digits == std::numeric_limits<typename std::iterator_traits<InputIteratorRight>::value_type>::digits),
+        "Error: Internals require same widths for left-right-result limb_types at the moment"
+      );
+
+      using local_limb_type = typename std::iterator_traits<ResultIterator>::value_type;
+
+      using local_double_limb_type =
+        typename detail::uint_type_helper<size_t(std::numeric_limits<local_limb_type>::digits * 2)>::exact_unsigned_type;
+
+      using result_difference_type = typename std::iterator_traits<ResultIterator>::difference_type;
+      using left_difference_type   = typename std::iterator_traits<InputIteratorLeft>::difference_type;
+      using right_difference_type  = typename std::iterator_traits<InputIteratorRight>::difference_type;
 
       std::fill_n(r, count, local_limb_type(0U));
 
       for(unsinged_fast_type i = 0U; i < count; ++i)
       {
-        if(a[i] != local_limb_type(0U))
+        if(*(a + left_difference_type(i)) != local_limb_type(0U))
         {
           local_double_limb_type carry = 0U;
 
-          for(unsinged_fast_type j = 0U; j < (count - i); ++j)
+          for(unsinged_fast_type j = 0U; j < unsinged_fast_type(count - i); ++j)
           {
-            carry = local_double_limb_type(carry + local_double_limb_type(local_double_limb_type(a[i]) * b[j]));
-            carry = local_double_limb_type(carry + r[i + j]);
+            carry = local_double_limb_type(carry + local_double_limb_type(local_double_limb_type(*(a + left_difference_type(i))) * *(b + right_difference_type(j))));
+            carry = local_double_limb_type(carry + *(r + result_difference_type(i + j)));
 
-            r[i + j] = local_limb_type(carry);
-            carry    = detail::make_hi<local_limb_type>(carry);
+            *(r + result_difference_type(i + j)) = local_limb_type(carry);
+            carry                                = detail::make_hi<local_limb_type>(carry);
           }
         }
       }
     }
 
-    static WIDE_INTEGER_CONSTEXPR void eval_multiply_n_by_n_to_2n(      limb_type*         r,
-                                                                  const limb_type*         a,
-                                                                  const limb_type*         b,
+    template<typename ResultIterator,
+             typename InputIteratorLeft,
+             typename InputIteratorRight>
+    static WIDE_INTEGER_CONSTEXPR void eval_multiply_n_by_n_to_2n(      ResultIterator     r,
+                                                                        InputIteratorLeft  a,
+                                                                        InputIteratorRight b,
                                                                   const unsinged_fast_type count)
     {
-      std::fill_n(r, (count * 2U), limb_type(0U));
+      static_assert
+      (
+           (std::numeric_limits<typename std::iterator_traits<ResultIterator>::value_type>::digits == std::numeric_limits<typename std::iterator_traits<InputIteratorLeft>::value_type>::digits)
+        && (std::numeric_limits<typename std::iterator_traits<ResultIterator>::value_type>::digits == std::numeric_limits<typename std::iterator_traits<InputIteratorRight>::value_type>::digits),
+        "Error: Internals require same widths for left-right-result limb_types at the moment"
+      );
+
+      using local_limb_type = typename std::iterator_traits<ResultIterator>::value_type;
+
+      using local_double_limb_type =
+        typename detail::uint_type_helper<size_t(std::numeric_limits<local_limb_type>::digits * 2)>::exact_unsigned_type;
+
+      using result_difference_type = typename std::iterator_traits<ResultIterator>::difference_type;
+      using left_difference_type   = typename std::iterator_traits<InputIteratorLeft>::difference_type;
+      using right_difference_type  = typename std::iterator_traits<InputIteratorRight>::difference_type;
+
+      std::fill_n(r, (count * 2U), local_limb_type(0U));
 
       for(unsinged_fast_type i = 0U; i < count; ++i)
       {
-        if(a[i] != limb_type(0U))
+        if(*(a + left_difference_type(i)) != local_limb_type(0U))
         {
           unsinged_fast_type j = 0U;
 
-          double_limb_type carry = 0U;
+          local_double_limb_type carry = 0U;
 
           for( ; j < count; ++j)
           {
-            carry    = double_limb_type(carry + double_limb_type(double_limb_type(a[i]) * b[j]));
-            carry    = double_limb_type(carry + r[i + j]);
+            carry    = local_double_limb_type(carry + local_double_limb_type(local_double_limb_type(*(a + left_difference_type(i))) * *(b + right_difference_type(j))));
+            carry    = local_double_limb_type(carry + *(r + result_difference_type(i + j)));
 
-            r[i + j] = limb_type(carry);
-            carry    = detail::make_hi<limb_type>(carry);
+            *(r + result_difference_type(i + j)) = local_limb_type(carry);
+            carry                                = detail::make_hi<local_limb_type>(carry);
           }
 
-          r[i + j] = limb_type(carry);
+          *(r + result_difference_type(i + j)) = local_limb_type(carry);
         }
       }
     }
 
-    static WIDE_INTEGER_CONSTEXPR limb_type eval_multiply_1d(      limb_type*         r,
-                                                             const limb_type*         a,
+    template<typename ResultIterator,
+             typename InputIteratorLeft>
+    static WIDE_INTEGER_CONSTEXPR limb_type eval_multiply_1d(      ResultIterator     r,
+                                                                   InputIteratorLeft  a,
                                                              const limb_type          b,
                                                              const unsinged_fast_type count)
     {
-      double_limb_type carry = 0U;
+      static_assert
+      (
+        (std::numeric_limits<typename std::iterator_traits<ResultIterator>::value_type>::digits == std::numeric_limits<typename std::iterator_traits<InputIteratorLeft>::value_type>::digits),
+        "Error: Internals require same widths for left-right-result limb_types at the moment"
+      );
+
+      using local_limb_type = typename std::iterator_traits<ResultIterator>::value_type;
+
+      using local_double_limb_type =
+        typename detail::uint_type_helper<size_t(std::numeric_limits<local_limb_type>::digits * 2)>::exact_unsigned_type;
+
+      using result_difference_type = typename std::iterator_traits<ResultIterator>::difference_type;
+      using left_difference_type   = typename std::iterator_traits<InputIteratorLeft>::difference_type;
+
+      local_double_limb_type carry = 0U;
 
       if(b == 0U)
       {
@@ -2990,17 +3051,19 @@
       {
         for(unsinged_fast_type i = 0U ; i < count; ++i)
         {
-          carry = double_limb_type(carry + double_limb_type(double_limb_type(a[i]) * b));
+          carry = local_double_limb_type(carry + local_double_limb_type(local_double_limb_type(*(a + left_difference_type(i))) * b));
 
-          r[i]  = limb_type(carry);
-          carry = detail::make_hi<limb_type>(carry);
+          *(r + result_difference_type(i)) = local_limb_type(carry);
+          carry                            = detail::make_hi<local_limb_type>(carry);
         }
       }
 
-      return limb_type(carry);
+      return local_limb_type(carry);
     }
 
-    static void eval_multiply_kara_propagate_carry(limb_type* t, const unsinged_fast_type n, const limb_type carry)
+    static void eval_multiply_kara_propagate_carry(      limb_type*         t,
+                                                   const unsinged_fast_type n,
+                                                   const limb_type          carry)
     {
       unsinged_fast_type i = 0U;
 
@@ -3018,7 +3081,9 @@
       }
     }
 
-    static void eval_multiply_kara_propagate_borrow(limb_type* t, const unsinged_fast_type n, const bool has_borrow)
+    static void eval_multiply_kara_propagate_borrow(      limb_type*         t,
+                                                    const unsinged_fast_type n,
+                                                    const bool               has_borrow)
     {
       unsinged_fast_type i = 0U;
 
@@ -3415,9 +3480,11 @@
         {
           const limb_type t = *(values.cbegin() + size_t(i));
 
-          *(values.begin() + size_t(i)) = limb_type(limb_type(t << local_integral_type(left_shift_amount)) | part_from_previous_value);
+          *(values.begin() + size_t(i)) =
+            limb_type(limb_type(t << local_integral_type(left_shift_amount)) | part_from_previous_value);
 
-          part_from_previous_value = limb_type(t >> local_integral_type(unsinged_fast_type(std::numeric_limits<limb_type>::digits - left_shift_amount)));
+          part_from_previous_value =
+            limb_type(t >> local_integral_type(unsinged_fast_type(std::numeric_limits<limb_type>::digits - left_shift_amount)));
         }
       }
     }
@@ -4665,18 +4732,18 @@
         {
           if(v <= (std::numeric_limits<local_ushort_type>::max)())
           {
-            u = detail::integer_gcd_reduce_short(v.crepresentation()[0U],
-                                                 u.crepresentation()[0U]);
+            u = detail::integer_gcd_reduce_short(*(v.crepresentation().cbegin() + 0U),
+                                                 *(u.crepresentation().cbegin() + 0U));
           }
           else
           {
             const local_ularge_type v_large =
-              detail::make_large(v.crepresentation()[0U],
-                                 v.crepresentation()[1U]);
+              detail::make_large(*(v.crepresentation().cbegin() + 0U),
+                                 *(v.crepresentation().cbegin() + 1U));
 
             const local_ularge_type u_large =
-              detail::make_large(u.crepresentation()[0U],
-                                 u.crepresentation()[1U]);
+              detail::make_large(*(u.crepresentation().cbegin() + 0U),
+                                 *(u.crepresentation().cbegin() + 1U));
 
             u = detail::integer_gcd_reduce_large(v_large, u_large);
           }
