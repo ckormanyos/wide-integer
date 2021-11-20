@@ -10,8 +10,8 @@
 
 namespace local
 {
-  using uint64_t = math::wide_integer::uint64_t;
-  using  int64_t = math::wide_integer::int64_t;
+  using math::wide_integer::uint64_t;
+  using math::wide_integer::int64_t;
   using uint32_t = math::wide_integer::uintwide_t<32U, std::uint8_t, void, false>;
   using  int32_t = math::wide_integer::uintwide_t<32U, std::uint8_t, void, true>;
 }
@@ -21,7 +21,7 @@ bool math::wide_integer::example000_numeric_limits()
   bool result_is_ok = true;
 
   {
-    using uint256_t = math::wide_integer::uint256_t;
+    using math::wide_integer::uint256_t;
 
     WIDE_INTEGER_CONSTEXPR uint256_t my_max("0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF");
     WIDE_INTEGER_CONSTEXPR uint256_t my_min(0U);
@@ -42,7 +42,7 @@ bool math::wide_integer::example000_numeric_limits()
   }
 
   {
-    using int256_t = math::wide_integer::int256_t;
+    using math::wide_integer::int256_t;
 
     WIDE_INTEGER_CONSTEXPR int256_t my_max   ("0x7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF");
     WIDE_INTEGER_CONSTEXPR int256_t my_min   ("-57896044618658097711785492504343953926634992332820282019728792003956564819968");

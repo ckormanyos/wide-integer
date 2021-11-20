@@ -8,8 +8,18 @@ on:
     - cron: '0 2 * * *' # run at 2 AM UTC
 jobs:
   cmake-linux:
+    strategy:
+      fail-fast: false
+      matrix:
+        compiler: [ g++, clang++ ]
+        include:
+          - compiler: g++
+            container: johnmcfarlane/cnl_ci:gcc-11
+          - compiler: clang++
+            container: johnmcfarlane/cnl_ci:clang-13-libcpp
+
     runs-on: ubuntu-20.04
-    container: johnmcfarlane/cnl_ci:gcc-11
+    container: ${{matrix.container}}
     steps:
       - uses: actions/checkout@v2
 

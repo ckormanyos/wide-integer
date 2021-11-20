@@ -21,7 +21,7 @@ bool math::wide_integer::example000a_builtin_convert()
 {
   bool result_is_ok = true;
 
-  using int256_t = math::wide_integer::int256_t;
+  using math::wide_integer::int256_t;
 
   {
     WIDE_INTEGER_CONSTEXPR int256_t n = -1234567.89;
