@@ -90,7 +90,7 @@ bool math::wide_integer::test_uintwide_t_spot_values()
   }
 
   {
-    using uint256_t = math::wide_integer::uintwide_t<256U>;
+    using math::wide_integer::uint256_t;
 
     // FromDigits["C9DD3EA24800F584CB28C25CC0E6FF1",16]
     // 16770224695321632575655872732632870897
@@ -114,7 +114,7 @@ bool math::wide_integer::test_uintwide_t_spot_values()
     // See also https://github.com/ckormanyos/wide-integer/issues/111
 
     {
-      using int256_t = math::wide_integer::uintwide_t<256U, std::uint32_t, void, true>;
+      using math::wide_integer::int256_t;
 
       int256_t a("-578960446186580977117854925043439539266349923328202820197287920"
                  "03956564819968");
@@ -224,7 +224,7 @@ bool math::wide_integer::test_uintwide_t_spot_values()
   }
 
   {
-    using uint512_t = math::wide_integer::uint512_t;
+    using math::wide_integer::uint512_t;
 
     const uint512_t a("698937339790347543053797400564366118744312537138445607919548628175822115805812983955794321304304417541511379093392776018867245622409026835324102460829431");
     const uint512_t b("100041341335406267530943777943625254875702684549707174207105689918734693139781");
@@ -246,8 +246,7 @@ bool math::wide_integer::test_uintwide_t_spot_values()
   }
 
   {
-    using uint256_t =
-      math::wide_integer::uintwide_t<256U, std::uint32_t>;
+    using math::wide_integer::uint256_t;
 
     static_assert(std::numeric_limits<uint256_t>::digits == 256,
                   "Error: Incorrect digit count for this example");
