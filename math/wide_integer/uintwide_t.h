@@ -435,7 +435,12 @@
                 && (std::numeric_limits<ptrdiff_t>::digits + 1 >= 16)),
                 "Error: size type and pointer difference type must be at least 16 bits in width (or wider)");
 
-  template<const size_t Width2> struct verify_power_of_two
+  template<const size_t Width2>
+  #if defined(__GNUC__)
+  struct verify_power_of_two __attribute__((aligned(0)))
+  #else
+  struct verify_power_of_two
+  #endif
   {
     // TBD: Which powers should be checked if size_t is not 32 bits?
     static constexpr bool conditional_value =
@@ -452,7 +457,11 @@
 
   template<const size_t BitCount,
            typename EnableType = void>
+  #if defined(__GNUC__)
+  struct uint_type_helper __attribute__((aligned(0)))
+  #else
   struct uint_type_helper
+  #endif
   {
     #if defined(WIDE_INTEGER_HAS_LIMB_TYPE_UINT64)
     static_assert((   ((BitCount >= 8U) && (BitCount <= 128U))
