@@ -14,8 +14,10 @@ jobs:
         compiler: [ g++, clang++ ]
         include:
           - compiler: g++
+            clang_tidy: ""
             container: johnmcfarlane/cnl_ci:gcc-11
           - compiler: clang++
+            clang_tidy: "clang-tidy"
             container: johnmcfarlane/cnl_ci:clang-13-libcpp
 
     runs-on: ubuntu-20.04
@@ -32,6 +34,7 @@ jobs:
           cmake \
               -DCMAKE_BUILD_TYPE=Release \
               -DCMAKE_CXX_STANDARD=20 \
+              -DCMAKE_CXX_CLANG_TIDY="${{matrix.clang_tidy}}" \
               -DCMAKE_TOOLCHAIN_FILE=$GITHUB_WORKSPACE/.github/toolchains/gcc.cmake \
               -GNinja \
               $GITHUB_WORKSPACE
