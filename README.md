@@ -378,10 +378,10 @@ by default.
 
 This macro disables compile-time checks for `std::is_trivially_copyable`
 and `std::is_standard_layout`. These checks provide assurance
-(among other attributes) that `uintwide_t`'s constructor(s)
+(among other attributes) that `uintwide_t`'s constructors
 satisfy rules needed for mixed-language C/C++ usage.
-Some older legacy target/compiler systems have have faulty or
-incomplete STL implementations that lack these compile-time
+Some older legacy target/compiler systems might have non-standard
+or incomplete STL implementations that lack these compile-time
 templates. For such compilers, it makes sense to deactivate
 these compile-time checks via activation of this macro.
 This macro is disabled by default and both the trivially-copyable

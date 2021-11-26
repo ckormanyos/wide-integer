@@ -167,6 +167,7 @@
     <None Include="README.md">
       <Filter>_doc</Filter>
     </None>
+    <None Include=".clang-tidy" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="examples\CMakeLists.txt">
