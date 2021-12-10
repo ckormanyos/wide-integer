@@ -99,33 +99,16 @@ jobs:
           git clone -b develop --depth 1 https://github.com/boostorg/boost.git ../boost-root
           cd ../boost-root
           git submodule update --init tools
-          git submodule update --init libs/array
           git submodule update --init libs/assert
-          git submodule update --init libs/concept_check
-          git submodule update --init libs/container
-          git submodule update --init libs/config
           git submodule update --init libs/core
-          git submodule update --init libs/detail
-          git submodule update --init libs/exception
-          git submodule update --init libs/functional
+          git submodule update --init libs/config
           git submodule update --init libs/integer
-          git submodule update --init libs/io
-          git submodule update --init libs/iterator
-          git submodule update --init libs/lexical_cast
           git submodule update --init libs/math
-          git submodule update --init libs/move
-          git submodule update --init libs/mpl
           git submodule update --init libs/multiprecision
-          git submodule update --init libs/numeric/conversion
-          git submodule update --init libs/predef
-          git submodule update --init libs/preprocessor
           git submodule update --init libs/random
-          git submodule update --init libs/range
-          git submodule update --init libs/rational
           git submodule update --init libs/static_assert
-          git submodule update --init libs/throw_exception
           git submodule update --init libs/type_traits
-          git submodule update --init libs/utility
+          git submodule update --init libs/throw_exception
           ./bootstrap.sh
           ./b2 headers
       - name: gcc-clang-native
@@ -156,33 +139,16 @@ jobs:
           git clone -b develop --depth 1 https://github.com/boostorg/boost.git ../boost-root
           cd ../boost-root
           git submodule update --init tools
-          git submodule update --init libs/array
           git submodule update --init libs/assert
-          git submodule update --init libs/concept_check
-          git submodule update --init libs/container
-          git submodule update --init libs/config
           git submodule update --init libs/core
-          git submodule update --init libs/detail
-          git submodule update --init libs/exception
-          git submodule update --init libs/functional
+          git submodule update --init libs/config
           git submodule update --init libs/integer
-          git submodule update --init libs/io
-          git submodule update --init libs/iterator
-          git submodule update --init libs/lexical_cast
           git submodule update --init libs/math
-          git submodule update --init libs/move
-          git submodule update --init libs/mpl
           git submodule update --init libs/multiprecision
-          git submodule update --init libs/numeric/conversion
-          git submodule update --init libs/predef
-          git submodule update --init libs/preprocessor
           git submodule update --init libs/random
-          git submodule update --init libs/range
-          git submodule update --init libs/rational
           git submodule update --init libs/static_assert
-          git submodule update --init libs/throw_exception
           git submodule update --init libs/type_traits
-          git submodule update --init libs/utility
+          git submodule update --init libs/throw_exception
           ./bootstrap.sh
           ./b2 headers
       - name: gcc-clang-native-limb_type_uint64_t
@@ -215,33 +181,16 @@ jobs:
           git clone -b develop --depth 1 https://github.com/boostorg/boost.git ../boost-root
           cd ../boost-root
           git submodule update --init tools
-          git submodule update --init libs/array
           git submodule update --init libs/assert
-          git submodule update --init libs/concept_check
-          git submodule update --init libs/container
-          git submodule update --init libs/config
           git submodule update --init libs/core
-          git submodule update --init libs/detail
-          git submodule update --init libs/exception
-          git submodule update --init libs/functional
+          git submodule update --init libs/config
           git submodule update --init libs/integer
-          git submodule update --init libs/io
-          git submodule update --init libs/iterator
-          git submodule update --init libs/lexical_cast
           git submodule update --init libs/math
-          git submodule update --init libs/move
-          git submodule update --init libs/mpl
           git submodule update --init libs/multiprecision
-          git submodule update --init libs/numeric/conversion
-          git submodule update --init libs/predef
-          git submodule update --init libs/preprocessor
           git submodule update --init libs/random
-          git submodule update --init libs/range
-          git submodule update --init libs/rational
           git submodule update --init libs/static_assert
-          git submodule update --init libs/throw_exception
           git submodule update --init libs/type_traits
-          git submodule update --init libs/utility
+          git submodule update --init libs/throw_exception
           ./bootstrap.sh
           ./b2 headers
       - name: gcc-clang-native-x86
@@ -274,33 +223,16 @@ jobs:
           git clone -b develop --depth 1 https://github.com/boostorg/boost.git ../boost-root
           cd ../boost-root
           git submodule update --init tools
-          git submodule update --init libs/array
           git submodule update --init libs/assert
-          git submodule update --init libs/concept_check
-          git submodule update --init libs/container
-          git submodule update --init libs/config
           git submodule update --init libs/core
-          git submodule update --init libs/detail
-          git submodule update --init libs/exception
-          git submodule update --init libs/functional
+          git submodule update --init libs/config
           git submodule update --init libs/integer
-          git submodule update --init libs/io
-          git submodule update --init libs/iterator
-          git submodule update --init libs/lexical_cast
           git submodule update --init libs/math
-          git submodule update --init libs/move
-          git submodule update --init libs/mpl
           git submodule update --init libs/multiprecision
-          git submodule update --init libs/numeric/conversion
-          git submodule update --init libs/predef
-          git submodule update --init libs/preprocessor
           git submodule update --init libs/random
-          git submodule update --init libs/range
-          git submodule update --init libs/rational
           git submodule update --init libs/static_assert
-          git submodule update --init libs/throw_exception
           git submodule update --init libs/type_traits
-          git submodule update --init libs/utility
+          git submodule update --init libs/throw_exception
           ./bootstrap.sh
           ./b2 headers
       - name: gcc-clang-10_up
@@ -333,33 +265,16 @@ jobs:
           git clone -b develop --depth 1 https://github.com/boostorg/boost.git ../boost-root
           cd ../boost-root
           git submodule update --init tools
-          git submodule update --init libs/array
           git submodule update --init libs/assert
-          git submodule update --init libs/concept_check
-          git submodule update --init libs/container
-          git submodule update --init libs/config
           git submodule update --init libs/core
-          git submodule update --init libs/detail
-          git submodule update --init libs/exception
-          git submodule update --init libs/functional
+          git submodule update --init libs/config
           git submodule update --init libs/integer
-          git submodule update --init libs/io
-          git submodule update --init libs/iterator
-          git submodule update --init libs/lexical_cast
           git submodule update --init libs/math
-          git submodule update --init libs/move
-          git submodule update --init libs/mpl
           git submodule update --init libs/multiprecision
-          git submodule update --init libs/numeric/conversion
-          git submodule update --init libs/predef
-          git submodule update --init libs/preprocessor
           git submodule update --init libs/random
-          git submodule update --init libs/range
-          git submodule update --init libs/rational
           git submodule update --init libs/static_assert
-          git submodule update --init libs/throw_exception
           git submodule update --init libs/type_traits
-          git submodule update --init libs/utility
+          git submodule update --init libs/throw_exception
           ./bootstrap.sh
           ./b2 headers
       - name: gcc-clang-9
@@ -392,33 +307,16 @@ jobs:
           git clone -b develop --depth 1 https://github.com/boostorg/boost.git ../boost-root
           cd ../boost-root
           git submodule update --init tools
-          git submodule update --init libs/array
           git submodule update --init libs/assert
-          git submodule update --init libs/concept_check
-          git submodule update --init libs/container
-          git submodule update --init libs/config
           git submodule update --init libs/core
-          git submodule update --init libs/detail
-          git submodule update --init libs/exception
-          git submodule update --init libs/functional
+          git submodule update --init libs/config
           git submodule update --init libs/integer
-          git submodule update --init libs/io
-          git submodule update --init libs/iterator
-          git submodule update --init libs/lexical_cast
           git submodule update --init libs/math
-          git submodule update --init libs/move
-          git submodule update --init libs/mpl
           git submodule update --init libs/multiprecision
-          git submodule update --init libs/numeric/conversion
-          git submodule update --init libs/predef
-          git submodule update --init libs/preprocessor
           git submodule update --init libs/random
-          git submodule update --init libs/range
-          git submodule update --init libs/rational
           git submodule update --init libs/static_assert
-          git submodule update --init libs/throw_exception
           git submodule update --init libs/type_traits
-          git submodule update --init libs/utility
+          git submodule update --init libs/throw_exception
           ./bootstrap.sh
           ./b2 headers
       - name: gcc-clang-8_down
@@ -449,33 +347,16 @@ jobs:
           git clone -b develop --depth 1 https://github.com/boostorg/boost.git ../boost-root
           cd ../boost-root
           git submodule update --init tools
-          git submodule update --init libs/array
           git submodule update --init libs/assert
-          git submodule update --init libs/concept_check
-          git submodule update --init libs/container
-          git submodule update --init libs/config
           git submodule update --init libs/core
-          git submodule update --init libs/detail
-          git submodule update --init libs/exception
-          git submodule update --init libs/functional
+          git submodule update --init libs/config
           git submodule update --init libs/integer
-          git submodule update --init libs/io
-          git submodule update --init libs/iterator
-          git submodule update --init libs/lexical_cast
           git submodule update --init libs/math
-          git submodule update --init libs/move
-          git submodule update --init libs/mpl
           git submodule update --init libs/multiprecision
-          git submodule update --init libs/numeric/conversion
-          git submodule update --init libs/predef
-          git submodule update --init libs/preprocessor
           git submodule update --init libs/random
-          git submodule update --init libs/range
-          git submodule update --init libs/rational
           git submodule update --init libs/static_assert
-          git submodule update --init libs/throw_exception
           git submodule update --init libs/type_traits
-          git submodule update --init libs/utility
+          git submodule update --init libs/throw_exception
           ./bootstrap.sh
           ./b2 headers
       - name: gcc-clang-native-asan
@@ -506,33 +387,16 @@ jobs:
           git clone -b develop --depth 1 https://github.com/boostorg/boost.git ../boost-root
           cd ../boost-root
           git submodule update --init tools
-          git submodule update --init libs/array
           git submodule update --init libs/assert
-          git submodule update --init libs/concept_check
-          git submodule update --init libs/container
-          git submodule update --init libs/config
           git submodule update --init libs/core
-          git submodule update --init libs/detail
-          git submodule update --init libs/exception
-          git submodule update --init libs/functional
+          git submodule update --init libs/config
           git submodule update --init libs/integer
-          git submodule update --init libs/io
-          git submodule update --init libs/iterator
-          git submodule update --init libs/lexical_cast
           git submodule update --init libs/math
-          git submodule update --init libs/move
-          git submodule update --init libs/mpl
           git submodule update --init libs/multiprecision
-          git submodule update --init libs/numeric/conversion
-          git submodule update --init libs/predef
-          git submodule update --init libs/preprocessor
           git submodule update --init libs/random
-          git submodule update --init libs/range
-          git submodule update --init libs/rational
           git submodule update --init libs/static_assert
-          git submodule update --init libs/throw_exception
           git submodule update --init libs/type_traits
-          git submodule update --init libs/utility
+          git submodule update --init libs/throw_exception
           ./bootstrap.sh
           ./b2 headers
       - name: gcc-clang-native-ubsan
@@ -563,33 +427,16 @@ jobs:
           git clone -b develop --depth 1 https://github.com/boostorg/boost.git ../boost-root
           cd ../boost-root
           git submodule update --init tools
-          git submodule update --init libs/array
           git submodule update --init libs/assert
-          git submodule update --init libs/concept_check
-          git submodule update --init libs/container
-          git submodule update --init libs/config
           git submodule update --init libs/core
-          git submodule update --init libs/detail
-          git submodule update --init libs/exception
-          git submodule update --init libs/functional
+          git submodule update --init libs/config
           git submodule update --init libs/integer
-          git submodule update --init libs/io
-          git submodule update --init libs/iterator
-          git submodule update --init libs/lexical_cast
           git submodule update --init libs/math
-          git submodule update --init libs/move
-          git submodule update --init libs/mpl
           git submodule update --init libs/multiprecision
-          git submodule update --init libs/numeric/conversion
-          git submodule update --init libs/predef
-          git submodule update --init libs/preprocessor
           git submodule update --init libs/random
-          git submodule update --init libs/range
-          git submodule update --init libs/rational
           git submodule update --init libs/static_assert
-          git submodule update --init libs/throw_exception
           git submodule update --init libs/type_traits
-          git submodule update --init libs/utility
+          git submodule update --init libs/throw_exception
           ./bootstrap.sh
           ./b2 headers
       - name: gcc-clang-native-ubsan-limb_type_uint64_t
@@ -620,33 +467,16 @@ jobs:
           git clone -b develop --depth 1 https://github.com/boostorg/boost.git ../boost-root
           cd ../boost-root
           git submodule update --init tools
-          git submodule update --init libs/array
           git submodule update --init libs/assert
-          git submodule update --init libs/concept_check
-          git submodule update --init libs/container
-          git submodule update --init libs/config
           git submodule update --init libs/core
-          git submodule update --init libs/detail
-          git submodule update --init libs/exception
-          git submodule update --init libs/functional
+          git submodule update --init libs/config
           git submodule update --init libs/integer
-          git submodule update --init libs/io
-          git submodule update --init libs/iterator
-          git submodule update --init libs/lexical_cast
           git submodule update --init libs/math
-          git submodule update --init libs/move
-          git submodule update --init libs/mpl
           git submodule update --init libs/multiprecision
-          git submodule update --init libs/numeric/conversion
-          git submodule update --init libs/predef
-          git submodule update --init libs/preprocessor
           git submodule update --init libs/random
-          git submodule update --init libs/range
-          git submodule update --init libs/rational
           git submodule update --init libs/static_assert
-          git submodule update --init libs/throw_exception
           git submodule update --init libs/type_traits
-          git submodule update --init libs/utility
+          git submodule update --init libs/throw_exception
           ./bootstrap.sh
           ./b2 headers
       - name: gcc-clang-native-tsan
@@ -677,33 +507,16 @@ jobs:
           git clone -b develop --depth 1 https://github.com/boostorg/boost.git ../boost-root
           cd ../boost-root
           git submodule update --init tools
-          git submodule update --init libs/array
           git submodule update --init libs/assert
-          git submodule update --init libs/concept_check
-          git submodule update --init libs/container
-          git submodule update --init libs/config
           git submodule update --init libs/core
-          git submodule update --init libs/detail
-          git submodule update --init libs/exception
-          git submodule update --init libs/functional
+          git submodule update --init libs/config
           git submodule update --init libs/integer
-          git submodule update --init libs/io
-          git submodule update --init libs/iterator
-          git submodule update --init libs/lexical_cast
           git submodule update --init libs/math
-          git submodule update --init libs/move
-          git submodule update --init libs/mpl
           git submodule update --init libs/multiprecision
-          git submodule update --init libs/numeric/conversion
-          git submodule update --init libs/predef
-          git submodule update --init libs/preprocessor
           git submodule update --init libs/random
-          git submodule update --init libs/range
-          git submodule update --init libs/rational
           git submodule update --init libs/static_assert
-          git submodule update --init libs/throw_exception
           git submodule update --init libs/type_traits
-          git submodule update --init libs/utility
+          git submodule update --init libs/throw_exception
           ./bootstrap.sh
           ./b2 headers
       - name: apple-gcc-clang-native
@@ -726,33 +539,16 @@ jobs:
           git clone -b develop --depth 1 https://github.com/boostorg/boost.git ../boost-root
           cd ../boost-root
           git submodule update --init tools
-          git submodule update --init libs/array
           git submodule update --init libs/assert
-          git submodule update --init libs/concept_check
-          git submodule update --init libs/container
-          git submodule update --init libs/config
           git submodule update --init libs/core
-          git submodule update --init libs/detail
-          git submodule update --init libs/exception
-          git submodule update --init libs/functional
+          git submodule update --init libs/config
           git submodule update --init libs/integer
-          git submodule update --init libs/io
-          git submodule update --init libs/iterator
-          git submodule update --init libs/lexical_cast
           git submodule update --init libs/math
-          git submodule update --init libs/move
-          git submodule update --init libs/mpl
           git submodule update --init libs/multiprecision
-          git submodule update --init libs/numeric/conversion
-          git submodule update --init libs/predef
-          git submodule update --init libs/preprocessor
           git submodule update --init libs/random
-          git submodule update --init libs/range
-          git submodule update --init libs/rational
           git submodule update --init libs/static_assert
-          git submodule update --init libs/throw_exception
           git submodule update --init libs/type_traits
-          git submodule update --init libs/utility
+          git submodule update --init libs/throw_exception
           ./bootstrap.bat
           ./b2 headers
       - uses: actions/checkout@v1
@@ -781,33 +577,16 @@ jobs:
           git clone -b develop --depth 1 https://github.com/boostorg/boost.git ../boost-root
           cd ../boost-root
           git submodule update --init tools
-          git submodule update --init libs/array
           git submodule update --init libs/assert
-          git submodule update --init libs/concept_check
-          git submodule update --init libs/container
-          git submodule update --init libs/config
           git submodule update --init libs/core
-          git submodule update --init libs/detail
-          git submodule update --init libs/exception
-          git submodule update --init libs/functional
+          git submodule update --init libs/config
           git submodule update --init libs/integer
-          git submodule update --init libs/io
-          git submodule update --init libs/iterator
-          git submodule update --init libs/lexical_cast
           git submodule update --init libs/math
-          git submodule update --init libs/move
-          git submodule update --init libs/mpl
           git submodule update --init libs/multiprecision
-          git submodule update --init libs/numeric/conversion
-          git submodule update --init libs/predef
-          git submodule update --init libs/preprocessor
           git submodule update --init libs/random
-          git submodule update --init libs/range
-          git submodule update --init libs/rational
           git submodule update --init libs/static_assert
-          git submodule update --init libs/throw_exception
           git submodule update --init libs/type_traits
-          git submodule update --init libs/utility
+          git submodule update --init libs/throw_exception
           ./bootstrap.bat
           ./b2 headers
       - name: mingw-winhost-x64
