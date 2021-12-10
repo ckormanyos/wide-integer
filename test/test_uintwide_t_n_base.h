@@ -27,12 +27,11 @@
   #endif
 
   #include <boost/multiprecision/cpp_int.hpp>
-  #include <boost/noncopyable.hpp>
 
   #include <test/parallel_for.h>
   #include <math/wide_integer/uintwide_t.h>
 
-  class test_uintwide_t_n_base : private boost::noncopyable
+  class test_uintwide_t_n_base
   {
   public:
     virtual ~test_uintwide_t_n_base() = default;
@@ -109,6 +108,9 @@
     const std::size_t number_of_cases;
 
     test_uintwide_t_n_base() = delete;
+
+    test_uintwide_t_n_base(const test_uintwide_t_n_base&) = delete;
+    test_uintwide_t_n_base& operator=(const test_uintwide_t_n_base&) = delete;
   };
 
   #if (defined(__clang__) && (__clang_major__ > 9)) && !defined(__APPLE__)

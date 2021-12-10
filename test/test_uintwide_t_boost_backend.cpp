@@ -54,9 +54,18 @@ bool math::wide_integer::test_uintwide_t_boost_backend()
     const boost_uint_type boost_control("93326215443944152681699238856266700490715968264381621468592963895217599993229915608941463976156518286253697920827223758251185210916864000000000000000000000000");
 
     const bool local_control_is_ok = (u == local_control);
-    const bool boost_control_is_ok = (boost::lexical_cast<std::string>(u) == boost::lexical_cast<std::string>(boost_control));
 
-    result_is_ok &= (local_control_is_ok && boost_control_is_ok);
+    {
+      std::stringstream strm_lhs;
+      strm_lhs << u;
+
+      std::stringstream strm_rhs;
+      strm_rhs << boost_control;
+
+      const bool boost_control_is_ok = (strm_lhs.str() == strm_rhs.str());
+
+      result_is_ok &= (local_control_is_ok && boost_control_is_ok);
+    }
 
     // Test divide-by-limb.
     u /= 10U;

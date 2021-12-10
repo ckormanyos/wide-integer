@@ -13,8 +13,6 @@
   #include <string>
   #include <type_traits>
 
-  // testing develop on its way to 1.77
-
   #if defined(__GNUC__)
   #pragma GCC diagnostic push
   #pragma GCC diagnostic ignored "-Wconversion"
@@ -30,6 +28,7 @@
   #endif
 
   #include <boost/config.hpp>
+  #include <boost/version.hpp>
   #include <boost/multiprecision/number.hpp>
 
   #include <math/wide_integer/uintwide_t.h>
@@ -47,12 +46,12 @@
   // Define the number category as an integer number kind
   // for the uintwide_t_backend. This is needed for properly
   // interacting as a backend with boost::muliprecision.
-  #if (BOOST_VERSION <= 107200)
+  #if (defined(BOOST_VERSION) && (BOOST_VERSION <= 107200))
   template<const ::math::wide_integer::size_t MyWidth2,
            typename MyLimbType>
   struct number_category<uintwide_t_backend<MyWidth2, MyLimbType>>
     : public boost::mpl::int_<number_kind_integer> { };
-  #elif (BOOST_VERSION <= 107500)
+  #elif (defined(BOOST_VERSION) && (BOOST_VERSION <= 107500))
   template<const ::math::wide_integer::size_t MyWidth2,
            typename MyLimbType>
   struct number_category<uintwide_t_backend<MyWidth2, MyLimbType>>
@@ -72,7 +71,7 @@
   public:
     using representation_type = ::math::wide_integer::uintwide_t<MyWidth2, MyLimbType>;
 
-    #if (BOOST_VERSION <= 107500)
+    #if (defined(BOOST_VERSION) && (BOOST_VERSION <= 107500))
     using signed_types   = mpl::list<std::int64_t>;
     using unsigned_types = mpl::list<std::uint64_t>;
     using float_types    = mpl::list<long double>;

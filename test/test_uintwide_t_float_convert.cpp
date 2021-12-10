@@ -233,9 +233,7 @@ bool math::wide_integer::test_uintwide_t_float_convert()
 
     using std::fabs;
 
-    constexpr float cast_tol_float   = ((std::is_same<boost_limb_type, local_limb_type>::value == true)
-                                         ? std::numeric_limits<float>::epsilon()
-                                         : std::numeric_limits<float>::epsilon() * 2.0F);
+    constexpr float cast_tol_float = float(std::numeric_limits<float>::epsilon() * 2.0F);
 
     const float closeness      = fabs(1.0F - fabs(f_boost / f_local));
     const bool  result_f_is_ok = (closeness < cast_tol_float);
@@ -257,9 +255,7 @@ bool math::wide_integer::test_uintwide_t_float_convert()
 
     using std::fabs;
 
-    constexpr double cast_tol_double = ((std::is_same<boost_limb_type, local_limb_type>::value == true)
-                                         ? std::numeric_limits<double>::epsilon()
-                                         : std::numeric_limits<double>::epsilon() * 2.0);
+    constexpr double cast_tol_double = double(std::numeric_limits<double>::epsilon() * 2.0);
 
     const double closeness      = fabs(1.0 - fabs(d_boost / d_local));
     const bool   result_f_is_ok = (closeness < cast_tol_double);
