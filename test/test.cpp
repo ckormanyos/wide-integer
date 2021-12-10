@@ -414,7 +414,7 @@ int main()
   result_is_ok &= local::test_uintwide_t_boost_backend();                std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
   result_is_ok &= local::test_uintwide_t_examples();                     std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
   result_is_ok &= local::test_uintwide_t_edge_cases();                   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
-  //result_is_ok &= local::test_uintwide_t_float_convert();                std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
+  result_is_ok &= local::test_uintwide_t_float_convert();                std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
   result_is_ok &= local::test_uintwide_t_int_convert();                  std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
   result_is_ok &= local::test_uintwide_t_spot_values();                  std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
   result_is_ok &= local::test_uintwide_t_0000024();                      std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
