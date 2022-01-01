@@ -171,9 +171,6 @@ bool math::wide_integer::test_uintwide_t_float_convert()
   using boost_uint_type = boost::multiprecision::number<boost_uint_backend_type, boost::multiprecision::et_on>;
   using boost_sint_type = boost::multiprecision::number<boost_sint_backend_type, boost::multiprecision::et_on>;
 
-  using boost_limb_type =
-    typename std::iterator_traits<typename boost_uint_backend_type::cpp_int_backend::base_type::cpp_int_base::limb_pointer>::value_type;
-
   #if defined(WIDE_INTEGER_HAS_LIMB_TYPE_UINT64)
   using local_limb_type = std::uint64_t;
   #else
