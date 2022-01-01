@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright Christopher Kormanyos 2019 - 2021.
+//  Copyright Christopher Kormanyos 2019 - 2022.
 //  Distributed under the Boost Software License,
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -40,6 +40,60 @@ namespace local
 bool math::wide_integer::test_uintwide_t_spot_values()
 {
   bool result_is_ok = true;
+
+  {
+    // See also https://github.com/ckormanyos/wide-integer/issues/154
+
+    using local_uint64_type    = math::wide_integer::uint64_t;
+    using local_uint128_type   = math::wide_integer::uint128_t;
+    using local_uint512_type   = math::wide_integer::uint512_t;
+    using local_uint1024_type  = math::wide_integer::uint1024_t;
+    using local_uint2048_type  = math::wide_integer::uint2048_t;
+    using local_uint4096_type  = math::wide_integer::uint4096_t;
+    using local_uint8192_type  = math::wide_integer::uint8192_t;
+    using local_uint16384_type = math::wide_integer::uint16384_t;
+    using local_uint32768_type = math::wide_integer::uint32768_t;
+    using local_uint65536_type = math::wide_integer::uint65536_t;
+
+    using local_int64_type    = math::wide_integer::int64_t;
+    using local_int128_type   = math::wide_integer::int128_t;
+    using local_int512_type   = math::wide_integer::int512_t;
+    using local_int1024_type  = math::wide_integer::int1024_t;
+    using local_int2048_type  = math::wide_integer::int2048_t;
+    using local_int4096_type  = math::wide_integer::int4096_t;
+    using local_int8192_type  = math::wide_integer::int8192_t;
+    using local_int16384_type = math::wide_integer::int16384_t;
+    using local_int32768_type = math::wide_integer::int32768_t;
+    using local_int65536_type = math::wide_integer::int65536_t;
+
+    result_is_ok &=
+      (
+           ((std::numeric_limits<local_uint64_type   >::max)() != 0U)
+        && ((std::numeric_limits<local_uint128_type  >::max)() != 0U)
+        && ((std::numeric_limits<local_uint512_type  >::max)() != 0U)
+        && ((std::numeric_limits<local_uint1024_type >::max)() != 0U)
+        && ((std::numeric_limits<local_uint2048_type >::max)() != 0U)
+        && ((std::numeric_limits<local_uint4096_type >::max)() != 0U)
+        && ((std::numeric_limits<local_uint8192_type >::max)() != 0U)
+        && ((std::numeric_limits<local_uint16384_type>::max)() != 0U)
+        && ((std::numeric_limits<local_uint32768_type>::max)() != 0U)
+        && ((std::numeric_limits<local_uint65536_type>::max)() != 0U)
+      );
+
+    result_is_ok &=
+      (
+           ((std::numeric_limits<local_int64_type   >::max)() != 0)
+        && ((std::numeric_limits<local_int128_type  >::max)() != 0)
+        && ((std::numeric_limits<local_int512_type  >::max)() != 0)
+        && ((std::numeric_limits<local_int1024_type >::max)() != 0)
+        && ((std::numeric_limits<local_int2048_type >::max)() != 0)
+        && ((std::numeric_limits<local_int4096_type >::max)() != 0)
+        && ((std::numeric_limits<local_int8192_type >::max)() != 0)
+        && ((std::numeric_limits<local_int16384_type>::max)() != 0)
+        && ((std::numeric_limits<local_int32768_type>::max)() != 0)
+        && ((std::numeric_limits<local_int65536_type>::max)() != 0)
+      );
+  }
 
   {
     // See also https://github.com/ckormanyos/wide-integer/pull/134
