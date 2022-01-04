@@ -34,7 +34,7 @@
 
 #include <examples/example_uintwide_t.h>
 
-bool math::wide_integer::example008a_miller_rabin_prime()
+auto math::wide_integer::example008a_miller_rabin_prime() -> bool
 {
   using wide_integer_type = boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<512U>,
                                                           boost::multiprecision::et_off>;

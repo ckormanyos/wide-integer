@@ -17,7 +17,7 @@ namespace local
   }
 }
 
-bool math::wide_integer::example000a_builtin_convert()
+auto math::wide_integer::example000a_builtin_convert() -> bool
 {
   bool result_is_ok = true;
 

@@ -16,7 +16,7 @@ namespace local
   using  int32_t = math::wide_integer::uintwide_t<32U, std::uint8_t, void, true>;
 }
 
-bool math::wide_integer::example000_numeric_limits()
+auto math::wide_integer::example000_numeric_limits() -> bool
 {
   bool result_is_ok = true;
 

@@ -15,7 +15,7 @@
 #include <examples/example_uintwide_t.h>
 #include <math/wide_integer/uintwide_t.h>
 
-bool math::wide_integer::example008_miller_rabin_prime()
+auto math::wide_integer::example008_miller_rabin_prime() -> bool
 {
   using wide_integer_type   = math::wide_integer::uintwide_t<512U>;
   using distribution_type   = math::wide_integer::uniform_int_distribution<wide_integer_type::my_width2, typename wide_integer_type::limb_type>;

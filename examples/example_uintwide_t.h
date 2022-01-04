@@ -12,26 +12,26 @@
 
   namespace math { namespace wide_integer {
 
-  bool example000_numeric_limits     ();
-  bool example000a_builtin_convert   ();
-  bool example001_mul_div            ();
-  bool example001a_div_mod           ();
-  bool example002_shl_shr            ();
-  bool example003_sqrt               ();
-  bool example003a_cbrt              ();
-  bool example004_rootk_pow          ();
-  bool example005_powm               ();
-  bool example005a_pow_factors_of_p99();
-  bool example006_gcd                ();
-  bool example007_random_generator   ();
-  bool example008_miller_rabin_prime ();
-  bool example008a_miller_rabin_prime();
-  bool example009_timed_mul          ();
-  bool example009a_timed_mul_4_by_4  ();
-  bool example009b_timed_mul_8_by_8  ();
-  bool example010_uint48_t           ();
-  bool example011_uint24_t           ();
-  bool example012_rsa_crypto         ();
+  auto example000_numeric_limits     () -> bool;
+  auto example000a_builtin_convert   () -> bool;
+  auto example001_mul_div            () -> bool;
+  auto example001a_div_mod           () -> bool;
+  auto example002_shl_shr            () -> bool;
+  auto example003_sqrt               () -> bool;
+  auto example003a_cbrt              () -> bool;
+  auto example004_rootk_pow          () -> bool;
+  auto example005_powm               () -> bool;
+  auto example005a_pow_factors_of_p99() -> bool;
+  auto example006_gcd                () -> bool;
+  auto example007_random_generator   () -> bool;
+  auto example008_miller_rabin_prime () -> bool;
+  auto example008a_miller_rabin_prime() -> bool;
+  auto example009_timed_mul          () -> bool;
+  auto example009a_timed_mul_4_by_4  () -> bool;
+  auto example009b_timed_mul_8_by_8  () -> bool;
+  auto example010_uint48_t           () -> bool;
+  auto example011_uint24_t           () -> bool;
+  auto example012_rsa_crypto         () -> bool;
 
   } } // namespace math::wide_integer
 

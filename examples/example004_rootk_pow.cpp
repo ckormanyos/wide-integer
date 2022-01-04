@@ -8,7 +8,7 @@
 #include <examples/example_uintwide_t.h>
 #include <math/wide_integer/uintwide_t.h>
 
-bool math::wide_integer::example004_rootk_pow()
+auto math::wide_integer::example004_rootk_pow() -> bool
 {
   bool result_is_ok = true;
 

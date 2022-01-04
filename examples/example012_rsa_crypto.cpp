@@ -351,7 +351,7 @@ namespace local_rsa
   };
 }
 
-bool math::wide_integer::example012_rsa_crypto()
+auto math::wide_integer::example012_rsa_crypto() -> bool
 {
   // Consider lines 25-30 in the file "KeyGen_186-3.rsp".
 

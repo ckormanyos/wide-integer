@@ -8,7 +8,7 @@
 #include <examples/example_uintwide_t.h>
 #include <math/wide_integer/uintwide_t.h>
 
-bool math::wide_integer::example005a_pow_factors_of_p99()
+auto math::wide_integer::example005a_pow_factors_of_p99() -> bool
 {
   using uint384_t = math::wide_integer::uintwide_t<384U>;
 

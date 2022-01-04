@@ -8,7 +8,7 @@
 #include <examples/example_uintwide_t.h>
 #include <math/wide_integer/uintwide_t.h>
 
-bool math::wide_integer::example002_shl_shr()
+auto math::wide_integer::example002_shl_shr() -> bool
 {
   using math::wide_integer::uint256_t;
 

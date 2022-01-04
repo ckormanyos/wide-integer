@@ -8,7 +8,7 @@
 #include <examples/example_uintwide_t.h>
 #include <math/wide_integer/uintwide_t.h>
 
-bool math::wide_integer::example005_powm()
+auto math::wide_integer::example005_powm() -> bool
 {
   using math::wide_integer::uint256_t;
 

@@ -8,7 +8,7 @@
 #include <examples/example_uintwide_t.h>
 #include <math/wide_integer/uintwide_t.h>
 
-bool math::wide_integer::example001a_div_mod()
+auto math::wide_integer::example001a_div_mod() -> bool
 {
   using math::wide_integer::uint512_t;
 

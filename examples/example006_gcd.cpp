@@ -8,7 +8,7 @@
 #include <examples/example_uintwide_t.h>
 #include <math/wide_integer/uintwide_t.h>
 
-bool math::wide_integer::example006_gcd()
+auto math::wide_integer::example006_gcd() -> bool
 {
   using math::wide_integer::uint256_t;
 

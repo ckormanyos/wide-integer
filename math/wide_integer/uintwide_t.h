@@ -211,7 +211,7 @@
     }
 
     // Assignment operator.
-    dynamic_array& operator=(const dynamic_array& other)
+    auto operator=(const dynamic_array& other) -> dynamic_array&
     {
       if(this != &other)
       {
@@ -224,7 +224,7 @@
     }
 
     // Move assignment operator.
-    dynamic_array& operator=(dynamic_array&& other)
+    auto operator=(dynamic_array&& other) -> dynamic_array&
     {
       // Destroy the elements and deallocate the range.
       pointer p = elems;
@@ -321,10 +321,10 @@
   };
 
   template<typename ValueType, typename AllocatorType>
-  bool operator==(const dynamic_array<ValueType, AllocatorType>& lhs,
-                  const dynamic_array<ValueType, AllocatorType>& rhs)
+  auto operator==(const dynamic_array<ValueType, AllocatorType>& lhs,
+                  const dynamic_array<ValueType, AllocatorType>& rhs) -> bool
   {
-    bool left_and_right_are_equal;
+    bool left_and_right_are_equal = false;
 
     const bool sizes_are_equal = (lhs.size() == rhs.size());
 
@@ -339,17 +339,17 @@
     }
     else
     {
-      left_and_right_are_equal = false;
+      ;
     }
 
     return left_and_right_are_equal;
   }
 
   template<typename ValueType, typename AllocatorType>
-  bool operator<(const dynamic_array<ValueType, AllocatorType>& lhs,
-                 const dynamic_array<ValueType, AllocatorType>& rhs)
+  auto operator<(const dynamic_array<ValueType, AllocatorType>& lhs,
+                 const dynamic_array<ValueType, AllocatorType>& rhs) -> bool
   {
-    typedef typename dynamic_array<ValueType, AllocatorType>::size_type size_type;
+    using size_type = typename dynamic_array<ValueType, AllocatorType>::size_type;
 
     const bool size_of_left_is_zero = (lhs.size() == size_type(0U));
 
@@ -380,29 +380,29 @@
   }
 
   template<typename ValueType, typename AllocatorType>
-  bool operator!=(const dynamic_array<ValueType, AllocatorType>& lhs,
-                  const dynamic_array<ValueType, AllocatorType>& rhs)
+  auto operator!=(const dynamic_array<ValueType, AllocatorType>& lhs,
+                  const dynamic_array<ValueType, AllocatorType>& rhs) -> bool
   {
     return ((lhs == rhs) == false);
   }
 
   template<typename ValueType, typename AllocatorType>
-  bool operator>(const dynamic_array<ValueType, AllocatorType>& lhs,
-                  const dynamic_array<ValueType, AllocatorType>& rhs)
+  auto operator>(const dynamic_array<ValueType, AllocatorType>& lhs,
+                 const dynamic_array<ValueType, AllocatorType>& rhs) -> bool
   {
     return (rhs < lhs);
   }
 
   template<typename ValueType, typename AllocatorType>
-  bool operator>=(const dynamic_array<ValueType, AllocatorType>& lhs,
-                  const dynamic_array<ValueType, AllocatorType>& rhs)
+  auto operator>=(const dynamic_array<ValueType, AllocatorType>& lhs,
+                  const dynamic_array<ValueType, AllocatorType>& rhs) -> bool
   {
     return ((lhs < rhs) == false);
   }
 
   template<typename ValueType, typename AllocatorType>
-  bool operator<=(const dynamic_array<ValueType, AllocatorType>& lhs,
-                  const dynamic_array<ValueType, AllocatorType>& rhs)
+  auto operator<=(const dynamic_array<ValueType, AllocatorType>& lhs,
+                  const dynamic_array<ValueType, AllocatorType>& rhs) -> bool
   {
     return ((rhs < lhs) == false);
   }
@@ -421,6 +421,8 @@
   #include <util/utility/util_dynamic_array.h>
 
   #endif
+
+  // NOLINTBEGIN(*-avoid-magic-numbers)
 
   namespace math { namespace wide_integer {
 
@@ -481,10 +483,10 @@
   #if !defined(WIDE_INTEGER_DISABLE_FLOAT_INTEROP)
   namespace my_own {
 
-  template<typename FloatingPointType> WIDE_INTEGER_CONSTEXPR typename std::enable_if<((std::is_floating_point<FloatingPointType>::value == true) && (std::numeric_limits<FloatingPointType>::is_iec559 == true )), FloatingPointType>::type frexp   (FloatingPointType x, int* expptr);
-  template<typename FloatingPointType> WIDE_INTEGER_CONSTEXPR typename std::enable_if<((std::is_floating_point<FloatingPointType>::value == true) && (std::numeric_limits<FloatingPointType>::is_iec559 == false)), FloatingPointType>::type frexp   (FloatingPointType x, int* expptr);
-  template<typename FloatingPointType> WIDE_INTEGER_CONSTEXPR typename std::enable_if<((std::is_floating_point<FloatingPointType>::value == true) && (std::numeric_limits<FloatingPointType>::is_iec559 == true )), bool>::type              isfinite(FloatingPointType x);
-  template<typename FloatingPointType> WIDE_INTEGER_CONSTEXPR typename std::enable_if<((std::is_floating_point<FloatingPointType>::value == true) && (std::numeric_limits<FloatingPointType>::is_iec559 == false)), bool>::type              isfinite(FloatingPointType x);
+  template<typename FloatingPointType> WIDE_INTEGER_CONSTEXPR auto frexp   (FloatingPointType x, int* expptr) -> typename std::enable_if<((std::is_floating_point<FloatingPointType>::value == true) && (std::numeric_limits<FloatingPointType>::is_iec559 == true )), FloatingPointType>::type;
+  template<typename FloatingPointType> WIDE_INTEGER_CONSTEXPR auto frexp   (FloatingPointType x, int* expptr) -> typename std::enable_if<((std::is_floating_point<FloatingPointType>::value == true) && (std::numeric_limits<FloatingPointType>::is_iec559 == false)), FloatingPointType>::type;
+  template<typename FloatingPointType> WIDE_INTEGER_CONSTEXPR auto isfinite(FloatingPointType x)              -> typename std::enable_if<((std::is_floating_point<FloatingPointType>::value == true) && (std::numeric_limits<FloatingPointType>::is_iec559 == true )), bool>::type;
+  template<typename FloatingPointType> WIDE_INTEGER_CONSTEXPR auto isfinite(FloatingPointType x)              -> typename std::enable_if<((std::is_floating_point<FloatingPointType>::value == true) && (std::numeric_limits<FloatingPointType>::is_iec559 == false)), bool>::type;
 
   }
   #endif
@@ -657,46 +659,44 @@
            typename LimbType,
            typename AllocatorType,
            const bool IsSigned>
-  WIDE_INTEGER_CONSTEXPR unsinged_fast_type lsb(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& x);
+  WIDE_INTEGER_CONSTEXPR auto lsb(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& x) -> unsinged_fast_type;
 
   template<const size_t Width2,
            typename LimbType,
            typename AllocatorType,
            const bool IsSigned>
-  WIDE_INTEGER_CONSTEXPR unsinged_fast_type msb(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& x);
+  WIDE_INTEGER_CONSTEXPR auto msb(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& x) -> unsinged_fast_type;
 
   template<const size_t Width2,
            typename LimbType,
            typename AllocatorType,
            const bool IsSigned>
-  constexpr uintwide_t<Width2, LimbType, AllocatorType, IsSigned> abs(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& x);
+  constexpr auto abs(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& x) -> uintwide_t<Width2, LimbType, AllocatorType, IsSigned>;
 
   template<const size_t Width2,
            typename LimbType,
            typename AllocatorType,
            const bool IsSigned>
-  WIDE_INTEGER_CONSTEXPR uintwide_t<Width2, LimbType, AllocatorType, IsSigned> sqrt(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& m);
+  WIDE_INTEGER_CONSTEXPR auto sqrt(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& m) -> uintwide_t<Width2, LimbType, AllocatorType, IsSigned>;
 
   template<const size_t Width2,
            typename LimbType,
            typename AllocatorType,
            const bool IsSigned>
-  WIDE_INTEGER_CONSTEXPR uintwide_t<Width2, LimbType, AllocatorType, IsSigned> cbrt(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& m);
+  WIDE_INTEGER_CONSTEXPR auto cbrt(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& m) -> uintwide_t<Width2, LimbType, AllocatorType, IsSigned>;
 
   template<const size_t Width2,
            typename LimbType,
            typename AllocatorType,
            const bool IsSigned>
-  WIDE_INTEGER_CONSTEXPR uintwide_t<Width2, LimbType, AllocatorType, IsSigned> rootk(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& m,
-                                                                                     const std::uint_fast8_t k);
+  WIDE_INTEGER_CONSTEXPR auto rootk(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& m, const std::uint_fast8_t k) -> uintwide_t<Width2, LimbType, AllocatorType, IsSigned>;
 
   template<typename OtherUnsignedIntegralTypeP,
            const size_t Width2,
            typename LimbType,
            typename AllocatorType,
            const bool IsSigned>
-  WIDE_INTEGER_CONSTEXPR uintwide_t<Width2, LimbType, AllocatorType, IsSigned> pow(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& b,
-                                                                                   const OtherUnsignedIntegralTypeP& p);
+  WIDE_INTEGER_CONSTEXPR auto pow(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& b, const OtherUnsignedIntegralTypeP& p) -> uintwide_t<Width2, LimbType, AllocatorType, IsSigned>;
 
   template<typename OtherUnsignedIntegralTypeP,
            typename OtherUnsignedIntegralTypeM,
@@ -704,33 +704,31 @@
            typename LimbType,
            typename AllocatorType,
            const bool IsSigned>
-  WIDE_INTEGER_CONSTEXPR uintwide_t<Width2, LimbType, AllocatorType, IsSigned> powm(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& b,
-                                                                                    const OtherUnsignedIntegralTypeP&    p,
-                                                                                    const OtherUnsignedIntegralTypeM&    m);
+  WIDE_INTEGER_CONSTEXPR auto powm(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& b,
+                                   const OtherUnsignedIntegralTypeP&    p,
+                                   const OtherUnsignedIntegralTypeM&    m) -> uintwide_t<Width2, LimbType, AllocatorType, IsSigned>;
 
   template<const size_t Width2,
            typename LimbType,
            typename AllocatorType,
            const bool IsSigned>
-  WIDE_INTEGER_CONSTEXPR uintwide_t<Width2, LimbType, AllocatorType, IsSigned> gcd(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& a,
-                                                                                   const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& b);
+  WIDE_INTEGER_CONSTEXPR auto gcd(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& a,
+                                  const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& b) -> uintwide_t<Width2, LimbType, AllocatorType, IsSigned>;
 
   template<typename UnsignedShortType>
-  WIDE_INTEGER_CONSTEXPR typename std::enable_if<(   (std::is_integral<UnsignedShortType>::value == true)
-                                                  && (std::is_unsigned<UnsignedShortType>::value == true)), UnsignedShortType>::type
-  gcd(const UnsignedShortType& u, const UnsignedShortType& v);
+  WIDE_INTEGER_CONSTEXPR auto gcd(const UnsignedShortType& u, const UnsignedShortType& v) -> typename std::enable_if<(   (std::is_integral<UnsignedShortType>::value == true)
+                                                                                                                      && (std::is_unsigned<UnsignedShortType>::value == true)), UnsignedShortType>::type;
 
   template<const size_t Width2,
            typename LimbType,
            typename AllocatorType,
            const bool IsSigned>
-  WIDE_INTEGER_CONSTEXPR uintwide_t<Width2, LimbType, AllocatorType, IsSigned> lcm(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& a,
-                                                                                   const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& b);
+  WIDE_INTEGER_CONSTEXPR auto lcm(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& a,
+                                  const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& b) -> uintwide_t<Width2, LimbType, AllocatorType, IsSigned>;
 
   template<typename UnsignedShortType>
-  WIDE_INTEGER_CONSTEXPR typename std::enable_if<(   (std::is_integral<UnsignedShortType>::value == true)
-                                                  && (std::is_unsigned<UnsignedShortType>::value == true)), UnsignedShortType>::type
-  lcm(const UnsignedShortType& a, const UnsignedShortType& b);
+  WIDE_INTEGER_CONSTEXPR auto lcm(const UnsignedShortType& a, const UnsignedShortType& b) -> typename std::enable_if<(   (std::is_integral<UnsignedShortType>::value == true)
+                                                                                                                      && (std::is_unsigned<UnsignedShortType>::value == true)), UnsignedShortType>::type;
 
   template<const size_t Width2,
            typename LimbType = std::uint32_t,
@@ -748,15 +746,15 @@
            typename LimbType,
            typename AllocatorType,
            const bool IsSigned>
-  constexpr bool operator==(const uniform_int_distribution<Width2, LimbType, AllocatorType, IsSigned>& lhs,
-                            const uniform_int_distribution<Width2, LimbType, AllocatorType, IsSigned>& rhs);
+  constexpr auto operator==(const uniform_int_distribution<Width2, LimbType, AllocatorType, IsSigned>& lhs,
+                            const uniform_int_distribution<Width2, LimbType, AllocatorType, IsSigned>& rhs) -> bool;
 
   template<const size_t Width2,
            typename LimbType,
            typename AllocatorType,
            const bool IsSigned>
-  constexpr bool operator!=(const uniform_int_distribution<Width2, LimbType, AllocatorType, IsSigned>& lhs,
-                            const uniform_int_distribution<Width2, LimbType, AllocatorType, IsSigned>& rhs);
+  constexpr auto operator!=(const uniform_int_distribution<Width2, LimbType, AllocatorType, IsSigned>& lhs,
+                            const uniform_int_distribution<Width2, LimbType, AllocatorType, IsSigned>& rhs) -> bool;
 
   template<typename DistributionType,
            typename GeneratorType,
@@ -764,12 +762,14 @@
            typename LimbType,
            typename AllocatorType,
            const bool IsSigned>
-  bool miller_rabin(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& n,
+  auto miller_rabin(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& n,
                     const unsinged_fast_type                                     number_of_trials,
                     DistributionType&                                            distribution,
-                    GeneratorType&                                               generator);
+                    GeneratorType&                                               generator) -> bool;
 
   } } // namespace math::wide_integer
+
+  // NOLINTEND(*-avoid-magic-numbers)
 
   namespace std
   {
@@ -792,7 +792,7 @@
     using base_class_type = detail::dynamic_array<MyType, MyAlloc, size_t, ptrdiff_t>;
 
   public:
-    static constexpr typename base_class_type::size_type static_size() { return MySize; }
+    static constexpr auto static_size() -> typename base_class_type::size_type { return MySize; }
 
     fixed_dynamic_array(const typename base_class_type::size_type       s = MySize,
                         const typename base_class_type::value_type&     v = typename base_class_type::value_type(),
@@ -818,14 +818,14 @@
     constexpr fixed_dynamic_array(fixed_dynamic_array&& other_array)
       : base_class_type((base_class_type&&) other_array) { }
 
-    fixed_dynamic_array& operator=(const fixed_dynamic_array& other_array)
+    auto operator=(const fixed_dynamic_array& other_array) -> fixed_dynamic_array&
     {
       base_class_type::operator=((const base_class_type&) other_array);
 
       return *this;
     }
 
-    fixed_dynamic_array& operator=(fixed_dynamic_array&& other_array)
+    auto operator=(fixed_dynamic_array&& other_array) -> fixed_dynamic_array&
     {
       base_class_type::operator=((base_class_type&&) other_array);
 
@@ -846,9 +846,9 @@
     using size_type  = size_t;
     using value_type = typename base_class_type::value_type;
 
-    static constexpr size_type static_size() { return MySize; }
+    static constexpr auto static_size() -> size_type { return MySize; }
 
-    constexpr fixed_static_array() { }
+    constexpr fixed_static_array() = default;
 
     WIDE_INTEGER_CONSTEXPR fixed_static_array(const size_type   s,
                                               const value_type& v = value_type())
@@ -889,11 +889,11 @@
 
     constexpr fixed_static_array(fixed_static_array&& other_array) = default;
 
-    WIDE_INTEGER_CONSTEXPR fixed_static_array& operator=(const fixed_static_array& other_array) = default;
-    WIDE_INTEGER_CONSTEXPR fixed_static_array& operator=(fixed_static_array&& other_array) = default;
+    WIDE_INTEGER_CONSTEXPR auto operator=(const fixed_static_array& other_array) -> fixed_static_array& = default;
+    WIDE_INTEGER_CONSTEXPR auto operator=(fixed_static_array&& other_array)      -> fixed_static_array& = default;
 
-    WIDE_INTEGER_CONSTEXPR typename base_class_type::reference       operator[](const size_type i)       { return base_class_type::operator[](static_cast<typename base_class_type::size_type>(i)); }
-    WIDE_INTEGER_CONSTEXPR typename base_class_type::const_reference operator[](const size_type i) const { return base_class_type::operator[](static_cast<typename base_class_type::size_type>(i)); }
+    WIDE_INTEGER_CONSTEXPR auto operator[](const size_type i)       -> typename base_class_type::reference       { return base_class_type::operator[](static_cast<typename base_class_type::size_type>(i)); }
+    WIDE_INTEGER_CONSTEXPR auto operator[](const size_type i) const -> typename base_class_type::const_reference { return base_class_type::operator[](static_cast<typename base_class_type::size_type>(i)); }
   };
 
   template<const size_t Width2> struct verify_power_of_two_times_granularity_one_sixty_fourth
@@ -919,22 +919,22 @@
   };
 
   template<typename UnsignedIntegralType>
-  inline WIDE_INTEGER_CONSTEXPR unsinged_fast_type lsb_helper(const UnsignedIntegralType& x);
+  inline WIDE_INTEGER_CONSTEXPR auto lsb_helper(const UnsignedIntegralType& x) -> unsinged_fast_type;
 
   template<typename UnsignedIntegralType>
-  inline WIDE_INTEGER_CONSTEXPR unsinged_fast_type msb_helper(const UnsignedIntegralType& x);
+  inline WIDE_INTEGER_CONSTEXPR auto msb_helper(const UnsignedIntegralType& x) -> unsinged_fast_type;
 
   template<>
-  inline WIDE_INTEGER_CONSTEXPR unsinged_fast_type msb_helper<std::uint32_t>(const std::uint32_t& x);
+  inline WIDE_INTEGER_CONSTEXPR auto msb_helper<std::uint32_t>(const std::uint32_t& x) -> unsinged_fast_type;
 
   template<>
-  inline WIDE_INTEGER_CONSTEXPR unsinged_fast_type msb_helper<std::uint16_t>(const std::uint16_t& x);
+  inline WIDE_INTEGER_CONSTEXPR auto msb_helper<std::uint16_t>(const std::uint16_t& x) -> unsinged_fast_type;
 
   template<>
-  inline WIDE_INTEGER_CONSTEXPR unsinged_fast_type msb_helper<std::uint8_t>(const std::uint8_t& x);
+  inline WIDE_INTEGER_CONSTEXPR auto msb_helper<std::uint8_t>(const std::uint8_t& x) -> unsinged_fast_type;
 
   // Use a local implementation of string copy.
-  inline WIDE_INTEGER_CONSTEXPR char* strcpy_unsafe(char* dst, const char* src)
+  inline WIDE_INTEGER_CONSTEXPR auto strcpy_unsafe(char* dst, const char* src) -> char*
   {
     while((*dst++ = *src++) != char('\0')) { ; }
 
@@ -942,7 +942,7 @@
   }
 
   // Use a local implementation of string length.
-  inline WIDE_INTEGER_CONSTEXPR unsinged_fast_type strlen_unsafe(const char* p_str)
+  inline WIDE_INTEGER_CONSTEXPR auto strlen_unsafe(const char* p_str) -> unsinged_fast_type
   {
     const char* p_str_copy{};
 
@@ -953,7 +953,7 @@
 
   template<typename UnsignedShortType,
            typename UnsignedLargeType = typename detail::uint_type_helper<size_t(std::numeric_limits<UnsignedShortType>::digits * 2)>::exact_unsigned_type>
-  constexpr UnsignedShortType make_lo(const UnsignedLargeType& u)
+  constexpr auto make_lo(const UnsignedLargeType& u) -> UnsignedShortType
   {
     // From an unsigned integral input parameter of type UnsignedLargeType,
     // extract the low part of it. The type of the extracted
@@ -980,7 +980,7 @@
 
   template<typename UnsignedShortType,
            typename UnsignedLargeType = typename detail::uint_type_helper<size_t(std::numeric_limits<UnsignedShortType>::digits * 2)>::exact_unsigned_type>
-  constexpr UnsignedShortType make_hi(const UnsignedLargeType& u)
+  constexpr auto make_hi(const UnsignedLargeType& u) -> UnsignedShortType
   {
     // From an unsigned integral input parameter of type UnsignedLargeType,
     // extract the high part of it. The type of the extracted
@@ -1007,7 +1007,7 @@
 
   template<typename UnsignedShortType,
            typename UnsignedLargeType = typename detail::uint_type_helper<size_t(std::numeric_limits<UnsignedShortType>::digits * 2)>::exact_unsigned_type>
-  constexpr UnsignedLargeType make_large(const UnsignedShortType& lo, const UnsignedShortType& hi)
+  constexpr auto make_large(const UnsignedShortType& lo, const UnsignedShortType& hi) -> UnsignedLargeType
   {
     // Create a composite unsigned integral value having type UnsignedLargeType.
     // Two constituents are used having type UnsignedShortType, whereby the
@@ -1033,17 +1033,15 @@
   }
 
   template<typename UnsignedIntegralType>
-  constexpr typename std::enable_if<   (std::is_integral<UnsignedIntegralType>::value == true)
-                                    && (std::is_unsigned<UnsignedIntegralType>::value == true), UnsignedIntegralType>::type
-  negate(UnsignedIntegralType u)
+  constexpr auto negate(UnsignedIntegralType u) -> typename std::enable_if<   (std::is_integral<UnsignedIntegralType>::value == true)
+                                                                           && (std::is_unsigned<UnsignedIntegralType>::value == true), UnsignedIntegralType>::type
   {
     return (UnsignedIntegralType) (((UnsignedIntegralType) ~u) + 1U);
   }
 
   template<typename SignedIntegralType>
-  constexpr typename std::enable_if<   (std::is_integral<SignedIntegralType>::value == true)
-                                    && (std::is_signed  <SignedIntegralType>::value == true), SignedIntegralType>::type
-  negate(SignedIntegralType n)
+  constexpr auto negate(SignedIntegralType n) -> typename std::enable_if<   (std::is_integral<SignedIntegralType>::value == true)
+                                                                         && (std::is_signed  <SignedIntegralType>::value == true), SignedIntegralType>::type
   {
     using local_unsigned_type =
       typename detail::uint_type_helper<size_t(std::numeric_limits<SignedIntegralType>::digits + 1)>::exact_unsigned_type;
@@ -1078,11 +1076,11 @@
       using my_own::frexp;
 
       // Get the fraction and base-2 exponent.
-      native_float_type man = (native_float_type) frexp(f, &my_exponent_part);
+      auto man = static_cast<native_float_type>(frexp(f, &my_exponent_part));
 
       unsigned n2 = 0U;
 
-      for(std::uint_fast16_t i = static_cast<std::uint_fast16_t>(0U); i < static_cast<std::uint_fast16_t>(std::numeric_limits<native_float_type>::digits); ++i)
+      for(auto i = static_cast<std::uint_fast16_t>(0U); i < static_cast<std::uint_fast16_t>(std::numeric_limits<native_float_type>::digits); ++i)
       {
         // Extract the mantissa of the floating-point type in base-2
         // (one bit at a time) and store it in an unsigned long long.
@@ -1107,15 +1105,15 @@
       my_exponent_part -= 1;
     }
 
-    WIDE_INTEGER_CONSTEXPR unsigned long long get_mantissa() const { return my_mantissa_part; }
-    WIDE_INTEGER_CONSTEXPR int                get_exponent() const { return my_exponent_part; }
+    WIDE_INTEGER_CONSTEXPR auto get_mantissa() const -> unsigned long long { return my_mantissa_part; }
+    WIDE_INTEGER_CONSTEXPR auto get_exponent() const -> int                { return my_exponent_part; }
 
-  private:
     WIDE_INTEGER_CONSTEXPR native_float_parts() = delete;
     WIDE_INTEGER_CONSTEXPR native_float_parts(const native_float_parts&) = delete;
 
-    WIDE_INTEGER_CONSTEXPR const native_float_parts& operator=(const native_float_parts&) = delete;
+    WIDE_INTEGER_CONSTEXPR auto operator=(const native_float_parts&) -> const native_float_parts& = delete;
 
+  private:
     unsigned long long my_mantissa_part;
     int                my_exponent_part;
   };
@@ -1203,7 +1201,7 @@
     using double_width_type = uintwide_t<size_t(Width2 * 2U), limb_type, AllocatorType, IsSigned>;
 
     // Default constructor.
-    constexpr uintwide_t() { }
+    constexpr uintwide_t() = default;
 
     // Constructors from built-in unsigned integral types that
     // are less wide than limb_type or exactly as wide as limb_type.
@@ -1375,12 +1373,12 @@
       : values(static_cast<representation_type&&>(other.values)) { }
 
     // Assignment operator.
-    WIDE_INTEGER_CONSTEXPR uintwide_t& operator=(const uintwide_t& other) = default;
+    WIDE_INTEGER_CONSTEXPR auto operator=(const uintwide_t& other) -> uintwide_t& = default;
 
     // Assignment operator from the other signed-ness type.
     template<const bool OtherIsSigned,
              typename std::enable_if<(OtherIsSigned != IsSigned)>::type const* = nullptr>
-    WIDE_INTEGER_CONSTEXPR uintwide_t& operator=(const uintwide_t<Width2, LimbType, AllocatorType, OtherIsSigned>& other)
+    WIDE_INTEGER_CONSTEXPR auto operator=(const uintwide_t<Width2, LimbType, AllocatorType, OtherIsSigned>& other) -> uintwide_t&
     {
       values = other.values;
 
@@ -1388,12 +1386,12 @@
     }
 
     // Trivial move assignment operator.
-    WIDE_INTEGER_CONSTEXPR uintwide_t& operator=(uintwide_t&& other) = default;
+    WIDE_INTEGER_CONSTEXPR auto operator=(uintwide_t&& other) -> uintwide_t& = default;
 
     // Trivial move assignment operator from the other signed-ness type.
     template<const bool OtherIsSigned,
              typename std::enable_if<(OtherIsSigned != IsSigned)>::type const* = nullptr>
-    WIDE_INTEGER_CONSTEXPR uintwide_t& operator=(uintwide_t<Width2, LimbType, AllocatorType, OtherIsSigned>&& other)
+    WIDE_INTEGER_CONSTEXPR auto operator=(uintwide_t<Width2, LimbType, AllocatorType, OtherIsSigned>&& other) -> uintwide_t&
     {
       values = static_cast<representation_type&&>(other.values);
 
@@ -1401,9 +1399,9 @@
     }
 
     #if !defined(WIDE_INTEGER_DISABLE_FLOAT_INTEROP)
-    explicit constexpr operator long double       () const { return extract_builtin_floating_point_type<long double>(); }
-    explicit constexpr operator double            () const { return extract_builtin_floating_point_type<double>     (); }
-    explicit constexpr operator float             () const { return extract_builtin_floating_point_type<float>      (); }
+    explicit constexpr operator long double() const { return extract_builtin_floating_point_type<long double>(); }
+    explicit constexpr operator double     () const { return extract_builtin_floating_point_type<double>     (); }
+    explicit constexpr operator float      () const { return extract_builtin_floating_point_type<float>      (); }
     #endif
 
     template<typename Integer, typename = typename std::enable_if<std::is_integral<Integer>::value>::type>
@@ -1438,15 +1436,15 @@
     }
 
     // Provide a user interface to the internal data representation.
-    WIDE_INTEGER_CONSTEXPR       representation_type&  representation()       { return values; }
-    WIDE_INTEGER_CONSTEXPR const representation_type&  representation() const { return values; }
-    WIDE_INTEGER_CONSTEXPR const representation_type& crepresentation() const { return values; }
+    WIDE_INTEGER_CONSTEXPR auto  representation()       ->       representation_type& { return values; }
+    WIDE_INTEGER_CONSTEXPR auto  representation() const -> const representation_type& { return values; }
+    WIDE_INTEGER_CONSTEXPR auto crepresentation() const -> const representation_type& { return values; }
 
     // Unary operators: not, plus and minus.
-    WIDE_INTEGER_CONSTEXPR const uintwide_t& operator+() const { return *this; }
-    WIDE_INTEGER_CONSTEXPR       uintwide_t  operator-() const { uintwide_t tmp(*this); tmp.negate(); return tmp; }
+    WIDE_INTEGER_CONSTEXPR auto operator+() const -> const uintwide_t& { return *this; }
+    WIDE_INTEGER_CONSTEXPR auto operator-() const ->       uintwide_t  { uintwide_t tmp(*this); tmp.negate(); return tmp; }
 
-    WIDE_INTEGER_CONSTEXPR uintwide_t& operator+=(const uintwide_t& other)
+    WIDE_INTEGER_CONSTEXPR auto operator+=(const uintwide_t& other) -> uintwide_t&
     {
       if(this == &other)
       {
@@ -1467,7 +1465,7 @@
       return *this;
     }
 
-    WIDE_INTEGER_CONSTEXPR uintwide_t& operator-=(const uintwide_t& other)
+    WIDE_INTEGER_CONSTEXPR auto operator-=(const uintwide_t& other) -> uintwide_t&
     {
       if(this == &other)
       {
@@ -1488,7 +1486,7 @@
       return *this;
     }
 
-    WIDE_INTEGER_CONSTEXPR uintwide_t& operator*=(const uintwide_t& other)
+    WIDE_INTEGER_CONSTEXPR auto operator*=(const uintwide_t& other) -> uintwide_t&
     {
       if(this == &other)
       {
@@ -1502,7 +1500,7 @@
       return *this;
     }
 
-    WIDE_INTEGER_CONSTEXPR uintwide_t& mul_by_limb(const limb_type v)
+    WIDE_INTEGER_CONSTEXPR auto mul_by_limb(const limb_type v) -> uintwide_t&
     {
       if(v == limb_type(0U))
       {
@@ -1519,7 +1517,7 @@
       return *this;
     }
 
-    WIDE_INTEGER_CONSTEXPR uintwide_t& operator/=(const uintwide_t& other)
+    WIDE_INTEGER_CONSTEXPR auto operator/=(const uintwide_t& other) -> uintwide_t&
     {
       if(this == &other)
       {
@@ -1563,7 +1561,7 @@
       return *this;
     }
 
-    WIDE_INTEGER_CONSTEXPR uintwide_t& operator%=(const uintwide_t& other)
+    WIDE_INTEGER_CONSTEXPR auto operator%=(const uintwide_t& other) -> uintwide_t&
     {
       if(this == &other)
       {
@@ -1609,14 +1607,14 @@
     }
 
     // Operators pre-increment and pre-decrement.
-    WIDE_INTEGER_CONSTEXPR uintwide_t& operator++() { preincrement(); return *this; }
-    WIDE_INTEGER_CONSTEXPR uintwide_t& operator--() { predecrement(); return *this; }
+    WIDE_INTEGER_CONSTEXPR auto operator++()  -> uintwide_t& { preincrement(); return *this; }
+    WIDE_INTEGER_CONSTEXPR auto operator--()  -> uintwide_t& { predecrement(); return *this; }
 
     // Operators post-increment and post-decrement.
-    WIDE_INTEGER_CONSTEXPR uintwide_t operator++(int) { const uintwide_t w(*this); preincrement(); return w; }
-    WIDE_INTEGER_CONSTEXPR uintwide_t operator--(int) { const uintwide_t w(*this); predecrement(); return w; }
+    WIDE_INTEGER_CONSTEXPR auto operator++(int) -> uintwide_t { const uintwide_t w(*this); preincrement(); return w; }
+    WIDE_INTEGER_CONSTEXPR auto operator--(int) -> uintwide_t { const uintwide_t w(*this); predecrement(); return w; }
 
-    WIDE_INTEGER_CONSTEXPR uintwide_t& operator~()
+    WIDE_INTEGER_CONSTEXPR auto operator~() -> uintwide_t&
     {
       // Bitwise NOT.
       bitwise_not();
@@ -1624,7 +1622,7 @@
       return *this;
     }
 
-    WIDE_INTEGER_CONSTEXPR uintwide_t& operator|=(const uintwide_t& other)
+    WIDE_INTEGER_CONSTEXPR auto operator|=(const uintwide_t& other) -> uintwide_t&
     {
       if(this != &other)
       {
@@ -1638,7 +1636,7 @@
       return *this;
     }
 
-    WIDE_INTEGER_CONSTEXPR uintwide_t& operator^=(const uintwide_t& other)
+    WIDE_INTEGER_CONSTEXPR auto operator^=(const uintwide_t& other) -> uintwide_t&
     {
       if(this == &other)
       {
@@ -1656,7 +1654,7 @@
       return *this;
     }
 
-    WIDE_INTEGER_CONSTEXPR uintwide_t& operator&=(const uintwide_t& other)
+    WIDE_INTEGER_CONSTEXPR auto operator&=(const uintwide_t& other) -> uintwide_t&
     {
       if(this != &other)
       {
@@ -1671,9 +1669,8 @@
     }
 
     template<typename SignedIntegralType>
-    WIDE_INTEGER_CONSTEXPR typename std::enable_if<(   (std::is_integral   <SignedIntegralType>::value == true)
-                                                    && (std::is_signed     <SignedIntegralType>::value == true)), uintwide_t>::type&
-    operator<<=(const SignedIntegralType n)
+    WIDE_INTEGER_CONSTEXPR auto operator<<=(const SignedIntegralType n) -> typename std::enable_if<(   (std::is_integral   <SignedIntegralType>::value == true)
+                                                                                                    && (std::is_signed     <SignedIntegralType>::value == true)), uintwide_t>::type&
     {
       // Left-shift operator.
       if(n <  0)
@@ -1690,8 +1687,8 @@
       }
       else
       {
-        const unsinged_fast_type offset            =                    unsinged_fast_type(n) / unsinged_fast_type(std::numeric_limits<limb_type>::digits);
-        const std::uint_fast16_t left_shift_amount = std::uint_fast16_t(unsinged_fast_type(n) % unsinged_fast_type(std::numeric_limits<limb_type>::digits));
+        const auto offset            = unsinged_fast_type(unsinged_fast_type(n) / unsinged_fast_type(std::numeric_limits<limb_type>::digits));
+        const auto left_shift_amount = std::uint_fast16_t(unsinged_fast_type(n) % unsinged_fast_type(std::numeric_limits<limb_type>::digits));
 
         shl(offset, left_shift_amount);
       }
@@ -1700,9 +1697,8 @@
     }
 
     template<typename UnsignedIntegralType>
-    WIDE_INTEGER_CONSTEXPR typename std::enable_if<(   (std::is_integral   <UnsignedIntegralType>::value == true)
-                                                    && (std::is_signed     <UnsignedIntegralType>::value == false)), uintwide_t>::type&
-    operator<<=(const UnsignedIntegralType n)
+    WIDE_INTEGER_CONSTEXPR auto operator<<=(const UnsignedIntegralType n) -> typename std::enable_if<(   (std::is_integral   <UnsignedIntegralType>::value == true)
+                                                                                                      && (std::is_signed     <UnsignedIntegralType>::value == false)), uintwide_t>::type&
     {
       // Left-shift operator.
       if(n == 0)
@@ -1715,8 +1711,8 @@
       }
       else
       {
-        const unsinged_fast_type offset            =                    unsinged_fast_type(n) / unsinged_fast_type(std::numeric_limits<limb_type>::digits);
-        const std::uint_fast16_t left_shift_amount = std::uint_fast16_t(unsinged_fast_type(n) % unsinged_fast_type(std::numeric_limits<limb_type>::digits));
+        const auto offset            = unsinged_fast_type(unsinged_fast_type(n) / unsinged_fast_type(std::numeric_limits<limb_type>::digits));
+        const auto left_shift_amount = std::uint_fast16_t(unsinged_fast_type(n) % unsinged_fast_type(std::numeric_limits<limb_type>::digits));
 
         shl(offset, left_shift_amount);
       }
@@ -1725,9 +1721,8 @@
     }
 
     template<typename SignedIntegralType>
-    WIDE_INTEGER_CONSTEXPR typename std::enable_if<(   (std::is_integral   <SignedIntegralType>::value == true)
-                                                    && (std::is_signed     <SignedIntegralType>::value == true)), uintwide_t>::type&
-    operator>>=(const SignedIntegralType n)
+    WIDE_INTEGER_CONSTEXPR auto operator>>=(const SignedIntegralType n) -> typename std::enable_if<(   (std::is_integral   <SignedIntegralType>::value == true)
+                                                                                                    && (std::is_signed     <SignedIntegralType>::value == true)), uintwide_t>::type&
     {
       // Right-shift operator.
       if(n <  0)
@@ -1753,8 +1748,8 @@
       }
       else
       {
-        const unsinged_fast_type offset             =                    unsinged_fast_type(n) / unsinged_fast_type(std::numeric_limits<limb_type>::digits);
-        const std::uint_fast16_t right_shift_amount = std::uint_fast16_t(unsinged_fast_type(n) % unsinged_fast_type(std::numeric_limits<limb_type>::digits));
+        const auto offset             = unsinged_fast_type(unsinged_fast_type(n) / unsinged_fast_type(std::numeric_limits<limb_type>::digits));
+        const auto right_shift_amount = std::uint_fast16_t(unsinged_fast_type(n) % unsinged_fast_type(std::numeric_limits<limb_type>::digits));
 
         shr(offset, right_shift_amount);
       }
@@ -1763,9 +1758,8 @@
     }
 
     template<typename UnsignedIntegralType>
-    WIDE_INTEGER_CONSTEXPR typename std::enable_if<(   (std::is_integral   <UnsignedIntegralType>::value == true)
-                                                    && (std::is_signed     <UnsignedIntegralType>::value == false)), uintwide_t>::type&
-    operator>>=(const UnsignedIntegralType n)
+    WIDE_INTEGER_CONSTEXPR auto operator>>=(const UnsignedIntegralType n) -> typename std::enable_if<(   (std::is_integral   <UnsignedIntegralType>::value == true)
+                                                                                                      && (std::is_signed     <UnsignedIntegralType>::value == false)), uintwide_t>::type&
     {
       // Right-shift operator.
       if(n == 0)
@@ -1778,8 +1772,8 @@
       }
       else
       {
-        const unsinged_fast_type offset             =                    unsinged_fast_type(n) / unsinged_fast_type(std::numeric_limits<limb_type>::digits);
-        const std::uint_fast16_t right_shift_amount = std::uint_fast16_t(unsinged_fast_type(n) % unsinged_fast_type(std::numeric_limits<limb_type>::digits));
+        const auto offset             = unsinged_fast_type(unsinged_fast_type(n) / unsinged_fast_type(std::numeric_limits<limb_type>::digits));
+        const auto right_shift_amount = std::uint_fast16_t(unsinged_fast_type(n) % unsinged_fast_type(std::numeric_limits<limb_type>::digits));
 
         shr(offset, right_shift_amount);
       }
@@ -1788,15 +1782,15 @@
     }
 
     // Implement comparison operators.
-    constexpr bool operator==(const uintwide_t& other) const { return (compare(other) == std::int_fast8_t( 0)); }
-    constexpr bool operator< (const uintwide_t& other) const { return (compare(other) == std::int_fast8_t(-1)); }
-    constexpr bool operator> (const uintwide_t& other) const { return (compare(other) == std::int_fast8_t( 1)); }
-    constexpr bool operator!=(const uintwide_t& other) const { return (compare(other) != std::int_fast8_t( 0)); }
-    constexpr bool operator<=(const uintwide_t& other) const { return (compare(other) <= std::int_fast8_t( 0)); }
-    constexpr bool operator>=(const uintwide_t& other) const { return (compare(other) >= std::int_fast8_t( 0)); }
+    constexpr auto operator==(const uintwide_t& other) const -> bool { return (compare(other) == std::int_fast8_t( 0)); }
+    constexpr auto operator< (const uintwide_t& other) const -> bool { return (compare(other) == std::int_fast8_t(-1)); }
+    constexpr auto operator> (const uintwide_t& other) const -> bool { return (compare(other) == std::int_fast8_t( 1)); }
+    constexpr auto operator!=(const uintwide_t& other) const -> bool { return (compare(other) != std::int_fast8_t( 0)); }
+    constexpr auto operator<=(const uintwide_t& other) const -> bool { return (compare(other) <= std::int_fast8_t( 0)); }
+    constexpr auto operator>=(const uintwide_t& other) const -> bool { return (compare(other) >= std::int_fast8_t( 0)); }
 
     // Helper functions for supporting std::numeric_limits<>.
-    static constexpr uintwide_t limits_helper_max(bool is_signed)
+    static constexpr auto limits_helper_max(bool is_signed) -> uintwide_t
     {
       return
       (is_signed == false)
@@ -1817,7 +1811,7 @@
         ;
     }
 
-    static constexpr uintwide_t limits_helper_min(bool is_signed)
+    static constexpr auto limits_helper_min(bool is_signed) -> uintwide_t
     {
       return
       (is_signed == false)
@@ -1838,12 +1832,12 @@
         ;
     }
 
-    static constexpr uintwide_t limits_helper_min()
+    static constexpr auto limits_helper_min() -> uintwide_t
     {
       return uintwide_t(representation_type(number_of_limbs, limb_type(0U)));
     }
 
-    static constexpr uintwide_t limits_helper_lowest(bool is_signed)
+    static constexpr auto limits_helper_lowest(bool is_signed) -> uintwide_t
     {
       return
       (is_signed == false)
@@ -1871,13 +1865,13 @@
     static constexpr size_t wr_string_max_buffer_size_dec = (20U + size_t((std::uintmax_t(my_width2) * UINTMAX_C(301)) / UINTMAX_C(1000))) + 1U;
 
     // Write string function.
-    WIDE_INTEGER_CONSTEXPR bool wr_string(      char*              str_result,
+    WIDE_INTEGER_CONSTEXPR auto wr_string(      char*              str_result,
                                           const std::uint_fast8_t  base_rep     = 0x10U,
                                           const bool               show_base    = true,
                                           const bool               show_pos     = false,
                                           const bool               is_uppercase = true,
                                                 unsinged_fast_type field_width  = 0U,
-                                          const char               fill_char    = char('0')) const
+                                          const char               fill_char    = char('0')) const -> bool
     {
       bool wr_string_is_ok = true;
 
@@ -1887,7 +1881,7 @@
 
         const limb_type mask(std::uint8_t(0x7U));
 
-        char str_temp[std::size_t(wr_string_max_buffer_size_oct)];
+        std::array<char, std::size_t(wr_string_max_buffer_size_oct)> str_temp;
 
         unsinged_fast_type pos = (sizeof(str_temp) - 1U);
 
@@ -1961,7 +1955,7 @@
 
         str_temp[(sizeof(str_temp) - 1U)] = char('\0');
 
-        detail::strcpy_unsafe(str_result, str_temp + pos);
+        detail::strcpy_unsafe(str_result, str_temp.data() + pos);
       }
       else if(base_rep == 10U)
       {
@@ -1974,7 +1968,7 @@
           t.negate();
         }
 
-        char str_temp[std::size_t(wr_string_max_buffer_size_dec)];
+        std::array<char, std::size_t(wr_string_max_buffer_size_dec)> str_temp;
 
         unsinged_fast_type pos = (sizeof(str_temp) - 1U);
 
@@ -2025,7 +2019,7 @@
 
         str_temp[(sizeof(str_temp) - 1U)] = char('\0');
 
-        detail::strcpy_unsafe(str_result, str_temp + pos);
+        detail::strcpy_unsafe(str_result, str_temp.data() + pos);
       }
       else if(base_rep == 16U)
       {
@@ -2033,7 +2027,7 @@
 
         const limb_type mask(std::uint8_t(0xFU));
 
-        char str_temp[std::size_t(wr_string_max_buffer_size_hex)];
+        std::array<char, std::size_t(wr_string_max_buffer_size_hex)> str_temp;
 
         unsinged_fast_type pos = (sizeof(str_temp) - 1U);
 
@@ -2113,7 +2107,7 @@
 
         str_temp[(sizeof(str_temp) - 1U)] = char('\0');
 
-        detail::strcpy_unsafe(str_result, str_temp + pos);
+        detail::strcpy_unsafe(str_result, str_temp.data() + pos);
       }
       else
       {
@@ -2125,7 +2119,7 @@
 
     template<const bool RePhraseIsSigned = IsSigned,
              typename std::enable_if<(RePhraseIsSigned == false)>::type const* = nullptr>
-    WIDE_INTEGER_CONSTEXPR std::int_fast8_t compare(const uintwide_t<Width2, LimbType, AllocatorType, RePhraseIsSigned>& other) const
+    WIDE_INTEGER_CONSTEXPR auto compare(const uintwide_t<Width2, LimbType, AllocatorType, RePhraseIsSigned>& other) const -> std::int_fast8_t
     {
       return compare_ranges(values.data(),
                             other.values.data(),
@@ -2134,7 +2128,7 @@
 
     template<const bool RePhraseIsSigned = IsSigned,
              typename std::enable_if<(RePhraseIsSigned == true)>::type const* = nullptr>
-    WIDE_INTEGER_CONSTEXPR std::int_fast8_t compare(const uintwide_t<Width2, LimbType, AllocatorType, RePhraseIsSigned>& other) const
+    WIDE_INTEGER_CONSTEXPR auto compare(const uintwide_t<Width2, LimbType, AllocatorType, RePhraseIsSigned>& other) const -> std::int_fast8_t
     {
       const bool other_is_neg = is_neg(other);
 
@@ -2165,7 +2159,7 @@
 
       limb_type hi_part = limb_type(0U);
 
-      for(singed_fast_type i = singed_fast_type(unsinged_fast_type(number_of_limbs - 1U) - u_offset); singed_fast_type(i) >= 0; --i)
+      for(auto i = singed_fast_type(unsinged_fast_type(number_of_limbs - 1U) - u_offset); singed_fast_type(i) >= 0; --i)
       {
         long_numerator =
           double_limb_type
@@ -2193,7 +2187,7 @@
       }
     }
 
-    WIDE_INTEGER_CONSTEXPR bool is_zero() const
+    WIDE_INTEGER_CONSTEXPR auto is_zero() const -> bool
     {
       auto it = values.cbegin();
 
@@ -2207,14 +2201,14 @@
 
     template<const bool RePhraseIsSigned = IsSigned,
              typename std::enable_if<(RePhraseIsSigned == false)>::type const* = nullptr>
-    static constexpr bool is_neg(uintwide_t<Width2, LimbType, AllocatorType, RePhraseIsSigned>)
+    static constexpr auto is_neg(uintwide_t<Width2, LimbType, AllocatorType, RePhraseIsSigned>) -> bool
     {
       return false;
     }
 
     template<const bool RePhraseIsSigned = IsSigned,
              typename std::enable_if<(RePhraseIsSigned == true)>::type const* = nullptr>
-    static constexpr bool is_neg(uintwide_t<Width2, LimbType, AllocatorType, RePhraseIsSigned> a)
+    static constexpr auto is_neg(uintwide_t<Width2, LimbType, AllocatorType, RePhraseIsSigned> a) -> bool
     {
       return (std::uint_fast8_t(std::uint_fast8_t(a.values.back() >> (std::numeric_limits<typename uintwide_t<Width2, LimbType, AllocatorType, RePhraseIsSigned>::limb_type>::digits - 1)) & 1U) != 0U);
     }
@@ -2222,7 +2216,7 @@
   private:
     representation_type values { };
 
-    static constexpr uintwide_t from_rep(const representation_type& other_rep)
+    static constexpr auto from_rep(const representation_type& other_rep) -> uintwide_t
     {
       // Factory-like creator from the internal data representation.
 
@@ -2238,9 +2232,9 @@
 
     template<typename InputIteratorLeftType,
              typename InputIteratorRightType>
-    static WIDE_INTEGER_CONSTEXPR std::int_fast8_t compare_ranges(InputIteratorLeftType    a,
-                                                                  InputIteratorRightType   b,
-                                                                  const unsinged_fast_type count)
+    static WIDE_INTEGER_CONSTEXPR auto compare_ranges(      InputIteratorLeftType    a,
+                                                            InputIteratorRightType   b,
+                                                      const unsinged_fast_type count) -> std::int_fast8_t
     {
       std::int_fast8_t n_return = 0;
 
@@ -2275,8 +2269,7 @@
                            / std::numeric_limits<limb_type>::digits);
 
       template<typename InputIteratorLeft>
-      static WIDE_INTEGER_CONSTEXPR local_unknown_integral_type extract(InputIteratorLeft  p_limb,
-                                                                        unsinged_fast_type limb_count)
+      static WIDE_INTEGER_CONSTEXPR auto extract(InputIteratorLeft  p_limb, unsinged_fast_type limb_count) -> local_unknown_integral_type
       {
         using local_limb_type      = typename std::iterator_traits<InputIteratorLeft>::value_type;
         using left_difference_type = typename std::iterator_traits<InputIteratorLeft>::difference_type;
@@ -2300,7 +2293,7 @@
     // Implement a function that extracts any built-in signed or unsigned integral type.
     template<typename UnknownBuiltInIntegralType,
              typename = typename std::enable_if<std::is_integral<UnknownBuiltInIntegralType>::value == true>::type>
-    WIDE_INTEGER_CONSTEXPR UnknownBuiltInIntegralType extract_builtin_integral_type() const
+    WIDE_INTEGER_CONSTEXPR auto extract_builtin_integral_type() const -> UnknownBuiltInIntegralType
     {
       using local_unknown_integral_type = UnknownBuiltInIntegralType;
       using digits_ratio_type           = digits_ratio<local_unknown_integral_type>;
@@ -2319,7 +2312,7 @@
     // Implement a function that extracts any built-in floating-point type.
     template<typename FloatingPointType,
              typename = typename std::enable_if<std::is_floating_point<FloatingPointType>::value == true>::type>
-    WIDE_INTEGER_CONSTEXPR FloatingPointType extract_builtin_floating_point_type() const
+    WIDE_INTEGER_CONSTEXPR auto extract_builtin_floating_point_type() const -> FloatingPointType
     {
       using local_unsigned_wide_integer_type = uintwide_t<Width2, limb_type, AllocatorType, false>;
       using local_builtin_float_type         = FloatingPointType;
@@ -2328,23 +2321,23 @@
 
       const local_unsigned_wide_integer_type u((u_is_neg == false) ? *this : -*this);
 
-      const size_t my_msb = static_cast<size_t>(msb(u));
-      const size_t ilim   = size_t
-                            (
-                               size_t(  size_t(my_msb + 1U) / size_t(std::numeric_limits<limb_type>::digits))
-                             + size_t(((size_t(my_msb + 1U) % size_t(std::numeric_limits<limb_type>::digits)) != 0U) ? size_t(1U) : size_t(0U))
-                            );
+      const auto my_msb = static_cast<size_t>(msb(u));
+      const auto ilim   = size_t
+                          (
+                             size_t(  size_t(my_msb + 1U) / size_t(std::numeric_limits<limb_type>::digits))
+                           + size_t(((size_t(my_msb + 1U) % size_t(std::numeric_limits<limb_type>::digits)) != 0U) ? size_t(1U) : size_t(0U))
+                          );
 
       local_builtin_float_type a = local_builtin_float_type(0.0F);
 
       long double ldexp_runner = 1.0L;
 
-      for(size_t i = size_t(0U); i < ilim; ++i)
+      for(auto i = size_t(0U); i < ilim; ++i)
       {
         long double ld      = 0.0L;
         limb_type   lm_mask = limb_type(1ULL);
 
-        for(size_t j = size_t(0U); j < size_t(std::numeric_limits<limb_type>::digits); ++j)
+        for(auto j = size_t(0U); j < size_t(std::numeric_limits<limb_type>::digits); ++j)
         {
           if(limb_type(*(u.values.cbegin() + size_t(i)) & lm_mask) != limb_type(0U))
           {
@@ -2434,13 +2427,13 @@
     template<typename ResultIterator,
              typename InputIteratorLeft,
              typename InputIteratorRight>
-    static WIDE_INTEGER_CONSTEXPR limb_type eval_add_n(      ResultIterator     r,
-                                                             InputIteratorLeft  u,
-                                                             InputIteratorRight v,
-                                                       const unsinged_fast_type count,
-                                                       const limb_type          carry_in = limb_type(0U))
+    static WIDE_INTEGER_CONSTEXPR auto eval_add_n(      ResultIterator     r,
+                                                        InputIteratorLeft  u,
+                                                        InputIteratorRight v,
+                                                  const unsinged_fast_type count,
+                                                  const limb_type          carry_in = limb_type(0U)) -> limb_type
     {
-      std::uint_fast8_t carry_out = static_cast<std::uint_fast8_t>(carry_in);
+      auto carry_out = static_cast<std::uint_fast8_t>(carry_in);
 
       static_assert
       (
@@ -2460,7 +2453,7 @@
 
       for(unsinged_fast_type i = 0U; i < count; ++i)
       {
-        const local_double_limb_type uv_as_ularge =
+        const auto uv_as_ularge =
           local_double_limb_type(local_double_limb_type(local_double_limb_type(*(u + left_difference_type(i))) + *(v + right_difference_type(i))) + carry_out);
 
         carry_out = static_cast<std::uint_fast8_t>(detail::make_hi<local_limb_type>(uv_as_ularge));
@@ -2474,11 +2467,11 @@
     template<typename ResultIterator,
              typename InputIteratorLeft,
              typename InputIteratorRight>
-    static WIDE_INTEGER_CONSTEXPR bool eval_subtract_n(      ResultIterator     r,
+    static WIDE_INTEGER_CONSTEXPR auto eval_subtract_n(      ResultIterator     r,
                                                              InputIteratorLeft  u,
                                                              InputIteratorRight v,
                                                        const unsinged_fast_type count,
-                                                       const bool               has_borrow_in = false)
+                                                       const bool               has_borrow_in = false) -> bool
     {
       std::uint_fast8_t has_borrow_out = (has_borrow_in ? 1U : 0U);
 
@@ -2500,7 +2493,7 @@
 
       for(unsinged_fast_type i = 0U; i < count; ++i)
       {
-        const local_double_limb_type uv_as_ularge = local_double_limb_type(local_double_limb_type(local_double_limb_type(*(u + left_difference_type(i))) - *(v + right_difference_type(i))) - has_borrow_out);
+        const auto uv_as_ularge = local_double_limb_type(local_double_limb_type(local_double_limb_type(*(u + left_difference_type(i))) - *(v + right_difference_type(i))) - has_borrow_out);
 
         has_borrow_out = (detail::make_hi<local_limb_type>(uv_as_ularge) != local_limb_type(0U)) ? 1U : 0U;
 
@@ -3030,10 +3023,10 @@
 
     template<typename ResultIterator,
              typename InputIteratorLeft>
-    static WIDE_INTEGER_CONSTEXPR limb_type eval_multiply_1d(      ResultIterator                                               r,
-                                                                   InputIteratorLeft                                            a,
-                                                             const typename std::iterator_traits<InputIteratorLeft>::value_type b,
-                                                             const unsinged_fast_type                                           count)
+    static WIDE_INTEGER_CONSTEXPR auto eval_multiply_1d(      ResultIterator                                               r,
+                                                              InputIteratorLeft                                            a,
+                                                        const typename std::iterator_traits<InputIteratorLeft>::value_type b,
+                                                        const unsinged_fast_type                                           count) -> limb_type
     {
       static_assert
       (
@@ -3299,12 +3292,12 @@
 
       using local_uint_index_type = unsinged_fast_type;
 
-      local_uint_index_type u_offset = local_uint_index_type(0U);
-      local_uint_index_type v_offset = local_uint_index_type(0U);
+      auto u_offset = local_uint_index_type(0U);
+      auto v_offset = local_uint_index_type(0U);
 
       // Compute the offsets for u and v.
-      for(local_uint_index_type i = 0U; (i < number_of_limbs) && (*(      values.cbegin() + size_t(local_uint_index_type(number_of_limbs - 1U) - i)) == limb_type(0U)); ++i) { ++u_offset; }
-      for(local_uint_index_type i = 0U; (i < number_of_limbs) && (*(other.values.cbegin() + size_t(local_uint_index_type(number_of_limbs - 1U) - i)) == limb_type(0U)); ++i) { ++v_offset; }
+      for(auto i = local_uint_index_type(0U); (i < number_of_limbs) && (*(      values.cbegin() + size_t(local_uint_index_type(number_of_limbs - 1U) - i)) == limb_type(0U)); ++i) { ++u_offset; }
+      for(auto i = local_uint_index_type(0U); (i < number_of_limbs) && (*(other.values.cbegin() + size_t(local_uint_index_type(number_of_limbs - 1U) - i)) == limb_type(0U)); ++i) { ++v_offset; }
 
       if(v_offset == local_uint_index_type(number_of_limbs))
       {
@@ -3406,11 +3399,11 @@
           // Step D2: Initialize j.
           // Step D7: Loop on j from m to 0.
 
-          const local_uint_index_type n   = local_uint_index_type(number_of_limbs - v_offset);
-          const local_uint_index_type m   = local_uint_index_type(number_of_limbs - u_offset) - n;
-          const local_uint_index_type vj0 = (number_of_limbs - 1U) - v_offset;
+          const auto n   = local_uint_index_type(number_of_limbs - v_offset);
+          const auto m   = local_uint_index_type(number_of_limbs - u_offset) - n;
+          const auto vj0 = local_uint_index_type((number_of_limbs - 1U) - v_offset);
 
-          for(local_uint_index_type j = local_uint_index_type(0U); j <= m; ++j)
+          for(auto j = local_uint_index_type(0U); j <= m; ++j)
           {
             // Step D3 [Calculate q_hat].
             //   if u[j] == v[j0]
@@ -3492,7 +3485,7 @@
             {
               limb_type previous_u = limb_type(0U);
 
-              for(singed_fast_type rl = singed_fast_type(n - 1U), ul = singed_fast_type(number_of_limbs - (v_offset + 1U)); rl >= 0; --rl, --ul)
+              for(auto rl = singed_fast_type(n - 1U), ul = singed_fast_type(number_of_limbs - (v_offset + 1U)); rl >= 0; --rl, --ul)
               {
                 const double_limb_type t =
                   double_limb_type(  *(uu.cbegin() + size_t(ul))
@@ -3527,7 +3520,7 @@
 
       if(left_shift_amount != local_integral_type(0U))
       {
-        limb_type part_from_previous_value = limb_type(0U);
+        auto part_from_previous_value = limb_type(0U);
 
         for(unsinged_fast_type i = offset; i < unsinged_fast_type(number_of_limbs); ++i)
         {
@@ -3565,7 +3558,7 @@
             ? limb_type(0U)
             : limb_type((std::numeric_limits<limb_type>::max)() << std::uint_fast16_t(std::uint_fast16_t(std::numeric_limits<limb_type>::digits) - right_shift_amount));
 
-        for(singed_fast_type i = singed_fast_type((number_of_limbs - 1U) - offset); i >= singed_fast_type(0); --i)
+        for(auto i = singed_fast_type((number_of_limbs - 1U) - offset); i >= singed_fast_type(0); --i)
         {
           const limb_type t = *(values.cbegin() + size_t(i));
 
@@ -3577,7 +3570,7 @@
     }
 
     // Read string function.
-    WIDE_INTEGER_CONSTEXPR bool rd_string(const char* str_input)
+    WIDE_INTEGER_CONSTEXPR auto rd_string(const char* str_input) -> bool
     {
       std::fill(values.begin(), values.end(), limb_type(0U));
 
@@ -3638,7 +3631,7 @@
 
       for( ; ((pos < str_length) && char_is_valid); ++pos)
       {
-        const std::uint8_t c = std::uint8_t(str_input[pos]);
+        const auto c = std::uint8_t(str_input[pos]);
 
         // TBD: Handle other digit delimiters in addition to apostrophe.
         const bool char_is_apostrophe = (c == char(39));
@@ -3818,9 +3811,9 @@
     static constexpr int max_exponent    = digits;
     static constexpr int max_exponent10  = static_cast<int>((std::uintmax_t(max_exponent) * UINTMAX_C(75257499)) / UINTMAX_C(250000000));
 
-    static constexpr local_wide_integer_type (max) () { return local_wide_integer_type::limits_helper_max   (IsSigned); }
-    static constexpr local_wide_integer_type (min) () { return local_wide_integer_type::limits_helper_min   (IsSigned); }
-    static constexpr local_wide_integer_type lowest() { return local_wide_integer_type::limits_helper_lowest(IsSigned); }
+    static constexpr auto (max) () -> local_wide_integer_type { return local_wide_integer_type::limits_helper_max   (IsSigned); }
+    static constexpr auto (min) () -> local_wide_integer_type { return local_wide_integer_type::limits_helper_min   (IsSigned); }
+    static constexpr auto lowest() -> local_wide_integer_type { return local_wide_integer_type::limits_helper_lowest(IsSigned); }
   };
 
   template<class T>
@@ -3888,7 +3881,7 @@
 
     using local_limb_type = typename local_wide_integer_type::limb_type;
 
-    local_limb_type u_rem = (local_limb_type) remainder;
+    auto u_rem = local_limb_type(remainder);
 
     return ((u_is_neg == false) ? u_rem : local_limb_type(local_limb_type(~u_rem) + 1U));
   }
@@ -4012,27 +4005,30 @@
 
     if(base_rep == 8U)
     {
-      char str_result[local_wide_integer_type::wr_string_max_buffer_size_oct];
+      std::array<char, local_wide_integer_type::wr_string_max_buffer_size_oct> str_result;
+      str_result.fill(char('\0'));
 
-      x.wr_string(str_result, base_rep, show_base, show_pos, is_uppercase, field_width, fill_char);
+      x.wr_string(str_result.data(), base_rep, show_base, show_pos, is_uppercase, field_width, fill_char);
 
-      static_cast<void>(ostr << str_result);
+      static_cast<void>(ostr << str_result.data());
     }
     else if(base_rep == 10U)
     {
-      char str_result[local_wide_integer_type::wr_string_max_buffer_size_dec];
+      std::array<char, local_wide_integer_type::wr_string_max_buffer_size_dec> str_result;
+      str_result.fill(char('\0'));
 
-      x.wr_string(str_result, base_rep, show_base, show_pos, is_uppercase, field_width, fill_char);
+      x.wr_string(str_result.data(), base_rep, show_base, show_pos, is_uppercase, field_width, fill_char);
 
-      static_cast<void>(ostr << str_result);
+      static_cast<void>(ostr << str_result.data());
     }
     else if(base_rep == 16U)
     {
-      char str_result[local_wide_integer_type::wr_string_max_buffer_size_hex];
+      std::array<char, local_wide_integer_type::wr_string_max_buffer_size_hex> str_result;
+      str_result.fill(char('\0'));
 
-      x.wr_string(str_result, base_rep, show_base, show_pos, is_uppercase, field_width, fill_char);
+      x.wr_string(str_result.data(), base_rep, show_base, show_pos, is_uppercase, field_width, fill_char);
 
-      static_cast<void>(ostr << str_result);
+      static_cast<void>(ostr << str_result.data());
     }
 
     return (out << ostr.str());
@@ -4071,7 +4067,7 @@
   #if !defined(WIDE_INTEGER_DISABLE_FLOAT_INTEROP)
   namespace my_own {
 
-  template<typename FloatingPointType> WIDE_INTEGER_CONSTEXPR typename std::enable_if<((std::is_floating_point<FloatingPointType>::value == true) && (std::numeric_limits<FloatingPointType>::is_iec559 == true)), FloatingPointType>::type frexp(FloatingPointType x, int* expptr)
+  template<typename FloatingPointType> WIDE_INTEGER_CONSTEXPR auto frexp(FloatingPointType x, int* expptr) -> typename std::enable_if<((std::is_floating_point<FloatingPointType>::value == true) && (std::numeric_limits<FloatingPointType>::is_iec559 == true)), FloatingPointType>::type
   {
     using local_floating_point_type = FloatingPointType;
 
@@ -4108,14 +4104,14 @@
     return ((x_is_neg == false) ? f : -f);
   }
 
-  template<typename FloatingPointType> WIDE_INTEGER_CONSTEXPR typename std::enable_if<((std::is_floating_point<FloatingPointType>::value == true) && (std::numeric_limits<FloatingPointType>::is_iec559 == false)), FloatingPointType>::type frexp(FloatingPointType x, int* expptr)
+  template<typename FloatingPointType> WIDE_INTEGER_CONSTEXPR auto frexp(FloatingPointType x, int* expptr) -> typename std::enable_if<((std::is_floating_point<FloatingPointType>::value == true) && (std::numeric_limits<FloatingPointType>::is_iec559 == false)), FloatingPointType>::type
   {
     using std::frexp;
 
     return frexp(x, expptr);
   }
 
-  template<typename FloatingPointType> WIDE_INTEGER_CONSTEXPR typename std::enable_if<((std::is_floating_point<FloatingPointType>::value == true) && (std::numeric_limits<FloatingPointType>::is_iec559 == true)), bool>::type isfinite(FloatingPointType x)
+  template<typename FloatingPointType> WIDE_INTEGER_CONSTEXPR auto isfinite(FloatingPointType x) -> typename std::enable_if<((std::is_floating_point<FloatingPointType>::value == true) && (std::numeric_limits<FloatingPointType>::is_iec559 == true)), bool>::type
   {
     using local_floating_point_type = FloatingPointType;
 
@@ -4141,7 +4137,7 @@
     return x_is_finite;
   }
 
-  template<typename FloatingPointType> WIDE_INTEGER_CONSTEXPR typename std::enable_if<((std::is_floating_point<FloatingPointType>::value == true) && (std::numeric_limits<FloatingPointType>::is_iec559 == false)), bool>::type isfinite(FloatingPointType x)
+  template<typename FloatingPointType> WIDE_INTEGER_CONSTEXPR auto isfinite(FloatingPointType x) -> typename std::enable_if<((std::is_floating_point<FloatingPointType>::value == true) && (std::numeric_limits<FloatingPointType>::is_iec559 == false)), bool>::type
   {
     using std::isfinite;
 
@@ -4152,7 +4148,7 @@
   #endif
 
   template<typename UnsignedIntegralType>
-  inline WIDE_INTEGER_CONSTEXPR unsinged_fast_type lsb_helper(const UnsignedIntegralType& x)
+  inline WIDE_INTEGER_CONSTEXPR auto lsb_helper(const UnsignedIntegralType& x) -> unsinged_fast_type
   {
     // Compile-time checks.
     static_assert((   (std::is_integral<UnsignedIntegralType>::value    == true)
@@ -4180,7 +4176,7 @@
   }
 
   template<typename UnsignedIntegralType>
-  inline WIDE_INTEGER_CONSTEXPR unsinged_fast_type msb_helper(const UnsignedIntegralType& u)
+  inline WIDE_INTEGER_CONSTEXPR auto msb_helper(const UnsignedIntegralType& u) -> unsinged_fast_type
   {
     // Compile-time checks.
     static_assert((   (std::is_integral<UnsignedIntegralType>::value    == true)
@@ -4206,7 +4202,7 @@
   }
 
   template<>
-  inline WIDE_INTEGER_CONSTEXPR unsinged_fast_type msb_helper<std::uint32_t>(const std::uint32_t& u)
+  inline WIDE_INTEGER_CONSTEXPR auto msb_helper<std::uint32_t>(const std::uint32_t& u) -> unsinged_fast_type
   {
     unsinged_fast_type r(0);
 
@@ -4217,13 +4213,13 @@
     if((x & UINT32_C(0x0000FF00)) != UINT32_C(0)) { x = std::uint32_t(x >>  8U); r |= UINT8_C( 8); }
     if((x & UINT32_C(0x000000F0)) != UINT32_C(0)) { x = std::uint32_t(x >>  4U); r |= UINT8_C( 4); }
     if((x & UINT32_C(0x0000000C)) != UINT32_C(0)) { x = std::uint32_t(x >>  2U); r |= UINT8_C( 2); }
-    if((x & UINT32_C(0x00000002)) != UINT32_C(0)) { x = std::uint32_t(x >>  1U); r |= UINT8_C( 1); }
+    if((x & UINT32_C(0x00000002)) != UINT32_C(0)) {                              r |= UINT8_C( 1); }
 
     return unsinged_fast_type(r);
   }
 
   template<>
-  inline WIDE_INTEGER_CONSTEXPR unsinged_fast_type msb_helper<std::uint16_t>(const std::uint16_t& u)
+  inline WIDE_INTEGER_CONSTEXPR auto msb_helper<std::uint16_t>(const std::uint16_t& u) -> unsinged_fast_type
   {
     unsinged_fast_type r(0);
 
@@ -4233,13 +4229,15 @@
     if((x & UINT16_C(0xFF00)) != UINT16_C(0)) { x = std::uint16_t(x >> 8U); r |= UINT8_C(8); }
     if((x & UINT16_C(0x00F0)) != UINT16_C(0)) { x = std::uint16_t(x >> 4U); r |= UINT8_C(4); }
     if((x & UINT16_C(0x000C)) != UINT16_C(0)) { x = std::uint16_t(x >> 2U); r |= UINT8_C(2); }
-    if((x & UINT16_C(0x0002)) != UINT16_C(0)) { x = std::uint16_t(x >> 1U); r |= UINT8_C(1); }
+    if((x & UINT16_C(0x0002)) != UINT16_C(0)) {                             r |= UINT8_C(1); }
+
+    static_cast<void>(x);
 
     return unsinged_fast_type(r);
   }
 
   template<>
-  inline WIDE_INTEGER_CONSTEXPR unsinged_fast_type msb_helper<std::uint8_t>(const std::uint8_t& u)
+  inline WIDE_INTEGER_CONSTEXPR auto msb_helper<std::uint8_t>(const std::uint8_t& u) -> unsinged_fast_type
   {
     unsinged_fast_type r(0);
 
@@ -4248,7 +4246,7 @@
     // Use O(log2[N]) binary-halving in an unrolled loop to find the msb.
     if((x & UINT8_C(0xF0)) != UINT8_C(0)) { x = std::uint8_t(x >> 4U); r |= UINT8_C(4); }
     if((x & UINT8_C(0x0C)) != UINT8_C(0)) { x = std::uint8_t(x >> 2U); r |= UINT8_C(2); }
-    if((x & UINT8_C(0x02)) != UINT8_C(0)) { x = std::uint8_t(x >> 1U); r |= UINT8_C(1); }
+    if((x & UINT8_C(0x02)) != UINT8_C(0)) {                            r |= UINT8_C(1); }
 
     return unsinged_fast_type(r);
   }
@@ -4277,7 +4275,7 @@
            typename LimbType,
            typename AllocatorType,
            const bool IsSigned>
-  inline WIDE_INTEGER_CONSTEXPR unsinged_fast_type lsb(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& x)
+  inline WIDE_INTEGER_CONSTEXPR auto lsb(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& x) -> unsinged_fast_type
   {
     // Calculate the position of the least-significant bit.
     // Use a linear search starting from the least significant limbs.
@@ -4308,7 +4306,7 @@
            typename LimbType,
            typename AllocatorType,
            const bool IsSigned>
-  WIDE_INTEGER_CONSTEXPR unsinged_fast_type msb(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& x)
+  WIDE_INTEGER_CONSTEXPR auto msb(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& x) -> unsinged_fast_type
   {
     // Calculate the position of the most-significant bit.
     // Use a linear search starting from the most significant limbs.
@@ -4339,7 +4337,7 @@
            typename LimbType,
            typename AllocatorType,
            const bool IsSigned>
-  constexpr uintwide_t<Width2, LimbType, AllocatorType, IsSigned> abs(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& x)
+  constexpr auto abs(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& x) -> uintwide_t<Width2, LimbType, AllocatorType, IsSigned>
   {
     using local_wide_integer_type = uintwide_t<Width2, LimbType, AllocatorType, IsSigned>;
 
@@ -4350,7 +4348,7 @@
            typename LimbType,
            typename AllocatorType,
            const bool IsSigned>
-  WIDE_INTEGER_CONSTEXPR uintwide_t<Width2, LimbType, AllocatorType, IsSigned> sqrt(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& m)
+  WIDE_INTEGER_CONSTEXPR auto sqrt(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& m) -> uintwide_t<Width2, LimbType, AllocatorType, IsSigned>
   {
     // Calculate the square root.
 
@@ -4401,7 +4399,7 @@
            typename LimbType,
            typename AllocatorType,
            const bool IsSigned>
-  WIDE_INTEGER_CONSTEXPR uintwide_t<Width2, LimbType, AllocatorType, IsSigned> cbrt(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& m)
+  WIDE_INTEGER_CONSTEXPR auto cbrt(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& m) -> uintwide_t<Width2, LimbType, AllocatorType, IsSigned>
   {
     // Calculate the cube root.
 
@@ -4470,8 +4468,7 @@
            typename LimbType,
            typename AllocatorType,
            const bool IsSigned>
-  WIDE_INTEGER_CONSTEXPR uintwide_t<Width2, LimbType, AllocatorType, IsSigned> rootk(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& m,
-                                                                                     const std::uint_fast8_t k)
+  WIDE_INTEGER_CONSTEXPR auto rootk(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& m, const std::uint_fast8_t k) -> uintwide_t<Width2, LimbType, AllocatorType, IsSigned>
   {
     // Calculate the k'th root.
 
@@ -4552,8 +4549,7 @@
            typename LimbType,
            typename AllocatorType,
            const bool IsSigned>
-  WIDE_INTEGER_CONSTEXPR uintwide_t<Width2, LimbType, AllocatorType, IsSigned> pow(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& b,
-                                                                                   const OtherIntegralTypeP&    p)
+  WIDE_INTEGER_CONSTEXPR auto pow(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& b, const OtherIntegralTypeP& p) -> uintwide_t<Width2, LimbType, AllocatorType, IsSigned>
   {
     // Calculate (b ^ p).
     using local_wide_integer_type = uintwide_t<Width2, LimbType, AllocatorType, IsSigned>;
@@ -4604,9 +4600,9 @@
            typename LimbType,
            typename AllocatorType,
            const bool IsSigned>
-  WIDE_INTEGER_CONSTEXPR uintwide_t<Width2, LimbType, AllocatorType, IsSigned> powm(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& b,
-                                                                                    const OtherIntegralTypeP& p,
-                                                                                    const OtherIntegralTypeM& m)
+  WIDE_INTEGER_CONSTEXPR auto powm(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& b,
+                                   const OtherIntegralTypeP& p,
+                                   const OtherIntegralTypeM& m) -> uintwide_t<Width2, LimbType, AllocatorType, IsSigned>
   {
     // Calculate (b ^ p) % m.
 
@@ -4662,7 +4658,7 @@
   namespace detail {
 
   template<typename UnsignedShortType>
-  WIDE_INTEGER_CONSTEXPR UnsignedShortType integer_gcd_reduce_short(UnsignedShortType u, UnsignedShortType v)
+  WIDE_INTEGER_CONSTEXPR auto integer_gcd_reduce_short(UnsignedShortType u, UnsignedShortType v) -> UnsignedShortType
   {
     // This implementation of GCD reduction is based on an
     // adaptation of existing code from Boost.Multiprecision.
@@ -4687,7 +4683,7 @@
   }
 
   template<typename UnsignedLargeType>
-  WIDE_INTEGER_CONSTEXPR UnsignedLargeType integer_gcd_reduce_large(UnsignedLargeType u, UnsignedLargeType v)
+  WIDE_INTEGER_CONSTEXPR auto integer_gcd_reduce_large(UnsignedLargeType u, UnsignedLargeType v) -> UnsignedLargeType
   {
     // This implementation of GCD reduction is based on an
     // adaptation of existing code from Boost.Multiprecision.
@@ -4732,8 +4728,8 @@
            typename LimbType,
            typename AllocatorType,
            const bool IsSigned>
-  WIDE_INTEGER_CONSTEXPR uintwide_t<Width2, LimbType, AllocatorType, IsSigned> gcd(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& a,
-                                                                                   const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& b)
+  WIDE_INTEGER_CONSTEXPR auto gcd(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& a,
+                                  const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& b) -> uintwide_t<Width2, LimbType, AllocatorType, IsSigned>
   {
     // This implementation of GCD is an adaptation
     // of existing code from Boost.Multiprecision.
@@ -4829,9 +4825,8 @@
   }
 
   template<typename UnsignedShortType>
-  WIDE_INTEGER_CONSTEXPR typename std::enable_if<(   (std::is_integral   <UnsignedShortType>::value == true)
-                                                  && (std::is_unsigned   <UnsignedShortType>::value == true)), UnsignedShortType>::type
-  gcd(const UnsignedShortType& u, const UnsignedShortType& v)
+  WIDE_INTEGER_CONSTEXPR auto gcd(const UnsignedShortType& u, const UnsignedShortType& v) -> typename std::enable_if<(   (std::is_integral   <UnsignedShortType>::value == true)
+                                                                                                                      && (std::is_unsigned   <UnsignedShortType>::value == true)), UnsignedShortType>::type
   {
     UnsignedShortType result;
 
@@ -4865,7 +4860,7 @@
   namespace detail {
 
   template<typename IntegerType>
-  WIDE_INTEGER_CONSTEXPR IntegerType lcm_impl(const IntegerType& a, const IntegerType& b)
+  WIDE_INTEGER_CONSTEXPR auto lcm_impl(const IntegerType& a, const IntegerType& b) -> IntegerType
   {
     using local_integer_type = IntegerType;
 
@@ -4888,16 +4883,15 @@
            typename LimbType,
            typename AllocatorType,
            const bool IsSigned>
-  WIDE_INTEGER_CONSTEXPR uintwide_t<Width2, LimbType, AllocatorType, IsSigned> lcm(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& a,
-                                                                                   const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& b)
+  WIDE_INTEGER_CONSTEXPR auto lcm(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& a,
+                                  const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& b) -> uintwide_t<Width2, LimbType, AllocatorType, IsSigned>
   {
     return detail::lcm_impl(a, b);
   }
 
   template<typename UnsignedShortType>
-  WIDE_INTEGER_CONSTEXPR typename std::enable_if<(   (std::is_integral<UnsignedShortType>::value == true)
-                                                  && (std::is_unsigned<UnsignedShortType>::value == true)), UnsignedShortType>::type
-  lcm(const UnsignedShortType& a, const UnsignedShortType& b)
+  WIDE_INTEGER_CONSTEXPR auto lcm(const UnsignedShortType& a, const UnsignedShortType& b) -> typename std::enable_if<(   (std::is_integral<UnsignedShortType>::value == true)
+                                                                                                                      && (std::is_unsigned<UnsignedShortType>::value == true)), UnsignedShortType>::type
   {
     return detail::lcm_impl(a, b);
   }
@@ -4924,7 +4918,7 @@
       param_type(const param_type& other_params) : param_a(other_params.param_a),
                                                    param_b(other_params.param_b) { }
 
-      param_type& operator=(const param_type& other_params)
+      auto operator=(const param_type& other_params) -> param_type&
       {
         if(this != &other_params)
         {
@@ -4935,8 +4929,8 @@
         return *this;
       }
 
-      constexpr result_type get_a() const { return param_a; }
-      constexpr result_type get_b() const { return param_b; }
+      constexpr auto get_a() const -> result_type { return param_a; }
+      constexpr auto get_b() const -> result_type { return param_b; }
 
       void set_a(const result_type& p_a) { param_a = p_a; }
       void set_b(const result_type& p_b) { param_b = p_b; }
@@ -4945,15 +4939,15 @@
       result_type param_a;
       result_type param_b;
 
-      friend inline constexpr bool operator==(const param_type& lhs,
-                                              const param_type& rhs)
+      friend inline constexpr auto operator==(const param_type& lhs,
+                                              const param_type& rhs) -> bool
       {
         return (   (lhs.param_a == rhs.param_a)
                 && (lhs.param_b == rhs.param_b));
       }
 
-      friend inline constexpr bool operator!=(const param_type& lhs,
-                                              const param_type& rhs)
+      friend inline constexpr auto operator!=(const param_type& lhs,
+                                              const param_type& rhs) -> bool
       {
         return (   (lhs.param_a != rhs.param_a)
                 || (lhs.param_b != rhs.param_b));
@@ -4973,29 +4967,29 @@
 
     ~uniform_int_distribution() = default;
 
-    uniform_int_distribution& operator=(const uniform_int_distribution&) = delete;
+    auto operator=(const uniform_int_distribution&) -> uniform_int_distribution& = delete;
 
     void param(const param_type& new_params)
     {
       my_params = new_params;
     }
 
-    const param_type& param() const { return my_params; }
+    auto param() const -> const param_type& { return my_params; }
 
-    result_type a() const { return my_params.get_a(); }
-    result_type b() const { return my_params.get_b(); }
+    auto a() const -> result_type { return my_params.get_a(); }
+    auto b() const -> result_type { return my_params.get_b(); }
 
     template<typename GeneratorType,
              const int GeneratorResultBits = std::numeric_limits<typename GeneratorType::result_type>::digits>
-    WIDE_INTEGER_CONSTEXPR result_type operator()(GeneratorType& generator)
+    WIDE_INTEGER_CONSTEXPR auto operator()(GeneratorType& generator) -> result_type
     {
       return generate<GeneratorType, GeneratorResultBits>(generator, my_params);
     }
 
     template<typename GeneratorType,
              const int GeneratorResultBits = std::numeric_limits<typename GeneratorType::result_type>::digits>
-    WIDE_INTEGER_CONSTEXPR result_type operator()(GeneratorType& input_generator,
-                                                  const param_type& input_params)
+    WIDE_INTEGER_CONSTEXPR auto operator()(      GeneratorType& input_generator,
+                                           const param_type&    input_params) -> result_type
     {
       return generate<GeneratorType, GeneratorResultBits>(input_generator, input_params);
     }
@@ -5005,8 +4999,8 @@
 
     template<typename GeneratorType,
              const int GeneratorResultBits = std::numeric_limits<typename GeneratorType::result_type>::digits>
-    WIDE_INTEGER_CONSTEXPR result_type generate(GeneratorType& input_generator,
-                                                const param_type& input_params) const
+    WIDE_INTEGER_CONSTEXPR auto generate(      GeneratorType& input_generator,
+                                         const param_type&    input_params) const -> result_type
     {
       // Generate random numbers r, where a <= r <= b.
 
@@ -5016,7 +5010,7 @@
 
       using generator_result_type = typename GeneratorType::result_type;
 
-      constexpr std::uint32_t digits_generator_result_type = static_cast<std::uint32_t>(GeneratorResultBits);
+      constexpr auto digits_generator_result_type = static_cast<std::uint32_t>(GeneratorResultBits);
 
       static_assert((digits_generator_result_type % 8U) == 0U,
                     "Error: Generator result type must have a multiple of 8 bits.");
@@ -5024,7 +5018,7 @@
       constexpr std::uint32_t digits_limb_ratio = 
         std::uint32_t(std::numeric_limits<local_limb_type>::digits / 8U);
 
-      constexpr std::uint32_t digits_gtor_ratio = std::uint32_t(digits_generator_result_type / 8U);
+      constexpr auto digits_gtor_ratio = std::uint32_t(digits_generator_result_type / 8U);
 
       generator_result_type value = generator_result_type();
 
@@ -5077,8 +5071,8 @@
            typename LimbType,
            typename AllocatorType,
            const bool IsSigned>
-  constexpr bool operator==(const uniform_int_distribution<Width2, LimbType, AllocatorType, IsSigned>& lhs,
-                            const uniform_int_distribution<Width2, LimbType, AllocatorType, IsSigned>& rhs)
+  constexpr auto operator==(const uniform_int_distribution<Width2, LimbType, AllocatorType, IsSigned>& lhs,
+                            const uniform_int_distribution<Width2, LimbType, AllocatorType, IsSigned>& rhs) -> bool
   {
     return (lhs.param() == rhs.param());
   }
@@ -5087,8 +5081,8 @@
            typename LimbType,
            typename AllocatorType,
            const bool IsSigned>
-  constexpr bool operator!=(const uniform_int_distribution<Width2, LimbType, AllocatorType, IsSigned>& lhs,
-                            const uniform_int_distribution<Width2, LimbType, AllocatorType, IsSigned>& rhs)
+  constexpr auto operator!=(const uniform_int_distribution<Width2, LimbType, AllocatorType, IsSigned>& lhs,
+                            const uniform_int_distribution<Width2, LimbType, AllocatorType, IsSigned>& rhs) -> bool
   {
     return (lhs.param() != rhs.param());
   }
@@ -5099,10 +5093,10 @@
            typename LimbType,
            typename AllocatorType,
            const bool IsSigned>
-  bool miller_rabin(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& n,
+  auto miller_rabin(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& n,
                     const unsinged_fast_type                                     number_of_trials,
                     DistributionType&                                            distribution,
-                    GeneratorType&                                               generator)
+                    GeneratorType&                                               generator) -> bool
   {
     // This Miller-Rabin primality test is loosely based on
     // an adaptation of some code from Boost.Multiprecision.
@@ -5246,7 +5240,7 @@
 
       const local_wide_integer_type fn = powm(local_wide_integer_type(local_limb_type(228U)), nm1, np);
 
-      const local_limb_type fn0 = static_cast<local_limb_type>(fn);
+      const auto fn0 = static_cast<local_limb_type>(fn);
 
       if((fn0 != 1U) && (fn != 1U))
       {

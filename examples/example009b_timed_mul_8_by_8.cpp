@@ -41,7 +41,7 @@ namespace
   std::vector<big_uint_type> local_b(local_a.size());
 }
 
-bool math::wide_integer::example009b_timed_mul_8_by_8()
+auto math::wide_integer::example009b_timed_mul_8_by_8() -> bool
 {
   using random_engine_type =
     std::linear_congruential_engine<std::uint32_t, UINT32_C(48271), UINT32_C(0), UINT32_C(2147483647)>;

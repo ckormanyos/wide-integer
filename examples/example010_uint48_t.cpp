@@ -10,7 +10,7 @@
 #include <examples/example_uintwide_t.h>
 #include <math/wide_integer/uintwide_t.h>
 
-bool math::wide_integer::example010_uint48_t()
+auto math::wide_integer::example010_uint48_t() -> bool
 {
   using uint48_t = math::wide_integer::uintwide_t<48U, std::uint8_t>;
 

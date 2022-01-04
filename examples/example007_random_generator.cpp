@@ -15,7 +15,7 @@
 namespace
 {
   template<typename LimbType, typename AllocatorType = void>
-  bool generate()
+  auto generate() -> bool
   {
     using random_engine_type = std::mersenne_twister_engine<std::uint64_t,
                                                             64,
@@ -49,7 +49,7 @@ namespace
   }
 }
 
-bool math::wide_integer::example007_random_generator()
+auto math::wide_integer::example007_random_generator() -> bool
 {
   const bool result_08_is_ok = generate<std::uint8_t> ();
   const bool result_16_is_ok = generate<std::uint16_t>();
