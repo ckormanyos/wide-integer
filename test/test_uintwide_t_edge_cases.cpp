@@ -21,7 +21,6 @@
 #pragma GCC diagnostic ignored "-Wdeprecated-copy"
 #endif
 
-#include <boost/lexical_cast.hpp>
 #include <boost/multiprecision/cpp_int.hpp>
 #include <boost/multiprecision/uintwide_t_backend.hpp>
 

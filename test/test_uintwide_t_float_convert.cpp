@@ -171,9 +171,6 @@ bool math::wide_integer::test_uintwide_t_float_convert()
   using boost_uint_type = boost::multiprecision::number<boost_uint_backend_type, boost::multiprecision::et_on>;
   using boost_sint_type = boost::multiprecision::number<boost_sint_backend_type, boost::multiprecision::et_on>;
 
-  using boost_limb_type =
-    typename std::iterator_traits<typename boost_uint_backend_type::cpp_int_backend::base_type::cpp_int_base::limb_pointer>::value_type;
-
   #if defined(WIDE_INTEGER_HAS_LIMB_TYPE_UINT64)
   using local_limb_type = std::uint64_t;
   #else
@@ -233,9 +230,7 @@ bool math::wide_integer::test_uintwide_t_float_convert()
 
     using std::fabs;
 
-    constexpr float cast_tol_float   = ((std::is_same<boost_limb_type, local_limb_type>::value == true)
-                                         ? std::numeric_limits<float>::epsilon()
-                                         : std::numeric_limits<float>::epsilon() * 2.0F);
+    constexpr float cast_tol_float = float(std::numeric_limits<float>::epsilon() * 2.0F);
 
     const float closeness      = fabs(1.0F - fabs(f_boost / f_local));
     const bool  result_f_is_ok = (closeness < cast_tol_float);
@@ -257,9 +252,7 @@ bool math::wide_integer::test_uintwide_t_float_convert()
 
     using std::fabs;
 
-    constexpr double cast_tol_double = ((std::is_same<boost_limb_type, local_limb_type>::value == true)
-                                         ? std::numeric_limits<double>::epsilon()
-                                         : std::numeric_limits<double>::epsilon() * 2.0);
+    constexpr double cast_tol_double = double(std::numeric_limits<double>::epsilon() * 2.0);
 
     const double closeness      = fabs(1.0 - fabs(d_boost / d_local));
     const bool   result_f_is_ok = (closeness < cast_tol_double);
