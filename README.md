@@ -42,6 +42,13 @@ as shown in the [examples](./examples).
 
 ## Quick start
 
+When working in your own project with wide-integer,
+using the [`uintwide_t.h` header](./math/wide_integer/uintwide_t.h)
+is straightforward. Identify the header within
+its directory. Include this header path to the compiler's set
+of include paths or in your project.
+Then simply `#include <uintwide_t.h>` the normal C++ way.
+
 Easy application follows via traditional C-style typedef or C++11 alias
 such as `uint512_t`. An instance of the defined type can be used very much
 like a built-in integral type. In the following code, for example,
@@ -143,13 +150,6 @@ on how to use wide-integer.
 
 The recent status of building and executing the tests and examples
 in Continuous Integration (CI) is always shown in the Build Status banner.
-
-When working in your own project with wide-integer,
-using the [`uintwide_t.h` header](./math/wide_integer/uintwide_t.h)
-is straightforward. Identify the header within
-its directory. Include this header path to the compiler's set
-of include paths or in your project.
-Then simply `#include <uintwide_t.h>` the normal C++ way.
 
 It is also possible, if desired, to build and execute
 the tests and examples using various different OS/compiler
