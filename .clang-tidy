@@ -1,7 +1,6 @@
 ---
 Checks: >
   *,
-  -fuchsia-*,
   -llvmlibc-*,
 
   -altera-id-dependent-backward-branch,

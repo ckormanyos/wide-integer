@@ -33,6 +33,7 @@
   auto example011_uint24_t           () -> bool;
   auto example012_rsa_crypto         () -> bool;
 
-  } } // namespace math::wide_integer
+  } // namespace wide_integer
+  } // namespace math
 
 #endif // EXAMPLE_UINTWIDE_T_2021_04_29_H_
