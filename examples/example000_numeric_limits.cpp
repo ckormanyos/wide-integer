@@ -12,8 +12,8 @@ namespace local
 {
   using math::wide_integer::uint64_t;
   using math::wide_integer::int64_t;
-  using uint32_t = math::wide_integer::uintwide_t<32U, std::uint8_t, void, false>;
-  using  int32_t = math::wide_integer::uintwide_t<32U, std::uint8_t, void, true>;
+  using uint32_t = math::wide_integer::uintwide_t<math::wide_integer::size_t(UINT32_C(32)), std::uint8_t, void, false>;
+  using  int32_t = math::wide_integer::uintwide_t<math::wide_integer::size_t(UINT32_C(32)), std::uint8_t, void, true>;
 }
 
 auto math::wide_integer::example000_numeric_limits() -> bool
@@ -30,8 +30,8 @@ auto math::wide_integer::example000_numeric_limits() -> bool
          ((std::numeric_limits<uint256_t>::max)  () == my_max)
       && ((std::numeric_limits<uint256_t>::min)  () == my_min)
       && ( std::numeric_limits<uint256_t>::lowest() == uint256_t(std::numeric_limits<unsigned>::lowest()))
-      && ( std::numeric_limits<uint256_t>::digits   == 256)
-      && ( std::numeric_limits<uint256_t>::digits10 == 77)
+      && ( std::numeric_limits<uint256_t>::digits   == int(INT32_C(256)))
+      && ( std::numeric_limits<uint256_t>::digits10 == int(INT32_C(77)))
       ;
 
     #if defined(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST) && (WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST != 0)
@@ -52,8 +52,8 @@ auto math::wide_integer::example000_numeric_limits() -> bool
          ((std::numeric_limits<int256_t>::max)  () == my_max)
       && ((std::numeric_limits<int256_t>::min)  () == my_min)
       && ( std::numeric_limits<int256_t>::lowest() == my_lowest)
-      && ( std::numeric_limits<int256_t>::digits   == 255)
-      && ( std::numeric_limits<int256_t>::digits10 == 76)
+      && ( std::numeric_limits<int256_t>::digits   == int(INT32_C(255)))
+      && ( std::numeric_limits<int256_t>::digits10 == int(INT32_C(76)))
       ;
 
     #if defined(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST) && (WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST != 0)

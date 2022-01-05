@@ -39,16 +39,16 @@
   #if (defined(__clang__) && (__clang_major__ <= 9))
   #define WIDE_INTEGER_NUM_LIMITS_CLASS_TYPE struct
   #else
-  #define WIDE_INTEGER_NUM_LIMITS_CLASS_TYPE class
+  #define WIDE_INTEGER_NUM_LIMITS_CLASS_TYPE class /* NOLINT */
   #endif
 
   #if defined(_MSC_VER)
     #if (_MSC_VER >= 1900) && defined(_HAS_CXX20) && (_HAS_CXX20 != 0)
       #define WIDE_INTEGER_CONSTEXPR constexpr
-      #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 1
+      #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 1 /* NOLINT */
     #else
       #define WIDE_INTEGER_CONSTEXPR
-      #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 0
+      #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 0 /* NOLINT */
     #endif
   #else
     #if (defined(__cplusplus) && (__cplusplus >= 201402L))
@@ -59,30 +59,30 @@
         #if defined(__clang__)
           #if (__clang_major__ > 9)
           #define WIDE_INTEGER_CONSTEXPR constexpr
-          #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 1
+          #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 1 /* NOLINT */
           #else
           #define WIDE_INTEGER_CONSTEXPR
-          #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 0
+          #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 0 /* NOLINT */
           #endif
         #else
         #define WIDE_INTEGER_CONSTEXPR constexpr
-        #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 1
+        #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 1 /* NOLINT */
         #endif
       #elif (defined(__clang__) && (__clang_major__ >= 10)) && (defined(__cplusplus) && (__cplusplus > 201703L))
         #if defined(__x86_64__)
         #define WIDE_INTEGER_CONSTEXPR constexpr
-        #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 1
+        #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 1 /* NOLINT */
         #else
         #define WIDE_INTEGER_CONSTEXPR
-        #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 0
+        #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 0 /* NOLINT */
         #endif
       #else
       #define WIDE_INTEGER_CONSTEXPR
-      #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 0
+      #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 0 /* NOLINT */
       #endif
     #else
       #define WIDE_INTEGER_CONSTEXPR
-      #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 0
+      #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 0 /* NOLINT */
     #endif
   #endif
 
@@ -115,9 +115,9 @@
     constexpr dynamic_array() : elem_count(0U),
                                 elems     (nullptr) { }
 
-    dynamic_array(size_type count,
-                  const_reference v = value_type(),
-                  const allocator_type& a = allocator_type())
+    explicit dynamic_array(      size_type count,
+                                 const_reference v = value_type(),
+                           const allocator_type& a = allocator_type())
       : elem_count(count),
         elems     (nullptr)
     {
@@ -185,8 +185,8 @@
     }
 
     // Move constructor.
-    dynamic_array(dynamic_array&& other) : elem_count(other.elem_count),
-                                            elems     (other.elems)
+    dynamic_array(dynamic_array&& other) noexcept : elem_count(other.elem_count),
+                                                    elems     (other.elems)
     {
       other.elem_count = 0U;
       other.elems      = nullptr;
@@ -224,7 +224,7 @@
     }
 
     // Move assignment operator.
-    auto operator=(dynamic_array&& other) -> dynamic_array&
+    auto operator=(dynamic_array&& other) noexcept -> dynamic_array&
     {
       // Destroy the elements and deallocate the range.
       pointer p = elems;
@@ -316,8 +316,8 @@
     }
 
   protected:
-    mutable size_type elem_count;
-    pointer           elems;
+    mutable size_type elem_count; // NOLINT
+    pointer           elems;      // NOLINT
   };
 
   template<typename ValueType, typename AllocatorType>
@@ -433,9 +433,11 @@
   using size_t    = std::uint32_t;
   using ptrdiff_t = std::int32_t;
 
-  static_assert((  (std::numeric_limits<size_t>::digits        >= 16)
-                && (std::numeric_limits<ptrdiff_t>::digits + 1 >= 16)),
+  // BEGINNOLINT
+  static_assert((  (std::numeric_limits<size_t>::digits        >= 16)   // NOLINT
+                && (std::numeric_limits<ptrdiff_t>::digits + 1 >= 16)), // NOLINT
                 "Error: size type and pointer difference type must be at least 16 bits in width (or wider)");
+  // ENDNOLINT
 
   template<const size_t Width2> struct verify_power_of_two
   {
@@ -457,11 +459,11 @@
   struct uint_type_helper
   {
     #if defined(WIDE_INTEGER_HAS_LIMB_TYPE_UINT64)
-    static_assert((   ((BitCount >= 8U) && (BitCount <= 128U))
+    static_assert((   ((BitCount >= 8U) && (BitCount <= 128U)) // NOLINT
                    && (verify_power_of_two<BitCount>::conditional_value == true)),
                   "Error: uint_type_helper is not intended to be used for this BitCount");
     #else
-    static_assert((   ((BitCount >= 8U) && (BitCount <= 64U))
+    static_assert((   ((BitCount >= 8U) && (BitCount <= 64U)) // NOLINT
                    && (verify_power_of_two<BitCount>::conditional_value == true)),
                   "Error: uint_type_helper is not intended to be used for this BitCount");
     #endif
@@ -469,12 +471,12 @@
     using exact_unsigned_type = std::uintmax_t;
   };
 
-  template<const size_t BitCount> struct uint_type_helper<BitCount, typename std::enable_if<                     (BitCount <=   8U)>::type> { using exact_unsigned_type = std::uint8_t;      using fast_unsigned_type = std::uint_fast8_t;  using fast_signed_type = std::int_fast8_t;  };
-  template<const size_t BitCount> struct uint_type_helper<BitCount, typename std::enable_if<(BitCount >=  9U) && (BitCount <=  16U)>::type> { using exact_unsigned_type = std::uint16_t;     using fast_unsigned_type = std::uint_fast16_t; using fast_signed_type = std::int_fast16_t; };
-  template<const size_t BitCount> struct uint_type_helper<BitCount, typename std::enable_if<(BitCount >= 17U) && (BitCount <=  32U)>::type> { using exact_unsigned_type = std::uint32_t;     using fast_unsigned_type = std::uint_fast32_t; using fast_signed_type = std::int_fast32_t; };
-  template<const size_t BitCount> struct uint_type_helper<BitCount, typename std::enable_if<(BitCount >= 33U) && (BitCount <=  64U)>::type> { using exact_unsigned_type = std::uint64_t;     using fast_unsigned_type = std::uint_fast64_t; using fast_signed_type = std::int_fast64_t; };
+  template<const size_t BitCount> struct uint_type_helper<BitCount, typename std::enable_if<                     (BitCount <=   8U)>::type> { using exact_unsigned_type = std::uint8_t;      using fast_unsigned_type = std::uint_fast8_t;  using fast_signed_type = std::int_fast8_t;  }; // NOLINT
+  template<const size_t BitCount> struct uint_type_helper<BitCount, typename std::enable_if<(BitCount >=  9U) && (BitCount <=  16U)>::type> { using exact_unsigned_type = std::uint16_t;     using fast_unsigned_type = std::uint_fast16_t; using fast_signed_type = std::int_fast16_t; }; // NOLINT
+  template<const size_t BitCount> struct uint_type_helper<BitCount, typename std::enable_if<(BitCount >= 17U) && (BitCount <=  32U)>::type> { using exact_unsigned_type = std::uint32_t;     using fast_unsigned_type = std::uint_fast32_t; using fast_signed_type = std::int_fast32_t; }; // NOLINT
+  template<const size_t BitCount> struct uint_type_helper<BitCount, typename std::enable_if<(BitCount >= 33U) && (BitCount <=  64U)>::type> { using exact_unsigned_type = std::uint64_t;     using fast_unsigned_type = std::uint_fast64_t; using fast_signed_type = std::int_fast64_t; }; // NOLINT
   #if defined(WIDE_INTEGER_HAS_LIMB_TYPE_UINT64)
-  template<const size_t BitCount> struct uint_type_helper<BitCount, typename std::enable_if<(BitCount >= 65U) && (BitCount <= 128U)>::type> { using exact_unsigned_type = unsigned __int128; using fast_unsigned_type = unsigned __int128;  using fast_signed_type = signed __int128;  };
+  template<const size_t BitCount> struct uint_type_helper<BitCount, typename std::enable_if<(BitCount >= 65U) && (BitCount <= 128U)>::type> { using exact_unsigned_type = unsigned __int128; using fast_unsigned_type = unsigned __int128;  using fast_signed_type = signed __int128;   }; // NOLINT
   #endif
 
   using unsinged_fast_type = typename uint_type_helper<size_t(std::numeric_limits<size_t   >::digits)    >::fast_unsigned_type;
@@ -794,9 +796,9 @@
   public:
     static constexpr auto static_size() -> typename base_class_type::size_type { return MySize; }
 
-    fixed_dynamic_array(const typename base_class_type::size_type       s = MySize,
-                        const typename base_class_type::value_type&     v = typename base_class_type::value_type(),
-                        const typename base_class_type::allocator_type& a = typename base_class_type::allocator_type())
+    explicit WIDE_INTEGER_CONSTEXPR fixed_dynamic_array(const typename base_class_type::size_type       s = MySize,
+                                                        const typename base_class_type::value_type&     v = typename base_class_type::value_type(),
+                                                        const typename base_class_type::allocator_type& a = typename base_class_type::allocator_type())
       : base_class_type(MySize, typename base_class_type::value_type(), a)
     {
       std::fill(base_class_type::begin(),
@@ -807,7 +809,7 @@
     constexpr fixed_dynamic_array(const fixed_dynamic_array& other_array)
       : base_class_type((const base_class_type&) other_array) { }
 
-    explicit fixed_dynamic_array(std::initializer_list<typename base_class_type::value_type> lst)
+    WIDE_INTEGER_CONSTEXPR fixed_dynamic_array(std::initializer_list<typename base_class_type::value_type> lst)
       : base_class_type(MySize)
     {
       std::copy(lst.begin(),
@@ -815,17 +817,17 @@
                 base_class_type::begin());
     }
 
-    constexpr fixed_dynamic_array(fixed_dynamic_array&& other_array)
+    constexpr fixed_dynamic_array(fixed_dynamic_array&& other_array) noexcept
       : base_class_type((base_class_type&&) other_array) { }
 
-    auto operator=(const fixed_dynamic_array& other_array) -> fixed_dynamic_array&
+    WIDE_INTEGER_CONSTEXPR auto operator=(const fixed_dynamic_array& other_array) -> fixed_dynamic_array&
     {
       base_class_type::operator=((const base_class_type&) other_array);
 
       return *this;
     }
 
-    auto operator=(fixed_dynamic_array&& other_array) -> fixed_dynamic_array&
+    WIDE_INTEGER_CONSTEXPR auto operator=(fixed_dynamic_array&& other_array) noexcept -> fixed_dynamic_array&
     {
       base_class_type::operator=((base_class_type&&) other_array);
 
@@ -850,8 +852,8 @@
 
     constexpr fixed_static_array() = default;
 
-    WIDE_INTEGER_CONSTEXPR fixed_static_array(const size_type   s,
-                                              const value_type& v = value_type())
+    explicit WIDE_INTEGER_CONSTEXPR fixed_static_array(const size_type   s,
+                                                       const value_type& v = value_type())
     {
       std::fill(base_class_type::begin(),
                 base_class_type::begin() + (std::min)(MySize, (size_type) s),
@@ -862,10 +864,9 @@
                 value_type());
     }
 
-    constexpr fixed_static_array(const fixed_static_array& other_array) = default;
-
     template<const size_type OtherSize>
-    WIDE_INTEGER_CONSTEXPR fixed_static_array(const fixed_static_array<size_type, OtherSize>& other_array)
+    WIDE_INTEGER_CONSTEXPR fixed_static_array(const fixed_static_array<size_type, OtherSize>& other_array, // NOLINT
+                                              typename std::enable_if<OtherSize != MySize>::type* = nullptr)
     {
       std::copy(other_array.cbegin(),
                 other_array.cbegin() + (std::min)(OtherSize, MySize),
@@ -876,7 +877,7 @@
                 value_type());
     }
 
-    explicit WIDE_INTEGER_CONSTEXPR fixed_static_array(std::initializer_list<value_type> lst)
+    WIDE_INTEGER_CONSTEXPR fixed_static_array(std::initializer_list<value_type> lst)
     {
       std::copy(lst.begin(),
                 lst.begin() + (std::min)((size_type) lst.size(), MySize),
@@ -887,10 +888,13 @@
                 value_type());
     }
 
-    constexpr fixed_static_array(fixed_static_array&& other_array) = default;
+    constexpr fixed_static_array(const fixed_static_array&) = default;
+    constexpr fixed_static_array(fixed_static_array&&) noexcept = default;
+
+    ~fixed_static_array() = default;
 
     WIDE_INTEGER_CONSTEXPR auto operator=(const fixed_static_array& other_array) -> fixed_static_array& = default;
-    WIDE_INTEGER_CONSTEXPR auto operator=(fixed_static_array&& other_array)      -> fixed_static_array& = default;
+    WIDE_INTEGER_CONSTEXPR auto operator=(fixed_static_array&& other_array) noexcept -> fixed_static_array& = default;
 
     WIDE_INTEGER_CONSTEXPR auto operator[](const size_type i)       -> typename base_class_type::reference       { return base_class_type::operator[](static_cast<typename base_class_type::size_type>(i)); }
     WIDE_INTEGER_CONSTEXPR auto operator[](const size_type i) const -> typename base_class_type::const_reference { return base_class_type::operator[](static_cast<typename base_class_type::size_type>(i)); }
@@ -936,7 +940,7 @@
   // Use a local implementation of string copy.
   inline WIDE_INTEGER_CONSTEXPR auto strcpy_unsafe(char* dst, const char* src) -> char*
   {
-    while((*dst++ = *src++) != char('\0')) { ; }
+    while((*dst++ = *src++) != char('\0')) { ; } // NOLINT
 
     return dst;
   }
@@ -946,7 +950,7 @@
   {
     const char* p_str_copy{};
 
-    for(p_str_copy = p_str; (*p_str_copy != char('\0')); ++p_str_copy) { ; }
+    for(p_str_copy = p_str; (*p_str_copy != char('\0')); ++p_str_copy) { ; } // NOLINT
 
     return unsinged_fast_type(p_str_copy - p_str);
   }
@@ -1002,7 +1006,7 @@
                    "Error: Please check the characteristics of the template parameters UnsignedShortType and UnsignedLargeType");
     #endif
 
-    return static_cast<local_ushort_type>(u >> std::numeric_limits<local_ushort_type>::digits);
+    return static_cast<local_ushort_type>(u >> local_ushort_type(std::numeric_limits<local_ushort_type>::digits));
   }
 
   template<typename UnsignedShortType,
@@ -1057,7 +1061,7 @@
     // Emphasize: This template class can be used with native floating-point
     // types like float, double and long double. Note: For long double,
     // you need to verify that the mantissa fits in unsigned long long.
-    WIDE_INTEGER_CONSTEXPR native_float_parts(const FloatingPointType f)
+    explicit WIDE_INTEGER_CONSTEXPR native_float_parts(const FloatingPointType f)
       : my_mantissa_part(0ULL),
         my_exponent_part(0)
     {
@@ -1105,13 +1109,37 @@
       my_exponent_part -= 1;
     }
 
+    constexpr native_float_parts(const native_float_parts& other) : my_mantissa_part(other.my_mantissa_part),
+                                                                    my_exponent_part(other.my_exponent_part) { }
+
+    constexpr native_float_parts(native_float_parts&& other) noexcept : my_mantissa_part(other.my_mantissa_part),
+                                                                        my_exponent_part(other.my_exponent_part) { }
+
+    ~native_float_parts() = default;
+
+    WIDE_INTEGER_CONSTEXPR auto operator=(const native_float_parts& other) -> native_float_parts&
+    {
+      if(this != &other)
+      {
+        my_mantissa_part = other.my_mantissa_part;
+        my_exponent_part = other.my_exponent_part;
+      }
+
+      return *this;
+    }
+
+    WIDE_INTEGER_CONSTEXPR auto operator=(native_float_parts&& other) noexcept -> native_float_parts&
+    {
+      my_mantissa_part = other.my_mantissa_part;
+      my_exponent_part = other.my_exponent_part;
+
+      return *this;
+    }
+
     WIDE_INTEGER_CONSTEXPR auto get_mantissa() const -> unsigned long long { return my_mantissa_part; }
     WIDE_INTEGER_CONSTEXPR auto get_exponent() const -> int                { return my_exponent_part; }
 
     WIDE_INTEGER_CONSTEXPR native_float_parts() = delete;
-    WIDE_INTEGER_CONSTEXPR native_float_parts(const native_float_parts&) = delete;
-
-    WIDE_INTEGER_CONSTEXPR auto operator=(const native_float_parts&) -> const native_float_parts& = delete;
 
   private:
     unsigned long long my_mantissa_part;
@@ -1174,7 +1202,7 @@
     //   * And that there are at least 16, 24 or 32 binary digits, or more.
     //   * And that the number of binary digits is an exact multiple of the number of limbs.
     static_assert(   (detail::verify_power_of_two_times_granularity_one_sixty_fourth<my_width2>::conditional_value == true)
-                  && ((my_width2 >= 16U) || (my_width2 >= 24U) || (my_width2 >= 32U))
+                  && ((my_width2 >= 16U) || (my_width2 >= 24U) || (my_width2 >= 32U)) // NOLINT
                   && (my_width2 == (number_of_limbs * size_t(std::numeric_limits<limb_type>::digits))),
                   "Error: Width2 must be 2^n times 1...63 (with n >= 3), while being 16, 24, 32 or larger, and exactly divisible by limb count");
 
@@ -1206,7 +1234,7 @@
     // Constructors from built-in unsigned integral types that
     // are less wide than limb_type or exactly as wide as limb_type.
     template<typename UnsignedIntegralType>
-    constexpr uintwide_t(const UnsignedIntegralType v,
+    constexpr uintwide_t(const UnsignedIntegralType v, // NOLINT
                          typename std::enable_if<(   (std::is_integral   <UnsignedIntegralType>::value == true)
                                                   && (std::is_unsigned   <UnsignedIntegralType>::value == true)
                                                   && (std::numeric_limits<UnsignedIntegralType>::digits <= std::numeric_limits<limb_type>::digits))>::type* = nullptr)
@@ -1216,7 +1244,7 @@
     // are wider than limb_type, and do not have exactly the
     // same width as limb_type.
     template<typename UnsignedIntegralType>
-    WIDE_INTEGER_CONSTEXPR uintwide_t(const UnsignedIntegralType v,
+    WIDE_INTEGER_CONSTEXPR uintwide_t(const UnsignedIntegralType v, // NOLINT
                                       typename std::enable_if<(   (std::is_integral   <UnsignedIntegralType>::value == true)
                                                                && (std::is_unsigned   <UnsignedIntegralType>::value == true)
                                                                && (std::numeric_limits<UnsignedIntegralType>::digits > std::numeric_limits<limb_type>::digits))>::type* = nullptr)
@@ -1228,7 +1256,7 @@
               && (right_shift_amount_v < unsinged_fast_type(std::numeric_limits<UnsignedIntegralType>::digits)));
              ++index_u)
       {
-        *(values.begin() + size_t(index_u)) = limb_type(v >> (int) right_shift_amount_v);
+        *(values.begin() + size_t(index_u)) = limb_type(v >> unsigned(right_shift_amount_v));
 
         right_shift_amount_v += unsinged_fast_type(std::numeric_limits<limb_type>::digits);
       }
@@ -1238,7 +1266,7 @@
 
     // Constructors from built-in signed integral types.
     template<typename SignedIntegralType>
-    WIDE_INTEGER_CONSTEXPR uintwide_t(const SignedIntegralType v,
+    WIDE_INTEGER_CONSTEXPR uintwide_t(const SignedIntegralType v, // NOLINT
                                       typename std::enable_if<(   (std::is_integral   <SignedIntegralType>::value == true)
                                                                && (std::is_signed     <SignedIntegralType>::value == true))>::type* = nullptr)
     {
@@ -1259,7 +1287,7 @@
     #if !defined(WIDE_INTEGER_DISABLE_FLOAT_INTEROP)
     template<typename FloatingPointType,
              typename std::enable_if<(std::is_floating_point<FloatingPointType>::value == true)>::type const* = nullptr>
-    WIDE_INTEGER_CONSTEXPR uintwide_t(const FloatingPointType f)
+    WIDE_INTEGER_CONSTEXPR uintwide_t(const FloatingPointType f) // NOLINT
     {
       using local_builtin_float_type = FloatingPointType;
 
@@ -1312,7 +1340,7 @@
     // Copy-like constructor from the other signed-ness type.
     template<const bool OtherIsSigned,
              typename std::enable_if<(OtherIsSigned != IsSigned)>::type const* = nullptr>
-    constexpr uintwide_t(const uintwide_t<Width2, LimbType, AllocatorType, OtherIsSigned>& other)
+    constexpr uintwide_t(const uintwide_t<Width2, LimbType, AllocatorType, OtherIsSigned>& other) // NOLINT
       : values(other.values) { }
 
     // Constructor from the another type having a different width but the same limb type.
@@ -1322,7 +1350,7 @@
     // TBD: Figure out if the keyword "explicit" is needed/wanted or not and correct code/comment to agree
     // with each other.
     template<const size_t OtherWidth2>
-    WIDE_INTEGER_CONSTEXPR uintwide_t(const uintwide_t<OtherWidth2, LimbType, AllocatorType, IsSigned>& v)
+    WIDE_INTEGER_CONSTEXPR uintwide_t(const uintwide_t<OtherWidth2, LimbType, AllocatorType, IsSigned>& v) // NOLINT
     {
       using other_wide_integer_type = uintwide_t<OtherWidth2, LimbType, AllocatorType, IsSigned>;
 
@@ -1355,7 +1383,7 @@
     }
 
     // Constructor from a constant character string.
-    WIDE_INTEGER_CONSTEXPR uintwide_t(const char* str_input)
+    WIDE_INTEGER_CONSTEXPR uintwide_t(const char* str_input) // NOLINT
     {
       if(rd_string(str_input) == false)
       {
@@ -1364,12 +1392,12 @@
     }
 
     // Move constructor.
-    constexpr uintwide_t(uintwide_t&& other) = default;
+    constexpr uintwide_t(uintwide_t&& other) noexcept = default;
 
     // Move-like constructor from the other signed-ness type.
     template<const bool OtherIsSigned,
              typename std::enable_if<(OtherIsSigned != IsSigned)>::type const* = nullptr>
-    constexpr uintwide_t(uintwide_t<Width2, LimbType, AllocatorType, OtherIsSigned>&& other)
+    constexpr uintwide_t(uintwide_t<Width2, LimbType, AllocatorType, OtherIsSigned>&& other) // NOLINT
       : values(static_cast<representation_type&&>(other.values)) { }
 
     // Assignment operator.
@@ -1386,7 +1414,7 @@
     }
 
     // Trivial move assignment operator.
-    WIDE_INTEGER_CONSTEXPR auto operator=(uintwide_t&& other) -> uintwide_t& = default;
+    WIDE_INTEGER_CONSTEXPR auto operator=(uintwide_t&& other) noexcept -> uintwide_t& = default;
 
     // Trivial move assignment operator from the other signed-ness type.
     template<const bool OtherIsSigned,
@@ -1412,7 +1440,7 @@
     // Implement the cast operator that casts to the double-width type.
     template<typename UnknownUnsignedWideIntegralType,
              typename = typename std::enable_if<(std::is_same<UnknownUnsignedWideIntegralType, double_width_type>::value == true)>::type>
-    WIDE_INTEGER_CONSTEXPR operator double_width_type() const
+    WIDE_INTEGER_CONSTEXPR operator double_width_type() const // NOLINT
     {
       double_width_type local_double_width_instance;
 
@@ -1875,7 +1903,7 @@
     {
       bool wr_string_is_ok = true;
 
-      if(base_rep == 8U)
+      if(base_rep == UINT8_C(8))
       {
         uintwide_t t(*this);
 
@@ -1899,7 +1927,7 @@
             {
               char c = char(*t.values.cbegin() & mask);
 
-              if(c <= 8) { c = char(c + char(0x30)); }
+              if(c <= char(INT8_C(8))) { c = char(c + char(INT8_C(0x30))); }
 
               --pos;
 
@@ -1916,7 +1944,7 @@
             {
               char c = char(*tu.values.cbegin() & mask);
 
-              if(c <= 8) { c = char(c + char(0x30)); }
+              if(c <= char(INT8_C(8))) { c = char(c + char(INT8_C(0x30))); }
 
               --pos;
 
@@ -1957,7 +1985,7 @@
 
         detail::strcpy_unsafe(str_result, str_temp.data() + pos);
       }
-      else if(base_rep == 10U)
+      else if(base_rep == UINT8_C(10))
       {
         uintwide_t t(*this);
 
@@ -1984,11 +2012,11 @@
           {
             const uintwide_t tmp(t);
 
-            t.eval_divide_by_single_limb(limb_type(10U), 0U, nullptr);
+            t.eval_divide_by_single_limb(limb_type(UINT8_C(10)), 0U, nullptr);
 
             --pos;
 
-            str_temp[pos] = (char) ((limb_type) (tmp - (uintwide_t(t).mul_by_limb(10U))) + 0x30U);
+            str_temp[pos] = (char) ((limb_type) (tmp - (uintwide_t(t).mul_by_limb(limb_type(UINT8_C(10))))) + UINT8_C(0x30));
           }
         }
 
@@ -2021,7 +2049,7 @@
 
         detail::strcpy_unsafe(str_result, str_temp.data() + pos);
       }
-      else if(base_rep == 16U)
+      else if(base_rep == UINT8_C(16))
       {
         uintwide_t t(*this);
 
@@ -2045,8 +2073,8 @@
             {
               char c(*t.values.cbegin() & mask);
 
-              if      (c <= char(  9))                      { c = char(c + char(0x30)); }
-              else if((c >= char(0xA)) && (c <= char(0xF))) { c = char(c + (is_uppercase ? char(55) : char(87))); }
+              if      (c <= char(INT8_C(  9)))                              { c = char(c + char(INT8_C(0x30))); }
+              else if((c >= char(INT8_C(0xA))) && (c <= char(INT8_C(0xF)))) { c = char(c + (is_uppercase ? char(INT8_C(55)) : char(INT8_C(87)))); }
 
               --pos;
 
@@ -2063,8 +2091,8 @@
             {
               char c(*tu.values.cbegin() & mask);
 
-              if      (c <= char(  9))                      { c = char(c + char(0x30)); }
-              else if((c >= char(0xA)) && (c <= char(0xF))) { c = char(c + (is_uppercase ? char(55) : char(87))); }
+              if      (c <= char(INT8_C(  9)))                              { c = char(c + char(INT8_C(0x30))); }
+              else if((c >= char(INT8_C(0xA))) && (c <= char(INT8_C(0xF)))) { c = char(c + (is_uppercase ? char(INT8_C(55)) : char(INT8_C(87)))); }
 
               --pos;
 
@@ -2210,7 +2238,7 @@
              typename std::enable_if<(RePhraseIsSigned == true)>::type const* = nullptr>
     static constexpr auto is_neg(uintwide_t<Width2, LimbType, AllocatorType, RePhraseIsSigned> a) -> bool
     {
-      return (std::uint_fast8_t(std::uint_fast8_t(a.values.back() >> (std::numeric_limits<typename uintwide_t<Width2, LimbType, AllocatorType, RePhraseIsSigned>::limb_type>::digits - 1)) & 1U) != 0U);
+      return (std::uint_fast8_t(std::uint_fast8_t(a.values.back() >> size_t(std::numeric_limits<typename uintwide_t<Width2, LimbType, AllocatorType, RePhraseIsSigned>::limb_type>::digits - 1)) & 1U) != 0U);
     }
 
   private:
@@ -2330,7 +2358,7 @@
 
       local_builtin_float_type a = local_builtin_float_type(0.0F);
 
-      long double ldexp_runner = 1.0L;
+      long double ldexp_runner = 1.0L; // NOLINT
 
       for(auto i = size_t(0U); i < ilim; ++i)
       {
@@ -2345,7 +2373,7 @@
           }
 
           lm_mask      = limb_type(lm_mask << 1U);
-          ldexp_runner = static_cast<long double>(ldexp_runner * 2.0L);
+          ldexp_runner = static_cast<long double>(ldexp_runner * 2.0L);  // NOLINT
         }
 
         a += (local_builtin_float_type) ld;
@@ -2631,7 +2659,7 @@
              typename InputIteratorLeft,
              typename InputIteratorRight,
              const size_t RePhraseWidth2 = Width2,
-             typename std::enable_if<(uintwide_t<RePhraseWidth2, LimbType, AllocatorType, IsSigned>::number_of_limbs == 8U)>::type const* = nullptr>
+             typename std::enable_if<(uintwide_t<RePhraseWidth2, LimbType, AllocatorType, IsSigned>::number_of_limbs == size_t(UINT32_C(8)))>::type const* = nullptr>
     static WIDE_INTEGER_CONSTEXPR void eval_multiply_n_by_n_to_lo_part(      ResultIterator     r,
                                                                              InputIteratorLeft  a,
                                                                              InputIteratorRight b,
@@ -2710,10 +2738,10 @@
       // of the form BITS/2 * BITS/2 = BITS. In this case, the algorithm
       // can be significantly simplified by using only the 'lower-halves'
       // of the data.
-      if(    (*(a + left_difference_type(7)) == 0U) && (*(b + right_difference_type(7)) == 0U)
-          && (*(a + left_difference_type(6)) == 0U) && (*(b + right_difference_type(6)) == 0U)
-          && (*(a + left_difference_type(5)) == 0U) && (*(b + right_difference_type(5)) == 0U)
-          && (*(a + left_difference_type(4)) == 0U) && (*(b + right_difference_type(4)) == 0U))
+      if(    (*(a + left_difference_type(INT32_C(7))) == 0U) && (*(b + right_difference_type(INT32_C(7))) == 0U)
+          && (*(a + left_difference_type(INT32_C(6))) == 0U) && (*(b + right_difference_type(INT32_C(6))) == 0U)
+          && (*(a + left_difference_type(INT32_C(5))) == 0U) && (*(b + right_difference_type(INT32_C(5))) == 0U)
+          && (*(a + left_difference_type(INT32_C(4))) == 0U) && (*(b + right_difference_type(INT32_C(4))) == 0U))
       {
         rd1   = local_double_limb_type
                 (
@@ -2780,7 +2808,7 @@
                 + detail::make_hi<local_limb_type>(a2b3)
                 ;
 
-        *(r + result_difference_type(7))
+        *(r + result_difference_type(INT32_C(7)))
               = local_limb_type
                 (
                     detail::make_hi<local_limb_type>(rd6)
@@ -2790,22 +2818,23 @@
       }
       else
       {
-        const local_double_limb_type a4b0 = *(a + left_difference_type(4)) * local_double_limb_type(*(b + right_difference_type(0)));
-        const local_double_limb_type a0b4 = *(a + left_difference_type(0)) * local_double_limb_type(*(b + right_difference_type(4)));
+        const local_double_limb_type a4b0 = *(a + left_difference_type(INT32_C(4))) * local_double_limb_type(*(b + right_difference_type(INT32_C(0))));
+        const local_double_limb_type a0b4 = *(a + left_difference_type(INT32_C(0))) * local_double_limb_type(*(b + right_difference_type(INT32_C(4))));
 
-        const local_double_limb_type a5b0 = *(a + left_difference_type(5)) * local_double_limb_type(*(b + right_difference_type(0)));
-        const local_double_limb_type a4b1 = *(a + left_difference_type(4)) * local_double_limb_type(*(b + right_difference_type(1)));
+        const local_double_limb_type a5b0 = *(a + left_difference_type(INT32_C(5))) * local_double_limb_type(*(b + right_difference_type(INT32_C(0))));
+        const local_double_limb_type a4b1 = *(a + left_difference_type(INT32_C(4))) * local_double_limb_type(*(b + right_difference_type(INT32_C(1))));
 
-        const local_double_limb_type a1b4 = *(a + left_difference_type(1)) * local_double_limb_type(*(b + right_difference_type(4)));
-        const local_double_limb_type a0b5 = *(a + left_difference_type(0)) * local_double_limb_type(*(b + right_difference_type(5)));
+        const local_double_limb_type a1b4 = *(a + left_difference_type(INT32_C(1))) * local_double_limb_type(*(b + right_difference_type(INT32_C(4))));
+        const local_double_limb_type a0b5 = *(a + left_difference_type(INT32_C(0))) * local_double_limb_type(*(b + right_difference_type(INT32_C(5))));
 
-        const local_double_limb_type a6b0 = *(a + left_difference_type(6)) * local_double_limb_type(*(b + right_difference_type(0)));
-        const local_double_limb_type a5b1 = *(a + left_difference_type(5)) * local_double_limb_type(*(b + right_difference_type(1)));
-        const local_double_limb_type a4b2 = *(a + left_difference_type(4)) * local_double_limb_type(*(b + right_difference_type(2)));
+        const local_double_limb_type a6b0 = *(a + left_difference_type(INT32_C(6))) * local_double_limb_type(*(b + right_difference_type(INT32_C(0))));
+        const local_double_limb_type a5b1 = *(a + left_difference_type(INT32_C(5))) * local_double_limb_type(*(b + right_difference_type(INT32_C(1))));
 
-        const local_double_limb_type a2b4 = *(a + left_difference_type(2)) * local_double_limb_type(*(b + right_difference_type(4)));
-        const local_double_limb_type a1b5 = *(a + left_difference_type(1)) * local_double_limb_type(*(b + right_difference_type(5)));
-        const local_double_limb_type a0b6 = *(a + left_difference_type(0)) * local_double_limb_type(*(b + right_difference_type(6)));
+        const local_double_limb_type a4b2 = *(a + left_difference_type(INT32_C(4))) * local_double_limb_type(*(b + right_difference_type(INT32_C(2))));
+        const local_double_limb_type a2b4 = *(a + left_difference_type(INT32_C(2))) * local_double_limb_type(*(b + right_difference_type(INT32_C(4))));
+
+        const local_double_limb_type a1b5 = *(a + left_difference_type(INT32_C(1))) * local_double_limb_type(*(b + right_difference_type(INT32_C(5))));
+        const local_double_limb_type a0b6 = *(a + left_difference_type(INT32_C(0))) * local_double_limb_type(*(b + right_difference_type(INT32_C(6))));
 
         rd1   = local_double_limb_type
                 (
@@ -2890,18 +2919,18 @@
                 + detail::make_hi<local_limb_type>(a0b5)
                 ;
 
-        *(r + result_difference_type(7))
+        *(r + result_difference_type(INT32_C(7)))
               = local_limb_type
                 (
                     detail::make_hi<local_limb_type>(rd6)
-                  + static_cast<local_limb_type>    (*(a + left_difference_type(7)) * local_double_limb_type(*(b + right_difference_type(0))))
-                  + static_cast<local_limb_type>    (*(a + left_difference_type(6)) * local_double_limb_type(*(b + right_difference_type(1))))
-                  + static_cast<local_limb_type>    (*(a + left_difference_type(5)) * local_double_limb_type(*(b + right_difference_type(2))))
-                  + static_cast<local_limb_type>    (*(a + left_difference_type(4)) * local_double_limb_type(*(b + right_difference_type(3))))
-                  + static_cast<local_limb_type>    (*(a + left_difference_type(3)) * local_double_limb_type(*(b + right_difference_type(4))))
-                  + static_cast<local_limb_type>    (*(a + left_difference_type(2)) * local_double_limb_type(*(b + right_difference_type(5))))
-                  + static_cast<local_limb_type>    (*(a + left_difference_type(1)) * local_double_limb_type(*(b + right_difference_type(6))))
-                  + static_cast<local_limb_type>    (*(a + left_difference_type(0)) * local_double_limb_type(*(b + right_difference_type(7))))
+                  + static_cast<local_limb_type>    (*(a + left_difference_type(INT32_C(7))) * local_double_limb_type(*(b + right_difference_type(INT32_C(0)))))
+                  + static_cast<local_limb_type>    (*(a + left_difference_type(INT32_C(6))) * local_double_limb_type(*(b + right_difference_type(INT32_C(1)))))
+                  + static_cast<local_limb_type>    (*(a + left_difference_type(INT32_C(5))) * local_double_limb_type(*(b + right_difference_type(INT32_C(2)))))
+                  + static_cast<local_limb_type>    (*(a + left_difference_type(INT32_C(4))) * local_double_limb_type(*(b + right_difference_type(INT32_C(3)))))
+                  + static_cast<local_limb_type>    (*(a + left_difference_type(INT32_C(3))) * local_double_limb_type(*(b + right_difference_type(INT32_C(4)))))
+                  + static_cast<local_limb_type>    (*(a + left_difference_type(INT32_C(2))) * local_double_limb_type(*(b + right_difference_type(INT32_C(5)))))
+                  + static_cast<local_limb_type>    (*(a + left_difference_type(INT32_C(1))) * local_double_limb_type(*(b + right_difference_type(INT32_C(6)))))
+                  + static_cast<local_limb_type>    (*(a + left_difference_type(INT32_C(0))) * local_double_limb_type(*(b + right_difference_type(INT32_C(7)))))
                   + detail::make_hi<local_limb_type>(a6b0)
                   + detail::make_hi<local_limb_type>(a5b1)
                   + detail::make_hi<local_limb_type>(a4b2)
@@ -2913,13 +2942,13 @@
                 ;
       }
 
-      *(r + result_difference_type(0)) = static_cast<local_limb_type>(a0b0);
-      *(r + result_difference_type(1)) = static_cast<local_limb_type>(rd1);
-      *(r + result_difference_type(2)) = static_cast<local_limb_type>(rd2);
-      *(r + result_difference_type(3)) = static_cast<local_limb_type>(rd3);
-      *(r + result_difference_type(4)) = static_cast<local_limb_type>(rd4);
-      *(r + result_difference_type(5)) = static_cast<local_limb_type>(rd5);
-      *(r + result_difference_type(6)) = static_cast<local_limb_type>(rd6);
+      *(r + result_difference_type(INT32_C(0))) = static_cast<local_limb_type>(a0b0);
+      *(r + result_difference_type(INT32_C(1))) = static_cast<local_limb_type>(rd1);
+      *(r + result_difference_type(INT32_C(2))) = static_cast<local_limb_type>(rd2);
+      *(r + result_difference_type(INT32_C(3))) = static_cast<local_limb_type>(rd3);
+      *(r + result_difference_type(INT32_C(4))) = static_cast<local_limb_type>(rd4);
+      *(r + result_difference_type(INT32_C(5))) = static_cast<local_limb_type>(rd5);
+      *(r + result_difference_type(INT32_C(6))) = static_cast<local_limb_type>(rd6);
     }
     #endif
 
@@ -2927,9 +2956,9 @@
              typename InputIteratorLeft,
              typename InputIteratorRight,
              const size_t RePhraseWidth2 = Width2,
-             typename std::enable_if<(   (uintwide_t<RePhraseWidth2, LimbType, AllocatorType>::number_of_limbs != 4U)
+             typename std::enable_if<(   (uintwide_t<RePhraseWidth2, LimbType, AllocatorType>::number_of_limbs != size_t(UINT32_C(4)))
     #if defined(WIDE_INTEGER_HAS_MUL_8_BY_8_UNROLL)
-                                      && (uintwide_t<RePhraseWidth2, LimbType, AllocatorType>::number_of_limbs != 8U)
+                                      && (uintwide_t<RePhraseWidth2, LimbType, AllocatorType>::number_of_limbs != size_t(UINT32_C(8)))
     #endif
                                      )>::type const* = nullptr>
     static WIDE_INTEGER_CONSTEXPR void eval_multiply_n_by_n_to_lo_part(      ResultIterator     r,
@@ -3136,7 +3165,7 @@
                                          const unsinged_fast_type n,
                                                InputIteratorTemp  t)
     {
-      if(n <= 48U)
+      if(n <= unsinged_fast_type(UINT32_C(48)))
       {
         static_cast<void>(t);
 
@@ -3576,13 +3605,13 @@
 
       const unsinged_fast_type str_length = detail::strlen_unsafe(str_input);
 
-      std::uint_fast8_t base = 10U;
+      std::uint_fast8_t base = UINT8_C(10);
 
       unsinged_fast_type pos = 0U;
 
       // Detect: Is there a plus sign?
       // And if there is a plus sign, skip over the plus sign.
-      if((str_length > 0U) && (str_input[0U] == char('+')))
+      if((str_length > 0U) && (str_input[0U] == char('+'))) // NOLINT
       {
         ++pos;
       }
@@ -3591,7 +3620,7 @@
 
       // Detect: Is there a minus sign?
       // And if there is a minus sign, skip over the minus sign.
-      if((str_length > 0U) && (str_input[0U] == char('-')))
+      if((str_length > 0U) && (str_input[0U] == char('-'))) // NOLINT
       {
         str_has_neg_sign = true;
 
@@ -3601,26 +3630,26 @@
       // Perform a dynamic detection of the base.
       if(str_length > (pos + 0U))
       {
-        const bool might_be_oct_or_hex = ((str_input[pos + 0U] == char('0')) && (str_length > (pos + 1U)));
+        const bool might_be_oct_or_hex = ((str_input[pos + 0U] == char('0')) && (str_length > (pos + 1U))); // NOLINT
 
         if(might_be_oct_or_hex)
         {
-          if((str_input[pos + 1U] >= char('0')) && (str_input[pos + 1U] <= char('8')))
+          if((str_input[pos + 1U] >= char('0')) && (str_input[pos + 1U] <= char('8'))) // NOLINT
           {
             // The input format is octal.
-            base = 8U;
+            base = UINT8_C(8);
 
             pos += 1U;
           }
-          else if((str_input[pos + 1U] == char('x')) || (str_input[pos + 1U] == char('X')))
+          else if((str_input[pos + 1U] == char('x')) || (str_input[pos + 1U] == char('X'))) // NOLINT
           {
             // The input format is hexadecimal.
-            base = 16U;
+            base = UINT8_C(16);
 
             pos += 2U;
           }
         }
-        else if((str_input[pos + 0U] >= char('0')) && (str_input[pos + 0U] <= char('9')))
+        else if((str_input[pos + 0U] >= char('0')) && (str_input[pos + 0U] <= char('9'))) // NOLINT
         {
           // The input format is decimal.
           ;
@@ -3631,18 +3660,18 @@
 
       for( ; ((pos < str_length) && char_is_valid); ++pos)
       {
-        const auto c = std::uint8_t(str_input[pos]);
+        const auto c = std::uint8_t(str_input[pos]); // NOLINT
 
         // TBD: Handle other digit delimiters in addition to apostrophe.
         const bool char_is_apostrophe = (c == char(39));
 
         if(char_is_apostrophe == false)
         {
-          if(base == 8U)
+          if(base == UINT8_C(8))
           {
-            std::uint8_t uc_oct;
+            std::uint8_t uc_oct { };
 
-            if  ((c >= char('0')) && (c <= char('8'))) { uc_oct = std::uint8_t(c - std::uint8_t(0x30U)); }
+            if  ((c >= char('0')) && (c <= char('8'))) { uc_oct = std::uint8_t(c - std::uint8_t(UINT8_C(0x30))); }
             else                                       { uc_oct = std::uint8_t('\0'); char_is_valid = false; }
 
             if(char_is_valid)
@@ -3652,27 +3681,27 @@
               *values.begin() |= uc_oct;
             }
           }
-          else if(base == 10U)
+          else if(base == UINT8_C(10))
           {
-            std::uint8_t uc_dec;
+            std::uint8_t uc_dec { };
 
-            if   ((c >= std::uint8_t('0')) && (c <= std::uint8_t('9'))) { uc_dec = std::uint8_t(c - std::uint8_t(0x30U)); }
+            if   ((c >= std::uint8_t('0')) && (c <= std::uint8_t('9'))) { uc_dec = std::uint8_t(c - std::uint8_t(UINT8_C(0x30))); }
             else                                                        { uc_dec = std::uint8_t('\0'); char_is_valid = false; }
 
             if(char_is_valid)
             {
-              mul_by_limb(limb_type(10U));
+              mul_by_limb(limb_type(UINT8_C(10)));
 
               operator+=(uc_dec);
             }
           }
-          else if(base == 16U)
+          else if(base == UINT8_C(16))
           {
-            std::uint8_t uc_hex;
+            std::uint8_t uc_hex { };
 
-            if     ((c >= std::uint8_t('a')) && (c <= std::uint8_t('f'))) { uc_hex = std::uint8_t(c - std::uint8_t(  87U)); }
-            else if((c >= std::uint8_t('A')) && (c <= std::uint8_t('F'))) { uc_hex = std::uint8_t(c - std::uint8_t(  55U)); }
-            else if((c >= std::uint8_t('0')) && (c <= std::uint8_t('9'))) { uc_hex = std::uint8_t(c - std::uint8_t(0x30U)); }
+            if     ((c >= std::uint8_t('a')) && (c <= std::uint8_t('f'))) { uc_hex = std::uint8_t(c - std::uint8_t(UINT8_C(  87))); }
+            else if((c >= std::uint8_t('A')) && (c <= std::uint8_t('F'))) { uc_hex = std::uint8_t(c - std::uint8_t(UINT8_C(  55))); }
+            else if((c >= std::uint8_t('0')) && (c <= std::uint8_t('9'))) { uc_hex = std::uint8_t(c - std::uint8_t(UINT8_C(0x30))); }
             else                                                          { uc_hex = std::uint8_t('\0'); char_is_valid = false; }
 
             if(char_is_valid)
@@ -3735,17 +3764,17 @@
   };
 
   // Define some convenient unsigned wide integer types.
-  using uint64_t    = uintwide_t<   64U, std::uint16_t>;
-  using uint128_t   = uintwide_t<  128U, std::uint32_t>;
-  using uint256_t   = uintwide_t<  256U, std::uint32_t>;
-  using uint512_t   = uintwide_t<  512U, std::uint32_t>;
-  using uint1024_t  = uintwide_t< 1024U, std::uint32_t>;
-  using uint2048_t  = uintwide_t< 2048U, std::uint32_t>;
-  using uint4096_t  = uintwide_t< 4096U, std::uint32_t>;
-  using uint8192_t  = uintwide_t< 8192U, std::uint32_t>;
-  using uint16384_t = uintwide_t<16384U, std::uint32_t>;
-  using uint32768_t = uintwide_t<32768U, std::uint32_t>;
-  using uint65536_t = uintwide_t<65536U, std::uint32_t>;
+  using uint64_t    = uintwide_t<size_t(UINT32_C(   64)), std::uint16_t>;
+  using uint128_t   = uintwide_t<size_t(UINT32_C(  128)), std::uint32_t>;
+  using uint256_t   = uintwide_t<size_t(UINT32_C(  256)), std::uint32_t>;
+  using uint512_t   = uintwide_t<size_t(UINT32_C(  512)), std::uint32_t>;
+  using uint1024_t  = uintwide_t<size_t(UINT32_C( 1024)), std::uint32_t>;
+  using uint2048_t  = uintwide_t<size_t(UINT32_C( 2048)), std::uint32_t>;
+  using uint4096_t  = uintwide_t<size_t(UINT32_C( 4096)), std::uint32_t>;
+  using uint8192_t  = uintwide_t<size_t(UINT32_C( 8192)), std::uint32_t>;
+  using uint16384_t = uintwide_t<size_t(UINT32_C(16384)), std::uint32_t>;
+  using uint32768_t = uintwide_t<size_t(UINT32_C(32768)), std::uint32_t>;
+  using uint65536_t = uintwide_t<size_t(UINT32_C(65536)), std::uint32_t>;
 
   #if !defined(WIDE_INTEGER_DISABLE_TRIVIAL_COPY_AND_STD_LAYOUT_CHECKS)
   static_assert(std::is_trivially_copyable<uint64_t   >::value && std::is_standard_layout<uint64_t   >::value, "uintwide_t must be trivially copyable with standard layout.");
@@ -3761,17 +3790,17 @@
   static_assert(std::is_trivially_copyable<uint65536_t>::value && std::is_standard_layout<uint65536_t>::value, "uintwide_t must be trivially copyable with standard layout.");
   #endif
 
-  using  int64_t    = uintwide_t<   64U, std::uint16_t, void, true>;
-  using  int128_t   = uintwide_t<  128U, std::uint32_t, void, true>;
-  using  int256_t   = uintwide_t<  256U, std::uint32_t, void, true>;
-  using  int512_t   = uintwide_t<  512U, std::uint32_t, void, true>;
-  using  int1024_t  = uintwide_t< 1024U, std::uint32_t, void, true>;
-  using  int2048_t  = uintwide_t< 2048U, std::uint32_t, void, true>;
-  using  int4096_t  = uintwide_t< 4096U, std::uint32_t, void, true>;
-  using  int8192_t  = uintwide_t< 8192U, std::uint32_t, void, true>;
-  using  int16384_t = uintwide_t<16384U, std::uint32_t, void, true>;
-  using  int32768_t = uintwide_t<32768U, std::uint32_t, void, true>;
-  using  int65536_t = uintwide_t<65536U, std::uint32_t, void, true>;
+  using  int64_t    = uintwide_t<size_t(UINT32_C(   64)), std::uint16_t, void, true>;
+  using  int128_t   = uintwide_t<size_t(UINT32_C(  128)), std::uint32_t, void, true>;
+  using  int256_t   = uintwide_t<size_t(UINT32_C(  256)), std::uint32_t, void, true>;
+  using  int512_t   = uintwide_t<size_t(UINT32_C(  512)), std::uint32_t, void, true>;
+  using  int1024_t  = uintwide_t<size_t(UINT32_C( 1024)), std::uint32_t, void, true>;
+  using  int2048_t  = uintwide_t<size_t(UINT32_C( 2048)), std::uint32_t, void, true>;
+  using  int4096_t  = uintwide_t<size_t(UINT32_C( 4096)), std::uint32_t, void, true>;
+  using  int8192_t  = uintwide_t<size_t(UINT32_C( 8192)), std::uint32_t, void, true>;
+  using  int16384_t = uintwide_t<size_t(UINT32_C(16384)), std::uint32_t, void, true>;
+  using  int32768_t = uintwide_t<size_t(UINT32_C(32768)), std::uint32_t, void, true>;
+  using  int65536_t = uintwide_t<size_t(UINT32_C(65536)), std::uint32_t, void, true>;
 
   #if !defined(WIDE_INTEGER_DISABLE_TRIVIAL_COPY_AND_STD_LAYOUT_CHECKS)
   static_assert(std::is_trivially_copyable<int64_t   >::value && std::is_standard_layout<int64_t   >::value, "uintwide_t must be trivially copyable with standard layout.");
@@ -3992,18 +4021,18 @@
     const bool show_base    = ((my_flags & std::ios::showbase)  == std::ios::showbase);
     const bool is_uppercase = ((my_flags & std::ios::uppercase) == std::ios::uppercase);
 
-    std::uint_fast8_t base_rep;
+    std::uint_fast8_t base_rep { };
 
-    if     ((my_flags & std::ios::oct) == std::ios::oct) { base_rep =  8U; }
-    else if((my_flags & std::ios::hex) == std::ios::hex) { base_rep = 16U; }
-    else                                                 { base_rep = 10U; }
+    if     ((my_flags & std::ios::oct) == std::ios::oct) { base_rep = UINT8_C( 8); }
+    else if((my_flags & std::ios::hex) == std::ios::hex) { base_rep = UINT8_C(16); }
+    else                                                 { base_rep = UINT8_C(10); }
 
     const unsinged_fast_type field_width = unsinged_fast_type(out.width());
     const char               fill_char   = out.fill();
 
     using local_wide_integer_type = uintwide_t<Width2, LimbType, AllocatorType, IsSigned>;
 
-    if(base_rep == 8U)
+    if(base_rep == UINT8_C(8))
     {
       std::array<char, local_wide_integer_type::wr_string_max_buffer_size_oct> str_result;
       str_result.fill(char('\0'));
@@ -4012,7 +4041,7 @@
 
       static_cast<void>(ostr << str_result.data());
     }
-    else if(base_rep == 10U)
+    else if(base_rep == UINT8_C(10))
     {
       std::array<char, local_wide_integer_type::wr_string_max_buffer_size_dec> str_result;
       str_result.fill(char('\0'));
@@ -4021,7 +4050,7 @@
 
       static_cast<void>(ostr << str_result.data());
     }
-    else if(base_rep == 16U)
+    else if(base_rep == UINT8_C(16))
     {
       std::array<char, local_wide_integer_type::wr_string_max_buffer_size_hex> str_result;
       str_result.fill(char('\0'));
@@ -4086,12 +4115,16 @@
       // with a more clever kind of binary searching.
 
       f   = local_floating_point_type(f / local_floating_point_type(two_pow32));
-      e2 += 32;
+      e2 += int(INT32_C(32));
     }
 
-    while(f >= local_floating_point_type(1.0L))
+    constexpr long double one_ldbl(1.0L);
+
+    while(f >= local_floating_point_type(one_ldbl))
     {
-      f = local_floating_point_type(f / local_floating_point_type(2.0L));
+      constexpr long double two_ldbl(2.0L);
+
+      f = local_floating_point_type(f / local_floating_point_type(two_ldbl));
 
       ++e2;
     }
@@ -4209,11 +4242,11 @@
     std::uint32_t x = u;
 
     // Use O(log2[N]) binary-halving in an unrolled loop to find the msb.
-    if((x & UINT32_C(0xFFFF0000)) != UINT32_C(0)) { x = std::uint32_t(x >> 16U); r |= UINT8_C(16); }
-    if((x & UINT32_C(0x0000FF00)) != UINT32_C(0)) { x = std::uint32_t(x >>  8U); r |= UINT8_C( 8); }
-    if((x & UINT32_C(0x000000F0)) != UINT32_C(0)) { x = std::uint32_t(x >>  4U); r |= UINT8_C( 4); }
-    if((x & UINT32_C(0x0000000C)) != UINT32_C(0)) { x = std::uint32_t(x >>  2U); r |= UINT8_C( 2); }
-    if((x & UINT32_C(0x00000002)) != UINT32_C(0)) {                              r |= UINT8_C( 1); }
+    if((x & UINT32_C(0xFFFF0000)) != UINT32_C(0)) { x = std::uint32_t(x >> unsigned(UINT32_C(16))); r = unsinged_fast_type(r | UINT32_C(16)); }
+    if((x & UINT32_C(0x0000FF00)) != UINT32_C(0)) { x = std::uint32_t(x >> unsigned(UINT32_C( 8))); r = unsinged_fast_type(r | UINT32_C( 8)); }
+    if((x & UINT32_C(0x000000F0)) != UINT32_C(0)) { x = std::uint32_t(x >> unsigned(UINT32_C( 4))); r = unsinged_fast_type(r | UINT32_C( 4)); }
+    if((x & UINT32_C(0x0000000C)) != UINT32_C(0)) { x = std::uint32_t(x >> unsigned(UINT32_C( 2))); r = unsinged_fast_type(r | UINT32_C( 2)); }
+    if((x & UINT32_C(0x00000002)) != UINT32_C(0)) {                                                 r = unsinged_fast_type(r | UINT32_C( 1)); }
 
     return unsinged_fast_type(r);
   }
@@ -4226,10 +4259,10 @@
     std::uint16_t x = u;
 
     // Use O(log2[N]) binary-halving in an unrolled loop to find the msb.
-    if((x & UINT16_C(0xFF00)) != UINT16_C(0)) { x = std::uint16_t(x >> 8U); r |= UINT8_C(8); }
-    if((x & UINT16_C(0x00F0)) != UINT16_C(0)) { x = std::uint16_t(x >> 4U); r |= UINT8_C(4); }
-    if((x & UINT16_C(0x000C)) != UINT16_C(0)) { x = std::uint16_t(x >> 2U); r |= UINT8_C(2); }
-    if((x & UINT16_C(0x0002)) != UINT16_C(0)) {                             r |= UINT8_C(1); }
+    if((x & UINT16_C(0xFF00)) != UINT16_C(0)) { x = std::uint16_t(x >> unsigned(UINT16_C(8))); r = unsinged_fast_type(r | UINT16_C(8)); } // NOLINT
+    if((x & UINT16_C(0x00F0)) != UINT16_C(0)) { x = std::uint16_t(x >> unsigned(UINT16_C(4))); r = unsinged_fast_type(r | UINT16_C(4)); } // NOLINT
+    if((x & UINT16_C(0x000C)) != UINT16_C(0)) { x = std::uint16_t(x >> unsigned(UINT16_C(2))); r = unsinged_fast_type(r | UINT16_C(2)); } // NOLINT
+    if((x & UINT16_C(0x0002)) != UINT16_C(0)) {                                                r = unsinged_fast_type(r | UINT16_C(1)); } // NOLINT
 
     static_cast<void>(x);
 
@@ -4244,9 +4277,9 @@
     std::uint8_t x = u;
 
     // Use O(log2[N]) binary-halving in an unrolled loop to find the msb.
-    if((x & UINT8_C(0xF0)) != UINT8_C(0)) { x = std::uint8_t(x >> 4U); r |= UINT8_C(4); }
-    if((x & UINT8_C(0x0C)) != UINT8_C(0)) { x = std::uint8_t(x >> 2U); r |= UINT8_C(2); }
-    if((x & UINT8_C(0x02)) != UINT8_C(0)) {                            r |= UINT8_C(1); }
+    if((x & UINT8_C(0xF0)) != UINT8_C(0)) { x = std::uint8_t(x >> 4U); r = unsinged_fast_type(r | UINT8_C(4)); } // NOLINT
+    if((x & UINT8_C(0x0C)) != UINT8_C(0)) { x = std::uint8_t(x >> 2U); r = unsinged_fast_type(r | UINT8_C(2)); } // NOLINT
+    if((x & UINT8_C(0x02)) != UINT8_C(0)) {                            r = unsinged_fast_type(r | UINT8_C(1)); } // NOLINT
 
     return unsinged_fast_type(r);
   }
@@ -4379,7 +4412,7 @@
       // in R.P. Brent and Paul Zimmermann, "Modern Computer Arithmetic",
       // Cambridge University Press, 2011.
 
-      for(unsinged_fast_type i = 0U; i < 64U; ++i)
+      for(unsinged_fast_type i = 0U; i < unsinged_fast_type(UINT8_C(64)); ++i)
       {
         s = u;
 
@@ -4438,7 +4471,7 @@
 
       const unsinged_fast_type three_minus_one(3U - 1U);
 
-      for(unsinged_fast_type i = 0U; i < 64U; ++i)
+      for(unsinged_fast_type i = 0U; i < unsinged_fast_type(UINT8_C(64)); ++i)
       {
         s = u;
 
@@ -4517,7 +4550,7 @@
 
         const unsinged_fast_type k_minus_one(k - 1U);
 
-        for(unsinged_fast_type i = 0U; i < 64U; ++i)
+        for(unsinged_fast_type i = 0U; i < unsinged_fast_type(UINT8_C(64)); ++i)
         {
           s = u;
 
@@ -4908,8 +4941,8 @@
     struct param_type
     {
     public:
-      param_type(const result_type& p_a = (std::numeric_limits<result_type>::min)(),
-                 const result_type& p_b = (std::numeric_limits<result_type>::max)())
+      explicit param_type(const result_type& p_a = (std::numeric_limits<result_type>::min)(),
+                          const result_type& p_b = (std::numeric_limits<result_type>::max)())
         : param_a(p_a),
           param_b(p_b) { }
 
@@ -4918,6 +4951,9 @@
       param_type(const param_type& other_params) : param_a(other_params.param_a),
                                                    param_b(other_params.param_b) { }
 
+      param_type(param_type&& other_params) noexcept : param_a(other_params.param_a),
+                                                       param_b(other_params.param_b) { }
+
       auto operator=(const param_type& other_params) -> param_type&
       {
         if(this != &other_params)
@@ -4925,6 +4961,14 @@
           param_a = other_params.param_a;
           param_b = other_params.param_b;
         }
+
+        return *this;
+      }
+
+      auto operator=(param_type&& other_params) noexcept -> param_type&
+      {
+        param_a = other_params.param_a;
+        param_b = other_params.param_b;
 
         return *this;
       }
@@ -4965,9 +5009,26 @@
 
     uniform_int_distribution(const uniform_int_distribution& other_distribution) = delete;
 
+    uniform_int_distribution(uniform_int_distribution&& other) noexcept : my_params(other.my_params) { }
+
     ~uniform_int_distribution() = default;
 
-    auto operator=(const uniform_int_distribution&) -> uniform_int_distribution& = delete;
+    auto operator=(const uniform_int_distribution& other) -> uniform_int_distribution&
+    {
+      if(this != &other)
+      {
+        my_params = other.my_params;
+      }
+
+      return *this;
+    }
+
+    auto operator=(uniform_int_distribution&& other) noexcept -> uniform_int_distribution&
+    {
+      my_params = other.my_params;
+
+      return *this;
+    }
 
     void param(const param_type& new_params)
     {
@@ -5012,7 +5073,7 @@
 
       constexpr auto digits_generator_result_type = static_cast<std::uint32_t>(GeneratorResultBits);
 
-      static_assert((digits_generator_result_type % 8U) == 0U,
+      static_assert((digits_generator_result_type % UINT32_C(8)) == UINT32_C(0),
                     "Error: Generator result type must have a multiple of 8 bits.");
 
       constexpr std::uint32_t digits_limb_ratio = 
@@ -5033,12 +5094,12 @@
           value = input_generator();
         }
 
-        const std::uint8_t next_byte = std::uint8_t(value >> unsigned((j % digits_gtor_ratio) * 8U));
+        const std::uint8_t next_byte = std::uint8_t(value >> unsigned(unsinged_fast_type(j % digits_gtor_ratio) * unsinged_fast_type(UINT8_C(8))));
 
         *it =
           static_cast<typename result_type::limb_type>
           (
-            *it | local_limb_type(local_limb_type(next_byte) << unsigned((j % digits_limb_ratio) * 8U))
+            *it | local_limb_type(local_limb_type(next_byte) << unsigned(unsinged_fast_type(j % digits_limb_ratio) * unsinged_fast_type(UINT8_C(8))))
           );
 
         ++j;
@@ -5120,9 +5181,9 @@
         return false;
       }
 
-      if((n0 <= 227U) && (np <= 227U))
+      if((n0 <= local_limb_type(UINT8_C(227))) && (np <= local_limb_type(UINT8_C(227))))
       {
-        if((n0 == 2U) && (np == 2U))
+        if((n0 == local_limb_type(UINT8_C(2))) && (np == local_limb_type(UINT8_C(2))))
         {
           // Trivial special case of (n = 2).
           return true;
