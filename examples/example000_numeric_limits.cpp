@@ -14,7 +14,7 @@ namespace local
   using math::wide_integer::int64_t;
   using uint32_t = math::wide_integer::uintwide_t<math::wide_integer::size_t(UINT32_C(32)), std::uint8_t, void, false>;
   using  int32_t = math::wide_integer::uintwide_t<math::wide_integer::size_t(UINT32_C(32)), std::uint8_t, void, true>;
-}
+} // namespace local
 
 auto math::wide_integer::example000_numeric_limits() -> bool
 {

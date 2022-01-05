@@ -5,8 +5,8 @@
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
 
-#ifndef TEST_UINTWIDE_T_N_BINARY_OPS_BASE_2019_12_19_H_
-  #define TEST_UINTWIDE_T_N_BINARY_OPS_BASE_2019_12_19_H_
+#ifndef TEST_UINTWIDE_T_N_BINARY_OPS_BASE_2019_12_19_H
+  #define TEST_UINTWIDE_T_N_BINARY_OPS_BASE_2019_12_19_H
 
   #include <cstdint>
   #include <iomanip>
@@ -81,4 +81,4 @@
     static random_generator_type my_gen;
   };
 
-#endif // TEST_UINTWIDE_T_N_BINARY_OPS_BASE_2019_12_19_H_
+#endif // TEST_UINTWIDE_T_N_BINARY_OPS_BASE_2019_12_19_H

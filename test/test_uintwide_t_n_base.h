@@ -5,8 +5,8 @@
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
 
-#ifndef TEST_UINTWIDE_T_N_BASE_2019_12_29_H_
-  #define TEST_UINTWIDE_T_N_BASE_2019_12_29_H_
+#ifndef TEST_UINTWIDE_T_N_BASE_2019_12_29_H
+  #define TEST_UINTWIDE_T_N_BASE_2019_12_29_H
 
   #include <atomic>
   #include <random>
@@ -123,4 +123,4 @@
   #pragma GCC diagnostic pop
   #endif
 
-#endif // TEST_UINTWIDE_T_N_BASE_2019_12_29_H_
+#endif // TEST_UINTWIDE_T_N_BASE_2019_12_29_H

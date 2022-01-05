@@ -5,8 +5,8 @@
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)             //
 ///////////////////////////////////////////////////////////////////
 
-#ifndef TEST_UINTWIDE_T_2019_12_15_H_
-  #define TEST_UINTWIDE_T_2019_12_15_H_
+#ifndef TEST_UINTWIDE_T_2019_12_15_H
+  #define TEST_UINTWIDE_T_2019_12_15_H
 
   namespace math { namespace wide_integer {
 
@@ -19,4 +19,4 @@
 
   } } // namespace math::wide_integer
 
-#endif // TEST_UINTWIDE_T_2019_12_15_H_
+#endif // TEST_UINTWIDE_T_2019_12_15_H
