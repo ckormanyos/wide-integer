@@ -330,7 +330,7 @@
 
     if(sizes_are_equal)
     {
-      typedef typename dynamic_array<ValueType, AllocatorType>::size_type size_type;
+      using size_type = typename dynamic_array<ValueType, AllocatorType>::size_type;
 
       const bool size_of_left_is_zero = (lhs.size() == size_type(0U));
 
@@ -414,7 +414,7 @@
     x.swap(y);
   }
 
-  }
+  } // namespace util
 
   #else
 
@@ -439,7 +439,7 @@
                 "Error: size type and pointer difference type must be at least 16 bits in width (or wider)");
   // ENDNOLINT
 
-  template<const size_t Width2> struct verify_power_of_two
+  template<const size_t Width2> struct verify_power_of_two // NOLINT(altera-struct-pack-align)
   {
     // TBD: Which powers should be checked if size_t is not 32 bits?
     static constexpr bool conditional_value =
@@ -493,7 +493,7 @@
   }
   #endif
 
-  } // namespace math::wide_integer::detail
+  } // namespace detail
 
   using detail::size_t;
   using detail::ptrdiff_t;
@@ -769,7 +769,8 @@
                     DistributionType&                                            distribution,
                     GeneratorType&                                               generator) -> bool;
 
-  } } // namespace math::wide_integer
+  } // namespace wide_integer
+  } // namespace math
 
   // NOLINTEND(*-avoid-magic-numbers)
 
@@ -802,34 +803,34 @@
       : base_class_type(MySize, typename base_class_type::value_type(), a)
     {
       std::fill(base_class_type::begin(),
-                base_class_type::begin() + (std::min)(MySize, (typename base_class_type::size_type) s),
+                base_class_type::begin() + (std::min)(MySize, static_cast<typename base_class_type::size_type>(s)),
                 v);
     }
 
     constexpr fixed_dynamic_array(const fixed_dynamic_array& other_array)
-      : base_class_type((const base_class_type&) other_array) { }
+      : base_class_type(static_cast<const base_class_type&>(other_array)) { }
 
     WIDE_INTEGER_CONSTEXPR fixed_dynamic_array(std::initializer_list<typename base_class_type::value_type> lst)
       : base_class_type(MySize)
     {
       std::copy(lst.begin(),
-                lst.begin() + (std::min)((typename base_class_type::size_type) lst.size(), MySize),
+                lst.begin() + (std::min)(static_cast<typename base_class_type::size_type>(lst.size()), MySize),
                 base_class_type::begin());
     }
 
     constexpr fixed_dynamic_array(fixed_dynamic_array&& other_array) noexcept
-      : base_class_type((base_class_type&&) other_array) { }
+      : base_class_type(static_cast<base_class_type&&>(other_array)) { }
 
-    WIDE_INTEGER_CONSTEXPR auto operator=(const fixed_dynamic_array& other_array) -> fixed_dynamic_array&
+    WIDE_INTEGER_CONSTEXPR auto operator=(const fixed_dynamic_array& other_array) -> fixed_dynamic_array& // NOLINT(cert-oop54-cpp)
     {
-      base_class_type::operator=((const base_class_type&) other_array);
+      base_class_type::operator=(static_cast<const base_class_type&>(other_array));
 
       return *this;
     }
 
     WIDE_INTEGER_CONSTEXPR auto operator=(fixed_dynamic_array&& other_array) noexcept -> fixed_dynamic_array&
     {
-      base_class_type::operator=((base_class_type&&) other_array);
+      base_class_type::operator=(static_cast<base_class_type&&>(other_array));
 
       return *this;
     }
@@ -856,17 +857,17 @@
                                                        const value_type& v = value_type())
     {
       std::fill(base_class_type::begin(),
-                base_class_type::begin() + (std::min)(MySize, (size_type) s),
+                base_class_type::begin() + (std::min)(MySize, static_cast<size_type>(s)),
                 v);
 
-      std::fill(base_class_type::begin() + (std::min)(MySize, (size_type) s),
+      std::fill(base_class_type::begin() + (std::min)(MySize, static_cast<size_type>(s)),
                 base_class_type::end(),
                 value_type());
     }
 
     template<const size_type OtherSize>
-    WIDE_INTEGER_CONSTEXPR fixed_static_array(const fixed_static_array<size_type, OtherSize>& other_array, // NOLINT
-                                              typename std::enable_if<OtherSize != MySize>::type* = nullptr)
+    WIDE_INTEGER_CONSTEXPR fixed_static_array(const fixed_static_array<size_type, OtherSize>& other_array,   // NOLINT(hicpp-explicit-conversions,google-explicit-constructor)
+                                              typename std::enable_if<OtherSize != MySize>::type* = nullptr) // NOLINT(hicpp-named-parameter)
     {
       std::copy(other_array.cbegin(),
                 other_array.cbegin() + (std::min)(OtherSize, MySize),
@@ -880,10 +881,10 @@
     WIDE_INTEGER_CONSTEXPR fixed_static_array(std::initializer_list<value_type> lst)
     {
       std::copy(lst.begin(),
-                lst.begin() + (std::min)((size_type) lst.size(), MySize),
+                lst.begin() + (std::min)(static_cast<size_type>(lst.size()), MySize),
                 base_class_type::begin());
 
-      std::fill(base_class_type::begin() + (std::min)((size_type) lst.size(), MySize),
+      std::fill(base_class_type::begin() + (std::min)(static_cast<size_type>(lst.size()), MySize),
                 base_class_type::end(),
                 value_type());
     }
@@ -900,7 +901,7 @@
     WIDE_INTEGER_CONSTEXPR auto operator[](const size_type i) const -> typename base_class_type::const_reference { return base_class_type::operator[](static_cast<typename base_class_type::size_type>(i)); }
   };
 
-  template<const size_t Width2> struct verify_power_of_two_times_granularity_one_sixty_fourth
+  template<const size_t Width2> struct verify_power_of_two_times_granularity_one_sixty_fourth // NOLINT(altera-struct-pack-align)
   {
     // List of numbers used to identify the form 2^n times 1...63.
     static constexpr bool conditional_value =
@@ -1040,7 +1041,7 @@
   constexpr auto negate(UnsignedIntegralType u) -> typename std::enable_if<   (std::is_integral<UnsignedIntegralType>::value == true)
                                                                            && (std::is_unsigned<UnsignedIntegralType>::value == true), UnsignedIntegralType>::type
   {
-    return (UnsignedIntegralType) (((UnsignedIntegralType) ~u) + 1U);
+    return static_cast<UnsignedIntegralType>((static_cast<UnsignedIntegralType>(~u)) + 1U);
   }
 
   template<typename SignedIntegralType>
@@ -1050,7 +1051,7 @@
     using local_unsigned_type =
       typename detail::uint_type_helper<size_t(std::numeric_limits<SignedIntegralType>::digits + 1)>::exact_unsigned_type;
 
-    return (SignedIntegralType) negate((local_unsigned_type) n);
+    return static_cast<SignedIntegralType>(negate(static_cast<local_unsigned_type>(n)));
   }
 
   #if !defined(WIDE_INTEGER_DISABLE_FLOAT_INTEROP)
@@ -1067,7 +1068,7 @@
     {
       using native_float_type = FloatingPointType;
 
-      static_assert(std::numeric_limits<native_float_type>::digits <= std::numeric_limits<unsigned long long>::digits,
+      static_assert(std::numeric_limits<native_float_type>::digits <= std::numeric_limits<unsigned long long>::digits, // NOLINT(google-runtime-int)
                     "Error: The width of the mantissa does not fit in unsigned long long");
 
       const native_float_type ff = ((f < static_cast<native_float_type>(0)) ? -f : f);
@@ -1105,7 +1106,7 @@
       }
 
       // Ensure that the value is normalized and adjust the exponent.
-      my_mantissa_part |= static_cast<unsigned long long>(1ULL << (std::numeric_limits<native_float_type>::digits - 1));
+      my_mantissa_part |= static_cast<unsigned long long>(1ULL << (std::numeric_limits<native_float_type>::digits - 1)); // NOLINT(google-runtime-int)
       my_exponent_part -= 1;
     }
 
@@ -1117,7 +1118,7 @@
 
     ~native_float_parts() = default;
 
-    WIDE_INTEGER_CONSTEXPR auto operator=(const native_float_parts& other) -> native_float_parts&
+    WIDE_INTEGER_CONSTEXPR auto operator=(const native_float_parts& other) noexcept -> native_float_parts&
     {
       if(this != &other)
       {
@@ -1136,18 +1137,20 @@
       return *this;
     }
 
-    WIDE_INTEGER_CONSTEXPR auto get_mantissa() const -> unsigned long long { return my_mantissa_part; }
+    WIDE_INTEGER_CONSTEXPR auto get_mantissa() const -> unsigned long long { return my_mantissa_part; } // NOLINT(google-runtime-int)
     WIDE_INTEGER_CONSTEXPR auto get_exponent() const -> int                { return my_exponent_part; }
 
     WIDE_INTEGER_CONSTEXPR native_float_parts() = delete;
 
   private:
-    unsigned long long my_mantissa_part;
+    unsigned long long my_mantissa_part; // NOLINT(google-runtime-int)
     int                my_exponent_part;
   };
   #endif
 
-  } } } // namespace math::wide_integer::detail
+  } // namespace detail
+  } // namespace wide_integer
+  } // namespace math
 
   namespace math { namespace wide_integer {
 
@@ -1155,7 +1158,7 @@
            typename LimbType,
            typename AllocatorType,
            const bool IsSigned>
-  class uintwide_t
+  class uintwide_t // NOLINT(cppcoreguidelines-special-member-functions,hicpp-special-member-functions)
   {
   public:
     template<const size_t OtherWidth2,
@@ -1237,7 +1240,7 @@
     constexpr uintwide_t(const UnsignedIntegralType v, // NOLINT
                          typename std::enable_if<(   (std::is_integral   <UnsignedIntegralType>::value == true)
                                                   && (std::is_unsigned   <UnsignedIntegralType>::value == true)
-                                                  && (std::numeric_limits<UnsignedIntegralType>::digits <= std::numeric_limits<limb_type>::digits))>::type* = nullptr)
+                                                  && (std::numeric_limits<UnsignedIntegralType>::digits <= std::numeric_limits<limb_type>::digits))>::type* = nullptr) // NOLINT(hicpp-named-parameter)
       : values(1U, v) { }
 
     // Constructors from built-in unsigned integral types that
@@ -1247,7 +1250,7 @@
     WIDE_INTEGER_CONSTEXPR uintwide_t(const UnsignedIntegralType v, // NOLINT
                                       typename std::enable_if<(   (std::is_integral   <UnsignedIntegralType>::value == true)
                                                                && (std::is_unsigned   <UnsignedIntegralType>::value == true)
-                                                               && (std::numeric_limits<UnsignedIntegralType>::digits > std::numeric_limits<limb_type>::digits))>::type* = nullptr)
+                                                               && (std::numeric_limits<UnsignedIntegralType>::digits > std::numeric_limits<limb_type>::digits))>::type* = nullptr) // NOLINT(hicpp-named-parameter)
     {
       unsinged_fast_type right_shift_amount_v = 0U;
       std::uint_fast8_t  index_u              = 0U;
@@ -1268,7 +1271,7 @@
     template<typename SignedIntegralType>
     WIDE_INTEGER_CONSTEXPR uintwide_t(const SignedIntegralType v, // NOLINT
                                       typename std::enable_if<(   (std::is_integral   <SignedIntegralType>::value == true)
-                                                               && (std::is_signed     <SignedIntegralType>::value == true))>::type* = nullptr)
+                                                               && (std::is_signed     <SignedIntegralType>::value == true))>::type* = nullptr) // NOLINT(hicpp-named-parameter)
     {
       using local_signed_integral_type   = SignedIntegralType;
       using local_unsigned_integral_type =
@@ -1317,9 +1320,9 @@
           // part of the long double and multiply with the base-2 exponent.
           const int p2 = ld_parts.get_exponent() - (std::numeric_limits<FloatingPointType>::digits - 1);
 
-          if     (p2 <   0) { *this >>= (unsigned) -p2; }
+          if     (p2 <   0) { *this >>= static_cast<unsigned>(-p2); }
           else if(p2 ==  0) { ; }
-          else              { *this <<= (unsigned) p2; }
+          else              { *this <<= static_cast<unsigned>( p2); }
 
           if(f_is_neg)
           {
@@ -2016,7 +2019,7 @@
 
             --pos;
 
-            str_temp[pos] = (char) ((limb_type) (tmp - (uintwide_t(t).mul_by_limb(limb_type(UINT8_C(10))))) + UINT8_C(0x30));
+            str_temp[pos] = static_cast<char>(static_cast<limb_type>(tmp - (uintwide_t(t).mul_by_limb(limb_type(UINT8_C(10))))) + UINT8_C(0x30));
           }
         }
 
@@ -2229,7 +2232,7 @@
 
     template<const bool RePhraseIsSigned = IsSigned,
              typename std::enable_if<(RePhraseIsSigned == false)>::type const* = nullptr>
-    static constexpr auto is_neg(uintwide_t<Width2, LimbType, AllocatorType, RePhraseIsSigned>) -> bool
+    static constexpr auto is_neg(uintwide_t<Width2, LimbType, AllocatorType, RePhraseIsSigned>) -> bool // NOLINT(hicpp-named-parameter)
     {
       return false;
     }
@@ -2372,11 +2375,13 @@
             ld = static_cast<long double>(ld + ldexp_runner);
           }
 
+          constexpr long double two_ldbl(2.0L);
+
           lm_mask      = limb_type(lm_mask << 1U);
-          ldexp_runner = static_cast<long double>(ldexp_runner * 2.0L);  // NOLINT
+          ldexp_runner = static_cast<long double>(ldexp_runner * two_ldbl);
         }
 
-        a += (local_builtin_float_type) ld;
+        a += static_cast<local_builtin_float_type>(ld);
       }
 
       return local_builtin_float_type((u_is_neg == false) ? a : -a);
@@ -2386,7 +2391,7 @@
     template<const size_t OtherWidth2>
     static WIDE_INTEGER_CONSTEXPR void eval_mul_unary(      uintwide_t<OtherWidth2, LimbType, AllocatorType, IsSigned>& u,
                                                       const uintwide_t<OtherWidth2, LimbType, AllocatorType, IsSigned>& v,
-                                                      typename std::enable_if<((OtherWidth2 / std::numeric_limits<LimbType>::digits) < number_of_limbs_karatsuba_threshold)>::type* = nullptr)
+                                                      typename std::enable_if<((OtherWidth2 / std::numeric_limits<LimbType>::digits) < number_of_limbs_karatsuba_threshold)>::type* = nullptr) // NOLINT(hicpp-named-parameter)
     {
       // Unary multiplication function using schoolbook multiplication,
       // but we only need to retain the low half of the n*n algorithm.
@@ -2410,7 +2415,7 @@
     template<const size_t OtherWidth2>
     static WIDE_INTEGER_CONSTEXPR void eval_mul_unary(      uintwide_t<OtherWidth2, LimbType, AllocatorType, IsSigned>& u,
                                                       const uintwide_t<OtherWidth2, LimbType, AllocatorType, IsSigned>& v,
-                                                      typename std::enable_if<((OtherWidth2 / std::numeric_limits<LimbType>::digits) >= number_of_limbs_karatsuba_threshold)>::type* = nullptr)
+                                                      typename std::enable_if<((OtherWidth2 / std::numeric_limits<LimbType>::digits) >= number_of_limbs_karatsuba_threshold)>::type* = nullptr) // NOLINT(hicpp-named-parameter)
     {
       // Unary multiplication function using Karatsuba multiplication.
 
@@ -3855,7 +3860,8 @@
   struct is_integral<math::wide_integer::uintwide_t<Width2, LimbType, AllocatorType, IsSigned>>
     : public std::integral_constant<bool, true> { };
 
-  } } // namespace math::wide_integer
+  } // namespace wide_integer
+  } // namespace math
 
   namespace std
   {
@@ -4085,7 +4091,8 @@
 
   #endif
 
-  } } // namespace math::wide_integer
+  } // namespace wide_integer
+  } // namespace math
 
   // Implement various number-theoretical tools.
 
@@ -4177,7 +4184,7 @@
     return isfinite(x);
   }
 
-  } // namespace math::wide_integer::detail::my_own
+  } // namespace my_own
   #endif
 
   template<typename UnsignedIntegralType>
@@ -4284,7 +4291,7 @@
     return unsinged_fast_type(r);
   }
 
-  }
+  } // namespace detail
 
   template<const size_t Width2,
            typename LimbType,
@@ -4755,7 +4762,7 @@
     return u;
   }
 
-  }
+  } // namespace detail
 
   template<const size_t Width2,
            typename LimbType,
@@ -4784,12 +4791,14 @@
       // This handles cases having (u = v) and also (u = v = 0).
       result = u;
     }
-    else if((static_cast<local_ushort_type>(v) == 0U) && (v == 0U))
+
+    if((static_cast<local_ushort_type>(v) == 0U) && (v == 0U))
     {
       // This handles cases having (v = 0) with (u != 0).
       result = u;
     }
-    else if((static_cast<local_ushort_type>(u) == 0U) && (u == 0U))
+
+    if((static_cast<local_ushort_type>(u) == 0U) && (u == 0U))
     {
       // This handles cases having (u = 0) with (v != 0).
       result = v;
@@ -4867,17 +4876,20 @@
     {
       result = gcd(v, u);
     }
-    else if(u == v)
+
+    if(u == v)
     {
       // This handles cases having (u = v) and also (u = v = 0).
       result = u;
     }
-    else if(v == 0U)
+
+    if(v == 0U)
     {
       // This handles cases having (v = 0) with (u != 0).
       result = u;
     }
-    else if(u == 0U)
+
+    if(u == 0U)
     {
       // This handles cases having (u = 0) with (v != 0).
       result = v;
@@ -4910,7 +4922,7 @@
                                 : bp * (ap / gcd_of_ab));
   }
 
-  }
+  } // namespace detail
 
   template<const size_t Width2,
            typename LimbType,
@@ -5371,6 +5383,7 @@
     return is_probably_prime;
   }
 
-  } } // namespace math::wide_integer
+  } // namespace wide_integer
+  } // namespace math
 
 #endif // UINTWIDE_T_2018_10_02_H_
