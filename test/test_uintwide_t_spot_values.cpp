@@ -14,6 +14,38 @@
 namespace local
 {
   template<typename UnknownIntegerType>
+  bool test_uintwide_t_spot_values_from_issue_145(const UnknownIntegerType x)
+  {
+    // See also https://github.com/ckormanyos/wide-integer/issues/145#issuecomment-1006374713
+
+    using local_unknown_integer_type = UnknownIntegerType;
+
+    bool local_result_is_ok = true;
+
+    const local_unknown_integer_type a0(x);
+
+    {
+      local_unknown_integer_type a = a0; a += a;
+
+      local_result_is_ok &= (a == (2U * a0));
+    }
+
+    {
+      local_unknown_integer_type a = a0; a -= a;
+
+      local_result_is_ok &= (a == 0U);
+    }
+
+    {
+      local_unknown_integer_type a = a0; a /= a;
+
+      local_result_is_ok &= (a == 1U);
+    }
+
+    return local_result_is_ok;
+  }
+
+  template<typename UnknownIntegerType>
   bool test_uintwide_t_spot_values_from_pull_request_130()
   {
     // See also https://github.com/ckormanyos/wide-integer/pull/130
@@ -41,6 +73,30 @@ namespace local
 bool math::wide_integer::test_uintwide_t_spot_values()
 {
   bool result_is_ok = true;
+
+  {
+    using math::wide_integer::uint128_t;
+    using math::wide_integer::int128_t;
+
+    // Get randoms via:
+    // RandomInteger[{100000000000000000000000000000000000, 10000000000000000000000000000000000000}]
+
+    uint128_t u0("3076659267683009403742876678609501102");
+    uint128_t u1("9784355713321885697254484081284759103");
+    uint128_t u2("1759644461251476961796845209840363274");
+
+    result_is_ok &= local::test_uintwide_t_spot_values_from_issue_145(u0);
+    result_is_ok &= local::test_uintwide_t_spot_values_from_issue_145(u1);
+    result_is_ok &= local::test_uintwide_t_spot_values_from_issue_145(u2);
+
+    int128_t n0("-3076659267683009403742876678609501102");
+    int128_t n1("-9784355713321885697254484081284759103");
+    int128_t n2("-1759644461251476961796845209840363274");
+
+    result_is_ok &= local::test_uintwide_t_spot_values_from_issue_145(n0);
+    result_is_ok &= local::test_uintwide_t_spot_values_from_issue_145(n1);
+    result_is_ok &= local::test_uintwide_t_spot_values_from_issue_145(n2);
+  }
 
   {
     // See also https://github.com/ckormanyos/wide-integer/issues/154

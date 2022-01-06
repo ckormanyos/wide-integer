@@ -39,50 +39,50 @@
   #if (defined(__clang__) && (__clang_major__ <= 9))
   #define WIDE_INTEGER_NUM_LIMITS_CLASS_TYPE struct
   #else
-  #define WIDE_INTEGER_NUM_LIMITS_CLASS_TYPE class /* NOLINT */
+  #define WIDE_INTEGER_NUM_LIMITS_CLASS_TYPE class /* NOLINT(cppcoreguidelines-macro-usage) */
   #endif
 
   #if defined(_MSC_VER)
     #if (_MSC_VER >= 1900) && defined(_HAS_CXX20) && (_HAS_CXX20 != 0)
       #define WIDE_INTEGER_CONSTEXPR constexpr
-      #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 1 /* NOLINT */
+      #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 1 /* NOLINT(cppcoreguidelines-macro-usage) */
     #else
       #define WIDE_INTEGER_CONSTEXPR
-      #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 0 /* NOLINT */
+      #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 0 /* NOLINT(cppcoreguidelines-macro-usage) */
     #endif
   #else
     #if (defined(__cplusplus) && (__cplusplus >= 201402L))
       #if defined(__AVR__) && (!defined(__GNUC__) || (defined(__GNUC__) && (__GNUC__ > 6)))
       #define WIDE_INTEGER_CONSTEXPR constexpr
-      #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 1
+      #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 1 /* NOLINT(cppcoreguidelines-macro-usage) */
       #elif (defined(__cpp_lib_constexpr_algorithms) && (__cpp_lib_constexpr_algorithms>=201806))
         #if defined(__clang__)
           #if (__clang_major__ > 9)
           #define WIDE_INTEGER_CONSTEXPR constexpr
-          #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 1 /* NOLINT */
+          #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 1 /* NOLINT(cppcoreguidelines-macro-usage) */
           #else
           #define WIDE_INTEGER_CONSTEXPR
-          #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 0 /* NOLINT */
+          #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 0 /* NOLINT(cppcoreguidelines-macro-usage) */
           #endif
         #else
         #define WIDE_INTEGER_CONSTEXPR constexpr
-        #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 1 /* NOLINT */
+        #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 1 /* NOLINT(cppcoreguidelines-macro-usage) */
         #endif
       #elif (defined(__clang__) && (__clang_major__ >= 10)) && (defined(__cplusplus) && (__cplusplus > 201703L))
         #if defined(__x86_64__)
         #define WIDE_INTEGER_CONSTEXPR constexpr
-        #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 1 /* NOLINT */
+        #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 1 /* NOLINT(cppcoreguidelines-macro-usage) */
         #else
         #define WIDE_INTEGER_CONSTEXPR
-        #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 0 /* NOLINT */
+        #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 0 /* NOLINT(cppcoreguidelines-macro-usage) */
         #endif
       #else
       #define WIDE_INTEGER_CONSTEXPR
-      #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 0 /* NOLINT */
+      #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 0 /* NOLINT(cppcoreguidelines-macro-usage) */
       #endif
     #else
       #define WIDE_INTEGER_CONSTEXPR
-      #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 0 /* NOLINT */
+      #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 0 /* NOLINT(cppcoreguidelines-macro-usage) */
     #endif
   #endif
 
@@ -316,8 +316,8 @@
     }
 
   protected:
-    mutable size_type elem_count; // NOLINT
-    pointer           elems;      // NOLINT
+    mutable size_type elem_count; //NOLINT(cppcoreguidelines-non-private-member-variables-in-classes,misc-non-private-member-variables-in-classes)
+    pointer           elems;      //NOLINT(cppcoreguidelines-non-private-member-variables-in-classes,misc-non-private-member-variables-in-classes)
   };
 
   template<typename ValueType, typename AllocatorType>
@@ -438,8 +438,8 @@
   using ptrdiff_t = std::int32_t;
 
   // BEGINNOLINT
-  static_assert((  (std::numeric_limits<size_t>::digits        >= 16)   // NOLINT
-                && (std::numeric_limits<ptrdiff_t>::digits + 1 >= 16)), // NOLINT
+  static_assert((  (std::numeric_limits<size_t>::digits        >= 16)
+                && (std::numeric_limits<ptrdiff_t>::digits + 1 >= 16)),
                 "Error: size type and pointer difference type must be at least 16 bits in width (or wider)");
   // ENDNOLINT
 
@@ -463,11 +463,11 @@
   struct uint_type_helper
   {
     #if defined(WIDE_INTEGER_HAS_LIMB_TYPE_UINT64)
-    static_assert((   ((BitCount >= 8U) && (BitCount <= 128U)) // NOLINT
+    static_assert((   ((BitCount >= 8U) && (BitCount <= 128U))
                    && (verify_power_of_two<BitCount>::conditional_value)),
                   "Error: uint_type_helper is not intended to be used for this BitCount");
     #else
-    static_assert((   ((BitCount >= 8U) && (BitCount <= 64U)) // NOLINT
+    static_assert((   ((BitCount >= 8U) && (BitCount <= 64U))
                    && (verify_power_of_two<BitCount>::conditional_value)),
                   "Error: uint_type_helper is not intended to be used for this BitCount");
     #endif
@@ -475,12 +475,12 @@
     using exact_unsigned_type = std::uintmax_t;
   };
 
-  template<const size_t BitCount> struct uint_type_helper<BitCount, typename std::enable_if<                     (BitCount <=   8U)>::type> { using exact_unsigned_type = std::uint8_t;      using fast_unsigned_type = std::uint_fast8_t;  using fast_signed_type = std::int_fast8_t;  }; // NOLINT
-  template<const size_t BitCount> struct uint_type_helper<BitCount, typename std::enable_if<(BitCount >=  9U) && (BitCount <=  16U)>::type> { using exact_unsigned_type = std::uint16_t;     using fast_unsigned_type = std::uint_fast16_t; using fast_signed_type = std::int_fast16_t; }; // NOLINT
-  template<const size_t BitCount> struct uint_type_helper<BitCount, typename std::enable_if<(BitCount >= 17U) && (BitCount <=  32U)>::type> { using exact_unsigned_type = std::uint32_t;     using fast_unsigned_type = std::uint_fast32_t; using fast_signed_type = std::int_fast32_t; }; // NOLINT
-  template<const size_t BitCount> struct uint_type_helper<BitCount, typename std::enable_if<(BitCount >= 33U) && (BitCount <=  64U)>::type> { using exact_unsigned_type = std::uint64_t;     using fast_unsigned_type = std::uint_fast64_t; using fast_signed_type = std::int_fast64_t; }; // NOLINT
+  template<const size_t BitCount> struct uint_type_helper<BitCount, typename std::enable_if<                     (BitCount <=   8U)>::type> { using exact_unsigned_type = std::uint8_t;      using fast_unsigned_type = std::uint_fast8_t;  using fast_signed_type = std::int_fast8_t;  };
+  template<const size_t BitCount> struct uint_type_helper<BitCount, typename std::enable_if<(BitCount >=  9U) && (BitCount <=  16U)>::type> { using exact_unsigned_type = std::uint16_t;     using fast_unsigned_type = std::uint_fast16_t; using fast_signed_type = std::int_fast16_t; };
+  template<const size_t BitCount> struct uint_type_helper<BitCount, typename std::enable_if<(BitCount >= 17U) && (BitCount <=  32U)>::type> { using exact_unsigned_type = std::uint32_t;     using fast_unsigned_type = std::uint_fast32_t; using fast_signed_type = std::int_fast32_t; };
+  template<const size_t BitCount> struct uint_type_helper<BitCount, typename std::enable_if<(BitCount >= 33U) && (BitCount <=  64U)>::type> { using exact_unsigned_type = std::uint64_t;     using fast_unsigned_type = std::uint_fast64_t; using fast_signed_type = std::int_fast64_t; };
   #if defined(WIDE_INTEGER_HAS_LIMB_TYPE_UINT64)
-  template<const size_t BitCount> struct uint_type_helper<BitCount, typename std::enable_if<(BitCount >= 65U) && (BitCount <= 128U)>::type> { using exact_unsigned_type = unsigned __int128; using fast_unsigned_type = unsigned __int128;  using fast_signed_type = signed __int128;   }; // NOLINT
+  template<const size_t BitCount> struct uint_type_helper<BitCount, typename std::enable_if<(BitCount >= 65U) && (BitCount <= 128U)>::type> { using exact_unsigned_type = unsigned __int128; using fast_unsigned_type = unsigned __int128;  using fast_signed_type = signed __int128;   };
   #endif
 
   using unsinged_fast_type = typename uint_type_helper<size_t(std::numeric_limits<size_t   >::digits + 0)>::fast_unsigned_type;
@@ -940,7 +940,7 @@
   // Use a local implementation of string copy.
   inline WIDE_INTEGER_CONSTEXPR auto strcpy_unsafe(char* dst, const char* src) -> char*
   {
-    while((*dst++ = *src++) != char('\0')) { ; } // NOLINT
+    while((*dst++ = *src++) != char('\0')) { ; } // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
 
     return dst;
   }
@@ -950,7 +950,7 @@
   {
     const char* p_str_copy{};
 
-    for(p_str_copy = p_str; (*p_str_copy != char('\0')); ++p_str_copy) { ; } // NOLINT
+    for(p_str_copy = p_str; (*p_str_copy != char('\0')); ++p_str_copy) { ; } // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
 
     return unsinged_fast_type(p_str_copy - p_str);
   }
@@ -1204,7 +1204,7 @@
     //   * And that there are at least 16, 24 or 32 binary digits, or more.
     //   * And that the number of binary digits is an exact multiple of the number of limbs.
     static_assert(   (detail::verify_power_of_two_times_granularity_one_sixty_fourth<my_width2>::conditional_value)
-                  && ((my_width2 >= 16U) || (my_width2 >= 24U) || (my_width2 >= 32U)) // NOLINT
+                  && (my_width2 >= 16U)
                   && (my_width2 == (number_of_limbs * size_t(std::numeric_limits<limb_type>::digits))),
                   "Error: Width2 must be 2^n times 1...63 (with n >= 3), while being 16, 24, 32 or larger, and exactly divisible by limb count");
 
@@ -1236,7 +1236,7 @@
     // Constructors from built-in unsigned integral types that
     // are less wide than limb_type or exactly as wide as limb_type.
     template<typename UnsignedIntegralType>
-    constexpr uintwide_t(const UnsignedIntegralType v, // NOLINT
+    constexpr uintwide_t(const UnsignedIntegralType v, // NOLINT(google-explicit-constructor,hicpp-explicit-conversions)
                          typename std::enable_if<(   (std::is_integral   <UnsignedIntegralType>::value)
                                                   && (std::is_unsigned   <UnsignedIntegralType>::value)
                                                   && (std::numeric_limits<UnsignedIntegralType>::digits <= std::numeric_limits<limb_type>::digits))>::type* = nullptr) // NOLINT(hicpp-named-parameter,readability-named-parameter)
@@ -1246,7 +1246,7 @@
     // are wider than limb_type, and do not have exactly the
     // same width as limb_type.
     template<typename UnsignedIntegralType>
-    WIDE_INTEGER_CONSTEXPR uintwide_t(const UnsignedIntegralType v, // NOLINT
+    WIDE_INTEGER_CONSTEXPR uintwide_t(const UnsignedIntegralType v, // NOLINT(google-explicit-constructor,hicpp-explicit-conversions)
                                       typename std::enable_if<(   (std::is_integral   <UnsignedIntegralType>::value)
                                                                && (std::is_unsigned   <UnsignedIntegralType>::value)
                                                                && (std::numeric_limits<UnsignedIntegralType>::digits > std::numeric_limits<limb_type>::digits))>::type* = nullptr) // NOLINT(hicpp-named-parameter,readability-named-parameter)
@@ -1268,7 +1268,7 @@
 
     // Constructors from built-in signed integral types.
     template<typename SignedIntegralType>
-    WIDE_INTEGER_CONSTEXPR uintwide_t(const SignedIntegralType v, // NOLINT
+    WIDE_INTEGER_CONSTEXPR uintwide_t(const SignedIntegralType v, // NOLINT(google-explicit-constructor,hicpp-explicit-conversions)
                                       typename std::enable_if<(   (std::is_integral   <SignedIntegralType>::value)
                                                                && (std::is_signed     <SignedIntegralType>::value))>::type* = nullptr) // NOLINT(hicpp-named-parameter,readability-named-parameter)
     {
@@ -1289,7 +1289,7 @@
     #if !defined(WIDE_INTEGER_DISABLE_FLOAT_INTEROP)
     template<typename FloatingPointType,
              typename std::enable_if<(std::is_floating_point<FloatingPointType>::value)>::type const* = nullptr>
-    WIDE_INTEGER_CONSTEXPR uintwide_t(const FloatingPointType f) // NOLINT
+    WIDE_INTEGER_CONSTEXPR uintwide_t(const FloatingPointType f) // NOLINT(google-explicit-constructor,hicpp-explicit-conversions)
     {
       using local_builtin_float_type = FloatingPointType;
 
@@ -1342,7 +1342,7 @@
     // Copy-like constructor from the other signed-ness type.
     template<const bool OtherIsSigned,
              typename std::enable_if<(OtherIsSigned != IsSigned)>::type const* = nullptr>
-    constexpr uintwide_t(const uintwide_t<Width2, LimbType, AllocatorType, OtherIsSigned>& other) // NOLINT
+    constexpr uintwide_t(const uintwide_t<Width2, LimbType, AllocatorType, OtherIsSigned>& other) // NOLINT(google-explicit-constructor,hicpp-explicit-conversions)
       : values(other.values) { }
 
     // Constructor from the another type having a different width but the same limb type.
@@ -1352,7 +1352,7 @@
     // TBD: Figure out if the keyword "explicit" is needed/wanted or not and correct code/comment to agree
     // with each other.
     template<const size_t OtherWidth2>
-    WIDE_INTEGER_CONSTEXPR uintwide_t(const uintwide_t<OtherWidth2, LimbType, AllocatorType, IsSigned>& v) // NOLINT
+    WIDE_INTEGER_CONSTEXPR uintwide_t(const uintwide_t<OtherWidth2, LimbType, AllocatorType, IsSigned>& v) // NOLINT(google-explicit-constructor,hicpp-explicit-conversions)
     {
       using other_wide_integer_type = uintwide_t<OtherWidth2, LimbType, AllocatorType, IsSigned>;
 
@@ -1385,7 +1385,7 @@
     }
 
     // Constructor from a constant character string.
-    WIDE_INTEGER_CONSTEXPR uintwide_t(const char* str_input) // NOLINT
+    WIDE_INTEGER_CONSTEXPR uintwide_t(const char* str_input) // NOLINT(google-explicit-constructor,hicpp-explicit-conversions)
     {
       if(rd_string(str_input) == false)
       {
@@ -1399,7 +1399,7 @@
     // Move-like constructor from the other signed-ness type.
     template<const bool OtherIsSigned,
              typename std::enable_if<(OtherIsSigned != IsSigned)>::type const* = nullptr>
-    constexpr uintwide_t(uintwide_t<Width2, LimbType, AllocatorType, OtherIsSigned>&& other) // NOLINT
+    constexpr uintwide_t(uintwide_t<Width2, LimbType, AllocatorType, OtherIsSigned>&& other) // NOLINT(google-explicit-constructor,hicpp-explicit-conversions)
       : values(static_cast<representation_type&&>(other.values)) { }
 
     // Assignment operator.
@@ -1442,7 +1442,7 @@
     // Implement the cast operator that casts to the double-width type.
     template<typename UnknownUnsignedWideIntegralType,
              typename = typename std::enable_if<(std::is_same<UnknownUnsignedWideIntegralType, double_width_type>::value)>::type>
-    WIDE_INTEGER_CONSTEXPR operator double_width_type() const // NOLINT
+    WIDE_INTEGER_CONSTEXPR operator double_width_type() const // NOLINT(google-explicit-constructor,hicpp-explicit-conversions)
     {
       double_width_type local_double_width_instance;
 
@@ -2371,7 +2371,9 @@
 
       local_builtin_float_type a = local_builtin_float_type(0.0F);
 
-      long double ldexp_runner = 1.0L; // NOLINT
+      constexpr long double one_ldbl(1.0L);
+
+      long double ldexp_runner(one_ldbl);
 
       for(auto i = size_t(0U); i < ilim; ++i)
       {
@@ -3626,7 +3628,7 @@
 
       // Detect: Is there a plus sign?
       // And if there is a plus sign, skip over the plus sign.
-      if((str_length > 0U) && (str_input[0U] == char('+'))) // NOLINT
+      if((str_length > 0U) && (str_input[0U] == char('+'))) // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
       {
         ++pos;
       }
@@ -3635,7 +3637,7 @@
 
       // Detect: Is there a minus sign?
       // And if there is a minus sign, skip over the minus sign.
-      if((str_length > 0U) && (str_input[0U] == char('-'))) // NOLINT
+      if((str_length > 0U) && (str_input[0U] == char('-'))) // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
       {
         str_has_neg_sign = true;
 
@@ -3645,18 +3647,18 @@
       // Perform a dynamic detection of the base.
       if(str_length > (pos + 0U))
       {
-        const bool might_be_oct_or_hex = ((str_input[pos + 0U] == char('0')) && (str_length > (pos + 1U))); // NOLINT
+        const bool might_be_oct_or_hex = ((str_input[pos + 0U] == char('0')) && (str_length > (pos + 1U))); // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
 
         if(might_be_oct_or_hex)
         {
-          if((str_input[pos + 1U] >= char('0')) && (str_input[pos + 1U] <= char('8'))) // NOLINT
+          if((str_input[pos + 1U] >= char('0')) && (str_input[pos + 1U] <= char('8'))) // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
           {
             // The input format is octal.
             base = UINT8_C(8);
 
             pos += 1U;
           }
-          else if((str_input[pos + 1U] == char('x')) || (str_input[pos + 1U] == char('X'))) // NOLINT
+          else if((str_input[pos + 1U] == char('x')) || (str_input[pos + 1U] == char('X'))) // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
           {
             // The input format is hexadecimal.
             base = UINT8_C(16);
@@ -3664,7 +3666,7 @@
             pos += 2U;
           }
         }
-        else if((str_input[pos + 0U] >= char('0')) && (str_input[pos + 0U] <= char('9'))) // NOLINT
+        else if((str_input[pos + 0U] >= char('0')) && (str_input[pos + 0U] <= char('9'))) // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
         {
           // The input format is decimal.
           ;
@@ -3675,7 +3677,7 @@
 
       for( ; ((pos < str_length) && char_is_valid); ++pos)
       {
-        const auto c = std::uint8_t(str_input[pos]); // NOLINT
+        const auto c = std::uint8_t(str_input[pos]); // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
 
         // TBD: Handle other digit delimiters in addition to apostrophe.
         const bool char_is_apostrophe = (c == char(39));
@@ -4300,10 +4302,10 @@
     std::uint16_t x = u;
 
     // Use O(log2[N]) binary-halving in an unrolled loop to find the msb.
-    if((x & UINT16_C(0xFF00)) != UINT16_C(0)) { x = std::uint16_t(x >> unsigned(UINT16_C(8))); r = unsinged_fast_type(r | UINT16_C(8)); } // NOLINT
-    if((x & UINT16_C(0x00F0)) != UINT16_C(0)) { x = std::uint16_t(x >> unsigned(UINT16_C(4))); r = unsinged_fast_type(r | UINT16_C(4)); } // NOLINT
-    if((x & UINT16_C(0x000C)) != UINT16_C(0)) { x = std::uint16_t(x >> unsigned(UINT16_C(2))); r = unsinged_fast_type(r | UINT16_C(2)); } // NOLINT
-    if((x & UINT16_C(0x0002)) != UINT16_C(0)) {                                                r = unsinged_fast_type(r | UINT16_C(1)); } // NOLINT
+    if((x & UINT16_C(0xFF00)) != UINT16_C(0)) { x = std::uint16_t(x >> unsigned(UINT16_C(8))); r = unsinged_fast_type(r | UINT16_C(8)); } // NOLINT(hicpp-signed-bitwise)
+    if((x & UINT16_C(0x00F0)) != UINT16_C(0)) { x = std::uint16_t(x >> unsigned(UINT16_C(4))); r = unsinged_fast_type(r | UINT16_C(4)); } // NOLINT(hicpp-signed-bitwise)
+    if((x & UINT16_C(0x000C)) != UINT16_C(0)) { x = std::uint16_t(x >> unsigned(UINT16_C(2))); r = unsinged_fast_type(r | UINT16_C(2)); } // NOLINT(hicpp-signed-bitwise)
+    if((x & UINT16_C(0x0002)) != UINT16_C(0)) {                                                r = unsinged_fast_type(r | UINT16_C(1)); } // NOLINT(hicpp-signed-bitwise)
 
     return unsinged_fast_type(r);
   }
@@ -4316,9 +4318,9 @@
     std::uint8_t x = u;
 
     // Use O(log2[N]) binary-halving in an unrolled loop to find the msb.
-    if((x & UINT8_C(0xF0)) != UINT8_C(0)) { x = std::uint8_t(x >> 4U); r = unsinged_fast_type(r | UINT8_C(4)); } // NOLINT
-    if((x & UINT8_C(0x0C)) != UINT8_C(0)) { x = std::uint8_t(x >> 2U); r = unsinged_fast_type(r | UINT8_C(2)); } // NOLINT
-    if((x & UINT8_C(0x02)) != UINT8_C(0)) {                            r = unsinged_fast_type(r | UINT8_C(1)); } // NOLINT
+    if((x & UINT8_C(0xF0)) != UINT8_C(0)) { x = std::uint8_t(x >> 4U); r = unsinged_fast_type(r | UINT8_C(4)); } // NOLINT(hicpp-signed-bitwise)
+    if((x & UINT8_C(0x0C)) != UINT8_C(0)) { x = std::uint8_t(x >> 2U); r = unsinged_fast_type(r | UINT8_C(2)); } // NOLINT(hicpp-signed-bitwise)
+    if((x & UINT8_C(0x02)) != UINT8_C(0)) {                            r = unsinged_fast_type(r | UINT8_C(1)); } // NOLINT(hicpp-signed-bitwise)
 
     return unsinged_fast_type(r);
   }
