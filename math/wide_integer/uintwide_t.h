@@ -834,7 +834,7 @@
       return *this;
     }
 
-    virtual ~fixed_dynamic_array() = default;
+    virtual ~fixed_dynamic_array() = default; // NOLINT(hicpp-use-override,modernize-use-override)
   };
 
   template<typename MyType,
@@ -1033,7 +1033,7 @@
                    "Error: Please check the characteristics of the template parameters UnsignedShortType and UnsignedLargeType");
     #endif
 
-    return local_ularge_type(local_ularge_type(static_cast<local_ularge_type>(hi) << std::numeric_limits<UnsignedShortType>::digits) | lo);
+    return local_ularge_type(local_ularge_type(static_cast<local_ularge_type>(hi) << unsigned(std::numeric_limits<UnsignedShortType>::digits)) | lo);
   }
 
   template<typename UnsignedIntegralType>
@@ -1105,7 +1105,7 @@
       }
 
       // Ensure that the value is normalized and adjust the exponent.
-      my_mantissa_part |= static_cast<unsigned long long>(1ULL << (std::numeric_limits<native_float_type>::digits - 1)); // NOLINT(google-runtime-int)
+      my_mantissa_part |= static_cast<unsigned long long>(1ULL << unsigned(std::numeric_limits<native_float_type>::digits - 1)); // NOLINT(google-runtime-int)
       my_exponent_part -= 1;
     }
 
@@ -1529,7 +1529,7 @@
     {
       if(this == &other)
       {
-        const uintwide_t self(other);
+        const uintwide_t self(other); // NOLINT(performance-unnecessary-copy-initialization)
 
         eval_mul_unary(*this, self);
       }
@@ -2196,9 +2196,9 @@
       // The denominator has one single limb.
       // Use a one-dimensional division algorithm.
 
-      double_limb_type long_numerator = double_limb_type(0U);
+      auto long_numerator = double_limb_type(0U);
 
-      limb_type hi_part = limb_type(0U);
+      auto hi_part = limb_type(0U);
 
       for(auto i = singed_fast_type(unsinged_fast_type(number_of_limbs - 1U) - u_offset); singed_fast_type(i) >= 0; --i)
       {
@@ -2206,7 +2206,7 @@
           double_limb_type
           (
              double_limb_type(*(values.cbegin() + size_t(i)))
-           + double_limb_type(double_limb_type(long_numerator - double_limb_type(double_limb_type(short_denominator) * hi_part)) << std::numeric_limits<limb_type>::digits)
+           + double_limb_type(double_limb_type(long_numerator - double_limb_type(double_limb_type(short_denominator) * hi_part)) << unsigned(std::numeric_limits<limb_type>::digits))
           );
 
         *(values.begin() + size_t(i)) =
@@ -2221,16 +2221,16 @@
           double_limb_type
           (
              double_limb_type(*values.cbegin())
-           + double_limb_type(double_limb_type(long_numerator - double_limb_type(double_limb_type(short_denominator) * hi_part)) << std::numeric_limits<limb_type>::digits)
+           + double_limb_type(double_limb_type(long_numerator - double_limb_type(double_limb_type(short_denominator) * hi_part)) << unsigned(std::numeric_limits<limb_type>::digits))
           );
 
-        *remainder = limb_type(long_numerator >> std::numeric_limits<limb_type>::digits);
+        *remainder = limb_type(long_numerator >> unsigned(std::numeric_limits<limb_type>::digits));
       }
     }
 
     WIDE_INTEGER_CONSTEXPR auto is_zero() const -> bool
     {
-      auto it = values.cbegin();
+      auto it = values.cbegin(); // NOLINT(llvm-qualified-auto,readability-qualified-auto)
 
       while((it != values.cend()) && (*it == limb_type(0U)))
       {
@@ -2369,7 +2369,7 @@
                            + size_t(((size_t(my_msb + 1U) % size_t(std::numeric_limits<limb_type>::digits)) != 0U) ? size_t(1U) : size_t(0U))
                           );
 
-      local_builtin_float_type a = local_builtin_float_type(0.0F);
+      auto a = local_builtin_float_type(0.0F);
 
       constexpr long double one_ldbl(1.0L);
 
@@ -2377,8 +2377,8 @@
 
       for(auto i = size_t(0U); i < ilim; ++i)
       {
-        long double ld      = 0.0L;
-        limb_type   lm_mask = limb_type(1ULL);
+        auto ld      = static_cast<long double>(0.0L);
+        auto lm_mask = limb_type(1ULL);
 
         for(auto j = size_t(0U); j < size_t(std::numeric_limits<limb_type>::digits); ++j)
         {
@@ -3156,7 +3156,7 @@
 
       while((i < n) && (has_borrow_out))
       {
-        local_double_limb_type uv_as_ularge = local_double_limb_type(*(t + left_difference_type(i)));
+        auto uv_as_ularge = local_double_limb_type(*(t + left_difference_type(i)));
 
         if(has_borrow_out)
         {
@@ -3176,7 +3176,7 @@
              typename InputIteratorRight,
              typename InputIteratorTemp>
     static WIDE_INTEGER_CONSTEXPR
-    void eval_multiply_kara_n_by_n_to_2n(      ResultIterator     r,
+    void eval_multiply_kara_n_by_n_to_2n(      ResultIterator     r, // NOLINT(misc-no-recursion)
                                          const InputIteratorLeft  a,
                                          const InputIteratorRight b,
                                          const unsinged_fast_type n,
@@ -3367,10 +3367,10 @@
       }
       else
       {
-        const int result_of_compare_left_with_right = compare(other);
+        const auto result_of_compare_left_with_right = compare(other);
 
-        const bool left_is_less_than_right = (result_of_compare_left_with_right == -1);
-        const bool left_is_equal_to_right  = (result_of_compare_left_with_right ==  0);
+        const bool left_is_less_than_right = (result_of_compare_left_with_right == INT8_C(-1));
+        const bool left_is_equal_to_right  = (result_of_compare_left_with_right == INT8_C( 0));
 
         if(left_is_less_than_right)
         {
@@ -3407,8 +3407,8 @@
           // We will now use the Knuth long division algorithm.
 
           // Compute the normalization factor d.
-          const limb_type d =
-            limb_type(double_limb_type(  double_limb_type(double_limb_type(1U) << std::numeric_limits<limb_type>::digits)
+          const auto d =
+            limb_type(double_limb_type(  double_limb_type(double_limb_type(1U) << unsigned(std::numeric_limits<limb_type>::digits))
                                        / double_limb_type(double_limb_type(*(other.values.cbegin() + size_t(local_uint_index_type(number_of_limbs - 1U) - v_offset))) + limb_type(1U))));
 
           // Step D1(b), normalize u -> u * d = uu.
@@ -3457,8 +3457,8 @@
             //   else
             //     set q_hat = (u[j] * b + u[j + 1]) / v[1]
 
-            const local_uint_index_type uj     = ((local_uint_index_type(number_of_limbs + 1U) - 1U) - u_offset) - j;
-            const double_limb_type      u_j_j1 = double_limb_type(double_limb_type(double_limb_type(*(uu.cbegin() + size_t(uj))) << std::numeric_limits<limb_type>::digits) + *(uu.cbegin() + size_t(uj - 1U)));
+            const auto uj     = local_uint_index_type(local_uint_index_type(local_uint_index_type(local_uint_index_type(number_of_limbs + 1U) - 1U) - u_offset) - j);
+            const auto u_j_j1 = double_limb_type(double_limb_type(double_limb_type(*(uu.cbegin() + size_t(uj))) << unsigned(std::numeric_limits<limb_type>::digits)) + *(uu.cbegin() + size_t(uj - 1U)));
 
             limb_type q_hat = ((*(uu.cbegin() + size_t(uj)) == *(vv.cbegin() + size_t(vj0)))
               ? (std::numeric_limits<limb_type>::max)()
@@ -3469,11 +3469,11 @@
             // expression [(u[uj] * b + u[uj - 1] - q_hat * v[vj0 - 1]) * b]
             // exceeds the range of uintwide_t.
 
-            for(double_limb_type t = double_limb_type(u_j_j1 - double_limb_type(q_hat * double_limb_type(*(vv.cbegin() + size_t(vj0))))); ; --q_hat, t = double_limb_type(t + *(vv.cbegin() + size_t(vj0))))
+            for(auto t = double_limb_type(u_j_j1 - double_limb_type(q_hat * double_limb_type(*(vv.cbegin() + size_t(vj0))))); ; --q_hat, t = double_limb_type(t + *(vv.cbegin() + size_t(vj0))))
             {
               if(   (detail::make_hi<limb_type>(t) != limb_type(0U))
                  || (   double_limb_type(double_limb_type(*(vv.cbegin() + size_t(vj0 - 1U))) * q_hat)
-                     <= double_limb_type(double_limb_type(t << std::numeric_limits<limb_type>::digits) + *(uu.cbegin() + size_t(uj - 2U)))))
+                     <= double_limb_type(double_limb_type(t << unsigned(std::numeric_limits<limb_type>::digits)) + *(uu.cbegin() + size_t(uj - 2U)))))
               {
                 break;
               }
@@ -3529,13 +3529,13 @@
             }
             else
             {
-              limb_type previous_u = limb_type(0U);
+              auto previous_u = limb_type(0U);
 
               for(auto rl = singed_fast_type(n - 1U), ul = singed_fast_type(number_of_limbs - (v_offset + 1U)); rl >= 0; --rl, --ul)
               {
-                const double_limb_type t =
+                const auto t =
                   double_limb_type(  *(uu.cbegin() + size_t(ul))
-                                   + double_limb_type(double_limb_type(previous_u) << std::numeric_limits<limb_type>::digits));
+                                   + double_limb_type(double_limb_type(previous_u) << unsigned(std::numeric_limits<limb_type>::digits)));
 
                 *(remainder->values.begin() + size_t(rl)) = limb_type(double_limb_type(t / d));
                 previous_u                                = limb_type(double_limb_type(t - double_limb_type(double_limb_type(d) * *(remainder->values.cbegin() + size_t(rl)))));
@@ -4354,17 +4354,16 @@
     // Calculate the position of the least-significant bit.
     // Use a linear search starting from the least significant limbs.
 
-    using local_wide_integer_type   = uintwide_t<Width2, LimbType, AllocatorType, IsSigned>;
-    using local_const_iterator_type = typename local_wide_integer_type::const_iterator;
-    using local_value_type          = typename local_wide_integer_type::limb_type;
+    using local_wide_integer_type = uintwide_t<Width2, LimbType, AllocatorType, IsSigned>;
+    using local_value_type        = typename local_wide_integer_type::limb_type;
 
-    unsinged_fast_type bpos = 0U;
+    auto bpos = unsinged_fast_type(0U);
 
-    for(local_const_iterator_type it = x.crepresentation().cbegin(); it != x.crepresentation().cend(); ++it)
+    for(auto it = (x.crepresentation()).cbegin(); it != (x.crepresentation()).cend(); ++it) // NOLINT(llvm-qualified-auto,readability-qualified-auto)
     {
       if((*it & (std::numeric_limits<local_value_type>::max)()) != 0U)
       {
-        const unsinged_fast_type offset = unsinged_fast_type(it - x.crepresentation().cbegin());
+        const auto offset = unsinged_fast_type(it - x.crepresentation().cbegin());
 
         bpos =   detail::lsb_helper(*it)
                + unsinged_fast_type(unsinged_fast_type(std::numeric_limits<local_value_type>::digits) * offset);
@@ -4385,13 +4384,12 @@
     // Calculate the position of the most-significant bit.
     // Use a linear search starting from the most significant limbs.
 
-    using local_wide_integer_type           = uintwide_t<Width2, LimbType, AllocatorType, IsSigned>;
-    using local_const_reverse_iterator_type = typename local_wide_integer_type::const_reverse_iterator;
-    using local_value_type                  = typename local_wide_integer_type::limb_type;
+    using local_wide_integer_type = uintwide_t<Width2, LimbType, AllocatorType, IsSigned>;
+    using local_value_type        = typename local_wide_integer_type::limb_type;
 
-    unsinged_fast_type bpos = 0U;
+    auto bpos = unsinged_fast_type(0U);
 
-    for(local_const_reverse_iterator_type ri = x.crepresentation().crbegin(); ri != x.crepresentation().crend(); ++ri)
+    for(auto ri = x.crepresentation().crbegin(); ri != x.crepresentation().crend(); ++ri)
     {
       if((*ri & (std::numeric_limits<local_value_type>::max)()) != 0U)
       {
@@ -4473,7 +4471,7 @@
            typename LimbType,
            typename AllocatorType,
            const bool IsSigned>
-  WIDE_INTEGER_CONSTEXPR auto cbrt(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& m) -> uintwide_t<Width2, LimbType, AllocatorType, IsSigned>
+  WIDE_INTEGER_CONSTEXPR auto cbrt(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& m) -> uintwide_t<Width2, LimbType, AllocatorType, IsSigned> // NOLINT(misc-no-recursion)
   {
     // Calculate the cube root.
 
@@ -4630,7 +4628,7 @@
     using local_limb_type         = typename local_wide_integer_type::limb_type;
 
     local_wide_integer_type result;
-    local_limb_type         p0(static_cast<local_limb_type>(p));
+    auto p0(static_cast<local_limb_type>(p));
 
     if((p0 == 0U) && (p == OtherIntegralTypeP(0)))
     {
@@ -4687,7 +4685,7 @@
           local_normal_width_type result;
           local_double_width_type y      (b);
     const local_double_width_type m_local(m);
-          local_limb_type         p0     (static_cast<local_limb_type>(p));
+          auto                    p0     (static_cast<local_limb_type>(p));
 
     if((p0 == 0U) && (p == OtherIntegralTypeP(0)))
     {
@@ -4720,7 +4718,7 @@
         y *= y;
         y %= m_local;
 
-        p_local >>= 1;
+        p_local >>= 1U;
       }
 
       result = local_normal_width_type(x);
@@ -4789,7 +4787,7 @@
 
       while((local_ushort_type(v) & 1U) == 0U)
       {
-        v >>= 1;
+        v >>= 1U;
       }
     }
 
@@ -4987,8 +4985,8 @@
     struct param_type
     {
     public:
-      explicit param_type(const result_type& p_a = (std::numeric_limits<result_type>::min)(),
-                          const result_type& p_b = (std::numeric_limits<result_type>::max)())
+      explicit param_type(const result_type& p_a = (std::numeric_limits<result_type>::min)(), // NOLINT(modernize-pass-by-value)
+                          const result_type& p_b = (std::numeric_limits<result_type>::max)()) // NOLINT(modernize-pass-by-value)
         : param_a(p_a),
           param_b(p_b) { }
 
@@ -5122,14 +5120,14 @@
       static_assert((digits_generator_result_type % UINT32_C(8)) == UINT32_C(0),
                     "Error: Generator result type must have a multiple of 8 bits.");
 
-      constexpr std::uint32_t digits_limb_ratio = 
+      constexpr auto digits_limb_ratio = 
         std::uint32_t(std::numeric_limits<local_limb_type>::digits / 8U);
 
       constexpr auto digits_gtor_ratio = std::uint32_t(digits_generator_result_type / 8U);
 
       generator_result_type value = generator_result_type();
 
-      typename result_type::iterator it = result.representation().begin();
+      auto it = (result.representation()).begin(); // NOLINT(llvm-qualified-auto,readability-qualified-auto,-warnings-as-errors)
 
       unsinged_fast_type j = 0U;
 
@@ -5140,7 +5138,7 @@
           value = input_generator();
         }
 
-        const std::uint8_t next_byte = std::uint8_t(value >> unsigned(unsinged_fast_type(j % digits_gtor_ratio) * unsinged_fast_type(UINT8_C(8))));
+        const auto next_byte = std::uint8_t(value >> unsigned(unsinged_fast_type(j % digits_gtor_ratio) * unsinged_fast_type(UINT8_C(8))));
 
         *it =
           static_cast<typename result_type::limb_type>
