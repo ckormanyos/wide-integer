@@ -1,10 +1,11 @@
 ---
 Checks: >
   *,
-  -fuchsia-*
+  -fuchsia-*,
   -llvmlibc-*,
 
   -altera-id-dependent-backward-branch,
+  -altera-struct-pack-align,
   -altera-unroll-loops,
   -bugprone-branch-clone,
   -bugprone-easily-swappable-parameters,
