@@ -1,3 +1,6 @@
+// NOLINTBEGIN(*)
+// copied from https://github.com/ckormanyos/wide-integer/
+
 ///////////////////////////////////////////////////////////////////
 //  Copyright Christopher Kormanyos 1999 - 2022.                 //
 //  Distributed under the Boost Software License,                //
@@ -85,6 +88,21 @@
       #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 0
     #endif
   #endif
+
+  #if defined(WIDE_INTEGER_NAMESPACE_BEGIN) || defined(WIDE_INTEGER_NAMESPACE_END)
+    #error internal pre-processor macro already defined
+  #endif
+
+  #if defined(WIDE_INTEGER_NAMESPACE)
+    #define WIDE_INTEGER_NAMESPACE_BEGIN namespace WIDE_INTEGER_NAMESPACE {
+    #define WIDE_INTEGER_NAMESPACE_END }
+  #else
+    #define WIDE_INTEGER_NAMESPACE
+    #define WIDE_INTEGER_NAMESPACE_BEGIN
+    #define WIDE_INTEGER_NAMESPACE_END
+  #endif
+
+  WIDE_INTEGER_NAMESPACE_BEGIN
 
   #if !defined(WIDE_INTEGER_DISABLE_IMPLEMENT_UTIL_DYNAMIC_ARRAY)
 
@@ -762,17 +780,19 @@
                     GeneratorType&                                               generator);
 
   } } // namespace math::wide_integer
+  WIDE_INTEGER_NAMESPACE_END
 
   namespace std
   {
     // Forward declaration of specialization of std::numeric_limits<uintwide_t>.
-    template<const math::wide_integer::size_t Width2,
+    template<const WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t Width2,
              typename LimbType,
              typename AllocatorType,
              const bool IsSigned>
-    WIDE_INTEGER_NUM_LIMITS_CLASS_TYPE numeric_limits<math::wide_integer::uintwide_t<Width2, LimbType, AllocatorType, IsSigned>>;
+    WIDE_INTEGER_NUM_LIMITS_CLASS_TYPE numeric_limits<WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<Width2, LimbType, AllocatorType, IsSigned>>;
   }
 
+  WIDE_INTEGER_NAMESPACE_BEGIN
   namespace math { namespace wide_integer { namespace detail {
 
   template<typename MyType,
@@ -3810,18 +3830,20 @@
     : public std::integral_constant<bool, true> { };
 
   } } // namespace math::wide_integer
+  WIDE_INTEGER_NAMESPACE_END
 
   namespace std
   {
     // Specialization of std::numeric_limits<uintwide_t>.
-    template<const math::wide_integer::size_t Width2,
+    template<const WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t Width2,
              typename LimbType,
              typename AllocatorType,
              const bool IsSigned>
-    WIDE_INTEGER_NUM_LIMITS_CLASS_TYPE numeric_limits<math::wide_integer::uintwide_t<Width2, LimbType, AllocatorType, IsSigned>>
-      : public math::wide_integer::numeric_limits_uintwide_t_base<Width2, LimbType, AllocatorType, IsSigned> { };
+    WIDE_INTEGER_NUM_LIMITS_CLASS_TYPE numeric_limits<WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<Width2, LimbType, AllocatorType, IsSigned>>
+      : public WIDE_INTEGER_NAMESPACE::math::wide_integer::numeric_limits_uintwide_t_base<Width2, LimbType, AllocatorType, IsSigned> { };
   }
 
+  WIDE_INTEGER_NAMESPACE_BEGIN
   namespace math { namespace wide_integer {
 
   // Non-member binary add, sub, mul, div, mod of (uintwide_t op uintwide_t).
@@ -5293,5 +5315,7 @@
   }
 
   } } // namespace math::wide_integer
+  WIDE_INTEGER_NAMESPACE_END
 
 #endif // UINTWIDE_T_2018_10_02_H_
+// NOLINTEND(*)
