@@ -295,7 +295,7 @@ namespace local_rsa
 
     rsa_fips(rsa_fips&& other) noexcept : base_class_type(other) { }
 
-    virtual ~rsa_fips() = default; // NOLINT(hicpp-use-override,modernize-use-override)
+    ~rsa_fips() override = default;
 
     auto operator=(const rsa_fips& other) -> rsa_fips& // NOLINT(cert-oop54-cpp)
     {

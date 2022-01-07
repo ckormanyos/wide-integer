@@ -14,7 +14,7 @@
 namespace local
 {
   template<typename UnknownIntegerType>
-  bool test_uintwide_t_spot_values_from_issue_145(const UnknownIntegerType x)
+  auto test_uintwide_t_spot_values_from_issue_145(const UnknownIntegerType x) -> bool
   {
     // See also https://github.com/ckormanyos/wide-integer/issues/145#issuecomment-1006374713
 
@@ -46,7 +46,7 @@ namespace local
   }
 
   template<typename UnknownIntegerType>
-  bool test_uintwide_t_spot_values_from_pull_request_130()
+  auto test_uintwide_t_spot_values_from_pull_request_130() -> bool
   {
     // See also https://github.com/ckormanyos/wide-integer/pull/130
 
@@ -68,9 +68,9 @@ namespace local
 
     return b_ok;
   }
-}
+} // namespace local
 
-bool math::wide_integer::test_uintwide_t_spot_values()
+auto math::wide_integer::test_uintwide_t_spot_values() -> bool // NOLINT(readability-function-cognitive-complexity)
 {
   bool result_is_ok = true;
 
@@ -136,27 +136,27 @@ bool math::wide_integer::test_uintwide_t_spot_values()
       static_assert((std::numeric_limits<local_uint32768_type>::min)() == 0U, "Error: Static check of convenience type fails");
       static_assert((std::numeric_limits<local_uint65536_type>::min)() == 0U, "Error: Static check of convenience type fails");
       #else
-      assert((std::numeric_limits<local_uint64_type   >::max)() != 0U);
-      assert((std::numeric_limits<local_uint128_type  >::max)() != 0U);
-      assert((std::numeric_limits<local_uint512_type  >::max)() != 0U);
-      assert((std::numeric_limits<local_uint1024_type >::max)() != 0U);
-      assert((std::numeric_limits<local_uint2048_type >::max)() != 0U);
-      assert((std::numeric_limits<local_uint4096_type >::max)() != 0U);
-      assert((std::numeric_limits<local_uint8192_type >::max)() != 0U);
-      assert((std::numeric_limits<local_uint16384_type>::max)() != 0U);
-      assert((std::numeric_limits<local_uint32768_type>::max)() != 0U);
-      assert((std::numeric_limits<local_uint65536_type>::max)() != 0U);
+      assert((std::numeric_limits<local_uint64_type   >::max)() != 0U); // NOLINT
+      assert((std::numeric_limits<local_uint128_type  >::max)() != 0U); // NOLINT
+      assert((std::numeric_limits<local_uint512_type  >::max)() != 0U); // NOLINT
+      assert((std::numeric_limits<local_uint1024_type >::max)() != 0U); // NOLINT
+      assert((std::numeric_limits<local_uint2048_type >::max)() != 0U); // NOLINT
+      assert((std::numeric_limits<local_uint4096_type >::max)() != 0U); // NOLINT
+      assert((std::numeric_limits<local_uint8192_type >::max)() != 0U); // NOLINT
+      assert((std::numeric_limits<local_uint16384_type>::max)() != 0U); // NOLINT
+      assert((std::numeric_limits<local_uint32768_type>::max)() != 0U); // NOLINT
+      assert((std::numeric_limits<local_uint65536_type>::max)() != 0U); // NOLINT
 
-      assert((std::numeric_limits<local_uint64_type   >::min)() == 0U);
-      assert((std::numeric_limits<local_uint128_type  >::min)() == 0U);
-      assert((std::numeric_limits<local_uint512_type  >::min)() == 0U);
-      assert((std::numeric_limits<local_uint1024_type >::min)() == 0U);
-      assert((std::numeric_limits<local_uint2048_type >::min)() == 0U);
-      assert((std::numeric_limits<local_uint4096_type >::min)() == 0U);
-      assert((std::numeric_limits<local_uint8192_type >::min)() == 0U);
-      assert((std::numeric_limits<local_uint16384_type>::min)() == 0U);
-      assert((std::numeric_limits<local_uint32768_type>::min)() == 0U);
-      assert((std::numeric_limits<local_uint65536_type>::min)() == 0U);
+      assert((std::numeric_limits<local_uint64_type   >::min)() == 0U); // NOLINT
+      assert((std::numeric_limits<local_uint128_type  >::min)() == 0U); // NOLINT
+      assert((std::numeric_limits<local_uint512_type  >::min)() == 0U); // NOLINT
+      assert((std::numeric_limits<local_uint1024_type >::min)() == 0U); // NOLINT
+      assert((std::numeric_limits<local_uint2048_type >::min)() == 0U); // NOLINT
+      assert((std::numeric_limits<local_uint4096_type >::min)() == 0U); // NOLINT
+      assert((std::numeric_limits<local_uint8192_type >::min)() == 0U); // NOLINT
+      assert((std::numeric_limits<local_uint16384_type>::min)() == 0U); // NOLINT
+      assert((std::numeric_limits<local_uint32768_type>::min)() == 0U); // NOLINT
+      assert((std::numeric_limits<local_uint65536_type>::min)() == 0U); // NOLINT
       #endif
     }
 
@@ -195,27 +195,27 @@ bool math::wide_integer::test_uintwide_t_spot_values()
       static_assert((std::numeric_limits<local_int32768_type>::min)() != 0, "Error: Static check of convenience type fails");
       static_assert((std::numeric_limits<local_int65536_type>::min)() != 0, "Error: Static check of convenience type fails");
       #else
-      assert((std::numeric_limits<local_int64_type   >::max)() != 0);
-      assert((std::numeric_limits<local_int128_type  >::max)() != 0);
-      assert((std::numeric_limits<local_int512_type  >::max)() != 0);
-      assert((std::numeric_limits<local_int1024_type >::max)() != 0);
-      assert((std::numeric_limits<local_int2048_type >::max)() != 0);
-      assert((std::numeric_limits<local_int4096_type >::max)() != 0);
-      assert((std::numeric_limits<local_int8192_type >::max)() != 0);
-      assert((std::numeric_limits<local_int16384_type>::max)() != 0);
-      assert((std::numeric_limits<local_int32768_type>::max)() != 0);
-      assert((std::numeric_limits<local_int65536_type>::max)() != 0);
+      assert((std::numeric_limits<local_int64_type   >::max)() != 0); // NOLINT
+      assert((std::numeric_limits<local_int128_type  >::max)() != 0); // NOLINT
+      assert((std::numeric_limits<local_int512_type  >::max)() != 0); // NOLINT
+      assert((std::numeric_limits<local_int1024_type >::max)() != 0); // NOLINT
+      assert((std::numeric_limits<local_int2048_type >::max)() != 0); // NOLINT
+      assert((std::numeric_limits<local_int4096_type >::max)() != 0); // NOLINT
+      assert((std::numeric_limits<local_int8192_type >::max)() != 0); // NOLINT
+      assert((std::numeric_limits<local_int16384_type>::max)() != 0); // NOLINT
+      assert((std::numeric_limits<local_int32768_type>::max)() != 0); // NOLINT
+      assert((std::numeric_limits<local_int65536_type>::max)() != 0); // NOLINT
 
-      assert((std::numeric_limits<local_int64_type   >::min)() != 0);
-      assert((std::numeric_limits<local_int128_type  >::min)() != 0);
-      assert((std::numeric_limits<local_int512_type  >::min)() != 0);
-      assert((std::numeric_limits<local_int1024_type >::min)() != 0);
-      assert((std::numeric_limits<local_int2048_type >::min)() != 0);
-      assert((std::numeric_limits<local_int4096_type >::min)() != 0);
-      assert((std::numeric_limits<local_int8192_type >::min)() != 0);
-      assert((std::numeric_limits<local_int16384_type>::min)() != 0);
-      assert((std::numeric_limits<local_int32768_type>::min)() != 0);
-      assert((std::numeric_limits<local_int65536_type>::min)() != 0);
+      assert((std::numeric_limits<local_int64_type   >::min)() != 0); // NOLINT
+      assert((std::numeric_limits<local_int128_type  >::min)() != 0); // NOLINT
+      assert((std::numeric_limits<local_int512_type  >::min)() != 0); // NOLINT
+      assert((std::numeric_limits<local_int1024_type >::min)() != 0); // NOLINT
+      assert((std::numeric_limits<local_int2048_type >::min)() != 0); // NOLINT
+      assert((std::numeric_limits<local_int4096_type >::min)() != 0); // NOLINT
+      assert((std::numeric_limits<local_int8192_type >::min)() != 0); // NOLINT
+      assert((std::numeric_limits<local_int16384_type>::min)() != 0); // NOLINT
+      assert((std::numeric_limits<local_int32768_type>::min)() != 0); // NOLINT
+      assert((std::numeric_limits<local_int65536_type>::min)() != 0); // NOLINT
       #endif
     }
 
@@ -420,7 +420,7 @@ bool math::wide_integer::test_uintwide_t_spot_values()
       }
     };
 
-    WIDE_INTEGER_CONSTEXPR bool result_ll_is_ok = (static_cast<long long>(input) == 1729348762983LL);
+    WIDE_INTEGER_CONSTEXPR bool result_ll_is_ok = (static_cast<long long>(input) == 1729348762983LL); // NOLINT(google-runtime-int)
 
     #if defined(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST) && (WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST != 0)
     static_assert(result_ll_is_ok, "Error: test_uintwide_t_spot_values unsigned not OK!");

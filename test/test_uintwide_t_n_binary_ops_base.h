@@ -18,19 +18,27 @@
   class test_uintwide_t_n_binary_ops_base : public test_uintwide_t_n_base
   {
   public:
-    test_uintwide_t_n_binary_ops_base(const std::size_t count)
+    explicit test_uintwide_t_n_binary_ops_base(const std::size_t count)
       : test_uintwide_t_n_base(count) { }
 
-    virtual ~test_uintwide_t_n_binary_ops_base() = default;
+    test_uintwide_t_n_binary_ops_base() = delete;
 
-    virtual bool test_binary_add () const { return false; }
-    virtual bool test_binary_sub () const { return false; }
-    virtual bool test_binary_mul () const { return false; }
-    virtual bool test_binary_div () const { return false; }
-    virtual bool test_binary_mod () const { return false; }
-    virtual bool test_binary_sqrt() const { return false; }
+    test_uintwide_t_n_binary_ops_base(const test_uintwide_t_n_binary_ops_base&)  = delete;
+    test_uintwide_t_n_binary_ops_base(      test_uintwide_t_n_binary_ops_base&&) = delete;
 
-    virtual bool do_test(const std::size_t rounds)
+    auto operator=(const test_uintwide_t_n_binary_ops_base&)  -> test_uintwide_t_n_binary_ops_base& = delete;
+    auto operator=(      test_uintwide_t_n_binary_ops_base&&) -> test_uintwide_t_n_binary_ops_base& = delete;
+
+    ~test_uintwide_t_n_binary_ops_base() override = default;
+
+    virtual auto test_binary_add () const -> bool { return false; }
+    virtual auto test_binary_sub () const -> bool { return false; }
+    virtual auto test_binary_mul () const -> bool { return false; }
+    virtual auto test_binary_div () const -> bool { return false; }
+    virtual auto test_binary_mod () const -> bool { return false; }
+    virtual auto test_binary_sqrt() const -> bool { return false; }
+
+    virtual auto do_test(const std::size_t rounds) -> bool
     {
       bool result_is_ok = true;
 
@@ -77,8 +85,8 @@
                                                                18,
                                                                UINT32_C(1812433253)>;
 
-    static std::random_device    my_rnd;
-    static random_generator_type my_gen;
+    static auto my_rnd() -> std::random_device&;
+    static auto my_gen() -> random_generator_type&;
   };
 
 #endif // TEST_UINTWIDE_T_N_BINARY_OPS_BASE_2019_12_19_H

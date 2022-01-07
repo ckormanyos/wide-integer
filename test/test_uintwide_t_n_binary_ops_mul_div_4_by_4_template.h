@@ -20,19 +20,19 @@
 
   template<const math::wide_integer::size_t MyWidth2,
            typename MyLimbType>
-  class test_uintwide_t_n_binary_ops_mul_div_4_by_4_template
+  class test_uintwide_t_n_binary_ops_mul_div_4_by_4_template // NOLINT(cppcoreguidelines-special-member-functions,hicpp-special-member-functions)
     <MyWidth2,
      MyLimbType,
      typename std::enable_if<(   (std::numeric_limits<MyLimbType>::digits * 4 == MyWidth2)
-                              && (std::is_fundamental<MyLimbType>::value == true)
-                              && (std::is_integral   <MyLimbType>::value == true)
-                              && (std::is_unsigned   <MyLimbType>::value == true))>::type>
+                              && (std::is_fundamental<MyLimbType>::value)
+                              && (std::is_integral   <MyLimbType>::value)
+                              && (std::is_unsigned   <MyLimbType>::value))>::type>
     : public test_uintwide_t_n_binary_ops_base
   {
   private:
     static constexpr math::wide_integer::size_t digits2 = MyWidth2;
 
-    virtual math::wide_integer::size_t get_digits2 () const { return digits2; }
+    auto get_digits2 () const -> math::wide_integer::size_t override { return digits2; }
 
     using native_uint_cntrl_type =
       typename math::wide_integer::detail::uint_type_helper<digits2>::exact_unsigned_type;
@@ -42,16 +42,16 @@
     using local_uint_ab_type = math::wide_integer::uintwide_t<digits2, local_limb_type>;
 
   public:
-    test_uintwide_t_n_binary_ops_mul_div_4_by_4_template(const std::size_t count)
+    explicit test_uintwide_t_n_binary_ops_mul_div_4_by_4_template(const std::size_t count)
       : test_uintwide_t_n_binary_ops_base(count),
         a_local(),
         b_local(),
         a_cntrl(),
         b_cntrl() { }
 
-    virtual ~test_uintwide_t_n_binary_ops_mul_div_4_by_4_template() = default;
+    ~test_uintwide_t_n_binary_ops_mul_div_4_by_4_template() override = default;
 
-    virtual bool do_test(const std::size_t rounds)
+    auto do_test(const std::size_t rounds) -> bool override
     {
       bool result_is_ok = true;
 
@@ -70,7 +70,7 @@
       return result_is_ok;
     }
 
-    virtual void initialize()
+    void initialize() override
     {
       a_local.clear();
       b_local.clear();
@@ -88,7 +88,7 @@
       get_equal_random_test_values_cntrl_and_local_n(b_local.data(), b_cntrl.data(), size());
     }
 
-    virtual bool test_binary_mul() const
+    auto test_binary_mul() const -> bool override
     {
       std::atomic_flag test_lock = ATOMIC_FLAG_INIT;
 
@@ -118,11 +118,11 @@
       return result_is_ok;
     }
 
-    virtual bool test_binary_div() const
+    auto test_binary_div() const -> bool override
     {
       std::atomic_flag test_lock = ATOMIC_FLAG_INIT;
 
-      test_uintwide_t_n_binary_ops_base::my_gen.seed(static_cast<typename random_generator_type::result_type>(std::clock()));
+      test_uintwide_t_n_binary_ops_base::my_gen().seed(static_cast<typename random_generator_type::result_type>(std::clock()));
       std::uniform_int_distribution<> dis(1, static_cast<int>(digits2 - 1U));
 
       bool result_is_ok = true;
@@ -134,7 +134,7 @@
         [&test_lock, &result_is_ok, this, &dis](std::size_t i)
         {
           while(test_lock.test_and_set()) { ; }
-          const std::size_t right_shift_amount = static_cast<std::size_t>(dis(my_gen));
+          const auto right_shift_amount = static_cast<std::size_t>(dis(my_gen()));
           test_lock.clear();
 
           const native_uint_cntrl_type c_cntrl = a_cntrl[i] / (std::max)(native_uint_cntrl_type(1U), native_uint_cntrl_type(b_cntrl[i] >> right_shift_amount));
@@ -168,7 +168,7 @@
       using other_local_uint_type = OtherLocalUintType;
       using other_cntrl_uint_type = OtherCntrlUintType;
 
-      test_uintwide_t_n_base::my_random_generator.seed(static_cast<typename std::linear_congruential_engine<std::uint32_t, 48271, 0, 2147483647>::result_type>(std::clock()));
+      test_uintwide_t_n_base::my_random_generator().seed(static_cast<typename std::linear_congruential_engine<std::uint32_t, 48271, 0, 2147483647>::result_type>(std::clock()));
 
       using distribution_type =
         math::wide_integer::uniform_int_distribution<other_local_uint_type::my_width2, typename other_local_uint_type::limb_type>;
@@ -184,11 +184,11 @@
         [&u_local, &u_cntrl, &distribution, &rnd_lock](std::size_t i)
         {
           while(rnd_lock.test_and_set()) { ; }
-          const other_local_uint_type a = distribution(my_random_generator);
+          const other_local_uint_type a = distribution(my_random_generator());
           rnd_lock.clear();
 
-          u_local[i] = a;
-          u_cntrl[i] = static_cast<other_cntrl_uint_type>(a);
+          u_local[i] = a;                                     // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+          u_cntrl[i] = static_cast<other_cntrl_uint_type>(a); // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
         }
       );
     }

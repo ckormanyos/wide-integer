@@ -21,9 +21,19 @@
 
 #include <test/test_uintwide_t_n_binary_ops_base.h>
 
-std::random_device test_uintwide_t_n_binary_ops_base::my_rnd;
+auto test_uintwide_t_n_binary_ops_base::my_rnd() -> std::random_device&
+{
+  static std::random_device my_random_device;
 
-test_uintwide_t_n_binary_ops_base::random_generator_type test_uintwide_t_n_binary_ops_base::my_gen(my_rnd());
+  return my_random_device;
+}
+
+auto test_uintwide_t_n_binary_ops_base::my_gen() -> test_uintwide_t_n_binary_ops_base::random_generator_type&
+{
+  static random_generator_type my_generator(my_rnd()());
+
+  return my_generator;
+}
 
 #if (defined(__clang__) && (__clang_major__ > 9)) && !defined(__APPLE__)
 #pragma GCC diagnostic pop

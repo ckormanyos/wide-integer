@@ -19,7 +19,7 @@
   template<const math::wide_integer::size_t MyDigits2,
            typename MyLimbType = std::uint32_t,
            typename AllocatorType = void>
-  class test_uintwide_t_n_binary_ops_template_signed : public test_uintwide_t_n_binary_ops_base
+  class test_uintwide_t_n_binary_ops_template_signed : public test_uintwide_t_n_binary_ops_base // NOLINT(cppcoreguidelines-special-member-functions,hicpp-special-member-functions)
   {
   private:
     static constexpr math::wide_integer::size_t digits2 = MyDigits2;
@@ -42,7 +42,7 @@
     using local_sint_type = math::wide_integer::uintwide_t<digits2, local_limb_type, AllocatorType, true>;
 
   public:
-    test_uintwide_t_n_binary_ops_template_signed(const std::size_t count)
+    explicit test_uintwide_t_n_binary_ops_template_signed(const std::size_t count)
       : test_uintwide_t_n_binary_ops_base(count),
         a_local       (),
         b_local       (),
@@ -53,11 +53,11 @@
         a_boost_signed(),
         b_boost_signed() { }
 
-    virtual ~test_uintwide_t_n_binary_ops_template_signed() = default;
+    ~test_uintwide_t_n_binary_ops_template_signed() override = default;
 
-    virtual math::wide_integer::size_t get_digits2() const { return digits2; }
+    auto get_digits2() const -> math::wide_integer::size_t override { return digits2; }
 
-    virtual void initialize()
+    auto initialize() -> void override
     {
       a_local.clear();
       b_local.clear();
@@ -89,7 +89,7 @@
       std::copy(b_boost.cbegin(), b_boost.cend(), b_boost_signed.begin());
     }
 
-    virtual bool test_binary_add() const
+    auto test_binary_add() const -> bool override
     {
       bool result_is_ok = true;
 
@@ -104,8 +104,8 @@
           const boost_sint_type c_boost_signed = a_boost_signed[i] + b_boost_signed[i];
           const local_sint_type c_local_signed = a_local_signed[i] + b_local_signed[i];
 
-          const std::string str_boost_signed = hexlexical_cast((boost_uint_type) c_boost_signed);
-          const std::string str_local_signed = hexlexical_cast((local_uint_type) c_local_signed);
+          const std::string str_boost_signed = hexlexical_cast(static_cast<boost_uint_type>(c_boost_signed));
+          const std::string str_local_signed = hexlexical_cast(static_cast<local_uint_type>(c_local_signed));
 
           while(test_lock.test_and_set()) { ; }
           result_is_ok &= (str_boost_signed == str_local_signed);
@@ -116,7 +116,7 @@
       return result_is_ok;
     }
 
-    virtual bool test_binary_sub() const
+    auto test_binary_sub() const -> bool override
     {
       bool result_is_ok = true;
 
@@ -131,8 +131,8 @@
           const boost_sint_type c_boost_signed = a_boost_signed[i] - b_boost_signed[i];
           const local_sint_type c_local_signed = a_local_signed[i] - b_local_signed[i];
 
-          const std::string str_boost_signed = hexlexical_cast((boost_uint_type) c_boost_signed);
-          const std::string str_local_signed = hexlexical_cast((local_uint_type) c_local_signed);
+          const std::string str_boost_signed = hexlexical_cast(static_cast<boost_uint_type>(c_boost_signed));
+          const std::string str_local_signed = hexlexical_cast(static_cast<local_uint_type>(c_local_signed));
 
           while(test_lock.test_and_set()) { ; }
           result_is_ok &= (str_boost_signed == str_local_signed);
@@ -143,7 +143,7 @@
       return result_is_ok;
     }
 
-    virtual bool test_binary_mul() const
+    auto test_binary_mul() const -> bool override
     {
       bool result_is_ok = true;
 
@@ -158,8 +158,8 @@
           const boost_sint_type c_boost_signed = a_boost_signed[i] * b_boost_signed[i];
           const local_sint_type c_local_signed = a_local_signed[i] * b_local_signed[i];
 
-          const std::string str_boost_signed = hexlexical_cast((boost_uint_type) c_boost_signed);
-          const std::string str_local_signed = hexlexical_cast((local_uint_type) c_local_signed);
+          const std::string str_boost_signed = hexlexical_cast(static_cast<boost_uint_type>(c_boost_signed));
+          const std::string str_local_signed = hexlexical_cast(static_cast<local_uint_type>(c_local_signed));
 
           while(test_lock.test_and_set()) { ; }
           result_is_ok &= (str_boost_signed == str_local_signed);
@@ -170,7 +170,7 @@
       return result_is_ok;
     }
 
-    virtual bool test_binary_div() const
+    auto test_binary_div() const -> bool override
     {
       bool result_is_ok = true;
 
@@ -185,8 +185,8 @@
           const boost_sint_type c_boost_signed = a_boost_signed[i] / b_boost_signed[i];
           const local_sint_type c_local_signed = a_local_signed[i] / b_local_signed[i];
 
-          const std::string str_boost_signed = hexlexical_cast((boost_uint_type) c_boost_signed);
-          const std::string str_local_signed = hexlexical_cast((local_uint_type) c_local_signed);
+          const std::string str_boost_signed = hexlexical_cast(static_cast<boost_uint_type>(c_boost_signed));
+          const std::string str_local_signed = hexlexical_cast(static_cast<local_uint_type>(c_local_signed));
 
           while(test_lock.test_and_set()) { ; }
           result_is_ok &= (str_boost_signed == str_local_signed);
@@ -197,7 +197,7 @@
       return result_is_ok;
     }
 
-    virtual bool test_binary_mod() const
+    auto test_binary_mod() const -> bool override
     {
       bool result_is_ok = true;
 
@@ -212,8 +212,8 @@
           const boost_sint_type c_boost_signed = a_boost_signed[i] % b_boost_signed[i];
           const local_sint_type c_local_signed = a_local_signed[i] % b_local_signed[i];
 
-          const std::string str_boost_signed = hexlexical_cast((boost_uint_type) c_boost_signed);
-          const std::string str_local_signed = hexlexical_cast((local_uint_type) c_local_signed);
+          const std::string str_boost_signed = hexlexical_cast(static_cast<boost_uint_type>(c_boost_signed));
+          const std::string str_local_signed = hexlexical_cast(static_cast<local_uint_type>(c_local_signed));
 
           while(test_lock.test_and_set()) { ; }
           result_is_ok &= (str_boost_signed == str_local_signed);
@@ -224,7 +224,7 @@
       return result_is_ok;
     }
 
-    virtual bool do_test(const std::size_t rounds)
+    auto do_test(const std::size_t rounds) -> bool override
     {
       bool result_is_ok = true;
 
@@ -266,7 +266,7 @@
 
 
   template<typename AllocatorType>
-  class test_uintwide_t_n_binary_ops_template_signed<math::wide_integer::size_t(64U), std::uint16_t, AllocatorType>
+  class test_uintwide_t_n_binary_ops_template_signed<math::wide_integer::size_t(64U), std::uint16_t, AllocatorType> // NOLINT(cppcoreguidelines-special-member-functions,hicpp-special-member-functions)
     : public test_uintwide_t_n_binary_ops_base
   {
   private:
@@ -281,18 +281,18 @@
     using local_sint_type = math::wide_integer::uintwide_t<digits2, local_limb_type, AllocatorType, true>;
 
   public:
-    test_uintwide_t_n_binary_ops_template_signed(const std::size_t count)
+    explicit test_uintwide_t_n_binary_ops_template_signed(const std::size_t count)
       : test_uintwide_t_n_binary_ops_base(count),
         a_local_signed (),
         b_local_signed (),
-        a_native_signed(),
-        b_native_signed() { }
+        a_native_signed(),    // NOLINT(readability-redundant-member-init)
+        b_native_signed() { } // NOLINT(readability-redundant-member-init)
 
-    virtual ~test_uintwide_t_n_binary_ops_template_signed() = default;
+    ~test_uintwide_t_n_binary_ops_template_signed() override = default;
 
-    virtual math::wide_integer::size_t get_digits2() const { return digits2; }
+    auto get_digits2() const -> math::wide_integer::size_t override { return digits2; }
 
-    virtual void initialize()
+    auto initialize() -> void override
     {
       a_local_signed.clear();
       b_local_signed.clear();
@@ -312,15 +312,15 @@
 
       for(size_t i = 0U; i < size(); ++i)
       {
-        a_native_signed[i] = (std::int64_t) dst_u64(eng64);
-        b_native_signed[i] = (std::int64_t) dst_u64(eng64);
+        a_native_signed[i] = static_cast<std::int64_t>(dst_u64(eng64));
+        b_native_signed[i] = static_cast<std::int64_t>(dst_u64(eng64));
 
         a_local_signed[i] = local_sint_type(local_uint_type(a_native_signed[i]));
         b_local_signed[i] = local_sint_type(local_uint_type(b_native_signed[i]));
       }
     }
 
-    virtual bool test_binary_add() const
+    auto test_binary_add() const -> bool override
     {
       bool result_is_ok = true;
 
@@ -333,10 +333,10 @@
         [&test_lock, &result_is_ok, this](std::size_t i)
         {
           const native_uint_type c_native_unsigned =
-            (native_uint_type) a_native_signed[i] + (native_uint_type) b_native_signed[i];
+            static_cast<native_uint_type>(a_native_signed[i]) + static_cast<native_uint_type>(b_native_signed[i]);
 
           const native_sint_type c_native_signed   =
-            c_native_unsigned < UINT64_C(0x8000000000000000) ? (native_sint_type) c_native_unsigned : -(native_sint_type) (~c_native_unsigned + 1U);
+            c_native_unsigned < UINT64_C(0x8000000000000000) ? static_cast<native_sint_type>(c_native_unsigned) : -static_cast<native_sint_type>(~c_native_unsigned + 1U);
 
           const local_sint_type  c_local_signed  = a_local_signed[i] + b_local_signed[i];
 
@@ -352,7 +352,7 @@
       return result_is_ok;
     }
 
-    virtual bool test_binary_sub() const
+    auto test_binary_sub() const -> bool override
     {
       bool result_is_ok = true;
 
@@ -365,10 +365,10 @@
         [&test_lock, &result_is_ok, this](std::size_t i)
         {
           const native_uint_type c_native_unsigned =
-            (native_uint_type) a_native_signed[i] - (native_uint_type) b_native_signed[i];
+            static_cast<native_uint_type>(a_native_signed[i]) - static_cast<native_uint_type>(b_native_signed[i]);
 
           const native_sint_type c_native_signed   =
-            c_native_unsigned < UINT64_C(0x8000000000000000) ? (native_sint_type) c_native_unsigned : -(native_sint_type) (~c_native_unsigned + 1U);
+            c_native_unsigned < UINT64_C(0x8000000000000000) ? static_cast<native_sint_type>(c_native_unsigned) : -static_cast<native_sint_type>(~c_native_unsigned + 1U);
 
           const local_sint_type  c_local_signed    = a_local_signed[i] - b_local_signed[i];
 
@@ -384,7 +384,7 @@
       return result_is_ok;
     }
 
-    virtual bool test_binary_mul() const
+    auto test_binary_mul() const -> bool override
     {
       bool result_is_ok = true;
 
@@ -397,10 +397,10 @@
         [&test_lock, &result_is_ok, this](std::size_t i)
         {
           const native_uint_type c_native_unsigned =
-            (native_uint_type) a_native_signed[i] * (native_uint_type) b_native_signed[i];
+            static_cast<native_uint_type>(a_native_signed[i]) * static_cast<native_uint_type>(b_native_signed[i]);
 
           const native_sint_type c_native_signed   =
-            c_native_unsigned < UINT64_C(0x8000000000000000) ? (native_sint_type) c_native_unsigned : -(native_sint_type) (~c_native_unsigned + 1U);
+            c_native_unsigned < UINT64_C(0x8000000000000000) ? static_cast<native_sint_type>(c_native_unsigned) : -static_cast<native_sint_type>(~c_native_unsigned + 1U);
 
           const local_sint_type  c_local_signed    = a_local_signed[i] * b_local_signed[i];
 
@@ -416,7 +416,7 @@
       return result_is_ok;
     }
 
-    virtual bool test_binary_div() const
+    auto test_binary_div() const -> bool override
     {
       bool result_is_ok = true;
 
@@ -443,7 +443,7 @@
       return result_is_ok;
     }
 
-    virtual bool test_binary_mod() const
+    auto test_binary_mod() const -> bool override
     {
       bool result_is_ok = true;
 
@@ -470,7 +470,7 @@
       return result_is_ok;
     }
 
-    virtual bool test_binary_mod1() const
+    virtual auto test_binary_mod1() const -> bool
     {
       using local_signed_limb_type = typename local_sint_type::limb_type;
 
@@ -485,11 +485,11 @@
         [&test_lock, &result_is_ok, this](std::size_t i)
         {
           while(test_lock.test_and_set()) { ; }
-          const local_signed_limb_type u = (local_signed_limb_type) my_distrib_1_to_0xFFFF(my_eng);
+          const auto u = static_cast<local_signed_limb_type>(my_distrib_1_to_0xFFFF(my_eng));
           test_lock.clear();
 
-          const local_signed_limb_type c_n = (local_signed_limb_type) (a_native_signed[i] % u);
-          const local_signed_limb_type c_l = (local_signed_limb_type) (a_local_signed [i] % u);
+          const auto c_n = static_cast<local_signed_limb_type>(a_native_signed[i] % u);
+          const auto c_l = static_cast<local_signed_limb_type>(a_local_signed [i] % u);
 
           while(test_lock.test_and_set()) { ; }
           result_is_ok &= (c_n == c_l);
@@ -500,9 +500,9 @@
       return result_is_ok;
     }
 
-    virtual bool test_binary_shr() const
+    virtual auto test_binary_shr() const -> bool
     {
-      my_gen.seed(static_cast<typename random_generator_type::result_type>(std::clock()));
+      my_gen().seed(static_cast<typename random_generator_type::result_type>(std::clock()));
 
       bool result_is_ok = true;
 
@@ -515,14 +515,14 @@
         [&test_lock, &result_is_ok, this](std::size_t i)
         {
           while(test_lock.test_and_set()) { ; }
-          const std::uint32_t u_shr = static_cast<std::uint32_t>(my_distrib_0_to_63(my_eng));
+          const auto u_shr = static_cast<std::uint32_t>(my_distrib_0_to_63(my_eng));
           test_lock.clear();
 
-          const native_sint_type c_native_signed = a_native_signed[i] >> u_shr;
+          const native_sint_type c_native_signed = a_native_signed[i] >> u_shr; // NOLINT(hicpp-signed-bitwise)
           const local_sint_type  c_local_signed  = a_local_signed [i] >> u_shr;
 
           const bool current_result_is_zero = (c_local_signed == 0U);
-          const bool current_result_is_ok   = (current_result_is_zero || (c_native_signed == (std::int64_t) c_local_signed));
+          const bool current_result_is_ok   = (current_result_is_zero || (c_native_signed == static_cast<std::int64_t>(c_local_signed)));
 
           while(test_lock.test_and_set()) { ; }
           result_is_ok &= current_result_is_ok;
@@ -533,7 +533,7 @@
       return result_is_ok;
     }
 
-    virtual bool do_test(const std::size_t rounds)
+    auto do_test(const std::size_t rounds) -> bool override
     {
       bool result_is_ok = true;
 
@@ -568,9 +568,9 @@
     }
 
   private:
-    static std::minstd_rand                my_eng;
-    static std::uniform_int_distribution<> my_distrib_0_to_63;
-    static std::uniform_int_distribution<> my_distrib_1_to_0xFFFF;
+    static std::minstd_rand                my_eng;                 // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
+    static std::uniform_int_distribution<> my_distrib_0_to_63;     // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
+    static std::uniform_int_distribution<> my_distrib_1_to_0xFFFF; // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
 
     std::vector<local_sint_type> a_local_signed;
     std::vector<local_sint_type> b_local_signed;
@@ -579,8 +579,8 @@
     std::vector<native_sint_type> b_native_signed;
   };
 
-  template<typename AllocatorType> std::minstd_rand                test_uintwide_t_n_binary_ops_template_signed<64U, std::uint16_t, AllocatorType>::my_eng;
-  template<typename AllocatorType> std::uniform_int_distribution<> test_uintwide_t_n_binary_ops_template_signed<64U, std::uint16_t, AllocatorType>::my_distrib_0_to_63(UINT16_C(0), UINT16_C(63));
-  template<typename AllocatorType> std::uniform_int_distribution<> test_uintwide_t_n_binary_ops_template_signed<64U, std::uint16_t, AllocatorType>::my_distrib_1_to_0xFFFF(UINT16_C(1), UINT16_C(0xFFFF));
+  template<typename AllocatorType> std::minstd_rand                test_uintwide_t_n_binary_ops_template_signed<64U, std::uint16_t, AllocatorType>::my_eng;                                                // NOLINT(cppcoreguidelines-avoid-non-const-global-variables,cert-err58-cpp,cert-msc32-c,cert-msc51-cpp)
+  template<typename AllocatorType> std::uniform_int_distribution<> test_uintwide_t_n_binary_ops_template_signed<64U, std::uint16_t, AllocatorType>::my_distrib_0_to_63(UINT16_C(0), UINT16_C(63));         // NOLINT(cppcoreguidelines-avoid-non-const-global-variables,cert-err58-cpp)
+  template<typename AllocatorType> std::uniform_int_distribution<> test_uintwide_t_n_binary_ops_template_signed<64U, std::uint16_t, AllocatorType>::my_distrib_1_to_0xFFFF(UINT16_C(1), UINT16_C(0xFFFF)); // NOLINT(cppcoreguidelines-avoid-non-const-global-variables,cert-err58-cpp)
 
 #endif // TEST_UINTWIDE_T_N_BINARY_OPS_TEMPLATE_SIGNED_2021_06_05_H

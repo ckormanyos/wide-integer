@@ -29,8 +29,8 @@
 
 #include <boost/multiprecision/miller_rabin.hpp>
 #include <boost/multiprecision/uintwide_t_backend.hpp>
-#include <boost/random/mersenne_twister.hpp>
 #include <boost/random/independent_bits.hpp>
+#include <boost/random/mersenne_twister.hpp>
 
 #include <examples/example_uintwide_t.h>
 

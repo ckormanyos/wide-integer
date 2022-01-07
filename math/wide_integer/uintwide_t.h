@@ -834,7 +834,7 @@
       return *this;
     }
 
-    virtual ~fixed_dynamic_array() = default; // NOLINT(hicpp-use-override,modernize-use-override)
+    ~fixed_dynamic_array() override = default;
   };
 
   template<typename MyType,
@@ -1920,9 +1920,9 @@
       {
         uintwide_t t(*this);
 
-        const limb_type mask(std::uint8_t(0x7U));
+        const auto mask = static_cast<limb_type>(std::uint8_t(0x7U));
 
-        std::array<char, std::size_t(wr_string_max_buffer_size_oct)> str_temp;
+        std::array<char, std::size_t(wr_string_max_buffer_size_oct)> str_temp { };
 
         unsinged_fast_type pos = (sizeof(str_temp) - 1U);
 
@@ -1930,7 +1930,7 @@
         {
           --pos;
 
-          str_temp[static_cast<std::size_t>(pos)] = char('0');
+          str_temp.at(static_cast<std::size_t>(pos)) = char('0');
         }
         else
         {
@@ -1944,7 +1944,7 @@
 
               --pos;
 
-              str_temp[static_cast<std::size_t>(pos)] = c;
+              str_temp.at(static_cast<std::size_t>(pos)) = c;
 
               t >>= 3;
             }
@@ -1961,7 +1961,7 @@
 
               --pos;
 
-              str_temp[static_cast<std::size_t>(pos)] = c;
+              str_temp.at(static_cast<std::size_t>(pos)) = c;
 
               tu >>= 3;
             }
@@ -1972,14 +1972,14 @@
         {
           --pos;
 
-          str_temp[static_cast<std::size_t>(pos)] = char('0');
+          str_temp.at(static_cast<std::size_t>(pos)) = char('0');
         }
 
         if(show_pos)
         {
           --pos;
 
-          str_temp[static_cast<std::size_t>(pos)] = char('+');
+          str_temp.at(static_cast<std::size_t>(pos)) = char('+');
         }
 
         if(field_width != 0U)
@@ -1990,11 +1990,11 @@
           {
             --pos;
 
-            str_temp[static_cast<std::size_t>(pos)] = fill_char;
+            str_temp.at(static_cast<std::size_t>(pos)) = fill_char;
           }
         }
 
-        str_temp[(sizeof(str_temp) - 1U)] = char('\0');
+        str_temp.at((sizeof(str_temp) - 1U)) = char('\0');
 
         detail::strcpy_unsafe(str_result, str_temp.data() + pos);
       }
@@ -2009,7 +2009,7 @@
           t.negate();
         }
 
-        std::array<char, std::size_t(wr_string_max_buffer_size_dec)> str_temp;
+        std::array<char, std::size_t(wr_string_max_buffer_size_dec)> str_temp { };
 
         unsinged_fast_type pos = (sizeof(str_temp) - 1U);
 
@@ -2017,7 +2017,7 @@
         {
           --pos;
 
-          str_temp[static_cast<std::size_t>(pos)] = char('0');
+          str_temp.at(static_cast<std::size_t>(pos)) = char('0');
         }
         else
         {
@@ -2029,7 +2029,7 @@
 
             --pos;
 
-            str_temp[static_cast<std::size_t>(pos)] = static_cast<char>(static_cast<limb_type>(tmp - (uintwide_t(t).mul_by_limb(limb_type(UINT8_C(10))))) + UINT8_C(0x30));
+            str_temp.at(static_cast<std::size_t>(pos)) = static_cast<char>(static_cast<limb_type>(tmp - (uintwide_t(t).mul_by_limb(limb_type(UINT8_C(10))))) + UINT8_C(0x30));
           }
         }
 
@@ -2037,13 +2037,13 @@
         {
           --pos;
 
-          str_temp[static_cast<std::size_t>(pos)] = char('+');
+          str_temp.at(static_cast<std::size_t>(pos)) = char('+');
         }
         else if(str_has_neg_sign)
         {
           --pos;
 
-          str_temp[static_cast<std::size_t>(pos)] = char('-');
+          str_temp.at(static_cast<std::size_t>(pos)) = char('-');
         }
 
         if(field_width != 0U)
@@ -2054,11 +2054,11 @@
           {
             --pos;
 
-            str_temp[static_cast<std::size_t>(pos)] = fill_char;
+            str_temp.at(static_cast<std::size_t>(pos)) = fill_char;
           }
         }
 
-        str_temp[(sizeof(str_temp) - 1U)] = char('\0');
+        str_temp.at((sizeof(str_temp) - 1U)) = char('\0');
 
         detail::strcpy_unsafe(str_result, str_temp.data() + pos);
       }
@@ -2066,9 +2066,9 @@
       {
         uintwide_t t(*this);
 
-        const limb_type mask(std::uint8_t(0xFU));
+        const auto mask = static_cast<limb_type>(std::uint8_t(0xFU));
 
-        std::array<char, std::size_t(wr_string_max_buffer_size_hex)> str_temp;
+        std::array<char, std::size_t(wr_string_max_buffer_size_hex)> str_temp { };
 
         unsinged_fast_type pos = (sizeof(str_temp) - 1U);
 
@@ -2076,7 +2076,7 @@
         {
           --pos;
 
-          str_temp[static_cast<std::size_t>(pos)] = char('0');
+          str_temp.at(static_cast<std::size_t>(pos)) = char('0');
         }
         else
         {
@@ -2091,7 +2091,7 @@
 
               --pos;
 
-              str_temp[static_cast<std::size_t>(pos)] = c;
+              str_temp.at(static_cast<std::size_t>(pos)) = c;
 
               t >>= 4;
             }
@@ -2109,7 +2109,7 @@
 
               --pos;
 
-              str_temp[static_cast<std::size_t>(pos)] = c;
+              str_temp.at(static_cast<std::size_t>(pos)) = c;
 
               tu >>= 4;
             }
@@ -2120,18 +2120,18 @@
         {
           --pos;
 
-          str_temp[static_cast<std::size_t>(pos)] = (is_uppercase ? char('X') : char('x'));
+          str_temp.at(static_cast<std::size_t>(pos)) = (is_uppercase ? char('X') : char('x'));
 
           --pos;
 
-          str_temp[static_cast<std::size_t>(pos)] = char('0');
+          str_temp.at(static_cast<std::size_t>(pos)) = char('0');
         }
 
         if(show_pos)
         {
           --pos;
 
-          str_temp[static_cast<std::size_t>(pos)] = char('+');
+          str_temp.at(static_cast<std::size_t>(pos)) = char('+');
         }
 
         if(field_width != 0U)
@@ -2142,7 +2142,7 @@
           {
             --pos;
 
-            str_temp[static_cast<std::size_t>(pos)] = fill_char;
+            str_temp.at(static_cast<std::size_t>(pos)) = fill_char;
           }
         }
 
@@ -4069,14 +4069,14 @@
     else if((my_flags & std::ios::hex) == std::ios::hex) { base_rep = UINT8_C(16); }
     else                                                 { base_rep = UINT8_C(10); }
 
-    const unsinged_fast_type field_width = unsinged_fast_type(out.width());
-    const char               fill_char   = out.fill();
+    const auto field_width = unsinged_fast_type(out.width());
+    const auto fill_char   = static_cast<char>(out.fill());
 
     using local_wide_integer_type = uintwide_t<Width2, LimbType, AllocatorType, IsSigned>;
 
     if(base_rep == UINT8_C(8))
     {
-      std::array<char, local_wide_integer_type::wr_string_max_buffer_size_oct> str_result;
+      std::array<char, local_wide_integer_type::wr_string_max_buffer_size_oct> str_result { };
       str_result.fill(char('\0'));
 
       x.wr_string(str_result.data(), base_rep, show_base, show_pos, is_uppercase, field_width, fill_char);
@@ -4085,7 +4085,7 @@
     }
     else if(base_rep == UINT8_C(10))
     {
-      std::array<char, local_wide_integer_type::wr_string_max_buffer_size_dec> str_result;
+      std::array<char, local_wide_integer_type::wr_string_max_buffer_size_dec> str_result { };
       str_result.fill(char('\0'));
 
       x.wr_string(str_result.data(), base_rep, show_base, show_pos, is_uppercase, field_width, fill_char);
@@ -4094,7 +4094,7 @@
     }
     else if(base_rep == UINT8_C(16))
     {
-      std::array<char, local_wide_integer_type::wr_string_max_buffer_size_hex> str_result;
+      std::array<char, local_wide_integer_type::wr_string_max_buffer_size_hex> str_result { };
       str_result.fill(char('\0'));
 
       x.wr_string(str_result.data(), base_rep, show_base, show_pos, is_uppercase, field_width, fill_char);

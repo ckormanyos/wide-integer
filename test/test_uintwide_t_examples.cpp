@@ -12,7 +12,7 @@
 #include <math/wide_integer/uintwide_t.h>
 #include <test/test_uintwide_t.h>
 
-bool math::wide_integer::test_uintwide_t_examples()
+auto math::wide_integer::test_uintwide_t_examples() -> bool
 {
   bool result_is_ok = true;
 

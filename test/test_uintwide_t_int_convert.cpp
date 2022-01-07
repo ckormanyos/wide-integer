@@ -30,15 +30,15 @@
 #include <math/wide_integer/uintwide_t.h>
 #include <test/test_uintwide_t.h>
 
-namespace
+namespace local_int_convert
 {
-  std::mt19937                                                         engine_val;
-  std::ranlux24_base                                                   engine_sgn;
-  std::linear_congruential_engine<std::uint32_t, 48271, 0, 2147483647> engine_len;
+  auto engine_val() -> std::mt19937&                                                         { static std::mt19937                                                         my_engine_val; return my_engine_val; } // NOLINT(cert-msc32-c,cert-msc51-cpp)
+  auto engine_sgn() -> std::ranlux24_base&                                                   { static std::ranlux24_base                                                   my_engine_sgn; return my_engine_sgn; } // NOLINT(cert-msc32-c,cert-msc51-cpp)
+  auto engine_len() -> std::linear_congruential_engine<std::uint32_t, 48271, 0, 2147483647>& { static std::linear_congruential_engine<std::uint32_t, 48271, 0, 2147483647> my_engine_len; return my_engine_len; } // NOLINT(cert-msc32-c,cert-msc51-cpp)
 
   template<const std::size_t MaxDigitsToGet,
            const std::size_t MinDigitsToGet = 2U>
-  void get_random_digit_string(std::string& str)
+  auto get_random_digit_string(std::string& str) -> void
   {
     static_assert(MinDigitsToGet >=  2U, "Error: The minimum number of digits to get must be  2 or more");
 
@@ -70,9 +70,9 @@ namespace
       9
     );
 
-    const bool is_neg = (dist_sgn(engine_sgn) != 0);
+    const bool is_neg = (dist_sgn(engine_sgn()) != 0);
 
-    const std::string::size_type len = static_cast<std::string::size_type>(dist_len(engine_len));
+    const std::string::size_type len = static_cast<std::string::size_type>(dist_len(engine_len()));
 
     std::string::size_type pos = 0U;
 
@@ -89,20 +89,20 @@ namespace
       str.resize(len);
     }
 
-    str.at(pos) = static_cast<char>(dist_first(engine_val) + 0x30U);
+    str.at(pos) = static_cast<char>(dist_first(engine_val()) + 0x30U);
 
     ++pos;
 
     while(pos < str.length())
     {
-      str.at(pos) = static_cast<char>(dist_following(engine_val) + 0x30U);
+      str.at(pos) = static_cast<char>(dist_following(engine_val()) + 0x30U);
 
       ++pos;
     }
   }
 
   template<typename UnsignedIntegralType>
-  static std::string hexlexical_cast(const UnsignedIntegralType& u)
+  static auto hexlexical_cast(const UnsignedIntegralType& u) -> std::string
   {
     std::stringstream ss;
 
@@ -110,11 +110,11 @@ namespace
 
     return ss.str();
   }
-}
+} // namespace local_int_convert
 
 bool math::wide_integer::test_uintwide_t_int_convert()
 {
-  constexpr unsigned digits2 = 256U;
+  constexpr auto digits2 = unsigned(256U);
 
   using boost_sint_backend_type =
     boost::multiprecision::cpp_int_backend<digits2,
@@ -131,23 +131,23 @@ bool math::wide_integer::test_uintwide_t_int_convert()
 
   using local_sint_type = math::wide_integer::uintwide_t<digits2, local_limb_type, void, true>;
 
-  engine_val.seed(static_cast<typename std::mt19937::result_type>                                                        (std::clock()));
-  engine_sgn.seed(static_cast<typename std::ranlux24_base::result_type>                                                  (std::clock()));
-  engine_len.seed(static_cast<typename std::linear_congruential_engine<std::uint32_t, 48271, 0, 2147483647>::result_type>(std::clock()));
+  local_int_convert::engine_val().seed(static_cast<typename std::mt19937::result_type>                                                        (std::clock()));
+  local_int_convert::engine_sgn().seed(static_cast<typename std::ranlux24_base::result_type>                                                  (std::clock()));
+  local_int_convert::engine_len().seed(static_cast<typename std::linear_congruential_engine<std::uint32_t, 48271, 0, 2147483647>::result_type>(std::clock()));
 
   bool result_is_ok = true;
 
-  for(std::size_t i = 0U; i < 0x100000U; ++i)
+  for(auto i = std::size_t(0U); i < std::size_t(0x100000U); ++i)
   {
     std::string str_digits;
 
-    get_random_digit_string<18U, 2U>(str_digits);
+    local_int_convert::get_random_digit_string<18U, 2U>(str_digits);
 
     const boost_sint_type n_boost = boost_sint_type(str_digits.c_str());
     const local_sint_type n_local = local_sint_type(str_digits.c_str());
 
-    const std::int64_t n_ctrl_boost = (std::int64_t) n_boost;
-    const std::int64_t n_ctrl_local = (std::int64_t) n_local;
+    const std::int64_t n_ctrl_boost = static_cast<std::int64_t>(n_boost);
+    const std::int64_t n_ctrl_local = static_cast<std::int64_t>(n_local);
 
     const bool result_n_is_ok = (n_ctrl_boost == n_ctrl_local);
 
