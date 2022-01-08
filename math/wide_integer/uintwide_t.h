@@ -1930,7 +1930,7 @@
         {
           --pos;
 
-          str_temp.at(static_cast<std::size_t>(pos)) = char('0');
+          str_temp[static_cast<std::size_t>(pos)] = char('0'); // NOLINT(cppcoreguidelines-pro-bounds-constant-array-index)
         }
         else
         {
@@ -1944,7 +1944,7 @@
 
               --pos;
 
-              str_temp.at(static_cast<std::size_t>(pos)) = c;
+              str_temp[static_cast<std::size_t>(pos)] = c; // NOLINT(cppcoreguidelines-pro-bounds-constant-array-index)
 
               t >>= 3;
             }
@@ -1961,7 +1961,7 @@
 
               --pos;
 
-              str_temp.at(static_cast<std::size_t>(pos)) = c;
+              str_temp[static_cast<std::size_t>(pos)] = c; // NOLINT(cppcoreguidelines-pro-bounds-constant-array-index)
 
               tu >>= 3;
             }
@@ -1972,14 +1972,14 @@
         {
           --pos;
 
-          str_temp.at(static_cast<std::size_t>(pos)) = char('0');
+          str_temp[static_cast<std::size_t>(pos)] = char('0'); // NOLINT(cppcoreguidelines-pro-bounds-constant-array-index)
         }
 
         if(show_pos)
         {
           --pos;
 
-          str_temp.at(static_cast<std::size_t>(pos)) = char('+');
+          str_temp[static_cast<std::size_t>(pos)] = char('+'); // NOLINT(cppcoreguidelines-pro-bounds-constant-array-index)
         }
 
         if(field_width != 0U)
@@ -1990,11 +1990,11 @@
           {
             --pos;
 
-            str_temp.at(static_cast<std::size_t>(pos)) = fill_char;
+            str_temp[static_cast<std::size_t>(pos)] = fill_char; // NOLINT(cppcoreguidelines-pro-bounds-constant-array-index)
           }
         }
 
-        str_temp.at((sizeof(str_temp) - 1U)) = char('\0');
+        str_temp[(sizeof(str_temp) - 1U)] = char('\0');
 
         detail::strcpy_unsafe(str_result, str_temp.data() + pos);
       }
@@ -2017,7 +2017,7 @@
         {
           --pos;
 
-          str_temp.at(static_cast<std::size_t>(pos)) = char('0');
+          str_temp[static_cast<std::size_t>(pos)] = char('0'); // NOLINT(cppcoreguidelines-pro-bounds-constant-array-index)
         }
         else
         {
@@ -2029,7 +2029,8 @@
 
             --pos;
 
-            str_temp.at(static_cast<std::size_t>(pos)) = static_cast<char>(static_cast<limb_type>(tmp - (uintwide_t(t).mul_by_limb(limb_type(UINT8_C(10))))) + UINT8_C(0x30));
+            str_temp[static_cast<std::size_t>(pos)] = // NOLINT(cppcoreguidelines-pro-bounds-constant-array-index)
+              static_cast<char>(static_cast<limb_type>(tmp - (uintwide_t(t).mul_by_limb(limb_type(UINT8_C(10))))) + UINT8_C(0x30));
           }
         }
 
@@ -2037,13 +2038,13 @@
         {
           --pos;
 
-          str_temp.at(static_cast<std::size_t>(pos)) = char('+');
+          str_temp[static_cast<std::size_t>(pos)] = char('+'); // NOLINT(cppcoreguidelines-pro-bounds-constant-array-index)
         }
         else if(str_has_neg_sign)
         {
           --pos;
 
-          str_temp.at(static_cast<std::size_t>(pos)) = char('-');
+          str_temp[static_cast<std::size_t>(pos)] = char('-'); // NOLINT(cppcoreguidelines-pro-bounds-constant-array-index)
         }
 
         if(field_width != 0U)
@@ -2054,11 +2055,11 @@
           {
             --pos;
 
-            str_temp.at(static_cast<std::size_t>(pos)) = fill_char;
+            str_temp[static_cast<std::size_t>(pos)] = fill_char; // NOLINT(cppcoreguidelines-pro-bounds-constant-array-index)
           }
         }
 
-        str_temp.at((sizeof(str_temp) - 1U)) = char('\0');
+        str_temp[static_cast<std::size_t>(sizeof(str_temp) - 1U)] = char('\0');
 
         detail::strcpy_unsafe(str_result, str_temp.data() + pos);
       }
@@ -2076,7 +2077,7 @@
         {
           --pos;
 
-          str_temp.at(static_cast<std::size_t>(pos)) = char('0');
+          str_temp[static_cast<std::size_t>(pos)] = char('0'); // NOLINT(cppcoreguidelines-pro-bounds-constant-array-index)
         }
         else
         {
@@ -2091,7 +2092,7 @@
 
               --pos;
 
-              str_temp.at(static_cast<std::size_t>(pos)) = c;
+              str_temp[static_cast<std::size_t>(pos)] = c; // NOLINT(cppcoreguidelines-pro-bounds-constant-array-index)
 
               t >>= 4;
             }
@@ -2109,7 +2110,7 @@
 
               --pos;
 
-              str_temp.at(static_cast<std::size_t>(pos)) = c;
+              str_temp[static_cast<std::size_t>(pos)] = c; // NOLINT(cppcoreguidelines-pro-bounds-constant-array-index)
 
               tu >>= 4;
             }
@@ -2120,18 +2121,18 @@
         {
           --pos;
 
-          str_temp.at(static_cast<std::size_t>(pos)) = (is_uppercase ? char('X') : char('x'));
+          str_temp[static_cast<std::size_t>(pos)] = (is_uppercase ? char('X') : char('x')); // NOLINT(cppcoreguidelines-pro-bounds-constant-array-index)
 
           --pos;
 
-          str_temp.at(static_cast<std::size_t>(pos)) = char('0');
+          str_temp[static_cast<std::size_t>(pos)] = char('0'); // NOLINT(cppcoreguidelines-pro-bounds-constant-array-index)
         }
 
         if(show_pos)
         {
           --pos;
 
-          str_temp.at(static_cast<std::size_t>(pos)) = char('+');
+          str_temp[static_cast<std::size_t>(pos)] = char('+'); // NOLINT(cppcoreguidelines-pro-bounds-constant-array-index)
         }
 
         if(field_width != 0U)
@@ -2142,7 +2143,7 @@
           {
             --pos;
 
-            str_temp.at(static_cast<std::size_t>(pos)) = fill_char;
+            str_temp[static_cast<std::size_t>(pos)] = fill_char; // NOLINT(cppcoreguidelines-pro-bounds-constant-array-index)
           }
         }
 
