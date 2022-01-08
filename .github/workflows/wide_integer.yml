@@ -41,5 +41,5 @@ jobs:
           echo "make prepare -f make_tidy_01_generic.gmk"
           echo
           make prepare -f make_tidy_01_generic.gmk
-          echo "make tidy -f make_tidy_01_generic.gmk --jobs=8 MY_BOOST_ROOT==../../../boost-root"
-          make tidy -f make_tidy_01_generic.gmk --jobs=8 MY_BOOST_ROOT==../../../boost-root
+          echo "make tidy -f make_tidy_01_generic.gmk --jobs=8 MY_BOOST_ROOT=../../../boost-root"
+          make tidy -f make_tidy_01_generic.gmk --jobs=8 MY_BOOST_ROOT=../../../boost-root
