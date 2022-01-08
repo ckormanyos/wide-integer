@@ -1,6 +1,7 @@
-
+﻿
 PATH_MAKE        = $(CURDIR)
-PATH_SRC         = $(PATH_MAKE)/../..
+PATH_PRJ         = $(PATH_MAKE)/../..
+PATH_SRC         = $(PATH_PRJ)
 PATH_TMP         = $(PATH_MAKE)/tmp
 PATH_ERR         = $(PATH_MAKE)/err
 
@@ -42,8 +43,8 @@ tidy: $(FILES_TIDY_TXT)
 # Clean temporary files.
 # ------------------------------------------------------------------------------
 
-.PHONY: clean
-clean:
+.PHONY: prepare
+prepare:
   # creating output directories
 	@$(GNUECHO) +++ creating output directories
 	@-$(MKDIR) -p $(PATH_ERR)
@@ -52,6 +53,12 @@ clean:
 	@$(GNUECHO) +++ cleaning output directories
 	@-$(RM) -rf $(PATH_ERR)/*.tidy_err
 	@-$(RM) -rf $(PATH_TMP)/*.tidy_txt
+	@$(GNUECHO)
+	@$(GNUECHO) +++ print clang-tidy version
+	@$(TIDY) --version
+	@$(GNUECHO)
+	@$(GNUECHO) +++ print include paths
+	@$(GNUECHO) $(C_INCLUDES)
 	@$(GNUECHO)
 
 # ------------------------------------------------------------------------------

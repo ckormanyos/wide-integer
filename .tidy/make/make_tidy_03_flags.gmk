@@ -1,7 +1,8 @@
-
+﻿
 ifeq ($(MY_BOOST_ROOT),)
 MY_BOOST_ROOT    = /mnt/c/boost/boost_1_78_0
 else
+MY_BOOST_ROOT    = $(PATH_PRJ)/../boost-root
 endif
 
 C_DEFINES    = WIDE_INTEGER_HAS_MUL_8_BY_8_UNROLL
