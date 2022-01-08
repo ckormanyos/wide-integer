@@ -1,4 +1,4 @@
-name: wide_integer
+﻿name: wide_integer
 on:
   push:
     branches:
@@ -80,6 +80,44 @@ jobs:
         working-directory: ${{runner.workspace}}/build
         run: ctest --verbose --output-on-failure
 
+  gnumake-clang-tidy-12-native:
+    runs-on: ubuntu-20.04
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: '0'
+      - name: update-tools
+        run: sudo apt install clang-tidy-12
+      - name: clone-submods-bootstrap-headers-boost-develop
+        run: |
+          git clone -b develop --depth 1 https://github.com/boostorg/boost.git ../boost-root
+          cd ../boost-root
+          git submodule update --init tools
+          git submodule update --init libs/assert
+          git submodule update --init libs/core
+          git submodule update --init libs/config
+          git submodule update --init libs/integer
+          git submodule update --init libs/math
+          git submodule update --init libs/multiprecision
+          git submodule update --init libs/random
+          git submodule update --init libs/static_assert
+          git submodule update --init libs/type_traits
+          git submodule update --init libs/throw_exception
+          ./bootstrap.sh
+          ./b2 headers
+      - name: gnumake-clang-tidy-12-native
+        run: |
+          grep BOOST_VERSION ../boost-root/boost/version.hpp
+          cd .tidy/make
+          echo "running clang-tidy"
+          echo "make clean -f make_tidy_01_generic.gmk"
+          echo
+          make clean -f make_tidy_01_generic.gmk
+          echo "make tidy -f make_tidy_01_generic.gmk --jobs=8 MY_BOOST_ROOT==${{runner.workspace}}/../boost-root"
+          make tidy -f make_tidy_01_generic.gmk --jobs=8 MY_BOOST_ROOT==${{runner.workspace}}/../boost-root
   gcc-clang-native:
     runs-on: ubuntu-20.04
     defaults:
