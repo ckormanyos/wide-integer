@@ -1,4 +1,4 @@
-///////////////////////////////////////////////////////////////////////////////
+﻿///////////////////////////////////////////////////////////////////////////////
 //  Copyright Christopher Kormanyos 2021.
 //  Distributed under the Boost Software License,
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt
@@ -72,7 +72,7 @@ namespace local_int_convert
 
     const bool is_neg = (dist_sgn(engine_sgn()) != 0);
 
-    const std::string::size_type len = static_cast<std::string::size_type>(dist_len(engine_len()));
+    const auto len = static_cast<std::string::size_type>(dist_len(engine_len()));
 
     std::string::size_type pos = 0U;
 
@@ -112,7 +112,7 @@ namespace local_int_convert
   }
 } // namespace local_int_convert
 
-bool math::wide_integer::test_uintwide_t_int_convert()
+auto math::wide_integer::test_uintwide_t_int_convert() -> bool
 {
   constexpr auto digits2 = unsigned(256U);
 
@@ -146,8 +146,8 @@ bool math::wide_integer::test_uintwide_t_int_convert()
     const boost_sint_type n_boost = boost_sint_type(str_digits.c_str());
     const local_sint_type n_local = local_sint_type(str_digits.c_str());
 
-    const std::int64_t n_ctrl_boost = static_cast<std::int64_t>(n_boost);
-    const std::int64_t n_ctrl_local = static_cast<std::int64_t>(n_local);
+    const auto n_ctrl_boost = static_cast<std::int64_t>(n_boost);
+    const auto n_ctrl_local = static_cast<std::int64_t>(n_local);
 
     const bool result_n_is_ok = (n_ctrl_boost == n_ctrl_local);
 

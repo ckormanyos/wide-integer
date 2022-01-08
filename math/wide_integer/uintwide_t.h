@@ -1,4 +1,4 @@
-///////////////////////////////////////////////////////////////////
+﻿///////////////////////////////////////////////////////////////////
 //  Copyright Christopher Kormanyos 1999 - 2022.                 //
 //  Distributed under the Boost Software License,                //
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt          //
@@ -4718,7 +4718,7 @@
         y *= y;
         y %= m_local;
 
-        p_local >>= 1U;
+        p_local >>= 1U; // NOLINT(hicpp-signed-bitwise)
       }
 
       result = local_normal_width_type(x);
