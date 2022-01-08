@@ -1,14 +1,14 @@
 ﻿
-ifeq ($(MY_BOOST_ROOT),)
-MY_BOOST_ROOT    = /mnt/c/boost/boost_1_78_0
-else
-MY_BOOST_ROOT    = $(PATH_PRJ)/../boost-root
+BOOST_ROOT_FOR_TIDY = /mnt/c/boost/boost_1_78_0
+
+ifneq ($(MY_BOOST_ROOT),)
+BOOST_ROOT_FOR_TIDY := $(MY_BOOST_ROOT)
 endif
 
 C_DEFINES    = WIDE_INTEGER_HAS_MUL_8_BY_8_UNROLL
 
 C_INCLUDES   = $(PATH_SRC)                                \
-               $(MY_BOOST_ROOT)
+               $(BOOST_ROOT_FOR_TIDY)
 
 C_DEFINES   :=$(addprefix -D,$(C_DEFINES))
 C_INCLUDES  :=$(addprefix -I,$(C_INCLUDES))
