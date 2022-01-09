@@ -99,9 +99,9 @@
     #define WIDE_INTEGER_NAMESPACE_END
   #endif
 
-  WIDE_INTEGER_NAMESPACE_BEGIN
-
   #if !defined(WIDE_INTEGER_DISABLE_IMPLEMENT_UTIL_DYNAMIC_ARRAY)
+
+  WIDE_INTEGER_NAMESPACE_BEGIN
 
   namespace util {
 
@@ -435,17 +435,47 @@
 
   } // namespace util
 
-  #else
+  WIDE_INTEGER_NAMESPACE_END
 
-  #include <util/utility/util_dynamic_array.h>
-
-  #endif
+  WIDE_INTEGER_NAMESPACE_BEGIN
 
   namespace math { namespace wide_integer {
 
   namespace detail {
 
   using util::dynamic_array;
+
+  } // namespace detail
+  } // namespace wide_integer
+  } // namespace math
+
+  WIDE_INTEGER_NAMESPACE_END
+
+  #else
+
+  #include <util/utility/util_dynamic_array.h>
+
+  WIDE_INTEGER_NAMESPACE_BEGIN
+
+  namespace math { namespace wide_integer {
+
+  namespace detail {
+
+  using util::dynamic_array;
+
+  } // namespace detail
+  } // namespace wide_integer
+  } // namespace math
+
+  WIDE_INTEGER_NAMESPACE_END
+
+  #endif
+
+  WIDE_INTEGER_NAMESPACE_BEGIN
+
+  namespace math { namespace wide_integer {
+
+  namespace detail {
 
   using size_t    = std::uint32_t;
   using ptrdiff_t = std::int32_t;

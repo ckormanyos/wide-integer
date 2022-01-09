@@ -398,9 +398,9 @@ We recall that all parts of the wide-integer implementation,
 such as the `uintwide_t` class and its associated implementation
 details reside within `namespace` `::math::wide_integer`
 Defining the macro `WIDE_INTEGER_NAMESPACE` to be something like,
-for instance, `-DWIDE_INTEGER_NAMESPACE=whatever_unique` places
+for instance, `-DWIDE_INTEGER_NAMESPACE=something_unique` places
 all parts of the wide-integer implementation and its details
-within an outer `namespace` such as `whatever_unique::math::wide_integer`.
+within the outer `namespace` `something_unique::math::wide_integer`.
 
 The macro `WIDE_INTEGER_NAMESPACE` is defined (but defined to be nothing, i.e., empty)
 by default. In this default state, `namespace` `::math::wide_integer` is used
