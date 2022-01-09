@@ -1,4 +1,4 @@
-Wide-integer
+﻿Wide-integer
 [![Build Status](https://github.com/ckormanyos/wide-integer/actions/workflows/wide_integer.yml/badge.svg)](https://github.com/ckormanyos/wide-integer/actions)
 ==================
 
@@ -392,17 +392,20 @@ as well as the standard-layout compile-time checks are active.
 #define WIDE_INTEGER_NAMESPACE
 ```
 
-This macro can be used in very discerning applications for which
-using the unqualified namespace `math` is undesired or inacceptable.
+This macro can be used in strict, exacting applications for which
+using the unqualified, global namespace `math` or `::math` is undesired or inacceptable.
 We recall that all parts of the wide-integer implementation,
-such as the `uintwide_t` class and their associated implementation
+such as the `uintwide_t` class and its associated implementation
 details reside within `namespace` `::math::wide_integer`
-Defining the macro WIDE_INTEGER_NAMESPACE to be something like,
+Defining the macro `WIDE_INTEGER_NAMESPACE` to be something like,
 for instance, `-DWIDE_INTEGER_NAMESPACE=whatever_unique` places
 all parts of the wide-integer implementation and its details
-within `namespace` `whatever_unique::math::wide_integer`.
-This macro is disabled by default and `namespace` `::math::wide_integer`
-is used.
+within an outer `namespace` such as `whatever_unique::math::wide_integer`.
+
+The macro `WIDE_INTEGER_NAMESPACE` is defined (but defined to be nothing, i.e., empty)
+by default. In this default state, `namespace` `::math::wide_integer` is used
+and the `uintwide_t` class and its associated implementation
+details reside therein.
 
 ## Detailed examples
 
