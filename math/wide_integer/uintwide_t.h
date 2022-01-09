@@ -92,7 +92,7 @@
 
   #if defined(WIDE_INTEGER_NAMESPACE)
     #define WIDE_INTEGER_NAMESPACE_BEGIN namespace WIDE_INTEGER_NAMESPACE {
-    #define WIDE_INTEGER_NAMESPACE_END }
+    #define WIDE_INTEGER_NAMESPACE_END } /* namespace WIDE_INTEGER_NAMESPACE */
   #else
     #define WIDE_INTEGER_NAMESPACE
     #define WIDE_INTEGER_NAMESPACE_BEGIN
@@ -791,7 +791,7 @@
              typename LimbType,
              typename AllocatorType,
              const bool IsSigned>
-    WIDE_INTEGER_NUM_LIMITS_CLASS_TYPE numeric_limits<math::wide_integer::uintwide_t<Width2, LimbType, AllocatorType, IsSigned>>;
+    WIDE_INTEGER_NUM_LIMITS_CLASS_TYPE numeric_limits<WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<Width2, LimbType, AllocatorType, IsSigned>>;
   } // namespace std
 
   WIDE_INTEGER_NAMESPACE_BEGIN
@@ -2589,6 +2589,8 @@
       using left_difference_type   = typename std::iterator_traits<InputIteratorLeft>::difference_type;
       using right_difference_type  = typename std::iterator_traits<InputIteratorRight>::difference_type;
 
+      using result_value_type = typename std::iterator_traits<ResultIterator>::value_type;
+
       // The algorithm has been derived from the polynomial multiplication.
       // After the multiplication terms of equal order are grouped
       // together and retained up to order(3). The carries from the
@@ -2613,10 +2615,10 @@
       local_double_limb_type r1;
       local_double_limb_type r2;
 
-      const local_double_limb_type a0b0 = *(a + left_difference_type(0)) * local_double_limb_type(*(b + right_difference_type(0)));
-      const local_double_limb_type a0b1 = *(a + left_difference_type(0)) * local_double_limb_type(*(b + right_difference_type(1)));
-      const local_double_limb_type a1b0 = *(a + left_difference_type(1)) * local_double_limb_type(*(b + right_difference_type(0)));
-      const local_double_limb_type a1b1 = *(a + left_difference_type(1)) * local_double_limb_type(*(b + right_difference_type(1)));
+      const auto a0b0 = local_double_limb_type(*(a + left_difference_type(0)) * local_double_limb_type(*(b + right_difference_type(0))));
+      const auto a0b1 = local_double_limb_type(*(a + left_difference_type(0)) * local_double_limb_type(*(b + right_difference_type(1))));
+      const auto a1b0 = local_double_limb_type(*(a + left_difference_type(1)) * local_double_limb_type(*(b + right_difference_type(0))));
+      const auto a1b1 = local_double_limb_type(*(a + left_difference_type(1)) * local_double_limb_type(*(b + right_difference_type(1))));
 
       // One special case is considered, the case of multiplication
       // of the form BITS/2 * BITS/2 = BITS. In this case, the algorithm
@@ -2627,55 +2629,73 @@
       {
         r1    = local_double_limb_type
                 (
-                  detail::make_hi<local_limb_type>(a0b0)
+                  local_double_limb_type
+                  (
+                    detail::make_hi<local_limb_type>(a0b0)
+                  )
+                  + detail::make_lo<local_limb_type>(a1b0)
+                  + detail::make_lo<local_limb_type>(a0b1)
                 )
-                + detail::make_lo<local_limb_type>(a1b0)
-                + detail::make_lo<local_limb_type>(a0b1)
                 ;
         r2    = local_double_limb_type
                 (
-                  detail::make_hi<local_limb_type>(r1)
+                  local_double_limb_type
+                  (
+                    detail::make_hi<local_limb_type>(r1)
+                  )
+                  + detail::make_lo<local_limb_type>(a1b1)
+                  + detail::make_hi<local_limb_type>(a0b1)
+                  + detail::make_hi<local_limb_type>(a1b0)
                 )
-                + detail::make_lo<local_limb_type>(a1b1)
-                + detail::make_hi<local_limb_type>(a0b1)
-                + detail::make_hi<local_limb_type>(a1b0)
                 ;
         *(r + result_difference_type(3))
-              =   detail::make_hi<local_limb_type>(r2)
-                + detail::make_hi<local_limb_type>(a1b1)
+              = result_value_type
+                (
+                    detail::make_hi<local_limb_type>(r2)
+                  + detail::make_hi<local_limb_type>(a1b1)
+                )
                 ;
       }
       else
       {
-        const local_double_limb_type a0b2 = *(a + left_difference_type(0)) * local_double_limb_type(*(b + right_difference_type(2)));
-        const local_double_limb_type a2b0 = *(a + left_difference_type(2)) * local_double_limb_type(*(b + right_difference_type(0)));
+        const auto a0b2 = local_double_limb_type(*(a + left_difference_type(0)) * local_double_limb_type(*(b + right_difference_type(2))));
+        const auto a2b0 = local_double_limb_type(*(a + left_difference_type(2)) * local_double_limb_type(*(b + right_difference_type(0))));
 
         r1    = local_double_limb_type
                 (
-                  detail::make_hi<local_limb_type>(a0b0)
+                  local_double_limb_type
+                  (
+                    detail::make_hi<local_limb_type>(a0b0)
+                  )
+                  + detail::make_lo<local_limb_type>(a1b0)
+                  + detail::make_lo<local_limb_type>(a0b1)
                 )
-                + detail::make_lo<local_limb_type>(a1b0)
-                + detail::make_lo<local_limb_type>(a0b1)
                 ;
         r2    = local_double_limb_type
                 (
-                  detail::make_hi<local_limb_type>(r1)
+                  local_double_limb_type
+                  (
+                    detail::make_hi<local_limb_type>(r1)
+                  )
+                  + detail::make_lo<local_limb_type>(a2b0)
+                  + detail::make_lo<local_limb_type>(a1b1)
+                  + detail::make_lo<local_limb_type>(a0b2)
+                  + detail::make_hi<local_limb_type>(a1b0)
+                  + detail::make_hi<local_limb_type>(a0b1)
                 )
-                + detail::make_lo<local_limb_type>(a2b0)
-                + detail::make_lo<local_limb_type>(a1b1)
-                + detail::make_lo<local_limb_type>(a0b2)
-                + detail::make_hi<local_limb_type>(a1b0)
-                + detail::make_hi<local_limb_type>(a0b1)
                 ;
         *(r + result_difference_type(3))
-              =   detail::make_hi<local_limb_type>(r2)
-                + static_cast<local_limb_type>    (*(a + left_difference_type(3)) * local_double_limb_type(*(b + right_difference_type(0))))
-                + static_cast<local_limb_type>    (*(a + left_difference_type(2)) * local_double_limb_type(*(b + right_difference_type(1))))
-                + static_cast<local_limb_type>    (*(a + left_difference_type(1)) * local_double_limb_type(*(b + right_difference_type(2))))
-                + static_cast<local_limb_type>    (*(a + left_difference_type(0)) * local_double_limb_type(*(b + right_difference_type(3))))
-                + detail::make_hi<local_limb_type>(a2b0)
-                + detail::make_hi<local_limb_type>(a1b1)
-                + detail::make_hi<local_limb_type>(a0b2)
+              = result_value_type
+                (
+                    detail::make_hi<local_limb_type>(r2)
+                  + static_cast<local_limb_type>    (*(a + left_difference_type(3)) * local_double_limb_type(*(b + right_difference_type(0))))
+                  + static_cast<local_limb_type>    (*(a + left_difference_type(2)) * local_double_limb_type(*(b + right_difference_type(1))))
+                  + static_cast<local_limb_type>    (*(a + left_difference_type(1)) * local_double_limb_type(*(b + right_difference_type(2))))
+                  + static_cast<local_limb_type>    (*(a + left_difference_type(0)) * local_double_limb_type(*(b + right_difference_type(3))))
+                  + detail::make_hi<local_limb_type>(a2b0)
+                  + detail::make_hi<local_limb_type>(a1b1)
+                  + detail::make_hi<local_limb_type>(a0b2)
+                )
                 ;
       }
 
@@ -3921,8 +3941,8 @@
              typename LimbType,
              typename AllocatorType,
              const bool IsSigned>
-    WIDE_INTEGER_NUM_LIMITS_CLASS_TYPE numeric_limits<math::wide_integer::uintwide_t<Width2, LimbType, AllocatorType, IsSigned>>
-      : public math::wide_integer::numeric_limits_uintwide_t_base<Width2, LimbType, AllocatorType, IsSigned> { };
+    WIDE_INTEGER_NUM_LIMITS_CLASS_TYPE numeric_limits<WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<Width2, LimbType, AllocatorType, IsSigned>>
+      : public WIDE_INTEGER_NAMESPACE::math::wide_integer::numeric_limits_uintwide_t_base<Width2, LimbType, AllocatorType, IsSigned> { };
   } // namespace std
 
   WIDE_INTEGER_NAMESPACE_BEGIN

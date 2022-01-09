@@ -1,4 +1,4 @@
-Wide-integer
+﻿Wide-integer
 [![Build Status](https://github.com/ckormanyos/wide-integer/actions/workflows/wide_integer.yml/badge.svg)](https://github.com/ckormanyos/wide-integer/actions)
 ==================
 
@@ -285,6 +285,7 @@ enabled or disabled at compile time with the compiler switches:
 #define WIDE_INTEGER_HAS_LIMB_TYPE_UINT64
 #define WIDE_INTEGER_HAS_MUL_8_BY_8_UNROLL
 #define WIDE_INTEGER_DISABLE_TRIVIAL_COPY_AND_STD_LAYOUT_CHECKS
+#define WIDE_INTEGER_NAMESPACE
 ```
 
 When working with even the most tiny microcontroller systems,
@@ -386,6 +387,25 @@ templates. For such compilers, it makes sense to deactivate
 these compile-time checks via activation of this macro.
 This macro is disabled by default and both the trivially-copyable
 as well as the standard-layout compile-time checks are active.
+
+```C
+#define WIDE_INTEGER_NAMESPACE
+```
+
+This macro can be used in strict, exacting applications for which
+using the unqualified, global namespace `math` or `::math` is undesired or inacceptable.
+We recall that all parts of the wide-integer implementation,
+such as the `uintwide_t` class and its associated implementation
+details reside within `namespace` `::math::wide_integer`
+Defining the macro `WIDE_INTEGER_NAMESPACE` to be something like,
+for instance, `-DWIDE_INTEGER_NAMESPACE=whatever_unique` places
+all parts of the wide-integer implementation and its details
+within an outer `namespace` such as `whatever_unique::math::wide_integer`.
+
+The macro `WIDE_INTEGER_NAMESPACE` is defined (but defined to be nothing, i.e., empty)
+by default. In this default state, `namespace` `::math::wide_integer` is used
+and the `uintwide_t` class and its associated implementation
+details reside therein.
 
 ## Detailed examples
 
