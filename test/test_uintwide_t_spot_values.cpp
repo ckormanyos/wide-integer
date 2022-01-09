@@ -1,4 +1,4 @@
-///////////////////////////////////////////////////////////////////////////////
+﻿///////////////////////////////////////////////////////////////////////////////
 //  Copyright Christopher Kormanyos 2019 - 2022.
 //  Distributed under the Boost Software License,
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt
@@ -22,7 +22,7 @@ namespace local
 
     bool local_result_is_ok = true;
 
-    const local_unknown_integer_type a0(x);
+    const auto a0(x);
 
     {
       local_unknown_integer_type a = a0; a += a;
@@ -46,7 +46,7 @@ namespace local
   }
 
   template<typename UnknownIntegerType>
-  auto test_uintwide_t_spot_values_from_pull_request_130() -> bool
+  WIDE_INTEGER_CONSTEXPR auto test_uintwide_t_spot_values_from_pull_request_130() -> bool
   {
     // See also https://github.com/ckormanyos/wide-integer/pull/130
 
@@ -54,17 +54,17 @@ namespace local
 
     using limits = std::numeric_limits<local_unknown_integer_type>;
 
-    auto expected
+    WIDE_INTEGER_CONSTEXPR auto expected
     {
       -1 - limits::max()
     };
 
-    auto actual
+    WIDE_INTEGER_CONSTEXPR auto actual
     {
       limits::lowest()
     };
 
-    const bool b_ok = (expected == actual);
+    WIDE_INTEGER_CONSTEXPR bool b_ok = (expected == actual);
 
     return b_ok;
   }
@@ -75,23 +75,57 @@ auto math::wide_integer::test_uintwide_t_spot_values() -> bool // NOLINT(readabi
   bool result_is_ok = true;
 
   {
+    // See also https://github.com/ckormanyos/wide-integer/issues/90
+
     using math::wide_integer::uint128_t;
     using math::wide_integer::int128_t;
 
     // Get randoms via:
     // RandomInteger[{100000000000000000000000000000000000, 10000000000000000000000000000000000000}]
 
-    uint128_t u0("3076659267683009403742876678609501102");
-    uint128_t u1("9784355713321885697254484081284759103");
-    uint128_t u2("1759644461251476961796845209840363274");
+    {
+      WIDE_INTEGER_CONSTEXPR uint128_t u_sep("6'216'049'444'209'020'458'323'688'259'792'241'931");
+      WIDE_INTEGER_CONSTEXPR uint128_t u    ("6216049444209020458323688259792241931");
+
+      WIDE_INTEGER_CONSTEXPR uint128_t n_sep("-3000'424'814'887'742'920'043'278'044'817'737'744");
+      WIDE_INTEGER_CONSTEXPR uint128_t n    ("-3000424814887742920043278044817737744");
+
+      // BaseForm[6216049444209020458323688259792241931, 16]
+      // 4ad2ae64368b98a810635e9cd49850b_16
+      WIDE_INTEGER_CONSTEXPR uint128_t h_sep("0x4'AD'2A'E6'43'68'B9'8A'81'06'35'E9'CD'49'85'0B");
+
+      result_is_ok &= (u_sep == u);
+      result_is_ok &= (n_sep == n);
+      result_is_ok &= (h_sep == u);
+
+      #if(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST == 1)
+      static_assert(u_sep == u, "Error: Static check of construction via string with digit separators fails");
+      static_assert(n_sep == n, "Error: Static check of construction via string with digit separators fails");
+      static_assert(h_sep == u, "Error: Static check of construction via string with digit separators fails");
+      #endif
+    }
+  }
+
+  {
+    // See also https://github.com/ckormanyos/wide-integer/issues/145#issuecomment-1006374713
+
+    using math::wide_integer::uint128_t;
+    using math::wide_integer::int128_t;
+
+    // Get randoms via:
+    // RandomInteger[{100000000000000000000000000000000000, 10000000000000000000000000000000000000}]
+
+    WIDE_INTEGER_CONSTEXPR uint128_t u0("3076659267683009403742876678609501102");
+    WIDE_INTEGER_CONSTEXPR uint128_t u1("9784355713321885697254484081284759103");
+    WIDE_INTEGER_CONSTEXPR uint128_t u2("1759644461251476961796845209840363274");
 
     result_is_ok &= local::test_uintwide_t_spot_values_from_issue_145(u0);
     result_is_ok &= local::test_uintwide_t_spot_values_from_issue_145(u1);
     result_is_ok &= local::test_uintwide_t_spot_values_from_issue_145(u2);
 
-    int128_t n0("-3076659267683009403742876678609501102");
-    int128_t n1("-9784355713321885697254484081284759103");
-    int128_t n2("-1759644461251476961796845209840363274");
+    WIDE_INTEGER_CONSTEXPR int128_t n0("-3076659267683009403742876678609501102");
+    WIDE_INTEGER_CONSTEXPR int128_t n1("-9784355713321885697254484081284759103");
+    WIDE_INTEGER_CONSTEXPR int128_t n2("-1759644461251476961796845209840363274");
 
     result_is_ok &= local::test_uintwide_t_spot_values_from_issue_145(n0);
     result_is_ok &= local::test_uintwide_t_spot_values_from_issue_145(n1);
@@ -268,30 +302,50 @@ auto math::wide_integer::test_uintwide_t_spot_values() -> bool // NOLINT(readabi
       using type = math::wide_integer::uintwide_t<64, std::uint32_t, void, true>;
 
       result_is_ok &= local::test_uintwide_t_spot_values_from_pull_request_130<type>();
+
+      #if(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST == 1)
+      static_assert(local::test_uintwide_t_spot_values_from_pull_request_130<type>(), "Error: Check conditions surrounding issue 130");
+      #endif
     }
 
     {
       using type = math::wide_integer::uintwide_t<64, std::uint8_t, void, true>;
 
       result_is_ok &= local::test_uintwide_t_spot_values_from_pull_request_130<type>();
+
+      #if(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST == 1)
+      static_assert(local::test_uintwide_t_spot_values_from_pull_request_130<type>(), "Error: Check conditions surrounding issue 130");
+      #endif
     }
 
     {
       using type = math::wide_integer::uintwide_t<256, std::uint32_t, void, true>;
 
       result_is_ok &= local::test_uintwide_t_spot_values_from_pull_request_130<type>();
+
+      #if(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST == 1)
+      static_assert(local::test_uintwide_t_spot_values_from_pull_request_130<type>(), "Error: Check conditions surrounding issue 130");
+      #endif
     }
 
     {
       using type = std::int32_t;
 
       result_is_ok &= local::test_uintwide_t_spot_values_from_pull_request_130<type>();
+
+      #if(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST == 1)
+      static_assert(local::test_uintwide_t_spot_values_from_pull_request_130<type>(), "Error: Check conditions surrounding issue 130");
+      #endif
     }
 
     {
       using type = std::int64_t;
 
       result_is_ok &= local::test_uintwide_t_spot_values_from_pull_request_130<type>();
+
+      #if(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST == 1)
+      static_assert(local::test_uintwide_t_spot_values_from_pull_request_130<type>(), "Error: Check conditions surrounding issue 130");
+      #endif
     }
   }
 

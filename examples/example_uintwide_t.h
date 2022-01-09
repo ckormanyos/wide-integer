@@ -10,6 +10,10 @@
 
   // This file contains function prototypes of the uintwide_t examples.
 
+  #include <math/wide_integer/uintwide_t.h>
+
+  WIDE_INTEGER_NAMESPACE_BEGIN
+
   namespace math { namespace wide_integer {
 
   auto example000_numeric_limits     () -> bool;
@@ -35,5 +39,14 @@
 
   } // namespace wide_integer
   } // namespace math
+
+  WIDE_INTEGER_NAMESPACE_END
+
+  #if defined(WIDE_INTEGER_NAMESPACE)
+  #if (~(~WIDE_INTEGER_NAMESPACE + 0) == 0 && ~(~WIDE_INTEGER_NAMESPACE + 1) == 1)
+  #else
+  using namespace WIDE_INTEGER_NAMESPACE;
+  #endif
+  #endif
 
 #endif // EXAMPLE_UINTWIDE_T_2021_04_29_H
