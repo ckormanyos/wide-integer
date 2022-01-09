@@ -1,4 +1,4 @@
-# ------------------------------------------------------------------------------
+﻿# ------------------------------------------------------------------------------
 #  Copyright Christopher Kormanyos 2022.
 #  Distributed under the Boost Software License,
 #  Version 1.0. (See accompanying file LICENSE_1_0.txt
@@ -13,6 +13,7 @@ PATH_ERR         = $(PATH_MAKE)/err
 
 CAT              = cat
 GNUECHO          = echo
+LS               = ls
 MKDIR            = mkdir
 TIDY             = clang-tidy-12
 RM               = rm
@@ -39,6 +40,9 @@ tidy: $(FILES_TIDY_TXT)
 	@$(GNUECHO) +++ summarize clang-tidy results
 	@$(GNUECHO) +++ concatenate $(PATH_TMP)/*.tidy_txt to $(PATH_TMP)/all.tidy_txt
 	@$(CAT) $(PATH_TMP)/*.tidy_txt > $(PATH_TMP)/all.tidy_txt
+	@$(GNUECHO)
+	@$(GNUECHO) +++ verify existence of $(PATH_TMP)/all.tidy_txt
+	@$(LS) -la $(PATH_TMP)/all.tidy_txt
 	@$(GNUECHO)
 	@$(GNUECHO) +++ print summary of tidy from $(PATH_TMP)/all.tidy_txt:
 	@-$(SED) -n l $(PATH_TMP)/all.tidy_txt
