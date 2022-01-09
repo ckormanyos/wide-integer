@@ -333,7 +333,7 @@
       other.elems      = tmp_elems;
     }
 
-  protected:
+  private:
     mutable size_type elem_count;
     pointer           elems;
   };
