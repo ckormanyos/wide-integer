@@ -782,6 +782,8 @@
   } // namespace wide_integer
   } // namespace math
 
+  WIDE_INTEGER_NAMESPACE_END
+
   namespace std
   {
     // Forward declaration of specialization of std::numeric_limits<uintwide_t>.
@@ -3909,6 +3911,8 @@
 
   } // namespace wide_integer
   } // namespace math
+
+  WIDE_INTEGER_NAMESPACE_END
 
   namespace std
   {
