@@ -12,10 +12,11 @@
 #include <examples/example_uintwide_t.h>
 #include <math/wide_integer/uintwide_t.h>
 
-namespace
+namespace local_random
 {
-  template<typename LimbType, typename AllocatorType = void>
-  bool generate()
+  template<typename LimbType,
+           typename AllocatorType = void>
+  auto generate() -> bool
   {
     using random_engine_type = std::mersenne_twister_engine<std::uint64_t,
                                                             64,
@@ -36,7 +37,8 @@ namespace
     using distribution_type  = math::wide_integer::uniform_int_distribution<wide_integer_type::my_width2, typename wide_integer_type::limb_type>;
 
     // Generate a random number with wide_integer_type having limbs of type LimbType.
-    random_engine_type generator;
+    // Purosely use the default seed.
+    random_engine_type generator; // NOLINT(cert-msc32-c,cert-msc51-cpp)
 
     distribution_type distribution;
 
@@ -47,13 +49,13 @@ namespace
 
     return result_is_ok;
   }
-}
+} // namespace local_random
 
-bool math::wide_integer::example007_random_generator()
+auto math::wide_integer::example007_random_generator() -> bool
 {
-  const bool result_08_is_ok = generate<std::uint8_t> ();
-  const bool result_16_is_ok = generate<std::uint16_t>();
-  const bool result_32_is_ok = generate<std::uint32_t>();
+  const bool result_08_is_ok = local_random::generate<std::uint8_t> ();
+  const bool result_16_is_ok = local_random::generate<std::uint16_t>();
+  const bool result_32_is_ok = local_random::generate<std::uint32_t>();
 
   const bool result_is_ok = (   result_08_is_ok
                              && result_16_is_ok

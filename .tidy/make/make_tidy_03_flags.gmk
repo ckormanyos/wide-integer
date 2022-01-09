@@ -1,0 +1,23 @@
+# ------------------------------------------------------------------------------
+#  Copyright Christopher Kormanyos 2022.
+#  Distributed under the Boost Software License,
+#  Version 1.0. (See accompanying file LICENSE_1_0.txt
+#  or copy at http://www.boost.org/LICENSE_1_0.txt)
+# ------------------------------------------------------------------------------
+
+BOOST_ROOT_FOR_TIDY = /mnt/c/boost/boost_1_78_0
+
+ifneq ($(MY_BOOST_ROOT),)
+BOOST_ROOT_FOR_TIDY := $(MY_BOOST_ROOT)
+endif
+
+C_DEFINES    = WIDE_INTEGER_HAS_MUL_8_BY_8_UNROLL
+
+C_INCLUDES   = $(PATH_SRC)                                \
+               $(BOOST_ROOT_FOR_TIDY)
+
+C_DEFINES   :=$(addprefix -D,$(C_DEFINES))
+C_INCLUDES  :=$(addprefix -I,$(C_INCLUDES))
+
+TIDY_FLAGS   = --header-filter=uintwide_t                 \
+               -checks=*,-fuchsia-*,-llvmlibc-*,-llvm-header-guard,-readability-identifier-naming,-readability-avoid-const-params-in-decls,-cppcoreguidelines-avoid-magic-numbers,-readability-magic-numbers,-altera-struct-pack-align

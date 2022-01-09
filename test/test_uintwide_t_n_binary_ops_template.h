@@ -5,8 +5,8 @@
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
 
-#ifndef TEST_UINTWIDE_T_N_BINARY_OPS_TEMPLATE_2019_12_19_H_
-  #define TEST_UINTWIDE_T_N_BINARY_OPS_TEMPLATE_2019_12_19_H_
+#ifndef TEST_UINTWIDE_T_N_BINARY_OPS_TEMPLATE_2019_12_19_H
+  #define TEST_UINTWIDE_T_N_BINARY_OPS_TEMPLATE_2019_12_19_H
 
   #include <algorithm>
   #include <atomic>
@@ -19,7 +19,7 @@
   template<const math::wide_integer::size_t MyDigits2,
            typename MyLimbType = std::uint32_t,
            typename AllocatorType = void>
-  class test_uintwide_t_n_binary_ops_template : public test_uintwide_t_n_binary_ops_base
+  class test_uintwide_t_n_binary_ops_template : public test_uintwide_t_n_binary_ops_base // NOLINT(cppcoreguidelines-special-member-functions,hicpp-special-member-functions)
   {
   private:
     static constexpr math::wide_integer::size_t digits2 = MyDigits2;
@@ -36,18 +36,18 @@
     using local_uint_type = math::wide_integer::uintwide_t<digits2, local_limb_type, AllocatorType>;
 
   public:
-    test_uintwide_t_n_binary_ops_template(const std::size_t count)
+    explicit test_uintwide_t_n_binary_ops_template(const std::size_t count)
       : test_uintwide_t_n_binary_ops_base(count),
         a_local(),
         b_local(),
         a_boost(),
         b_boost() { }
 
-    virtual ~test_uintwide_t_n_binary_ops_template() = default;
+    ~test_uintwide_t_n_binary_ops_template() override = default;
 
-    virtual math::wide_integer::size_t get_digits2() const { return digits2; }
+    auto get_digits2() const -> math::wide_integer::size_t override { return digits2; }
 
-    virtual void initialize()
+    void initialize() override
     {
       a_local.clear();
       b_local.clear();
@@ -65,7 +65,7 @@
       get_equal_random_test_values_boost_and_local_n<local_uint_type, boost_uint_type, AllocatorType>(b_local.data(), b_boost.data(), size());
     }
 
-    virtual bool test_binary_add() const
+    auto test_binary_add() const -> bool override
     {
       bool result_is_ok = true;
 
@@ -92,7 +92,7 @@
       return result_is_ok;
     }
 
-    virtual bool test_binary_sub() const
+    auto test_binary_sub() const -> bool override
     {
       bool result_is_ok = true;
 
@@ -119,7 +119,7 @@
       return result_is_ok;
     }
 
-    virtual bool test_binary_mul() const
+    auto test_binary_mul() const -> bool override
     {
       bool result_is_ok = true;
 
@@ -146,11 +146,11 @@
       return result_is_ok;
     }
 
-    virtual bool test_binary_div() const
+    auto test_binary_div() const -> bool override
     {
       std::atomic_flag test_lock = ATOMIC_FLAG_INIT;
 
-      my_gen.seed(static_cast<typename random_generator_type::result_type>(std::clock()));
+      my_gen().seed(static_cast<typename random_generator_type::result_type>(std::clock()));
       std::uniform_int_distribution<> dis(1, static_cast<int>(digits2 - 1U));
 
       bool result_is_ok = true;
@@ -162,7 +162,7 @@
         [&result_is_ok, this, &dis, &test_lock](std::size_t i)
         {
           while(test_lock.test_and_set()) { ; }
-          const std::size_t right_shift_amount = static_cast<std::size_t>(dis(my_gen));
+          const auto right_shift_amount = static_cast<std::size_t>(dis(my_gen()));
           test_lock.clear();
 
           const boost_uint_type c_boost = a_boost[i] / (std::max)(boost_uint_type(1U), boost_uint_type(b_boost[i] >> right_shift_amount));
@@ -180,11 +180,11 @@
       return result_is_ok;
     }
 
-    virtual bool test_binary_mod() const
+    auto test_binary_mod() const -> bool override
     {
       std::atomic_flag test_lock = ATOMIC_FLAG_INIT;
 
-      my_gen.seed(static_cast<typename random_generator_type::result_type>(std::clock()));
+      my_gen().seed(static_cast<typename random_generator_type::result_type>(std::clock()));
       std::uniform_int_distribution<> dis(1, static_cast<int>(digits2 - 1U));
 
       bool result_is_ok = true;
@@ -196,7 +196,7 @@
         [&result_is_ok, this, &dis, &test_lock](std::size_t i)
         {
           while(test_lock.test_and_set()) { ; }
-          const std::size_t right_shift_amount = static_cast<std::size_t>(dis(my_gen));
+          const auto right_shift_amount = static_cast<std::size_t>(dis(my_gen()));
           test_lock.clear();
 
           const boost_uint_type c_boost = a_boost[i] % (std::max)(boost_uint_type(1U), boost_uint_type(b_boost[i] >> right_shift_amount));
@@ -214,7 +214,7 @@
       return result_is_ok;
     }
 
-    virtual bool test_binary_sqrt() const
+    auto test_binary_sqrt() const -> bool override
     {
       bool result_is_ok = true;
 
@@ -249,4 +249,4 @@
     std::vector<boost_uint_type> b_boost;
   };
 
-#endif // TEST_UINTWIDE_T_N_BINARY_OPS_TEMPLATE_2019_12_19_H_
+#endif // TEST_UINTWIDE_T_N_BINARY_OPS_TEMPLATE_2019_12_19_H

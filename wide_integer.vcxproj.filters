@@ -32,6 +32,12 @@
     <Filter Include="Source Files\math\wide_integer">
       <UniqueIdentifier>{8460bf03-d727-4c68-8f29-e2acf7b95386}</UniqueIdentifier>
     </Filter>
+    <Filter Include=".tidy">
+      <UniqueIdentifier>{ceebef52-f03f-4437-8256-8bf8301cf498}</UniqueIdentifier>
+    </Filter>
+    <Filter Include=".tidy\make">
+      <UniqueIdentifier>{c8663027-03cc-43d3-a3bc-927bbbdb3b3f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="boost\multiprecision\uintwide_t_backend.hpp">
@@ -168,6 +174,15 @@
       <Filter>_doc</Filter>
     </None>
     <None Include=".clang-tidy" />
+    <None Include=".tidy\make\make_tidy_01_generic.gmk">
+      <Filter>.tidy\make</Filter>
+    </None>
+    <None Include=".tidy\make\make_tidy_02_files.gmk">
+      <Filter>.tidy\make</Filter>
+    </None>
+    <None Include=".tidy\make\make_tidy_03_flags.gmk">
+      <Filter>.tidy\make</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Text Include="examples\CMakeLists.txt">

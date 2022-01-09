@@ -33,7 +33,7 @@ namespace local_rsa
     using crypto_alloc   = typename std::allocator_traits<allocator_type>::template rebind_alloc<crypto_char>;
     using crypto_string  = math::wide_integer::detail::dynamic_array<crypto_char, crypto_alloc>;
 
-    typedef struct private_key_type
+    typedef struct private_key_type // NOLINT(modernize-use-using)
     {
       my_uintwide_t s;
       my_uintwide_t p;
@@ -41,7 +41,7 @@ namespace local_rsa
     }
     private_key_type;
 
-    typedef struct public_key_type
+    typedef struct public_key_type // NOLINT(modernize-use-using)
     {
       my_uintwide_t r;
       my_uintwide_t m;
@@ -53,10 +53,10 @@ namespace local_rsa
     struct euclidean
     {
       template<typename IntegerType>
-      static IntegerType extended_euclidean(const IntegerType& a,
-                                            const IntegerType& b,
-                                                  IntegerType* x,
-                                                  IntegerType* y)
+      static auto extended_euclidean(const IntegerType& a, // NOLINT(misc-no-recursion)
+                                     const IntegerType& b,
+                                           IntegerType* x,
+                                           IntegerType* y) -> IntegerType
       {
         // Recursive extended Euclidean algorithm.
         using local_integer_type = IntegerType;
@@ -72,7 +72,7 @@ namespace local_rsa
         local_integer_type tmp_x;
         local_integer_type tmp_y;
 
-        const local_integer_type gcd_ext = extended_euclidean(b % a, a, &tmp_x, &tmp_y);
+        local_integer_type gcd_ext = extended_euclidean(b % a, a, &tmp_x, &tmp_y);
 
         *x = tmp_y - ((b / a) * tmp_x);
         *y = tmp_x;
@@ -84,7 +84,7 @@ namespace local_rsa
     class encryptor
     {
     public:
-      encryptor(const public_key_type& key) : public_key(key) { }
+      explicit encryptor(const public_key_type& key) : public_key(key) { }
 
       template<typename InputIterator,
                typename OutputIterator>
@@ -103,7 +103,7 @@ namespace local_rsa
     class decryptor
     {
     public:
-      decryptor(const private_key_type& key) : private_key(key) { }
+      explicit decryptor(const private_key_type& key) : private_key(key) { }
 
       template<typename InputIterator,
                typename OutputIterator>
@@ -115,7 +115,7 @@ namespace local_rsa
         {
           const my_uintwide_t tmp = powm(*it, private_key.s, private_key.q * private_key.p);
 
-          *cypher_out++ = static_cast<typename std::iterator_traits<OutputIterator>::value_type>((limb_type) tmp);
+          *cypher_out++ = static_cast<typename std::iterator_traits<OutputIterator>::value_type>(static_cast<limb_type>(tmp));
         }
       }
 
@@ -131,15 +131,15 @@ namespace local_rsa
                                       public_key (other.public_key),
                                       private_key(other.private_key) { }
 
-    rsa_base(rsa_base&& other) : my_p       ((my_uintwide_t&&) other.my_p),
-                                 my_q       ((my_uintwide_t&&) other.my_q),
-                                 my_r       ((my_uintwide_t&&) other.my_r),
-                                 my_m       ((my_uintwide_t&&) other.my_m),
-                                 phi_of_m   ((my_uintwide_t&&) other.phi_of_m),
-                                 public_key ((public_key_type&&)     other.public_key),
-                                 private_key((private_key_type&&)    other.private_key) { }
+    rsa_base(rsa_base&& other) noexcept : my_p       (static_cast<my_uintwide_t&&   >(other.my_p)),
+                                          my_q       (static_cast<my_uintwide_t&&   >(other.my_q)),
+                                          my_r       (static_cast<my_uintwide_t&&   >(other.my_r)),
+                                          my_m       (static_cast<my_uintwide_t&&   >(other.my_m)),
+                                          phi_of_m   (static_cast<my_uintwide_t&&   >(other.phi_of_m)),
+                                          public_key (static_cast<public_key_type&& >(other.public_key)),
+                                          private_key(static_cast<private_key_type&&>(other.private_key)) { }
 
-    rsa_base& operator=(const rsa_base& other)
+    auto operator=(const rsa_base& other) -> rsa_base&
     {
       if(this != &other)
       {
@@ -155,28 +155,28 @@ namespace local_rsa
       return *this;
     }
 
-    rsa_base& operator=(rsa_base&& other)
+    auto operator=(rsa_base&& other) noexcept -> rsa_base&
     {
-      my_p        = (my_uintwide_t&&) other.my_p;
-      my_q        = (my_uintwide_t&&) other.my_q;
-      my_r        = (my_uintwide_t&&) other.my_r;
-      my_m        = (my_uintwide_t&&) other.my_m;
-      phi_of_m    = (my_uintwide_t&&) other.phi_of_m;
-      public_key  = (public_key_type&&)     other.public_key;
-      private_key = (private_key_type&&)    other.private_key;
+      my_p        = static_cast<my_uintwide_t&&   >(other.my_p);
+      my_q        = static_cast<my_uintwide_t&&   >(other.my_q);
+      my_r        = static_cast<my_uintwide_t&&   >(other.my_r);
+      my_m        = static_cast<my_uintwide_t&&   >(other.my_m);
+      phi_of_m    = static_cast<my_uintwide_t&&   >(other.phi_of_m);
+      public_key  = static_cast<public_key_type&& >(other.public_key);
+      private_key = static_cast<private_key_type&&>(other.private_key);
 
       return *this;
     }
 
-    const public_key_type&  getPublicKey () const { return public_key; }
-    const private_key_type& getPrivateKey() const { return private_key; }
+    auto getPublicKey () const -> const public_key_type&  { return public_key; }
+    auto getPrivateKey() const -> const private_key_type& { return private_key; }
 
-    const crypto_char& get_p() const { return getPrivateKey().p; }
-    const crypto_char& get_q() const { return getPrivateKey().q; }
-    const crypto_char& get_d() const { return getPrivateKey().s; }
-    const crypto_char& get_n() const { return getPublicKey().m; }
+    auto get_p() const -> const crypto_char& { return getPrivateKey().p; }
+    auto get_q() const -> const crypto_char& { return getPrivateKey().q; }
+    auto get_d() const -> const crypto_char& { return getPrivateKey().s; }
+    auto get_n() const -> const crypto_char& { return getPublicKey().m; }
 
-    crypto_string encrypt(const std::string& str) const
+    auto encrypt(const std::string& str) const -> crypto_string
     {
       crypto_string str_out(str.length());
 
@@ -185,7 +185,7 @@ namespace local_rsa
       return str_out;
     }
 
-    std::string decrypt(const crypto_string& str) const
+    auto decrypt(const crypto_string& str) const -> std::string
     {
       std::string res(str.size(), char('\0'));
 
@@ -195,8 +195,8 @@ namespace local_rsa
     }
 
     template<typename RandomEngineType = std::minstd_rand>
-    static bool is_prime(const my_uintwide_t& p,
-                         const RandomEngineType& generator = RandomEngineType(static_cast<typename RandomEngineType::result_type>(std::clock())))
+    static auto is_prime(const my_uintwide_t& p,
+                         const RandomEngineType& generator = RandomEngineType(static_cast<typename RandomEngineType::result_type>(std::clock()))) -> bool
     {
       using local_distribution_type =
         ::math::wide_integer::uniform_int_distribution< :: math::wide_integer::size_t(bit_count), limb_type, allocator_type>;
@@ -210,24 +210,26 @@ namespace local_rsa
       return miller_rabin_result_is_ok;
     }
 
-  protected:
-    my_uintwide_t my_p;
-    my_uintwide_t my_q;
-    my_uintwide_t my_r;
-    my_uintwide_t my_m;
-    my_uintwide_t phi_of_m;
-    public_key_type     public_key;
-    private_key_type    private_key;
+    rsa_base() = delete;
 
-    rsa_base(const my_uintwide_t& p_in,
-              const my_uintwide_t& q_in,
-              const my_uintwide_t& r_in) : my_p       (p_in),
-                                          my_q       (q_in),
-                                          my_r       (r_in),
-                                          my_m       (my_p * my_q),
-                                          phi_of_m   (),
-                                          public_key (),
-                                          private_key()
+  protected:
+    my_uintwide_t    my_p;        // NOLINT(cppcoreguidelines-non-private-member-variables-in-classes,misc-non-private-member-variables-in-classes)
+    my_uintwide_t    my_q;        // NOLINT(cppcoreguidelines-non-private-member-variables-in-classes,misc-non-private-member-variables-in-classes)
+    my_uintwide_t    my_r;        // NOLINT(cppcoreguidelines-non-private-member-variables-in-classes,misc-non-private-member-variables-in-classes)
+    my_uintwide_t    my_m;        // NOLINT(cppcoreguidelines-non-private-member-variables-in-classes,misc-non-private-member-variables-in-classes)
+    my_uintwide_t    phi_of_m;    // NOLINT(cppcoreguidelines-non-private-member-variables-in-classes,misc-non-private-member-variables-in-classes)
+    public_key_type  public_key;  // NOLINT(cppcoreguidelines-non-private-member-variables-in-classes,misc-non-private-member-variables-in-classes)
+    private_key_type private_key; // NOLINT(cppcoreguidelines-non-private-member-variables-in-classes,misc-non-private-member-variables-in-classes)
+
+    rsa_base(my_uintwide_t p_in,
+             my_uintwide_t q_in,
+             my_uintwide_t r_in) : my_p       (std::move(p_in)),
+                                   my_q       (std::move(q_in)),
+                                   my_r       (std::move(r_in)),
+                                   my_m       (my_p * my_q),
+                                   phi_of_m   (),
+                                   public_key (),
+                                   private_key()
     {
       public_key = public_key_type { my_r, my_m };
     }
@@ -248,16 +250,14 @@ namespace local_rsa
     }
 
   private:
-    rsa_base() = delete;
-
-    static bool is_neg(const my_uintwide_t& x)
+    static auto is_neg(const my_uintwide_t& x) -> bool
     {
       const bool x_is_neg = ((x & (my_uintwide_t(1U) << (std::numeric_limits<my_uintwide_t>::digits - 1))) != 0);
 
       return x_is_neg;
     }
 
-    static my_uintwide_t make_positive(const my_uintwide_t& numb, const my_uintwide_t& mod)
+    static auto make_positive(const my_uintwide_t& numb, const my_uintwide_t& mod) -> my_uintwide_t
     {
       my_uintwide_t tmp = numb;
 
@@ -293,16 +293,18 @@ namespace local_rsa
 
     rsa_fips(const rsa_fips& other) : base_class_type(other) { }
 
-    rsa_fips(rsa_fips&& other) : base_class_type(other) { }
+    rsa_fips(rsa_fips&& other) noexcept : base_class_type(other) { }
 
-    rsa_fips& operator=(const rsa_fips& other)
+    ~rsa_fips() override = default;
+
+    auto operator=(const rsa_fips& other) -> rsa_fips& // NOLINT(cert-oop54-cpp)
     {
       static_cast<void>(base_class_type::operator=(other));
 
       return *this;
     }
 
-    rsa_fips& operator=(rsa_fips&& other)
+    auto operator=(rsa_fips&& other) noexcept -> rsa_fips&
     {
       static_cast<void>(base_class_type::operator=(other));
 
@@ -319,8 +321,8 @@ namespace local_rsa
 
   public:
     rsa_traditional(const typename base_class_type::my_uintwide_t& p_in,
-             const typename base_class_type::my_uintwide_t& q_in,
-             const typename base_class_type::my_uintwide_t& r_in)
+                    const typename base_class_type::my_uintwide_t& q_in,
+                    const typename base_class_type::my_uintwide_t& r_in)
       : base_class_type(p_in, q_in, r_in)
     {
       const typename base_class_type::my_uintwide_t my_one(1U);
@@ -333,25 +335,27 @@ namespace local_rsa
 
     rsa_traditional(const rsa_traditional& other) : base_class_type(other) { }
 
-    rsa_traditional(rsa_traditional&& other) : base_class_type(other) { }
+    rsa_traditional(rsa_traditional&& other) noexcept : base_class_type(other) { }
 
-    rsa_traditional& operator=(const rsa_traditional& other)
+    virtual ~rsa_traditional() = default;
+
+    auto operator=(const rsa_traditional& other) -> rsa_traditional& // NOLINT(cert-oop54-cpp)
     {
       static_cast<void>(base_class_type::operator=(other));
 
       return *this;
     }
 
-    rsa_traditional& operator=(rsa_traditional&& other)
+    auto operator=(rsa_traditional&& other) noexcept -> rsa_traditional&
     {
       static_cast<void>(base_class_type::operator=(other));
 
       return *this;
     }
   };
-}
+} // namespace local_rsa
 
-bool math::wide_integer::example012_rsa_crypto()
+auto math::wide_integer::example012_rsa_crypto() -> bool
 {
   // Consider lines 25-30 in the file "KeyGen_186-3.rsp".
 

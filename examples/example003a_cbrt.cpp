@@ -10,7 +10,7 @@
 #include <examples/example_uintwide_t.h>
 #include <math/wide_integer/uintwide_t.h>
 
-bool math::wide_integer::example003a_cbrt()
+auto math::wide_integer::example003a_cbrt() -> bool
 {
   using uint11264_t = math::wide_integer::uintwide_t<11264U, std::uint32_t, std::allocator<std::uint32_t>>;
 

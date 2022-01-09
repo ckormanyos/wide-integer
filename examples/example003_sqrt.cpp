@@ -8,7 +8,7 @@
 #include <examples/example_uintwide_t.h>
 #include <math/wide_integer/uintwide_t.h>
 
-bool math::wide_integer::example003_sqrt()
+auto math::wide_integer::example003_sqrt() -> bool
 {
   using math::wide_integer::uint256_t;
 

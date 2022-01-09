@@ -1,4 +1,4 @@
-///////////////////////////////////////////////////////////////////
+﻿///////////////////////////////////////////////////////////////////
 //  Copyright Christopher Kormanyos 2018 - 2020.                 //
 //  Distributed under the Boost Software License,                //
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt          //
@@ -10,14 +10,14 @@
 #include <examples/example_uintwide_t.h>
 #include <math/wide_integer/uintwide_t.h>
 
-bool math::wide_integer::example011_uint24_t()
+auto math::wide_integer::example011_uint24_t() -> bool
 {
   using uint24_t = math::wide_integer::uintwide_t<24U, std::uint8_t>;
 
   using distribution_type  = math::wide_integer::uniform_int_distribution<24U, typename uint24_t::limb_type>;
   using random_engine_type = std::linear_congruential_engine<std::uint32_t, UINT32_C(48271), UINT32_C(0), UINT32_C(2147483647)>;
 
-  random_engine_type generator(UINT32_C(0xDEADBEEF));
+  random_engine_type generator(UINT32_C(0xDEADBEEF)); // NOLINT(cert-msc32-c,cert-msc51-cpp)
 
   distribution_type distribution;
 
@@ -37,10 +37,10 @@ bool math::wide_integer::example011_uint24_t()
                                  && (c_mul == ((a32 * b32) & 0x00FFFFFFULL))
                                  && (c_div == ((a32 / b32) & 0x00FFFFFFULL)))
                              &&
-                                (   ((std::uint64_t) c_add == ((a32 + b32) & 0x00FFFFFFULL))
-                                 && ((std::uint64_t) c_sub == ((a32 - b32) & 0x00FFFFFFULL))
-                                 && ((std::uint64_t) c_mul == ((a32 * b32) & 0x00FFFFFFULL))
-                                 && ((std::uint64_t) c_div == ((a32 / b32) & 0x00FFFFFFULL))));
+                                (   (static_cast<std::uint64_t>(c_add) == ((a32 + b32) & 0x00FFFFFFULL))
+                                 && (static_cast<std::uint64_t>(c_sub) == ((a32 - b32) & 0x00FFFFFFULL))
+                                 && (static_cast<std::uint64_t>(c_mul) == ((a32 * b32) & 0x00FFFFFFULL))
+                                 && (static_cast<std::uint64_t>(c_div) == ((a32 / b32) & 0x00FFFFFFULL))));
 
   return result_is_ok;
 }

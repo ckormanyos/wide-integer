@@ -10,14 +10,14 @@
 #include <examples/example_uintwide_t.h>
 #include <math/wide_integer/uintwide_t.h>
 
-bool math::wide_integer::example010_uint48_t()
+auto math::wide_integer::example010_uint48_t() -> bool
 {
   using uint48_t = math::wide_integer::uintwide_t<48U, std::uint8_t>;
 
   using distribution_type  = math::wide_integer::uniform_int_distribution<48U, typename uint48_t::limb_type>;
   using random_engine_type = std::linear_congruential_engine<std::uint32_t, UINT32_C(48271), UINT32_C(0), UINT32_C(2147483647)>;
 
-  random_engine_type generator(0xF00DCAFEULL);
+  random_engine_type generator(0xF00DCAFEULL); // NOLINT(cert-msc32-c,cert-msc51-cpp)
 
   distribution_type distribution;
 
@@ -37,10 +37,10 @@ bool math::wide_integer::example010_uint48_t()
                                  && (c_mul == ((a64 * b64) & 0x0000FFFFFFFFFFFFULL))
                                  && (c_div == ((a64 / b64) & 0x0000FFFFFFFFFFFFULL)))
                              &&
-                                (   ((std::uint64_t) c_add == ((a64 + b64) & 0x0000FFFFFFFFFFFFULL))
-                                 && ((std::uint64_t) c_sub == ((a64 - b64) & 0x0000FFFFFFFFFFFFULL))
-                                 && ((std::uint64_t) c_mul == ((a64 * b64) & 0x0000FFFFFFFFFFFFULL))
-                                 && ((std::uint64_t) c_div == ((a64 / b64) & 0x0000FFFFFFFFFFFFULL))));
+                                (   (static_cast<std::uint64_t>(c_add) == ((a64 + b64) & 0x0000FFFFFFFFFFFFULL))
+                                 && (static_cast<std::uint64_t>(c_sub) == ((a64 - b64) & 0x0000FFFFFFFFFFFFULL))
+                                 && (static_cast<std::uint64_t>(c_mul) == ((a64 * b64) & 0x0000FFFFFFFFFFFFULL))
+                                 && (static_cast<std::uint64_t>(c_div) == ((a64 / b64) & 0x0000FFFFFFFFFFFFULL))));
 
   return result_is_ok;
 }

@@ -30,16 +30,16 @@
 #include <math/wide_integer/uintwide_t.h>
 #include <test/test_uintwide_t.h>
 
-namespace
+namespace local_float_convert
 {
-  std::mt19937                                                         engine_man;
-  std::ranlux24_base                                                   engine_sgn;
-  std::linear_congruential_engine<std::uint32_t, 48271, 0, 2147483647> engine_e10;
+  auto engine_man() -> std::mt19937&                                                         { static std::mt19937                                                         my_engine_man; return my_engine_man; } // NOLINT(cert-msc32-c,cert-msc51-cpp)
+  auto engine_sgn() -> std::ranlux24_base&                                                   { static std::ranlux24_base                                                   my_engine_sgn; return my_engine_sgn; } // NOLINT(cert-msc32-c,cert-msc51-cpp)
+  auto engine_e10() -> std::linear_congruential_engine<std::uint32_t, 48271, 0, 2147483647>& { static std::linear_congruential_engine<std::uint32_t, 48271, 0, 2147483647> my_engine_e10; return my_engine_e10; } // NOLINT(cert-msc32-c,cert-msc51-cpp)
 
   template<typename FloatingPointType,
            const std::int32_t LoExp10,
            const std::int32_t HiExp10>
-  FloatingPointType get_random_float()
+  auto get_random_float() -> FloatingPointType
   {
     using local_builtin_float_type = FloatingPointType;
 
@@ -66,15 +66,15 @@ namespace
 
     using std::pow;
 
-    const std::int32_t             p10 = dist_e10(engine_e10);
+    const std::int32_t             p10 = dist_e10(engine_e10());
     const local_builtin_float_type e10 = pow(local_builtin_float_type(10.0F),
                                              local_builtin_float_type(p10));
 
-    const local_builtin_float_type a = dist_man(engine_man) * e10;
+    const local_builtin_float_type a = dist_man(engine_man()) * e10;
 
-    const bool is_neg = (dist_sgn(engine_sgn) != 0);
+    const bool is_neg = (dist_sgn(engine_sgn()) != 0);
 
-    const local_builtin_float_type f = ((is_neg == false) ? a : -a);
+    const local_builtin_float_type f = ((!is_neg) ? a : -a);
 
     return f;
   }
@@ -113,9 +113,9 @@ namespace
       9
     );
 
-    const bool is_neg = (dist_sgn(engine_sgn) != 0);
+    const bool is_neg = (dist_sgn(engine_sgn()) != 0);
 
-    const std::string::size_type len = static_cast<std::string::size_type>(dist_len(engine_e10));
+    const auto len = static_cast<std::string::size_type>(dist_len(engine_e10()));
 
     std::string::size_type pos = 0U;
 
@@ -132,20 +132,20 @@ namespace
       str.resize(len);
     }
 
-    str.at(pos) = static_cast<char>(dist_first(engine_man) + 0x30U);
+    str.at(pos) = static_cast<char>(dist_first(engine_man()) + 0x30U);
 
     ++pos;
 
     while(pos < str.length())
     {
-      str.at(pos) = static_cast<char>(dist_following(engine_man) + 0x30U);
+      str.at(pos) = static_cast<char>(dist_following(engine_man()) + 0x30U);
 
       ++pos;
     }
   }
 
   template<typename UnsignedIntegralType>
-  static std::string hexlexical_cast(const UnsignedIntegralType& u)
+  static auto hexlexical_cast(const UnsignedIntegralType& u) -> std::string
   {
     std::stringstream ss;
 
@@ -153,9 +153,9 @@ namespace
 
     return ss.str();
   }
-}
+} // namespace local_float_convert
 
-bool math::wide_integer::test_uintwide_t_float_convert()
+auto math::wide_integer::test_uintwide_t_float_convert() -> bool
 {
   constexpr unsigned digits2 = 256U;
 
@@ -180,57 +180,57 @@ bool math::wide_integer::test_uintwide_t_float_convert()
   using local_uint_type = math::wide_integer::uintwide_t<digits2, local_limb_type, void>;
   using local_sint_type = math::wide_integer::uintwide_t<digits2, local_limb_type, void, true>;
 
-  engine_man.seed(static_cast<typename std::mt19937::result_type>                                                        (std::clock()));
-  engine_sgn.seed(static_cast<typename std::ranlux24_base::result_type>                                                  (std::clock()));
-  engine_e10.seed(static_cast<typename std::linear_congruential_engine<std::uint32_t, 48271, 0, 2147483647>::result_type>(std::clock()));
+  local_float_convert::engine_man().seed(static_cast<typename std::mt19937::result_type>                                                        (std::clock()));
+  local_float_convert::engine_sgn().seed(static_cast<typename std::ranlux24_base::result_type>                                                  (std::clock()));
+  local_float_convert::engine_e10().seed(static_cast<typename std::linear_congruential_engine<std::uint32_t, 48271, 0, 2147483647>::result_type>(std::clock()));
 
   bool result_is_ok = true;
 
-  for(std::size_t i = 0U; i < 0x80000U; ++i)
+  for(auto i = std::size_t(0U); i < std::size_t(0x80000U); ++i)
   {
-    const float f = get_random_float<float, -1, 27>();
+    const auto f = local_float_convert::get_random_float<float, -1, 27>();
 
     boost_sint_type n_boost = boost_sint_type(f);
     local_sint_type n_local = local_sint_type(f);
 
-    const std::string str_boost_signed = hexlexical_cast((boost_uint_type) n_boost);
-    const std::string str_local_signed = hexlexical_cast((local_uint_type) n_local);
+    const std::string str_boost_signed = local_float_convert::hexlexical_cast(static_cast<boost_uint_type>(n_boost));
+    const std::string str_local_signed = local_float_convert::hexlexical_cast(static_cast<local_uint_type>(n_local));
 
     result_is_ok &= (str_boost_signed == str_local_signed);
   }
 
-  for(std::size_t i = 0U; i < 0x80000U; ++i)
+  for(auto i = std::size_t(0U); i < std::size_t(0x80000U); ++i)
   {
-    const double d = get_random_float<double, -1, 75>();
+    const auto d = local_float_convert::get_random_float<double, -1, 75>();
 
     boost_sint_type n_boost = boost_sint_type(d);
     local_sint_type n_local = local_sint_type(d);
 
-    const std::string str_boost_signed = hexlexical_cast((boost_uint_type) n_boost);
-    const std::string str_local_signed = hexlexical_cast((local_uint_type) n_local);
+    const std::string str_boost_signed = local_float_convert::hexlexical_cast(static_cast<boost_uint_type>(n_boost));
+    const std::string str_local_signed = local_float_convert::hexlexical_cast(static_cast<local_uint_type>(n_local));
 
     result_is_ok &= (str_boost_signed == str_local_signed);
   }
 
-  engine_man.seed(static_cast<typename std::mt19937::result_type>                                                        (std::clock()));
-  engine_sgn.seed(static_cast<typename std::ranlux24_base::result_type>                                                  (std::clock()));
-  engine_e10.seed(static_cast<typename std::linear_congruential_engine<std::uint32_t, 48271, 0, 2147483647>::result_type>(std::clock()));
+  local_float_convert::engine_man().seed(static_cast<typename std::mt19937::result_type>                                                        (std::clock()));
+  local_float_convert::engine_sgn().seed(static_cast<typename std::ranlux24_base::result_type>                                                  (std::clock()));
+  local_float_convert::engine_e10().seed(static_cast<typename std::linear_congruential_engine<std::uint32_t, 48271, 0, 2147483647>::result_type>(std::clock()));
 
-  for(std::size_t i = 0U; i < 0x100000U; ++i)
+  for(auto i = std::size_t(0U); i < std::size_t(0x100000U); ++i)
   {
     std::string str_digits;
 
-    get_random_digit_string<31U>(str_digits);
+    local_float_convert::get_random_digit_string<31U>(str_digits);
 
     const boost_sint_type n_boost = boost_sint_type(str_digits.c_str());
     const local_sint_type n_local = local_sint_type(str_digits.c_str());
 
-    const float f_boost = (float) n_boost;
-    const float f_local = (float) n_local;
+    const auto f_boost = static_cast<float>(n_boost);
+    const auto f_local = static_cast<float>(n_local);
 
     using std::fabs;
 
-    constexpr float cast_tol_float = float(std::numeric_limits<float>::epsilon() * 2.0F);
+    constexpr auto cast_tol_float = float(std::numeric_limits<float>::epsilon() * 2.0F);
 
     const float closeness      = fabs(1.0F - fabs(f_boost / f_local));
     const bool  result_f_is_ok = (closeness < cast_tol_float);
@@ -238,21 +238,21 @@ bool math::wide_integer::test_uintwide_t_float_convert()
     result_is_ok &= result_f_is_ok;
   }
 
-  for(std::size_t i = 0U; i < 0x40000U; ++i)
+  for(auto i = std::size_t(0U); i < std::size_t(0x40000U); ++i)
   {
     std::string str_digits;
 
-    get_random_digit_string<71U>(str_digits);
+    local_float_convert::get_random_digit_string<71U>(str_digits);
 
     const boost_sint_type n_boost = boost_sint_type(str_digits.c_str());
     const local_sint_type n_local = local_sint_type(str_digits.c_str());
 
-    const double d_boost = (double) n_boost;
-    const double d_local = (double) n_local;
+    const auto d_boost = static_cast<double>(n_boost);
+    const auto d_local = static_cast<double>(n_local);
 
     using std::fabs;
 
-    constexpr double cast_tol_double = double(std::numeric_limits<double>::epsilon() * 2.0);
+    constexpr auto cast_tol_double = double(std::numeric_limits<double>::epsilon() * 2.0);
 
     const double closeness      = fabs(1.0 - fabs(d_boost / d_local));
     const bool   result_f_is_ok = (closeness < cast_tol_double);

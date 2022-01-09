@@ -29,12 +29,12 @@
 
 #include <boost/multiprecision/miller_rabin.hpp>
 #include <boost/multiprecision/uintwide_t_backend.hpp>
-#include <boost/random/mersenne_twister.hpp>
 #include <boost/random/independent_bits.hpp>
+#include <boost/random/mersenne_twister.hpp>
 
 #include <examples/example_uintwide_t.h>
 
-bool math::wide_integer::example008a_miller_rabin_prime()
+auto math::wide_integer::example008a_miller_rabin_prime() -> bool
 {
   using wide_integer_type = boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<512U>,
                                                           boost::multiprecision::et_off>;

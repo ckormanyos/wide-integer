@@ -5,8 +5,8 @@
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
 
-#ifndef TEST_UINTWIDE_T_N_BINARY_OPS_MUL_N_BY_M_TEMPLATE_2019_12_26_H_
-  #define TEST_UINTWIDE_T_N_BINARY_OPS_MUL_N_BY_M_TEMPLATE_2019_12_26_H_
+#ifndef TEST_UINTWIDE_T_N_BINARY_OPS_MUL_N_BY_M_TEMPLATE_2019_12_26_H
+  #define TEST_UINTWIDE_T_N_BINARY_OPS_MUL_N_BY_M_TEMPLATE_2019_12_26_H
 
   #include <atomic>
 
@@ -15,15 +15,15 @@
   template<const math::wide_integer::size_t MyDigits2A,
            const math::wide_integer::size_t MyDigits2B,
            typename MyLimbType = std::uint32_t>
-  class test_uintwide_t_n_binary_ops_mul_n_by_m_template : public test_uintwide_t_n_binary_ops_base
+  class test_uintwide_t_n_binary_ops_mul_n_by_m_template : public test_uintwide_t_n_binary_ops_base // NOLINT(cppcoreguidelines-special-member-functions,hicpp-special-member-functions)
   {
   private:
     static constexpr math::wide_integer::size_t digits2a = MyDigits2A;
     static constexpr math::wide_integer::size_t digits2b = MyDigits2B;
 
-            math::wide_integer::size_t get_digits2a() const { return digits2a; }
-            math::wide_integer::size_t get_digits2b() const { return digits2b; }
-    virtual math::wide_integer::size_t get_digits2 () const { return digits2a + digits2b; }
+    auto get_digits2a() const -> math::wide_integer::size_t          { return digits2a; }
+    auto get_digits2b() const -> math::wide_integer::size_t          { return digits2b; }
+    auto get_digits2 () const -> math::wide_integer::size_t override { return digits2a + digits2b; }
 
     using boost_uint_backend_a_type =
       boost::multiprecision::cpp_int_backend<digits2a,
@@ -51,16 +51,16 @@
     using local_uint_c_type = math::wide_integer::uintwide_t<digits2a + digits2b, local_limb_type>;
 
   public:
-    test_uintwide_t_n_binary_ops_mul_n_by_m_template(const std::size_t count)
+    explicit test_uintwide_t_n_binary_ops_mul_n_by_m_template(const std::size_t count)
       : test_uintwide_t_n_binary_ops_base(count),
         a_local(),
         b_local(),
         a_boost(),
         b_boost() { }
 
-    virtual ~test_uintwide_t_n_binary_ops_mul_n_by_m_template() = default;
+    ~test_uintwide_t_n_binary_ops_mul_n_by_m_template() override = default;
 
-    virtual bool do_test(const std::size_t rounds)
+    auto do_test(const std::size_t rounds) -> bool override
     {
       bool result_is_ok = true;
 
@@ -76,7 +76,7 @@
       return result_is_ok;
     }
 
-    virtual void initialize()
+    void initialize() override
     {
       a_local.clear();
       b_local.clear();
@@ -94,7 +94,7 @@
       get_equal_random_test_values_boost_and_local_n(b_local.data(), b_boost.data(), size());
     }
 
-    virtual bool test_binary_mul() const
+    auto test_binary_mul() const -> bool override
     {
       bool result_is_ok = true;
 
@@ -132,4 +132,4 @@
     std::vector<boost_uint_b_type> b_boost;
   };
 
-#endif // TEST_UINTWIDE_T_N_BINARY_OPS_MUL_N_BY_M_TEMPLATE_2019_12_26_H_
+#endif // TEST_UINTWIDE_T_N_BINARY_OPS_MUL_N_BY_M_TEMPLATE_2019_12_26_H

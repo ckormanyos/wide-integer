@@ -24,9 +24,9 @@
 
 #include <test/test_uintwide_t.h>
 
-typedef boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<1024U>,
-                                      boost::multiprecision::et_off>
-local_uint_type;
+using local_uint_type =
+  boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<1024U>,
+                                boost::multiprecision::et_off>;
 
 using boost_uint_backend_type =
   boost::multiprecision::cpp_int_backend<1024,
@@ -36,7 +36,7 @@ using boost_uint_backend_type =
 using boost_uint_type = boost::multiprecision::number<boost_uint_backend_type,
                                                       boost::multiprecision::et_off>;
 
-bool math::wide_integer::test_uintwide_t_boost_backend()
+auto math::wide_integer::test_uintwide_t_boost_backend() -> bool
 {
   bool result_is_ok = true;
 
