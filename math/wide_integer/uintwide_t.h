@@ -441,8 +441,6 @@
 
   #endif
 
-  // NOLINTBEGIN(*-avoid-magic-numbers)
-
   namespace math { namespace wide_integer {
 
   namespace detail {
@@ -452,11 +450,9 @@
   using size_t    = std::uint32_t;
   using ptrdiff_t = std::int32_t;
 
-  // BEGINNOLINT
   static_assert((  (std::numeric_limits<size_t>::digits        >= 16)
                 && (std::numeric_limits<ptrdiff_t>::digits + 1 >= 16)),
                 "Error: size type and pointer difference type must be at least 16 bits in width (or wider)");
-  // ENDNOLINT
 
   template<const size_t Width2> struct verify_power_of_two // NOLINT(altera-struct-pack-align)
   {
