@@ -24,6 +24,11 @@ namespace local
 
     const auto a0(x);
 
+    #if defined(__clang__)
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wself-assign-overloaded"
+    #endif
+
     {
       local_unknown_integer_type a = a0; a += a; // NOLINT(clang-diagnostic-self-assign-overloaded)
 
@@ -41,6 +46,10 @@ namespace local
 
       local_result_is_ok &= (a == 1U);
     }
+
+    #if defined(__clang__)
+    #pragma GCC diagnostic pop
+    #endif
 
     return local_result_is_ok;
   }
