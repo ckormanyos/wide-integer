@@ -47,10 +47,10 @@
 
       pool.reserve(number_of_threads);
 
-      index_type i1 = start;
-      index_type i2 = (std::min)(index_type(start + slice), end);
+      auto i1 = start;
+      auto i2 = (std::min)(index_type(start + slice), end);
 
-      for(unsigned i = 0U; ((index_type(i + 1) < number_of_threads) && (i1 < end)); ++i)
+      for(auto i = static_cast<index_type>(0U); ((static_cast<index_type>(i + 1) < static_cast<index_type>(number_of_threads)) && (i1 < end)); ++i)
       {
         pool.emplace_back(launch_range, i1, i2);
 
@@ -81,7 +81,7 @@
                         index_type             end,
                         callable_function_type sequential_function)
     {
-      for(index_type i = start; i < end; i++)
+      for(index_type i = start; i < end; ++i)
       {
         sequential_function(i);
       }
