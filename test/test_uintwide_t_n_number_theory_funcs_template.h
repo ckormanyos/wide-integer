@@ -5,7 +5,7 @@
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
 
-#ifndef TEST_UINTWIDE_T_N_NUMBER_THEORY_FUNCS_TEMPLATE_2019_12_29_H
+#ifndef TEST_UINTWIDE_T_N_NUMBER_THEORY_FUNCS_TEMPLATE_2019_12_29_H // NOLINT(llvm-header-guard)
   #define TEST_UINTWIDE_T_N_NUMBER_THEORY_FUNCS_TEMPLATE_2019_12_29_H
 
   #include <test/test_uintwide_t_n_base.h>

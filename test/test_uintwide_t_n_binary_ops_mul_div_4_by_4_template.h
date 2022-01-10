@@ -5,7 +5,7 @@
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
 
-#ifndef TEST_UINTWIDE_T_N_BINARY_OPS_MUL_DIV_4_BY_4_TEMPLATE_2021_03_04_H
+#ifndef TEST_UINTWIDE_T_N_BINARY_OPS_MUL_DIV_4_BY_4_TEMPLATE_2021_03_04_H // NOLINT(llvm-header-guard)
   #define TEST_UINTWIDE_T_N_BINARY_OPS_MUL_DIV_4_BY_4_TEMPLATE_2021_03_04_H
 
   #include <atomic>

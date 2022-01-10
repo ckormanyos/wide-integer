@@ -1,4 +1,4 @@
-///////////////////////////////////////////////////////////////////
+﻿///////////////////////////////////////////////////////////////////
 //  Copyright Christopher Kormanyos 2021.                        //
 //  Distributed under the Boost Software License,                //
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt          //
@@ -231,7 +231,7 @@ namespace local_rsa
                                    public_key (),
                                    private_key()
     {
-      public_key = public_key_type { my_r, my_m };
+      public_key = public_key_type { my_r, my_m }; // NOLINT(cppcoreguidelines-prefer-member-initializer)
     }
 
     void calculate_private_key()

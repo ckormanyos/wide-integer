@@ -5,7 +5,7 @@
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
 
-#ifndef TEST_UINTWIDE_T_N_BINARY_OPS_TEMPLATE_SIGNED_2021_06_05_H
+#ifndef TEST_UINTWIDE_T_N_BINARY_OPS_TEMPLATE_SIGNED_2021_06_05_H // NOLINT(llvm-header-guard)
   #define TEST_UINTWIDE_T_N_BINARY_OPS_TEMPLATE_SIGNED_2021_06_05_H
 
   #include <algorithm>
