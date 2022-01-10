@@ -22,7 +22,7 @@ auto math::wide_integer::example001_mul_div() -> bool
                                               && (std::uint_fast8_t(d) == 10U));
 
   #if defined(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST) && (WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST != 0)
-  static_assert(result_is_ok == true, "Error: example001_mul_div not OK!");
+  static_assert(result_is_ok, "Error: example001_mul_div not OK!");
   #endif
 
   return result_is_ok;

@@ -253,15 +253,15 @@
     }
 
   private:
-    std::vector<local_uint_type> a_local;
-    std::vector<local_uint_type> b_local;
-    std::vector<local_sint_type> a_local_signed;
-    std::vector<local_sint_type> b_local_signed;
+    std::vector<local_uint_type> a_local;        // NOLINT(readability-identifier-naming)
+    std::vector<local_uint_type> b_local;        // NOLINT(readability-identifier-naming)
+    std::vector<local_sint_type> a_local_signed; // NOLINT(readability-identifier-naming)
+    std::vector<local_sint_type> b_local_signed; // NOLINT(readability-identifier-naming)
 
-    std::vector<boost_uint_type> a_boost;
-    std::vector<boost_uint_type> b_boost;
-    std::vector<boost_sint_type> a_boost_signed;
-    std::vector<boost_sint_type> b_boost_signed;
+    std::vector<boost_uint_type> a_boost;        // NOLINT(readability-identifier-naming)
+    std::vector<boost_uint_type> b_boost;        // NOLINT(readability-identifier-naming)
+    std::vector<boost_sint_type> a_boost_signed; // NOLINT(readability-identifier-naming)
+    std::vector<boost_sint_type> b_boost_signed; // NOLINT(readability-identifier-naming)
   };
 
 
@@ -572,11 +572,11 @@
     static std::uniform_int_distribution<> my_distrib_0_to_63;     // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
     static std::uniform_int_distribution<> my_distrib_1_to_0xFFFF; // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
 
-    std::vector<local_sint_type> a_local_signed;
-    std::vector<local_sint_type> b_local_signed;
+    std::vector<local_sint_type> a_local_signed; // NOLINT(readability-identifier-naming)
+    std::vector<local_sint_type> b_local_signed; // NOLINT(readability-identifier-naming)
 
-    std::vector<native_sint_type> a_native_signed;
-    std::vector<native_sint_type> b_native_signed;
+    std::vector<native_sint_type> a_native_signed; // NOLINT(readability-identifier-naming)
+    std::vector<native_sint_type> b_native_signed; // NOLINT(readability-identifier-naming)
   };
 
   template<typename AllocatorType> std::minstd_rand                test_uintwide_t_n_binary_ops_template_signed<64U, std::uint16_t, AllocatorType>::my_eng;                                                // NOLINT(cppcoreguidelines-avoid-non-const-global-variables,cert-err58-cpp,cert-msc32-c,cert-msc51-cpp)

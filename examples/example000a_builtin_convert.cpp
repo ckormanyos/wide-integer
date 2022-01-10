@@ -29,7 +29,7 @@ auto math::wide_integer::example000a_builtin_convert() -> bool
     WIDE_INTEGER_CONSTEXPR bool result_n_is_ok = (n == -1234567);
 
     #if defined(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST) && (WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST != 0)
-    static_assert(result_n_is_ok == true, "Error: example000a_builtin_convert not OK!");
+    static_assert(result_n_is_ok, "Error: example000a_builtin_convert not OK!");
     #endif
 
     result_is_ok &= result_n_is_ok;
@@ -46,7 +46,7 @@ auto math::wide_integer::example000a_builtin_convert() -> bool
     WIDE_INTEGER_CONSTEXPR bool result_f_is_ok = (closeness < std::numeric_limits<float>::epsilon());
 
     #if defined(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST) && (WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST != 0)
-    static_assert(result_f_is_ok == true, "Error: example000a_builtin_convert not OK!");
+    static_assert(result_f_is_ok, "Error: example000a_builtin_convert not OK!");
     #endif
 
     result_is_ok &= result_f_is_ok;

@@ -125,11 +125,11 @@
     }
 
   private:
-    std::vector<local_uint_a_type> a_local;
-    std::vector<local_uint_b_type> b_local;
+    std::vector<local_uint_a_type> a_local; // NOLINT(readability-identifier-naming)
+    std::vector<local_uint_b_type> b_local; // NOLINT(readability-identifier-naming)
 
-    std::vector<boost_uint_a_type> a_boost;
-    std::vector<boost_uint_b_type> b_boost;
+    std::vector<boost_uint_a_type> a_boost; // NOLINT(readability-identifier-naming)
+    std::vector<boost_uint_b_type> b_boost; // NOLINT(readability-identifier-naming)
   };
 
 #endif // TEST_UINTWIDE_T_N_BINARY_OPS_MUL_N_BY_M_TEMPLATE_2019_12_26_H

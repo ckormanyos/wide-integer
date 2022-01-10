@@ -153,11 +153,11 @@
     }
 
   private:
-    std::vector<local_uint_ab_type> a_local;
-    std::vector<local_uint_ab_type> b_local;
+    std::vector<local_uint_ab_type> a_local; // NOLINT(readability-identifier-naming)
+    std::vector<local_uint_ab_type> b_local; // NOLINT(readability-identifier-naming)
 
-    std::vector<native_uint_cntrl_type> a_cntrl;
-    std::vector<native_uint_cntrl_type> b_cntrl;
+    std::vector<native_uint_cntrl_type> a_cntrl; // NOLINT(readability-identifier-naming)
+    std::vector<native_uint_cntrl_type> b_cntrl; // NOLINT(readability-identifier-naming)
 
     template<typename OtherLocalUintType,
              typename OtherCntrlUintType>

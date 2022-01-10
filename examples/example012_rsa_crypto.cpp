@@ -97,7 +97,7 @@ namespace local_rsa
       }
 
     private:
-      const public_key_type& public_key;
+      const public_key_type& public_key; // NOLINT(readability-identifier-naming)
     };
 
     class decryptor
@@ -120,7 +120,7 @@ namespace local_rsa
       }
 
     private:
-      const private_key_type& private_key;
+      const private_key_type& private_key; // NOLINT(readability-identifier-naming)
     };
 
     rsa_base(const rsa_base& other) : my_p       (other.my_p),
@@ -168,8 +168,8 @@ namespace local_rsa
       return *this;
     }
 
-    auto getPublicKey () const -> const public_key_type&  { return public_key; }
-    auto getPrivateKey() const -> const private_key_type& { return private_key; }
+    auto getPublicKey () const -> const public_key_type&  { return public_key; }  // NOLINT(readability-identifier-naming)
+    auto getPrivateKey() const -> const private_key_type& { return private_key; } // NOLINT(readability-identifier-naming)
 
     auto get_p() const -> const crypto_char& { return getPrivateKey().p; }
     auto get_q() const -> const crypto_char& { return getPrivateKey().q; }
@@ -213,13 +213,13 @@ namespace local_rsa
     rsa_base() = delete;
 
   protected:
-    my_uintwide_t    my_p;        // NOLINT(cppcoreguidelines-non-private-member-variables-in-classes,misc-non-private-member-variables-in-classes)
-    my_uintwide_t    my_q;        // NOLINT(cppcoreguidelines-non-private-member-variables-in-classes,misc-non-private-member-variables-in-classes)
-    my_uintwide_t    my_r;        // NOLINT(cppcoreguidelines-non-private-member-variables-in-classes,misc-non-private-member-variables-in-classes)
-    my_uintwide_t    my_m;        // NOLINT(cppcoreguidelines-non-private-member-variables-in-classes,misc-non-private-member-variables-in-classes)
-    my_uintwide_t    phi_of_m;    // NOLINT(cppcoreguidelines-non-private-member-variables-in-classes,misc-non-private-member-variables-in-classes)
-    public_key_type  public_key;  // NOLINT(cppcoreguidelines-non-private-member-variables-in-classes,misc-non-private-member-variables-in-classes)
-    private_key_type private_key; // NOLINT(cppcoreguidelines-non-private-member-variables-in-classes,misc-non-private-member-variables-in-classes)
+    my_uintwide_t    my_p;        // NOLINT(cppcoreguidelines-non-private-member-variables-in-classes,misc-non-private-member-variables-in-classes,readability-identifier-naming)
+    my_uintwide_t    my_q;        // NOLINT(cppcoreguidelines-non-private-member-variables-in-classes,misc-non-private-member-variables-in-classes,readability-identifier-naming)
+    my_uintwide_t    my_r;        // NOLINT(cppcoreguidelines-non-private-member-variables-in-classes,misc-non-private-member-variables-in-classes,readability-identifier-naming)
+    my_uintwide_t    my_m;        // NOLINT(cppcoreguidelines-non-private-member-variables-in-classes,misc-non-private-member-variables-in-classes,readability-identifier-naming)
+    my_uintwide_t    phi_of_m;    // NOLINT(cppcoreguidelines-non-private-member-variables-in-classes,misc-non-private-member-variables-in-classes,readability-identifier-naming)
+    public_key_type  public_key;  // NOLINT(cppcoreguidelines-non-private-member-variables-in-classes,misc-non-private-member-variables-in-classes,readability-identifier-naming)
+    private_key_type private_key; // NOLINT(cppcoreguidelines-non-private-member-variables-in-classes,misc-non-private-member-variables-in-classes,readability-identifier-naming)
 
     rsa_base(my_uintwide_t p_in,
              my_uintwide_t q_in,
