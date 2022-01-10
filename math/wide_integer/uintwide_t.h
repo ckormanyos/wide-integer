@@ -39,50 +39,50 @@
   #if (defined(__clang__) && (__clang_major__ <= 9))
   #define WIDE_INTEGER_NUM_LIMITS_CLASS_TYPE struct
   #else
-  #define WIDE_INTEGER_NUM_LIMITS_CLASS_TYPE class /* NOLINT(cppcoreguidelines-macro-usage) */
+  #define WIDE_INTEGER_NUM_LIMITS_CLASS_TYPE class // NOLINT(cppcoreguidelines-macro-usage)
   #endif
 
   #if defined(_MSC_VER)
     #if (_MSC_VER >= 1900) && defined(_HAS_CXX20) && (_HAS_CXX20 != 0)
       #define WIDE_INTEGER_CONSTEXPR constexpr
-      #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 1 /* NOLINT(cppcoreguidelines-macro-usage) */
+      #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 1 // NOLINT(cppcoreguidelines-macro-usage)
     #else
       #define WIDE_INTEGER_CONSTEXPR
-      #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 0 /* NOLINT(cppcoreguidelines-macro-usage) */
+      #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 0 // NOLINT(cppcoreguidelines-macro-usage)
     #endif
   #else
     #if (defined(__cplusplus) && (__cplusplus >= 201402L))
       #if defined(__AVR__) && (!defined(__GNUC__) || (defined(__GNUC__) && (__GNUC__ > 6)))
       #define WIDE_INTEGER_CONSTEXPR constexpr
-      #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 1 /* NOLINT(cppcoreguidelines-macro-usage) */
+      #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 1 // NOLINT(cppcoreguidelines-macro-usage)
       #elif (defined(__cpp_lib_constexpr_algorithms) && (__cpp_lib_constexpr_algorithms>=201806))
         #if defined(__clang__)
           #if (__clang_major__ > 9)
           #define WIDE_INTEGER_CONSTEXPR constexpr
-          #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 1 /* NOLINT(cppcoreguidelines-macro-usage) */
+          #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 1 // NOLINT(cppcoreguidelines-macro-usage)
           #else
           #define WIDE_INTEGER_CONSTEXPR
-          #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 0 /* NOLINT(cppcoreguidelines-macro-usage) */
+          #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 0 // NOLINT(cppcoreguidelines-macro-usage)
           #endif
         #else
         #define WIDE_INTEGER_CONSTEXPR constexpr
-        #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 1 /* NOLINT(cppcoreguidelines-macro-usage) */
+        #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 1 // NOLINT(cppcoreguidelines-macro-usage)
         #endif
       #elif (defined(__clang__) && (__clang_major__ >= 10)) && (defined(__cplusplus) && (__cplusplus > 201703L))
         #if defined(__x86_64__)
         #define WIDE_INTEGER_CONSTEXPR constexpr
-        #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 1 /* NOLINT(cppcoreguidelines-macro-usage) */
+        #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 1 // NOLINT(cppcoreguidelines-macro-usage)
         #else
         #define WIDE_INTEGER_CONSTEXPR
-        #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 0 /* NOLINT(cppcoreguidelines-macro-usage) */
+        #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 0 // NOLINT(cppcoreguidelines-macro-usage)
         #endif
       #else
       #define WIDE_INTEGER_CONSTEXPR
-      #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 0 /* NOLINT(cppcoreguidelines-macro-usage) */
+      #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 0 // NOLINT(cppcoreguidelines-macro-usage)
       #endif
     #else
       #define WIDE_INTEGER_CONSTEXPR
-      #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 0 /* NOLINT(cppcoreguidelines-macro-usage) */
+      #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 0 // NOLINT(cppcoreguidelines-macro-usage)
     #endif
   #endif
 
@@ -330,8 +330,8 @@
     }
 
   private:
-    mutable size_type elem_count;
-    pointer           elems;
+    mutable size_type elem_count; // NOLINT(readability-identifier-naming)
+    pointer           elems;      // NOLINT(readability-identifier-naming)
   };
 
   template<typename ValueType, typename AllocatorType>
@@ -1193,8 +1193,8 @@
     WIDE_INTEGER_CONSTEXPR native_float_parts() = delete;
 
   private:
-    unsigned long long my_mantissa_part; // NOLINT(google-runtime-int)
-    int                my_exponent_part;
+    unsigned long long my_mantissa_part; // NOLINT(readability-identifier-naming,google-runtime-int)
+    int                my_exponent_part; // NOLINT(readability-identifier-naming)
   };
   #endif
 
@@ -2307,7 +2307,7 @@
     }
 
   private:
-    representation_type values { };
+    representation_type values { };  // NOLINT(readability-identifier-naming)
 
     static constexpr auto from_rep(const representation_type& other_rep) -> uintwide_t
     {
@@ -5108,8 +5108,8 @@
       void set_b(const result_type& p_b) { param_b = p_b; }
 
     private:
-      result_type param_a;
-      result_type param_b;
+      result_type param_a; // NOLINT(readability-identifier-naming)
+      result_type param_b; // NOLINT(readability-identifier-naming)
 
       friend inline constexpr auto operator==(const param_type& lhs,
                                               const param_type& rhs) -> bool
@@ -5184,7 +5184,7 @@
     }
 
   private:
-    param_type my_params;
+    param_type my_params; // NOLINT(readability-identifier-naming)
 
     template<typename GeneratorType,
              const int GeneratorResultBits = std::numeric_limits<typename GeneratorType::result_type>::digits>

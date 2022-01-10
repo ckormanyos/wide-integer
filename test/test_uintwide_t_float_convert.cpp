@@ -1,4 +1,4 @@
-///////////////////////////////////////////////////////////////////////////////
+﻿///////////////////////////////////////////////////////////////////////////////
 //  Copyright Christopher Kormanyos 2021.
 //  Distributed under the Boost Software License,
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt
@@ -190,8 +190,8 @@ auto math::wide_integer::test_uintwide_t_float_convert() -> bool
   {
     const auto f = local_float_convert::get_random_float<float, -1, 27>();
 
-    boost_sint_type n_boost = boost_sint_type(f);
-    local_sint_type n_local = local_sint_type(f);
+    auto n_boost = static_cast<boost_sint_type>(f);
+    auto n_local = static_cast<local_sint_type>(f);
 
     const std::string str_boost_signed = local_float_convert::hexlexical_cast(static_cast<boost_uint_type>(n_boost));
     const std::string str_local_signed = local_float_convert::hexlexical_cast(static_cast<local_uint_type>(n_local));
@@ -203,8 +203,8 @@ auto math::wide_integer::test_uintwide_t_float_convert() -> bool
   {
     const auto d = local_float_convert::get_random_float<double, -1, 75>();
 
-    boost_sint_type n_boost = boost_sint_type(d);
-    local_sint_type n_local = local_sint_type(d);
+    auto n_boost = static_cast<boost_sint_type>(d);
+    auto n_local = static_cast<local_sint_type>(d);
 
     const std::string str_boost_signed = local_float_convert::hexlexical_cast(static_cast<boost_uint_type>(n_boost));
     const std::string str_local_signed = local_float_convert::hexlexical_cast(static_cast<local_uint_type>(n_local));

@@ -80,3 +80,4 @@ $(PATH_TMP)/%.tidy_txt : %.cpp
 	@-$(GNUECHO)
 	@-$(GNUECHO) +++ print $(PATH_ERR)/$(basename $(@F)).tidy_err
 	@-$(SED) -n l $(PATH_ERR)/$(basename $(@F)).tidy_err
+	@-$(GNUECHO)
