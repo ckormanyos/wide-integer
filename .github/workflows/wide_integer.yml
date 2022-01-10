@@ -35,6 +35,11 @@ jobs:
       - name: create build directory
         run: mkdir $GITHUB_WORKSPACE/build
 
+      - name: install Boost
+        run: |
+          apt-get update --quiet
+          apt-get install --no-install-recommends --quiet --yes libboost-dev
+
       - name: build
         working-directory: build
         run: |

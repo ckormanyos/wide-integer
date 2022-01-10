@@ -1,4 +1,4 @@
-///////////////////////////////////////////////////////////////////
+﻿///////////////////////////////////////////////////////////////////
 //  Copyright Christopher Kormanyos 2021.                        //
 //  Distributed under the Boost Software License,                //
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt          //
@@ -43,10 +43,8 @@
   WIDE_INTEGER_NAMESPACE_END
 
   #if defined(WIDE_INTEGER_NAMESPACE)
-  #if (~(~WIDE_INTEGER_NAMESPACE + 0) == 0 && ~(~WIDE_INTEGER_NAMESPACE + 1) == 1)
-  #else
   using namespace WIDE_INTEGER_NAMESPACE;
-  #endif
+  #else
   #endif
 
 #endif // EXAMPLE_UINTWIDE_T_2021_04_29_H
