@@ -1,20 +1,55 @@
 ﻿---
 Checks: >
   *,
-  -fuchsia-*,
-  -llvmlibc-*,
-
-  -llvm-header-guard,
-  -readability-identifier-naming,
-  -readability-avoid-const-params-in-decls,
+  google-readability-casting,
+  -abseil-*,
+  -altera-*,
+  -android-*,
+  -cert-err58-cpp,
+  -clang-analyzer-osx.*,
   -cppcoreguidelines-avoid-magic-numbers,
+  -darwin-dispatch-once-nonstatic,
+  -fuchsia-*,
+  -google-build-using-namespace,
+  -google-readability-namespace-comments,
+  -google-runtime-int,
+  -google-runtime-references,
+  -hicpp-named-parameter,
+  -hicpp-signed-bitwise,
+  -llvm-namespace-comment,
+  -llvm-qualified-auto,
+  -llvmlibc-*,
+  -modernize-use-trailing-return-type,
+  -objc-*,
+  -openmp-*,
+  -readability-identifier-length,
+  -readability-implicit-bool-conversion,
   -readability-magic-numbers,
-  -altera-struct-pack-align
+  -readability-named-parameter,
+  -readability-qualified-auto,
+  -zircon-*,
+  -bugprone-easily-swappable-parameters,
+  -cppcoreguidelines-pro-bounds-array-to-pointer-decay,
+  -cppcoreguidelines-pro-bounds-constant-array-index,
+  -cppcoreguidelines-pro-bounds-pointer-arithmetic,
+  -cppcoreguidelines-pro-type-vararg,
+  -google-readability-todo,
+  -hicpp-avoid-c-arrays,
+  -hicpp-no-array-decay,
+  -hicpp-vararg,
+  -misc-definitions-in-headers,
+  -misc-no-recursion,
+  -modernize-avoid-c-arrays,
+  -modernize-concat-nested-namespaces,
+  -modernize-unary-static-assert,
+  -readability-avoid-const-params-in-decls,
+  -readability-function-cognitive-complexity,
 
 WarningsAsErrors: '*'
-HeaderFilterRegex: 'uintwide_t'
+HeaderFilterRegex: '.*'
 AnalyzeTemporaryDtors: false
 FormatStyle:     none
+User:            john
 CheckOptions:
   - key:             cert-dcl16-c.NewSuffixes
     value:           'L;LL;LU;LLU'

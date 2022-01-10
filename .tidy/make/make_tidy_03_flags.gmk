@@ -6,10 +6,29 @@
 # ------------------------------------------------------------------------------
 
 BOOST_ROOT_FOR_TIDY = /mnt/c/boost/boost_1_78_0
+CC                  = clang++
+STD                 = c++11
 
 ifneq ($(MY_BOOST_ROOT),)
 BOOST_ROOT_FOR_TIDY := $(MY_BOOST_ROOT)
 endif
+
+ifneq ($(MY_CC),)
+CC                  := $(MY_CC)
+endif
+
+ifneq ($(MY_STD),)
+STD                 := $(MY_STD)
+endif
+
+CXX_FLAGS    = $(CC)                                      \
+               -march=native                              \
+               -O3                                        \
+               -Wall                                      \
+               -Wextra                                    \
+               -Wconversion                               \
+               -Wsign-conversion                          \
+               -std=$(STD)
 
 C_DEFINES    = WIDE_INTEGER_HAS_MUL_8_BY_8_UNROLL
 
@@ -21,4 +40,4 @@ C_INCLUDES  :=$(addprefix -I,$(C_INCLUDES))
 
 TIDY_FLAGS   = --header-filter=uintwide_t                 \
                -warnings-as-errors=*                      \
-               -checks=*,-fuchsia-*,-llvmlibc-*,-llvm-header-guard,-readability-avoid-const-params-in-decls,-cppcoreguidelines-avoid-magic-numbers,-readability-magic-numbers,-altera-struct-pack-align
+               -checks=*,google-readability-casting,-fuchsia-*,-llvmlibc-*,-llvm-header-guard,-readability-avoid-const-params-in-decls,-cppcoreguidelines-avoid-magic-numbers,-readability-magic-numbers,-altera-struct-pack-align
