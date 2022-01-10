@@ -1,4 +1,4 @@
-///////////////////////////////////////////////////////////////////////////////
+﻿///////////////////////////////////////////////////////////////////////////////
 //  Copyright Christopher Kormanyos 2017 - 2022.
 //  Distributed under the Boost Software License,
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt
@@ -27,15 +27,13 @@
         ((number_of_threads_hint == 0U) ? 4U : number_of_threads_hint);
 
       // Set the size of a slice for the range functions.
-      index_type n = index_type(end - start) + index_type(1);
+      const auto n = static_cast<index_type>(static_cast<index_type>(end - start) + static_cast<index_type>(1));
 
-      index_type slice =
-        static_cast<index_type>(std::round(n / static_cast<double> (number_of_threads)));
-
-      slice = (std::max)(slice, index_type(1));
+      const auto slice =
+        (std::max)(static_cast<index_type>(std::round(n / static_cast<double> (number_of_threads))), index_type(1));
 
       // Inner loop.
-      auto launch_range =
+      const auto launch_range =
         [&parallel_function](index_type index_lo, index_type index_hi)
         {
           for(index_type i = index_lo; i < index_hi; ++i)
