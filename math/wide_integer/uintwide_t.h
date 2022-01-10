@@ -94,7 +94,6 @@
     #define WIDE_INTEGER_NAMESPACE_BEGIN namespace WIDE_INTEGER_NAMESPACE {
     #define WIDE_INTEGER_NAMESPACE_END } /* namespace WIDE_INTEGER_NAMESPACE */
   #else
-    #define WIDE_INTEGER_NAMESPACE
     #define WIDE_INTEGER_NAMESPACE_BEGIN
     #define WIDE_INTEGER_NAMESPACE_END
   #endif
@@ -817,11 +816,19 @@
   namespace std
   {
     // Forward declaration of specialization of std::numeric_limits<uintwide_t>.
+    #if defined(WIDE_INTEGER_NAMESPACE)
     template<const WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t Width2,
              typename LimbType,
              typename AllocatorType,
              const bool IsSigned>
     WIDE_INTEGER_NUM_LIMITS_CLASS_TYPE numeric_limits<WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<Width2, LimbType, AllocatorType, IsSigned>>;
+    #else
+    template<const ::math::wide_integer::size_t Width2,
+             typename LimbType,
+             typename AllocatorType,
+             const bool IsSigned>
+    WIDE_INTEGER_NUM_LIMITS_CLASS_TYPE numeric_limits<::math::wide_integer::uintwide_t<Width2, LimbType, AllocatorType, IsSigned>>;
+    #endif
   } // namespace std
 
   WIDE_INTEGER_NAMESPACE_BEGIN
@@ -3967,12 +3974,21 @@
   namespace std
   {
     // Specialization of std::numeric_limits<uintwide_t>.
+    #if defined(WIDE_INTEGER_NAMESPACE)
     template<const WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t Width2,
              typename LimbType,
              typename AllocatorType,
              const bool IsSigned>
     WIDE_INTEGER_NUM_LIMITS_CLASS_TYPE numeric_limits<WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<Width2, LimbType, AllocatorType, IsSigned>>
       : public WIDE_INTEGER_NAMESPACE::math::wide_integer::numeric_limits_uintwide_t_base<Width2, LimbType, AllocatorType, IsSigned> { };
+    #else
+    template<const ::math::wide_integer::size_t Width2,
+             typename LimbType,
+             typename AllocatorType,
+             const bool IsSigned>
+    WIDE_INTEGER_NUM_LIMITS_CLASS_TYPE numeric_limits<::math::wide_integer::uintwide_t<Width2, LimbType, AllocatorType, IsSigned>>
+      : public ::math::wide_integer::numeric_limits_uintwide_t_base<Width2, LimbType, AllocatorType, IsSigned> { };
+    #endif
   } // namespace std
 
   WIDE_INTEGER_NAMESPACE_BEGIN
