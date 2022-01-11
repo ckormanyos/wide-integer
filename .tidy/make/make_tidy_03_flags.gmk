@@ -40,4 +40,4 @@ C_INCLUDES  :=$(addprefix -I,$(C_INCLUDES))
 
 TIDY_FLAGS   = --header-filter=uintwide_t                 \
                -warnings-as-errors=*                      \
-               -checks=*,google-readability-casting,-fuchsia-*,-llvmlibc-*,-llvm-header-guard,-readability-avoid-const-params-in-decls,-cppcoreguidelines-avoid-magic-numbers,-readability-magic-numbers,-altera-struct-pack-align,-modernize-use-nodiscard
+               -checks=*,google-readability-casting,-fuchsia-*,-llvmlibc-*,-llvm-header-guard,-readability-avoid-const-params-in-decls,-cppcoreguidelines-avoid-magic-numbers,-readability-magic-numbers,-altera-struct-pack-align

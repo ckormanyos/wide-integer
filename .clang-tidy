@@ -42,7 +42,6 @@ Checks: >
   -modernize-avoid-c-arrays,
   -modernize-concat-nested-namespaces,
   -modernize-unary-static-assert,
-  -modernize-use-nodiscard,
   -readability-avoid-const-params-in-decls,
   -readability-function-cognitive-complexity,
 
