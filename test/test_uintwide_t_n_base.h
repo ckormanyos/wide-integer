@@ -1,4 +1,4 @@
-///////////////////////////////////////////////////////////////////////////////
+﻿///////////////////////////////////////////////////////////////////////////////
 //  Copyright Christopher Kormanyos 2019 - 2022.
 //  Distributed under the Boost Software License,
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt
@@ -41,9 +41,9 @@
   public:
     virtual ~test_uintwide_t_n_base() = default;
 
-    virtual auto get_digits2() const -> math::wide_integer::size_t = 0;
+    [[nodiscard]] virtual auto get_digits2() const -> math::wide_integer::size_t = 0;
 
-    auto size() const -> std::size_t { return number_of_cases; }
+    [[nodiscard]] auto size() const -> std::size_t { return number_of_cases; }
 
     virtual void initialize() = 0;
 

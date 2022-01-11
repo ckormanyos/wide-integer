@@ -1,4 +1,4 @@
-///////////////////////////////////////////////////////////////////////////////
+﻿///////////////////////////////////////////////////////////////////////////////
 //  Copyright Christopher Kormanyos 2021.
 //  Distributed under the Boost Software License,
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt
@@ -55,7 +55,7 @@
 
     ~test_uintwide_t_n_binary_ops_template_signed() override = default;
 
-    auto get_digits2() const -> math::wide_integer::size_t override { return digits2; }
+    [[nodiscard]] auto get_digits2() const -> math::wide_integer::size_t override { return digits2; }
 
     auto initialize() -> void override
     {
@@ -89,7 +89,7 @@
       std::copy(b_boost.cbegin(), b_boost.cend(), b_boost_signed.begin());
     }
 
-    auto test_binary_add() const -> bool override
+    [[nodiscard]] auto test_binary_add() const -> bool override
     {
       bool result_is_ok = true;
 
@@ -116,7 +116,7 @@
       return result_is_ok;
     }
 
-    auto test_binary_sub() const -> bool override
+    [[nodiscard]] auto test_binary_sub() const -> bool override
     {
       bool result_is_ok = true;
 
@@ -143,7 +143,7 @@
       return result_is_ok;
     }
 
-    auto test_binary_mul() const -> bool override
+    [[nodiscard]] auto test_binary_mul() const -> bool override
     {
       bool result_is_ok = true;
 
@@ -170,7 +170,7 @@
       return result_is_ok;
     }
 
-    auto test_binary_div() const -> bool override
+    [[nodiscard]] auto test_binary_div() const -> bool override
     {
       bool result_is_ok = true;
 
@@ -197,7 +197,7 @@
       return result_is_ok;
     }
 
-    auto test_binary_mod() const -> bool override
+    [[nodiscard]] auto test_binary_mod() const -> bool override
     {
       bool result_is_ok = true;
 
@@ -290,7 +290,7 @@
 
     ~test_uintwide_t_n_binary_ops_template_signed() override = default;
 
-    auto get_digits2() const -> math::wide_integer::size_t override { return digits2; }
+    [[nodiscard]] auto get_digits2() const -> math::wide_integer::size_t override { return digits2; }
 
     auto initialize() -> void override
     {
@@ -320,7 +320,7 @@
       }
     }
 
-    auto test_binary_add() const -> bool override
+    [[nodiscard]] auto test_binary_add() const -> bool override
     {
       bool result_is_ok = true;
 
@@ -352,7 +352,7 @@
       return result_is_ok;
     }
 
-    auto test_binary_sub() const -> bool override
+    [[nodiscard]] auto test_binary_sub() const -> bool override
     {
       bool result_is_ok = true;
 
@@ -384,7 +384,7 @@
       return result_is_ok;
     }
 
-    auto test_binary_mul() const -> bool override
+    [[nodiscard]] auto test_binary_mul() const -> bool override
     {
       bool result_is_ok = true;
 
@@ -416,7 +416,7 @@
       return result_is_ok;
     }
 
-    auto test_binary_div() const -> bool override
+    [[nodiscard]] auto test_binary_div() const -> bool override
     {
       bool result_is_ok = true;
 
@@ -443,7 +443,7 @@
       return result_is_ok;
     }
 
-    auto test_binary_mod() const -> bool override
+    [[nodiscard]] auto test_binary_mod() const -> bool override
     {
       bool result_is_ok = true;
 
@@ -470,7 +470,7 @@
       return result_is_ok;
     }
 
-    virtual auto test_binary_mod1() const -> bool
+    [[nodiscard]] virtual auto test_binary_mod1() const -> bool
     {
       using local_signed_limb_type = typename local_sint_type::limb_type;
 
@@ -500,7 +500,7 @@
       return result_is_ok;
     }
 
-    virtual auto test_binary_shr() const -> bool
+    [[nodiscard]] virtual auto test_binary_shr() const -> bool
     {
       my_gen().seed(static_cast<typename random_generator_type::result_type>(std::clock()));
 

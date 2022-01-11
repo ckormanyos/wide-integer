@@ -164,11 +164,11 @@
       m_value.representation().swap(other_mp_cpp_backend.m_value.representation());
     }
 
-    WIDE_INTEGER_CONSTEXPR auto  representation()       ->       representation_type& { return m_value; }
-    WIDE_INTEGER_CONSTEXPR auto  representation() const -> const representation_type& { return m_value; }
-    WIDE_INTEGER_CONSTEXPR auto crepresentation() const -> const representation_type& { return m_value; }
+                  WIDE_INTEGER_CONSTEXPR auto  representation()       ->       representation_type& { return m_value; }
+    [[nodiscard]] WIDE_INTEGER_CONSTEXPR auto  representation() const -> const representation_type& { return m_value; }
+    [[nodiscard]] WIDE_INTEGER_CONSTEXPR auto crepresentation() const -> const representation_type& { return m_value; }
 
-    auto str(std::streamsize number_of_digits, const std::ios::fmtflags format_flags) const -> std::string
+    [[nodiscard]] auto str(std::streamsize number_of_digits, const std::ios::fmtflags format_flags) const -> std::string
     {
       (void) number_of_digits;
 
@@ -191,14 +191,14 @@
       m_value.negate();
     }
 
-    constexpr auto compare(const uintwide_t_backend& other_mp_cpp_backend) const -> int
+    [[nodiscard]] constexpr auto compare(const uintwide_t_backend& other_mp_cpp_backend) const -> int
     {
       return static_cast<int>(m_value.compare(other_mp_cpp_backend.crepresentation()));
     }
 
     template<typename ArithmeticType,
              typename std::enable_if<std::is_arithmetic<ArithmeticType>::value>::type const* = nullptr>
-    constexpr auto compare(ArithmeticType x) const -> int
+    [[nodiscard]] constexpr auto compare(ArithmeticType x) const -> int
     {
       return static_cast<int>(m_value.compare(representation_type(x)));
     }

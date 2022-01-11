@@ -1187,8 +1187,8 @@
       return *this;
     }
 
-    WIDE_INTEGER_CONSTEXPR auto get_mantissa() const -> unsigned long long { return my_mantissa_part; } // NOLINT(google-runtime-int)
-    WIDE_INTEGER_CONSTEXPR auto get_exponent() const -> int                { return my_exponent_part; }
+    [[nodiscard]] WIDE_INTEGER_CONSTEXPR auto get_mantissa() const -> unsigned long long { return my_mantissa_part; } // NOLINT(google-runtime-int)
+    [[nodiscard]] WIDE_INTEGER_CONSTEXPR auto get_exponent() const -> int                { return my_exponent_part; }
 
     WIDE_INTEGER_CONSTEXPR native_float_parts() = delete;
 
@@ -1522,9 +1522,9 @@
     }
 
     // Provide a user interface to the internal data representation.
-    WIDE_INTEGER_CONSTEXPR auto  representation()       ->       representation_type& { return values; }
-    WIDE_INTEGER_CONSTEXPR auto  representation() const -> const representation_type& { return values; }
-    WIDE_INTEGER_CONSTEXPR auto crepresentation() const -> const representation_type& { return values; }
+                  WIDE_INTEGER_CONSTEXPR auto  representation()       ->       representation_type& { return values; }
+    [[nodiscard]] WIDE_INTEGER_CONSTEXPR auto  representation() const -> const representation_type& { return values; }
+    [[nodiscard]] WIDE_INTEGER_CONSTEXPR auto crepresentation() const -> const representation_type& { return values; }
 
     // Unary operators: not, plus and minus.
     WIDE_INTEGER_CONSTEXPR auto operator+() const -> const uintwide_t& { return *this; }
@@ -2217,7 +2217,7 @@
 
     template<const bool RePhraseIsSigned = IsSigned,
              typename std::enable_if<(!RePhraseIsSigned)>::type const* = nullptr>
-    WIDE_INTEGER_CONSTEXPR auto compare(const uintwide_t<Width2, LimbType, AllocatorType, RePhraseIsSigned>& other) const -> std::int_fast8_t
+    [[nodiscard]] WIDE_INTEGER_CONSTEXPR auto compare(const uintwide_t<Width2, LimbType, AllocatorType, RePhraseIsSigned>& other) const -> std::int_fast8_t
     {
       return compare_ranges(values.data(),
                             other.values.data(),
@@ -2226,7 +2226,7 @@
 
     template<const bool RePhraseIsSigned = IsSigned,
              typename std::enable_if<(RePhraseIsSigned)>::type const* = nullptr>
-    WIDE_INTEGER_CONSTEXPR auto compare(const uintwide_t<Width2, LimbType, AllocatorType, RePhraseIsSigned>& other) const -> std::int_fast8_t
+    [[nodiscard]] WIDE_INTEGER_CONSTEXPR auto compare(const uintwide_t<Width2, LimbType, AllocatorType, RePhraseIsSigned>& other) const -> std::int_fast8_t
     {
       const bool other_is_neg = is_neg(other);
 
@@ -2285,7 +2285,7 @@
       }
     }
 
-    WIDE_INTEGER_CONSTEXPR auto is_zero() const -> bool
+    [[nodiscard]] WIDE_INTEGER_CONSTEXPR auto is_zero() const -> bool
     {
       auto it = values.cbegin(); // NOLINT(llvm-qualified-auto,readability-qualified-auto)
 
@@ -2391,7 +2391,7 @@
     // Implement a function that extracts any built-in signed or unsigned integral type.
     template<typename UnknownBuiltInIntegralType,
              typename = typename std::enable_if<std::is_integral<UnknownBuiltInIntegralType>::value>::type>
-    WIDE_INTEGER_CONSTEXPR auto extract_builtin_integral_type() const -> UnknownBuiltInIntegralType
+    [[nodiscard]] WIDE_INTEGER_CONSTEXPR auto extract_builtin_integral_type() const -> UnknownBuiltInIntegralType
     {
       using local_unknown_integral_type = UnknownBuiltInIntegralType;
       using digits_ratio_type           = digits_ratio<local_unknown_integral_type>;
@@ -2410,7 +2410,7 @@
     // Implement a function that extracts any built-in floating-point type.
     template<typename FloatingPointType,
              typename = typename std::enable_if<std::is_floating_point<FloatingPointType>::value>::type>
-    WIDE_INTEGER_CONSTEXPR auto extract_builtin_floating_point_type() const -> FloatingPointType
+    [[nodiscard]] WIDE_INTEGER_CONSTEXPR auto extract_builtin_floating_point_type() const -> FloatingPointType
     {
       using local_unsigned_wide_integer_type = uintwide_t<Width2, limb_type, AllocatorType, false>;
       using local_builtin_float_type         = FloatingPointType;
@@ -5113,8 +5113,8 @@
         return *this;
       }
 
-      constexpr auto get_a() const -> result_type { return param_a; }
-      constexpr auto get_b() const -> result_type { return param_b; }
+      [[nodiscard]] constexpr auto get_a() const -> result_type { return param_a; }
+      [[nodiscard]] constexpr auto get_b() const -> result_type { return param_b; }
 
       void set_a(const result_type& p_a) { param_a = p_a; }
       void set_b(const result_type& p_b) { param_b = p_b; }
@@ -5175,10 +5175,10 @@
       my_params = new_params;
     }
 
-    auto param() const -> const param_type& { return my_params; }
+    [[nodiscard]] auto param() const -> const param_type& { return my_params; }
 
-    auto a() const -> result_type { return my_params.get_a(); }
-    auto b() const -> result_type { return my_params.get_b(); }
+    [[nodiscard]] auto a() const -> result_type { return my_params.get_a(); }
+    [[nodiscard]] auto b() const -> result_type { return my_params.get_b(); }
 
     template<typename GeneratorType,
              const int GeneratorResultBits = std::numeric_limits<typename GeneratorType::result_type>::digits>
