@@ -915,8 +915,10 @@
 
     template<const size_type OtherSize>
     WIDE_INTEGER_CONSTEXPR fixed_static_array(const fixed_static_array<size_type, OtherSize>& other_array,   // NOLINT(hicpp-explicit-conversions,google-explicit-constructor)
-                                              typename std::enable_if<OtherSize != MySize>::type* = nullptr) // NOLINT(hicpp-named-parameter,readability-named-parameter)
+                                              typename std::enable_if<OtherSize != MySize>::type* p_nullparam = nullptr)
     {
+      static_cast<void>(p_nullparam == nullptr);
+
       std::copy(other_array.cbegin(),
                 other_array.cbegin() + (std::min)(OtherSize, MySize),
                 base_class_type::begin());
@@ -1298,8 +1300,10 @@
     WIDE_INTEGER_CONSTEXPR uintwide_t(const UnsignedIntegralType v, // NOLINT(google-explicit-constructor,hicpp-explicit-conversions)
                                       typename std::enable_if<(   (std::is_integral   <UnsignedIntegralType>::value)
                                                                && (std::is_unsigned   <UnsignedIntegralType>::value)
-                                                               && (std::numeric_limits<UnsignedIntegralType>::digits > std::numeric_limits<limb_type>::digits))>::type* = nullptr) // NOLINT(hicpp-named-parameter,readability-named-parameter)
+                                                               && (std::numeric_limits<UnsignedIntegralType>::digits > std::numeric_limits<limb_type>::digits))>::type* p_nullparam = nullptr)
     {
+      static_cast<void>(p_nullparam == nullptr);
+
       auto right_shift_amount_v = static_cast<unsinged_fast_type>(0U);
       auto index_u              = static_cast<std::uint_fast8_t> (0U);
 
@@ -1318,9 +1322,11 @@
     // Constructors from built-in signed integral types.
     template<typename SignedIntegralType>
     WIDE_INTEGER_CONSTEXPR uintwide_t(const SignedIntegralType v, // NOLINT(google-explicit-constructor,hicpp-explicit-conversions)
-                                      typename std::enable_if<(   (std::is_integral   <SignedIntegralType>::value)
-                                                               && (std::is_signed     <SignedIntegralType>::value))>::type* = nullptr) // NOLINT(hicpp-named-parameter,readability-named-parameter)
+                                      typename std::enable_if<(   (std::is_integral<SignedIntegralType>::value)
+                                                               && (std::is_signed  <SignedIntegralType>::value))>::type* p_nullparam = nullptr)
     {
+      static_cast<void>(p_nullparam == nullptr);
+
       using local_signed_integral_type   = SignedIntegralType;
       using local_unsigned_integral_type =
         typename detail::uint_type_helper<static_cast<size_t>(std::numeric_limits<local_signed_integral_type>::digits + 1)>::exact_unsigned_type;
@@ -2293,8 +2299,10 @@
 
     template<const bool RePhraseIsSigned = IsSigned,
              typename std::enable_if<(!RePhraseIsSigned)>::type const* = nullptr>
-    static constexpr auto is_neg(uintwide_t<Width2, LimbType, AllocatorType, RePhraseIsSigned>) -> bool // NOLINT(hicpp-named-parameter,readability-named-parameter)
+    static constexpr auto is_neg(uintwide_t<Width2, LimbType, AllocatorType, RePhraseIsSigned> a) -> bool
     {
+      static_cast<void>(a.crepresentation().empty());
+
       return false;
     }
 
@@ -2454,8 +2462,10 @@
     template<const size_t OtherWidth2>
     static WIDE_INTEGER_CONSTEXPR void eval_mul_unary(      uintwide_t<OtherWidth2, LimbType, AllocatorType, IsSigned>& u,
                                                       const uintwide_t<OtherWidth2, LimbType, AllocatorType, IsSigned>& v,
-                                                      typename std::enable_if<((OtherWidth2 / std::numeric_limits<LimbType>::digits) < number_of_limbs_karatsuba_threshold)>::type* = nullptr) // NOLINT(hicpp-named-parameter,readability-named-parameter)
+                                                      typename std::enable_if<((OtherWidth2 / std::numeric_limits<LimbType>::digits) < number_of_limbs_karatsuba_threshold)>::type* p_nullparam = nullptr)
     {
+      static_cast<void>(p_nullparam == nullptr);
+
       // Unary multiplication function using schoolbook multiplication,
       // but we only need to retain the low half of the n*n algorithm.
       // In other words, this is an n*n->n bit multiplication.
@@ -2478,8 +2488,10 @@
     template<const size_t OtherWidth2>
     static WIDE_INTEGER_CONSTEXPR void eval_mul_unary(      uintwide_t<OtherWidth2, LimbType, AllocatorType, IsSigned>& u,
                                                       const uintwide_t<OtherWidth2, LimbType, AllocatorType, IsSigned>& v,
-                                                      typename std::enable_if<((OtherWidth2 / std::numeric_limits<LimbType>::digits) >= number_of_limbs_karatsuba_threshold)>::type* = nullptr) // NOLINT(hicpp-named-parameter,readability-named-parameter)
+                                                      typename std::enable_if<((OtherWidth2 / std::numeric_limits<LimbType>::digits) >= number_of_limbs_karatsuba_threshold)>::type* p_nullparam = nullptr)
     {
+      static_cast<void>(p_nullparam == nullptr);
+
       // Unary multiplication function using Karatsuba multiplication.
 
       constexpr size_t local_number_of_limbs =
@@ -4981,8 +4993,8 @@
   }
 
   template<typename UnsignedShortType>
-  WIDE_INTEGER_CONSTEXPR auto gcd(const UnsignedShortType& u, const UnsignedShortType& v) -> typename std::enable_if<(   (std::is_integral   <UnsignedShortType>::value)
-                                                                                                                      && (std::is_unsigned   <UnsignedShortType>::value)), UnsignedShortType>::type
+  WIDE_INTEGER_CONSTEXPR auto gcd(const UnsignedShortType& u, const UnsignedShortType& v) -> typename std::enable_if<(   (std::is_integral<UnsignedShortType>::value)
+                                                                                                                      && (std::is_unsigned<UnsignedShortType>::value)), UnsignedShortType>::type
   {
     UnsignedShortType result;
 
