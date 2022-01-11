@@ -1055,7 +1055,7 @@
                    "Error: Please check the characteristics of the template parameters UnsignedShortType and UnsignedLargeType");
     #endif
 
-    return static_cast<local_ushort_type>(u >> local_ushort_type(std::numeric_limits<local_ushort_type>::digits));
+    return static_cast<local_ushort_type>(u >> static_cast<local_ushort_type>(std::numeric_limits<local_ushort_type>::digits));
   }
 
   template<typename UnsignedShortType,
@@ -1328,7 +1328,8 @@
       const bool v_is_neg = (v < local_signed_integral_type(0));
 
       const local_unsigned_integral_type u =
-        ((!v_is_neg) ? local_unsigned_integral_type(v) : local_unsigned_integral_type(detail::negate(v)));
+        ((!v_is_neg) ? static_cast<local_unsigned_integral_type>(v)
+                     : static_cast<local_unsigned_integral_type>(detail::negate(v)));
 
       operator=(uintwide_t(u));
 
@@ -1717,7 +1718,7 @@
       if(this != &other)
       {
         // Bitwise OR.
-        for(unsinged_fast_type i = 0U; i < number_of_limbs; ++i)
+        for(auto i = static_cast<unsinged_fast_type>(0U); i < number_of_limbs; ++i)
         {
           *(values.begin() + static_cast<size_t>(i)) = static_cast<limb_type>(*(values.cbegin() + static_cast<size_t>(i)) | *(other.values.cbegin() + static_cast<size_t>(i)));
         }
@@ -1735,7 +1736,7 @@
       else
       {
         // Bitwise XOR.
-        for(unsinged_fast_type i = 0U; i < number_of_limbs; ++i)
+        for(auto i = static_cast<unsinged_fast_type>(0U); i < number_of_limbs; ++i)
         {
           *(values.begin() + static_cast<size_t>(i)) = static_cast<limb_type>(*(values.cbegin() + static_cast<size_t>(i)) ^ *(other.values.cbegin() + static_cast<size_t>(i)));
         }
@@ -1749,7 +1750,7 @@
       if(this != &other)
       {
         // Bitwise AND.
-        for(unsinged_fast_type i = 0U; i < number_of_limbs; ++i)
+        for(auto i = static_cast<unsinged_fast_type>(0U); i < number_of_limbs; ++i)
         {
           *(values.begin() + static_cast<size_t>(i)) = static_cast<limb_type>(*(values.cbegin() + static_cast<size_t>(i)) & *(other.values.cbegin() + static_cast<size_t>(i)));
         }
@@ -1952,7 +1953,7 @@
     // octal, decimal and hexadecimal string representations.
     static constexpr size_t wr_string_max_buffer_size_oct = (16U + (my_width2 / 3U)) + static_cast<size_t>(((my_width2 % 3U) != 0U) ? 1U : 0U) + 1U;
     static constexpr size_t wr_string_max_buffer_size_hex = (32U + (my_width2 / 4U)) + 1U;
-    static constexpr size_t wr_string_max_buffer_size_dec = (20U + static_cast<size_t>((std::uintmax_t(my_width2) * UINTMAX_C(301)) / UINTMAX_C(1000))) + 1U;
+    static constexpr size_t wr_string_max_buffer_size_dec = (20U + static_cast<size_t>((static_cast<std::uintmax_t>(my_width2) * UINTMAX_C(301)) / UINTMAX_C(1000))) + 1U;
 
     // Write string function.
     WIDE_INTEGER_CONSTEXPR auto wr_string(      char*              str_result, // NOLINT(readability-function-cognitive-complexity)
@@ -1973,7 +1974,7 @@
 
         std::array<char, static_cast<std::size_t>(wr_string_max_buffer_size_oct)> str_temp { };
 
-        unsinged_fast_type pos = (sizeof(str_temp) - 1U);
+        auto pos = static_cast<unsinged_fast_type>(sizeof(str_temp) - 1U);
 
         if(t.is_zero())
         {
@@ -1987,7 +1988,7 @@
           {
             while(!t.is_zero())
             {
-              char c = static_cast<char>(*t.values.cbegin() & mask);
+              auto c = static_cast<char>(*t.values.cbegin() & mask);
 
               if(c <= static_cast<char>(INT8_C(8))) { c = static_cast<char>(c + static_cast<char>(INT8_C(0x30))); }
 
@@ -2004,7 +2005,7 @@
 
             while(!tu.is_zero())
             {
-              char c = static_cast<char>(*tu.values.cbegin() & mask);
+              auto c = static_cast<char>(*tu.values.cbegin() & mask);
 
               if(c <= static_cast<char>(INT8_C(8))) { c = static_cast<char>(c + static_cast<char>(INT8_C(0x30))); }
 
@@ -2367,7 +2368,7 @@
 
         auto u = static_cast<local_unsigned_conversion_type>(0U);
 
-        for(unsinged_fast_type i = 0U; i < limb_count; ++i)
+        for(auto i = static_cast<unsinged_fast_type>(0U); i < limb_count; ++i)
         {
           u =
             static_cast<local_unsigned_conversion_type>
@@ -2546,7 +2547,7 @@
       using left_difference_type   = typename std::iterator_traits<InputIteratorLeft>::difference_type;
       using right_difference_type  = typename std::iterator_traits<InputIteratorRight>::difference_type;
 
-      for(unsinged_fast_type i = 0U; i < count; ++i)
+      for(auto i = static_cast<unsinged_fast_type>(0U); i < count; ++i)
       {
         const auto uv_as_ularge =
           static_cast<local_double_limb_type>(static_cast<local_double_limb_type>(static_cast<local_double_limb_type>(*(u + static_cast<left_difference_type>(i))) + *(v + static_cast<right_difference_type>(i))) + carry_out);
@@ -2586,7 +2587,7 @@
       using left_difference_type   = typename std::iterator_traits<InputIteratorLeft>::difference_type;
       using right_difference_type  = typename std::iterator_traits<InputIteratorRight>::difference_type;
 
-      for(unsinged_fast_type i = 0U; i < count; ++i)
+      for(auto i = static_cast<unsinged_fast_type>(0U); i < count; ++i)
       {
         const auto uv_as_ularge = static_cast<local_double_limb_type>(static_cast<local_double_limb_type>(static_cast<local_double_limb_type>(*(u + static_cast<left_difference_type>(i))) - *(v + static_cast<right_difference_type>(i))) - has_borrow_out);
 
@@ -3070,7 +3071,7 @@
 
       std::fill_n(r, count, static_cast<local_limb_type>(0U));
 
-      for(unsinged_fast_type i = 0U; i < count; ++i)
+      for(auto i = static_cast<unsinged_fast_type>(0U); i < count; ++i)
       {
         if(*(a + static_cast<left_difference_type>(i)) != static_cast<local_limb_type>(0U))
         {
@@ -3114,7 +3115,7 @@
 
       std::fill_n(r, (count * 2U), static_cast<local_limb_type>(0U));
 
-      for(unsinged_fast_type i = 0U; i < count; ++i)
+      for(auto i = static_cast<unsinged_fast_type>(0U); i < count; ++i)
       {
         if(*(a + static_cast<left_difference_type>(i)) != static_cast<local_limb_type>(0U))
         {
@@ -3165,7 +3166,7 @@
       }
       else
       {
-        for(unsinged_fast_type i = 0U ; i < count; ++i)
+        for(auto i = static_cast<unsinged_fast_type>(0U) ; i < count; ++i)
         {
           carry = static_cast<local_double_limb_type>(carry + static_cast<local_double_limb_type>(static_cast<local_double_limb_type>(*(a + static_cast<left_difference_type>(i))) * b));
 
@@ -3810,7 +3811,7 @@
 
     WIDE_INTEGER_CONSTEXPR void bitwise_not()
     {
-      for(unsinged_fast_type i = 0U; i < number_of_limbs; ++i)
+      for(auto i = static_cast<unsinged_fast_type>(0U); i < number_of_limbs; ++i)
       {
         *(values.begin() + static_cast<size_t>(i)) = static_cast<limb_type>(~(*(values.cbegin() + static_cast<size_t>(i))));
       }
@@ -3945,10 +3946,10 @@
                                              ? static_cast<int>(local_wide_integer_type::my_width2)
                                              : static_cast<int>(local_wide_integer_type::my_width2 - 1U);
 
-    static constexpr int digits10        = static_cast<int>((std::uintmax_t(digits)       * UINTMAX_C(75257499)) / UINTMAX_C(250000000));
+    static constexpr int digits10        = static_cast<int>((static_cast<std::uintmax_t>(digits)       * UINTMAX_C(75257499)) / UINTMAX_C(250000000));
     static constexpr int max_digits10    = digits10;
     static constexpr int max_exponent    = digits;
-    static constexpr int max_exponent10  = static_cast<int>((std::uintmax_t(max_exponent) * UINTMAX_C(75257499)) / UINTMAX_C(250000000));
+    static constexpr int max_exponent10  = static_cast<int>((static_cast<std::uintmax_t>(max_exponent) * UINTMAX_C(75257499)) / UINTMAX_C(250000000));
 
     static constexpr auto (max) () -> local_wide_integer_type { return local_wide_integer_type::limits_helper_max   (IsSigned); }
     static constexpr auto (min) () -> local_wide_integer_type { return local_wide_integer_type::limits_helper_min   (IsSigned); }
@@ -4349,7 +4350,7 @@
 
     for(i = static_cast<singed_fast_type>(std::numeric_limits<local_unsigned_integral_type>::digits - 1); i >= 0; --i)
     {
-      if((u & static_cast<local_unsigned_integral_type>(local_unsigned_integral_type(1U) << i)) != 0U)
+      if((u & static_cast<local_unsigned_integral_type>(static_cast<local_unsigned_integral_type>(1U) << i)) != 0U)
       {
         break;
       }
@@ -4532,7 +4533,7 @@
       // in R.P. Brent and Paul Zimmermann, "Modern Computer Arithmetic",
       // Cambridge University Press, 2011.
 
-      for(unsinged_fast_type i = 0U; i < static_cast<unsinged_fast_type>(UINT8_C(64)); ++i)
+      for(auto i = static_cast<unsinged_fast_type>(0U); i < static_cast<unsinged_fast_type>(UINT8_C(64)); ++i)
       {
         s = u;
 
@@ -4589,9 +4590,9 @@
       // in R.P. Brent and Paul Zimmermann, "Modern Computer Arithmetic",
       // Cambridge University Press, 2011.
 
-      const unsinged_fast_type three_minus_one(3U - 1U);
+      const auto three_minus_one = static_cast<unsinged_fast_type>(3U - 1U);
 
-      for(unsinged_fast_type i = 0U; i < static_cast<unsinged_fast_type>(UINT8_C(64)); ++i)
+      for(auto i = static_cast<unsinged_fast_type>(0U); i < static_cast<unsinged_fast_type>(UINT8_C(64)); ++i)
       {
         s = u;
 
@@ -4670,7 +4671,7 @@
 
         const unsinged_fast_type k_minus_one(k - 1U);
 
-        for(unsinged_fast_type i = 0U; i < static_cast<unsinged_fast_type>(UINT8_C(64)); ++i)
+        for(auto i = static_cast<unsinged_fast_type>(0U); i < static_cast<unsinged_fast_type>(UINT8_C(64)); ++i)
         {
           s = u;
 
@@ -4858,15 +4859,15 @@
 
       if(v <= static_cast<local_ularge_type>((std::numeric_limits<local_ushort_type>::max)()))
       {
-        u = integer_gcd_reduce_short(local_ushort_type(v),
-                                     local_ushort_type(u));
+        u = integer_gcd_reduce_short(static_cast<local_ushort_type>(v),
+                                     static_cast<local_ushort_type>(u));
 
         break;
       }
 
       v -= u;
 
-      while((local_ushort_type(v) & 1U) == 0U)
+      while((static_cast<local_ushort_type>(v) & 1U) == 0U)
       {
         v >>= 1U;
       }
@@ -5298,7 +5299,7 @@
     const local_wide_integer_type np((!local_wide_integer_type::is_neg(n)) ? n : -n);
 
     {
-      const local_limb_type n0(np);
+      const auto n0 = static_cast<local_limb_type>(np);
 
       if((n0 & 1U) == 0U)
       {
@@ -5351,7 +5352,7 @@
     {
       constexpr std::uint64_t pp0 = UINT64_C(16294579238595022365);
 
-      const std::uint64_t m0(np % pp0);
+      const auto m0 = static_cast<std::uint64_t>(np % pp0);
 
       if(detail::integer_gcd_reduce_large(m0, pp0) != 1U)
       {
@@ -5365,7 +5366,7 @@
     {
       constexpr std::uint64_t pp1 = UINT64_C(7145393598349078859);
 
-      const std::uint64_t m1(np % pp1);
+      const auto m1 = static_cast<std::uint64_t>(np % pp1);
 
       if(detail::integer_gcd_reduce_large(m1, pp1) != 1U)
       {
@@ -5379,7 +5380,7 @@
     {
       constexpr std::uint64_t pp2 = UINT64_C(6408001374760705163);
 
-      const std::uint64_t m2(np % pp2);
+      const auto m2 = static_cast<std::uint64_t>(np % pp2);
 
       if(detail::integer_gcd_reduce_large(m2, pp2) != 1U)
       {
@@ -5393,7 +5394,7 @@
     {
       constexpr std::uint64_t pp3 = UINT64_C(690862709424854779);
 
-      const std::uint64_t m3(np % pp3);
+      const auto m3 = static_cast<std::uint64_t>(np % pp3);
 
       if(detail::integer_gcd_reduce_large(m3, pp3) != 1U)
       {
@@ -5407,7 +5408,7 @@
     {
       constexpr std::uint64_t pp4 = UINT64_C(80814592450549);
 
-      const std::uint64_t m4(np % pp4);
+      const auto m4 = static_cast<std::uint64_t>(np % pp4);
 
       if(detail::integer_gcd_reduce_large(m4, pp4) != 1U)
       {
@@ -5444,7 +5445,7 @@
 
     bool is_probably_prime = true;
 
-    unsinged_fast_type i = 0U;
+    auto i = static_cast<unsinged_fast_type>(0U);
 
     local_wide_integer_type x;
     local_wide_integer_type y;
@@ -5455,7 +5456,7 @@
       x = distribution(generator, params);
       y = powm(x, q, np);
 
-      unsinged_fast_type j = 0U;
+      auto j = static_cast<unsinged_fast_type>(0U);
 
       while(y != nm1)
       {
