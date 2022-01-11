@@ -915,7 +915,7 @@
 
     template<const size_type OtherSize>
     WIDE_INTEGER_CONSTEXPR fixed_static_array(const fixed_static_array<size_type, OtherSize>& other_array,   // NOLINT(hicpp-explicit-conversions,google-explicit-constructor)
-                                              typename std::enable_if<OtherSize != MySize>::type* = nullptr)
+                                              typename std::enable_if<OtherSize != MySize>::type* = nullptr) // NOLINT(hicpp-named-parameter,readability-named-parameter)
     {
       std::copy(other_array.cbegin(),
                 other_array.cbegin() + (std::min)(OtherSize, MySize),
