@@ -2299,10 +2299,8 @@
 
     template<const bool RePhraseIsSigned = IsSigned,
              typename std::enable_if<(!RePhraseIsSigned)>::type const* = nullptr>
-    static constexpr auto is_neg(uintwide_t<Width2, LimbType, AllocatorType, RePhraseIsSigned> a) -> bool
+    static constexpr auto is_neg(uintwide_t<Width2, LimbType, AllocatorType, RePhraseIsSigned>) -> bool // NOLINT(hicpp-named-parameter,readability-named-parameter)
     {
-      static_cast<void>(a.crepresentation().empty());
-
       return false;
     }
 
@@ -4535,10 +4533,14 @@
       // Obtain the initial value.
       const unsinged_fast_type left_shift_amount =
         ((static_cast<unsinged_fast_type>(msb_pos % 2U) == 0U)
-          ? 1U + static_cast<unsinged_fast_type>((msb_pos + 0U) / 2U)
-          : 1U + static_cast<unsinged_fast_type>((msb_pos + 1U) / 2U));
+          ? static_cast<unsinged_fast_type>(1U + static_cast<unsinged_fast_type>((msb_pos + 0U) / 2U))
+          : static_cast<unsinged_fast_type>(1U + static_cast<unsinged_fast_type>((msb_pos + 1U) / 2U)));
 
-      local_wide_integer_type u(local_wide_integer_type(static_cast<std::uint_fast8_t>(1U)) << left_shift_amount);
+      local_wide_integer_type
+      u
+      (
+        local_wide_integer_type(static_cast<std::uint_fast8_t>(1U)) << left_shift_amount
+      );
 
       // Perform the iteration for the square root.
       // See Algorithm 1.13 SqrtInt, Sect. 1.5.1
@@ -4588,12 +4590,12 @@
       const unsinged_fast_type msb_pos = msb(m);
 
       // Obtain the initial value.
-      const unsinged_fast_type msb_pos_mod_3 = msb_pos % 3;
+      const auto msb_pos_mod_3 = static_cast<unsinged_fast_type>(msb_pos % UINT8_C(3));
 
       const unsinged_fast_type left_shift_amount =
         ((msb_pos_mod_3 == 0U)
-          ? 1U + static_cast<unsinged_fast_type>((msb_pos +                  0U ) / 3U)
-          : 1U + static_cast<unsinged_fast_type>((msb_pos + (3U - msb_pos_mod_3)) / 3U));
+          ? static_cast<unsinged_fast_type>(1U + static_cast<unsinged_fast_type>((msb_pos +                  0U ) / 3U))
+          : static_cast<unsinged_fast_type>(1U + static_cast<unsinged_fast_type>((msb_pos + (3U - msb_pos_mod_3)) / 3U)));
 
       local_wide_integer_type u(local_wide_integer_type(static_cast<std::uint_fast8_t>(1U)) << left_shift_amount);
 
@@ -5182,7 +5184,11 @@
              const int GeneratorResultBits = std::numeric_limits<typename GeneratorType::result_type>::digits>
     WIDE_INTEGER_CONSTEXPR auto operator()(GeneratorType& generator) -> result_type
     {
-      return generate<GeneratorType, GeneratorResultBits>(generator, my_params);
+      return generate<GeneratorType, GeneratorResultBits>
+             (
+               generator,
+               my_params
+             );
     }
 
     template<typename GeneratorType,
@@ -5190,7 +5196,11 @@
     WIDE_INTEGER_CONSTEXPR auto operator()(      GeneratorType& input_generator,
                                            const param_type&    input_params) -> result_type
     {
-      return generate<GeneratorType, GeneratorResultBits>(input_generator, input_params);
+      return generate<GeneratorType, GeneratorResultBits>
+             (
+               input_generator,
+               input_params
+             );
     }
 
   private:
@@ -5203,7 +5213,7 @@
     {
       // Generate random numbers r, where a <= r <= b.
 
-      result_type result(std::uint8_t(0U));
+      auto result = static_cast<result_type>(std::uint8_t(0U));
 
       using local_limb_type = typename result_type::limb_type;
 
@@ -5221,18 +5231,19 @@
 
       generator_result_type value = generator_result_type();
 
-      auto it = (result.representation()).begin(); // NOLINT(llvm-qualified-auto,readability-qualified-auto)
+      auto it = result.representation().begin(); // NOLINT(llvm-qualified-auto,readability-qualified-auto)
 
       unsinged_fast_type j = 0U;
 
-      while(it < result.representation().end())
+      while(it != result.representation().end())
       {
         if((j % digits_gtor_ratio) == 0U)
         {
           value = input_generator();
         }
 
-        const auto next_byte = static_cast<std::uint8_t>(value >> static_cast<unsigned>(static_cast<unsinged_fast_type>(j % digits_gtor_ratio) * static_cast<unsinged_fast_type>(UINT8_C(8))));
+        const auto next_byte =
+          static_cast<std::uint8_t>(value >> static_cast<unsigned>(static_cast<unsinged_fast_type>(j % digits_gtor_ratio) * static_cast<unsinged_fast_type>(UINT8_C(8))));
 
         *it =
           static_cast<typename result_type::limb_type>
@@ -5242,7 +5253,7 @@
 
         ++j;
 
-        if((j % digits_limb_ratio) == 0U)
+        if(static_cast<unsinged_fast_type>(j % digits_limb_ratio) == static_cast<unsinged_fast_type>(0U))
         {
           ++it;
         }
