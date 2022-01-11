@@ -915,8 +915,10 @@
 
     template<const size_type OtherSize>
     WIDE_INTEGER_CONSTEXPR fixed_static_array(const fixed_static_array<size_type, OtherSize>& other_array,   // NOLINT(hicpp-explicit-conversions,google-explicit-constructor)
-                                              typename std::enable_if<OtherSize != MySize>::type* = nullptr) // NOLINT(hicpp-named-parameter,readability-named-parameter)
+                                              typename std::enable_if<OtherSize != MySize>::type* p_nullparam = nullptr)
     {
+      static_cast<void>(p_nullparam == nullptr);
+
       std::copy(other_array.cbegin(),
                 other_array.cbegin() + (std::min)(OtherSize, MySize),
                 base_class_type::begin());
@@ -1298,8 +1300,10 @@
     WIDE_INTEGER_CONSTEXPR uintwide_t(const UnsignedIntegralType v, // NOLINT(google-explicit-constructor,hicpp-explicit-conversions)
                                       typename std::enable_if<(   (std::is_integral   <UnsignedIntegralType>::value)
                                                                && (std::is_unsigned   <UnsignedIntegralType>::value)
-                                                               && (std::numeric_limits<UnsignedIntegralType>::digits > std::numeric_limits<limb_type>::digits))>::type* = nullptr) // NOLINT(hicpp-named-parameter,readability-named-parameter)
+                                                               && (std::numeric_limits<UnsignedIntegralType>::digits > std::numeric_limits<limb_type>::digits))>::type* p_nullparam = nullptr)
     {
+      static_cast<void>(p_nullparam == nullptr);
+
       auto right_shift_amount_v = static_cast<unsinged_fast_type>(0U);
       auto index_u              = static_cast<std::uint_fast8_t> (0U);
 
@@ -1318,9 +1322,11 @@
     // Constructors from built-in signed integral types.
     template<typename SignedIntegralType>
     WIDE_INTEGER_CONSTEXPR uintwide_t(const SignedIntegralType v, // NOLINT(google-explicit-constructor,hicpp-explicit-conversions)
-                                      typename std::enable_if<(   (std::is_integral   <SignedIntegralType>::value)
-                                                               && (std::is_signed     <SignedIntegralType>::value))>::type* = nullptr) // NOLINT(hicpp-named-parameter,readability-named-parameter)
+                                      typename std::enable_if<(   (std::is_integral<SignedIntegralType>::value)
+                                                               && (std::is_signed  <SignedIntegralType>::value))>::type* p_nullparam = nullptr)
     {
+      static_cast<void>(p_nullparam == nullptr);
+
       using local_signed_integral_type   = SignedIntegralType;
       using local_unsigned_integral_type =
         typename detail::uint_type_helper<static_cast<size_t>(std::numeric_limits<local_signed_integral_type>::digits + 1)>::exact_unsigned_type;
@@ -2454,8 +2460,10 @@
     template<const size_t OtherWidth2>
     static WIDE_INTEGER_CONSTEXPR void eval_mul_unary(      uintwide_t<OtherWidth2, LimbType, AllocatorType, IsSigned>& u,
                                                       const uintwide_t<OtherWidth2, LimbType, AllocatorType, IsSigned>& v,
-                                                      typename std::enable_if<((OtherWidth2 / std::numeric_limits<LimbType>::digits) < number_of_limbs_karatsuba_threshold)>::type* = nullptr) // NOLINT(hicpp-named-parameter,readability-named-parameter)
+                                                      typename std::enable_if<((OtherWidth2 / std::numeric_limits<LimbType>::digits) < number_of_limbs_karatsuba_threshold)>::type* p_nullparam = nullptr)
     {
+      static_cast<void>(p_nullparam == nullptr);
+
       // Unary multiplication function using schoolbook multiplication,
       // but we only need to retain the low half of the n*n algorithm.
       // In other words, this is an n*n->n bit multiplication.
@@ -2478,8 +2486,10 @@
     template<const size_t OtherWidth2>
     static WIDE_INTEGER_CONSTEXPR void eval_mul_unary(      uintwide_t<OtherWidth2, LimbType, AllocatorType, IsSigned>& u,
                                                       const uintwide_t<OtherWidth2, LimbType, AllocatorType, IsSigned>& v,
-                                                      typename std::enable_if<((OtherWidth2 / std::numeric_limits<LimbType>::digits) >= number_of_limbs_karatsuba_threshold)>::type* = nullptr) // NOLINT(hicpp-named-parameter,readability-named-parameter)
+                                                      typename std::enable_if<((OtherWidth2 / std::numeric_limits<LimbType>::digits) >= number_of_limbs_karatsuba_threshold)>::type* p_nullparam = nullptr)
     {
+      static_cast<void>(p_nullparam == nullptr);
+
       // Unary multiplication function using Karatsuba multiplication.
 
       constexpr size_t local_number_of_limbs =
@@ -4523,10 +4533,14 @@
       // Obtain the initial value.
       const unsinged_fast_type left_shift_amount =
         ((static_cast<unsinged_fast_type>(msb_pos % 2U) == 0U)
-          ? 1U + static_cast<unsinged_fast_type>((msb_pos + 0U) / 2U)
-          : 1U + static_cast<unsinged_fast_type>((msb_pos + 1U) / 2U));
+          ? static_cast<unsinged_fast_type>(1U + static_cast<unsinged_fast_type>((msb_pos + 0U) / 2U))
+          : static_cast<unsinged_fast_type>(1U + static_cast<unsinged_fast_type>((msb_pos + 1U) / 2U)));
 
-      local_wide_integer_type u(local_wide_integer_type(static_cast<std::uint_fast8_t>(1U)) << left_shift_amount);
+      local_wide_integer_type
+      u
+      (
+        local_wide_integer_type(static_cast<std::uint_fast8_t>(1U)) << left_shift_amount
+      );
 
       // Perform the iteration for the square root.
       // See Algorithm 1.13 SqrtInt, Sect. 1.5.1
@@ -4576,12 +4590,12 @@
       const unsinged_fast_type msb_pos = msb(m);
 
       // Obtain the initial value.
-      const unsinged_fast_type msb_pos_mod_3 = msb_pos % 3;
+      const auto msb_pos_mod_3 = static_cast<unsinged_fast_type>(msb_pos % UINT8_C(3));
 
       const unsinged_fast_type left_shift_amount =
         ((msb_pos_mod_3 == 0U)
-          ? 1U + static_cast<unsinged_fast_type>((msb_pos +                  0U ) / 3U)
-          : 1U + static_cast<unsinged_fast_type>((msb_pos + (3U - msb_pos_mod_3)) / 3U));
+          ? static_cast<unsinged_fast_type>(1U + static_cast<unsinged_fast_type>((msb_pos +                  0U ) / 3U))
+          : static_cast<unsinged_fast_type>(1U + static_cast<unsinged_fast_type>((msb_pos + (3U - msb_pos_mod_3)) / 3U)));
 
       local_wide_integer_type u(local_wide_integer_type(static_cast<std::uint_fast8_t>(1U)) << left_shift_amount);
 
@@ -4981,8 +4995,8 @@
   }
 
   template<typename UnsignedShortType>
-  WIDE_INTEGER_CONSTEXPR auto gcd(const UnsignedShortType& u, const UnsignedShortType& v) -> typename std::enable_if<(   (std::is_integral   <UnsignedShortType>::value)
-                                                                                                                      && (std::is_unsigned   <UnsignedShortType>::value)), UnsignedShortType>::type
+  WIDE_INTEGER_CONSTEXPR auto gcd(const UnsignedShortType& u, const UnsignedShortType& v) -> typename std::enable_if<(   (std::is_integral<UnsignedShortType>::value)
+                                                                                                                      && (std::is_unsigned<UnsignedShortType>::value)), UnsignedShortType>::type
   {
     UnsignedShortType result;
 
@@ -5170,7 +5184,11 @@
              const int GeneratorResultBits = std::numeric_limits<typename GeneratorType::result_type>::digits>
     WIDE_INTEGER_CONSTEXPR auto operator()(GeneratorType& generator) -> result_type
     {
-      return generate<GeneratorType, GeneratorResultBits>(generator, my_params);
+      return generate<GeneratorType, GeneratorResultBits>
+             (
+               generator,
+               my_params
+             );
     }
 
     template<typename GeneratorType,
@@ -5178,7 +5196,11 @@
     WIDE_INTEGER_CONSTEXPR auto operator()(      GeneratorType& input_generator,
                                            const param_type&    input_params) -> result_type
     {
-      return generate<GeneratorType, GeneratorResultBits>(input_generator, input_params);
+      return generate<GeneratorType, GeneratorResultBits>
+             (
+               input_generator,
+               input_params
+             );
     }
 
   private:
@@ -5191,7 +5213,7 @@
     {
       // Generate random numbers r, where a <= r <= b.
 
-      result_type result(std::uint8_t(0U));
+      auto result = static_cast<result_type>(std::uint8_t(0U));
 
       using local_limb_type = typename result_type::limb_type;
 
@@ -5209,18 +5231,19 @@
 
       generator_result_type value = generator_result_type();
 
-      auto it = (result.representation()).begin(); // NOLINT(llvm-qualified-auto,readability-qualified-auto)
+      auto it = result.representation().begin(); // NOLINT(llvm-qualified-auto,readability-qualified-auto)
 
       unsinged_fast_type j = 0U;
 
-      while(it < result.representation().end())
+      while(it != result.representation().end())
       {
         if((j % digits_gtor_ratio) == 0U)
         {
           value = input_generator();
         }
 
-        const auto next_byte = static_cast<std::uint8_t>(value >> static_cast<unsigned>(static_cast<unsinged_fast_type>(j % digits_gtor_ratio) * static_cast<unsinged_fast_type>(UINT8_C(8))));
+        const auto next_byte =
+          static_cast<std::uint8_t>(value >> static_cast<unsigned>(static_cast<unsinged_fast_type>(j % digits_gtor_ratio) * static_cast<unsinged_fast_type>(UINT8_C(8))));
 
         *it =
           static_cast<typename result_type::limb_type>
@@ -5230,7 +5253,7 @@
 
         ++j;
 
-        if((j % digits_limb_ratio) == 0U)
+        if(static_cast<unsinged_fast_type>(j % digits_limb_ratio) == static_cast<unsinged_fast_type>(0U))
         {
           ++it;
         }
