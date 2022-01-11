@@ -1,4 +1,4 @@
-///////////////////////////////////////////////////////////////////////////////
+﻿///////////////////////////////////////////////////////////////////////////////
 //  Copyright Christopher Kormanyos 2019 - 2022.
 //  Distributed under the Boost Software License,
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt
@@ -87,7 +87,7 @@ auto math::wide_integer::test_uintwide_t_boost_backend() -> bool
     result_is_ok &= result_cu_is_ok;
 
     #if defined(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST) && (WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST != 0)
-    static_assert(result_cu_is_ok == true, "Error: test_uintwide_t_boost_backend not OK!");
+    static_assert(result_cu_is_ok, "Error: test_uintwide_t_boost_backend not OK!");
     #endif
   }
 

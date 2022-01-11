@@ -21,7 +21,7 @@ auto math::wide_integer::example002_shl_shr() -> bool
                              && (d == "0x1E9BEE83BCB17965E6FE306E404DDF3979F88AD97015E"));
 
   #if defined(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST) && (WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST != 0)
-  static_assert(result_is_ok == true, "Error: example002_shl_shr not OK!");
+  static_assert(result_is_ok, "Error: example002_shl_shr not OK!");
   #endif
 
   return result_is_ok;

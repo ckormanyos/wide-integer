@@ -5,7 +5,7 @@
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
 
-#ifndef TEST_UINTWIDE_T_N_BINARY_OPS_TEMPLATE_2019_12_19_H
+#ifndef TEST_UINTWIDE_T_N_BINARY_OPS_TEMPLATE_2019_12_19_H // NOLINT(llvm-header-guard)
   #define TEST_UINTWIDE_T_N_BINARY_OPS_TEMPLATE_2019_12_19_H
 
   #include <algorithm>
@@ -242,11 +242,11 @@
     }
 
   private:
-    std::vector<local_uint_type> a_local;
-    std::vector<local_uint_type> b_local;
+    std::vector<local_uint_type> a_local; // NOLINT(readability-identifier-naming)
+    std::vector<local_uint_type> b_local; // NOLINT(readability-identifier-naming)
 
-    std::vector<boost_uint_type> a_boost;
-    std::vector<boost_uint_type> b_boost;
+    std::vector<boost_uint_type> a_boost; // NOLINT(readability-identifier-naming)
+    std::vector<boost_uint_type> b_boost; // NOLINT(readability-identifier-naming)
   };
 
 #endif // TEST_UINTWIDE_T_N_BINARY_OPS_TEMPLATE_2019_12_19_H

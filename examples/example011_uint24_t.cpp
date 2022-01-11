@@ -1,4 +1,4 @@
-///////////////////////////////////////////////////////////////////
+﻿///////////////////////////////////////////////////////////////////
 //  Copyright Christopher Kormanyos 2018 - 2022.                 //
 //  Distributed under the Boost Software License,                //
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt          //
@@ -32,15 +32,15 @@ auto math::wide_integer::example011_uint24_t() -> bool
   const uint24_t c_mul = (a * b);
   const uint24_t c_div = (a / b);
 
-  const bool result_is_ok = (   (   (c_add == ((a32 + b32) & 0x00FFFFFFULL))
-                                 && (c_sub == ((a32 - b32) & 0x00FFFFFFULL))
-                                 && (c_mul == ((a32 * b32) & 0x00FFFFFFULL))
-                                 && (c_div == ((a32 / b32) & 0x00FFFFFFULL)))
+  const bool result_is_ok = (   (   (c_add == static_cast<std::uint32_t>(static_cast<std::uint32_t>(a32 + b32) & UINT32_C(0x00FFFFFF)))
+                                 && (c_sub == static_cast<std::uint32_t>(static_cast<std::uint32_t>(a32 - b32) & UINT32_C(0x00FFFFFF)))
+                                 && (c_mul == static_cast<std::uint32_t>(static_cast<std::uint32_t>(a32 * b32) & UINT32_C(0x00FFFFFF)))
+                                 && (c_div == static_cast<std::uint32_t>(static_cast<std::uint32_t>(a32 / b32) & UINT32_C(0x00FFFFFF))))
                              &&
-                                (   (static_cast<std::uint64_t>(c_add) == ((a32 + b32) & 0x00FFFFFFULL))
-                                 && (static_cast<std::uint64_t>(c_sub) == ((a32 - b32) & 0x00FFFFFFULL))
-                                 && (static_cast<std::uint64_t>(c_mul) == ((a32 * b32) & 0x00FFFFFFULL))
-                                 && (static_cast<std::uint64_t>(c_div) == ((a32 / b32) & 0x00FFFFFFULL))));
+                                (   (static_cast<std::uint64_t>(c_add) == static_cast<std::uint64_t>(static_cast<std::uint32_t>(a32 + b32) & UINT32_C(0x00FFFFFF)))
+                                 && (static_cast<std::uint64_t>(c_sub) == static_cast<std::uint64_t>(static_cast<std::uint32_t>(a32 - b32) & UINT32_C(0x00FFFFFF)))
+                                 && (static_cast<std::uint64_t>(c_mul) == static_cast<std::uint64_t>(static_cast<std::uint32_t>(a32 * b32) & UINT32_C(0x00FFFFFF)))
+                                 && (static_cast<std::uint64_t>(c_div) == static_cast<std::uint64_t>(static_cast<std::uint32_t>(a32 / b32) & UINT32_C(0x00FFFFFF)))));
 
   return result_is_ok;
 }

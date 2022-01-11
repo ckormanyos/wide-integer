@@ -97,12 +97,17 @@ jobs:
     defaults:
       run:
         shell: bash
+    strategy:
+      fail-fast: false
+      matrix:
+        standard: [ c++20 ]
+        compiler: [ g++-11, clang++-12 ]
     steps:
       - uses: actions/checkout@v2
         with:
           fetch-depth: '0'
       - name: update-tools
-        run: sudo apt install clang-tidy-12
+        run: sudo apt install gcc-11 g++-11 clang-12 clang-tidy-12
       - name: clone-submods-bootstrap-headers-boost-develop
         run: |
           git clone -b develop --depth 1 https://github.com/boostorg/boost.git ../boost-root
@@ -125,11 +130,11 @@ jobs:
           grep BOOST_VERSION ../boost-root/boost/version.hpp
           cd .tidy/make
           echo "running clang-tidy"
-          echo "make prepare -f make_tidy_01_generic.gmk MY_BOOST_ROOT=../../../boost-root"
+          echo "make prepare -f make_tidy_01_generic.gmk MY_BOOST_ROOT=../../../boost-root MY_CC=${{ matrix.compiler }} MY_STD=${{ matrix.standard }}"
           echo
-          make prepare -f make_tidy_01_generic.gmk MY_BOOST_ROOT=../../../boost-root
-          echo "make tidy -f make_tidy_01_generic.gmk --jobs=8 MY_BOOST_ROOT=../../../boost-root"
-          make tidy -f make_tidy_01_generic.gmk --jobs=8 MY_BOOST_ROOT=../../../boost-root
+          make prepare -f make_tidy_01_generic.gmk MY_BOOST_ROOT=../../../boost-root MY_CC=${{ matrix.compiler }} MY_STD=${{ matrix.standard }}
+          echo "make tidy -f make_tidy_01_generic.gmk --jobs=8 MY_BOOST_ROOT=../../../boost-root MY_CC=${{ matrix.compiler }} MY_STD=${{ matrix.standard }}"
+          make tidy -f make_tidy_01_generic.gmk --jobs=8 MY_BOOST_ROOT=../../../boost-root MY_CC=${{ matrix.compiler }} MY_STD=${{ matrix.standard }}
           echo
           echo "verify empty word count of ./tmp/all.tidy_txt"
           wc ./tmp/all.tidy_txt | grep '0 0 0'

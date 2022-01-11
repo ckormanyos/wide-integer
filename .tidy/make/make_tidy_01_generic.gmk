@@ -76,7 +76,8 @@ prepare:
 # ------------------------------------------------------------------------------
 $(PATH_TMP)/%.tidy_txt : %.cpp
 	@-$(GNUECHO) +++ tidying: $<
-	@-$(TIDY) $(TIDY_FLAGS) $< -- $(C_INCLUDES) $(C_DEFINES) > $(PATH_TMP)/$(basename $(@F)).tidy_txt 2> $(PATH_ERR)/$(basename $(@F)).tidy_err
+	@-$(TIDY) $(TIDY_FLAGS) $< -- $(CXX_FLAGS) $(C_INCLUDES) $(C_DEFINES) > $(PATH_TMP)/$(basename $(@F)).tidy_txt 2> $(PATH_ERR)/$(basename $(@F)).tidy_err
 	@-$(GNUECHO)
 	@-$(GNUECHO) +++ print $(PATH_ERR)/$(basename $(@F)).tidy_err
 	@-$(SED) -n l $(PATH_ERR)/$(basename $(@F)).tidy_err
+	@-$(GNUECHO)

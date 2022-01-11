@@ -23,7 +23,7 @@ auto math::wide_integer::example004_rootk_pow() -> bool
     result_is_ok &= result_is_ok_root;
 
     #if defined(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST) && (WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST != 0)
-    static_assert(result_is_ok_root == true, "Error: example004_rootk_pow not OK!");
+    static_assert(result_is_ok_root, "Error: example004_rootk_pow not OK!");
     #endif
   }
 
@@ -38,7 +38,7 @@ auto math::wide_integer::example004_rootk_pow() -> bool
     result_is_ok &= result_is_ok_pow;
 
     #if defined(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST) && (WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST != 0)
-    static_assert(result_is_ok_pow == true, "Error: example004_rootk_pow not OK!");
+    static_assert(result_is_ok_pow, "Error: example004_rootk_pow not OK!");
     #endif
   }
 
@@ -53,7 +53,7 @@ auto math::wide_integer::example004_rootk_pow() -> bool
     result_is_ok &= result_is_ok_root;
 
     #if defined(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST) && (WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST != 0)
-    static_assert(result_is_ok_root == true, "Error: example004_rootk_pow not OK!");
+    static_assert(result_is_ok_root, "Error: example004_rootk_pow not OK!");
     #endif
   }
 
@@ -68,7 +68,7 @@ auto math::wide_integer::example004_rootk_pow() -> bool
     result_is_ok &= result_is_ok_root;
 
     #if defined(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST) && (WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST != 0)
-    static_assert(result_is_ok_root == true, "Error: example004_rootk_pow not OK!");
+    static_assert(result_is_ok_root, "Error: example004_rootk_pow not OK!");
     #endif
   }
 

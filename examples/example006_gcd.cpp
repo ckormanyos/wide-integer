@@ -20,7 +20,7 @@ auto math::wide_integer::example006_gcd() -> bool
   WIDE_INTEGER_CONSTEXPR bool result_is_ok = (std::uint32_t(c) == UINT32_C(12170749));
 
   #if defined(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST) && (WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST != 0)
-  static_assert(result_is_ok == true, "Error: example006_gcd not OK!");
+  static_assert(result_is_ok, "Error: example006_gcd not OK!");
   #endif
 
   return result_is_ok;

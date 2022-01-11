@@ -5,7 +5,7 @@
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)             //
 ///////////////////////////////////////////////////////////////////
 
-#ifndef EXAMPLE_UINTWIDE_T_2021_04_29_H
+#ifndef EXAMPLE_UINTWIDE_T_2021_04_29_H // NOLINT(llvm-header-guard)
   #define EXAMPLE_UINTWIDE_T_2021_04_29_H
 
   // This file contains function prototypes of the uintwide_t examples.

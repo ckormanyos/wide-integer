@@ -5,7 +5,7 @@
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
 
-#ifndef TEST_UINTWIDE_T_N_BINARY_OPS_MUL_DIV_4_BY_4_TEMPLATE_2021_03_04_H
+#ifndef TEST_UINTWIDE_T_N_BINARY_OPS_MUL_DIV_4_BY_4_TEMPLATE_2021_03_04_H // NOLINT(llvm-header-guard)
   #define TEST_UINTWIDE_T_N_BINARY_OPS_MUL_DIV_4_BY_4_TEMPLATE_2021_03_04_H
 
   #include <atomic>
@@ -153,11 +153,11 @@
     }
 
   private:
-    std::vector<local_uint_ab_type> a_local;
-    std::vector<local_uint_ab_type> b_local;
+    std::vector<local_uint_ab_type> a_local; // NOLINT(readability-identifier-naming)
+    std::vector<local_uint_ab_type> b_local; // NOLINT(readability-identifier-naming)
 
-    std::vector<native_uint_cntrl_type> a_cntrl;
-    std::vector<native_uint_cntrl_type> b_cntrl;
+    std::vector<native_uint_cntrl_type> a_cntrl; // NOLINT(readability-identifier-naming)
+    std::vector<native_uint_cntrl_type> b_cntrl; // NOLINT(readability-identifier-naming)
 
     template<typename OtherLocalUintType,
              typename OtherCntrlUintType>

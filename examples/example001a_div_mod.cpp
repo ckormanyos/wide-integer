@@ -25,7 +25,7 @@ auto math::wide_integer::example001a_div_mod() -> bool
                                               && (d == "100041341335406267530943777943625254875702684549707174207105689918734693139780"));
 
   #if defined(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST) && (WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST != 0)
-  static_assert(result_is_ok == true, "Error: example001a_div_mod not OK!");
+  static_assert(result_is_ok, "Error: example001a_div_mod not OK!");
   #endif
 
   return result_is_ok;
