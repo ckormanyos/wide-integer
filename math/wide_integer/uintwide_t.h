@@ -1585,9 +1585,9 @@
     {
       if(this == &other)
       {
-        const uintwide_t self(other); // NOLINT(performance-unnecessary-copy-initialization)
+        const uintwide_t other_as_self_copy(other); // NOLINT(performance-unnecessary-copy-initialization)
 
-        eval_mul_unary(*this, self);
+        eval_mul_unary(*this, other_as_self_copy);
       }
       else
       {
@@ -1685,7 +1685,6 @@
           a.eval_divide_knuth(b, &remainder);
 
           // The sign of the remainder follows the sign of the denominator.
-          // TBD: Verify if this is always the correct sign of the remainder.
           if(numererator_was_neg) { remainder.negate(); }
 
           values = remainder.values;
@@ -1713,7 +1712,7 @@
 
     WIDE_INTEGER_CONSTEXPR auto operator~() -> uintwide_t&
     {
-      // Bitwise NOT.
+      // Perform bitwise NOT.
       bitwise_not();
 
       return *this;
@@ -1723,7 +1722,7 @@
     {
       if(this != &other)
       {
-        // Bitwise OR.
+        // Perform bitwise OR.
         for(auto i = static_cast<unsinged_fast_type>(0U); i < number_of_limbs; ++i)
         {
           *(values.begin() + static_cast<size_t>(i)) = static_cast<limb_type>(*(values.cbegin() + static_cast<size_t>(i)) | *(other.values.cbegin() + static_cast<size_t>(i)));
@@ -1741,7 +1740,7 @@
       }
       else
       {
-        // Bitwise XOR.
+        // Perform bitwise XOR.
         for(auto i = static_cast<unsinged_fast_type>(0U); i < number_of_limbs; ++i)
         {
           *(values.begin() + static_cast<size_t>(i)) = static_cast<limb_type>(*(values.cbegin() + static_cast<size_t>(i)) ^ *(other.values.cbegin() + static_cast<size_t>(i)));
@@ -1755,7 +1754,7 @@
     {
       if(this != &other)
       {
-        // Bitwise AND.
+        // Perform bitwise AND.
         for(auto i = static_cast<unsinged_fast_type>(0U); i < number_of_limbs; ++i)
         {
           *(values.begin() + static_cast<size_t>(i)) = static_cast<limb_type>(*(values.cbegin() + static_cast<size_t>(i)) & *(other.values.cbegin() + static_cast<size_t>(i)));
@@ -1769,10 +1768,13 @@
     WIDE_INTEGER_CONSTEXPR auto operator<<=(const SignedIntegralType n) -> typename std::enable_if<(   (std::is_integral<SignedIntegralType>::value) // NOLINT(misc-no-recursion)
                                                                                                     && (std::is_signed  <SignedIntegralType>::value)), uintwide_t>::type&
     {
-      // Left-shift operator.
+      // Implement left-shift operator for signed integral argument.
       if(n < 0)
       {
-        operator>>=(-n); // NOLINT(misc-no-recursion)
+        using local_unsigned_type =
+          typename detail::uint_type_helper<static_cast<size_t>(std::numeric_limits<SignedIntegralType>::digits + 1)>::exact_unsigned_type;
+
+        operator>>=(static_cast<local_unsigned_type>(detail::negate(n)));
       }
       else if(n == 0)
       {
@@ -1797,7 +1799,7 @@
     WIDE_INTEGER_CONSTEXPR auto operator<<=(const UnsignedIntegralType n) -> typename std::enable_if<(   ( std::is_integral<UnsignedIntegralType>::value)
                                                                                                       && (!std::is_signed  <UnsignedIntegralType>::value)), uintwide_t>::type&
     {
-      // Left-shift operator.
+      // Implement left-shift operator for unsigned integral argument.
       if(n == 0)
       {
         ;
@@ -1821,10 +1823,13 @@
     WIDE_INTEGER_CONSTEXPR auto operator>>=(const SignedIntegralType n) -> typename std::enable_if<(   (std::is_integral<SignedIntegralType>::value) // NOLINT(misc-no-recursion)
                                                                                                     && (std::is_signed  <SignedIntegralType>::value)), uintwide_t>::type&
     {
-      // Right-shift operator.
+      // Implement right-shift operator for signed integral argument.
       if(n < 0)
       {
-        operator<<=(-n);
+        using local_unsigned_type =
+          typename detail::uint_type_helper<static_cast<size_t>(std::numeric_limits<SignedIntegralType>::digits + 1)>::exact_unsigned_type;
+
+        operator<<=(static_cast<local_unsigned_type>(detail::negate(n)));
       }
       else if(n == 0)
       {
@@ -1858,7 +1863,7 @@
     WIDE_INTEGER_CONSTEXPR auto operator>>=(const UnsignedIntegralType n) -> typename std::enable_if<(   ( std::is_integral<UnsignedIntegralType>::value)
                                                                                                       && (!std::is_signed  <UnsignedIntegralType>::value)), uintwide_t>::type&
     {
-      // Right-shift operator.
+      // Implement right-shift operator for unsigned integral argument.
       if(n == 0)
       {
         ;
@@ -4449,16 +4454,18 @@
     using local_wide_integer_type = uintwide_t<Width2, LimbType, AllocatorType, IsSigned>;
     using local_value_type        = typename local_wide_integer_type::limb_type;
 
-    auto bpos = static_cast<unsinged_fast_type>(0U);
+    auto bpos   = static_cast<unsinged_fast_type>(0U);
+    auto offset = static_cast<unsinged_fast_type>(0U);
 
-    for(auto it = (x.crepresentation()).cbegin(); it != (x.crepresentation()).cend(); ++it) // NOLINT(llvm-qualified-auto,readability-qualified-auto)
+    for(auto it = x.crepresentation().cbegin(); it != x.crepresentation().cend(); ++it, ++offset) // NOLINT(llvm-qualified-auto,readability-qualified-auto)
     {
-      if((*it & (std::numeric_limits<local_value_type>::max)()) != 0U)
+      if(static_cast<local_value_type>(*it & (std::numeric_limits<local_value_type>::max)()) != static_cast<local_value_type>(0U))
       {
-        const auto offset = static_cast<unsinged_fast_type>(it - x.crepresentation().cbegin());
-
-        bpos =   detail::lsb_helper(*it)
-               + static_cast<unsinged_fast_type>(static_cast<unsinged_fast_type>(std::numeric_limits<local_value_type>::digits) * offset);
+        bpos = static_cast<unsinged_fast_type>
+               (
+                   detail::lsb_helper(*it)
+                 + static_cast<unsinged_fast_type>(static_cast<unsinged_fast_type>(std::numeric_limits<local_value_type>::digits) * offset)
+               );
 
         break;
       }
@@ -4479,16 +4486,18 @@
     using local_wide_integer_type = uintwide_t<Width2, LimbType, AllocatorType, IsSigned>;
     using local_value_type        = typename local_wide_integer_type::limb_type;
 
-    auto bpos = static_cast<unsinged_fast_type>(0U);
+    auto bpos   = static_cast<unsinged_fast_type>(0U);
+    auto offset = static_cast<unsinged_fast_type>(x.crepresentation().size() - 1U);
 
-    for(auto ri = x.crepresentation().crbegin(); ri != x.crepresentation().crend(); ++ri)
+    for(auto ri = x.crepresentation().crbegin(); ri != x.crepresentation().crend(); ++ri, --offset)
     {
       if((*ri & (std::numeric_limits<local_value_type>::max)()) != 0U)
       {
-        const auto offset = static_cast<unsinged_fast_type>((x.crepresentation().crend() - 1U) - ri);
-
-        bpos =   detail::msb_helper(*ri)
-               + static_cast<unsinged_fast_type>(static_cast<unsinged_fast_type>(std::numeric_limits<local_value_type>::digits) * offset);
+        bpos = static_cast<unsinged_fast_type>
+               (
+                    detail::msb_helper(*ri)
+                  + static_cast<unsinged_fast_type>(static_cast<unsinged_fast_type>(std::numeric_limits<local_value_type>::digits) * offset)
+               );
 
         break;
       }
