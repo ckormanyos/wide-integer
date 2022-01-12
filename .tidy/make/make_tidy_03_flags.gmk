@@ -23,6 +23,7 @@ endif
 
 CXX_FLAGS    = $(CC)                                      \
                -march=native                              \
+               -mtune=native                              \
                -O3                                        \
                -Wall                                      \
                -Wextra                                    \
@@ -38,6 +39,7 @@ C_INCLUDES   = $(PATH_SRC)                                \
 C_DEFINES   :=$(addprefix -D,$(C_DEFINES))
 C_INCLUDES  :=$(addprefix -I,$(C_INCLUDES))
 
-TIDY_FLAGS   = --header-filter=uintwide_t                 \
+TIDY_FLAGS   = --extra-arg-before=--driver-mode=g++       \
+               --header-filter=uintwide_t                 \
                -warnings-as-errors=*                      \
                -checks=*,google-readability-casting,-fuchsia-*,-llvmlibc-*,-llvm-header-guard,-readability-avoid-const-params-in-decls,-cppcoreguidelines-avoid-magic-numbers,-readability-magic-numbers,-altera-struct-pack-align
