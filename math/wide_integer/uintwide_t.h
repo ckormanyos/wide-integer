@@ -37,52 +37,62 @@
   #endif
 
   #if (defined(__clang__) && (__clang_major__ <= 9))
-  #define WIDE_INTEGER_NUM_LIMITS_CLASS_TYPE struct
+  #define WIDE_INTEGER_NUM_LIMITS_CLASS_TYPE struct // NOLINT(cppcoreguidelines-macro-usage)
   #else
-  #define WIDE_INTEGER_NUM_LIMITS_CLASS_TYPE class // NOLINT(cppcoreguidelines-macro-usage)
+  #define WIDE_INTEGER_NUM_LIMITS_CLASS_TYPE class  // NOLINT(cppcoreguidelines-macro-usage)
   #endif
 
   #if defined(_MSC_VER)
     #if (_MSC_VER >= 1900) && defined(_HAS_CXX20) && (_HAS_CXX20 != 0)
-      #define WIDE_INTEGER_CONSTEXPR constexpr
+      #define WIDE_INTEGER_CONSTEXPR constexpr               // NOLINT(cppcoreguidelines-macro-usage)
       #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 1 // NOLINT(cppcoreguidelines-macro-usage)
+      #define WIDE_INTEGER_NODISCARD [[nodiscard]]           // NOLINT(cppcoreguidelines-macro-usage)
     #else
       #define WIDE_INTEGER_CONSTEXPR
       #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 0 // NOLINT(cppcoreguidelines-macro-usage)
+      #define WIDE_INTEGER_NODISCARD
     #endif
   #else
     #if (defined(__cplusplus) && (__cplusplus >= 201402L))
       #if defined(__AVR__) && (!defined(__GNUC__) || (defined(__GNUC__) && (__GNUC__ > 6)))
       #define WIDE_INTEGER_CONSTEXPR constexpr               // NOLINT(cppcoreguidelines-macro-usage)
       #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 1 // NOLINT(cppcoreguidelines-macro-usage)
+      #define WIDE_INTEGER_NODISCARD [[nodiscard]]           // NOLINT(cppcoreguidelines-macro-usage)
       #elif (defined(__cpp_lib_constexpr_algorithms) && (__cpp_lib_constexpr_algorithms>=201806))
         #if defined(__clang__)
           #if (__clang_major__ > 9)
           #define WIDE_INTEGER_CONSTEXPR constexpr               // NOLINT(cppcoreguidelines-macro-usage)
           #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 1 // NOLINT(cppcoreguidelines-macro-usage)
+          #define WIDE_INTEGER_NODISCARD [[nodiscard]]           // NOLINT(cppcoreguidelines-macro-usage)
           #else
           #define WIDE_INTEGER_CONSTEXPR
           #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 0 // NOLINT(cppcoreguidelines-macro-usage)
+          #define WIDE_INTEGER_NODISCARD
           #endif
         #else
         #define WIDE_INTEGER_CONSTEXPR constexpr               // NOLINT(cppcoreguidelines-macro-usage)
         #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 1 // NOLINT(cppcoreguidelines-macro-usage)
+        #define WIDE_INTEGER_NODISCARD [[nodiscard]]           // NOLINT(cppcoreguidelines-macro-usage)
         #endif
       #elif (defined(__clang__) && (__clang_major__ >= 10)) && (defined(__cplusplus) && (__cplusplus > 201703L))
         #if defined(__x86_64__)
         #define WIDE_INTEGER_CONSTEXPR constexpr               // NOLINT(cppcoreguidelines-macro-usage)
         #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 1 // NOLINT(cppcoreguidelines-macro-usage)
+        #define WIDE_INTEGER_NODISCARD [[nodiscard]]           // NOLINT(cppcoreguidelines-macro-usage)
         #else
         #define WIDE_INTEGER_CONSTEXPR
         #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 0 // NOLINT(cppcoreguidelines-macro-usage)
+        #define WIDE_INTEGER_NODISCARD
         #endif
       #else
       #define WIDE_INTEGER_CONSTEXPR
       #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 0 // NOLINT(cppcoreguidelines-macro-usage)
+      #define WIDE_INTEGER_NODISCARD
       #endif
     #else
       #define WIDE_INTEGER_CONSTEXPR
       #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 0 // NOLINT(cppcoreguidelines-macro-usage)
+      #define WIDE_INTEGER_NODISCARD
     #endif
   #endif
 
@@ -96,12 +106,6 @@
   #else
     #define WIDE_INTEGER_NAMESPACE_BEGIN
     #define WIDE_INTEGER_NAMESPACE_END
-  #endif
-
-  #if defined(__GNUC__) && (__GNUC__ < 6)
-  #define WIDE_INTEGER_NODISCARD               // NOLINT(cppcoreguidelines-macro-usage)
-  #else
-  #define WIDE_INTEGER_NODISCARD [[nodiscard]] // NOLINT(cppcoreguidelines-macro-usage)
   #endif
 
   #if !defined(WIDE_INTEGER_DISABLE_IMPLEMENT_UTIL_DYNAMIC_ARRAY)
@@ -213,7 +217,7 @@
     }
 
     // Destructor.
-    virtual ~dynamic_array()
+    WIDE_INTEGER_CONSTEXPR virtual ~dynamic_array()
     {
       pointer p = elems;
 
@@ -889,7 +893,7 @@
       return *this;
     }
 
-    ~fixed_dynamic_array() override = default;
+    WIDE_INTEGER_CONSTEXPR ~fixed_dynamic_array() override = default;
   };
 
   template<typename MyType,
@@ -948,7 +952,7 @@
     constexpr fixed_static_array(const fixed_static_array&) = default;
     constexpr fixed_static_array(fixed_static_array&&) noexcept = default;
 
-    ~fixed_static_array() = default;
+    WIDE_INTEGER_CONSTEXPR ~fixed_static_array() = default;
 
     WIDE_INTEGER_CONSTEXPR auto operator=(const fixed_static_array& other_array) -> fixed_static_array& = default;
     WIDE_INTEGER_CONSTEXPR auto operator=(fixed_static_array&& other_array) noexcept -> fixed_static_array& = default;
@@ -1172,7 +1176,7 @@
     constexpr native_float_parts(native_float_parts&& other) noexcept : my_mantissa_part(other.my_mantissa_part),
                                                                         my_exponent_part(other.my_exponent_part) { }
 
-    ~native_float_parts() = default;
+    WIDE_INTEGER_CONSTEXPR ~native_float_parts() = default;
 
     WIDE_INTEGER_CONSTEXPR auto operator=(const native_float_parts& other) noexcept -> native_float_parts&
     {
