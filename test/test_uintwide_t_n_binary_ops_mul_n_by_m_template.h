@@ -1,4 +1,4 @@
-﻿///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 //  Copyright Christopher Kormanyos 2019 - 2022.
 //  Distributed under the Boost Software License,
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt
@@ -21,9 +21,9 @@
     static constexpr math::wide_integer::size_t digits2a = MyDigits2A;
     static constexpr math::wide_integer::size_t digits2b = MyDigits2B;
 
-    [[nodiscard]] auto get_digits2a() const -> math::wide_integer::size_t          { return digits2a; }
-    [[nodiscard]] auto get_digits2b() const -> math::wide_integer::size_t          { return digits2b; }
-    [[nodiscard]] auto get_digits2 () const -> math::wide_integer::size_t override { return digits2a + digits2b; }
+    WIDE_INTEGER_NODISCARD auto get_digits2a() const -> math::wide_integer::size_t          { return digits2a; }
+    WIDE_INTEGER_NODISCARD auto get_digits2b() const -> math::wide_integer::size_t          { return digits2b; }
+    WIDE_INTEGER_NODISCARD auto get_digits2 () const -> math::wide_integer::size_t override { return digits2a + digits2b; }
 
     using boost_uint_backend_a_type =
       boost::multiprecision::cpp_int_backend<digits2a,
@@ -94,7 +94,7 @@
       get_equal_random_test_values_boost_and_local_n(b_local.data(), b_boost.data(), size());
     }
 
-    [[nodiscard]] auto test_binary_mul() const -> bool override
+    WIDE_INTEGER_NODISCARD auto test_binary_mul() const -> bool override
     {
       bool result_is_ok = true;
 

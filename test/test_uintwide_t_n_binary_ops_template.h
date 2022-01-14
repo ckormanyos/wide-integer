@@ -1,4 +1,4 @@
-﻿///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 //  Copyright Christopher Kormanyos 2019 - 2022.
 //  Distributed under the Boost Software License,
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt
@@ -45,7 +45,7 @@
 
     ~test_uintwide_t_n_binary_ops_template() override = default;
 
-    [[nodiscard]] auto get_digits2() const -> math::wide_integer::size_t override { return digits2; }
+    WIDE_INTEGER_NODISCARD auto get_digits2() const -> math::wide_integer::size_t override { return digits2; }
 
     void initialize() override
     {
@@ -65,7 +65,7 @@
       get_equal_random_test_values_boost_and_local_n<local_uint_type, boost_uint_type, AllocatorType>(b_local.data(), b_boost.data(), size());
     }
 
-    [[nodiscard]] auto test_binary_add() const -> bool override
+    WIDE_INTEGER_NODISCARD auto test_binary_add() const -> bool override
     {
       bool result_is_ok = true;
 
@@ -92,7 +92,7 @@
       return result_is_ok;
     }
 
-    [[nodiscard]] auto test_binary_sub() const -> bool override
+    WIDE_INTEGER_NODISCARD auto test_binary_sub() const -> bool override
     {
       bool result_is_ok = true;
 
@@ -119,7 +119,7 @@
       return result_is_ok;
     }
 
-    [[nodiscard]] auto test_binary_mul() const -> bool override
+    WIDE_INTEGER_NODISCARD auto test_binary_mul() const -> bool override
     {
       bool result_is_ok = true;
 
@@ -146,7 +146,7 @@
       return result_is_ok;
     }
 
-    [[nodiscard]] auto test_binary_div() const -> bool override
+    WIDE_INTEGER_NODISCARD auto test_binary_div() const -> bool override
     {
       std::atomic_flag test_lock = ATOMIC_FLAG_INIT;
 
@@ -180,7 +180,7 @@
       return result_is_ok;
     }
 
-    [[nodiscard]] auto test_binary_mod() const -> bool override
+    WIDE_INTEGER_NODISCARD auto test_binary_mod() const -> bool override
     {
       std::atomic_flag test_lock = ATOMIC_FLAG_INIT;
 
@@ -214,7 +214,7 @@
       return result_is_ok;
     }
 
-    [[nodiscard]] auto test_binary_sqrt() const -> bool override
+    WIDE_INTEGER_NODISCARD auto test_binary_sqrt() const -> bool override
     {
       bool result_is_ok = true;
 
