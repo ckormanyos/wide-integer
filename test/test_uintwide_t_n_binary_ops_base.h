@@ -1,4 +1,4 @@
-﻿///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 //  Copyright Christopher Kormanyos 2019 - 2022.
 //  Distributed under the Boost Software License,
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt
@@ -31,12 +31,12 @@
 
     ~test_uintwide_t_n_binary_ops_base() override = default;
 
-    [[nodiscard]] virtual auto test_binary_add () const -> bool { return false; }
-    [[nodiscard]] virtual auto test_binary_sub () const -> bool { return false; }
-    [[nodiscard]] virtual auto test_binary_mul () const -> bool { return false; }
-    [[nodiscard]] virtual auto test_binary_div () const -> bool { return false; }
-    [[nodiscard]] virtual auto test_binary_mod () const -> bool { return false; }
-    [[nodiscard]] virtual auto test_binary_sqrt() const -> bool { return false; }
+    WIDE_INTEGER_NODISCARD virtual auto test_binary_add () const -> bool { return false; }
+    WIDE_INTEGER_NODISCARD virtual auto test_binary_sub () const -> bool { return false; }
+    WIDE_INTEGER_NODISCARD virtual auto test_binary_mul () const -> bool { return false; }
+    WIDE_INTEGER_NODISCARD virtual auto test_binary_div () const -> bool { return false; }
+    WIDE_INTEGER_NODISCARD virtual auto test_binary_mod () const -> bool { return false; }
+    WIDE_INTEGER_NODISCARD virtual auto test_binary_sqrt() const -> bool { return false; }
 
     virtual auto do_test(const std::size_t rounds) -> bool
     {

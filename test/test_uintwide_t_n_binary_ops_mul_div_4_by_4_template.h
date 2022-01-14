@@ -1,4 +1,4 @@
-﻿///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 //  Copyright Christopher Kormanyos 2021.
 //  Distributed under the Boost Software License,
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt
@@ -32,7 +32,7 @@
   private:
     static constexpr math::wide_integer::size_t digits2 = MyWidth2;
 
-    [[nodiscard]] auto get_digits2 () const -> math::wide_integer::size_t override { return digits2; }
+    WIDE_INTEGER_NODISCARD auto get_digits2 () const -> math::wide_integer::size_t override { return digits2; }
 
     using native_uint_cntrl_type =
       typename math::wide_integer::detail::uint_type_helper<digits2>::exact_unsigned_type;
@@ -88,7 +88,7 @@
       get_equal_random_test_values_cntrl_and_local_n(b_local.data(), b_cntrl.data(), size());
     }
 
-    [[nodiscard]] auto test_binary_mul() const -> bool override
+    WIDE_INTEGER_NODISCARD auto test_binary_mul() const -> bool override
     {
       std::atomic_flag test_lock = ATOMIC_FLAG_INIT;
 
@@ -118,7 +118,7 @@
       return result_is_ok;
     }
 
-    [[nodiscard]] auto test_binary_div() const -> bool override
+    WIDE_INTEGER_NODISCARD auto test_binary_div() const -> bool override
     {
       std::atomic_flag test_lock = ATOMIC_FLAG_INIT;
 
