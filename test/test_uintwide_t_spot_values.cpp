@@ -86,25 +86,25 @@ auto math::wide_integer::test_uintwide_t_spot_values() -> bool // NOLINT(readabi
   {
     // See also https://github.com/ckormanyos/wide-integer/issues/181
 
-    using uint128_t = math::wide_integer::uintwide_t<128U, std::uint32_t, void, false>;
-    using  int128_t = math::wide_integer::uintwide_t<128U, std::uint32_t, void, true>;
-    using uint160_t = math::wide_integer::uintwide_t<160U, std::uint32_t, void, false>;
-    using  int160_t = math::wide_integer::uintwide_t<160U, std::uint32_t, void, true>;
+    using local_uint128_type = math::wide_integer::uintwide_t<128U, std::uint32_t, void, false>;
+    using local_int128_type  = math::wide_integer::uintwide_t<128U, std::uint32_t, void, true>;
+    using local_uint160_type = math::wide_integer::uintwide_t<160U, std::uint32_t, void, false>;
+    using local_int160_type  = math::wide_integer::uintwide_t<160U, std::uint32_t, void, true>;
 
     // Get randoms via:
     // RandomInteger[{100000000000000000000000000000000000, 10000000000000000000000000000000000000}]
 
-    WIDE_INTEGER_CONSTEXPR uint128_t u128_0("3076659267683009403742876678609501102");
-    WIDE_INTEGER_CONSTEXPR uint128_t u128_1("9784355713321885697254484081284759103");
-    WIDE_INTEGER_CONSTEXPR uint128_t u128_2("1759644461251476961796845209840363274");
+    WIDE_INTEGER_CONSTEXPR local_uint128_type u128_0("3076659267683009403742876678609501102");
+    WIDE_INTEGER_CONSTEXPR local_uint128_type u128_1("9784355713321885697254484081284759103");
+    WIDE_INTEGER_CONSTEXPR local_uint128_type u128_2("1759644461251476961796845209840363274");
 
-    WIDE_INTEGER_CONSTEXPR uint160_t u160_0 = uint160_t(u128_0);
-    WIDE_INTEGER_CONSTEXPR uint160_t u160_1 = uint160_t(u128_1);
-    WIDE_INTEGER_CONSTEXPR uint160_t u160_2 = uint160_t(u128_2);
+    WIDE_INTEGER_CONSTEXPR local_uint160_type u160_0 = local_uint160_type(u128_0);
+    WIDE_INTEGER_CONSTEXPR local_uint160_type u160_1 = local_uint160_type(u128_1);
+    WIDE_INTEGER_CONSTEXPR local_uint160_type u160_2 = local_uint160_type(u128_2);
 
-    WIDE_INTEGER_CONSTEXPR uint128_t v128_0 = uint128_t(u160_0);
-    WIDE_INTEGER_CONSTEXPR uint128_t v128_1 = uint128_t(u160_1);
-    WIDE_INTEGER_CONSTEXPR uint128_t v128_2 = uint128_t(u160_2);
+    WIDE_INTEGER_CONSTEXPR local_uint128_type v128_0 = local_uint128_type(u160_0);
+    WIDE_INTEGER_CONSTEXPR local_uint128_type v128_1 = local_uint128_type(u160_1);
+    WIDE_INTEGER_CONSTEXPR local_uint128_type v128_2 = local_uint128_type(u160_2);
 
     result_is_ok &= (u128_0 == v128_0);
     result_is_ok &= (u128_1 == v128_1);
@@ -116,17 +116,17 @@ auto math::wide_integer::test_uintwide_t_spot_values() -> bool // NOLINT(readabi
     static_assert(u128_2 == v128_2, "Error: Static check of inter-width casting (unsigned) is not OK");
     #endif
 
-    WIDE_INTEGER_CONSTEXPR int128_t n128_0("-3076659267683009403742876678609501102");
-    WIDE_INTEGER_CONSTEXPR int128_t n128_1("-9784355713321885697254484081284759103");
-    WIDE_INTEGER_CONSTEXPR int128_t n128_2("-1759644461251476961796845209840363274");
+    WIDE_INTEGER_CONSTEXPR local_int128_type n128_0("-3076659267683009403742876678609501102");
+    WIDE_INTEGER_CONSTEXPR local_int128_type n128_1("-9784355713321885697254484081284759103");
+    WIDE_INTEGER_CONSTEXPR local_int128_type n128_2("-1759644461251476961796845209840363274");
 
-    WIDE_INTEGER_CONSTEXPR int160_t n160_0 = int160_t(n128_0);
-    WIDE_INTEGER_CONSTEXPR int160_t n160_1 = int160_t(n128_1);
-    WIDE_INTEGER_CONSTEXPR int160_t n160_2 = int160_t(n128_2);
+    WIDE_INTEGER_CONSTEXPR local_int160_type n160_0 = local_int160_type(n128_0);
+    WIDE_INTEGER_CONSTEXPR local_int160_type n160_1 = local_int160_type(n128_1);
+    WIDE_INTEGER_CONSTEXPR local_int160_type n160_2 = local_int160_type(n128_2);
 
-    WIDE_INTEGER_CONSTEXPR int128_t m128_0 = static_cast<int128_t>(n160_0);
-    WIDE_INTEGER_CONSTEXPR int128_t m128_1 = static_cast<int128_t>(n160_1);
-    WIDE_INTEGER_CONSTEXPR int128_t m128_2 = static_cast<int128_t>(n160_2);
+    WIDE_INTEGER_CONSTEXPR local_int128_type m128_0 = static_cast<local_int128_type>(n160_0);
+    WIDE_INTEGER_CONSTEXPR local_int128_type m128_1 = static_cast<local_int128_type>(n160_1);
+    WIDE_INTEGER_CONSTEXPR local_int128_type m128_2 = static_cast<local_int128_type>(n160_2);
 
     result_is_ok &= (n128_0 == m128_0);
     result_is_ok &= (n128_1 == m128_1);
@@ -138,9 +138,9 @@ auto math::wide_integer::test_uintwide_t_spot_values() -> bool // NOLINT(readabi
     static_assert(u128_2 == v128_2, "Error: Static check of inter-width casting (signed) is not OK");
     #endif
 
-    WIDE_INTEGER_CONSTEXPR uint160_t un160_0 = uint160_t(-n128_0);
-    WIDE_INTEGER_CONSTEXPR uint160_t un160_1 = uint160_t(-n128_1);
-    WIDE_INTEGER_CONSTEXPR uint160_t un160_2 = uint160_t(-n128_2);
+    WIDE_INTEGER_CONSTEXPR local_uint160_type un160_0 = local_uint160_type(-n128_0);
+    WIDE_INTEGER_CONSTEXPR local_uint160_type un160_1 = local_uint160_type(-n128_1);
+    WIDE_INTEGER_CONSTEXPR local_uint160_type un160_2 = local_uint160_type(-n128_2);
 
     result_is_ok &= (un160_0 == u160_0);
     result_is_ok &= (un160_1 == u160_1);
@@ -152,18 +152,18 @@ auto math::wide_integer::test_uintwide_t_spot_values() -> bool // NOLINT(readabi
     static_assert(un160_2 == u160_2, "Error: Static check of inter-width casting (mixed signes) is not OK");
     #endif
 
-    WIDE_INTEGER_CONSTEXPR int128_t s128_0 = int128_t(un160_0);
-    WIDE_INTEGER_CONSTEXPR int128_t s128_1 = int128_t(un160_1);
-    WIDE_INTEGER_CONSTEXPR int128_t s128_2 = int128_t(un160_2);
+    WIDE_INTEGER_CONSTEXPR local_int128_type s128_0 = local_int128_type(un160_0);
+    WIDE_INTEGER_CONSTEXPR local_int128_type s128_1 = local_int128_type(un160_1);
+    WIDE_INTEGER_CONSTEXPR local_int128_type s128_2 = local_int128_type(un160_2);
 
-    result_is_ok &= (uint128_t(s128_0) == u128_0);
-    result_is_ok &= (uint128_t(s128_1) == u128_1);
-    result_is_ok &= (uint128_t(s128_2) == u128_2);
+    result_is_ok &= (local_uint128_type(s128_0) == u128_0);
+    result_is_ok &= (local_uint128_type(s128_1) == u128_1);
+    result_is_ok &= (local_uint128_type(s128_2) == u128_2);
 
     #if(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST == 1)
-    static_assert(static_cast<uint128_t>(s128_0) == u128_0, "Error: Static check of inter-width casting (mixed signes) is not OK");
-    static_assert(static_cast<uint128_t>(s128_1) == u128_1, "Error: Static check of inter-width casting (mixed signes) is not OK");
-    static_assert(static_cast<uint128_t>(s128_2) == u128_2, "Error: Static check of inter-width casting (mixed signes) is not OK");
+    static_assert(static_cast<local_uint128_type>(s128_0) == u128_0, "Error: Static check of inter-width casting (mixed signes) is not OK");
+    static_assert(static_cast<local_uint128_type>(s128_1) == u128_1, "Error: Static check of inter-width casting (mixed signes) is not OK");
+    static_assert(static_cast<local_uint128_type>(s128_2) == u128_2, "Error: Static check of inter-width casting (mixed signes) is not OK");
     #endif
   }
 
