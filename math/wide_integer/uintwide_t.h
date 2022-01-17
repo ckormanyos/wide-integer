@@ -101,8 +101,8 @@
   #endif
 
   #if defined(WIDE_INTEGER_NAMESPACE)
-    #define WIDE_INTEGER_NAMESPACE_BEGIN namespace WIDE_INTEGER_NAMESPACE {
-    #define WIDE_INTEGER_NAMESPACE_END } // namespace WIDE_INTEGER_NAMESPACE
+    #define WIDE_INTEGER_NAMESPACE_BEGIN namespace WIDE_INTEGER_NAMESPACE {   // NOLINT(cppcoreguidelines-macro-usage)
+    #define WIDE_INTEGER_NAMESPACE_END } // namespace WIDE_INTEGER_NAMESPACE  // NOLINT(cppcoreguidelines-macro-usage)
   #else
     #define WIDE_INTEGER_NAMESPACE_BEGIN
     #define WIDE_INTEGER_NAMESPACE_END
@@ -1341,7 +1341,7 @@
       using local_unsigned_integral_type =
         typename detail::uint_type_helper<static_cast<size_t>(std::numeric_limits<local_signed_integral_type>::digits + 1)>::exact_unsigned_type;
 
-      const bool v_is_neg = (v < local_signed_integral_type(0));
+      const bool v_is_neg = (v < static_cast<local_signed_integral_type>(0));
 
       const local_unsigned_integral_type u =
         ((!v_is_neg) ? static_cast<local_unsigned_integral_type>(v)
@@ -1367,11 +1367,11 @@
       }
       else
       {
-        const bool f_is_neg = (f < local_builtin_float_type(0.0F));
+        const bool f_is_neg = (f < static_cast<local_builtin_float_type>(0.0F));
 
         const local_builtin_float_type a = ((!f_is_neg) ? f : -f);
 
-        const bool a_is_zero = (a < local_builtin_float_type(1.0F));
+        const bool a_is_zero = (a < static_cast<local_builtin_float_type>(1.0F));
 
         if(!a_is_zero)
         {
@@ -1537,7 +1537,12 @@
     #endif
 
     template<typename Integer, typename = typename std::enable_if<std::is_integral<Integer>::value>::type>
-    explicit constexpr operator Integer() const { return ((!is_neg(*this)) ? extract_builtin_integral_type<Integer>() : detail::negate(uintwide_t(-*this).extract_builtin_integral_type<Integer>())); }
+    explicit constexpr operator Integer() const
+    {
+      return ((!is_neg(*this))
+               ? extract_builtin_integral_type<Integer>()
+               : detail::negate((-*this).template extract_builtin_integral_type<Integer>()));
+    }
 
     explicit constexpr operator bool() const { return (!is_zero()); }
 
@@ -1962,12 +1967,12 @@
     }
 
     // Implement comparison operators.
-    constexpr auto operator==(const uintwide_t& other) const -> bool { return (compare(other) == std::int_fast8_t( 0)); }
-    constexpr auto operator< (const uintwide_t& other) const -> bool { return (compare(other) == std::int_fast8_t(-1)); }
-    constexpr auto operator> (const uintwide_t& other) const -> bool { return (compare(other) == std::int_fast8_t( 1)); }
-    constexpr auto operator!=(const uintwide_t& other) const -> bool { return (compare(other) != std::int_fast8_t( 0)); }
-    constexpr auto operator<=(const uintwide_t& other) const -> bool { return (compare(other) <= std::int_fast8_t( 0)); }
-    constexpr auto operator>=(const uintwide_t& other) const -> bool { return (compare(other) >= std::int_fast8_t( 0)); }
+    constexpr auto operator==(const uintwide_t& other) const -> bool { return (compare(other) == static_cast<std::int_fast8_t>( 0)); }
+    constexpr auto operator< (const uintwide_t& other) const -> bool { return (compare(other) == static_cast<std::int_fast8_t>(-1)); }
+    constexpr auto operator> (const uintwide_t& other) const -> bool { return (compare(other) == static_cast<std::int_fast8_t>( 1)); }
+    constexpr auto operator!=(const uintwide_t& other) const -> bool { return (compare(other) != static_cast<std::int_fast8_t>( 0)); }
+    constexpr auto operator<=(const uintwide_t& other) const -> bool { return (compare(other) <= static_cast<std::int_fast8_t>( 0)); }
+    constexpr auto operator>=(const uintwide_t& other) const -> bool { return (compare(other) >= static_cast<std::int_fast8_t>( 0)); }
 
     // Helper functions for supporting std::numeric_limits<>.
     static constexpr auto limits_helper_max(bool is_signed) -> uintwide_t
@@ -2343,7 +2348,7 @@
       for(auto i = static_cast<singed_fast_type>(static_cast<unsinged_fast_type>(number_of_limbs - 1U) - u_offset); static_cast<singed_fast_type>(i) >= 0; --i)
       {
         long_numerator =
-          double_limb_type
+          static_cast<double_limb_type>
           (
              static_cast<double_limb_type>(*(values.cbegin() + static_cast<size_t>(i)))
            + static_cast<double_limb_type>(static_cast<double_limb_type>(long_numerator - static_cast<double_limb_type>(static_cast<double_limb_type>(short_denominator) * hi_part)) << static_cast<unsigned>(std::numeric_limits<limb_type>::digits))
@@ -2358,7 +2363,7 @@
       if(remainder != nullptr)
       {
         long_numerator =
-          double_limb_type
+          static_cast<double_limb_type>
           (
              static_cast<double_limb_type>(*values.cbegin())
            + static_cast<double_limb_type>(static_cast<double_limb_type>(long_numerator - static_cast<double_limb_type>(static_cast<double_limb_type>(short_denominator) * hi_part)) << static_cast<unsigned>(std::numeric_limits<limb_type>::digits))
@@ -2427,8 +2432,8 @@
         using value_left_type =
           typename std::iterator_traits<InputIteratorLeftType>::value_type;
 
-        if(*pa > value_left_type(*pb)) { n_return =  1; break; }
-        if(*pa < value_left_type(*pb)) { n_return = -1; break; }
+        if(*pa > static_cast<value_left_type>(*pb)) { n_return =  1; break; }
+        if(*pa < static_cast<value_left_type>(*pb)) { n_return = -1; break; }
       }
 
       return n_return;
@@ -2509,7 +2514,7 @@
                            + static_cast<size_t>(((static_cast<size_t>(my_msb + 1U) % static_cast<size_t>(std::numeric_limits<limb_type>::digits)) != 0U) ? static_cast<size_t>(1U) : static_cast<size_t>(0U))
                           );
 
-      auto a = local_builtin_float_type(0.0F);
+      auto a = static_cast<local_builtin_float_type>(0.0F);
 
       constexpr long double one_ldbl(1.0L);
 
@@ -2536,7 +2541,7 @@
         a += static_cast<local_builtin_float_type>(ld);
       }
 
-      return local_builtin_float_type((!u_is_neg) ? a : -a);
+      return static_cast<local_builtin_float_type>((!u_is_neg) ? a : -a);
     }
     #endif
 
@@ -5301,7 +5306,7 @@
     {
       // Generate random numbers r, where a <= r <= b.
 
-      auto result = static_cast<result_type>(std::uint8_t(0U));
+      auto result = static_cast<result_type>(static_cast<std::uint8_t>(0U));
 
       using local_limb_type = typename result_type::limb_type;
 
