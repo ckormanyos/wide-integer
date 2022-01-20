@@ -1415,12 +1415,11 @@
     constexpr uintwide_t(const uintwide_t<Width2, LimbType, AllocatorType, OtherIsSigned>& other) // NOLINT(google-explicit-constructor,hicpp-explicit-conversions)
       : values(other.values) { }
 
-    // Constructor from the another type having width that is wider
+    // Copy-like constructor from the another type having width that is wider
     // (but has the same limb type) and possibly a different signed-ness.
-    // This constructor is explicit because it is a non-trivial conversion.
     template<const size_t OtherWidth2,
              const bool OtherIsSigned,
-             typename std::enable_if<(OtherWidth2 > Width2)>::type const* = nullptr>
+             typename std::enable_if<(Width2 < OtherWidth2)>::type const* = nullptr>
     explicit WIDE_INTEGER_CONSTEXPR uintwide_t(const uintwide_t<OtherWidth2, LimbType, AllocatorType, OtherIsSigned>& v)
     {
       using other_wide_integer_type = uintwide_t<OtherWidth2, LimbType, AllocatorType, OtherIsSigned>;
@@ -1447,13 +1446,12 @@
       }
     }
 
-    // Constructor from the another type having width that is less wide
+    // Copy-like constructor from the another type having width that is less wide
     // (but has the same limb type) and possibly a different signed-ness.
-    // This constructor is non-explicit because it is a trivial conversion.
     template<const size_t OtherWidth2,
              const bool OtherIsSigned,
-             typename std::enable_if<(OtherWidth2 < Width2)>::type const* = nullptr>
-    WIDE_INTEGER_CONSTEXPR uintwide_t(const uintwide_t<OtherWidth2, LimbType, AllocatorType, OtherIsSigned>& v) // NOLINT(google-explicit-constructor,hicpp-explicit-conversions)
+             typename std::enable_if<(Width2 > OtherWidth2)>::type const* = nullptr>
+    explicit WIDE_INTEGER_CONSTEXPR uintwide_t(const uintwide_t<OtherWidth2, LimbType, AllocatorType, OtherIsSigned>& v)
     {
       using other_wide_integer_type = uintwide_t<OtherWidth2, LimbType, AllocatorType, OtherIsSigned>;
 
@@ -1496,8 +1494,9 @@
     constexpr uintwide_t(uintwide_t&& other) noexcept = default;
 
     // Move-like constructor from the other signed-ness type.
+    // This constructor is non-explicit because it is a trivial conversion.
     template<const bool OtherIsSigned,
-             typename std::enable_if<(OtherIsSigned != IsSigned)>::type const* = nullptr>
+             typename std::enable_if<(IsSigned != OtherIsSigned)>::type const* = nullptr>
     constexpr uintwide_t(uintwide_t<Width2, LimbType, AllocatorType, OtherIsSigned>&& other) // NOLINT(google-explicit-constructor,hicpp-explicit-conversions)
       : values(static_cast<representation_type&&>(other.values)) { }
 
@@ -1522,7 +1521,7 @@
 
     // Trivial move assignment operator from the other signed-ness type.
     template<const bool OtherIsSigned,
-             typename std::enable_if<(OtherIsSigned != IsSigned)>::type const* = nullptr>
+             typename std::enable_if<(IsSigned != OtherIsSigned)>::type const* = nullptr>
     WIDE_INTEGER_CONSTEXPR auto operator=(uintwide_t<Width2, LimbType, AllocatorType, OtherIsSigned>&& other) -> uintwide_t&
     {
       values = static_cast<representation_type&&>(other.values);
@@ -1536,28 +1535,37 @@
     explicit constexpr operator float      () const { return extract_builtin_floating_point_type<float>      (); }
     #endif
 
-    template<typename Integer, typename = typename std::enable_if<std::is_integral<Integer>::value>::type>
-    explicit constexpr operator Integer() const
+    template<typename IntegralType,
+             typename = typename std::enable_if<std::is_integral<IntegralType>::value>::type>
+    explicit constexpr operator IntegralType() const
     {
+      using local_integral_type = IntegralType;
+
       return ((!is_neg(*this))
-               ? extract_builtin_integral_type<Integer>()
-               : detail::negate((-*this).template extract_builtin_integral_type<Integer>()));
+               ? extract_builtin_integral_type<local_integral_type>()
+               : detail::negate((-*this).template extract_builtin_integral_type<local_integral_type>()));
     }
 
+    // Cast operator to built-in Boolean type.
     explicit constexpr operator bool() const { return (!is_zero()); }
 
-    // Cast operator that casts to a uintwide_t having a type that is wider
-    // (but has the same limb type) and possibly a different signed-ness.
+    // Cast operator that casts to a uintwide_t having a different width
+    // (but having the same limb type) and possibly a different signed-ness.
     template<const size_t OtherWidth2,
              const bool OtherIsSigned,
-             typename std::enable_if<(OtherWidth2 > Width2)>::type const* = nullptr>
-    WIDE_INTEGER_CONSTEXPR operator uintwide_t<OtherWidth2, LimbType, AllocatorType, OtherIsSigned>() const // NOLINT(google-explicit-constructor,hicpp-explicit-conversions)
+             typename = typename std::enable_if<(Width2 != OtherWidth2), uintwide_t<OtherWidth2, LimbType, AllocatorType, OtherIsSigned>>::type>
+    WIDE_INTEGER_CONSTEXPR operator uintwide_t<OtherWidth2, LimbType, AllocatorType, OtherIsSigned>() const // NOLINT(hicpp-explicit-conversions,google-explicit-constructor)
     {
-      using other_wide_integer_type = uintwide_t<OtherWidth2, LimbType, AllocatorType, OtherIsSigned>;
-
       const bool this_is_neg = (is_neg(*this));
 
-      constexpr auto sz = static_cast<size_t>(number_of_limbs);
+      using other_wide_integer_type = uintwide_t<OtherWidth2, LimbType, AllocatorType, OtherIsSigned>;
+
+      constexpr auto sz =
+        static_cast<size_t>
+        (
+          (Width2 < OtherWidth2) ? static_cast<size_t>(number_of_limbs)
+                                 : static_cast<size_t>(other_wide_integer_type::number_of_limbs)
+        );
 
       other_wide_integer_type other;
 
@@ -1567,7 +1575,10 @@
                   crepresentation().cbegin() + sz,
                   other.values.begin());
 
-        std::fill(other.values.begin() + sz, other.values.end(), static_cast<limb_type>(0U));
+        if(Width2 < OtherWidth2)
+        {
+          std::fill(other.values.begin() + sz, other.values.end(), static_cast<limb_type>(0U));
+        }
       }
       else
       {
@@ -1579,7 +1590,10 @@
                   uv.crepresentation().cbegin() + sz,
                   other.values.begin());
 
-        std::fill(other.values.begin() + sz, other.values.end(), static_cast<limb_type>(0U));
+        if(Width2 < OtherWidth2)
+        {
+          std::fill(other.values.begin() + sz, other.values.end(), static_cast<limb_type>(0U));
+        }
 
         other.negate();
       }
@@ -1587,21 +1601,21 @@
       return other;
     }
 
-    // Cast operator that casts to a uintwide_t having a type that is less wide
-    // (but has the same limb type) and possibly a different signed-ness.
+    // Cast operator that casts to a uintwide_t having a type with the same width
+    // (and having the same limb type) but definitely having a different signed-ness.
     template<const bool OtherIsSigned,
-             typename std::enable_if<(OtherIsSigned != IsSigned)>::type const* = nullptr>
-    explicit WIDE_INTEGER_CONSTEXPR operator uintwide_t<Width2, LimbType, AllocatorType, OtherIsSigned>() const
+             typename = typename std::enable_if<(OtherIsSigned != IsSigned), uintwide_t<Width2, LimbType, AllocatorType, OtherIsSigned>>::type>
+    WIDE_INTEGER_CONSTEXPR operator uintwide_t<Width2, LimbType, AllocatorType, OtherIsSigned>() const // NOLINT(hicpp-explicit-conversions,google-explicit-constructor)
     {
       using other_wide_integer_type = uintwide_t<Width2, LimbType, AllocatorType, OtherIsSigned>;
 
-      other_wide_integer_type u;
+      other_wide_integer_type other;
 
       std::copy(crepresentation().cbegin(),
                 crepresentation().cend(),
-                u.representation().begin());
+                other.representation().begin());
 
-      return u;
+      return other;
     }
 
     // Provide a user interface to the internal data representation.

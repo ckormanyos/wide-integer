@@ -84,10 +84,78 @@ auto math::wide_integer::test_uintwide_t_spot_values() -> bool // NOLINT(readabi
   bool result_is_ok = true;
 
   {
-    // See also https://github.com/ckormanyos/wide-integer/issues/181
+    // See also https://github.com/ckormanyos/wide-integer/issues/186
+
+    // Here we statically test non-explicit construction/conversion
 
     using local_uint128_type = math::wide_integer::uintwide_t<128U, std::uint32_t, void, false>;
     using local_int128_type  = math::wide_integer::uintwide_t<128U, std::uint32_t, void, true>;
+
+    using local_uint160_type = math::wide_integer::uintwide_t<160U, std::uint32_t, void, false>;
+    using local_int160_type  = math::wide_integer::uintwide_t<160U, std::uint32_t, void, true>;
+
+
+    // Static test of construction rules.
+
+    // Move construction(s)
+    static_assert(std::is_move_constructible           <local_uint128_type>::value, "Error: Type is not move-constructible");
+    static_assert(std::is_move_constructible           <local_int128_type >::value, "Error: Type is not move-constructible");
+    static_assert(std::is_trivially_move_constructible <local_uint128_type>::value, "Error: Type is not trivially move-constructible");
+    static_assert(std::is_trivially_move_constructible <local_int128_type >::value, "Error: Type is not trivially move-constructible");
+
+    // Constructible
+    static_assert(std::is_trivially_constructible<local_uint128_type, const local_uint128_type&>::value, "Error: Types are not constructible");
+    static_assert(std::is_constructible          <local_uint128_type,       local_int128_type  >::value, "Error: Types are not constructible");
+    static_assert(std::is_constructible          <local_uint128_type,       local_uint160_type >::value, "Error: Types are not constructible");
+    static_assert(std::is_constructible          <local_uint128_type,       local_int160_type  >::value, "Error: Types are not constructible");
+
+    static_assert(std::is_constructible          <local_int128_type,        local_uint128_type >::value, "Error: Types are not constructible");
+    static_assert(std::is_trivially_constructible<local_int128_type,  const local_int128_type& >::value, "Error: Types are not constructible");
+    static_assert(std::is_move_constructible     <local_int128_type                            >::value, "Error: Types are not constructible");
+    static_assert(std::is_constructible          <local_int128_type,        local_uint160_type >::value, "Error: Types are not constructible");
+    static_assert(std::is_constructible          <local_int128_type,        local_int160_type  >::value, "Error: Types are not constructible");
+
+    static_assert(std::is_constructible          <local_uint160_type,       local_uint128_type >::value, "Error: Types are not constructible");
+    static_assert(std::is_constructible          <local_uint160_type,       local_int128_type  >::value, "Error: Types are not constructible");
+    static_assert(std::is_trivially_constructible<local_uint160_type, const local_uint160_type&>::value, "Error: Types are not constructible");
+    static_assert(std::is_constructible          <local_uint160_type,       local_int160_type  >::value, "Error: Types are not constructible");
+
+    static_assert(std::is_constructible          <local_int160_type,        local_uint128_type >::value, "Error: Types are not constructible");
+    static_assert(std::is_constructible          <local_int160_type,        local_int128_type  >::value, "Error: Types are not constructible");
+    static_assert(std::is_constructible          <local_int160_type,        local_uint160_type >::value, "Error: Types are not constructible");
+    static_assert(std::is_trivially_constructible<local_int160_type,  const local_int160_type& >::value, "Error: Types are not constructible");
+
+    // Static test of conversion rules.
+    //                               <local_uint128_type, local_uint128_type>
+    static_assert(std::is_convertible<local_uint128_type, local_int128_type >::value, "Error: Types are not constructible");
+    static_assert(std::is_convertible<local_uint128_type, local_uint160_type>::value, "Error: Types are not constructible");
+    static_assert(std::is_convertible<local_uint128_type, local_int160_type >::value, "Error: Types are not constructible");
+
+    static_assert(std::is_convertible<local_int128_type,  local_uint128_type>::value, "Error: Types are not constructible");
+    //                               <local_int128_type,  local_int128_type >
+    static_assert(std::is_convertible<local_int128_type,  local_uint160_type>::value, "Error: Types are not constructible");
+    static_assert(std::is_convertible<local_int128_type,  local_int160_type >::value, "Error: Types are not constructible");
+
+    static_assert(std::is_convertible<local_uint160_type, local_uint128_type>::value, "Error: Types are not constructible");
+    static_assert(std::is_convertible<local_uint160_type, local_int128_type >::value, "Error: Types are not constructible");
+    //                               <local_uint160_type, local_uint160_type>
+    static_assert(std::is_convertible<local_uint160_type, local_int160_type >::value, "Error: Types are not constructible");
+
+    static_assert(std::is_convertible<local_int160_type,  local_uint128_type>::value, "Error: Types are not constructible");
+    static_assert(std::is_convertible<local_int160_type,  local_int128_type >::value, "Error: Types are not constructible");
+    static_assert(std::is_convertible<local_int160_type,  local_uint160_type>::value, "Error: Types are not constructible");
+    //                               <local_int160_type,  local_int160_type >
+  }
+
+  {
+    // See also https://github.com/ckormanyos/wide-integer/issues/181
+
+    // Here we test explicit construction/conversion both statically
+    // as well as dynamically (i.e., dynamically in run-time).
+
+    using local_uint128_type = math::wide_integer::uintwide_t<128U, std::uint32_t, void, false>;
+    using local_int128_type  = math::wide_integer::uintwide_t<128U, std::uint32_t, void, true>;
+
     using local_uint160_type = math::wide_integer::uintwide_t<160U, std::uint32_t, void, false>;
     using local_int160_type  = math::wide_integer::uintwide_t<160U, std::uint32_t, void, true>;
 
