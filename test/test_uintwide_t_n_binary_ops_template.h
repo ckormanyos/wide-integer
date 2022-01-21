@@ -16,13 +16,23 @@
 
   #include <test/test_uintwide_t_n_binary_ops_base.h>
 
+  #if defined(WIDE_INTEGER_NAMESPACE)
+  template<const WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t MyDigits2,
+           typename MyLimbType = std::uint32_t,
+           typename AllocatorType = void>
+  #else
   template<const math::wide_integer::size_t MyDigits2,
            typename MyLimbType = std::uint32_t,
            typename AllocatorType = void>
+  #endif
   class test_uintwide_t_n_binary_ops_template : public test_uintwide_t_n_binary_ops_base // NOLINT(cppcoreguidelines-special-member-functions,hicpp-special-member-functions)
   {
   private:
-    static constexpr math::wide_integer::size_t digits2 = MyDigits2;
+    #if defined(WIDE_INTEGER_NAMESPACE)
+    static constexpr auto digits2 = static_cast<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t>(MyDigits2);
+    #else
+    static constexpr auto digits2 = static_cast<math::wide_integer::size_t>(MyDigits2);
+    #endif
 
     using boost_uint_backend_type =
       boost::multiprecision::cpp_int_backend<digits2,
@@ -45,7 +55,11 @@
 
     ~test_uintwide_t_n_binary_ops_template() override = default;
 
+    #if defined(WIDE_INTEGER_NAMESPACE)
+    WIDE_INTEGER_NODISCARD auto get_digits2() const -> WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t override { return digits2; }
+    #else
     WIDE_INTEGER_NODISCARD auto get_digits2() const -> math::wide_integer::size_t override { return digits2; }
+    #endif
 
     void initialize() override
     {
@@ -73,7 +87,7 @@
 
       my_concurrency::parallel_for
       (
-        std::size_t(0U),
+        static_cast<std::size_t>(0U),
         size(),
         [&test_lock, &result_is_ok, this](std::size_t i)
         {
@@ -100,7 +114,7 @@
 
       my_concurrency::parallel_for
       (
-        std::size_t(0U),
+        static_cast<std::size_t>(0U),
         size(),
         [&test_lock, &result_is_ok, this](std::size_t i)
         {
@@ -127,7 +141,7 @@
 
       my_concurrency::parallel_for
       (
-        std::size_t(0U),
+        static_cast<std::size_t>(0U),
         size(),
         [&test_lock, &result_is_ok, this](std::size_t i)
         {
@@ -157,7 +171,7 @@
 
       my_concurrency::parallel_for
       (
-        std::size_t(0U),
+        static_cast<std::size_t>(0U),
         size(),
         [&result_is_ok, this, &dis, &test_lock](std::size_t i)
         {
@@ -191,7 +205,7 @@
 
       my_concurrency::parallel_for
       (
-        std::size_t(0U),
+        static_cast<std::size_t>(0U),
         size(),
         [&result_is_ok, this, &dis, &test_lock](std::size_t i)
         {
@@ -222,7 +236,7 @@
 
       my_concurrency::parallel_for
       (
-        std::size_t(0U),
+        static_cast<std::size_t>(0U),
         size(),
         [&test_lock, &result_is_ok, this](std::size_t i)
         {

@@ -33,13 +33,24 @@ CXX_FLAGS    = $(CC)                                      \
 
 C_DEFINES    = WIDE_INTEGER_HAS_MUL_8_BY_8_UNROLL
 
-C_INCLUDES   = $(PATH_SRC)                                \
+C_INCLUDES   = $(PATH_SRC)                                          \
                $(BOOST_ROOT_FOR_TIDY)
 
 C_DEFINES   :=$(addprefix -D,$(C_DEFINES))
 C_INCLUDES  :=$(addprefix -I,$(C_INCLUDES))
 
-TIDY_FLAGS   = --extra-arg-before=--driver-mode=g++       \
-               --header-filter=uintwide_t                 \
-               -warnings-as-errors=*                      \
-               -checks=*,google-readability-casting,-fuchsia-*,-llvmlibc-*,-llvm-header-guard,-readability-avoid-const-params-in-decls,-cppcoreguidelines-avoid-magic-numbers,-readability-magic-numbers,-altera-struct-pack-align
+
+TIDY_CHECKS  = "*,                                                                \
+                -altera-id-dependent-backward-branch,                             \
+                -altera-struct-pack-align,                                        \
+                -altera-unroll-loops,                                             \
+                -fuchsia-*,                                                       \
+                -llvmlibc-*,                                                      \
+                -llvm-header-guard,                                               \
+                -modernize-concat-nested-namespaces,                              \
+                -readability-avoid-const-params-in-decls"
+
+TIDY_FLAGS   = --extra-arg-before=--driver-mode=g++                 \
+               --header-filter=uintwide_t                           \
+               -warnings-as-errors=*                                \
+               -checks=$(TIDY_CHECKS)

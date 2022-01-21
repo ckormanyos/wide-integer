@@ -17,8 +17,14 @@
 
 auto math::wide_integer::example008_miller_rabin_prime() -> bool
 {
-  using wide_integer_type   = math::wide_integer::uintwide_t<512U>;
+  #if defined(WIDE_INTEGER_NAMESPACE)
+  using wide_integer_type   = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<static_cast<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t>(UINT32_C(512))>;
+  using distribution_type   = WIDE_INTEGER_NAMESPACE::math::wide_integer::uniform_int_distribution<wide_integer_type::my_width2, typename wide_integer_type::limb_type>;
+  #else
+  using wide_integer_type   = math::wide_integer::uintwide_t<static_cast<math::wide_integer::size_t>(UINT32_C(512))>;
   using distribution_type   = math::wide_integer::uniform_int_distribution<wide_integer_type::my_width2, typename wide_integer_type::limb_type>;
+  #endif
+
   using random_engine1_type = std::linear_congruential_engine<std::uint32_t, UINT32_C(48271), UINT32_C(0), UINT32_C(2147483647)>;
   using random_engine2_type = std::mt19937;
 

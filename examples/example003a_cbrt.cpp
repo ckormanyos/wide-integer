@@ -12,7 +12,11 @@
 
 auto math::wide_integer::example003a_cbrt() -> bool
 {
-  using uint11264_t = math::wide_integer::uintwide_t<11264U, std::uint32_t, std::allocator<std::uint32_t>>;
+  #if defined(WIDE_INTEGER_NAMESPACE)
+  using uint11264_t = math::wide_integer::uintwide_t<static_cast<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t>(UINT32_C(11264)), std::uint32_t, std::allocator<std::uint32_t>>;
+  #else
+  using uint11264_t = math::wide_integer::uintwide_t<static_cast<math::wide_integer::size_t>(UINT32_C(11264)), std::uint32_t, std::allocator<std::uint32_t>>;
+  #endif
 
   // Create the string '1' + 3,333 times '0', which is
   // equivalent to the decimal integral value 10^3333.

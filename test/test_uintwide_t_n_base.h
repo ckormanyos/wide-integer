@@ -41,8 +41,13 @@
   public:
     virtual ~test_uintwide_t_n_base() = default;
 
+    #if defined(WIDE_INTEGER_NAMESPACE)
+    WIDE_INTEGER_NODISCARD
+    virtual auto get_digits2() const -> WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t = 0;
+    #else
     WIDE_INTEGER_NODISCARD
     virtual auto get_digits2() const -> math::wide_integer::size_t = 0;
+    #endif
 
     WIDE_INTEGER_NODISCARD
     auto size() const -> std::size_t { return number_of_cases; }
@@ -58,7 +63,10 @@
     auto operator=(      test_uintwide_t_n_base&&) -> test_uintwide_t_n_base& = delete;
 
   protected:
-    static auto my_random_generator() -> std::linear_congruential_engine<std::uint32_t, 48271, 0, 2147483647>&;
+    using random_engine_type =
+      std::linear_congruential_engine<std::uint32_t, 48271, 0, 2147483647>; // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
+
+    static auto my_random_generator() -> random_engine_type&;
 
     explicit test_uintwide_t_n_base(const std::size_t count)
       : number_of_cases(count) { }
@@ -93,7 +101,7 @@
       using other_local_uint_type = OtherLocalUintType;
       using other_boost_uint_type = OtherBoostUintType;
 
-      my_random_generator().seed(static_cast<typename std::linear_congruential_engine<std::uint32_t, 48271, 0, 2147483647>::result_type>(std::clock()));
+      my_random_generator().seed(static_cast<typename random_engine_type::result_type>(std::clock()));
 
       using distribution_type =
         math::wide_integer::uniform_int_distribution<other_local_uint_type::my_width2, typename other_local_uint_type::limb_type, AllocatorType>;
@@ -104,7 +112,7 @@
 
       my_concurrency::parallel_for
       (
-        std::size_t(0U),
+        static_cast<std::size_t>(0U),
         count,
         [&u_local, &u_boost, &distribution, &rnd_lock](std::size_t i)
         {

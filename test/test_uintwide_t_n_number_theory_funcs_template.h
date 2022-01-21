@@ -10,19 +10,32 @@
 
   #include <test/test_uintwide_t_n_base.h>
 
+  #if defined(WIDE_INTEGER_NAMESPACE)
+  template<const WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t MyWidth2,
+           typename MyLimbType = std::uint32_t>
+  #else
   template<const math::wide_integer::size_t MyWidth2,
            typename MyLimbType = std::uint32_t>
+  #endif
   class test_uintwide_t_n_number_theory_funcs_template : public test_uintwide_t_n_base
   {
   public:
-    static constexpr math::wide_integer::size_t digits2 = MyWidth2;
+    #if defined(WIDE_INTEGER_NAMESPACE)
+    static constexpr auto digits2 = static_cast<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t>(MyWidth2);
+    #else
+    static constexpr auto digits2 = static_cast<math::wide_integer::size_t>(MyWidth2);
+    #endif
 
     test_uintwide_t_n_number_theory_funcs_template(const std::size_t count)
       : test_uintwide_t_n_base(count) { }
 
     virtual ~test_uintwide_t_n_number_theory_funcs_template() = default;
 
-    virtual math::wide_integer::size_t get_digits2() const { return digits2; }
+    #if defined(WIDE_INTEGER_NAMESPACE)
+    virtual auto get_digits2() const -> WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t { return digits2; }
+    #else
+    virtual auto get_digits2() const -> math::wide_integer::size_t { return digits2; }
+    #endif
 
     virtual void initialize() { }
   };

@@ -71,18 +71,18 @@
 
   protected:
     using random_generator_type = std::mersenne_twister_engine<std::uint32_t,
-                                                               32,
-                                                               624,
-                                                               397,
-                                                               31,
+                                                               static_cast<std::size_t>(UINT32_C( 32)),
+                                                               static_cast<std::size_t>(UINT32_C(624)),
+                                                               static_cast<std::size_t>(UINT32_C(397)),
+                                                               static_cast<std::size_t>(UINT32_C( 31)),
                                                                UINT32_C(0x9908B0DF),
-                                                               11,
+                                                               static_cast<std::size_t>(UINT32_C( 11)),
                                                                UINT32_C(0xFFFFFFFF),
-                                                               7,
+                                                               static_cast<std::size_t>(UINT32_C(  7)),
                                                                UINT32_C(0x9D2C5680),
-                                                               15,
+                                                               static_cast<std::size_t>(UINT32_C( 15)),
                                                                UINT32_C(0xEFC60000),
-                                                               18,
+                                                               static_cast<std::size_t>(UINT32_C( 18)),
                                                                UINT32_C(1812433253)>;
 
     static auto my_rnd() -> std::random_device&;

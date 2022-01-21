@@ -1,4 +1,4 @@
-///////////////////////////////////////////////////////////////////////////////
+﻿///////////////////////////////////////////////////////////////////////////////
 //  Copyright Christopher Kormanyos 2021.
 //  Distributed under the Boost Software License,
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt
@@ -13,13 +13,25 @@
   #include <math/wide_integer/uintwide_t.h>
   #include <test/test_uintwide_t_n_base.h>
 
+  #if defined(WIDE_INTEGER_NAMESPACE)
+  template<const WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t MyWidth2,
+           typename MyLimbType,
+           typename EnableType = void>
+  class test_uintwide_t_n_binary_ops_mul_div_4_by_4_template;
+  #else
   template<const math::wide_integer::size_t MyWidth2,
            typename MyLimbType,
            typename EnableType = void>
   class test_uintwide_t_n_binary_ops_mul_div_4_by_4_template;
+  #endif
 
+  #if defined(WIDE_INTEGER_NAMESPACE)
+  template<const WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t MyWidth2,
+           typename MyLimbType>
+  #else
   template<const math::wide_integer::size_t MyWidth2,
            typename MyLimbType>
+  #endif
   class test_uintwide_t_n_binary_ops_mul_div_4_by_4_template // NOLINT(cppcoreguidelines-special-member-functions,hicpp-special-member-functions)
     <MyWidth2,
      MyLimbType,
@@ -30,9 +42,17 @@
     : public test_uintwide_t_n_binary_ops_base
   {
   private:
-    static constexpr math::wide_integer::size_t digits2 = MyWidth2;
+    #if defined(WIDE_INTEGER_NAMESPACE)
+    static constexpr auto digits2 = static_cast<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t>(MyWidth2);
+    #else
+    static constexpr auto digits2 = static_cast<math::wide_integer::size_t>(MyWidth2);
+    #endif
 
+    #if defined(WIDE_INTEGER_NAMESPACE)
+    WIDE_INTEGER_NODISCARD auto get_digits2 () const -> WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t override { return digits2; }
+    #else
     WIDE_INTEGER_NODISCARD auto get_digits2 () const -> math::wide_integer::size_t override { return digits2; }
+    #endif
 
     using native_uint_cntrl_type =
       typename math::wide_integer::detail::uint_type_helper<digits2>::exact_unsigned_type;
@@ -96,7 +116,7 @@
 
       my_concurrency::parallel_for
       (
-        std::size_t(0U),
+        static_cast<std::size_t>(0U),
         size(),
         [&test_lock, &result_is_ok, this](std::size_t i)
         {
@@ -129,7 +149,7 @@
 
       my_concurrency::parallel_for
       (
-        std::size_t(0U),
+        static_cast<std::size_t>(0U),
         size(),
         [&test_lock, &result_is_ok, this, &dis](std::size_t i)
         {
@@ -168,7 +188,10 @@
       using other_local_uint_type = OtherLocalUintType;
       using other_cntrl_uint_type = OtherCntrlUintType;
 
-      test_uintwide_t_n_base::my_random_generator().seed(static_cast<typename std::linear_congruential_engine<std::uint32_t, 48271, 0, 2147483647>::result_type>(std::clock()));
+      test_uintwide_t_n_base::my_random_generator().seed
+      (
+        static_cast<typename std::linear_congruential_engine<std::uint32_t, 48271, 0, 2147483647>::result_type>(std::clock())  // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
+      );
 
       using distribution_type =
         math::wide_integer::uniform_int_distribution<other_local_uint_type::my_width2, typename other_local_uint_type::limb_type>;
@@ -179,7 +202,7 @@
 
       my_concurrency::parallel_for
       (
-        std::size_t(0U),
+        static_cast<std::size_t>(0U),
         count,
         [&u_local, &u_cntrl, &distribution, &rnd_lock](std::size_t i)
         {

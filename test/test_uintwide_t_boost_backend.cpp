@@ -1,4 +1,4 @@
-﻿///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 //  Copyright Christopher Kormanyos 2019 - 2022.
 //  Distributed under the Boost Software License,
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt
@@ -25,12 +25,17 @@
 #include <test/test_uintwide_t.h>
 
 using local_uint_type =
-  boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<1024U>,
+  #if defined(WIDE_INTEGER_NAMESPACE)
+  boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<static_cast<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t>(UINT32_C(1024))>,
                                 boost::multiprecision::et_off>;
+  #else
+  boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<static_cast<::math::wide_integer::size_t>(UINT32_C(1024))>,
+                                boost::multiprecision::et_off>;
+  #endif
 
 using boost_uint_backend_type =
-  boost::multiprecision::cpp_int_backend<1024,
-                                         1024,
+  boost::multiprecision::cpp_int_backend<static_cast<unsigned>(UINT32_C(1024)),
+                                         static_cast<unsigned>(UINT32_C(1024)),
                                          boost::multiprecision::unsigned_magnitude>;
 
 using boost_uint_type = boost::multiprecision::number<boost_uint_backend_type,
@@ -45,7 +50,7 @@ auto math::wide_integer::test_uintwide_t_boost_backend() -> bool
   {
     local_uint_type u = 1U;
 
-    for(std::size_t i = 2U; i <= 100U; ++i)
+    for(auto i = static_cast<std::size_t>(UINT32_C(2)); i <= static_cast<std::size_t>(UINT32_C(100)); ++i)
     {
       u *= i;
     }
@@ -68,7 +73,7 @@ auto math::wide_integer::test_uintwide_t_boost_backend() -> bool
     }
 
     // Test divide-by-limb.
-    u /= 10U;
+    u /= static_cast<std::uint8_t>(UINT8_C(10));
 
     result_is_ok &= (u == local_uint_type("9332621544394415268169923885626670049071596826438162146859296389521759999322991560894146397615651828625369792082722375825118521091686400000000000000000000000"));
 
