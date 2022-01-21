@@ -1,4 +1,4 @@
-///////////////////////////////////////////////////////////////////
+﻿///////////////////////////////////////////////////////////////////
 //  Copyright Christopher Kormanyos 2021.                        //
 //  Distributed under the Boost Software License,                //
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt          //
@@ -61,7 +61,7 @@ namespace local_rsa
       template<typename IntegerType>
       static auto extended_euclidean(const IntegerType& a, // NOLINT(misc-no-recursion)
                                      const IntegerType& b,
-                                           IntegerType* x,
+                                           IntegerType* x, // NOLINT(bugprone-easily-swappable-parameters)
                                            IntegerType* y) -> IntegerType
       {
         // Recursive extended Euclidean algorithm.
@@ -268,13 +268,13 @@ namespace local_rsa
       return x_is_neg;
     }
 
-    static auto make_positive(const my_uintwide_t& numb, const my_uintwide_t& mod) -> my_uintwide_t
+    static auto make_positive(const my_uintwide_t& number, const my_uintwide_t& modulus) -> my_uintwide_t // NOLINT(bugprone-easily-swappable-parameters)
     {
-      my_uintwide_t tmp = numb;
+      my_uintwide_t tmp = number;
 
       while(is_neg(tmp))
       {
-        tmp += mod;
+        tmp += modulus;
       }
 
       return tmp;
