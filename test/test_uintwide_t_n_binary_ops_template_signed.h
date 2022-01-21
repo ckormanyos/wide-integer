@@ -1,4 +1,4 @@
-///////////////////////////////////////////////////////////////////////////////
+﻿///////////////////////////////////////////////////////////////////////////////
 //  Copyright Christopher Kormanyos 2021.
 //  Distributed under the Boost Software License,
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt
@@ -605,8 +605,14 @@
     std::vector<native_sint_type> b_native_signed; // NOLINT(readability-identifier-naming)
   };
 
-  template<typename AllocatorType> std::minstd_rand                test_uintwide_t_n_binary_ops_template_signed<64U, std::uint16_t, AllocatorType>::my_eng;                                                // NOLINT(cppcoreguidelines-avoid-non-const-global-variables,cert-err58-cpp,cert-msc32-c,cert-msc51-cpp)
-  template<typename AllocatorType> std::uniform_int_distribution<> test_uintwide_t_n_binary_ops_template_signed<64U, std::uint16_t, AllocatorType>::my_distrib_0_to_63(UINT16_C(0), UINT16_C(63));         // NOLINT(cppcoreguidelines-avoid-non-const-global-variables,cert-err58-cpp)
-  template<typename AllocatorType> std::uniform_int_distribution<> test_uintwide_t_n_binary_ops_template_signed<64U, std::uint16_t, AllocatorType>::my_distrib_1_to_0xFFFF(UINT16_C(1), UINT16_C(0xFFFF)); // NOLINT(cppcoreguidelines-avoid-non-const-global-variables,cert-err58-cpp)
+  #if defined(WIDE_INTEGER_NAMESPACE)
+  template<typename AllocatorType> std::minstd_rand                test_uintwide_t_n_binary_ops_template_signed<static_cast<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t>(UINT32_C(64)), std::uint16_t, AllocatorType>::my_eng;                                                // NOLINT(cppcoreguidelines-avoid-non-const-global-variables,cert-err58-cpp,cert-msc32-c,cert-msc51-cpp)
+  template<typename AllocatorType> std::uniform_int_distribution<> test_uintwide_t_n_binary_ops_template_signed<static_cast<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t>(UINT32_C(64)), std::uint16_t, AllocatorType>::my_distrib_0_to_63(UINT16_C(0), UINT16_C(63));         // NOLINT(cppcoreguidelines-avoid-non-const-global-variables,cert-err58-cpp)
+  template<typename AllocatorType> std::uniform_int_distribution<> test_uintwide_t_n_binary_ops_template_signed<static_cast<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t>(UINT32_C(64)), std::uint16_t, AllocatorType>::my_distrib_1_to_0xFFFF(UINT16_C(1), UINT16_C(0xFFFF)); // NOLINT(cppcoreguidelines-avoid-non-const-global-variables,cert-err58-cpp)
+  #else
+  template<typename AllocatorType> std::minstd_rand                test_uintwide_t_n_binary_ops_template_signed<static_cast<math::wide_integer::size_t>(UINT32_C(64)), std::uint16_t, AllocatorType>::my_eng;                                                // NOLINT(cppcoreguidelines-avoid-non-const-global-variables,cert-err58-cpp,cert-msc32-c,cert-msc51-cpp)
+  template<typename AllocatorType> std::uniform_int_distribution<> test_uintwide_t_n_binary_ops_template_signed<static_cast<math::wide_integer::size_t>(UINT32_C(64)), std::uint16_t, AllocatorType>::my_distrib_0_to_63(UINT16_C(0), UINT16_C(63));         // NOLINT(cppcoreguidelines-avoid-non-const-global-variables,cert-err58-cpp)
+  template<typename AllocatorType> std::uniform_int_distribution<> test_uintwide_t_n_binary_ops_template_signed<static_cast<math::wide_integer::size_t>(UINT32_C(64)), std::uint16_t, AllocatorType>::my_distrib_1_to_0xFFFF(UINT16_C(1), UINT16_C(0xFFFF)); // NOLINT(cppcoreguidelines-avoid-non-const-global-variables,cert-err58-cpp)
+  #endif
 
 #endif // TEST_UINTWIDE_T_N_BINARY_OPS_TEMPLATE_SIGNED_2021_06_05_H

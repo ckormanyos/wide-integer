@@ -76,7 +76,11 @@ auto test_uintwide_t_small_bits() -> bool
   bool result_is_ok = true;
 
   {
-    using local_uint16_t = math::wide_integer::uintwide_t<16U, std::uint8_t>;
+    #if defined(WIDE_INTEGER_NAMESPACE)
+    using local_uint16_t = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<static_cast<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t>(UINT32_C(16)), std::uint8_t>;
+    #else
+    using local_uint16_t = math::wide_integer::uintwide_t<static_cast<math::wide_integer::size_t>(UINT32_C(16)), std::uint8_t>;
+    #endif
 
     local_uint16_t a = UINT16_C(0x5522); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
     local_uint16_t b = UINT16_C(0xFFEE); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
@@ -87,7 +91,11 @@ auto test_uintwide_t_small_bits() -> bool
   }
 
   {
-    using local_uint24_t = math::wide_integer::uintwide_t<24U, std::uint8_t>;
+    #if defined(WIDE_INTEGER_NAMESPACE)
+    using local_uint24_t = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<static_cast<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t>(UINT32_C(24)), std::uint8_t>;
+    #else
+    using local_uint24_t = math::wide_integer::uintwide_t<static_cast<math::wide_integer::size_t>(UINT32_C(24)), std::uint8_t>;
+    #endif
 
     local_uint24_t a = UINT32_C(0x11FF5522); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
     local_uint24_t b = UINT32_C(0xABCDFFEE); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
@@ -98,7 +106,11 @@ auto test_uintwide_t_small_bits() -> bool
   }
 
   {
-    using local_uint32_t = math::wide_integer::uintwide_t<32U, std::uint16_t>;
+    #if defined(WIDE_INTEGER_NAMESPACE)
+    using local_uint32_t = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<static_cast<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t>(UINT32_C(32)), std::uint16_t>;
+    #else
+    using local_uint32_t = math::wide_integer::uintwide_t<static_cast<math::wide_integer::size_t>(UINT32_C(32)), std::uint16_t>;
+    #endif
 
     local_uint32_t a = UINT32_C(0x11FF5522); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
     local_uint32_t b = UINT32_C(0xABCDFFEE); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
@@ -307,7 +319,7 @@ auto test_uintwide_t_0032768() -> bool
   #endif
 
   std::cout << "running: test_uintwide_t_0032768" << std::endl;
-  test_uintwide_t_n_binary_ops_template<32768U> test_uintwide_t_n_binary_ops_template_instance(count);
+  test_uintwide_t_n_binary_ops_template<32768U> test_uintwide_t_n_binary_ops_template_instance(count); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
   const bool result_is_ok =
     test_uintwide_t_n_binary_ops_template_instance.do_test(test_uintwide_t_n_binary_ops_rounds);
   return result_is_ok;
@@ -366,7 +378,7 @@ auto test_uintwide_t_0000032_by_0000032_4_by_4() -> bool
 auto test_uintwide_t_0000064_by_0000064_4_by_4() -> bool
 {
   std::cout << "running: test_uintwide_t_0000064_by_0000064_4_by_4" << std::endl;
-  test_uintwide_t_n_binary_ops_mul_div_4_by_4_template<64U, std::uint16_t> test_uintwide_t_n_binary_ops_template_instance(test_uintwide_t_n_binary_ops_4_by_4_cases);
+  test_uintwide_t_n_binary_ops_mul_div_4_by_4_template<64U, std::uint16_t> test_uintwide_t_n_binary_ops_template_instance(test_uintwide_t_n_binary_ops_4_by_4_cases); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
   const bool result_is_ok =
     test_uintwide_t_n_binary_ops_template_instance.do_test(test_uintwide_t_n_binary_ops_rounds);
   return result_is_ok;
@@ -419,15 +431,19 @@ auto main() -> int // NOLINT(bugprone-exception-escape)
 
   const time_point_type stop = local::clock_type::now();
 
-  std::cout << "result_is_ok: "
-            << std::boolalpha
-            << result_is_ok
-            << ", time: "
-            << std::fixed
-            << std::setprecision(1)
-            << (static_cast<float>(std::chrono::duration_cast<std::chrono::milliseconds>(stop - start).count())) / 1000.0F
-            << "s"
-            << std::endl;
+  {
+    constexpr auto one_thousand_milliseconds = static_cast<float>(1000.0F);
+
+    std::cout << "result_is_ok: "
+              << std::boolalpha
+              << result_is_ok
+              << ", time: "
+              << std::fixed
+              << std::setprecision(1)
+              << (static_cast<float>(std::chrono::duration_cast<std::chrono::milliseconds>(stop - start).count())) / one_thousand_milliseconds
+              << "s"
+              << std::endl;
+  }
 
   return (result_is_ok ? 0 : -1);
 }

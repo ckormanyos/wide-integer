@@ -1,4 +1,4 @@
-///////////////////////////////////////////////////////////////////////////////
+﻿///////////////////////////////////////////////////////////////////////////////
 //  Copyright Christopher Kormanyos 2021.
 //  Distributed under the Boost Software License,
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt
@@ -188,7 +188,10 @@
       using other_local_uint_type = OtherLocalUintType;
       using other_cntrl_uint_type = OtherCntrlUintType;
 
-      test_uintwide_t_n_base::my_random_generator().seed(static_cast<typename std::linear_congruential_engine<std::uint32_t, 48271, 0, 2147483647>::result_type>(std::clock()));
+      test_uintwide_t_n_base::my_random_generator().seed
+      (
+        static_cast<typename std::linear_congruential_engine<std::uint32_t, 48271, 0, 2147483647>::result_type>(std::clock())  // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
+      );
 
       using distribution_type =
         math::wide_integer::uniform_int_distribution<other_local_uint_type::my_width2, typename other_local_uint_type::limb_type>;
