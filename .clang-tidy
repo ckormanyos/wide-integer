@@ -8,7 +8,7 @@ Checks: >
   -llvmlibc-*,
   -llvm-header-guard,
   -modernize-concat-nested-namespaces,
-  -readability-avoid-const-params-in-decls"
+  -readability-avoid-const-params-in-decls
 
 WarningsAsErrors: '*'
 HeaderFilterRegex: '.*'
