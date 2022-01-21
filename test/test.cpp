@@ -58,15 +58,15 @@ using clock_type = std::chrono::high_resolution_clock;
 const auto wide_decimal_time_start = clock_type::now();
 
 #if !defined(UINTWIDE_T_REDUCE_TEST_DEPTH)
-constexpr std::size_t test_uintwide_t_n_binary_ops_rounds = 4U;
+constexpr auto test_uintwide_t_n_binary_ops_rounds = static_cast<std::size_t>(4U); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
 #else
-constexpr std::size_t test_uintwide_t_n_binary_ops_rounds = 1U;
+constexpr auto test_uintwide_t_n_binary_ops_rounds = static_cast<std::size_t>(1U); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
 #endif
 
 #if !defined(UINTWIDE_T_REDUCE_TEST_DEPTH)
-constexpr std::size_t test_uintwide_t_n_binary_ops_4_by_4_cases = std::uint32_t(1UL << 15U);
+constexpr std::size_t test_uintwide_t_n_binary_ops_4_by_4_cases = std::uint32_t(1UL << 15U); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
 #else
-constexpr std::size_t test_uintwide_t_n_binary_ops_4_by_4_cases = std::uint32_t(1UL << 9U);
+constexpr std::size_t test_uintwide_t_n_binary_ops_4_by_4_cases = std::uint32_t(1UL << 9U); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
 #endif
 
 auto test_uintwide_t_small_bits() -> bool
@@ -78,34 +78,34 @@ auto test_uintwide_t_small_bits() -> bool
   {
     using local_uint16_t = math::wide_integer::uintwide_t<16U, std::uint8_t>;
 
-    local_uint16_t a = UINT16_C(0x5522);
-    local_uint16_t b = UINT16_C(0xFFEE);
+    local_uint16_t a = UINT16_C(0x5522); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
+    local_uint16_t b = UINT16_C(0xFFEE); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
 
     local_uint16_t c = a * b;
 
-    result_is_ok &= (c == UINT32_C(0x039C));
+    result_is_ok &= (c == UINT32_C(0x039C)); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
   }
 
   {
     using local_uint24_t = math::wide_integer::uintwide_t<24U, std::uint8_t>;
 
-    local_uint24_t a = UINT32_C(0x11FF5522);
-    local_uint24_t b = UINT32_C(0xABCDFFEE);
+    local_uint24_t a = UINT32_C(0x11FF5522); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
+    local_uint24_t b = UINT32_C(0xABCDFFEE); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
 
     local_uint24_t c = a * b;
 
-    result_is_ok &= (c == UINT32_C(0xF368039C));
+    result_is_ok &= (c == UINT32_C(0xF368039C)); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
   }
 
   {
     using local_uint32_t = math::wide_integer::uintwide_t<32U, std::uint16_t>;
 
-    local_uint32_t a = UINT32_C(0x11FF5522);
-    local_uint32_t b = UINT32_C(0xABCDFFEE);
+    local_uint32_t a = UINT32_C(0x11FF5522); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
+    local_uint32_t b = UINT32_C(0xABCDFFEE); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
 
     local_uint32_t c = a * b;
 
-    result_is_ok &= (c == UINT32_C(0xF368039C));
+    result_is_ok &= (c == UINT32_C(0xF368039C)); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
   }
 
   return result_is_ok;
@@ -156,7 +156,7 @@ auto test_uintwide_t_spot_values() -> bool
 auto test_uintwide_t_0000024() -> bool
 {
   std::cout << "running: test_uintwide_t_0000024" << std::endl;
-  test_uintwide_t_n_binary_ops_template<24U, std::uint8_t> test_uintwide_t_n_binary_ops_template_instance(1UL << 13U);
+  test_uintwide_t_n_binary_ops_template<24U, std::uint8_t> test_uintwide_t_n_binary_ops_template_instance(1UL << 13U); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
   const bool result_is_ok =
     test_uintwide_t_n_binary_ops_template_instance.do_test(test_uintwide_t_n_binary_ops_rounds);
   return result_is_ok;
@@ -165,7 +165,7 @@ auto test_uintwide_t_0000024() -> bool
 auto test_uintwide_t_0000048() -> bool
 {
   std::cout << "running: test_uintwide_t_0000048" << std::endl;
-  test_uintwide_t_n_binary_ops_template<48U, std::uint16_t> test_uintwide_t_n_binary_ops_template_instance(1UL << 13U);
+  test_uintwide_t_n_binary_ops_template<48U, std::uint16_t> test_uintwide_t_n_binary_ops_template_instance(1UL << 13U); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
   const bool result_is_ok =
     test_uintwide_t_n_binary_ops_template_instance.do_test(test_uintwide_t_n_binary_ops_rounds);
   return result_is_ok;
@@ -174,7 +174,7 @@ auto test_uintwide_t_0000048() -> bool
 auto test_uintwide_t_0000064() -> bool
 {
   std::cout << "running: test_uintwide_t_0000064" << std::endl;
-  test_uintwide_t_n_binary_ops_template<64U, std::uint32_t> test_uintwide_t_n_binary_ops_template_instance(1UL << 13U);
+  test_uintwide_t_n_binary_ops_template<64U, std::uint32_t> test_uintwide_t_n_binary_ops_template_instance(1UL << 13U); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
   const bool result_is_ok =
     test_uintwide_t_n_binary_ops_template_instance.do_test(test_uintwide_t_n_binary_ops_rounds);
   return result_is_ok;
@@ -183,7 +183,7 @@ auto test_uintwide_t_0000064() -> bool
 auto test_uintwide_t_0000064_signed() -> bool
 {
   std::cout << "running: test_uintwide_t_0000064_signed" << std::endl;
-  test_uintwide_t_n_binary_ops_template_signed<64U, std::uint16_t> test_uintwide_t_n_binary_ops_template_instance(1UL << 13U);
+  test_uintwide_t_n_binary_ops_template_signed<64U, std::uint16_t> test_uintwide_t_n_binary_ops_template_instance(1UL << 13U); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
   const bool result_is_ok =
     test_uintwide_t_n_binary_ops_template_instance.do_test(test_uintwide_t_n_binary_ops_rounds);
   return result_is_ok;
@@ -192,7 +192,7 @@ auto test_uintwide_t_0000064_signed() -> bool
 auto test_uintwide_t_0000096() -> bool
 {
   std::cout << "running: test_uintwide_t_0000096" << std::endl;
-  test_uintwide_t_n_binary_ops_template<96U, std::uint16_t> test_uintwide_t_n_binary_ops_template_instance(1UL << 13U);
+  test_uintwide_t_n_binary_ops_template<96U, std::uint16_t> test_uintwide_t_n_binary_ops_template_instance(1UL << 13U); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
   const bool result_is_ok =
     test_uintwide_t_n_binary_ops_template_instance.do_test(test_uintwide_t_n_binary_ops_rounds);
   return result_is_ok;
@@ -201,7 +201,7 @@ auto test_uintwide_t_0000096() -> bool
 auto test_uintwide_t_0000128() -> bool
 {
   std::cout << "running: test_uintwide_t_0000128" << std::endl;
-  test_uintwide_t_n_binary_ops_template<128U> test_uintwide_t_n_binary_ops_template_instance(1UL << 13U);
+  test_uintwide_t_n_binary_ops_template<128U> test_uintwide_t_n_binary_ops_template_instance(1UL << 13U); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
   const bool result_is_ok =
     test_uintwide_t_n_binary_ops_template_instance.do_test(test_uintwide_t_n_binary_ops_rounds);
   return result_is_ok;
@@ -210,7 +210,7 @@ auto test_uintwide_t_0000128() -> bool
 auto test_uintwide_t_0000256() -> bool
 {
   std::cout << "running: test_uintwide_t_0000256" << std::endl;
-  test_uintwide_t_n_binary_ops_template<256U> test_uintwide_t_n_binary_ops_template_instance(1UL << 13U);
+  test_uintwide_t_n_binary_ops_template<256U> test_uintwide_t_n_binary_ops_template_instance(1UL << 13U); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
   const bool result_is_ok =
     test_uintwide_t_n_binary_ops_template_instance.do_test(test_uintwide_t_n_binary_ops_rounds);
   return result_is_ok;
@@ -220,7 +220,7 @@ auto test_uintwide_t_0000256() -> bool
 auto test_uintwide_t_0000256_limb_type_uint64_t() -> bool
 {
   std::cout << "running: test_uintwide_t_0000256_limb_type_uint64_t" << std::endl;
-  test_uintwide_t_n_binary_ops_template<256U, std::uint64_t> test_uintwide_t_n_binary_ops_template_instance(1UL << 13U);
+  test_uintwide_t_n_binary_ops_template<256U, std::uint64_t> test_uintwide_t_n_binary_ops_template_instance(1UL << 13U); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
   const bool result_is_ok =
     test_uintwide_t_n_binary_ops_template_instance.do_test(test_uintwide_t_n_binary_ops_rounds);
   return result_is_ok;
@@ -230,7 +230,7 @@ auto test_uintwide_t_0000256_limb_type_uint64_t() -> bool
 auto test_uintwide_t_0000512() -> bool
 {
   std::cout << "running: test_uintwide_t_0000512" << std::endl;
-  test_uintwide_t_n_binary_ops_template<512U> test_uintwide_t_n_binary_ops_template_instance(1UL << 13U);
+  test_uintwide_t_n_binary_ops_template<512U> test_uintwide_t_n_binary_ops_template_instance(1UL << 13U); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
   const bool result_is_ok =
     test_uintwide_t_n_binary_ops_template_instance.do_test(test_uintwide_t_n_binary_ops_rounds);
   return result_is_ok;
@@ -239,7 +239,7 @@ auto test_uintwide_t_0000512() -> bool
 auto test_uintwide_t_0000512_signed() -> bool
 {
   std::cout << "running: test_uintwide_t_0000512_signed" << std::endl;
-  test_uintwide_t_n_binary_ops_template_signed<512U> test_uintwide_t_n_binary_ops_template_signed_instance(1UL << 13U);
+  test_uintwide_t_n_binary_ops_template_signed<512U> test_uintwide_t_n_binary_ops_template_signed_instance(1UL << 13U); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
   const bool result_is_ok =
     test_uintwide_t_n_binary_ops_template_signed_instance.do_test(test_uintwide_t_n_binary_ops_rounds);
   return result_is_ok;
@@ -248,7 +248,7 @@ auto test_uintwide_t_0000512_signed() -> bool
 auto test_uintwide_t_0001024() -> bool
 {
   std::cout << "running: test_uintwide_t_0001024" << std::endl;
-  test_uintwide_t_n_binary_ops_template<1024U> test_uintwide_t_n_binary_ops_template_instance(1UL << 12U);
+  test_uintwide_t_n_binary_ops_template<1024U> test_uintwide_t_n_binary_ops_template_instance(1UL << 12U); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
   const bool result_is_ok =
     test_uintwide_t_n_binary_ops_template_instance.do_test(test_uintwide_t_n_binary_ops_rounds);
   return result_is_ok;
@@ -257,7 +257,7 @@ auto test_uintwide_t_0001024() -> bool
 auto test_uintwide_t_0002048() -> bool
 {
   std::cout << "running: test_uintwide_t_0002048" << std::endl;
-  test_uintwide_t_n_binary_ops_template<2048U> test_uintwide_t_n_binary_ops_template_instance(1UL << 11U);
+  test_uintwide_t_n_binary_ops_template<2048U> test_uintwide_t_n_binary_ops_template_instance(1UL << 11U); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
   const bool result_is_ok =
     test_uintwide_t_n_binary_ops_template_instance.do_test(test_uintwide_t_n_binary_ops_rounds);
   return result_is_ok;
@@ -266,7 +266,7 @@ auto test_uintwide_t_0002048() -> bool
 auto test_uintwide_t_0008192() -> bool
 {
   std::cout << "running: test_uintwide_t_0008192" << std::endl;
-  test_uintwide_t_n_binary_ops_template<8192U> test_uintwide_t_n_binary_ops_template_instance(1UL << 8U);
+  test_uintwide_t_n_binary_ops_template<8192U> test_uintwide_t_n_binary_ops_template_instance(1UL << 8U); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
   const bool result_is_ok =
     test_uintwide_t_n_binary_ops_template_instance.do_test(test_uintwide_t_n_binary_ops_rounds);
   return result_is_ok;
@@ -276,7 +276,7 @@ auto test_uintwide_t_0008192() -> bool
 auto test_uintwide_t_0008192_limb_type_uint64_t() -> bool
 {
   std::cout << "running: test_uintwide_t_0008192_limb_type_uint64_t" << std::endl;
-  test_uintwide_t_n_binary_ops_template<8192U, std::uint64_t> test_uintwide_t_n_binary_ops_template_instance(1UL << 8U);
+  test_uintwide_t_n_binary_ops_template<8192U, std::uint64_t> test_uintwide_t_n_binary_ops_template_instance(1UL << 8U); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
   const bool result_is_ok =
     test_uintwide_t_n_binary_ops_template_instance.do_test(test_uintwide_t_n_binary_ops_rounds);
   return result_is_ok;
@@ -286,13 +286,13 @@ auto test_uintwide_t_0008192_limb_type_uint64_t() -> bool
 auto test_uintwide_t_0012288() -> bool
 {
   #if !defined(UINTWIDE_T_REDUCE_TEST_DEPTH)
-  constexpr auto count = std::size_t(1UL << 5U);
+  constexpr auto count = static_cast<std::size_t>(1UL << 5U);
   #else
-  constexpr auto count = std::size_t(1UL << 7U);
+  constexpr auto count = static_cast<std::size_t>(1UL << 7U);
   #endif
 
   std::cout << "running: test_uintwide_t_0012288" << std::endl;
-  test_uintwide_t_n_binary_ops_template<12288U> test_uintwide_t_n_binary_ops_template_instance(count);
+  test_uintwide_t_n_binary_ops_template<12288U> test_uintwide_t_n_binary_ops_template_instance(count); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
   const bool result_is_ok =
     test_uintwide_t_n_binary_ops_template_instance.do_test(test_uintwide_t_n_binary_ops_rounds);
   return result_is_ok;
@@ -301,9 +301,9 @@ auto test_uintwide_t_0012288() -> bool
 auto test_uintwide_t_0032768() -> bool
 {
   #if !defined(UINTWIDE_T_REDUCE_TEST_DEPTH)
-  constexpr auto count = std::size_t(1UL << 5U);
+  constexpr auto count = static_cast<std::size_t>(1UL << 5U); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
   #else
-  constexpr auto count = std::size_t(1UL << 7U);
+  constexpr auto count = static_cast<std::size_t>(1UL << 7U); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
   #endif
 
   std::cout << "running: test_uintwide_t_0032768" << std::endl;
@@ -317,7 +317,7 @@ auto test_uintwide_t_0032768() -> bool
 auto test_uintwide_t_0065536_alloc() -> bool
 {
   std::cout << "running: test_uintwide_t_0065536_alloc" << std::endl;
-  test_uintwide_t_n_binary_ops_template<65536U, std::uint32_t, std::allocator<std::uint32_t>> test_uintwide_t_n_binary_ops_template_instance(1UL << 6U);
+  test_uintwide_t_n_binary_ops_template<65536U, std::uint32_t, std::allocator<std::uint32_t>> test_uintwide_t_n_binary_ops_template_instance(1UL << 6U); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
   const bool result_is_ok =
     test_uintwide_t_n_binary_ops_template_instance.do_test(test_uintwide_t_n_binary_ops_rounds);
   return result_is_ok;
@@ -327,13 +327,13 @@ auto test_uintwide_t_0065536_alloc() -> bool
 auto test_uintwide_t_0008192_by_0012288() -> bool
 {
   #if !defined(UINTWIDE_T_REDUCE_TEST_DEPTH)
-  constexpr auto count = std::size_t(1UL << 5U);
+  constexpr auto count = static_cast<std::size_t>(1UL << 5U); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
   #else
-  constexpr auto count = std::size_t(1UL << 7U);
+  constexpr auto count = static_cast<std::size_t>(1UL << 7U); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
   #endif
 
   std::cout << "running: test_uintwide_t_0008192_by_0012288" << std::endl;
-  test_uintwide_t_n_binary_ops_mul_n_by_m_template<8192U, 12288U> test_uintwide_t_n_binary_ops_template_instance(count);
+  test_uintwide_t_n_binary_ops_mul_n_by_m_template<8192U, 12288U> test_uintwide_t_n_binary_ops_template_instance(count); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
   const bool result_is_ok =
     test_uintwide_t_n_binary_ops_template_instance.do_test(test_uintwide_t_n_binary_ops_rounds);
   return result_is_ok;
@@ -342,13 +342,13 @@ auto test_uintwide_t_0008192_by_0012288() -> bool
 auto test_uintwide_t_0012288_by_0008192() -> bool
 {
   #if !defined(UINTWIDE_T_REDUCE_TEST_DEPTH)
-  constexpr auto count = std::size_t(1UL << 5U);
+  constexpr auto count = static_cast<std::size_t>(1UL << 5U); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
   #else
-  constexpr auto count = std::size_t(1UL << 7U);
+  constexpr auto count = static_cast<std::size_t>(1UL << 7U); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
   #endif
 
   std::cout << "running: test_uintwide_t_0012288_by_0008192" << std::endl;
-  test_uintwide_t_n_binary_ops_mul_n_by_m_template<12288U, 8192U> test_uintwide_t_n_binary_ops_template_instance(count);
+  test_uintwide_t_n_binary_ops_mul_n_by_m_template<12288U, 8192U> test_uintwide_t_n_binary_ops_template_instance(count); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
   const bool result_is_ok =
     test_uintwide_t_n_binary_ops_template_instance.do_test(test_uintwide_t_n_binary_ops_rounds);
   return result_is_ok;
@@ -357,7 +357,7 @@ auto test_uintwide_t_0012288_by_0008192() -> bool
 auto test_uintwide_t_0000032_by_0000032_4_by_4() -> bool
 {
   std::cout << "running: test_uintwide_t_0000032_by_0000032_4_by_4" << std::endl;
-  test_uintwide_t_n_binary_ops_mul_div_4_by_4_template<32U, std::uint8_t> test_uintwide_t_n_binary_ops_template_instance(test_uintwide_t_n_binary_ops_4_by_4_cases);
+  test_uintwide_t_n_binary_ops_mul_div_4_by_4_template<32U, std::uint8_t> test_uintwide_t_n_binary_ops_template_instance(test_uintwide_t_n_binary_ops_4_by_4_cases); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
   const bool result_is_ok =
     test_uintwide_t_n_binary_ops_template_instance.do_test(test_uintwide_t_n_binary_ops_rounds);
   return result_is_ok;

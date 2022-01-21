@@ -41,7 +41,11 @@ namespace local_timed_mul
 
   auto local_a() -> std::vector<big_uint_type>&
   {
-    static std::vector<big_uint_type> my_local_a(128U);
+    static std::vector<big_uint_type>
+      my_local_a
+      (
+        static_cast<typename std::vector<big_uint_type>::size_type>(UINT32_C(128))
+      );
 
     return my_local_a;
   }
@@ -72,7 +76,7 @@ auto math::wide_integer::example009_timed_mul() -> bool
   std::uint64_t count = 0U;
   std::size_t   index = 0U;
 
-  long long total_time { }; // NOLINT(google-runtime-int)
+  std::intmax_t total_time { };
 
   const std::chrono::high_resolution_clock::time_point begin = std::chrono::high_resolution_clock::now();
 
@@ -82,7 +86,7 @@ auto math::wide_integer::example009_timed_mul() -> bool
 
     const std::chrono::high_resolution_clock::time_point end = std::chrono::high_resolution_clock::now();
 
-    total_time = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count();
+    total_time = static_cast<std::intmax_t>(std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count());
 
     ++count;
     ++index;
@@ -92,7 +96,7 @@ auto math::wide_integer::example009_timed_mul() -> bool
       index = 0U;
     }
 
-    if(total_time > 5999U)
+    if(total_time > INTMAX_C(5999))
     {
       break;
     }

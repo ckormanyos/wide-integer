@@ -12,18 +12,35 @@
 
   #include <test/test_uintwide_t_n_base.h>
 
+  #if defined(WIDE_INTEGER_NAMESPACE)
+  template<const WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t MyDigits2A,
+           const WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t MyDigits2B,
+           typename MyLimbType = std::uint32_t>
+  #else
   template<const math::wide_integer::size_t MyDigits2A,
            const math::wide_integer::size_t MyDigits2B,
            typename MyLimbType = std::uint32_t>
+  #endif
   class test_uintwide_t_n_binary_ops_mul_n_by_m_template : public test_uintwide_t_n_binary_ops_base // NOLINT(cppcoreguidelines-special-member-functions,hicpp-special-member-functions)
   {
   private:
-    static constexpr math::wide_integer::size_t digits2a = MyDigits2A;
-    static constexpr math::wide_integer::size_t digits2b = MyDigits2B;
+    #if defined(WIDE_INTEGER_NAMESPACE)
+    static constexpr auto digits2a = static_cast<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t>(MyDigits2A);
+    static constexpr auto digits2b = static_cast<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t>(MyDigits2B);
+    #else
+    static constexpr auto digits2a = static_cast<math::wide_integer::size_t>(MyDigits2A);
+    static constexpr auto digits2b = static_cast<math::wide_integer::size_t>(MyDigits2B);
+    #endif
 
+    #if defined(WIDE_INTEGER_NAMESPACE)
+    WIDE_INTEGER_NODISCARD auto get_digits2a() const -> WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t          { return digits2a; }
+    WIDE_INTEGER_NODISCARD auto get_digits2b() const -> WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t          { return digits2b; }
+    WIDE_INTEGER_NODISCARD auto get_digits2 () const -> WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t override { return digits2a + digits2b; }
+    #else
     WIDE_INTEGER_NODISCARD auto get_digits2a() const -> math::wide_integer::size_t          { return digits2a; }
     WIDE_INTEGER_NODISCARD auto get_digits2b() const -> math::wide_integer::size_t          { return digits2b; }
     WIDE_INTEGER_NODISCARD auto get_digits2 () const -> math::wide_integer::size_t override { return digits2a + digits2b; }
+    #endif
 
     using boost_uint_backend_a_type =
       boost::multiprecision::cpp_int_backend<digits2a,
@@ -102,7 +119,7 @@
 
       my_concurrency::parallel_for
       (
-        std::size_t(0U),
+        static_cast<std::size_t>(0U),
         size(),
         [&test_lock, &result_is_ok, this](std::size_t i)
         {

@@ -1,4 +1,4 @@
-///////////////////////////////////////////////////////////////////
+﻿///////////////////////////////////////////////////////////////////
 //  Copyright Christopher Kormanyos 2018 - 2022.                 //
 //  Distributed under the Boost Software License,                //
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt          //
@@ -36,8 +36,15 @@
 
 auto math::wide_integer::example008a_miller_rabin_prime() -> bool
 {
-  using wide_integer_type = boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<512U>,
-                                                          boost::multiprecision::et_off>;
+  #if defined(WIDE_INTEGER_NAMESPACE)
+  using wide_integer_type =
+    boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<static_cast<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t>(UINT32_C(512))>,
+                                  boost::multiprecision::et_off>;
+  #else
+  using wide_integer_type =
+    boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<static_cast<math::wide_integer::size_t>(UINT32_C(512))>,
+                                  boost::multiprecision::et_off>;
+  #endif
 
   boost::random::mt11213b base_gen(static_cast<typename boost::random::mt11213b::result_type>(std::clock()));
 

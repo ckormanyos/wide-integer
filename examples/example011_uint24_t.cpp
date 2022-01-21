@@ -1,4 +1,4 @@
-﻿///////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////
 //  Copyright Christopher Kormanyos 2018 - 2022.                 //
 //  Distributed under the Boost Software License,                //
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt          //
@@ -12,9 +12,18 @@
 
 auto math::wide_integer::example011_uint24_t() -> bool
 {
-  using uint24_t = math::wide_integer::uintwide_t<24U, std::uint8_t>;
+  #if defined(WIDE_INTEGER_NAMESPACE)
+  using uint24_t = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<static_cast<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t>(UINT32_C(24)), std::uint8_t>;
+  #else
+  using uint24_t = math::wide_integer::uintwide_t<static_cast<math::wide_integer::size_t>(UINT32_C(24)), std::uint8_t>;
+  #endif
 
-  using distribution_type  = math::wide_integer::uniform_int_distribution<24U, typename uint24_t::limb_type>;
+  #if defined(WIDE_INTEGER_NAMESPACE)
+  using distribution_type  = WIDE_INTEGER_NAMESPACE::math::wide_integer::uniform_int_distribution<static_cast<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t>(UINT32_C(24)), typename uint24_t::limb_type>;
+  #else
+  using distribution_type  = math::wide_integer::uniform_int_distribution<static_cast<math::wide_integer::size_t>(UINT32_C(24)), typename uint24_t::limb_type>;
+  #endif
+
   using random_engine_type = std::linear_congruential_engine<std::uint32_t, UINT32_C(48271), UINT32_C(0), UINT32_C(2147483647)>;
 
   random_engine_type generator(UINT32_C(0xDEADBEEF)); // NOLINT(cert-msc32-c,cert-msc51-cpp)

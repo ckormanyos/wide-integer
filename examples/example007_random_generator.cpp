@@ -19,22 +19,27 @@ namespace local_random
   auto generate() -> bool
   {
     using random_engine_type = std::mersenne_twister_engine<std::uint64_t,
-                                                            64,
-                                                            312,
-                                                            156,
-                                                            31,
+                                                            static_cast<std::size_t>(UINT32_C( 64)),
+                                                            static_cast<std::size_t>(UINT32_C(312)),
+                                                            static_cast<std::size_t>(UINT32_C(156)),
+                                                            static_cast<std::size_t>(UINT32_C( 31)),
                                                             UINT64_C(0xB5026F5AA96619E9),
-                                                            29,
+                                                            static_cast<std::size_t>(UINT32_C( 29)),
                                                             UINT64_C(0x5555555555555555),
-                                                            17,
+                                                            static_cast<std::size_t>(UINT32_C( 17)),
                                                             UINT64_C(0x71D67FFFEDA60000),
-                                                            37,
+                                                            static_cast<std::size_t>(UINT32_C( 37)),
                                                             UINT64_C(0xFFF7EEE000000000),
-                                                            43,
+                                                            static_cast<std::size_t>(UINT32_C( 43)),
                                                             UINT64_C(6364136223846793005)>;
 
-    using wide_integer_type  = math::wide_integer::uintwide_t<256U, std::uint32_t, AllocatorType>;
+    #if defined(WIDE_INTEGER_NAMESPACE)
+    using wide_integer_type  = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<static_cast<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t>(UINT32_C(256)), std::uint32_t, AllocatorType>;
+    using distribution_type  = WIDE_INTEGER_NAMESPACE::math::wide_integer::uniform_int_distribution<wide_integer_type::my_width2, typename wide_integer_type::limb_type>;
+    #else
+    using wide_integer_type  = math::wide_integer::uintwide_t<static_cast<math::wide_integer::size_t>(UINT32_C(256)), std::uint32_t, AllocatorType>;
     using distribution_type  = math::wide_integer::uniform_int_distribution<wide_integer_type::my_width2, typename wide_integer_type::limb_type>;
+    #endif
 
     // Generate a random number with wide_integer_type having limbs of type LimbType.
     // Purosely use the default seed.

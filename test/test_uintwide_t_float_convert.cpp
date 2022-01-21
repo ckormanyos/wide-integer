@@ -1,4 +1,4 @@
-﻿///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 //  Copyright Christopher Kormanyos 2021.
 //  Distributed under the Boost Software License,
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt
@@ -34,7 +34,7 @@ namespace local_float_convert
 {
   auto engine_man() -> std::mt19937&                                                         { static std::mt19937                                                         my_engine_man; return my_engine_man; } // NOLINT(cert-msc32-c,cert-msc51-cpp)
   auto engine_sgn() -> std::ranlux24_base&                                                   { static std::ranlux24_base                                                   my_engine_sgn; return my_engine_sgn; } // NOLINT(cert-msc32-c,cert-msc51-cpp)
-  auto engine_e10() -> std::linear_congruential_engine<std::uint32_t, 48271, 0, 2147483647>& { static std::linear_congruential_engine<std::uint32_t, 48271, 0, 2147483647> my_engine_e10; return my_engine_e10; } // NOLINT(cert-msc32-c,cert-msc51-cpp)
+  auto engine_e10() -> std::linear_congruential_engine<std::uint32_t, 48271, 0, 2147483647>& { static std::linear_congruential_engine<std::uint32_t, 48271, 0, 2147483647> my_engine_e10; return my_engine_e10; } // NOLINT(cert-msc32-c,cert-msc51-cpp,cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
 
   template<typename FloatingPointType,
            const std::int32_t LoExp10,
@@ -103,14 +103,14 @@ namespace local_float_convert
     dist_first
     (
       1,
-      9
+      9 // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
     );
 
     static std::uniform_int_distribution<unsigned>
     dist_following
     (
       0,
-      9
+      9 // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
     );
 
     const bool is_neg = (dist_sgn(engine_sgn()) != 0);
@@ -132,13 +132,23 @@ namespace local_float_convert
       str.resize(len);
     }
 
-    str.at(pos) = static_cast<char>(dist_first(engine_man()) + 0x30U);
+    str.at(pos) =
+      static_cast<char>
+      (
+          dist_first(engine_man())
+        + static_cast<std::uniform_int_distribution<unsigned>::result_type>(UINT32_C(0x30))
+      );
 
     ++pos;
 
     while(pos < str.length())
     {
-      str.at(pos) = static_cast<char>(dist_following(engine_man()) + 0x30U);
+      str.at(pos) =
+        static_cast<char>
+        (
+            dist_following(engine_man())
+          + static_cast<std::uniform_int_distribution<unsigned>::result_type>(UINT32_C(0x30))
+        );
 
       ++pos;
     }
@@ -157,7 +167,7 @@ namespace local_float_convert
 
 auto math::wide_integer::test_uintwide_t_float_convert() -> bool
 {
-  constexpr unsigned digits2 = 256U;
+  constexpr auto digits2 = static_cast<unsigned>(256U);
 
   using boost_uint_backend_type =
     boost::multiprecision::cpp_int_backend<digits2,
@@ -182,11 +192,11 @@ auto math::wide_integer::test_uintwide_t_float_convert() -> bool
 
   local_float_convert::engine_man().seed(static_cast<typename std::mt19937::result_type>                                                        (std::clock()));
   local_float_convert::engine_sgn().seed(static_cast<typename std::ranlux24_base::result_type>                                                  (std::clock()));
-  local_float_convert::engine_e10().seed(static_cast<typename std::linear_congruential_engine<std::uint32_t, 48271, 0, 2147483647>::result_type>(std::clock()));
+  local_float_convert::engine_e10().seed(static_cast<typename std::linear_congruential_engine<std::uint32_t, 48271, 0, 2147483647>::result_type>(std::clock())); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
 
   bool result_is_ok = true;
 
-  for(auto i = std::size_t(0U); i < std::size_t(0x80000U); ++i)
+  for(auto i = static_cast<std::size_t>(0U); i < static_cast<std::size_t>(UINT32_C(0x80000)); ++i)
   {
     const auto f = local_float_convert::get_random_float<float, -1, 27>();
 
@@ -199,7 +209,7 @@ auto math::wide_integer::test_uintwide_t_float_convert() -> bool
     result_is_ok &= (str_boost_signed == str_local_signed);
   }
 
-  for(auto i = std::size_t(0U); i < std::size_t(0x80000U); ++i)
+  for(auto i = static_cast<std::size_t>(0U); i < static_cast<std::size_t>(UINT32_C(0x80000)); ++i)
   {
     const auto d = local_float_convert::get_random_float<double, -1, 75>();
 
@@ -214,13 +224,13 @@ auto math::wide_integer::test_uintwide_t_float_convert() -> bool
 
   local_float_convert::engine_man().seed(static_cast<typename std::mt19937::result_type>                                                        (std::clock()));
   local_float_convert::engine_sgn().seed(static_cast<typename std::ranlux24_base::result_type>                                                  (std::clock()));
-  local_float_convert::engine_e10().seed(static_cast<typename std::linear_congruential_engine<std::uint32_t, 48271, 0, 2147483647>::result_type>(std::clock()));
+  local_float_convert::engine_e10().seed(static_cast<typename std::linear_congruential_engine<std::uint32_t, 48271, 0, 2147483647>::result_type>(std::clock())); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
 
-  for(auto i = std::size_t(0U); i < std::size_t(0x100000U); ++i)
+  for(auto i = static_cast<std::size_t>(0U); i < static_cast<std::size_t>(UINT32_C(0x100000)); ++i)
   {
     std::string str_digits;
 
-    local_float_convert::get_random_digit_string<31U>(str_digits);
+    local_float_convert::get_random_digit_string<31U>(str_digits); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
 
     const boost_sint_type n_boost = boost_sint_type(str_digits.c_str());
     const local_sint_type n_local = local_sint_type(str_digits.c_str());
@@ -238,11 +248,11 @@ auto math::wide_integer::test_uintwide_t_float_convert() -> bool
     result_is_ok &= result_f_is_ok;
   }
 
-  for(auto i = std::size_t(0U); i < std::size_t(0x40000U); ++i)
+  for(auto i = static_cast<std::size_t>(0U); i < static_cast<std::size_t>(UINT32_C(0x40000)); ++i)
   {
     std::string str_digits;
 
-    local_float_convert::get_random_digit_string<71U>(str_digits);
+    local_float_convert::get_random_digit_string<71U>(str_digits); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
 
     const boost_sint_type n_boost = boost_sint_type(str_digits.c_str());
     const local_sint_type n_local = local_sint_type(str_digits.c_str());
@@ -252,7 +262,7 @@ auto math::wide_integer::test_uintwide_t_float_convert() -> bool
 
     using std::fabs;
 
-    constexpr auto cast_tol_double = double(std::numeric_limits<double>::epsilon() * 2.0);
+    constexpr auto cast_tol_double = static_cast<double>(std::numeric_limits<double>::epsilon() * 2.0);
 
     const double closeness      = fabs(1.0 - fabs(d_boost / d_local));
     const bool   result_f_is_ok = (closeness < cast_tol_double);

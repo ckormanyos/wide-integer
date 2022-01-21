@@ -88,12 +88,17 @@ auto math::wide_integer::test_uintwide_t_spot_values() -> bool // NOLINT(readabi
 
     // Here we statically test non-explicit construction/conversion
 
-    using local_uint128_type = math::wide_integer::uintwide_t<128U, std::uint32_t, void, false>;
-    using local_int128_type  = math::wide_integer::uintwide_t<128U, std::uint32_t, void, true>;
-
-    using local_uint160_type = math::wide_integer::uintwide_t<160U, std::uint32_t, void, false>;
-    using local_int160_type  = math::wide_integer::uintwide_t<160U, std::uint32_t, void, true>;
-
+    #if defined(WIDE_INTEGER_NAMESPACE)
+    using local_uint128_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<static_cast<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t>(UINT32_C(128)), std::uint32_t, void, false>;
+    using local_int128_type  = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<static_cast<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t>(UINT32_C(128)), std::uint32_t, void, true>;
+    using local_uint160_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<static_cast<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t>(UINT32_C(160)), std::uint32_t, void, false>;
+    using local_int160_type  = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<static_cast<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t>(UINT32_C(160)), std::uint32_t, void, true>;
+    #else
+    using local_uint128_type = math::wide_integer::uintwide_t<static_cast<math::wide_integer::size_t>(UINT32_C(128)), std::uint32_t, void, false>;
+    using local_int128_type  = math::wide_integer::uintwide_t<static_cast<math::wide_integer::size_t>(UINT32_C(128)), std::uint32_t, void, true>;
+    using local_uint160_type = math::wide_integer::uintwide_t<static_cast<math::wide_integer::size_t>(UINT32_C(160)), std::uint32_t, void, false>;
+    using local_int160_type  = math::wide_integer::uintwide_t<static_cast<math::wide_integer::size_t>(UINT32_C(160)), std::uint32_t, void, true>;
+    #endif
 
     // Static test of construction rules.
 
@@ -152,12 +157,17 @@ auto math::wide_integer::test_uintwide_t_spot_values() -> bool // NOLINT(readabi
 
     // Here we test explicit construction/conversion both statically
     // as well as dynamically (i.e., dynamically in run-time).
-
-    using local_uint128_type = math::wide_integer::uintwide_t<128U, std::uint32_t, void, false>;
-    using local_int128_type  = math::wide_integer::uintwide_t<128U, std::uint32_t, void, true>;
-
-    using local_uint160_type = math::wide_integer::uintwide_t<160U, std::uint32_t, void, false>;
-    using local_int160_type  = math::wide_integer::uintwide_t<160U, std::uint32_t, void, true>;
+    #if defined(WIDE_INTEGER_NAMESPACE)
+    using local_uint128_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<static_cast<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t>(UINT32_C(128)), std::uint32_t, void, false>;
+    using local_int128_type  = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<static_cast<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t>(UINT32_C(128)), std::uint32_t, void, true>;
+    using local_uint160_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<static_cast<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t>(UINT32_C(160)), std::uint32_t, void, false>;
+    using local_int160_type  = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<static_cast<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t>(UINT32_C(160)), std::uint32_t, void, true>;
+    #else
+    using local_uint128_type = math::wide_integer::uintwide_t<static_cast<math::wide_integer::size_t>(UINT32_C(128)), std::uint32_t, void, false>;
+    using local_int128_type  = math::wide_integer::uintwide_t<static_cast<math::wide_integer::size_t>(UINT32_C(128)), std::uint32_t, void, true>;
+    using local_uint160_type = math::wide_integer::uintwide_t<static_cast<math::wide_integer::size_t>(UINT32_C(160)), std::uint32_t, void, false>;
+    using local_int160_type  = math::wide_integer::uintwide_t<static_cast<math::wide_integer::size_t>(UINT32_C(160)), std::uint32_t, void, true>;
+    #endif
 
     // Get randoms via:
     // RandomInteger[{100000000000000000000000000000000000, 10000000000000000000000000000000000000}]
@@ -415,10 +425,10 @@ auto math::wide_integer::test_uintwide_t_spot_values() -> bool // NOLINT(readabi
     }
 
     {
-      using local_uint131072_type = math::wide_integer::uintwide_t<131072, std::uint32_t, std::allocator<void>, false>;
+      using local_uint131072_type = math::wide_integer::uintwide_t<static_cast<math::wide_integer::size_t>(UINT32_C(131072)), std::uint32_t, std::allocator<void>, false>;
 
-      local_uint131072_type u(123U);
-      local_uint131072_type v( 56U);
+      local_uint131072_type u(123U); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
+      local_uint131072_type v( 56U); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
 
       // Multiply 123^256.
       u *= u; u *= u; u *= u; u *= u;
@@ -460,7 +470,11 @@ auto math::wide_integer::test_uintwide_t_spot_values() -> bool // NOLINT(readabi
     // and these have been integrated into _spot_values().
 
     {
-      using type = math::wide_integer::uintwide_t<64, std::uint32_t, void, true>;
+      #if defined(WIDE_INTEGER_NAMESPACE)
+      using type = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<static_cast<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t>(UINT32_C(64)), std::uint32_t, void, true>;
+      #else
+      using type = math::wide_integer::uintwide_t<static_cast<math::wide_integer::size_t>(UINT32_C(64)), std::uint32_t, void, true>;
+      #endif
 
       result_is_ok &= local::test_uintwide_t_spot_values_from_pull_request_130<type>();
 
@@ -470,7 +484,11 @@ auto math::wide_integer::test_uintwide_t_spot_values() -> bool // NOLINT(readabi
     }
 
     {
-      using type = math::wide_integer::uintwide_t<64, std::uint8_t, void, true>;
+      #if defined(WIDE_INTEGER_NAMESPACE)
+      using type = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<static_cast<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t>(UINT32_C(64)), std::uint8_t, void, true>;
+      #else
+      using type = math::wide_integer::uintwide_t<static_cast<math::wide_integer::size_t>(UINT32_C(64)), std::uint8_t, void, true>;
+      #endif
 
       result_is_ok &= local::test_uintwide_t_spot_values_from_pull_request_130<type>();
 
@@ -480,7 +498,11 @@ auto math::wide_integer::test_uintwide_t_spot_values() -> bool // NOLINT(readabi
     }
 
     {
-      using type = math::wide_integer::uintwide_t<256, std::uint32_t, void, true>;
+      #if defined(WIDE_INTEGER_NAMESPACE)
+      using type = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<static_cast<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t>(UINT32_C(256)), std::uint32_t, void, true>;
+      #else
+      using type = math::wide_integer::uintwide_t<static_cast<math::wide_integer::size_t>(UINT32_C(256)), std::uint32_t, void, true>;
+      #endif
 
       result_is_ok &= local::test_uintwide_t_spot_values_from_pull_request_130<type>();
 
@@ -528,7 +550,7 @@ auto math::wide_integer::test_uintwide_t_spot_values() -> bool // NOLINT(readabi
     result_is_ok &= (lm == uint256_t("28398706972978513348490390087175345493497748446743697820448222113648043280"));
 
     // GCD[16770224695321632575655872732632870897 - 1, 40641612127094559121321599356729737321 - 1]
-    result_is_ok &= (gd == 24U);
+    result_is_ok &= (gd == 24U); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
   }
 
   {
@@ -553,9 +575,13 @@ auto math::wide_integer::test_uintwide_t_spot_values() -> bool // NOLINT(readabi
     }
 
     {
-      using my_int32_t = math::wide_integer::uintwide_t<32U, std::uint32_t, void, true>;
+      #if defined(WIDE_INTEGER_NAMESPACE)
+      using my_int32_t = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<static_cast<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t>(UINT32_C(32)), std::uint32_t, void, true>;
+      #else
+      using my_int32_t = math::wide_integer::uintwide_t<static_cast<math::wide_integer::size_t>(UINT32_C(32)), std::uint32_t, void, true>;
+      #endif
 
-      my_int32_t c("-2147483648");
+      my_int32_t c("-2147483648"); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
 
       my_int32_t c_itself = (std::numeric_limits<my_int32_t>::min)();
 
@@ -573,8 +599,13 @@ auto math::wide_integer::test_uintwide_t_spot_values() -> bool // NOLINT(readabi
   {
     // See also https://github.com/ckormanyos/wide-integer/issues/108
     {
-      using w_t  = math::wide_integer::uintwide_t<32U, std::uint32_t, void, true>;
-      using ww_t = math::wide_integer::uintwide_t<64U, std::uint32_t, void, true>;
+      #if defined(WIDE_INTEGER_NAMESPACE)
+      using w_t  = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<static_cast<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t>(UINT32_C(32)), std::uint32_t, void, true>;
+      using ww_t = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<static_cast<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t>(UINT32_C(64)), std::uint32_t, void, true>;
+      #else
+      using w_t  = math::wide_integer::uintwide_t<static_cast<math::wide_integer::size_t>(UINT32_C(32)), std::uint32_t, void, true>;
+      using ww_t = math::wide_integer::uintwide_t<static_cast<math::wide_integer::size_t>(UINT32_C(64)), std::uint32_t, void, true>;
+      #endif
 
       w_t  neg     (-2);
       ww_t neg_wide(-2);
@@ -598,8 +629,13 @@ auto math::wide_integer::test_uintwide_t_spot_values() -> bool // NOLINT(readabi
     }
 
     {
-      using w_t  = math::wide_integer::uintwide_t<32U, std::uint8_t, void, true>;
-      using ww_t = math::wide_integer::uintwide_t<64U, std::uint8_t, void, true>;
+      #if defined(WIDE_INTEGER_NAMESPACE)
+      using w_t  = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<static_cast<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t>(UINT32_C(32)), std::uint8_t, void, true>;
+      using ww_t = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<static_cast<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t>(UINT32_C(64)), std::uint8_t, void, true>;
+      #else
+      using w_t  = math::wide_integer::uintwide_t<static_cast<math::wide_integer::size_t>(UINT32_C(32)), std::uint8_t, void, true>;
+      using ww_t = math::wide_integer::uintwide_t<static_cast<math::wide_integer::size_t>(UINT32_C(64)), std::uint8_t, void, true>;
+      #endif
 
       w_t  neg     (-2);
       ww_t neg_wide(-2);
@@ -674,7 +710,7 @@ auto math::wide_integer::test_uintwide_t_spot_values() -> bool // NOLINT(readabi
   {
     using math::wide_integer::uint256_t;
 
-    static_assert(std::numeric_limits<uint256_t>::digits == 256,
+    static_assert(std::numeric_limits<uint256_t>::digits == 256, // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
                   "Error: Incorrect digit count for this example");
 
     // Note: Some of the comments in this file use the Wolfram Language(TM).

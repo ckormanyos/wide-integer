@@ -12,8 +12,14 @@ namespace local
 {
   using math::wide_integer::uint64_t;
   using math::wide_integer::int64_t;
+
+  #if defined(WIDE_INTEGER_NAMESPACE)
+  using uint32_t = math::wide_integer::uintwide_t<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t(UINT32_C(32)), std::uint8_t, void, false>;
+  using  int32_t = math::wide_integer::uintwide_t<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t(UINT32_C(32)), std::uint8_t, void, true>;
+  #else
   using uint32_t = math::wide_integer::uintwide_t<math::wide_integer::size_t(UINT32_C(32)), std::uint8_t, void, false>;
   using  int32_t = math::wide_integer::uintwide_t<math::wide_integer::size_t(UINT32_C(32)), std::uint8_t, void, true>;
+  #endif
 } // namespace local
 
 auto math::wide_integer::example000_numeric_limits() -> bool

@@ -1,4 +1,4 @@
-﻿///////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////
 //  Copyright Christopher Kormanyos 2021.                        //
 //  Distributed under the Boost Software License,                //
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt          //
@@ -23,9 +23,15 @@ namespace local_rsa
 
     using allocator_type = typename std::allocator_traits<AllocatorType>::template rebind_alloc<LimbType>;
 
-    using my_uintwide_t  = ::math::wide_integer::uintwide_t< ::math::wide_integer::size_t(bit_count),
-                                                            LimbType,
-                                                            allocator_type>;
+    #if defined(WIDE_INTEGER_NAMESPACE)
+    using my_uintwide_t  = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<static_cast<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t>(bit_count),
+                                                                                  LimbType,
+                                                                                  allocator_type>;
+    #else
+    using my_uintwide_t  = math::wide_integer::uintwide_t<static_cast<math::wide_integer::size_t>(bit_count),
+                                                          LimbType,
+                                                          allocator_type>;
+    #endif
 
     using limb_type      = typename my_uintwide_t::limb_type;
 
@@ -198,8 +204,13 @@ namespace local_rsa
     static auto is_prime(const my_uintwide_t& p,
                          const RandomEngineType& generator = RandomEngineType(static_cast<typename RandomEngineType::result_type>(std::clock()))) -> bool
     {
+      #if defined(WIDE_INTEGER_NAMESPACE)
       using local_distribution_type =
-        ::math::wide_integer::uniform_int_distribution< :: math::wide_integer::size_t(bit_count), limb_type, allocator_type>;
+        WIDE_INTEGER_NAMESPACE::math::wide_integer::uniform_int_distribution<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t(bit_count), limb_type, allocator_type>;
+      #else
+      using local_distribution_type =
+        math::wide_integer::uniform_int_distribution<math::wide_integer::size_t(bit_count), limb_type, allocator_type>;
+      #endif
 
       local_distribution_type distribution;
 
@@ -366,7 +377,7 @@ auto math::wide_integer::example012_rsa_crypto() -> bool
   // n    = d9f3094b36634c05a02ae1a5569035107a48029e39b3c6a1853817f063e18e761c0c538e55ff2c7e53d603bb35cabb3b8d07f82aa0afdeaf7441fcf6746c5bcaaa2cde398ad73edb9c340c3ffca559132581eaf8f65c13d02f3445a932a3e1fadb5912f7553edec5047e4d0ed06ee87effc549e194d38e06b73a971c961688ba2d4aa4f450d2523372f317d41d06f9f0360e962ce953a69f36c53c370799fcfba195e8f691ebe862f84ae4bbd7747bc14499bd0efffcdc7154325908355c2ffc5b3948b8102b33aa2420381470e4ee858380ff0eea58288516c263f6d51dbbd0e477d1393a0a3ee60e1fde4330856665bf522006608a6104c138c0f39e09c4c5
   // d    = 1bf009caddc664b4404d59711fde16d7c55822449de1c5a084d22ed5791fdaa37ea538867fc91a17e6856e277c2dedd70ca8bf6ec44b0e729917a88e5988cc561d948ddeea46e21fd8ff46cce7657c94bfb1bdf40b3b30d4595a8bc3a15f1d4ad4c665c09b3b265ba19cdb0b89cbaadd0097ff52e9f6e594f86829c5bb4e9ba0200f12fa6dc60fd28dec0d194f08deb50f5a7749540160d6e8338e75b11165b76f4650c2fcce08f979ad9941daedaa5e328473bf712f8f549c36967f5e15477dc643d1f48d563139134e5cdc4bb84f9782cd5125e864e067cb980290f215cb41090e297bac2714efba61115d85613851c2de50a82f4ab526b88c61b7c9a0b589
 
-  using rsa_type          = local_rsa::rsa_fips<2048U>;
+  using rsa_type          = local_rsa::rsa_fips<static_cast<std::size_t>(UINT32_C(2048))>;
   using rsa_integral_type = typename rsa_type::my_uintwide_t;
 
   const rsa_integral_type p("0xFF03B1A74827C746DB83D2EAFF00067622F545B62584321256E62B01509F10962F9C5C8FD0B7F5184A9CE8E81F439DF47DDA14563DD55A221799D2AA57ED2713271678A5A0B8B40A84AD13D5B6E6599E6467C670109CF1F45CCFED8F75EA3B814548AB294626FE4D14FF764DD8B091F11A0943A2DD2B983B0DF02F4C4D00B413");

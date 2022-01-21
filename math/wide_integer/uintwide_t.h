@@ -10,7 +10,7 @@
 
   #if defined(__GNUC__) || defined(__clang__)
   #if defined(WIDE_INTEGER_HAS_LIMB_TYPE_UINT64)
-  #include <inttypes.h>
+  #include <cinttypes>
   #endif
   #endif
 
@@ -489,8 +489,8 @@
   using size_t    = std::uint32_t;
   using ptrdiff_t = std::int32_t;
 
-  static_assert((  (std::numeric_limits<size_t>::digits        >= 16)
-                && (std::numeric_limits<ptrdiff_t>::digits + 1 >= 16)),
+  static_assert((  (std::numeric_limits<size_t>::digits        >= std::numeric_limits<std::uint16_t>::digits)
+                && (std::numeric_limits<ptrdiff_t>::digits + 1 >= std::numeric_limits<std::uint16_t>::digits)),
                 "Error: size type and pointer difference type must be at least 16 bits in width (or wider)");
 
   template<const size_t Width2> struct verify_power_of_two // NOLINT(altera-struct-pack-align)
@@ -513,11 +513,11 @@
   struct uint_type_helper
   {
     #if defined(WIDE_INTEGER_HAS_LIMB_TYPE_UINT64)
-    static_assert((   ((BitCount >= 8U) && (BitCount <= 128U))
+    static_assert((   ((BitCount >= 8U) && (BitCount <= 128U)) // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
                    && (verify_power_of_two<BitCount>::conditional_value)),
                   "Error: uint_type_helper is not intended to be used for this BitCount");
     #else
-    static_assert((   ((BitCount >= 8U) && (BitCount <= 64U))
+    static_assert((   ((BitCount >= 8U) && (BitCount <= 64U)) // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
                    && (verify_power_of_two<BitCount>::conditional_value)),
                   "Error: uint_type_helper is not intended to be used for this BitCount");
     #endif
@@ -525,12 +525,12 @@
     using exact_unsigned_type = std::uintmax_t;
   };
 
-  template<const size_t BitCount> struct uint_type_helper<BitCount, typename std::enable_if<                     (BitCount <=   8U)>::type> { using exact_unsigned_type = std::uint8_t;      using fast_unsigned_type = std::uint_fast8_t;  using fast_signed_type = std::int_fast8_t;  };
-  template<const size_t BitCount> struct uint_type_helper<BitCount, typename std::enable_if<(BitCount >=  9U) && (BitCount <=  16U)>::type> { using exact_unsigned_type = std::uint16_t;     using fast_unsigned_type = std::uint_fast16_t; using fast_signed_type = std::int_fast16_t; };
-  template<const size_t BitCount> struct uint_type_helper<BitCount, typename std::enable_if<(BitCount >= 17U) && (BitCount <=  32U)>::type> { using exact_unsigned_type = std::uint32_t;     using fast_unsigned_type = std::uint_fast32_t; using fast_signed_type = std::int_fast32_t; };
-  template<const size_t BitCount> struct uint_type_helper<BitCount, typename std::enable_if<(BitCount >= 33U) && (BitCount <=  64U)>::type> { using exact_unsigned_type = std::uint64_t;     using fast_unsigned_type = std::uint_fast64_t; using fast_signed_type = std::int_fast64_t; };
+  template<const size_t BitCount> struct uint_type_helper<BitCount, typename std::enable_if<                     (BitCount <=   8U)>::type> { using exact_unsigned_type = std::uint8_t;      using fast_unsigned_type = std::uint_fast8_t;  using fast_signed_type = std::int_fast8_t;  }; // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
+  template<const size_t BitCount> struct uint_type_helper<BitCount, typename std::enable_if<(BitCount >=  9U) && (BitCount <=  16U)>::type> { using exact_unsigned_type = std::uint16_t;     using fast_unsigned_type = std::uint_fast16_t; using fast_signed_type = std::int_fast16_t; }; // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
+  template<const size_t BitCount> struct uint_type_helper<BitCount, typename std::enable_if<(BitCount >= 17U) && (BitCount <=  32U)>::type> { using exact_unsigned_type = std::uint32_t;     using fast_unsigned_type = std::uint_fast32_t; using fast_signed_type = std::int_fast32_t; }; // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
+  template<const size_t BitCount> struct uint_type_helper<BitCount, typename std::enable_if<(BitCount >= 33U) && (BitCount <=  64U)>::type> { using exact_unsigned_type = std::uint64_t;     using fast_unsigned_type = std::uint_fast64_t; using fast_signed_type = std::int_fast64_t; }; // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
   #if defined(WIDE_INTEGER_HAS_LIMB_TYPE_UINT64)
-  template<const size_t BitCount> struct uint_type_helper<BitCount, typename std::enable_if<(BitCount >= 65U) && (BitCount <= 128U)>::type> { using exact_unsigned_type = unsigned __int128; using fast_unsigned_type = unsigned __int128;  using fast_signed_type = signed __int128;   };
+  template<const size_t BitCount> struct uint_type_helper<BitCount, typename std::enable_if<(BitCount >= 65U) && (BitCount <= 128U)>::type> { using exact_unsigned_type = unsigned __int128; using fast_unsigned_type = unsigned __int128;  using fast_signed_type = signed __int128;   }; // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
   #endif
 
   using unsigned_fast_type = typename uint_type_helper<static_cast<size_t>(std::numeric_limits<size_t   >::digits + 0)>::fast_unsigned_type;
@@ -1265,7 +1265,7 @@
     //   * And that there are at least 16, 24 or 32 binary digits, or more.
     //   * And that the number of binary digits is an exact multiple of the number of limbs.
     static_assert(   (detail::verify_power_of_two_times_granularity_one_sixty_fourth<my_width2>::conditional_value)
-                  && (my_width2 >= 16U)
+                  && (my_width2 >= 16U) // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
                   && (my_width2 == (number_of_limbs * static_cast<size_t>(std::numeric_limits<limb_type>::digits))),
                   "Error: Width2 must be 2^n times 1...63 (with n >= 3), while being 16, 24, 32 or larger, and exactly divisible by limb count");
 
