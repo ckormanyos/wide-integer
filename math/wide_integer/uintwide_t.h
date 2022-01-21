@@ -3732,7 +3732,7 @@
       }
     }
 
-    WIDE_INTEGER_CONSTEXPR void shl(const unsigned_fast_type offset,
+    WIDE_INTEGER_CONSTEXPR void shl(const unsigned_fast_type offset, // NOLINT(bugprone-easily-swappable-parameters)
                                     const std::uint_fast16_t left_shift_amount)
     {
       if(offset > 0U)
@@ -3763,7 +3763,7 @@
       }
     }
 
-    WIDE_INTEGER_CONSTEXPR void shr(const unsigned_fast_type offset,
+    WIDE_INTEGER_CONSTEXPR void shr(const unsigned_fast_type offset, // NOLINT(bugprone-easily-swappable-parameters)
                                     const std::uint_fast16_t right_shift_amount)
     {
       if(offset > 0U)
@@ -5003,7 +5003,7 @@
            typename LimbType,
            typename AllocatorType,
            const bool IsSigned>
-  WIDE_INTEGER_CONSTEXPR auto gcd(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& a,
+  WIDE_INTEGER_CONSTEXPR auto gcd(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& a, // NOLINT(bugprone-easily-swappable-parameters)
                                   const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& b) -> uintwide_t<Width2, LimbType, AllocatorType, IsSigned>
   {
     // This implementation of GCD is an adaptation

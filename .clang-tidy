@@ -1,10 +1,13 @@
 ﻿---
 Checks: >
   *,
+  -altera-id-dependent-backward-branch,
+  -altera-struct-pack-align,
+  -altera-unroll-loops,
   -fuchsia-*,
   -llvmlibc-*,
   -llvm-header-guard,
-  -altera-struct-pack-align
+  -modernize-concat-nested-namespaces,
   -readability-avoid-const-params-in-decls"
 
 WarningsAsErrors: '*'
