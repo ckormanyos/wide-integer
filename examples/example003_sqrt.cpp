@@ -1,4 +1,4 @@
-///////////////////////////////////////////////////////////////////
+﻿///////////////////////////////////////////////////////////////////
 //  Copyright Christopher Kormanyos 2018 - 2022.                 //
 //  Distributed under the Boost Software License,                //
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt          //
@@ -30,10 +30,12 @@ auto math::wide_integer::example003_sqrt() -> bool
 }
 
 // Enable this if you would like to activate this main() as a standalone example.
-#if 0
+#if defined(WIDE_INTEGER_STANDALONE_EXAMPLE003_SQRT)
 
+#if !defined(WIDE_INTEGER_DISABLE_IOSTREAM)
 #include <iomanip>
 #include <iostream>
+#endif
 
 int main()
 {
@@ -43,7 +45,11 @@ int main()
   const bool result_is_ok = math::wide_integer::example003_sqrt();
   #endif
 
+  #if !defined(WIDE_INTEGER_DISABLE_IOSTREAM)
   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
+  #endif
+
+  return (result_is_ok ? 0 : -1);
 }
 
 #endif
