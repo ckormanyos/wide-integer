@@ -448,14 +448,11 @@
 
   WIDE_INTEGER_NAMESPACE_BEGIN
 
-  namespace math::wide_integer {
-
-  namespace detail {
+  namespace math::wide_integer::detail {
 
   using util::dynamic_array;
 
-  } // namespace detail
-  } // namespace math::wide_integer
+  } // namespace math::wide_integer::detail
 
   WIDE_INTEGER_NAMESPACE_END
 
@@ -465,14 +462,11 @@
 
   WIDE_INTEGER_NAMESPACE_BEGIN
 
-  namespace math::wide_integer {
-
-  namespace detail {
+  namespace math::wide_integer::detail {
 
   using util::dynamic_array;
 
   } // namespace detail
-  } // namespace math::wide_integer
 
   WIDE_INTEGER_NAMESPACE_END
 
