@@ -14,7 +14,11 @@
 
   WIDE_INTEGER_NAMESPACE_BEGIN
 
+  #if(__cplusplus >= 201703L)
   namespace math::wide_integer {
+  #else
+  namespace math { namespace wide_integer { // NOLINT(modernize-concat-nested-namespaces)
+  #endif
 
   auto example000_numeric_limits     () -> bool;
   auto example000a_builtin_convert   () -> bool;
@@ -37,7 +41,12 @@
   auto example011_uint24_t           () -> bool;
   auto example012_rsa_crypto         () -> bool;
 
+  #if(__cplusplus >= 201703L)
   } // namespace math::wide_integer
+  #else
+  } // namespace wide_integer
+  } // namespace math
+  #endif
 
   WIDE_INTEGER_NAMESPACE_END
 
