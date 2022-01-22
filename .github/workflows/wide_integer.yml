@@ -31,7 +31,7 @@ jobs:
         run: sudo apt install gcc-arm-none-eabi
       - name: upcase-my_example
         run: |
-          echo "MY_EXAMPLE=${{{matrix.example }}^^}" >>${GITHUB_ENV}
+          echo 'MY_EXAMPLE=${${{ matrix.example}}^^}' >>${GITHUB_ENV}
       - name: gcc-arm-none-eabi
         run: |
           mkdir bin
