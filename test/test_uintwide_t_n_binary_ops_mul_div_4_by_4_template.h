@@ -54,12 +54,21 @@
     WIDE_INTEGER_NODISCARD auto get_digits2 () const -> math::wide_integer::size_t override { return digits2; }
     #endif
 
+    #if defined(WIDE_INTEGER_NAMESPACE)
+    using native_uint_cntrl_type =
+      typename WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::uint_type_helper<digits2>::exact_unsigned_type;
+    #else
     using native_uint_cntrl_type =
       typename math::wide_integer::detail::uint_type_helper<digits2>::exact_unsigned_type;
+    #endif
 
     using local_limb_type = MyLimbType;
 
+    #if defined(WIDE_INTEGER_NAMESPACE)
+    using local_uint_ab_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<digits2, local_limb_type>;
+    #else
     using local_uint_ab_type = math::wide_integer::uintwide_t<digits2, local_limb_type>;
+    #endif
 
   public:
     explicit test_uintwide_t_n_binary_ops_mul_div_4_by_4_template(const std::size_t count)
@@ -193,8 +202,13 @@
         static_cast<typename std::linear_congruential_engine<std::uint32_t, 48271, 0, 2147483647>::result_type>(std::clock())  // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
       );
 
+      #if defined(WIDE_INTEGER_NAMESPACE)
+      using distribution_type =
+        WIDE_INTEGER_NAMESPACE::math::wide_integer::uniform_int_distribution<other_local_uint_type::my_width2, typename other_local_uint_type::limb_type>;
+      #else
       using distribution_type =
         math::wide_integer::uniform_int_distribution<other_local_uint_type::my_width2, typename other_local_uint_type::limb_type>;
+      #endif
 
       distribution_type distribution;
 

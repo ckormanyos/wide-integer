@@ -29,15 +29,24 @@ namespace local_timed_mul
   {
     using local_uint_type = typename std::iterator_traits<UnsignedIntegralIteratorType>::value_type;
 
+    #if defined(WIDE_INTEGER_NAMESPACE)
+    using distribution_type =
+      WIDE_INTEGER_NAMESPACE::math::wide_integer::uniform_int_distribution<std::numeric_limits<local_uint_type>::digits, typename local_uint_type::limb_type>;
+    #else
     using distribution_type =
       math::wide_integer::uniform_int_distribution<std::numeric_limits<local_uint_type>::digits, typename local_uint_type::limb_type>;
+    #endif
 
     distribution_type distribution;
 
     *it_out = distribution(rng);
   }
 
+  #if defined(WIDE_INTEGER_NAMESPACE)
+  using big_uint_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<wide_integer_test9_digits2>;
+  #else
   using big_uint_type = math::wide_integer::uintwide_t<wide_integer_test9_digits2>;
+  #endif
 
   auto local_a() -> std::vector<big_uint_type>&
   {
@@ -58,7 +67,11 @@ namespace local_timed_mul
   }
 } // namespace local_timed_mul
 
+#if defined(WIDE_INTEGER_NAMESPACE)
+auto WIDE_INTEGER_NAMESPACE::math::wide_integer::example009_timed_mul() -> bool
+#else
 auto math::wide_integer::example009_timed_mul() -> bool
+#endif
 {
   using random_engine_type =
     std::linear_congruential_engine<std::uint32_t, UINT32_C(48271), UINT32_C(0), UINT32_C(2147483647)>;
@@ -124,7 +137,11 @@ auto math::wide_integer::example009_timed_mul() -> bool
 
 int main()
 {
+  #if defined(WIDE_INTEGER_NAMESPACE)
+  const bool result_is_ok = WIDE_INTEGER_NAMESPACE::wide_integer::example009_timed_mul();
+  #else
   const bool result_is_ok = wide_integer::example009_timed_mul();
+  #endif
 
   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
 }

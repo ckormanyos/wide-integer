@@ -8,7 +8,11 @@
 #include <examples/example_uintwide_t.h>
 #include <math/wide_integer/uintwide_t.h>
 
+#if defined(WIDE_INTEGER_NAMESPACE)
+auto WIDE_INTEGER_NAMESPACE::math::wide_integer::example004_rootk_pow() -> bool
+#else
 auto math::wide_integer::example004_rootk_pow() -> bool
+#endif
 {
   bool result_is_ok = true;
 
@@ -83,7 +87,11 @@ auto math::wide_integer::example004_rootk_pow() -> bool
 
 int main()
 {
+  #if defined(WIDE_INTEGER_NAMESPACE)
+  const bool result_is_ok = WIDE_INTEGER_NAMESPACE::wide_integer::example004_rootk_pow();
+  #else
   const bool result_is_ok = wide_integer::example004_rootk_pow();
+  #endif
 
   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
 }

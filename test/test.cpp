@@ -126,42 +126,66 @@ auto test_uintwide_t_small_bits() -> bool
 auto test_uintwide_t_boost_backend() -> bool
 {
   std::cout << "running: test_uintwide_t_boost_backend" << std::endl;
+  #if defined(WIDE_INTEGER_NAMESPACE)
+  const bool result_test_uintwide_t_boost_backend_is_ok = WIDE_INTEGER_NAMESPACE::math::wide_integer::test_uintwide_t_boost_backend();
+  #else
   const bool result_test_uintwide_t_boost_backend_is_ok = math::wide_integer::test_uintwide_t_boost_backend();
+  #endif
   return result_test_uintwide_t_boost_backend_is_ok;
 }
 
 auto test_uintwide_t_examples() -> bool
 {
   std::cout << "running: test_uintwide_t_examples" << std::endl;
+  #if defined(WIDE_INTEGER_NAMESPACE)
+  const bool result_test_uintwide_t_examples_is_ok = WIDE_INTEGER_NAMESPACE::math::wide_integer::test_uintwide_t_examples();
+  #else
   const bool result_test_uintwide_t_examples_is_ok = math::wide_integer::test_uintwide_t_examples();
+  #endif
   return result_test_uintwide_t_examples_is_ok;
 }
 
 auto test_uintwide_t_edge_cases() -> bool
 {
   std::cout << "running: test_uintwide_t_edge_cases" << std::endl;
+  #if defined(WIDE_INTEGER_NAMESPACE)
+  const bool result_test_uintwide_t_edge_cases_is_ok = WIDE_INTEGER_NAMESPACE::math::wide_integer::test_uintwide_t_edge_cases();
+  #else
   const bool result_test_uintwide_t_edge_cases_is_ok = math::wide_integer::test_uintwide_t_edge_cases();
+  #endif
   return result_test_uintwide_t_edge_cases_is_ok;
 }
 
 auto test_uintwide_t_float_convert() -> bool
 {
   std::cout << "running: test_uintwide_t_float_convert" << std::endl;
+  #if defined(WIDE_INTEGER_NAMESPACE)
+  const bool result_test_uintwide_t_float_convert_is_ok = WIDE_INTEGER_NAMESPACE::math::wide_integer::test_uintwide_t_float_convert();
+  #else
   const bool result_test_uintwide_t_float_convert_is_ok = math::wide_integer::test_uintwide_t_float_convert();
+  #endif
   return result_test_uintwide_t_float_convert_is_ok;
 }
 
 auto test_uintwide_t_int_convert() -> bool
 {
   std::cout << "running: test_uintwide_t_int_convert" << std::endl;
+  #if defined(WIDE_INTEGER_NAMESPACE)
+  const bool result_test_uintwide_t_int_convert_is_ok = WIDE_INTEGER_NAMESPACE::math::wide_integer::test_uintwide_t_int_convert();
+  #else
   const bool result_test_uintwide_t_int_convert_is_ok = math::wide_integer::test_uintwide_t_int_convert();
+  #endif
   return result_test_uintwide_t_int_convert_is_ok;
 }
 
 auto test_uintwide_t_spot_values() -> bool
 {
   std::cout << "running: test_uintwide_t_spot_values" << std::endl;
+  #if defined(WIDE_INTEGER_NAMESPACE)
+  const bool result_test_uintwide_t_spot_values_is_ok = WIDE_INTEGER_NAMESPACE::math::wide_integer::test_uintwide_t_spot_values();
+  #else
   const bool result_test_uintwide_t_spot_values_is_ok = math::wide_integer::test_uintwide_t_spot_values();
+  #endif
   return result_test_uintwide_t_spot_values_is_ok;
 }
 

@@ -1,4 +1,4 @@
-﻿///////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////
 //  Copyright Christopher Kormanyos 2019 - 2022.                 //
 //  Distributed under the Boost Software License,                //
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt          //
@@ -24,10 +24,5 @@
   } // namespace math::wide_integer
 
   WIDE_INTEGER_NAMESPACE_END
-
-  #if defined(WIDE_INTEGER_NAMESPACE)
-  using namespace WIDE_INTEGER_NAMESPACE;
-  #else
-  #endif
 
 #endif // TEST_UINTWIDE_T_2019_12_15_H

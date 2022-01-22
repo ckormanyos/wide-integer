@@ -41,9 +41,4 @@
 
   WIDE_INTEGER_NAMESPACE_END
 
-  #if defined(WIDE_INTEGER_NAMESPACE)
-  using namespace WIDE_INTEGER_NAMESPACE;
-  #else
-  #endif
-
 #endif // EXAMPLE_UINTWIDE_T_2021_04_29_H

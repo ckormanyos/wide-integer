@@ -165,7 +165,11 @@ namespace local_float_convert
   }
 } // namespace local_float_convert
 
+#if defined(WIDE_INTEGER_NAMESPACE)
+auto WIDE_INTEGER_NAMESPACE::math::wide_integer::test_uintwide_t_float_convert() -> bool
+#else
 auto math::wide_integer::test_uintwide_t_float_convert() -> bool
+#endif
 {
   constexpr auto digits2 = static_cast<unsigned>(256U);
 

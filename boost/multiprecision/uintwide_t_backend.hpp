@@ -1,4 +1,4 @@
-﻿///////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////
 //  Copyright Christopher Kormanyos 2019 - 2022.                 //
 //  Distributed under the Boost Software License,                //
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt          //
@@ -709,7 +709,7 @@
 
   } // namespace boost::multiprecision
 
-  namespace boost::math { namespace policies {
+  namespace boost::math::policies {
 
   // Specialization of the precision structure.
   template<
@@ -740,8 +740,7 @@
     #endif
   };
 
-  } // namespace policies
-  } // namespace boost::math
+  } // namespace boost::math::policies
 
   namespace std // NOLINT(cert-dcl58-cpp)
   {

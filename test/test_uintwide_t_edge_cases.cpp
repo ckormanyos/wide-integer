@@ -45,7 +45,11 @@ using boost_uint_type =
   boost::multiprecision::number<boost_uint_backend_type,
                                 boost::multiprecision::et_off>;
 
+#if defined(WIDE_INTEGER_NAMESPACE)
+auto WIDE_INTEGER_NAMESPACE::math::wide_integer::test_uintwide_t_edge_cases() -> bool
+#else
 auto math::wide_integer::test_uintwide_t_edge_cases() -> bool
+#endif
 {
   const local_uint_type u_max_local = (std::numeric_limits<local_uint_type>::max)();
   const boost_uint_type u_max_boost = (std::numeric_limits<boost_uint_type>::max)();
