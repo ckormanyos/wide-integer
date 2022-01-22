@@ -738,3 +738,38 @@ jobs:
           ${{ matrix.compiler }} -finline-functions -m64 -O3 -Wall -Wextra -Wconversion -Wsign-conversion -std=${{ matrix.standard }} -DWIDE_INTEGER_HAS_LIMB_TYPE_UINT64 -I. -I../boost-root -pthread -lpthread  test/test.cpp test/test_uintwide_t_boost_backend.cpp test/test_uintwide_t_edge_cases.cpp test/test_uintwide_t_examples.cpp test/test_uintwide_t_float_convert.cpp test/test_uintwide_t_int_convert.cpp test/test_uintwide_t_n_base.cpp test/test_uintwide_t_n_binary_ops_base.cpp test/test_uintwide_t_spot_values.cpp examples/example000_numeric_limits.cpp examples/example000a_builtin_convert.cpp examples/example001_mul_div.cpp examples/example001a_div_mod.cpp examples/example002_shl_shr.cpp examples/example003_sqrt.cpp examples/example003a_cbrt.cpp examples/example004_rootk_pow.cpp examples/example005_powm.cpp examples/example005a_pow_factors_of_p99.cpp examples/example006_gcd.cpp examples/example007_random_generator.cpp examples/example008_miller_rabin_prime.cpp examples/example008a_miller_rabin_prime.cpp examples/example009_timed_mul.cpp examples/example009a_timed_mul_4_by_4.cpp examples/example009b_timed_mul_8_by_8.cpp examples/example010_uint48_t.cpp examples/example011_uint24_t.cpp examples/example012_rsa_crypto.cpp -o wide_integer.exe
           dir %cd%\wide_integer.exe
           %cd%\wide_integer.exe
+  gcc-arm-none-eabi:
+    runs-on: ubuntu-20.04
+    defaults:
+      run:
+        shell: bash
+    strategy:
+      fail-fast: false
+      matrix:
+        example: [ example001_mul_div, example003_sqrt ]
+        standard: [ c++11, c++14, c++17, c++2a ]
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: '0'
+      - name: update-tools
+        run: sudo apt install gcc-arm-none-eabi
+      - id: upcase_my_example
+        uses: ASzc/change-string-case-action@v2
+        with:
+          string: ${{ matrix.example }}
+      - name: gcc-arm-none-eabi
+        run: |
+          mkdir bin
+          echo ${{ steps.upcase_my_example.outputs.uppercase }}
+          echo 'compile examples/${{ matrix.example }}.cpp with:'
+          echo 'arm-none-eabi-g++ -x c++ -std=${{ matrix.standard }} -Os -Wall -Wextra -pedantic -Werror -Wmain -Wundef -Wconversion -Wsign-conversion -Wunused-parameter -Wuninitialized -Wmissing-declarations -Wshadow -Wunreachable-code -Wswitch-default -Wswitch-enum -Wcast-align -Wmissing-include-dirs -Winit-self -Wfloat-equal -Wdouble-promotion -Wno-psabi -mcpu=cortex-m4 -mtune=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16 -ffast-math -mno-unaligned-access -mno-long-calls -finline-functions -finline-limit=32 -g -gdwarf-2 -fno-exceptions -ffunction-sections -fdata-sections -fno-rtti -fno-use-cxa-atexit -fno-exceptions -fno-threadsafe-statics -fno-enforce-eh-specs -ftemplate-depth=32 -Wzero-as-null-pointer-constant -I. -DWIDE_INTEGER_DISABLE_IOSTREAM -DWIDE_INTEGER_DISABLE_TRIVIAL_COPY_AND_STD_LAYOUT_CHECKS -DWIDE_INTEGER_NAMESPACE=ckormanyos -DWIDE_INTEGER_STANDALONE_${{ steps.upcase_my_example.outputs.uppercase }} examples/${{ matrix.example }}.cpp -Wl,--gc-sections -Wl,-Map,./bin/${{ matrix.example }}.map --specs=nano.specs --specs=nosys.specs -o bin/${{ matrix.example }}.elf'
+          arm-none-eabi-g++ -x c++ -std=${{ matrix.standard }} -Os -Wall -Wextra -pedantic -Werror -Wmain -Wundef -Wconversion -Wsign-conversion -Wunused-parameter -Wuninitialized -Wmissing-declarations -Wshadow -Wunreachable-code -Wswitch-default -Wswitch-enum -Wcast-align -Wmissing-include-dirs -Winit-self -Wfloat-equal -Wdouble-promotion -Wno-psabi -mcpu=cortex-m4 -mtune=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16 -ffast-math -mno-unaligned-access -mno-long-calls -finline-functions -finline-limit=32 -g -gdwarf-2 -fno-exceptions -ffunction-sections -fdata-sections -fno-rtti -fno-use-cxa-atexit -fno-exceptions -fno-threadsafe-statics -fno-enforce-eh-specs -ftemplate-depth=32 -Wzero-as-null-pointer-constant -I. -DWIDE_INTEGER_DISABLE_IOSTREAM -DWIDE_INTEGER_DISABLE_TRIVIAL_COPY_AND_STD_LAYOUT_CHECKS -DWIDE_INTEGER_NAMESPACE=ckormanyos -DWIDE_INTEGER_STANDALONE_${{ steps.upcase_my_example.outputs.uppercase }} examples/${{ matrix.example }}.cpp -Wl,--gc-sections -Wl,-Map,./bin/${{ matrix.example }}.map --specs=nano.specs --specs=nosys.specs -o bin/${{ matrix.example }}.elf
+          echo
+          echo 'run objcopy with:'
+          echo 'arm-none-eabi-objcopy bin/${{ matrix.example }}.elf -O ihex bin/${{ matrix.example }}.hex'
+          arm-none-eabi-objcopy bin/${{ matrix.example }}.elf -O ihex bin/${{ matrix.example }}.hex
+          echo
+          echo 'ls -la bin/${{ matrix.example }}.elf bin/${{ matrix.example }}.map bin/${{ matrix.example }}.hex'
+          ls -la bin/${{ matrix.example }}.elf bin/${{ matrix.example }}.map bin/${{ matrix.example }}.hex
+        working-directory: ./

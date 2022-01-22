@@ -448,11 +448,21 @@
 
   WIDE_INTEGER_NAMESPACE_BEGIN
 
+  #if(__cplusplus >= 201703L)
   namespace math::wide_integer::detail {
+  #else
+  namespace math { namespace wide_integer { namespace detail { // NOLINT(modernize-concat-nested-namespaces)
+  #endif
 
   using util::dynamic_array;
 
+  #if(__cplusplus >= 201703L)
   } // namespace math::wide_integer::detail
+  #else
+  } // namespace detail
+  } // namespace wide_integer
+  } // namespace math
+  #endif
 
   WIDE_INTEGER_NAMESPACE_END
 
@@ -462,7 +472,11 @@
 
   WIDE_INTEGER_NAMESPACE_BEGIN
 
+  #if(__cplusplus >= 201703L)
   namespace math::wide_integer::detail {
+  #else
+  namespace math { namespace wide_integer { namespace detail { // NOLINT(modernize-concat-nested-namespaces)
+  #endif
 
   using util::dynamic_array;
 
@@ -474,7 +488,11 @@
 
   WIDE_INTEGER_NAMESPACE_BEGIN
 
+  #if(__cplusplus >= 201703L)
   namespace math::wide_integer {
+  #else
+  namespace math { namespace wide_integer { // NOLINT(modernize-concat-nested-namespaces)
+  #endif
 
   namespace detail {
 
@@ -810,7 +828,12 @@
                     DistributionType&                                            distribution,
                     GeneratorType&                                               generator) -> bool;
 
+  #if(__cplusplus >= 201703L)
   } // namespace math::wide_integer
+  #else
+  } // namespace wide_integer
+  } // namespace math
+  #endif
 
   WIDE_INTEGER_NAMESPACE_END
 
@@ -833,7 +856,12 @@
   } // namespace std
 
   WIDE_INTEGER_NAMESPACE_BEGIN
+
+  #if(__cplusplus >= 201703L)
   namespace math::wide_integer::detail {
+  #else
+  namespace math { namespace wide_integer { namespace detail { // NOLINT(modernize-concat-nested-namespaces)
+  #endif
 
   template<typename MyType,
            const size_t MySize,
@@ -1199,9 +1227,19 @@
   };
   #endif
 
+  #if(__cplusplus >= 201703L)
   } // namespace math::wide_integer::detail
+  #else
+  } // namespace detail
+  } // namespace wide_integer
+  } // namespace math
+  #endif
 
+  #if(__cplusplus >= 201703L)
   namespace math::wide_integer {
+  #else
+  namespace math { namespace wide_integer { // NOLINT(modernize-concat-nested-namespaces)
+  #endif
 
   template<const size_t Width2,
            typename LimbType,
@@ -2048,9 +2086,9 @@
 
     // Define the maximum buffer sizes for extracting
     // octal, decimal and hexadecimal string representations.
-    static constexpr size_t wr_string_max_buffer_size_oct = (16U + (my_width2 / 3U)) + static_cast<size_t>(((my_width2 % 3U) != 0U) ? 1U : 0U) + 1U;
-    static constexpr size_t wr_string_max_buffer_size_hex = (32U + (my_width2 / 4U)) + 1U;
-    static constexpr size_t wr_string_max_buffer_size_dec = (20U + static_cast<size_t>((static_cast<std::uintmax_t>(my_width2) * UINTMAX_C(301)) / UINTMAX_C(1000))) + 1U;
+    static constexpr auto wr_string_max_buffer_size_oct = static_cast<size_t>((16U + ((my_width2 % 3U) * 4U) + (my_width2 / 3U)) + static_cast<size_t>(((my_width2 % 3U) != 0U) ? 1U : 0U) + 1U);
+    static constexpr auto wr_string_max_buffer_size_hex = static_cast<size_t>((32U + ((my_width2 % 4U) * 2U) + (my_width2 / 4U)) + 1U);
+    static constexpr auto wr_string_max_buffer_size_dec = static_cast<size_t>((20U + static_cast<size_t>((static_cast<std::uintmax_t>(my_width2) * UINTMAX_C(301)) / UINTMAX_C(1000))) + 1U);
 
     // Write string function.
     WIDE_INTEGER_CONSTEXPR auto wr_string(      char*              str_result, // NOLINT(readability-function-cognitive-complexity)
@@ -4067,7 +4105,12 @@
   struct is_integral<math::wide_integer::uintwide_t<Width2, LimbType, AllocatorType, IsSigned>>
     : public std::integral_constant<bool, true> { };
 
+  #if(__cplusplus >= 201703L)
   } // namespace math::wide_integer
+  #else
+  } // namespace wide_integer
+  } // namespace math
+  #endif
 
   WIDE_INTEGER_NAMESPACE_END
 
@@ -4092,7 +4135,12 @@
   } // namespace std
 
   WIDE_INTEGER_NAMESPACE_BEGIN
+
+  #if(__cplusplus >= 201703L)
   namespace math::wide_integer {
+  #else
+  namespace math { namespace wide_integer { // NOLINT(modernize-concat-nested-namespaces)
+  #endif
 
   // Non-member binary add, sub, mul, div, mod of (uintwide_t op uintwide_t).
   template<const size_t Width2, typename LimbType, typename AllocatorType, const bool IsSigned> constexpr auto operator+ (const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& u, const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& v) -> uintwide_t<Width2, LimbType, AllocatorType, IsSigned> { return uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(u).operator+=(v); }
@@ -4309,11 +4357,20 @@
 
   #endif
 
+  #if(__cplusplus >= 201703L)
   } // namespace math::wide_integer
+  #else
+  } // namespace wide_integer
+  } // namespace math
+  #endif
 
   // Implement various number-theoretical tools.
 
+  #if(__cplusplus >= 201703L)
   namespace math::wide_integer {
+  #else
+  namespace math { namespace wide_integer { // NOLINT(modernize-concat-nested-namespaces)
+  #endif
 
   namespace detail {
 
@@ -5614,7 +5671,12 @@
     return is_probably_prime;
   }
 
+  #if(__cplusplus >= 201703L)
   } // namespace math::wide_integer
+  #else
+  } // namespace wide_integer
+  } // namespace math
+  #endif
 
   WIDE_INTEGER_NAMESPACE_END
 
