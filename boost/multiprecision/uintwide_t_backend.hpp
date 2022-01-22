@@ -1,4 +1,4 @@
-///////////////////////////////////////////////////////////////////
+﻿///////////////////////////////////////////////////////////////////
 //  Copyright Christopher Kormanyos 2019 - 2022.                 //
 //  Distributed under the Boost Software License,                //
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt          //
@@ -33,7 +33,7 @@
 
   #include <math/wide_integer/uintwide_t.h>
 
-  namespace boost { namespace multiprecision {
+  namespace boost::multiprecision {
 
   // Forward declaration of the uintwide_t_backend multiple precision class.
   // This class binds native (WIDE_INTEGER_NAMESPACE)::math::wide_integer::uintwide_t
@@ -707,10 +707,9 @@
     *result = static_cast<long double>(val.crepresentation());
   }
 
-  } // namespace multiprecision
-  } // namespace boost
+  } // namespace boost::multiprecision
 
-  namespace boost { namespace math { namespace policies {
+  namespace boost::math { namespace policies {
 
   // Specialization of the precision structure.
   template<
@@ -742,8 +741,7 @@
   };
 
   } // namespace policies
-  } // namespace math
-  } // namespace boost
+  } // namespace boost::math
 
   namespace std // NOLINT(cert-dcl58-cpp)
   {
