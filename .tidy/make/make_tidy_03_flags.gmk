@@ -47,7 +47,6 @@ TIDY_CHECKS  = "*,                                                              
                 -fuchsia-*,                                                       \
                 -llvmlibc-*,                                                      \
                 -llvm-header-guard,                                               \
-                -modernize-concat-nested-namespaces,                              \
                 -readability-avoid-const-params-in-decls"
 
 TIDY_FLAGS   = --extra-arg-before=--driver-mode=g++                 \

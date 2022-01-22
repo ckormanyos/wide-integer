@@ -65,7 +65,11 @@ namespace local_timed_mul_4_by_4
   }
 } // namespace local_timed_mul_4_by_4
 
+#if defined(WIDE_INTEGER_NAMESPACE)
+auto WIDE_INTEGER_NAMESPACE::math::wide_integer::example009a_timed_mul_4_by_4() -> bool
+#else
 auto math::wide_integer::example009a_timed_mul_4_by_4() -> bool
+#endif
 {
   using random_engine_type =
     std::linear_congruential_engine<std::uint32_t, UINT32_C(48271), UINT32_C(0), UINT32_C(2147483647)>;
@@ -134,7 +138,11 @@ auto math::wide_integer::example009a_timed_mul_4_by_4() -> bool
 
 int main()
 {
+  #if defined(WIDE_INTEGER_NAMESPACE)
+  const bool result_is_ok = WIDE_INTEGER_NAMESPACE::wide_integer::example009a_timed_mul_4_by_4();
+  #else
   const bool result_is_ok = wide_integer::example009a_timed_mul_4_by_4();
+  #endif
 
   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
 }

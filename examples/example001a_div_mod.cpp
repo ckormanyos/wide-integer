@@ -8,7 +8,11 @@
 #include <examples/example_uintwide_t.h>
 #include <math/wide_integer/uintwide_t.h>
 
+#if defined(WIDE_INTEGER_NAMESPACE)
+auto WIDE_INTEGER_NAMESPACE::math::wide_integer::example001a_div_mod() -> bool
+#else
 auto math::wide_integer::example001a_div_mod() -> bool
+#endif
 {
   using math::wide_integer::uint512_t;
 
@@ -39,7 +43,11 @@ auto math::wide_integer::example001a_div_mod() -> bool
 
 int main()
 {
+  #if defined(WIDE_INTEGER_NAMESPACE)
+  const bool result_is_ok = WIDE_INTEGER_NAMESPACE::wide_integer::example001a_div_mod();
+  #else
   const bool result_is_ok = wide_integer::example001a_div_mod();
+  #endif
 
   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
 }

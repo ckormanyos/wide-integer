@@ -448,15 +448,11 @@
 
   WIDE_INTEGER_NAMESPACE_BEGIN
 
-  namespace math { namespace wide_integer {
-
-  namespace detail {
+  namespace math::wide_integer::detail {
 
   using util::dynamic_array;
 
-  } // namespace detail
-  } // namespace wide_integer
-  } // namespace math
+  } // namespace math::wide_integer::detail
 
   WIDE_INTEGER_NAMESPACE_END
 
@@ -466,15 +462,11 @@
 
   WIDE_INTEGER_NAMESPACE_BEGIN
 
-  namespace math { namespace wide_integer {
-
-  namespace detail {
+  namespace math::wide_integer::detail {
 
   using util::dynamic_array;
 
   } // namespace detail
-  } // namespace wide_integer
-  } // namespace math
 
   WIDE_INTEGER_NAMESPACE_END
 
@@ -482,7 +474,7 @@
 
   WIDE_INTEGER_NAMESPACE_BEGIN
 
-  namespace math { namespace wide_integer {
+  namespace math::wide_integer {
 
   namespace detail {
 
@@ -818,8 +810,7 @@
                     DistributionType&                                            distribution,
                     GeneratorType&                                               generator) -> bool;
 
-  } // namespace wide_integer
-  } // namespace math
+  } // namespace math::wide_integer
 
   WIDE_INTEGER_NAMESPACE_END
 
@@ -842,7 +833,7 @@
   } // namespace std
 
   WIDE_INTEGER_NAMESPACE_BEGIN
-  namespace math { namespace wide_integer { namespace detail {
+  namespace math::wide_integer::detail {
 
   template<typename MyType,
            const size_t MySize,
@@ -1208,11 +1199,9 @@
   };
   #endif
 
-  } // namespace detail
-  } // namespace wide_integer
-  } // namespace math
+  } // namespace math::wide_integer::detail
 
-  namespace math { namespace wide_integer {
+  namespace math::wide_integer {
 
   template<const size_t Width2,
            typename LimbType,
@@ -4078,8 +4067,7 @@
   struct is_integral<math::wide_integer::uintwide_t<Width2, LimbType, AllocatorType, IsSigned>>
     : public std::integral_constant<bool, true> { };
 
-  } // namespace wide_integer
-  } // namespace math
+  } // namespace math::wide_integer
 
   WIDE_INTEGER_NAMESPACE_END
 
@@ -4104,7 +4092,7 @@
   } // namespace std
 
   WIDE_INTEGER_NAMESPACE_BEGIN
-  namespace math { namespace wide_integer {
+  namespace math::wide_integer {
 
   // Non-member binary add, sub, mul, div, mod of (uintwide_t op uintwide_t).
   template<const size_t Width2, typename LimbType, typename AllocatorType, const bool IsSigned> constexpr auto operator+ (const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& u, const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& v) -> uintwide_t<Width2, LimbType, AllocatorType, IsSigned> { return uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(u).operator+=(v); }
@@ -4321,12 +4309,11 @@
 
   #endif
 
-  } // namespace wide_integer
-  } // namespace math
+  } // namespace math::wide_integer
 
   // Implement various number-theoretical tools.
 
-  namespace math { namespace wide_integer {
+  namespace math::wide_integer {
 
   namespace detail {
 
@@ -5627,8 +5614,8 @@
     return is_probably_prime;
   }
 
-  } // namespace wide_integer
-  } // namespace math
+  } // namespace math::wide_integer
+
   WIDE_INTEGER_NAMESPACE_END
 
 #endif // UINTWIDE_T_2018_10_02_H

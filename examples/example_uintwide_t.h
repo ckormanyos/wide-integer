@@ -1,5 +1,5 @@
 ﻿///////////////////////////////////////////////////////////////////
-//  Copyright Christopher Kormanyos 2021.                        //
+//  Copyright Christopher Kormanyos 2021 - 2022.                 //
 //  Distributed under the Boost Software License,                //
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt          //
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)             //
@@ -14,7 +14,7 @@
 
   WIDE_INTEGER_NAMESPACE_BEGIN
 
-  namespace math { namespace wide_integer {
+  namespace math::wide_integer {
 
   auto example000_numeric_limits     () -> bool;
   auto example000a_builtin_convert   () -> bool;
@@ -37,14 +37,8 @@
   auto example011_uint24_t           () -> bool;
   auto example012_rsa_crypto         () -> bool;
 
-  } // namespace wide_integer
-  } // namespace math
+  } // namespace math::wide_integer
 
   WIDE_INTEGER_NAMESPACE_END
-
-  #if defined(WIDE_INTEGER_NAMESPACE)
-  using namespace WIDE_INTEGER_NAMESPACE;
-  #else
-  #endif
 
 #endif // EXAMPLE_UINTWIDE_T_2021_04_29_H

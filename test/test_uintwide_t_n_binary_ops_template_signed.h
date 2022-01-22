@@ -1,4 +1,4 @@
-﻿///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 //  Copyright Christopher Kormanyos 2021.
 //  Distributed under the Boost Software License,
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt
@@ -48,8 +48,13 @@
 
     using local_limb_type = MyLimbType;
 
+    #if defined(WIDE_INTEGER_NAMESPACE)
+    using local_uint_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<digits2, local_limb_type, AllocatorType>;
+    using local_sint_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<digits2, local_limb_type, AllocatorType, true>;
+    #else
     using local_uint_type = math::wide_integer::uintwide_t<digits2, local_limb_type, AllocatorType>;
     using local_sint_type = math::wide_integer::uintwide_t<digits2, local_limb_type, AllocatorType, true>;
+    #endif
 
   public:
     explicit test_uintwide_t_n_binary_ops_template_signed(const std::size_t count)
@@ -299,8 +304,13 @@
 
     using local_limb_type = std::uint16_t;
 
+    #if defined(WIDE_INTEGER_NAMESPACE)
+    using local_uint_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<digits2, local_limb_type, AllocatorType>;
+    using local_sint_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<digits2, local_limb_type, AllocatorType, true>;
+    #else
     using local_uint_type = math::wide_integer::uintwide_t<digits2, local_limb_type, AllocatorType>;
     using local_sint_type = math::wide_integer::uintwide_t<digits2, local_limb_type, AllocatorType, true>;
+    #endif
 
   public:
     explicit test_uintwide_t_n_binary_ops_template_signed(const std::size_t count)

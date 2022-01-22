@@ -10,7 +10,11 @@
 #include <examples/example_uintwide_t.h>
 #include <math/wide_integer/uintwide_t.h>
 
+#if defined(WIDE_INTEGER_NAMESPACE)
+auto WIDE_INTEGER_NAMESPACE::math::wide_integer::example010_uint48_t() -> bool
+#else
 auto math::wide_integer::example010_uint48_t() -> bool
+#endif
 {
   #if defined(WIDE_INTEGER_NAMESPACE)
   using uint48_t = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<static_cast<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t>(UINT32_C(48)), std::uint8_t>;
@@ -62,7 +66,11 @@ auto math::wide_integer::example010_uint48_t() -> bool
 
 int main()
 {
+  #if defined(WIDE_INTEGER_NAMESPACE)
+  const bool result_is_ok = WIDE_INTEGER_NAMESPACE::wide_integer::example010_uint48_t();
+  #else
   const bool result_is_ok = wide_integer::example010_uint48_t();
+  #endif
 
   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
 }

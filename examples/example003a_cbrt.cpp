@@ -10,7 +10,11 @@
 #include <examples/example_uintwide_t.h>
 #include <math/wide_integer/uintwide_t.h>
 
+#if defined(WIDE_INTEGER_NAMESPACE)
+auto WIDE_INTEGER_NAMESPACE::math::wide_integer::example003a_cbrt() -> bool
+#else
 auto math::wide_integer::example003a_cbrt() -> bool
+#endif
 {
   #if defined(WIDE_INTEGER_NAMESPACE)
   using uint11264_t = math::wide_integer::uintwide_t<static_cast<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t>(UINT32_C(11264)), std::uint32_t, std::allocator<std::uint32_t>>;
@@ -46,7 +50,11 @@ auto math::wide_integer::example003a_cbrt() -> bool
 
 int main()
 {
+  #if defined(WIDE_INTEGER_NAMESPACE)
+  const bool result_is_ok = WIDE_INTEGER_NAMESPACE::wide_integer::example003a_cbrt();
+  #else
   const bool result_is_ok = wide_integer::example003a_cbrt();
+  #endif
 
   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
 }

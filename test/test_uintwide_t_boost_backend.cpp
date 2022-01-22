@@ -41,7 +41,11 @@ using boost_uint_backend_type =
 using boost_uint_type = boost::multiprecision::number<boost_uint_backend_type,
                                                       boost::multiprecision::et_off>;
 
+#if defined(WIDE_INTEGER_NAMESPACE)
+auto WIDE_INTEGER_NAMESPACE::math::wide_integer::test_uintwide_t_boost_backend() -> bool
+#else
 auto math::wide_integer::test_uintwide_t_boost_backend() -> bool
+#endif
 {
   bool result_is_ok = true;
 

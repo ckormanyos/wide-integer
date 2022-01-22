@@ -63,9 +63,15 @@
 
     using local_limb_type = MyLimbType;
 
+    #if defined(WIDE_INTEGER_NAMESPACE)
+    using local_uint_a_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<digits2a, local_limb_type>;
+    using local_uint_b_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<digits2b, local_limb_type>;
+    using local_uint_c_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<digits2a + digits2b, local_limb_type>;
+    #else
     using local_uint_a_type = math::wide_integer::uintwide_t<digits2a, local_limb_type>;
     using local_uint_b_type = math::wide_integer::uintwide_t<digits2b, local_limb_type>;
     using local_uint_c_type = math::wide_integer::uintwide_t<digits2a + digits2b, local_limb_type>;
+    #endif
 
   public:
     explicit test_uintwide_t_n_binary_ops_mul_n_by_m_template(const std::size_t count)

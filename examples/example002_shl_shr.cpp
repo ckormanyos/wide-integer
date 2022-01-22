@@ -8,7 +8,11 @@
 #include <examples/example_uintwide_t.h>
 #include <math/wide_integer/uintwide_t.h>
 
+#if defined(WIDE_INTEGER_NAMESPACE)
+auto WIDE_INTEGER_NAMESPACE::math::wide_integer::example002_shl_shr() -> bool
+#else
 auto math::wide_integer::example002_shl_shr() -> bool
+#endif
 {
   using math::wide_integer::uint256_t;
 
@@ -35,7 +39,11 @@ auto math::wide_integer::example002_shl_shr() -> bool
 
 int main()
 {
+  #if defined(WIDE_INTEGER_NAMESPACE)
+  const bool result_is_ok = WIDE_INTEGER_NAMESPACE::wide_integer::example002_shl_shr();
+  #else
   const bool result_is_ok = wide_integer::example002_shl_shr();
+  #endif
 
   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
 }
