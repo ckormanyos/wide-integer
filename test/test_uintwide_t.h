@@ -12,7 +12,7 @@
 
   WIDE_INTEGER_NAMESPACE_BEGIN
 
-  namespace math { namespace wide_integer {
+  namespace math::wide_integer {
 
   auto test_uintwide_t_boost_backend() -> bool;
   auto test_uintwide_t_examples     () -> bool;
@@ -21,14 +21,8 @@
   auto test_uintwide_t_int_convert  () -> bool;
   auto test_uintwide_t_spot_values  () -> bool;
 
-  } // namespace wide_integer
-  } // namespace math
+  } // namespace math::wide_integer
 
   WIDE_INTEGER_NAMESPACE_END
-
-  #if defined(WIDE_INTEGER_NAMESPACE)
-  using namespace WIDE_INTEGER_NAMESPACE;
-  #else
-  #endif
 
 #endif // TEST_UINTWIDE_T_2019_12_15_H

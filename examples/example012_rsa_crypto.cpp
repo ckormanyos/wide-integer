@@ -1,4 +1,4 @@
-﻿///////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////
 //  Copyright Christopher Kormanyos 2021.                        //
 //  Distributed under the Boost Software License,                //
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt          //
@@ -37,7 +37,11 @@ namespace local_rsa
 
     using crypto_char    = my_uintwide_t;
     using crypto_alloc   = typename std::allocator_traits<allocator_type>::template rebind_alloc<crypto_char>;
+    #if defined(WIDE_INTEGER_NAMESPACE)
+    using crypto_string  = WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::dynamic_array<crypto_char, crypto_alloc>;
+    #else
     using crypto_string  = math::wide_integer::detail::dynamic_array<crypto_char, crypto_alloc>;
+    #endif
 
     typedef struct private_key_type // NOLINT(modernize-use-using)
     {
@@ -366,7 +370,11 @@ namespace local_rsa
   };
 } // namespace local_rsa
 
+#if defined(WIDE_INTEGER_NAMESPACE)
+auto WIDE_INTEGER_NAMESPACE::math::wide_integer::example012_rsa_crypto() -> bool
+#else
 auto math::wide_integer::example012_rsa_crypto() -> bool
+#endif
 {
   // Consider lines 25-30 in the file "KeyGen_186-3.rsp".
 
@@ -435,7 +443,11 @@ auto math::wide_integer::example012_rsa_crypto() -> bool
 
 int main()
 {
+  #if defined(WIDE_INTEGER_NAMESPACE)
+  const bool result_is_ok = WIDE_INTEGER_NAMESPACE::wide_integer::example012_rsa_crypto();
+  #else
   const bool result_is_ok = wide_integer::example012_rsa_crypto();
+  #endif
 
   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
 }

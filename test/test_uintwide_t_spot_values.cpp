@@ -79,7 +79,11 @@ namespace local
   }
 } // namespace local
 
+#if defined(WIDE_INTEGER_NAMESPACE)
+auto WIDE_INTEGER_NAMESPACE::math::wide_integer::test_uintwide_t_spot_values() -> bool // NOLINT(readability-function-cognitive-complexity)
+#else
 auto math::wide_integer::test_uintwide_t_spot_values() -> bool // NOLINT(readability-function-cognitive-complexity)
+#endif
 {
   bool result_is_ok = true;
 

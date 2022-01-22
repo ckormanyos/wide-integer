@@ -56,7 +56,11 @@ namespace local_random
   }
 } // namespace local_random
 
+#if defined(WIDE_INTEGER_NAMESPACE)
+auto WIDE_INTEGER_NAMESPACE::math::wide_integer::example007_random_generator() -> bool
+#else
 auto math::wide_integer::example007_random_generator() -> bool
+#endif
 {
   const bool result_08_is_ok = local_random::generate<std::uint8_t> ();
   const bool result_16_is_ok = local_random::generate<std::uint16_t>();
@@ -77,7 +81,11 @@ auto math::wide_integer::example007_random_generator() -> bool
 
 int main()
 {
+  #if defined(WIDE_INTEGER_NAMESPACE)
+  const bool result_is_ok = WIDE_INTEGER_NAMESPACE::wide_integer::example007_random_generator();
+  #else
   const bool result_is_ok = wide_integer::example007_random_generator();
+  #endif
 
   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
 }

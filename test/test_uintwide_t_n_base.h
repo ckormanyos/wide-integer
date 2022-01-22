@@ -31,11 +31,6 @@
   #include <math/wide_integer/uintwide_t.h>
   #include <test/parallel_for.h>
 
-  #if defined(WIDE_INTEGER_NAMESPACE)
-  using namespace WIDE_INTEGER_NAMESPACE;
-  #else
-  #endif
-
   class test_uintwide_t_n_base
   {
   public:
@@ -103,8 +98,13 @@
 
       my_random_generator().seed(static_cast<typename random_engine_type::result_type>(std::clock()));
 
+      #if defined(WIDE_INTEGER_NAMESPACE)
+      using distribution_type =
+        WIDE_INTEGER_NAMESPACE::math::wide_integer::uniform_int_distribution<other_local_uint_type::my_width2, typename other_local_uint_type::limb_type, AllocatorType>;
+      #else
       using distribution_type =
         math::wide_integer::uniform_int_distribution<other_local_uint_type::my_width2, typename other_local_uint_type::limb_type, AllocatorType>;
+      #endif
 
       distribution_type distribution;
 

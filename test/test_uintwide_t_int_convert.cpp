@@ -122,7 +122,11 @@ namespace local_int_convert
   }
 } // namespace local_int_convert
 
+#if defined(WIDE_INTEGER_NAMESPACE)
+auto WIDE_INTEGER_NAMESPACE::math::wide_integer::test_uintwide_t_int_convert() -> bool
+#else
 auto math::wide_integer::test_uintwide_t_int_convert() -> bool
+#endif
 {
   constexpr auto digits2 = unsigned(256U);
 

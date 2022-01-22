@@ -12,7 +12,11 @@
 #include <math/wide_integer/uintwide_t.h>
 #include <test/test_uintwide_t.h>
 
+#if defined(WIDE_INTEGER_NAMESPACE)
+auto WIDE_INTEGER_NAMESPACE::math::wide_integer::test_uintwide_t_examples() -> bool
+#else
 auto math::wide_integer::test_uintwide_t_examples() -> bool
+#endif
 {
   bool result_is_ok = true;
 

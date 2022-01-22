@@ -33,7 +33,7 @@
 
   #include <math/wide_integer/uintwide_t.h>
 
-  namespace boost { namespace multiprecision {
+  namespace boost::multiprecision {
 
   // Forward declaration of the uintwide_t_backend multiple precision class.
   // This class binds native (WIDE_INTEGER_NAMESPACE)::math::wide_integer::uintwide_t
@@ -707,10 +707,9 @@
     *result = static_cast<long double>(val.crepresentation());
   }
 
-  } // namespace multiprecision
-  } // namespace boost
+  } // namespace boost::multiprecision
 
-  namespace boost { namespace math { namespace policies {
+  namespace boost::math::policies {
 
   // Specialization of the precision structure.
   template<
@@ -741,9 +740,7 @@
     #endif
   };
 
-  } // namespace policies
-  } // namespace math
-  } // namespace boost
+  } // namespace boost::math::policies
 
   namespace std // NOLINT(cert-dcl58-cpp)
   {
