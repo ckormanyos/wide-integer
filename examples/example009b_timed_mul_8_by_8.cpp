@@ -139,9 +139,9 @@ auto math::wide_integer::example009b_timed_mul_8_by_8() -> bool
 int main()
 {
   #if defined(WIDE_INTEGER_NAMESPACE)
-  const bool result_is_ok = WIDE_INTEGER_NAMESPACE::wide_integer::example009b_timed_mul_8_by_8();
+  const bool result_is_ok = WIDE_INTEGER_NAMESPACE::math::wide_integer::example009b_timed_mul_8_by_8();
   #else
-  const bool result_is_ok = wide_integer::example009b_timed_mul_8_by_8();
+  const bool result_is_ok = math::wide_integer::example009b_timed_mul_8_by_8();
   #endif
 
   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;

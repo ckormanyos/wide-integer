@@ -44,9 +44,9 @@ auto math::wide_integer::example001a_div_mod() -> bool
 int main()
 {
   #if defined(WIDE_INTEGER_NAMESPACE)
-  const bool result_is_ok = WIDE_INTEGER_NAMESPACE::wide_integer::example001a_div_mod();
+  const bool result_is_ok = WIDE_INTEGER_NAMESPACE::math::wide_integer::example001a_div_mod();
   #else
-  const bool result_is_ok = wide_integer::example001a_div_mod();
+  const bool result_is_ok = math::wide_integer::example001a_div_mod();
   #endif
 
   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;

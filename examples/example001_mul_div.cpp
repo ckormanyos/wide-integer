@@ -33,20 +33,26 @@ auto math::wide_integer::example001_mul_div() -> bool
 }
 
 // Enable this if you would like to activate this main() as a standalone example.
-#if 0
+#if defined(WIDE_INTEGER_STANDALONE_EXAMPLE001_MUL_DIV)
 
+#if !defined(WIDE_INTEGER_DISABLE_IOSTREAM)
 #include <iomanip>
 #include <iostream>
+#endif
 
 int main()
 {
   #if defined(WIDE_INTEGER_NAMESPACE)
-  const bool result_is_ok = WIDE_INTEGER_NAMESPACE::wide_integer::example001_mul_div();
+  const bool result_is_ok = WIDE_INTEGER_NAMESPACE::math::wide_integer::example001_mul_div();
   #else
-  const bool result_is_ok = wide_integer::example001_mul_div();
+  const bool result_is_ok = math::wide_integer::example001_mul_div();
   #endif
 
+  #if !defined(WIDE_INTEGER_DISABLE_IOSTREAM)
   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
+  #endif
+
+  return (result_is_ok ? 0 : -1);
 }
 
 #endif
