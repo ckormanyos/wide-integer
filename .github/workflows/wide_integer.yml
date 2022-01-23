@@ -773,3 +773,21 @@ jobs:
           echo 'ls -la bin/${{ matrix.example }}.elf bin/${{ matrix.example }}.map bin/${{ matrix.example }}.hex'
           ls -la bin/${{ matrix.example }}.elf bin/${{ matrix.example }}.map bin/${{ matrix.example }}.hex
         working-directory: ./
+  gcc-5_example_builds:
+    runs-on: ubuntu-18.04
+    defaults:
+      run:
+        shell: bash
+    strategy:
+      fail-fast: false
+      matrix:
+        standard: [ c++11, c++14 ]
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: '0'
+      - name: update-tools
+        run: sudo apt install gcc-5 g++-5
+      - name: gcc-5_example_builds
+        run: ./test_examples.sh g++-5 ${{ matrix.standard }}
+        working-directory: ./examples/build/
