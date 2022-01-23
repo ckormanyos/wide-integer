@@ -134,7 +134,7 @@ auto math::wide_integer::example009a_timed_mul_4_by_4() -> bool
 }
 
 // Enable this if you would like to activate this main() as a standalone example.
-#if 0
+#if defined(WIDE_INTEGER_STANDALONE_EXAMPLE009A_TIMED_MUL_4_BY_4)
 
 int main()
 {
@@ -145,6 +145,8 @@ int main()
   #endif
 
   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
+
+  return (result_is_ok ? 0 : -1);
 }
 
 #endif

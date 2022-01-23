@@ -436,7 +436,7 @@ auto math::wide_integer::example012_rsa_crypto() -> bool
 }
 
 // Enable this if you would like to activate this main() as a standalone example.
-#if 0
+#if defined(WIDE_INTEGER_STANDALONE_EXAMPLE012_RSA_CRYPTO)
 
 #include <iomanip>
 #include <iostream>
@@ -450,6 +450,8 @@ int main()
   #endif
 
   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
+
+  return (result_is_ok ? 0 : -1);
 }
 
 #endif
