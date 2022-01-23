@@ -773,6 +773,45 @@ jobs:
           echo 'ls -la bin/${{ matrix.example }}.elf bin/${{ matrix.example }}.map bin/${{ matrix.example }}.hex'
           ls -la bin/${{ matrix.example }}.elf bin/${{ matrix.example }}.map bin/${{ matrix.example }}.hex
         working-directory: ./
+  gcc-avr:
+    runs-on: ubuntu-20.04
+    defaults:
+      run:
+        shell: bash
+    strategy:
+      fail-fast: false
+      matrix:
+        example: [ example001_mul_div, example003_sqrt ]
+        standard: [ c++11, c++14 ]
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: '0'
+      - name: update-tools
+        run: sudo apt install gcc-avr avr-libc
+      - name: clone-real-time-cpp
+        run: |
+          git clone -b master --depth 1 https://github.com/ckormanyos/real-time-cpp.git ../real-time-cpp-root
+        working-directory: ./
+      - id: upcase_my_example
+        uses: ASzc/change-string-case-action@v2
+        with:
+          string: ${{ matrix.example }}
+      - name: gcc-avr
+        run: |
+          mkdir bin
+          echo ${{ steps.upcase_my_example.outputs.uppercase }}
+          echo 'compile examples/${{ matrix.example }}.cpp with:'
+          echo 'avr-g++ -x c++ -std=${{ matrix.standard }} -Os -Wall -Wextra -pedantic -Werror -Wmain -Wundef -Wconversion -Wsign-conversion -Wunused-parameter -Wuninitialized -Wmissing-declarations -Wshadow -Wunreachable-code -Wswitch-default -Wswitch-enum -Wcast-align -Wmissing-include-dirs -Winit-self -Wfloat-equal -Wdouble-promotion -mmcu=atmega328p -mrelax -finline-functions -finline-limit=32 -fsigned-char -g -gdwarf-2 -fno-exceptions -ffunction-sections -fdata-sections -fno-rtti -fno-use-cxa-atexit -fno-exceptions -fno-threadsafe-statics -fno-enforce-eh-specs -ftemplate-depth=32 -Wzero-as-null-pointer-constant -I. -I../real-time-cpp-root/ref_app/src -I../real-time-cpp-root/ref_app/src/util/STL -DWIDE_INTEGER_DISABLE_IOSTREAM -DWIDE_INTEGER_DISABLE_TRIVIAL_COPY_AND_STD_LAYOUT_CHECKS -DWIDE_INTEGER_DISABLE_IMPLEMENT_UTIL_DYNAMIC_ARRAY -DWIDE_INTEGER_NAMESPACE=ckormanyos -DWIDE_INTEGER_STANDALONE_${{ steps.upcase_my_example.outputs.uppercase }} examples/${{ matrix.example }}.cpp -Wl,--gc-sections -Wl,-Map,./bin/${{ matrix.example }}.map -o bin/${{ matrix.example }}.elf'
+          avr-g++ -x c++ -std=${{ matrix.standard }} -Os -Wall -Wextra -pedantic -Werror -Wmain -Wundef -Wconversion -Wsign-conversion -Wunused-parameter -Wuninitialized -Wmissing-declarations -Wshadow -Wunreachable-code -Wswitch-default -Wswitch-enum -Wcast-align -Wmissing-include-dirs -Winit-self -Wfloat-equal -Wdouble-promotion -mmcu=atmega328p -mrelax -finline-functions -finline-limit=32 -fsigned-char -g -gdwarf-2 -fno-exceptions -ffunction-sections -fdata-sections -fno-rtti -fno-use-cxa-atexit -fno-exceptions -fno-threadsafe-statics -fno-enforce-eh-specs -ftemplate-depth=32 -Wzero-as-null-pointer-constant -I. -I../real-time-cpp-root/ref_app/src -I../real-time-cpp-root/ref_app/src/util/STL -DWIDE_INTEGER_DISABLE_IOSTREAM -DWIDE_INTEGER_DISABLE_TRIVIAL_COPY_AND_STD_LAYOUT_CHECKS -DWIDE_INTEGER_DISABLE_IMPLEMENT_UTIL_DYNAMIC_ARRAY -DWIDE_INTEGER_NAMESPACE=ckormanyos -DWIDE_INTEGER_STANDALONE_${{ steps.upcase_my_example.outputs.uppercase }} examples/${{ matrix.example }}.cpp -Wl,--gc-sections -Wl,-Map,./bin/${{ matrix.example }}.map -o bin/${{ matrix.example }}.elf
+          echo
+          echo 'run objcopy with:'
+          echo 'avr-objcopy bin/${{ matrix.example }}.elf -O ihex bin/${{ matrix.example }}.hex'
+          avr-objcopy bin/${{ matrix.example }}.elf -O ihex bin/${{ matrix.example }}.hex
+          echo
+          echo 'ls -la bin/${{ matrix.example }}.elf bin/${{ matrix.example }}.map bin/${{ matrix.example }}.hex'
+          ls -la bin/${{ matrix.example }}.elf bin/${{ matrix.example }}.map bin/${{ matrix.example }}.hex
+        working-directory: ./
   gcc-5_example_builds:
     runs-on: ubuntu-18.04
     defaults:
