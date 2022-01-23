@@ -480,7 +480,13 @@
 
   using util::dynamic_array;
 
+  #if(__cplusplus >= 201703L)
+  } // namespace math::wide_integer::detail
+  #else
   } // namespace detail
+  } // namespace wide_integer
+  } // namespace math
+  #endif
 
   WIDE_INTEGER_NAMESPACE_END
 
