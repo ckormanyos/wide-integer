@@ -392,21 +392,21 @@ as well as the standard-layout compile-time checks are active.
 #define WIDE_INTEGER_NAMESPACE
 ```
 
-This macro can be used in strict, exacting applications for which
-using the unqualified, global namespace `math` or `::math` is undesired or inacceptable.
+This is an advanced macro intended to be used in strict, exacting applications for which
+using the unqualified, global namespace `math` (i.e., `namespace` `::math`) is undesired or inacceptable.
 We recall that all parts of the wide-integer implementation,
 such as the `uintwide_t` class and its associated implementation
 details reside within `namespace` `::math::wide_integer`
+
 Defining the macro `WIDE_INTEGER_NAMESPACE` to be something like,
 for instance, `-DWIDE_INTEGER_NAMESPACE=something_unique` places
 all parts of the wide-integer implementation and its details
 within the prepended outer namespace `something_unique` ---
 as in `namespace` `::something_unique::math::wide_integer`.
-Vary the actual name or nesting depth of the desired prepended
-outer namespace if/as needed for your project.
+When using this option, vary the actual name or nesting depth of the desired prepended
+outer namespace if/as needed for your particular project.
 
-By default the macro `WIDE_INTEGER_NAMESPACE` is defined
-(but defined to be nothing, i.e., empty).
+By default the macro `WIDE_INTEGER_NAMESPACE` is not defined.
 In this default state, `namespace` `::math::wide_integer` is used
 and the `uintwide_t` class and its associated implementation
 details reside therein.
@@ -677,13 +677,13 @@ negative arguments in number theoretical functions.
   - MSB/LSB (most/least significant bit) do not differentiate between positive or negative argument such that MSB of a negative integer will be the highest bit of the corresponding unsigned type.
   - Printing both positive-valued and negative-valued signed integers in hexadecimal format is supported. When printing negative-valued, signed  `uintwide_t` in hexadecimal format, the sign bit and all other bits are treated as if the integer were unsigned. The negative sign is not explicitly shown when using hexadecimal format, even if the underlying integer is signed and negative-valued. A potential positive sign, however, will be shown for positive-valued signed integers in hexadecimal form in the presence of `std::showpos`.
 
-### Conversion rules
+### Notable construction/conversion rules
 
-The following design choices have been implemented when implementing
-conversion rules.
+The following notable construction/conversion rules have been implemented
+in the wide-integer project.
 
-  - Construction-from built-in types is non-explicit (considered widening).
-  - Cast-to built-in types is explicit (considered narrowing).
-  - Construction-from, cast-to wider/less-wide/signed-unsigned wide-integer types is non-explicit (even if the conversoin is narrowing via having fewer bits).
+  - Constructions-from built-in types are implicit. These are considered widening conversions.
+  - Casts to built-in types are explicit and considered narrowing, regardless of the widths of left-and-right hand sides of the conversion.
+  - All of both constructions-from as well as casts-to wider/less-wide and signed/unsigned wide-integer types are implicit (even if the conversion at hand is narrowing via having fewer bits). Casts such as `int128_t` to/from `uint160_t` and similar, for instance, are implicit.
   - All wide-integer-types are move constructible.
-  - All wide-integer types having same widths and having the same limb-type, but possibly different sign are move-assignable.
+  - All wide-integer types having the same widths and having the same limb-type (but possibly different sign) are move-assignable and move-swap-capable.
