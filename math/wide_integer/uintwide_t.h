@@ -8,33 +8,35 @@
 #ifndef UINTWIDE_T_2018_10_02_H // NOLINT(llvm-header-guard)
   #define UINTWIDE_T_2018_10_02_H
 
+  #include <algorithm>
+  #include <array>
   #if defined(__GNUC__) || defined(__clang__)
   #if defined(WIDE_INTEGER_HAS_LIMB_TYPE_UINT64)
   #include <cinttypes>
   #endif
   #endif
-
-  #include <algorithm>
-  #include <array>
+  #if !defined(WIDE_INTEGER_DISABLE_FLOAT_INTEROP)
+  #include <cmath>
+  #endif
   #include <cstddef>
   #include <cstdint>
   #include <cstdlib>
   #include <cstring>
   #include <initializer_list>
-  #include <iterator>
-  #include <limits>
-  #include <type_traits>
-
-  #if !defined(WIDE_INTEGER_DISABLE_FLOAT_INTEROP)
-  #include <cmath>
-  #endif
-
   #if !defined(WIDE_INTEGER_DISABLE_IOSTREAM)
   #include <iomanip>
   #include <istream>
+  #endif
+  #include <iterator>
+  #include <limits>
+  #if !defined(WIDE_INTEGER_DISABLE_IMPLEMENT_UTIL_DYNAMIC_ARRAY)
+  #include <memory>
+  #endif
+  #if !defined(WIDE_INTEGER_DISABLE_IOSTREAM)
   #include <ostream>
   #include <sstream>
   #endif
+  #include <type_traits>
 
   #if (defined(__clang__) && (__clang_major__ <= 9))
   #define WIDE_INTEGER_NUM_LIMITS_CLASS_TYPE struct // NOLINT(cppcoreguidelines-macro-usage)
@@ -115,9 +117,15 @@
   namespace util {
 
   template<typename ValueType,
-            typename AllocatorType = std::allocator<ValueType>,
-            typename SizeType = std::size_t,
-            typename DiffType = std::ptrdiff_t>
+           typename AllocatorType = std::allocator<ValueType>,
+           typename SizeType      = std::size_t,
+           typename DiffType      = std::ptrdiff_t>
+  class dynamic_array;
+
+  template<typename ValueType,
+           typename AllocatorType,
+           typename SizeType,
+           typename DiffType>
   class dynamic_array
   {
   public:
