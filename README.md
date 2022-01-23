@@ -399,11 +399,22 @@ such as the `uintwide_t` class and its associated implementation
 details reside within `namespace` `::math::wide_integer`
 
 Defining the macro `WIDE_INTEGER_NAMESPACE` to be something like,
-for instance, `-DWIDE_INTEGER_NAMESPACE=something_unique` places
-all parts of the wide-integer implementation and its details
+for instance,
+
+```sh
+-DWIDE_INTEGER_NAMESPACE=something_unique
+```
+
+places all parts of the wide-integer implementation and its details
 within the prepended outer namespace `something_unique` ---
-as in `namespace` `::something_unique::math::wide_integer`.
-When using this option, vary the actual name or nesting depth of the desired prepended
+as in
+
+```C
+namespace ::something_unique::math::wide_integer { }
+```
+
+When utilizing the `WIDE_INTEGER_NAMESPACE` option,
+vary the actual name or nesting depth of the desired prepended
 outer namespace if/as needed for your particular project.
 
 By default the macro `WIDE_INTEGER_NAMESPACE` is not defined.
@@ -686,4 +697,4 @@ in the wide-integer project.
   - Casts to built-in types are explicit and considered narrowing, regardless of the widths of left-and-right hand sides of the conversion.
   - All of both constructions-from as well as casts-to wider/less-wide and signed/unsigned wide-integer types are implicit (even if the conversion at hand is narrowing via having fewer bits). Casts such as `int128_t` to/from `uint160_t` and similar, for instance, are implicit.
   - All wide-integer-types are move constructible.
-  - All wide-integer types having the same widths and having the same limb-type (but possibly different sign) are move-assignable and move-swap-capable.
+  - All wide-integer types having the same widths and having the same limb-type (but possibly different sign) are move-assignable and `std::move()`-capable.
