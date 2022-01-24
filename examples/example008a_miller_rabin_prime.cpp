@@ -1,4 +1,4 @@
-///////////////////////////////////////////////////////////////////
+﻿///////////////////////////////////////////////////////////////////
 //  Copyright Christopher Kormanyos 2018 - 2022.                 //
 //  Distributed under the Boost Software License,                //
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt          //
@@ -34,18 +34,19 @@
 
 #include <examples/example_uintwide_t.h>
 
-namespace local_miller_rabin
+namespace local_miller_rabin {
+
+template<typename UnsignedIntegralType>
+auto lexical_cast(const UnsignedIntegralType& u) -> std::string
 {
-  template<typename UnsignedIntegralType>
-  auto lexical_cast(const UnsignedIntegralType& u) -> std::string
-  {
-    std::stringstream ss;
+  std::stringstream ss;
 
-    ss << u;
+  ss << u;
 
-    return ss.str();
-  }
+  return ss.str();
 }
+
+} // namespace local_miller_rabin
 
 #if defined(WIDE_INTEGER_NAMESPACE)
 auto WIDE_INTEGER_NAMESPACE::math::wide_integer::example008a_miller_rabin_prime() -> bool
@@ -63,59 +64,88 @@ auto math::wide_integer::example008a_miller_rabin_prime() -> bool
                                   boost::multiprecision::et_off>;
   #endif
 
-  using local_wide_integer_type = math::wide_integer::uintwide_t              <static_cast<math::wide_integer::size_t>(std::numeric_limits<boost_wide_integer_type>::digits), std::uint32_t>;
-  using local_distribution_type = math::wide_integer::uniform_int_distribution<static_cast<math::wide_integer::size_t>(std::numeric_limits<boost_wide_integer_type>::digits), typename local_wide_integer_type::limb_type>;
+  // This example uses wide_integer's uniform_int_distribution to select
+  // prime candidates. These prime candidates are subsequently converted
+  // (via string-streaming) to Boost.Multiprecision integers.
+
+  #if defined(WIDE_INTEGER_NAMESPACE)
+  using local_wide_integer_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t              <static_cast<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t>(std::numeric_limits<boost_wide_integer_type>::digits)>;
+  using local_distribution_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::uniform_int_distribution<static_cast<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t>(std::numeric_limits<boost_wide_integer_type>::digits)>;
+  #else
+  using local_wide_integer_type = math::wide_integer::uintwide_t              <static_cast<math::wide_integer::size_t>(std::numeric_limits<boost_wide_integer_type>::digits)>;
+  using local_distribution_type = math::wide_integer::uniform_int_distribution<static_cast<math::wide_integer::size_t>(std::numeric_limits<boost_wide_integer_type>::digits)>;
+  #endif
 
   using random_engine1_type = std::mt19937;
+  using random_engine2_type = std::linear_congruential_engine<std::uint32_t, UINT32_C(48271), UINT32_C(0), UINT32_C(2147483647)>; // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
 
-  using random_engine2_type =
-    std::linear_congruential_engine<std::uint32_t, UINT32_C(48271), UINT32_C(0), UINT32_C(2147483647)>;
+  const auto seed_start = std::clock();
 
-  random_engine2_type gen2(static_cast<typename random_engine2_type::result_type>(std::clock()));
+  random_engine1_type gen1(static_cast<typename random_engine1_type::result_type>(seed_start));
+  random_engine2_type gen2(static_cast<typename random_engine2_type::result_type>(seed_start));
+
+  // Select prime candidates from a range of 10^150 ... max(uint512_t)-1.
+  WIDE_INTEGER_CONSTEXPR local_wide_integer_type
+    dist_min
+    (
+      "1"
+      "00000000000000000000000000000000000000000000000000"
+      "00000000000000000000000000000000000000000000000000"
+      "00000000000000000000000000000000000000000000000000"
+    );
+
+  WIDE_INTEGER_CONSTEXPR local_wide_integer_type
+    dist_max
+    (
+      (std::numeric_limits<local_wide_integer_type>::max)() - 1
+    );
+
+  local_distribution_type
+    dist
+    {
+      dist_min,
+      dist_max
+    };
 
   boost_wide_integer_type p0;
   boost_wide_integer_type p1;
 
-  random_engine2_type generator(static_cast<std::mt19937::result_type>(std::clock()));
-
-  local_distribution_type
-    distribution
-    {
-      // Select prime candidates from a range of 10^150 ... uint512_t-max.
-      local_wide_integer_type
-      (
-        std::string(std::string("1") + std::string(150U, static_cast<char>('0'))).c_str() // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
-      ),
-      (std::numeric_limits<local_wide_integer_type>::max)()
-    };
-
   for(;;)
   {
     {
-      const local_wide_integer_type n0 = distribution(generator);
+      const local_wide_integer_type n0 = dist(gen1);
 
       p0 = boost_wide_integer_type(local_miller_rabin::lexical_cast(n0));
     }
 
-    const bool miller_rabin_result = boost::multiprecision::miller_rabin_test(p0, 25U, gen2);
+    const bool p0_is_probably_prime = boost::multiprecision::miller_rabin_test(p0, 25U, gen2);
 
-    if(miller_rabin_result)
+    if(p0_is_probably_prime)
     {
       break;
     }
   }
 
+  auto seed_next = std::clock();
+
+  while(seed_next == seed_start)
+  {
+    seed_next = std::clock();
+  }
+
+  gen1.seed(static_cast<typename random_engine1_type::result_type>(seed_next));
+
   for(;;)
   {
     {
-      const local_wide_integer_type n1 = distribution(generator);
+      const local_wide_integer_type n1 = dist(gen1);
 
       p1 = boost_wide_integer_type(local_miller_rabin::lexical_cast(n1));
     }
 
-    const bool miller_rabin_result = boost::multiprecision::miller_rabin_test(p1, 25U, gen2);
+    const bool p1_is_probably_prime = boost::multiprecision::miller_rabin_test(p1, 25U, gen2);
 
-    if(miller_rabin_result)
+    if(p1_is_probably_prime)
     {
       break;
     }
@@ -123,7 +153,9 @@ auto math::wide_integer::example008a_miller_rabin_prime() -> bool
 
   const boost_wide_integer_type gd = gcd(p0, p1);
 
-  const bool result_is_ok = (   (p0 != 0U)
+  const bool result_is_ok = (   (p0  > boost_wide_integer_type(local_miller_rabin::lexical_cast(dist_min)))
+                             && (p1  > boost_wide_integer_type(local_miller_rabin::lexical_cast(dist_min)))
+                             && (p0 != 0U)
                              && (p1 != 0U)
                              && (p0 != p1)
                              && (gd == 1U));
