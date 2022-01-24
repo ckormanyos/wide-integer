@@ -5135,13 +5135,24 @@
           }
           else
           {
-            const local_ularge_type v_large =
-              detail::make_large(*(v.crepresentation().cbegin() + 0U),
-                                 *(v.crepresentation().cbegin() + 1U));
+            const auto my_v_hi =
+              static_cast<local_ushort_type>
+              (
+                (v.crepresentation().size() >= static_cast<typename local_wide_integer_type::representation_type::size_type>(2U))
+                  ? static_cast<local_ushort_type>(*(v.crepresentation().cbegin() + 1U))
+                  : static_cast<local_ushort_type>(0U)
+              );
 
-            const local_ularge_type u_large =
-              detail::make_large(*(u.crepresentation().cbegin() + 0U),
-                                 *(u.crepresentation().cbegin() + 1U));
+            const auto my_u_hi =
+              static_cast<local_ushort_type>
+              (
+                (u.crepresentation().size() >= static_cast<typename local_wide_integer_type::representation_type::size_type>(2U))
+                  ? static_cast<local_ushort_type>(*(u.crepresentation().cbegin() + 1U))
+                  : static_cast<local_ushort_type>(0U)
+              );
+
+            const local_ularge_type v_large = detail::make_large(*(v.crepresentation().cbegin() + 0U), my_v_hi);
+            const local_ularge_type u_large = detail::make_large(*(u.crepresentation().cbegin() + 0U), my_u_hi);
 
             u = detail::integer_gcd_reduce_large(v_large, u_large);
           }
