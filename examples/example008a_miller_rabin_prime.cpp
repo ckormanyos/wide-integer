@@ -1,4 +1,4 @@
-///////////////////////////////////////////////////////////////////
+﻿///////////////////////////////////////////////////////////////////
 //  Copyright Christopher Kormanyos 2018 - 2022.                 //
 //  Distributed under the Boost Software License,                //
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt          //
@@ -8,10 +8,12 @@
 // This Miller-Rabin primality test is loosely based on
 // an adaptation of some code from Boost.Multiprecision.
 // The Boost.Multiprecision code can be found here:
-// https://www.boost.org/doc/libs/1_76_0/libs/multiprecision/doc/html/boost_multiprecision/tut/primetest.html
+// https://www.boost.org/doc/libs/1_78_0/libs/multiprecision/doc/html/boost_multiprecision/tut/primetest.html
 
 #include <ctime>
 #include <random>
+#include <sstream>
+#include <string>
 
 #if defined(__GNUC__)
 #pragma GCC diagnostic push
@@ -29,10 +31,22 @@
 
 #include <boost/multiprecision/miller_rabin.hpp>
 #include <boost/multiprecision/uintwide_t_backend.hpp>
-#include <boost/random/independent_bits.hpp>
-#include <boost/random/mersenne_twister.hpp>
 
 #include <examples/example_uintwide_t.h>
+
+namespace local_miller_rabin {
+
+template<typename UnsignedIntegralType>
+auto lexical_cast(const UnsignedIntegralType& u) -> std::string
+{
+  std::stringstream ss;
+
+  ss << u;
+
+  return ss.str();
+}
+
+} // namespace local_miller_rabin
 
 #if defined(WIDE_INTEGER_NAMESPACE)
 auto WIDE_INTEGER_NAMESPACE::math::wide_integer::example008a_miller_rabin_prime() -> bool
@@ -41,57 +55,107 @@ auto math::wide_integer::example008a_miller_rabin_prime() -> bool
 #endif
 {
   #if defined(WIDE_INTEGER_NAMESPACE)
-  using wide_integer_type =
+  using boost_wide_integer_type =
     boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<static_cast<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t>(UINT32_C(512))>,
                                   boost::multiprecision::et_off>;
   #else
-  using wide_integer_type =
+  using boost_wide_integer_type =
     boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<static_cast<math::wide_integer::size_t>(UINT32_C(512))>,
                                   boost::multiprecision::et_off>;
   #endif
 
-  boost::random::mt11213b base_gen(static_cast<typename boost::random::mt11213b::result_type>(std::clock()));
+  // This example uses wide_integer's uniform_int_distribution to select
+  // prime candidates. These prime candidates are subsequently converted
+  // (via string-streaming) to Boost.Multiprecision integers.
 
-  boost::random::independent_bits_engine<boost::random::mt11213b,
-                                         std::numeric_limits<wide_integer_type>::digits,
-                                         wide_integer_type>
-  gen(base_gen);
+  #if defined(WIDE_INTEGER_NAMESPACE)
+  using local_wide_integer_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t              <static_cast<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t>(std::numeric_limits<boost_wide_integer_type>::digits)>;
+  using local_distribution_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::uniform_int_distribution<static_cast<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t>(std::numeric_limits<boost_wide_integer_type>::digits)>;
+  #else
+  using local_wide_integer_type = math::wide_integer::uintwide_t              <static_cast<math::wide_integer::size_t>(std::numeric_limits<boost_wide_integer_type>::digits)>;
+  using local_distribution_type = math::wide_integer::uniform_int_distribution<static_cast<math::wide_integer::size_t>(std::numeric_limits<boost_wide_integer_type>::digits)>;
+  #endif
 
-  using random_engine2_type =
-    std::linear_congruential_engine<std::uint32_t, UINT32_C(48271), UINT32_C(0), UINT32_C(2147483647)>;
+  using random_engine1_type = std::mt19937;
+  using random_engine2_type = std::linear_congruential_engine<std::uint32_t, UINT32_C(48271), UINT32_C(0), UINT32_C(2147483647)>; // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
 
-  random_engine2_type gen2(static_cast<typename random_engine2_type::result_type>(std::clock()));
+  const auto seed_start = std::clock();
 
-  wide_integer_type p0;
-  wide_integer_type p1;
+  random_engine1_type gen1(static_cast<typename random_engine1_type::result_type>(seed_start));
+  random_engine2_type gen2(static_cast<typename random_engine2_type::result_type>(seed_start));
+
+  // Select prime candidates from a range of 10^150 ... max(uint512_t)-1.
+  WIDE_INTEGER_CONSTEXPR local_wide_integer_type
+    dist_min
+    (
+      "1"
+      "00000000000000000000000000000000000000000000000000"
+      "00000000000000000000000000000000000000000000000000"
+      "00000000000000000000000000000000000000000000000000"
+    );
+
+  WIDE_INTEGER_CONSTEXPR local_wide_integer_type
+    dist_max
+    (
+      (std::numeric_limits<local_wide_integer_type>::max)() - 1
+    );
+
+  local_distribution_type
+    dist
+    {
+      dist_min,
+      dist_max
+    };
+
+  boost_wide_integer_type p0;
+  boost_wide_integer_type p1;
 
   for(;;)
   {
-    p0 = gen();
+    {
+      const local_wide_integer_type n0 = dist(gen1);
 
-    const bool miller_rabin_result = boost::multiprecision::miller_rabin_test(p0, 25U, gen2);
+      p0 = boost_wide_integer_type(local_miller_rabin::lexical_cast(n0));
+    }
 
-    if(miller_rabin_result)
+    const bool p0_is_probably_prime = boost::multiprecision::miller_rabin_test(p0, 25U, gen2);
+
+    if(p0_is_probably_prime)
     {
       break;
     }
   }
 
+  auto seed_next = std::clock();
+
+  while(seed_next == seed_start)
+  {
+    seed_next = std::clock();
+  }
+
+  gen1.seed(static_cast<typename random_engine1_type::result_type>(seed_next));
+
   for(;;)
   {
-    p1 = gen();
+    {
+      const local_wide_integer_type n1 = dist(gen1);
 
-    const bool miller_rabin_result = boost::multiprecision::miller_rabin_test(p1, 25U, gen2);
+      p1 = boost_wide_integer_type(local_miller_rabin::lexical_cast(n1));
+    }
 
-    if(miller_rabin_result)
+    const bool p1_is_probably_prime = boost::multiprecision::miller_rabin_test(p1, 25U, gen2);
+
+    if(p1_is_probably_prime)
     {
       break;
     }
   }
 
-  const wide_integer_type gd = gcd(p0, p1);
+  const boost_wide_integer_type gd = gcd(p0, p1);
 
-  const bool result_is_ok = (   (p0 != 0U)
+  const bool result_is_ok = (   (p0  > boost_wide_integer_type(local_miller_rabin::lexical_cast(dist_min)))
+                             && (p1  > boost_wide_integer_type(local_miller_rabin::lexical_cast(dist_min)))
+                             && (p0 != 0U)
                              && (p1 != 0U)
                              && (p0 != p1)
                              && (gd == 1U));
