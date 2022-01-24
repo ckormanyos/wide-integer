@@ -5061,7 +5061,7 @@
            typename LimbType,
            typename AllocatorType,
            const bool IsSigned>
-  WIDE_INTEGER_CONSTEXPR auto gcd(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& a, // NOLINT(bugprone-easily-swappable-parameters)
+  WIDE_INTEGER_CONSTEXPR auto gcd(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& a, // NOLINT(readability-function-cognitive-complexity,bugprone-easily-swappable-parameters)
                                   const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& b) -> uintwide_t<Width2, LimbType, AllocatorType, IsSigned>
   {
     // This implementation of GCD is an adaptation
