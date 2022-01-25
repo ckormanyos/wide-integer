@@ -88,6 +88,37 @@ auto math::wide_integer::test_uintwide_t_spot_values() -> bool // NOLINT(readabi
   bool result_is_ok = true;
 
   {
+    // See also https://github.com/ckormanyos/wide-integer/issues/213
+
+    #if defined(WIDE_INTEGER_NAMESPACE)
+    using local_uint32_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<static_cast<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t>(UINT32_C(32)), std::uint32_t, void, false>;
+    #else
+    using local_uint32_type = math::wide_integer::uintwide_t<static_cast<math::wide_integer::size_t>(UINT32_C(32)), std::uint32_t, void, false>;
+    #endif
+
+    WIDE_INTEGER_CONSTEXPR local_uint32_type
+      p
+      (
+        static_cast<typename local_uint32_type::limb_type>(UINT8_C(61))
+      );
+
+    WIDE_INTEGER_CONSTEXPR local_uint32_type
+      q
+      (
+        static_cast<typename local_uint32_type::limb_type>(UINT8_C(53))
+      );
+
+    WIDE_INTEGER_CONSTEXPR local_uint32_type lcm_result = lcm(p - 1U, q - 1U);
+
+    result_is_ok &= (static_cast<unsigned>(lcm_result) == static_cast<unsigned>(UINT16_C(780)));
+
+    #if(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST == 1)
+    static_assert((static_cast<unsigned>(lcm_result) == static_cast<unsigned>(UINT16_C(780))),
+                  "Error: Rudimentary LCM calculation result is wrong");
+    #endif
+  }
+
+  {
     // See also https://github.com/ckormanyos/wide-integer/issues/186
 
     // Here we statically test non-explicit construction/conversion
