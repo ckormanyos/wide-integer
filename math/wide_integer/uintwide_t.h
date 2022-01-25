@@ -130,8 +130,8 @@
   {
   public:
     // Type definitions.
-    using allocator_type         =       AllocatorType;
-    using value_type             =       ValueType;
+    using allocator_type         = typename std::allocator_traits<AllocatorType>::template rebind_alloc<ValueType>;
+    using value_type             = typename allocator_type::value_type;
     using reference              =       value_type&;
     using const_reference        = const value_type&;
     using iterator               =       value_type*;
@@ -164,7 +164,7 @@
 
       while(it != end())
       {
-        std::allocator_traits<AllocatorType>::construct(my_a, it, v);
+        std::allocator_traits<allocator_type>::construct(my_a, it, v);
 
         ++it;
       }
