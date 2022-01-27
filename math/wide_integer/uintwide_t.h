@@ -2100,9 +2100,34 @@
 
     // Define the maximum buffer sizes for extracting
     // octal, decimal and hexadecimal string representations.
-    static constexpr auto wr_string_max_buffer_size_oct = static_cast<size_t>((16U + ((my_width2 % 3U) * 4U) + (my_width2 / 3U)) + static_cast<size_t>(((my_width2 % 3U) != 0U) ? 1U : 0U) + 1U);
-    static constexpr auto wr_string_max_buffer_size_hex = static_cast<size_t>((32U + ((my_width2 % 4U) * 2U) + (my_width2 / 4U)) + 1U);
-    static constexpr auto wr_string_max_buffer_size_dec = static_cast<size_t>((20U + static_cast<size_t>((static_cast<std::uintmax_t>(my_width2) * UINTMAX_C(301)) / UINTMAX_C(1000))) + 1U);
+    static constexpr auto wr_string_max_buffer_size_oct =
+      static_cast<size_t>
+      (
+        (
+            8U
+          + (((my_width2 % 3U) != 0U) ? 1U : 0U)
+          +   (my_width2 / 3U)
+        )
+      );
+
+    static constexpr auto wr_string_max_buffer_size_hex =
+      static_cast<size_t>
+      (
+        (
+            8U
+          + (((my_width2 % 4U) != 0U) ? 1U : 0U)
+          +   (my_width2 / 4U)
+        )
+      );
+
+    static constexpr auto wr_string_max_buffer_size_dec =
+      static_cast<size_t>
+      (
+        (
+            10U
+          + static_cast<size_t>((static_cast<std::uintmax_t>(my_width2) * UINTMAX_C(301)) / UINTMAX_C(1000))
+        )
+      );
 
     // Write string function.
     WIDE_INTEGER_CONSTEXPR auto wr_string(      char*              str_result, // NOLINT(readability-function-cognitive-complexity)
@@ -2121,15 +2146,27 @@
 
         const auto mask = static_cast<limb_type>(static_cast<std::uint8_t>(0x7U));
 
-        std::array<char, static_cast<std::size_t>(wr_string_max_buffer_size_oct)> str_temp { };
+        using string_storage_oct_type =
+          typename std::conditional
+            <my_width2 <= static_cast<size_t>(UINT32_C(2048)),
+             detail::fixed_static_array <char,
+                                         wr_string_max_buffer_size_oct>,
+             detail::fixed_dynamic_array<char,
+                                         wr_string_max_buffer_size_oct,
+                                         typename std::allocator_traits<typename std::conditional<std::is_same<AllocatorType, void>::value,
+                                                                                                  std::allocator<void>,
+                                                                                                  AllocatorType>::type>::template rebind_alloc<limb_type>>
+            >::type;
 
-        auto pos = static_cast<unsigned_fast_type>(sizeof(str_temp) - 1U);
+        string_storage_oct_type str_temp;
+
+        auto pos = static_cast<unsigned_fast_type>(str_temp.size() - 1U);
 
         if(t.is_zero())
         {
           --pos;
 
-          str_temp[static_cast<std::size_t>(pos)] = static_cast<char>('0'); // NOLINT(cppcoreguidelines-pro-bounds-constant-array-index)
+          str_temp[static_cast<typename string_storage_oct_type::size_type>(pos)] = static_cast<char>('0');
         }
         else
         {
@@ -2143,7 +2180,7 @@
 
               --pos;
 
-              str_temp[static_cast<std::size_t>(pos)] = c; // NOLINT(cppcoreguidelines-pro-bounds-constant-array-index)
+              str_temp[static_cast<typename string_storage_oct_type::size_type>(pos)] = c;
 
               t >>= 3;
             }
@@ -2160,7 +2197,7 @@
 
               --pos;
 
-              str_temp[static_cast<std::size_t>(pos)] = c; // NOLINT(cppcoreguidelines-pro-bounds-constant-array-index)
+              str_temp[static_cast<typename string_storage_oct_type::size_type>(pos)] = c;
 
               tu >>= 3;
             }
@@ -2171,29 +2208,29 @@
         {
           --pos;
 
-          str_temp[static_cast<std::size_t>(pos)] = static_cast<char>('0'); // NOLINT(cppcoreguidelines-pro-bounds-constant-array-index)
+          str_temp[static_cast<typename string_storage_oct_type::size_type>(pos)] = static_cast<char>('0');
         }
 
         if(show_pos)
         {
           --pos;
 
-          str_temp[static_cast<std::size_t>(pos)] = static_cast<char>('+'); // NOLINT(cppcoreguidelines-pro-bounds-constant-array-index)
+          str_temp[static_cast<typename string_storage_oct_type::size_type>(pos)] = static_cast<char>('+');
         }
 
         if(field_width != 0U)
         {
-          field_width = (std::min)(field_width, static_cast<unsigned_fast_type>(sizeof(str_temp) - 1U));
+          field_width = (std::min)(field_width, static_cast<unsigned_fast_type>(str_temp.size() - 1U));
 
-          while(static_cast<signed_fast_type>(pos) > static_cast<signed_fast_type>((sizeof(str_temp) - 1U) - field_width))
+          while(static_cast<signed_fast_type>(pos) > static_cast<signed_fast_type>((str_temp.size() - 1U) - field_width))
           {
             --pos;
 
-            str_temp[static_cast<std::size_t>(pos)] = fill_char; // NOLINT(cppcoreguidelines-pro-bounds-constant-array-index)
+            str_temp[static_cast<typename string_storage_oct_type::size_type>(pos)] = fill_char;
           }
         }
 
-        str_temp[(sizeof(str_temp) - 1U)] = static_cast<char>('\0');
+        str_temp[static_cast<typename string_storage_oct_type::size_type>(str_temp.size() - 1U)] = static_cast<char>('\0');
 
         detail::strcpy_unsafe(str_result, str_temp.data() + pos);
       }
@@ -2208,15 +2245,27 @@
           t.negate();
         }
 
-        std::array<char, static_cast<std::size_t>(wr_string_max_buffer_size_dec)> str_temp { };
+        using string_storage_dec_type =
+          typename std::conditional
+            <my_width2 <= static_cast<size_t>(UINT32_C(2048)),
+             detail::fixed_static_array <char,
+                                         wr_string_max_buffer_size_dec>,
+             detail::fixed_dynamic_array<char,
+                                         wr_string_max_buffer_size_dec,
+                                         typename std::allocator_traits<typename std::conditional<std::is_same<AllocatorType, void>::value,
+                                                                                                  std::allocator<void>,
+                                                                                                  AllocatorType>::type>::template rebind_alloc<limb_type>>
+            >::type;
 
-        unsigned_fast_type pos = (sizeof(str_temp) - 1U);
+        string_storage_dec_type str_temp;
+
+        auto pos = static_cast<unsigned_fast_type>(str_temp.size() - 1U);
 
         if(t.is_zero())
         {
           --pos;
 
-          str_temp[static_cast<std::size_t>(pos)] = static_cast<char>('0'); // NOLINT(cppcoreguidelines-pro-bounds-constant-array-index)
+          str_temp[static_cast<typename string_storage_dec_type::size_type>(pos)] = static_cast<char>('0');
         }
         else
         {
@@ -2228,8 +2277,15 @@
 
             --pos;
 
-            str_temp[static_cast<std::size_t>(pos)] = // NOLINT(cppcoreguidelines-pro-bounds-constant-array-index)
-              static_cast<char>(static_cast<limb_type>(tmp - (uintwide_t(t).mul_by_limb(static_cast<limb_type>(UINT8_C(10))))) + UINT8_C(0x30));
+            str_temp[static_cast<typename string_storage_dec_type::size_type>(pos)] =
+              static_cast<char>
+              (
+                  static_cast<limb_type>
+                  (
+                    tmp - (uintwide_t(t).mul_by_limb(static_cast<limb_type>(UINT8_C(10))))
+                  )
+                + UINT8_C(0x30)
+              );
           }
         }
 
@@ -2237,28 +2293,28 @@
         {
           --pos;
 
-          str_temp[static_cast<std::size_t>(pos)] = static_cast<char>('+'); // NOLINT(cppcoreguidelines-pro-bounds-constant-array-index)
+          str_temp[static_cast<typename string_storage_dec_type::size_type>(pos)] = static_cast<char>('+');
         }
         else if(str_has_neg_sign)
         {
           --pos;
 
-          str_temp[static_cast<std::size_t>(pos)] = static_cast<char>('-'); // NOLINT(cppcoreguidelines-pro-bounds-constant-array-index)
+          str_temp[static_cast<typename string_storage_dec_type::size_type>(pos)] = static_cast<char>('-');
         }
 
         if(field_width != 0U)
         {
-          field_width = (std::min)(field_width, static_cast<unsigned_fast_type>(sizeof(str_temp) - 1U));
+          field_width = (std::min)(field_width, static_cast<unsigned_fast_type>(str_temp.size() - 1U));
 
-          while(static_cast<signed_fast_type>(pos) > static_cast<signed_fast_type>((sizeof(str_temp) - 1U) - field_width))
+          while(static_cast<signed_fast_type>(pos) > static_cast<signed_fast_type>((str_temp.size() - 1U) - field_width))
           {
             --pos;
 
-            str_temp[static_cast<std::size_t>(pos)] = fill_char; // NOLINT(cppcoreguidelines-pro-bounds-constant-array-index)
+            str_temp[static_cast<typename string_storage_dec_type::size_type>(pos)] = fill_char;
           }
         }
 
-        str_temp[static_cast<std::size_t>(sizeof(str_temp) - 1U)] = static_cast<char>('\0');
+        str_temp[static_cast<typename string_storage_dec_type::size_type>(str_temp.size() - 1U)] = static_cast<char>('\0');
 
         detail::strcpy_unsafe(str_result, str_temp.data() + pos);
       }
@@ -2268,15 +2324,27 @@
 
         const auto mask = static_cast<limb_type>(static_cast<std::uint8_t>(0xFU));
 
-        std::array<char, static_cast<std::size_t>(wr_string_max_buffer_size_hex)> str_temp { };
+        using string_storage_hex_type =
+          typename std::conditional
+            <my_width2 <= static_cast<size_t>(UINT32_C(2048)),
+             detail::fixed_static_array <char,
+                                         wr_string_max_buffer_size_hex>,
+             detail::fixed_dynamic_array<char,
+                                         wr_string_max_buffer_size_hex,
+                                         typename std::allocator_traits<typename std::conditional<std::is_same<AllocatorType, void>::value,
+                                                                                                  std::allocator<void>,
+                                                                                                  AllocatorType>::type>::template rebind_alloc<limb_type>>
+            >::type;
 
-        unsigned_fast_type pos = (sizeof(str_temp) - 1U);
+        string_storage_hex_type str_temp;
+
+        auto pos = static_cast<unsigned_fast_type>(str_temp.size() - 1U);
 
         if(t.is_zero())
         {
           --pos;
 
-          str_temp[static_cast<std::size_t>(pos)] = static_cast<char>('0'); // NOLINT(cppcoreguidelines-pro-bounds-constant-array-index)
+          str_temp[static_cast<typename string_storage_hex_type::size_type>(pos)] = static_cast<char>('0');
         }
         else
         {
@@ -2291,7 +2359,7 @@
 
               --pos;
 
-              str_temp[static_cast<std::size_t>(pos)] = c; // NOLINT(cppcoreguidelines-pro-bounds-constant-array-index)
+              str_temp[static_cast<typename string_storage_hex_type::size_type>(pos)] = c;
 
               t >>= 4;
             }
@@ -2309,7 +2377,7 @@
 
               --pos;
 
-              str_temp[static_cast<std::size_t>(pos)] = c; // NOLINT(cppcoreguidelines-pro-bounds-constant-array-index)
+              str_temp[static_cast<typename string_storage_hex_type::size_type>(pos)] = c;
 
               tu >>= 4;
             }
@@ -2320,33 +2388,33 @@
         {
           --pos;
 
-          str_temp[static_cast<std::size_t>(pos)] = (is_uppercase ? static_cast<char>('X') : static_cast<char>('x')); // NOLINT(cppcoreguidelines-pro-bounds-constant-array-index)
+          str_temp[static_cast<typename string_storage_hex_type::size_type>(pos)] = (is_uppercase ? static_cast<char>('X') : static_cast<char>('x'));
 
           --pos;
 
-          str_temp[static_cast<std::size_t>(pos)] = static_cast<char>('0'); // NOLINT(cppcoreguidelines-pro-bounds-constant-array-index)
+          str_temp[static_cast<typename string_storage_hex_type::size_type>(pos)] = static_cast<char>('0');
         }
 
         if(show_pos)
         {
           --pos;
 
-          str_temp[static_cast<std::size_t>(pos)] = static_cast<char>('+'); // NOLINT(cppcoreguidelines-pro-bounds-constant-array-index)
+          str_temp[static_cast<typename string_storage_hex_type::size_type>(pos)] = static_cast<char>('+');
         }
 
         if(field_width != 0U)
         {
-          field_width = (std::min)(field_width, static_cast<unsigned_fast_type>(sizeof(str_temp) - 1U));
+          field_width = (std::min)(field_width, static_cast<unsigned_fast_type>(str_temp.size() - 1U));
 
-          while(static_cast<signed_fast_type>(pos) > static_cast<signed_fast_type>((sizeof(str_temp) - 1U) - field_width))
+          while(static_cast<signed_fast_type>(pos) > static_cast<signed_fast_type>((str_temp.size() - 1U) - field_width))
           {
             --pos;
 
-            str_temp[static_cast<std::size_t>(pos)] = fill_char; // NOLINT(cppcoreguidelines-pro-bounds-constant-array-index)
+            str_temp[static_cast<typename string_storage_hex_type::size_type>(pos)] = fill_char;
           }
         }
 
-        str_temp[(sizeof(str_temp) - 1U)] = static_cast<char>('\0');
+        str_temp[static_cast<typename string_storage_hex_type::size_type>(str_temp.size() - 1U)] = static_cast<char>('\0');
 
         detail::strcpy_unsafe(str_result, str_temp.data() + pos);
       }
@@ -3230,7 +3298,7 @@
         {
           local_double_limb_type carry = 0U;
 
-          for(unsigned_fast_type j = 0U; j < static_cast<unsigned_fast_type>(count - i); ++j)
+          for(auto j = static_cast<unsigned_fast_type>(0U); j < static_cast<unsigned_fast_type>(count - i); ++j)
           {
             carry = static_cast<local_double_limb_type>(carry + static_cast<local_double_limb_type>(static_cast<local_double_limb_type>(*(a + static_cast<left_difference_type>(i))) * *(b + static_cast<right_difference_type>(j))));
             carry = static_cast<local_double_limb_type>(carry + *(r + static_cast<result_difference_type>(i + j)));
@@ -3278,8 +3346,8 @@
 
           for( ; j < count; ++j)
           {
-            carry    = static_cast<local_double_limb_type>(carry + static_cast<local_double_limb_type>(static_cast<local_double_limb_type>(*(a + static_cast<left_difference_type>(i))) * *(b + static_cast<right_difference_type>(j))));
-            carry    = static_cast<local_double_limb_type>(carry + *(r + static_cast<result_difference_type>(i + j)));
+            carry = static_cast<local_double_limb_type>(carry + static_cast<local_double_limb_type>(static_cast<local_double_limb_type>(*(a + static_cast<left_difference_type>(i))) * *(b + static_cast<right_difference_type>(j))));
+            carry = static_cast<local_double_limb_type>(carry + *(r + static_cast<result_difference_type>(i + j)));
 
             *(r + static_cast<result_difference_type>(i + j)) = static_cast<local_limb_type>(carry);
             carry                                             = detail::make_hi<local_limb_type>(carry);
@@ -4320,7 +4388,22 @@
 
     if(base_rep == UINT8_C(8))
     {
-      std::array<char, local_wide_integer_type::wr_string_max_buffer_size_oct> str_result { };
+      using string_storage_oct_type =
+        typename std::conditional
+          <local_wide_integer_type::my_width2 <= static_cast<size_t>(UINT32_C(2048)),
+            detail::fixed_static_array <char,
+                                        local_wide_integer_type::wr_string_max_buffer_size_oct>,
+            detail::fixed_dynamic_array<char,
+                                        local_wide_integer_type::wr_string_max_buffer_size_oct,
+                                        typename std::allocator_traits<typename std::conditional<std::is_same<AllocatorType, void>::value,
+                                                                                                std::allocator<void>,
+                                                                                                AllocatorType>::type>::template rebind_alloc<typename local_wide_integer_type::limb_type>>
+          >::type;
+
+      // TBD: There is redundant storage of this kind both here
+      // in this subroutine as well as in the wr_string methos.
+      string_storage_oct_type str_result;
+
       str_result.fill(static_cast<char>('\0'));
 
       x.wr_string(str_result.data(), base_rep, show_base, show_pos, is_uppercase, field_width, fill_char);
@@ -4329,7 +4412,22 @@
     }
     else if(base_rep == UINT8_C(10))
     {
-      std::array<char, local_wide_integer_type::wr_string_max_buffer_size_dec> str_result { };
+      using string_storage_dec_type =
+        typename std::conditional
+          <local_wide_integer_type::my_width2 <= static_cast<size_t>(UINT32_C(2048)),
+            detail::fixed_static_array <char,
+                                        local_wide_integer_type::wr_string_max_buffer_size_dec>,
+            detail::fixed_dynamic_array<char,
+                                        local_wide_integer_type::wr_string_max_buffer_size_dec,
+                                        typename std::allocator_traits<typename std::conditional<std::is_same<AllocatorType, void>::value,
+                                                                                                std::allocator<void>,
+                                                                                                AllocatorType>::type>::template rebind_alloc<typename local_wide_integer_type::limb_type>>
+          >::type;
+
+      // TBD: There is redundant storage of this kind both here
+      // in this subroutine as well as in the wr_string methos.
+      string_storage_dec_type str_result;
+
       str_result.fill(static_cast<char>('\0'));
 
       x.wr_string(str_result.data(), base_rep, show_base, show_pos, is_uppercase, field_width, fill_char);
@@ -4338,7 +4436,22 @@
     }
     else if(base_rep == UINT8_C(16))
     {
-      std::array<char, local_wide_integer_type::wr_string_max_buffer_size_hex> str_result { };
+      using string_storage_hex_type =
+        typename std::conditional
+          <local_wide_integer_type::my_width2 <= static_cast<size_t>(UINT32_C(2048)),
+            detail::fixed_static_array <char,
+                                        local_wide_integer_type::wr_string_max_buffer_size_hex>,
+            detail::fixed_dynamic_array<char,
+                                        local_wide_integer_type::wr_string_max_buffer_size_hex,
+                                        typename std::allocator_traits<typename std::conditional<std::is_same<AllocatorType, void>::value,
+                                                                                                std::allocator<void>,
+                                                                                                AllocatorType>::type>::template rebind_alloc<typename local_wide_integer_type::limb_type>>
+          >::type;
+
+      // TBD: There is redundant storage of this kind both here
+      // in this subroutine as well as in the wr_string methos.
+      string_storage_hex_type str_result;
+
       str_result.fill(static_cast<char>('\0'));
 
       x.wr_string(str_result.data(), base_rep, show_base, show_pos, is_uppercase, field_width, fill_char);
