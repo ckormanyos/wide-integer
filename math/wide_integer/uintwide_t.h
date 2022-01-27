@@ -325,26 +325,25 @@
 
     void swap(dynamic_array& other)
     {
-      const size_type     tmp_elem_count = elem_count;
-            const_pointer tmp_elems      = elems;
+      if(this != &other)
+      {
+        pointer tmp_elems = elems;
 
-      elem_count = other.elem_count;
-      elems      = other.elems;
+        elems = other.elems;
+        other.elems = tmp_elems;
 
-      other.elem_count = tmp_elem_count;
-      other.elems      = tmp_elems;
+        std::swap(elem_count, other.elem_count);
+      }
     }
 
     void swap(dynamic_array&& other)
     {
-      const size_type     tmp_elem_count = elem_count;
-            const_pointer tmp_elems      = elems;
+      pointer tmp_elems = elems;
 
-      elem_count = other.elem_count;
-      elems      = other.elems;
+      elems = other.elems;
+      other.elems = tmp_elems;
 
-      other.elem_count = tmp_elem_count;
-      other.elems      = tmp_elems;
+      std::swap(elem_count, other.elem_count);
     }
 
   private:
