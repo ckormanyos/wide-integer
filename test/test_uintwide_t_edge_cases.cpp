@@ -1,4 +1,4 @@
-///////////////////////////////////////////////////////////////////////////////
+﻿///////////////////////////////////////////////////////////////////////////////
 //  Copyright Christopher Kormanyos 2019 - 2022.
 //  Distributed under the Boost Software License,
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt
@@ -32,14 +32,17 @@ namespace local_edge_cases
   constexpr std::size_t local_digits2 = 16384U;
 } // namespace local_edge_cases
 
-using local_uint_type =
-  boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<local_edge_cases::local_digits2>,
-                                boost::multiprecision::et_off>;
+using local_uint_backend_type =
+  boost::multiprecision::uintwide_t_backend<local_edge_cases::local_digits2, std::uint32_t, std::allocator<void>>;
 
 using boost_uint_backend_type =
   boost::multiprecision::cpp_int_backend<local_edge_cases::local_digits2,
                                          local_edge_cases::local_digits2,
                                          boost::multiprecision::unsigned_magnitude>;
+
+using local_uint_type =
+  boost::multiprecision::number<local_uint_backend_type,
+                                boost::multiprecision::et_off>;
 
 using boost_uint_type =
   boost::multiprecision::number<boost_uint_backend_type,

@@ -1,4 +1,4 @@
-﻿///////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////
 //  Copyright Christopher Kormanyos 2019 - 2022.                 //
 //  Distributed under the Boost Software License,                //
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt          //
@@ -42,14 +42,14 @@
   // Forward declaration of the uintwide_t_backend multiple precision class.
   // This class binds native (WIDE_INTEGER_NAMESPACE)::math::wide_integer::uintwide_t
   // to boost::multiprecsion::uintwide_t_backend.
-
   template<
   #if defined(WIDE_INTEGER_NAMESPACE)
            const WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t MyWidth2,
   #else
            const ::math::wide_integer::size_t MyWidth2,
   #endif
-           typename MyLimbType>
+           typename MyLimbType = std::uint32_t,
+           typename MyAllocatorType = void>
   class uintwide_t_backend;
 
   // Define the number category as an integer number kind
@@ -62,8 +62,9 @@
   #else
            const ::math::wide_integer::size_t MyWidth2,
   #endif
-           typename MyLimbType>
-  struct number_category<uintwide_t_backend<MyWidth2, MyLimbType>>
+           typename MyLimbType,
+           typename MyAllocatorType>
+  struct number_category<uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>>
     : public boost::mpl::int_<number_kind_integer> { };
   #elif (defined(BOOST_VERSION) && (BOOST_VERSION <= 107500))
   template<
@@ -72,8 +73,9 @@
   #else
            const ::math::wide_integer::size_t MyWidth2,
   #endif
-           typename MyLimbType>
-  struct number_category<uintwide_t_backend<MyWidth2, MyLimbType>>
+           typename MyLimbType,
+           typename MyAllocatorType>
+  struct number_category<uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>>
     : public boost::integral_constant<int, number_kind_integer> { };
   #else
   template<
@@ -82,8 +84,9 @@
   #else
            const ::math::wide_integer::size_t MyWidth2,
   #endif
-           typename MyLimbType>
-  struct number_category<uintwide_t_backend<MyWidth2, MyLimbType>>
+           typename MyLimbType,
+           typename MyAllocatorType>
+  struct number_category<uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>>
     : public std::integral_constant<int, number_kind_integer> { };
   #endif
 
@@ -94,15 +97,16 @@
   #else
            const ::math::wide_integer::size_t MyWidth2,
   #endif
-           typename MyLimbType = std::uint32_t>
+           typename MyLimbType,
+           typename MyAllocatorType>
   class uintwide_t_backend // NOLINT(cppcoreguidelines-special-member-functions,hicpp-special-member-functions)
   {
   public:
     using representation_type =
     #if defined(WIDE_INTEGER_NAMESPACE)
-      WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<MyWidth2, MyLimbType>;
+      WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<MyWidth2, MyLimbType, MyAllocatorType>;
     #else
-      ::math::wide_integer::uintwide_t<MyWidth2, MyLimbType>;
+      ::math::wide_integer::uintwide_t<MyWidth2, MyLimbType, MyAllocatorType>;
     #endif
 
     #if (defined(BOOST_VERSION) && (BOOST_VERSION <= 107500))
@@ -117,9 +121,11 @@
 
     constexpr uintwide_t_backend() : m_value() { }
 
-    explicit constexpr uintwide_t_backend(const representation_type& rep) : m_value(rep) { }
+    explicit constexpr uintwide_t_backend(const representation_type& rep) : m_value(std::move(rep)) { }
 
     constexpr uintwide_t_backend(const uintwide_t_backend& other) : m_value(other.m_value) { }
+
+    constexpr uintwide_t_backend(uintwide_t_backend&& other) noexcept : m_value(static_cast<representation_type&&>(other.m_value)) { }
 
     template<typename UnsignedIntegralType,
              typename std::enable_if<(   (std::is_integral<UnsignedIntegralType>::value)
@@ -139,7 +145,7 @@
 
     constexpr uintwide_t_backend(const std::string& str) : m_value(str) { } // NOLINT(google-explicit-constructor,hicpp-explicit-conversions)
 
-    //~uintwide_t_backend() { }
+    WIDE_INTEGER_CONSTEXPR ~uintwide_t_backend() = default;
 
     WIDE_INTEGER_CONSTEXPR auto operator=(const uintwide_t_backend& other) -> uintwide_t_backend&
     {
@@ -147,6 +153,13 @@
       {
         m_value.representation() = other.m_value.crepresentation();
       }
+
+      return *this;
+    }
+
+    WIDE_INTEGER_CONSTEXPR auto operator=(uintwide_t_backend&& other) noexcept -> uintwide_t_backend&
+    {
+      m_value = static_cast<representation_type&&>(other.m_value);
 
       return *this;
     }
@@ -163,18 +176,25 @@
     WIDE_INTEGER_CONSTEXPR auto operator=(const std::string& str_rep)  -> uintwide_t_backend& { m_value = representation_type(str_rep);  return *this; }
     WIDE_INTEGER_CONSTEXPR auto operator=(const char*        char_ptr) -> uintwide_t_backend& { m_value = representation_type(char_ptr); return *this; }
 
-    WIDE_INTEGER_CONSTEXPR void swap(uintwide_t_backend& other_mp_cpp_backend)
+    WIDE_INTEGER_CONSTEXPR auto swap(uintwide_t_backend& other_mp_cpp_backend) -> void
     {
       m_value.representation().swap(other_mp_cpp_backend.m_value.representation());
     }
 
-                  WIDE_INTEGER_CONSTEXPR auto  representation()       ->       representation_type& { return m_value; }
+    WIDE_INTEGER_CONSTEXPR auto swap(uintwide_t_backend&& other_mp_cpp_backend) -> void
+    {
+      m_value.representation().swap(other_mp_cpp_backend.m_value.representation());
+    }
+
+                           WIDE_INTEGER_CONSTEXPR auto  representation()       ->       representation_type& { return m_value; }
     WIDE_INTEGER_NODISCARD WIDE_INTEGER_CONSTEXPR auto  representation() const -> const representation_type& { return m_value; }
     WIDE_INTEGER_NODISCARD WIDE_INTEGER_CONSTEXPR auto crepresentation() const -> const representation_type& { return m_value; }
 
     WIDE_INTEGER_NODISCARD auto str(std::streamsize number_of_digits, const std::ios::fmtflags format_flags) const -> std::string
     {
-      (void) number_of_digits;
+      static_cast<void>(number_of_digits);
+
+      // TBD: Use a mechanism similar to the one used in the uintwide_t class for this array type.
 
       std::array<char, representation_type::wr_string_max_buffer_size_dec> pstr { };
 
@@ -190,7 +210,7 @@
       return str_result;
     }
 
-    WIDE_INTEGER_CONSTEXPR void negate()
+    WIDE_INTEGER_CONSTEXPR auto negate() -> void
     {
       m_value.negate();
     }
@@ -219,8 +239,9 @@
   #else
            const ::math::wide_integer::size_t MyWidth2,
   #endif
-           typename MyLimbType>
-  WIDE_INTEGER_CONSTEXPR void eval_add(uintwide_t_backend<MyWidth2, MyLimbType>& result, const uintwide_t_backend<MyWidth2, MyLimbType>& x)
+           typename MyLimbType,
+           typename MyAllocatorType>
+  WIDE_INTEGER_CONSTEXPR auto eval_add(uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& result, const uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& x) -> void
   {
     result.representation() += x.crepresentation();
   }
@@ -231,8 +252,9 @@
   #else
            const ::math::wide_integer::size_t MyWidth2,
   #endif
-           typename MyLimbType>
-  WIDE_INTEGER_CONSTEXPR void eval_subtract(uintwide_t_backend<MyWidth2, MyLimbType>& result, const uintwide_t_backend<MyWidth2, MyLimbType>& x)
+           typename MyLimbType,
+           typename MyAllocatorType>
+  WIDE_INTEGER_CONSTEXPR auto eval_subtract(uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& result, const uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& x) -> void
   {
     result.representation() -= x.crepresentation();
   }
@@ -243,8 +265,9 @@
   #else
            const ::math::wide_integer::size_t MyWidth2,
   #endif
-           typename MyLimbType>
-  WIDE_INTEGER_CONSTEXPR void eval_multiply(uintwide_t_backend<MyWidth2, MyLimbType>& result, const uintwide_t_backend<MyWidth2, MyLimbType>& x)
+           typename MyLimbType,
+           typename MyAllocatorType>
+  WIDE_INTEGER_CONSTEXPR auto eval_multiply(uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& result, const uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& x) -> void
   {
     result.representation() *= x.crepresentation();
   }
@@ -256,9 +279,10 @@
            const ::math::wide_integer::size_t MyWidth2,
   #endif
            typename MyLimbType,
+           typename MyAllocatorType,
            typename IntegralType,
            typename std::enable_if<(std::is_integral<IntegralType>::value)>::type const* = nullptr>
-  WIDE_INTEGER_CONSTEXPR void eval_multiply(uintwide_t_backend<MyWidth2, MyLimbType>& result, const IntegralType& n)
+  WIDE_INTEGER_CONSTEXPR auto eval_multiply(uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& result, const IntegralType& n) -> void
   {
     result.representation() *= n;
   }
@@ -269,8 +293,9 @@
   #else
            const ::math::wide_integer::size_t MyWidth2,
   #endif
-           typename MyLimbType>
-  WIDE_INTEGER_CONSTEXPR void eval_divide(uintwide_t_backend<MyWidth2, MyLimbType>& result, const uintwide_t_backend<MyWidth2, MyLimbType>& x)
+           typename MyLimbType,
+           typename MyAllocatorType>
+  WIDE_INTEGER_CONSTEXPR auto eval_divide(uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& result, const uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& x) -> void
   {
     result.representation() /= x.crepresentation();
   }
@@ -282,13 +307,14 @@
            const ::math::wide_integer::size_t MyWidth2,
   #endif
            typename MyLimbType,
+           typename MyAllocatorType,
            typename IntegralType,
            typename std::enable_if<(   (std::is_integral   <IntegralType>::value)
                                     && (std::is_unsigned   <IntegralType>::value)
                                     && (std::numeric_limits<IntegralType>::digits <= std::numeric_limits<MyLimbType>::digits))>::type const* = nullptr>
-  WIDE_INTEGER_CONSTEXPR void eval_divide(uintwide_t_backend<MyWidth2, MyLimbType>& result, const IntegralType& n)
+  WIDE_INTEGER_CONSTEXPR auto eval_divide(uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& result, const IntegralType& n) -> void
   {
-    using local_wide_integer_type = typename uintwide_t_backend<MyWidth2, MyLimbType>::representation_type;
+    using local_wide_integer_type = typename uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>::representation_type;
 
     using local_limb_type = typename local_wide_integer_type::limb_type;
 
@@ -302,11 +328,12 @@
            const ::math::wide_integer::size_t MyWidth2,
   #endif
            typename MyLimbType,
+           typename MyAllocatorType,
            typename IntegralType,
            typename std::enable_if<(   (std::is_integral   <IntegralType>::value)
                                     && (std::is_unsigned   <IntegralType>::value)
                                     && (std::numeric_limits<IntegralType>::digits) > std::numeric_limits<MyLimbType>::digits)>::type const* = nullptr>
-  WIDE_INTEGER_CONSTEXPR void eval_divide(uintwide_t_backend<MyWidth2, MyLimbType>& result, const IntegralType& n)
+  WIDE_INTEGER_CONSTEXPR auto eval_divide(uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& result, const IntegralType& n) -> void
   {
     result.representation() /= n;
   }
@@ -317,8 +344,9 @@
   #else
            const ::math::wide_integer::size_t MyWidth2,
   #endif
-           typename MyLimbType>
-  WIDE_INTEGER_CONSTEXPR void eval_modulus(uintwide_t_backend<MyWidth2, MyLimbType>& result, const uintwide_t_backend<MyWidth2, MyLimbType>& x)
+           typename MyLimbType,
+           typename MyAllocatorType>
+  WIDE_INTEGER_CONSTEXPR auto eval_modulus(uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& result, const uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& x) -> void
   {
     result.representation() %= x.crepresentation();
   }
@@ -330,15 +358,16 @@
            const ::math::wide_integer::size_t MyWidth2,
   #endif
            typename MyLimbType,
+           typename MyAllocatorType,
            typename IntegralType,
            typename std::enable_if<(   (std::is_integral   <IntegralType>::value)
                                     && (std::is_unsigned   <IntegralType>::value)
                                     && (std::numeric_limits<IntegralType>::digits <= std::numeric_limits<MyLimbType>::digits))>::type const* = nullptr>
-  WIDE_INTEGER_CONSTEXPR auto eval_integer_modulus(uintwide_t_backend<MyWidth2, MyLimbType>& x, const IntegralType& n) -> IntegralType
+  WIDE_INTEGER_CONSTEXPR auto eval_integer_modulus(uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& x, const IntegralType& n) -> IntegralType
   {
-    using local_wide_integer_type = typename uintwide_t_backend<MyWidth2, MyLimbType>::representation_type;
+    using local_wide_integer_type = typename uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>::representation_type;
 
-    typename uintwide_t_backend<MyWidth2, MyLimbType>::representation_type rem;
+    typename uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>::representation_type rem;
 
     local_wide_integer_type(x.crepresentation()).eval_divide_by_single_limb(n, 0U, &rem);
 
@@ -352,13 +381,14 @@
            const ::math::wide_integer::size_t MyWidth2,
   #endif
            typename MyLimbType,
+           typename MyAllocatorType,
            typename IntegralType,
            typename std::enable_if<(   (std::is_integral   <IntegralType>::value)
                                     && (std::is_unsigned   <IntegralType>::value)
                                     && (std::numeric_limits<IntegralType>::digits) > std::numeric_limits<MyLimbType>::digits)>::type const* = nullptr>
-  WIDE_INTEGER_CONSTEXPR auto eval_integer_modulus(uintwide_t_backend<MyWidth2, MyLimbType>& x, const IntegralType& n) -> IntegralType
+  WIDE_INTEGER_CONSTEXPR auto eval_integer_modulus(uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& x, const IntegralType& n) -> IntegralType
   {
-    const uintwide_t_backend<MyWidth2, MyLimbType> rem = x.crepresentation() % uintwide_t_backend<MyWidth2, MyLimbType>(n);
+    const uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType> rem = x.crepresentation() % uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>(n);
 
     return static_cast<IntegralType>(rem);
   }
@@ -369,8 +399,9 @@
   #else
            const ::math::wide_integer::size_t MyWidth2,
   #endif
-           typename MyLimbType>
-  WIDE_INTEGER_CONSTEXPR void eval_bitwise_and(uintwide_t_backend<MyWidth2, MyLimbType>& result, const uintwide_t_backend<MyWidth2, MyLimbType>& x)
+           typename MyLimbType,
+           typename MyAllocatorType>
+  WIDE_INTEGER_CONSTEXPR auto eval_bitwise_and(uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& result, const uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& x) -> void
   {
     result.representation() &= x.crepresentation();
   }
@@ -381,8 +412,9 @@
   #else
            const ::math::wide_integer::size_t MyWidth2,
   #endif
-           typename MyLimbType>
-  WIDE_INTEGER_CONSTEXPR void eval_bitwise_or(uintwide_t_backend<MyWidth2, MyLimbType>& result, const uintwide_t_backend<MyWidth2, MyLimbType>& x)
+           typename MyLimbType,
+           typename MyAllocatorType>
+  WIDE_INTEGER_CONSTEXPR void eval_bitwise_or(uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& result, const uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& x)
   {
     result.representation() |= x.crepresentation();
   }
@@ -393,8 +425,9 @@
   #else
            const ::math::wide_integer::size_t MyWidth2,
   #endif
-           typename MyLimbType>
-  WIDE_INTEGER_CONSTEXPR void eval_bitwise_xor(uintwide_t_backend<MyWidth2, MyLimbType>& result, const uintwide_t_backend<MyWidth2, MyLimbType>& x)
+           typename MyLimbType,
+           typename MyAllocatorType>
+  WIDE_INTEGER_CONSTEXPR auto eval_bitwise_xor(uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& result, const uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& x) -> void
   {
     result.representation() ^= x.crepresentation();
   }
@@ -405,12 +438,15 @@
   #else
            const ::math::wide_integer::size_t MyWidth2,
   #endif
-           typename MyLimbType>
-  WIDE_INTEGER_CONSTEXPR void eval_complement(uintwide_t_backend<MyWidth2, MyLimbType>& result, const uintwide_t_backend<MyWidth2, MyLimbType>& x)
+           typename MyLimbType,
+           typename MyAllocatorType>
+  WIDE_INTEGER_CONSTEXPR auto eval_complement(uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& result, const uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& x) -> void
   {
-    for(auto i = 0U; i < std::tuple_size<typename uintwide_t_backend<MyWidth2, MyLimbType>::representation_type>::value; ++i)
+    for(auto   i = static_cast<std::size_t>(0U);
+               i < std::tuple_size<typename uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>::representation_type>::value;
+             ++i)
     {
-      using local_limb_type = typename uintwide_t_backend<MyWidth2, MyLimbType>::limb_type;
+      using local_limb_type = typename uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>::limb_type;
 
       result.representation().representation()[i] = static_cast<local_limb_type>(~x.crepresentation().crepresentation()[i]);
     }
@@ -422,11 +458,12 @@
   #else
            const ::math::wide_integer::size_t MyWidth2,
   #endif
-           typename MyLimbType>
-  WIDE_INTEGER_CONSTEXPR void eval_powm(      uintwide_t_backend<MyWidth2, MyLimbType>& result,
-                                        const uintwide_t_backend<MyWidth2, MyLimbType>& b,
-                                        const uintwide_t_backend<MyWidth2, MyLimbType>& p,
-                                        const uintwide_t_backend<MyWidth2, MyLimbType>& m)
+           typename MyLimbType,
+           typename MyAllocatorType>
+  WIDE_INTEGER_CONSTEXPR auto eval_powm(      uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& result,
+                                        const uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& b,
+                                        const uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& p,
+                                        const uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& m) -> void
   {
     result.representation() = powm(b.crepresentation(),
                                    p.crepresentation(),
@@ -440,12 +477,13 @@
            const ::math::wide_integer::size_t MyWidth2,
   #endif
            typename MyLimbType,
+           typename MyAllocatorType,
            typename OtherIntegralTypeM,
            typename std::enable_if<(std::is_integral<OtherIntegralTypeM>::value)>::type const* = nullptr>
-  WIDE_INTEGER_CONSTEXPR void eval_powm(      uintwide_t_backend<MyWidth2, MyLimbType>& result,
-                                        const uintwide_t_backend<MyWidth2, MyLimbType>& b,
-                                        const uintwide_t_backend<MyWidth2, MyLimbType>& p,
-                                        const OtherIntegralTypeM                         m)
+  WIDE_INTEGER_CONSTEXPR auto eval_powm(      uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& result,
+                                        const uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& b,
+                                        const uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& p,
+                                        const OtherIntegralTypeM                                         m) -> void
   {
     result.representation() = powm(b.crepresentation(),
                                    p.crepresentation(),
@@ -459,12 +497,13 @@
            const ::math::wide_integer::size_t MyWidth2,
   #endif
            typename MyLimbType,
+           typename MyAllocatorType,
            typename OtherIntegralTypeP,
            typename std::enable_if<(std::is_integral<OtherIntegralTypeP>::value)>::type const* = nullptr>
-  WIDE_INTEGER_CONSTEXPR void eval_powm(      uintwide_t_backend<MyWidth2, MyLimbType>& result,
-                                        const uintwide_t_backend<MyWidth2, MyLimbType>& b,
-                                        const OtherIntegralTypeP                         p,
-                                        const uintwide_t_backend<MyWidth2, MyLimbType>& m)
+  WIDE_INTEGER_CONSTEXPR auto eval_powm(      uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& result,
+                                        const uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& b,
+                                        const OtherIntegralTypeP                                         p,
+                                        const uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& m) -> void
   {
     result.representation() = powm(b.crepresentation(),
                                    p,
@@ -478,9 +517,10 @@
            const ::math::wide_integer::size_t MyWidth2,
   #endif
            typename MyLimbType,
+           typename MyAllocatorType,
            typename IntegralType,
            typename std::enable_if<(std::is_integral<IntegralType>::value)>::type const* = nullptr>
-  WIDE_INTEGER_CONSTEXPR void eval_left_shift(uintwide_t_backend<MyWidth2, MyLimbType>& result, const IntegralType& n)
+  WIDE_INTEGER_CONSTEXPR auto eval_left_shift(uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& result, const IntegralType& n) -> void
   {
     result.representation() <<= n;
   }
@@ -492,9 +532,10 @@
            const ::math::wide_integer::size_t MyWidth2,
   #endif
            typename MyLimbType,
+           typename MyAllocatorType,
            typename IntegralType,
            typename std::enable_if<(std::is_integral<IntegralType>::value)>::type const* = nullptr>
-  WIDE_INTEGER_CONSTEXPR void eval_right_shift(uintwide_t_backend<MyWidth2, MyLimbType>& result, const IntegralType& n)
+  WIDE_INTEGER_CONSTEXPR auto eval_right_shift(uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& result, const IntegralType& n) -> void
   {
     result.representation() >>= n;
   }
@@ -505,8 +546,9 @@
   #else
            const ::math::wide_integer::size_t MyWidth2,
   #endif
-           typename MyLimbType>
-  WIDE_INTEGER_CONSTEXPR auto eval_lsb(const uintwide_t_backend<MyWidth2, MyLimbType>& a) -> unsigned
+           typename MyLimbType,
+           typename MyAllocatorType>
+  constexpr auto eval_lsb(const uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& a) -> unsigned
   {
     return static_cast<unsigned>(lsb(a.crepresentation()));
   }
@@ -517,8 +559,9 @@
   #else
            const ::math::wide_integer::size_t MyWidth2,
   #endif
-           typename MyLimbType>
-  WIDE_INTEGER_CONSTEXPR auto eval_msb(const uintwide_t_backend<MyWidth2, MyLimbType>& a) -> unsigned
+           typename MyLimbType,
+           typename MyAllocatorType>
+  constexpr auto eval_msb(const uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& a) -> unsigned
   {
     return static_cast<unsigned>(msb(a.crepresentation()));
   }
@@ -529,8 +572,9 @@
   #else
            const ::math::wide_integer::size_t MyWidth2,
   #endif
-           typename MyLimbType>
-  WIDE_INTEGER_CONSTEXPR auto eval_eq(const uintwide_t_backend<MyWidth2, MyLimbType>& a, const uintwide_t_backend<MyWidth2, MyLimbType>& b) -> bool
+           typename MyLimbType,
+           typename MyAllocatorType>
+  constexpr auto eval_eq(const uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& a, const uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& b) -> bool
   {
     return (a.compare(b) == 0);
   }
@@ -542,9 +586,10 @@
            const ::math::wide_integer::size_t MyWidth2,
   #endif
            typename MyLimbType,
+           typename MyAllocatorType,
            typename ArithmeticType,
            typename std::enable_if<(std::is_arithmetic <ArithmeticType>::value)>::type const* = nullptr>
-  WIDE_INTEGER_CONSTEXPR auto eval_eq(const uintwide_t_backend<MyWidth2, MyLimbType>& a, const ArithmeticType& b) -> bool
+  constexpr auto eval_eq(const uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& a, const ArithmeticType& b) -> bool
   {
     return (a.compare(b) == 0);
   }
@@ -556,11 +601,12 @@
            const ::math::wide_integer::size_t MyWidth2,
   #endif
            typename MyLimbType,
+           typename MyAllocatorType,
            typename ArithmeticType,
            typename std::enable_if<(std::is_arithmetic <ArithmeticType>::value)>::type const* = nullptr>
-  WIDE_INTEGER_CONSTEXPR auto eval_eq(const ArithmeticType& a, const uintwide_t_backend<MyWidth2, MyLimbType>& b) -> bool
+  constexpr auto eval_eq(const ArithmeticType& a, const uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& b) -> bool
   {
-    return (uintwide_t_backend<MyWidth2, MyLimbType>(a).compare(b) == 0);
+    return (uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>(a).compare(b) == 0);
   }
 
   template<
@@ -569,8 +615,9 @@
   #else
            const ::math::wide_integer::size_t MyWidth2,
   #endif
-           typename MyLimbType>
-  WIDE_INTEGER_CONSTEXPR auto eval_gt(const uintwide_t_backend<MyWidth2, MyLimbType>& a, const uintwide_t_backend<MyWidth2, MyLimbType>& b) -> bool
+           typename MyLimbType,
+           typename MyAllocatorType>
+  constexpr auto eval_gt(const uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& a, const uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& b) -> bool
   {
     return (a.compare(b) == 1);
   }
@@ -582,9 +629,10 @@
            const ::math::wide_integer::size_t MyWidth2,
   #endif
            typename MyLimbType,
+           typename MyAllocatorType,
            typename ArithmeticType,
            typename std::enable_if<(std::is_arithmetic <ArithmeticType>::value)>::type const* = nullptr>
-  WIDE_INTEGER_CONSTEXPR auto eval_gt(const uintwide_t_backend<MyWidth2, MyLimbType>& a, const ArithmeticType& b) -> bool
+  constexpr auto eval_gt(const uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& a, const ArithmeticType& b) -> bool
   {
     return (a.compare(b) == 1);
   }
@@ -596,11 +644,12 @@
            const ::math::wide_integer::size_t MyWidth2,
   #endif
            typename MyLimbType,
+           typename MyAllocatorType,
            typename ArithmeticType,
            typename std::enable_if<(std::is_arithmetic <ArithmeticType>::value)>::type const* = nullptr>
-  WIDE_INTEGER_CONSTEXPR auto eval_gt(const ArithmeticType& a, const uintwide_t_backend<MyWidth2, MyLimbType>& b) -> bool
+  constexpr auto eval_gt(const ArithmeticType& a, const uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& b) -> bool
   {
-    return (uintwide_t_backend<MyWidth2, MyLimbType>(a).compare(b) == 1);
+    return (uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>(a).compare(b) == 1);
   }
 
   template<
@@ -609,8 +658,9 @@
   #else
            const ::math::wide_integer::size_t MyWidth2,
   #endif
-           typename MyLimbType>
-  WIDE_INTEGER_CONSTEXPR auto eval_lt(const uintwide_t_backend<MyWidth2, MyLimbType>& a, const uintwide_t_backend<MyWidth2, MyLimbType>& b) -> bool
+           typename MyLimbType,
+           typename MyAllocatorType>
+  constexpr auto eval_lt(const uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& a, const uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& b) -> bool
   {
     return (a.compare(b) == -1);
   }
@@ -622,9 +672,10 @@
            const ::math::wide_integer::size_t MyWidth2,
   #endif
            typename MyLimbType,
+           typename MyAllocatorType,
            typename ArithmeticType,
            typename std::enable_if<(std::is_arithmetic <ArithmeticType>::value)>::type const* = nullptr>
-  WIDE_INTEGER_CONSTEXPR auto eval_lt(const uintwide_t_backend<MyWidth2, MyLimbType>& a, const ArithmeticType& b) -> bool
+  constexpr auto eval_lt(const uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& a, const ArithmeticType& b) -> bool
   {
     return (a.compare(b) == -1);
   }
@@ -636,11 +687,12 @@
            const ::math::wide_integer::size_t MyWidth2,
   #endif
            typename MyLimbType,
+           typename MyAllocatorType,
            typename ArithmeticType,
            typename std::enable_if<(std::is_arithmetic <ArithmeticType>::value)>::type const* = nullptr>
-  WIDE_INTEGER_CONSTEXPR auto eval_lt(const ArithmeticType& a, const uintwide_t_backend<MyWidth2, MyLimbType>& b) -> bool
+  constexpr auto eval_lt(const ArithmeticType& a, const uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& b) -> bool
   {
-    return (uintwide_t_backend<MyWidth2, MyLimbType>(a).compare(b) == -1);
+    return (uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>(a).compare(b) == -1);
   }
 
   template<
@@ -649,8 +701,9 @@
   #else
            const ::math::wide_integer::size_t MyWidth2,
   #endif
-           typename MyLimbType>
-  WIDE_INTEGER_CONSTEXPR auto eval_is_zero(const uintwide_t_backend<MyWidth2, MyLimbType>& x) -> bool
+           typename MyLimbType,
+           typename MyAllocatorType>
+  constexpr auto eval_is_zero(const uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& x) -> bool
   {
     return (x.crepresentation() == 0U);
   }
@@ -661,15 +714,13 @@
   #else
            const ::math::wide_integer::size_t MyWidth2,
   #endif
-           typename MyLimbType>
-  WIDE_INTEGER_CONSTEXPR auto eval_get_sign(const uintwide_t_backend<MyWidth2, MyLimbType>& x) -> int
+           typename MyLimbType,
+           typename MyAllocatorType>
+  constexpr auto eval_get_sign(const uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& x) -> int
   {
-    int n_result { };
-
-    if  (x.crepresentation() == 0U) { n_result = 0; }
-    else                            { n_result = 1; }
-
-    return n_result;
+    return ((x.crepresentation() == 0U)
+             ? 0
+             : ((x.crepresentation() > 0U) ? 1 : -1));
   }
 
   template<
@@ -678,9 +729,10 @@
   #else
            const ::math::wide_integer::size_t MyWidth2,
   #endif
-           typename MyLimbType>
+           typename MyLimbType,
+           typename MyAllocatorType>
   WIDE_INTEGER_CONSTEXPR void eval_convert_to(unsigned long long* result, // NOLINT(google-runtime-int)
-                                              const uintwide_t_backend<MyWidth2, MyLimbType>& val)
+                                              const uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& val)
   {
     *result = static_cast<unsigned long long>(val.crepresentation()); // NOLINT(google-runtime-int)
   }
@@ -691,9 +743,10 @@
   #else
            const ::math::wide_integer::size_t MyWidth2,
   #endif
-           typename MyLimbType>
-  WIDE_INTEGER_CONSTEXPR void eval_convert_to(signed long long* result, // NOLINT(google-runtime-int)
-                                              const uintwide_t_backend<MyWidth2, MyLimbType>& val)
+           typename MyLimbType,
+           typename MyAllocatorType>
+  WIDE_INTEGER_CONSTEXPR auto eval_convert_to(signed long long* result, // NOLINT(google-runtime-int)
+                                              const uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& val) -> void
   {
     *result = static_cast<signed long long>(val.crepresentation()); // NOLINT(google-runtime-int)
   }
@@ -704,9 +757,10 @@
   #else
            const ::math::wide_integer::size_t MyWidth2,
   #endif
-           typename MyLimbType>
-  WIDE_INTEGER_CONSTEXPR void eval_convert_to(long double* result,
-                                              const uintwide_t_backend<MyWidth2, MyLimbType>& val)
+           typename MyLimbType,
+           typename MyAllocatorType>
+  WIDE_INTEGER_CONSTEXPR auto eval_convert_to(long double* result,
+                                              const uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& val) -> void
   {
     *result = static_cast<long double>(val.crepresentation());
   }
@@ -732,9 +786,10 @@
            const ::math::wide_integer::size_t MyWidth2,
   #endif
            typename MyLimbType,
+           typename MyAllocatorType,
            typename ThisPolicy,
            const boost::multiprecision::expression_template_option ExpressionTemplatesOptions>
-  struct precision<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType>,
+  struct precision<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>,
                                                  ExpressionTemplatesOptions>,
                    ThisPolicy>
   {
@@ -770,8 +825,9 @@
              const ::math::wide_integer::size_t MyWidth2,
     #endif
              typename MyLimbType,
+             typename MyAllocatorType,
              const boost::multiprecision::expression_template_option ExpressionTemplatesOptions>
-    class numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType>,
+    class numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>,
                                                        ExpressionTemplatesOptions>>
     {
     public:
@@ -787,15 +843,15 @@
       static constexpr int  max_digits10   = static_cast<int>((MyWidth2 * 301LL) / 1000LL);
 
       #if defined(WIDE_INTEGER_NAMESPACE)
-      static constexpr int max_exponent   = std::numeric_limits<WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<MyWidth2, MyLimbType>>::max_exponent;
-      static constexpr int max_exponent10 = std::numeric_limits<WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<MyWidth2, MyLimbType>>::max_exponent10;
-      static constexpr int min_exponent   = std::numeric_limits<WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<MyWidth2, MyLimbType>>::min_exponent;
-      static constexpr int min_exponent10 = std::numeric_limits<WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<MyWidth2, MyLimbType>>::min_exponent10;
+      static constexpr int max_exponent    = std::numeric_limits<WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<MyWidth2, MyLimbType, MyAllocatorType>>::max_exponent;
+      static constexpr int max_exponent10  = std::numeric_limits<WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<MyWidth2, MyLimbType, MyAllocatorType>>::max_exponent10;
+      static constexpr int min_exponent    = std::numeric_limits<WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<MyWidth2, MyLimbType, MyAllocatorType>>::min_exponent;
+      static constexpr int min_exponent10  = std::numeric_limits<WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<MyWidth2, MyLimbType, MyAllocatorType>>::min_exponent10;
       #else
-      static constexpr int max_exponent   = std::numeric_limits<::math::wide_integer::uintwide_t<MyWidth2, MyLimbType>>::max_exponent;
-      static constexpr int max_exponent10 = std::numeric_limits<::math::wide_integer::uintwide_t<MyWidth2, MyLimbType>>::max_exponent10;
-      static constexpr int min_exponent   = std::numeric_limits<::math::wide_integer::uintwide_t<MyWidth2, MyLimbType>>::min_exponent;
-      static constexpr int min_exponent10 = std::numeric_limits<::math::wide_integer::uintwide_t<MyWidth2, MyLimbType>>::min_exponent10;
+      static constexpr int max_exponent    = std::numeric_limits<::math::wide_integer::uintwide_t<MyWidth2, MyLimbType, MyAllocatorType>>::max_exponent;
+      static constexpr int max_exponent10  = std::numeric_limits<::math::wide_integer::uintwide_t<MyWidth2, MyLimbType, MyAllocatorType>>::max_exponent10;
+      static constexpr int min_exponent    = std::numeric_limits<::math::wide_integer::uintwide_t<MyWidth2, MyLimbType, MyAllocatorType>>::min_exponent;
+      static constexpr int min_exponent10  = std::numeric_limits<::math::wide_integer::uintwide_t<MyWidth2, MyLimbType, MyAllocatorType>>::min_exponent10;
       #endif
 
       static constexpr int                     radix             = 2;
@@ -809,82 +865,82 @@
       static constexpr bool                    tinyness_before   = false;
 
       #if defined(WIDE_INTEGER_NAMESPACE)
-      static WIDE_INTEGER_CONSTEXPR auto (min)        () -> boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType>, ExpressionTemplatesOptions> { return boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType>((std::numeric_limits<WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<MyWidth2, MyLimbType>>::min)()       ); }
-      static WIDE_INTEGER_CONSTEXPR auto (max)        () -> boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType>, ExpressionTemplatesOptions> { return boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType>((std::numeric_limits<WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<MyWidth2, MyLimbType>>::max)()       ); }
-      static WIDE_INTEGER_CONSTEXPR auto lowest       () -> boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType>, ExpressionTemplatesOptions> { return boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType> (std::numeric_limits<WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<MyWidth2, MyLimbType>>::lowest       ); }
-      static WIDE_INTEGER_CONSTEXPR auto epsilon      () -> boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType>, ExpressionTemplatesOptions> { return boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType> (std::numeric_limits<WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<MyWidth2, MyLimbType>>::epsilon      ); }
-      static WIDE_INTEGER_CONSTEXPR auto round_error  () -> boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType>, ExpressionTemplatesOptions> { return boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType> (std::numeric_limits<WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<MyWidth2, MyLimbType>>::round_error  ); }
-      static WIDE_INTEGER_CONSTEXPR auto infinity     () -> boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType>, ExpressionTemplatesOptions> { return boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType> (std::numeric_limits<WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<MyWidth2, MyLimbType>>::infinity     ); }
-      static WIDE_INTEGER_CONSTEXPR auto quiet_NaN    () -> boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType>, ExpressionTemplatesOptions> { return boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType> (std::numeric_limits<WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<MyWidth2, MyLimbType>>::quiet_NaN    ); } // NOLINT(readability-identifier-naming)
-      static WIDE_INTEGER_CONSTEXPR auto signaling_NaN() -> boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType>, ExpressionTemplatesOptions> { return boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType> (std::numeric_limits<WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<MyWidth2, MyLimbType>>::signaling_NaN); } // NOLINT(readability-identifier-naming)
-      static WIDE_INTEGER_CONSTEXPR auto denorm_min   () -> boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType>, ExpressionTemplatesOptions> { return boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType> (std::numeric_limits<WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<MyWidth2, MyLimbType>>::denorm_min   ); }
+      static WIDE_INTEGER_CONSTEXPR auto (min)        () -> boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>, ExpressionTemplatesOptions> { return boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>((std::numeric_limits<WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<MyWidth2, MyLimbType, MyAllocatorType>>::min)()       ); }
+      static WIDE_INTEGER_CONSTEXPR auto (max)        () -> boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>, ExpressionTemplatesOptions> { return boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>((std::numeric_limits<WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<MyWidth2, MyLimbType, MyAllocatorType>>::max)()       ); }
+      static WIDE_INTEGER_CONSTEXPR auto lowest       () -> boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>, ExpressionTemplatesOptions> { return boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType> (std::numeric_limits<WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<MyWidth2, MyLimbType, MyAllocatorType>>::lowest       ); }
+      static WIDE_INTEGER_CONSTEXPR auto epsilon      () -> boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>, ExpressionTemplatesOptions> { return boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType> (std::numeric_limits<WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<MyWidth2, MyLimbType, MyAllocatorType>>::epsilon      ); }
+      static WIDE_INTEGER_CONSTEXPR auto round_error  () -> boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>, ExpressionTemplatesOptions> { return boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType> (std::numeric_limits<WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<MyWidth2, MyLimbType, MyAllocatorType>>::round_error  ); }
+      static WIDE_INTEGER_CONSTEXPR auto infinity     () -> boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>, ExpressionTemplatesOptions> { return boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType> (std::numeric_limits<WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<MyWidth2, MyLimbType, MyAllocatorType>>::infinity     ); }
+      static WIDE_INTEGER_CONSTEXPR auto quiet_NaN    () -> boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>, ExpressionTemplatesOptions> { return boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType> (std::numeric_limits<WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<MyWidth2, MyLimbType, MyAllocatorType>>::quiet_NaN    ); } // NOLINT(readability-identifier-naming)
+      static WIDE_INTEGER_CONSTEXPR auto signaling_NaN() -> boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>, ExpressionTemplatesOptions> { return boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType> (std::numeric_limits<WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<MyWidth2, MyLimbType, MyAllocatorType>>::signaling_NaN); } // NOLINT(readability-identifier-naming)
+      static WIDE_INTEGER_CONSTEXPR auto denorm_min   () -> boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>, ExpressionTemplatesOptions> { return boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType> (std::numeric_limits<WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<MyWidth2, MyLimbType, MyAllocatorType>>::denorm_min   ); }
       #else
-      static WIDE_INTEGER_CONSTEXPR auto (min)        () -> boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType>, ExpressionTemplatesOptions> { return boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType>((std::numeric_limits<::math::wide_integer::uintwide_t<MyWidth2, MyLimbType>>::min)()       ); }
-      static WIDE_INTEGER_CONSTEXPR auto (max)        () -> boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType>, ExpressionTemplatesOptions> { return boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType>((std::numeric_limits<::math::wide_integer::uintwide_t<MyWidth2, MyLimbType>>::max)()       ); }
-      static WIDE_INTEGER_CONSTEXPR auto lowest       () -> boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType>, ExpressionTemplatesOptions> { return boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType> (std::numeric_limits<::math::wide_integer::uintwide_t<MyWidth2, MyLimbType>>::lowest       ); }
-      static WIDE_INTEGER_CONSTEXPR auto epsilon      () -> boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType>, ExpressionTemplatesOptions> { return boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType> (std::numeric_limits<::math::wide_integer::uintwide_t<MyWidth2, MyLimbType>>::epsilon      ); }
-      static WIDE_INTEGER_CONSTEXPR auto round_error  () -> boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType>, ExpressionTemplatesOptions> { return boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType> (std::numeric_limits<::math::wide_integer::uintwide_t<MyWidth2, MyLimbType>>::round_error  ); }
-      static WIDE_INTEGER_CONSTEXPR auto infinity     () -> boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType>, ExpressionTemplatesOptions> { return boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType> (std::numeric_limits<::math::wide_integer::uintwide_t<MyWidth2, MyLimbType>>::infinity     ); }
-      static WIDE_INTEGER_CONSTEXPR auto quiet_NaN    () -> boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType>, ExpressionTemplatesOptions> { return boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType> (std::numeric_limits<::math::wide_integer::uintwide_t<MyWidth2, MyLimbType>>::quiet_NaN    ); } // NOLINT(readability-identifier-naming)
-      static WIDE_INTEGER_CONSTEXPR auto signaling_NaN() -> boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType>, ExpressionTemplatesOptions> { return boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType> (std::numeric_limits<::math::wide_integer::uintwide_t<MyWidth2, MyLimbType>>::signaling_NaN); } // NOLINT(readability-identifier-naming)
-      static WIDE_INTEGER_CONSTEXPR auto denorm_min   () -> boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType>, ExpressionTemplatesOptions> { return boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType> (std::numeric_limits<::math::wide_integer::uintwide_t<MyWidth2, MyLimbType>>::denorm_min   ); }
+      static WIDE_INTEGER_CONSTEXPR auto (min)        () -> boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>, ExpressionTemplatesOptions> { return boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>((std::numeric_limits<::math::wide_integer::uintwide_t<MyWidth2, MyLimbType, MyAllocatorType>>::min)()       ); }
+      static WIDE_INTEGER_CONSTEXPR auto (max)        () -> boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>, ExpressionTemplatesOptions> { return boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>((std::numeric_limits<::math::wide_integer::uintwide_t<MyWidth2, MyLimbType, MyAllocatorType>>::max)()       ); }
+      static WIDE_INTEGER_CONSTEXPR auto lowest       () -> boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>, ExpressionTemplatesOptions> { return boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType> (std::numeric_limits<::math::wide_integer::uintwide_t<MyWidth2, MyLimbType, MyAllocatorType>>::lowest       ); }
+      static WIDE_INTEGER_CONSTEXPR auto epsilon      () -> boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>, ExpressionTemplatesOptions> { return boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType> (std::numeric_limits<::math::wide_integer::uintwide_t<MyWidth2, MyLimbType, MyAllocatorType>>::epsilon      ); }
+      static WIDE_INTEGER_CONSTEXPR auto round_error  () -> boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>, ExpressionTemplatesOptions> { return boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType> (std::numeric_limits<::math::wide_integer::uintwide_t<MyWidth2, MyLimbType, MyAllocatorType>>::round_error  ); }
+      static WIDE_INTEGER_CONSTEXPR auto infinity     () -> boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>, ExpressionTemplatesOptions> { return boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType> (std::numeric_limits<::math::wide_integer::uintwide_t<MyWidth2, MyLimbType, MyAllocatorType>>::infinity     ); }
+      static WIDE_INTEGER_CONSTEXPR auto quiet_NaN    () -> boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>, ExpressionTemplatesOptions> { return boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType> (std::numeric_limits<::math::wide_integer::uintwide_t<MyWidth2, MyLimbType, MyAllocatorType>>::quiet_NaN    ); } // NOLINT(readability-identifier-naming)
+      static WIDE_INTEGER_CONSTEXPR auto signaling_NaN() -> boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>, ExpressionTemplatesOptions> { return boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType> (std::numeric_limits<::math::wide_integer::uintwide_t<MyWidth2, MyLimbType, MyAllocatorType>>::signaling_NaN); } // NOLINT(readability-identifier-naming)
+      static WIDE_INTEGER_CONSTEXPR auto denorm_min   () -> boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>, ExpressionTemplatesOptions> { return boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType> (std::numeric_limits<::math::wide_integer::uintwide_t<MyWidth2, MyLimbType, MyAllocatorType>>::denorm_min   ); }
       #endif
     };
 
     #ifndef BOOST_NO_INCLASS_MEMBER_INITIALIZATION
 
     #if defined(WIDE_INTEGER_NAMESPACE)
-    template<const WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t MyWidth2, typename MyLimbType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr bool std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType>, ExpressionTemplatesOptions>>::is_specialized; // NOLINT(readability-redundant-declaration)
-    template<const WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t MyWidth2, typename MyLimbType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr bool std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType>, ExpressionTemplatesOptions>>::is_signed;      // NOLINT(readability-redundant-declaration)
-    template<const WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t MyWidth2, typename MyLimbType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr bool std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType>, ExpressionTemplatesOptions>>::is_integer;     // NOLINT(readability-redundant-declaration)
-    template<const WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t MyWidth2, typename MyLimbType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr bool std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType>, ExpressionTemplatesOptions>>::is_exact;       // NOLINT(readability-redundant-declaration)
-    template<const WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t MyWidth2, typename MyLimbType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr bool std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType>, ExpressionTemplatesOptions>>::is_bounded;     // NOLINT(readability-redundant-declaration)
-    template<const WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t MyWidth2, typename MyLimbType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr bool std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType>, ExpressionTemplatesOptions>>::is_modulo;      // NOLINT(readability-redundant-declaration)
-    template<const WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t MyWidth2, typename MyLimbType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr bool std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType>, ExpressionTemplatesOptions>>::is_iec559;      // NOLINT(readability-redundant-declaration)
-    template<const WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t MyWidth2, typename MyLimbType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr int  std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType>, ExpressionTemplatesOptions>>::digits;         // NOLINT(readability-redundant-declaration)
-    template<const WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t MyWidth2, typename MyLimbType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr int  std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType>, ExpressionTemplatesOptions>>::digits10;       // NOLINT(readability-redundant-declaration)
-    template<const WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t MyWidth2, typename MyLimbType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr int  std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType>, ExpressionTemplatesOptions>>::max_digits10;   // NOLINT(readability-redundant-declaration)
+    template<const WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t MyWidth2, typename MyLimbType, typename MyAllocatorType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr bool std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>, ExpressionTemplatesOptions>>::is_specialized; // NOLINT(readability-redundant-declaration)
+    template<const WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t MyWidth2, typename MyLimbType, typename MyAllocatorType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr bool std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>, ExpressionTemplatesOptions>>::is_signed;      // NOLINT(readability-redundant-declaration)
+    template<const WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t MyWidth2, typename MyLimbType, typename MyAllocatorType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr bool std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>, ExpressionTemplatesOptions>>::is_integer;     // NOLINT(readability-redundant-declaration)
+    template<const WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t MyWidth2, typename MyLimbType, typename MyAllocatorType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr bool std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>, ExpressionTemplatesOptions>>::is_exact;       // NOLINT(readability-redundant-declaration)
+    template<const WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t MyWidth2, typename MyLimbType, typename MyAllocatorType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr bool std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>, ExpressionTemplatesOptions>>::is_bounded;     // NOLINT(readability-redundant-declaration)
+    template<const WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t MyWidth2, typename MyLimbType, typename MyAllocatorType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr bool std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>, ExpressionTemplatesOptions>>::is_modulo;      // NOLINT(readability-redundant-declaration)
+    template<const WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t MyWidth2, typename MyLimbType, typename MyAllocatorType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr bool std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>, ExpressionTemplatesOptions>>::is_iec559;      // NOLINT(readability-redundant-declaration)
+    template<const WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t MyWidth2, typename MyLimbType, typename MyAllocatorType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr int  std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>, ExpressionTemplatesOptions>>::digits;         // NOLINT(readability-redundant-declaration)
+    template<const WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t MyWidth2, typename MyLimbType, typename MyAllocatorType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr int  std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>, ExpressionTemplatesOptions>>::digits10;       // NOLINT(readability-redundant-declaration)
+    template<const WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t MyWidth2, typename MyLimbType, typename MyAllocatorType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr int  std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>, ExpressionTemplatesOptions>>::max_digits10;   // NOLINT(readability-redundant-declaration)
 
-    template<const WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t MyWidth2, typename MyLimbType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr int std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType>, ExpressionTemplatesOptions>>::max_exponent;   // NOLINT(readability-redundant-declaration)
-    template<const WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t MyWidth2, typename MyLimbType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr int std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType>, ExpressionTemplatesOptions>>::max_exponent10; // NOLINT(readability-redundant-declaration)
-    template<const WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t MyWidth2, typename MyLimbType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr int std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType>, ExpressionTemplatesOptions>>::min_exponent;   // NOLINT(readability-redundant-declaration)
-    template<const WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t MyWidth2, typename MyLimbType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr int std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType>, ExpressionTemplatesOptions>>::min_exponent10; // NOLINT(readability-redundant-declaration)
+    template<const WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t MyWidth2, typename MyLimbType, typename MyAllocatorType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr int std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>, ExpressionTemplatesOptions>>::max_exponent;   // NOLINT(readability-redundant-declaration)
+    template<const WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t MyWidth2, typename MyLimbType, typename MyAllocatorType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr int std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>, ExpressionTemplatesOptions>>::max_exponent10; // NOLINT(readability-redundant-declaration)
+    template<const WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t MyWidth2, typename MyLimbType, typename MyAllocatorType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr int std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>, ExpressionTemplatesOptions>>::min_exponent;   // NOLINT(readability-redundant-declaration)
+    template<const WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t MyWidth2, typename MyLimbType, typename MyAllocatorType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr int std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>, ExpressionTemplatesOptions>>::min_exponent10; // NOLINT(readability-redundant-declaration)
 
-    template<const WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t MyWidth2, typename MyLimbType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr int                     std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType>, ExpressionTemplatesOptions>>::radix;             // NOLINT(readability-redundant-declaration)
-    template<const WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t MyWidth2, typename MyLimbType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr std::float_round_style  std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType>, ExpressionTemplatesOptions>>::round_style;       // NOLINT(readability-redundant-declaration)
-    template<const WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t MyWidth2, typename MyLimbType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr bool                    std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType>, ExpressionTemplatesOptions>>::has_infinity;      // NOLINT(readability-redundant-declaration)
-    template<const WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t MyWidth2, typename MyLimbType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr bool                    std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType>, ExpressionTemplatesOptions>>::has_quiet_NaN;     // NOLINT(readability-redundant-declaration)
-    template<const WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t MyWidth2, typename MyLimbType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr bool                    std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType>, ExpressionTemplatesOptions>>::has_signaling_NaN; // NOLINT(readability-redundant-declaration)
-    template<const WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t MyWidth2, typename MyLimbType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr std::float_denorm_style std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType>, ExpressionTemplatesOptions>>::has_denorm;        // NOLINT(readability-redundant-declaration)
-    template<const WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t MyWidth2, typename MyLimbType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr bool                    std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType>, ExpressionTemplatesOptions>>::has_denorm_loss;   // NOLINT(readability-redundant-declaration)
-    template<const WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t MyWidth2, typename MyLimbType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr bool                    std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType>, ExpressionTemplatesOptions>>::traps;             // NOLINT(readability-redundant-declaration)
-    template<const WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t MyWidth2, typename MyLimbType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr bool                    std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType>, ExpressionTemplatesOptions>>::tinyness_before;   // NOLINT(readability-redundant-declaration)
+    template<const WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t MyWidth2, typename MyLimbType, typename MyAllocatorType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr int                     std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>, ExpressionTemplatesOptions>>::radix;             // NOLINT(readability-redundant-declaration)
+    template<const WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t MyWidth2, typename MyLimbType, typename MyAllocatorType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr std::float_round_style  std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>, ExpressionTemplatesOptions>>::round_style;       // NOLINT(readability-redundant-declaration)
+    template<const WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t MyWidth2, typename MyLimbType, typename MyAllocatorType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr bool                    std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>, ExpressionTemplatesOptions>>::has_infinity;      // NOLINT(readability-redundant-declaration)
+    template<const WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t MyWidth2, typename MyLimbType, typename MyAllocatorType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr bool                    std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>, ExpressionTemplatesOptions>>::has_quiet_NaN;     // NOLINT(readability-redundant-declaration)
+    template<const WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t MyWidth2, typename MyLimbType, typename MyAllocatorType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr bool                    std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>, ExpressionTemplatesOptions>>::has_signaling_NaN; // NOLINT(readability-redundant-declaration)
+    template<const WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t MyWidth2, typename MyLimbType, typename MyAllocatorType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr std::float_denorm_style std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>, ExpressionTemplatesOptions>>::has_denorm;        // NOLINT(readability-redundant-declaration)
+    template<const WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t MyWidth2, typename MyLimbType, typename MyAllocatorType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr bool                    std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>, ExpressionTemplatesOptions>>::has_denorm_loss;   // NOLINT(readability-redundant-declaration)
+    template<const WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t MyWidth2, typename MyLimbType, typename MyAllocatorType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr bool                    std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>, ExpressionTemplatesOptions>>::traps;             // NOLINT(readability-redundant-declaration)
+    template<const WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t MyWidth2, typename MyLimbType, typename MyAllocatorType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr bool                    std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>, ExpressionTemplatesOptions>>::tinyness_before;   // NOLINT(readability-redundant-declaration)
     #else
-    template<const ::math::wide_integer::size_t MyWidth2, typename MyLimbType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr bool std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType>, ExpressionTemplatesOptions>>::is_specialized; // NOLINT(readability-redundant-declaration)
-    template<const ::math::wide_integer::size_t MyWidth2, typename MyLimbType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr bool std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType>, ExpressionTemplatesOptions>>::is_signed;      // NOLINT(readability-redundant-declaration)
-    template<const ::math::wide_integer::size_t MyWidth2, typename MyLimbType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr bool std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType>, ExpressionTemplatesOptions>>::is_integer;     // NOLINT(readability-redundant-declaration)
-    template<const ::math::wide_integer::size_t MyWidth2, typename MyLimbType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr bool std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType>, ExpressionTemplatesOptions>>::is_exact;       // NOLINT(readability-redundant-declaration)
-    template<const ::math::wide_integer::size_t MyWidth2, typename MyLimbType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr bool std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType>, ExpressionTemplatesOptions>>::is_bounded;     // NOLINT(readability-redundant-declaration)
-    template<const ::math::wide_integer::size_t MyWidth2, typename MyLimbType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr bool std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType>, ExpressionTemplatesOptions>>::is_modulo;      // NOLINT(readability-redundant-declaration)
-    template<const ::math::wide_integer::size_t MyWidth2, typename MyLimbType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr bool std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType>, ExpressionTemplatesOptions>>::is_iec559;      // NOLINT(readability-redundant-declaration)
-    template<const ::math::wide_integer::size_t MyWidth2, typename MyLimbType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr int  std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType>, ExpressionTemplatesOptions>>::digits;         // NOLINT(readability-redundant-declaration)
-    template<const ::math::wide_integer::size_t MyWidth2, typename MyLimbType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr int  std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType>, ExpressionTemplatesOptions>>::digits10;       // NOLINT(readability-redundant-declaration)
-    template<const ::math::wide_integer::size_t MyWidth2, typename MyLimbType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr int  std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType>, ExpressionTemplatesOptions>>::max_digits10;   // NOLINT(readability-redundant-declaration)
+    template<const ::math::wide_integer::size_t MyWidth2, typename MyLimbType, typename MyAllocatorType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr bool std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>, ExpressionTemplatesOptions>>::is_specialized; // NOLINT(readability-redundant-declaration)
+    template<const ::math::wide_integer::size_t MyWidth2, typename MyLimbType, typename MyAllocatorType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr bool std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>, ExpressionTemplatesOptions>>::is_signed;      // NOLINT(readability-redundant-declaration)
+    template<const ::math::wide_integer::size_t MyWidth2, typename MyLimbType, typename MyAllocatorType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr bool std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>, ExpressionTemplatesOptions>>::is_integer;     // NOLINT(readability-redundant-declaration)
+    template<const ::math::wide_integer::size_t MyWidth2, typename MyLimbType, typename MyAllocatorType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr bool std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>, ExpressionTemplatesOptions>>::is_exact;       // NOLINT(readability-redundant-declaration)
+    template<const ::math::wide_integer::size_t MyWidth2, typename MyLimbType, typename MyAllocatorType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr bool std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>, ExpressionTemplatesOptions>>::is_bounded;     // NOLINT(readability-redundant-declaration)
+    template<const ::math::wide_integer::size_t MyWidth2, typename MyLimbType, typename MyAllocatorType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr bool std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>, ExpressionTemplatesOptions>>::is_modulo;      // NOLINT(readability-redundant-declaration)
+    template<const ::math::wide_integer::size_t MyWidth2, typename MyLimbType, typename MyAllocatorType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr bool std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>, ExpressionTemplatesOptions>>::is_iec559;      // NOLINT(readability-redundant-declaration)
+    template<const ::math::wide_integer::size_t MyWidth2, typename MyLimbType, typename MyAllocatorType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr int  std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>, ExpressionTemplatesOptions>>::digits;         // NOLINT(readability-redundant-declaration)
+    template<const ::math::wide_integer::size_t MyWidth2, typename MyLimbType, typename MyAllocatorType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr int  std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>, ExpressionTemplatesOptions>>::digits10;       // NOLINT(readability-redundant-declaration)
+    template<const ::math::wide_integer::size_t MyWidth2, typename MyLimbType, typename MyAllocatorType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr int  std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>, ExpressionTemplatesOptions>>::max_digits10;   // NOLINT(readability-redundant-declaration)
 
-    template<const ::math::wide_integer::size_t MyWidth2, typename MyLimbType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr int std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType>, ExpressionTemplatesOptions>>::max_exponent;    // NOLINT(readability-redundant-declaration)
-    template<const ::math::wide_integer::size_t MyWidth2, typename MyLimbType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr int std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType>, ExpressionTemplatesOptions>>::max_exponent10;  // NOLINT(readability-redundant-declaration)
-    template<const ::math::wide_integer::size_t MyWidth2, typename MyLimbType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr int std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType>, ExpressionTemplatesOptions>>::min_exponent;    // NOLINT(readability-redundant-declaration)
-    template<const ::math::wide_integer::size_t MyWidth2, typename MyLimbType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr int std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType>, ExpressionTemplatesOptions>>::min_exponent10;  // NOLINT(readability-redundant-declaration)
+    template<const ::math::wide_integer::size_t MyWidth2, typename MyLimbType, typename MyAllocatorType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr int std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>, ExpressionTemplatesOptions>>::max_exponent;    // NOLINT(readability-redundant-declaration)
+    template<const ::math::wide_integer::size_t MyWidth2, typename MyLimbType, typename MyAllocatorType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr int std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>, ExpressionTemplatesOptions>>::max_exponent10;  // NOLINT(readability-redundant-declaration)
+    template<const ::math::wide_integer::size_t MyWidth2, typename MyLimbType, typename MyAllocatorType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr int std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>, ExpressionTemplatesOptions>>::min_exponent;    // NOLINT(readability-redundant-declaration)
+    template<const ::math::wide_integer::size_t MyWidth2, typename MyLimbType, typename MyAllocatorType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr int std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>, ExpressionTemplatesOptions>>::min_exponent10;  // NOLINT(readability-redundant-declaration)
 
-    template<const ::math::wide_integer::size_t MyWidth2, typename MyLimbType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr int                     std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType>, ExpressionTemplatesOptions>>::radix;             // NOLINT(readability-redundant-declaration)
-    template<const ::math::wide_integer::size_t MyWidth2, typename MyLimbType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr std::float_round_style  std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType>, ExpressionTemplatesOptions>>::round_style;       // NOLINT(readability-redundant-declaration)
-    template<const ::math::wide_integer::size_t MyWidth2, typename MyLimbType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr bool                    std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType>, ExpressionTemplatesOptions>>::has_infinity;      // NOLINT(readability-redundant-declaration)
-    template<const ::math::wide_integer::size_t MyWidth2, typename MyLimbType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr bool                    std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType>, ExpressionTemplatesOptions>>::has_quiet_NaN;     // NOLINT(readability-redundant-declaration)
-    template<const ::math::wide_integer::size_t MyWidth2, typename MyLimbType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr bool                    std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType>, ExpressionTemplatesOptions>>::has_signaling_NaN; // NOLINT(readability-redundant-declaration)
-    template<const ::math::wide_integer::size_t MyWidth2, typename MyLimbType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr std::float_denorm_style std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType>, ExpressionTemplatesOptions>>::has_denorm;        // NOLINT(readability-redundant-declaration)
-    template<const ::math::wide_integer::size_t MyWidth2, typename MyLimbType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr bool                    std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType>, ExpressionTemplatesOptions>>::has_denorm_loss;   // NOLINT(readability-redundant-declaration)
-    template<const ::math::wide_integer::size_t MyWidth2, typename MyLimbType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr bool                    std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType>, ExpressionTemplatesOptions>>::traps;             // NOLINT(readability-redundant-declaration)
-    template<const ::math::wide_integer::size_t MyWidth2, typename MyLimbType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr bool                    std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType>, ExpressionTemplatesOptions>>::tinyness_before;   // NOLINT(readability-redundant-declaration)
+    template<const ::math::wide_integer::size_t MyWidth2, typename MyLimbType, typename MyAllocatorType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr int                     std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>, ExpressionTemplatesOptions>>::radix;             // NOLINT(readability-redundant-declaration)
+    template<const ::math::wide_integer::size_t MyWidth2, typename MyLimbType, typename MyAllocatorType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr std::float_round_style  std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>, ExpressionTemplatesOptions>>::round_style;       // NOLINT(readability-redundant-declaration)
+    template<const ::math::wide_integer::size_t MyWidth2, typename MyLimbType, typename MyAllocatorType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr bool                    std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>, ExpressionTemplatesOptions>>::has_infinity;      // NOLINT(readability-redundant-declaration)
+    template<const ::math::wide_integer::size_t MyWidth2, typename MyLimbType, typename MyAllocatorType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr bool                    std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>, ExpressionTemplatesOptions>>::has_quiet_NaN;     // NOLINT(readability-redundant-declaration)
+    template<const ::math::wide_integer::size_t MyWidth2, typename MyLimbType, typename MyAllocatorType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr bool                    std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>, ExpressionTemplatesOptions>>::has_signaling_NaN; // NOLINT(readability-redundant-declaration)
+    template<const ::math::wide_integer::size_t MyWidth2, typename MyLimbType, typename MyAllocatorType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr std::float_denorm_style std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>, ExpressionTemplatesOptions>>::has_denorm;        // NOLINT(readability-redundant-declaration)
+    template<const ::math::wide_integer::size_t MyWidth2, typename MyLimbType, typename MyAllocatorType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr bool                    std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>, ExpressionTemplatesOptions>>::has_denorm_loss;   // NOLINT(readability-redundant-declaration)
+    template<const ::math::wide_integer::size_t MyWidth2, typename MyLimbType, typename MyAllocatorType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr bool                    std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>, ExpressionTemplatesOptions>>::traps;             // NOLINT(readability-redundant-declaration)
+    template<const ::math::wide_integer::size_t MyWidth2, typename MyLimbType, typename MyAllocatorType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr bool                    std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>, ExpressionTemplatesOptions>>::tinyness_before;   // NOLINT(readability-redundant-declaration)
     #endif
 
     #endif // !BOOST_NO_INCLASS_MEMBER_INITIALIZATION
