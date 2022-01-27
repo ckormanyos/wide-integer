@@ -121,9 +121,11 @@
 
     constexpr uintwide_t_backend() : m_value() { }
 
-    explicit constexpr uintwide_t_backend(const representation_type& rep) : m_value(rep) { }
+    explicit constexpr uintwide_t_backend(const representation_type& rep) : m_value(std::move(rep)) { }
 
     constexpr uintwide_t_backend(const uintwide_t_backend& other) : m_value(other.m_value) { }
+
+    constexpr uintwide_t_backend(uintwide_t_backend&& other) noexcept : m_value(static_cast<representation_type&&>(other.m_value)) { }
 
     template<typename UnsignedIntegralType,
              typename std::enable_if<(   (std::is_integral<UnsignedIntegralType>::value)
@@ -155,6 +157,13 @@
       return *this;
     }
 
+    WIDE_INTEGER_CONSTEXPR auto operator=(uintwide_t_backend&& other) noexcept -> uintwide_t_backend&
+    {
+      m_value = static_cast<representation_type&&>(other.m_value);
+
+      return *this;
+    }
+
     template<typename ArithmeticType,
              typename std::enable_if<std::is_arithmetic<ArithmeticType>::value>::type const* = nullptr>
     WIDE_INTEGER_CONSTEXPR auto operator=(const ArithmeticType& x) -> uintwide_t_backend&
@@ -167,7 +176,12 @@
     WIDE_INTEGER_CONSTEXPR auto operator=(const std::string& str_rep)  -> uintwide_t_backend& { m_value = representation_type(str_rep);  return *this; }
     WIDE_INTEGER_CONSTEXPR auto operator=(const char*        char_ptr) -> uintwide_t_backend& { m_value = representation_type(char_ptr); return *this; }
 
-    WIDE_INTEGER_CONSTEXPR void swap(uintwide_t_backend& other_mp_cpp_backend)
+    WIDE_INTEGER_CONSTEXPR auto swap(uintwide_t_backend& other_mp_cpp_backend) -> void
+    {
+      m_value.representation().swap(other_mp_cpp_backend.m_value.representation());
+    }
+
+    WIDE_INTEGER_CONSTEXPR auto swap(uintwide_t_backend&& other_mp_cpp_backend) -> void
     {
       m_value.representation().swap(other_mp_cpp_backend.m_value.representation());
     }
@@ -178,7 +192,7 @@
 
     WIDE_INTEGER_NODISCARD auto str(std::streamsize number_of_digits, const std::ios::fmtflags format_flags) const -> std::string
     {
-      (void) number_of_digits;
+      static_cast<void>(number_of_digits);
 
       // TBD: Use a mechanism similar to the one used in the uintwide_t class for this array type.
 
@@ -227,7 +241,7 @@
   #endif
            typename MyLimbType,
            typename MyAllocatorType>
-  WIDE_INTEGER_CONSTEXPR void eval_add(uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& result, const uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& x)
+  WIDE_INTEGER_CONSTEXPR auto eval_add(uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& result, const uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& x) -> void
   {
     result.representation() += x.crepresentation();
   }
@@ -534,7 +548,7 @@
   #endif
            typename MyLimbType,
            typename MyAllocatorType>
-  WIDE_INTEGER_CONSTEXPR auto eval_lsb(const uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& a) -> unsigned
+  constexpr auto eval_lsb(const uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& a) -> unsigned
   {
     return static_cast<unsigned>(lsb(a.crepresentation()));
   }
@@ -547,7 +561,7 @@
   #endif
            typename MyLimbType,
            typename MyAllocatorType>
-  WIDE_INTEGER_CONSTEXPR auto eval_msb(const uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& a) -> unsigned
+  constexpr auto eval_msb(const uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& a) -> unsigned
   {
     return static_cast<unsigned>(msb(a.crepresentation()));
   }
@@ -560,7 +574,7 @@
   #endif
            typename MyLimbType,
            typename MyAllocatorType>
-  WIDE_INTEGER_CONSTEXPR auto eval_eq(const uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& a, const uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& b) -> bool
+  constexpr auto eval_eq(const uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& a, const uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& b) -> bool
   {
     return (a.compare(b) == 0);
   }
@@ -575,7 +589,7 @@
            typename MyAllocatorType,
            typename ArithmeticType,
            typename std::enable_if<(std::is_arithmetic <ArithmeticType>::value)>::type const* = nullptr>
-  WIDE_INTEGER_CONSTEXPR auto eval_eq(const uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& a, const ArithmeticType& b) -> bool
+  constexpr auto eval_eq(const uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& a, const ArithmeticType& b) -> bool
   {
     return (a.compare(b) == 0);
   }
@@ -590,7 +604,7 @@
            typename MyAllocatorType,
            typename ArithmeticType,
            typename std::enable_if<(std::is_arithmetic <ArithmeticType>::value)>::type const* = nullptr>
-  WIDE_INTEGER_CONSTEXPR auto eval_eq(const ArithmeticType& a, const uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& b) -> bool
+  constexpr auto eval_eq(const ArithmeticType& a, const uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& b) -> bool
   {
     return (uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>(a).compare(b) == 0);
   }
@@ -603,7 +617,7 @@
   #endif
            typename MyLimbType,
            typename MyAllocatorType>
-  WIDE_INTEGER_CONSTEXPR auto eval_gt(const uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& a, const uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& b) -> bool
+  constexpr auto eval_gt(const uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& a, const uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& b) -> bool
   {
     return (a.compare(b) == 1);
   }
@@ -618,7 +632,7 @@
            typename MyAllocatorType,
            typename ArithmeticType,
            typename std::enable_if<(std::is_arithmetic <ArithmeticType>::value)>::type const* = nullptr>
-  WIDE_INTEGER_CONSTEXPR auto eval_gt(const uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& a, const ArithmeticType& b) -> bool
+  constexpr auto eval_gt(const uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& a, const ArithmeticType& b) -> bool
   {
     return (a.compare(b) == 1);
   }
@@ -633,7 +647,7 @@
            typename MyAllocatorType,
            typename ArithmeticType,
            typename std::enable_if<(std::is_arithmetic <ArithmeticType>::value)>::type const* = nullptr>
-  WIDE_INTEGER_CONSTEXPR auto eval_gt(const ArithmeticType& a, const uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& b) -> bool
+  constexpr auto eval_gt(const ArithmeticType& a, const uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& b) -> bool
   {
     return (uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>(a).compare(b) == 1);
   }
@@ -646,7 +660,7 @@
   #endif
            typename MyLimbType,
            typename MyAllocatorType>
-  WIDE_INTEGER_CONSTEXPR auto eval_lt(const uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& a, const uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& b) -> bool
+  constexpr auto eval_lt(const uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& a, const uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& b) -> bool
   {
     return (a.compare(b) == -1);
   }
@@ -661,7 +675,7 @@
            typename MyAllocatorType,
            typename ArithmeticType,
            typename std::enable_if<(std::is_arithmetic <ArithmeticType>::value)>::type const* = nullptr>
-  WIDE_INTEGER_CONSTEXPR auto eval_lt(const uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& a, const ArithmeticType& b) -> bool
+  constexpr auto eval_lt(const uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& a, const ArithmeticType& b) -> bool
   {
     return (a.compare(b) == -1);
   }
@@ -676,7 +690,7 @@
            typename MyAllocatorType,
            typename ArithmeticType,
            typename std::enable_if<(std::is_arithmetic <ArithmeticType>::value)>::type const* = nullptr>
-  WIDE_INTEGER_CONSTEXPR auto eval_lt(const ArithmeticType& a, const uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& b) -> bool
+  constexpr auto eval_lt(const ArithmeticType& a, const uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& b) -> bool
   {
     return (uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>(a).compare(b) == -1);
   }
@@ -689,7 +703,7 @@
   #endif
            typename MyLimbType,
            typename MyAllocatorType>
-  WIDE_INTEGER_CONSTEXPR auto eval_is_zero(const uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& x) -> bool
+  constexpr auto eval_is_zero(const uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& x) -> bool
   {
     return (x.crepresentation() == 0U);
   }
@@ -702,14 +716,11 @@
   #endif
            typename MyLimbType,
            typename MyAllocatorType>
-  WIDE_INTEGER_CONSTEXPR auto eval_get_sign(const uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& x) -> int
+  constexpr auto eval_get_sign(const uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& x) -> int
   {
-    int n_result { };
-
-    if  (x.crepresentation() == 0U) { n_result = 0; }
-    else                            { n_result = 1; }
-
-    return n_result;
+    return ((x.crepresentation() == 0U)
+             ? 0
+             : ((x.crepresentation() > 0U) ? 1 : -1));
   }
 
   template<
