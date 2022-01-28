@@ -1,4 +1,4 @@
-///////////////////////////////////////////////////////////////////
+﻿///////////////////////////////////////////////////////////////////
 //  Copyright Christopher Kormanyos 2019 - 2022.                 //
 //  Distributed under the Boost Software License,                //
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt          //
@@ -176,14 +176,9 @@
     WIDE_INTEGER_CONSTEXPR auto operator=(const std::string& str_rep)  -> uintwide_t_backend& { m_value = representation_type(str_rep);  return *this; }
     WIDE_INTEGER_CONSTEXPR auto operator=(const char*        char_ptr) -> uintwide_t_backend& { m_value = representation_type(char_ptr); return *this; }
 
-    WIDE_INTEGER_CONSTEXPR auto swap(uintwide_t_backend& other_mp_cpp_backend) -> void
+    WIDE_INTEGER_CONSTEXPR auto swap(uintwide_t_backend& other) -> void
     {
-      m_value.representation().swap(other_mp_cpp_backend.m_value.representation());
-    }
-
-    WIDE_INTEGER_CONSTEXPR auto swap(uintwide_t_backend&& other_mp_cpp_backend) -> void
-    {
-      m_value.representation().swap(other_mp_cpp_backend.m_value.representation());
+      m_value.representation().swap(other.m_value.representation());
     }
 
                            WIDE_INTEGER_CONSTEXPR auto  representation()       ->       representation_type& { return m_value; }
@@ -705,7 +700,7 @@
            typename MyAllocatorType>
   constexpr auto eval_is_zero(const uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& x) -> bool
   {
-    return (x.crepresentation() == 0U);
+    return (x.crepresentation().is_zero());
   }
 
   template<
@@ -718,9 +713,7 @@
            typename MyAllocatorType>
   constexpr auto eval_get_sign(const uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& x) -> int
   {
-    return ((x.crepresentation() == 0U)
-             ? 0
-             : ((x.crepresentation() > 0U) ? 1 : -1));
+    return (eval_is_zero(x) ? 0 : 1);
   }
 
   template<

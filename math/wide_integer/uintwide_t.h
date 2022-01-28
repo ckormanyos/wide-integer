@@ -4352,7 +4352,7 @@
   template<typename FloatingPointType, const size_t Width2, typename LimbType, typename AllocatorType, const bool IsSigned> constexpr auto operator< (const FloatingPointType& f, const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& v) -> typename std::enable_if<std::is_floating_point<FloatingPointType>::value, bool>::type { return uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(f).operator< (v); }
   template<typename FloatingPointType, const size_t Width2, typename LimbType, typename AllocatorType, const bool IsSigned> constexpr auto operator>=(const FloatingPointType& f, const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& v) -> typename std::enable_if<std::is_floating_point<FloatingPointType>::value, bool>::type { return uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(f).operator>=(v); }
   template<typename FloatingPointType, const size_t Width2, typename LimbType, typename AllocatorType, const bool IsSigned> constexpr auto operator<=(const FloatingPointType& f, const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& v) -> typename std::enable_if<std::is_floating_point<FloatingPointType>::value, bool>::type { return uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(f).operator<=(v); }
-  #endif
+  #endif // !defined(WIDE_INTEGER_DISABLE_FLOAT_INTEROP)
 
   #if !defined(WIDE_INTEGER_DISABLE_IOSTREAM)
 
@@ -4400,7 +4400,7 @@
           >::type;
 
       // TBD: There is redundant storage of this kind both here
-      // in this subroutine as well as in the wr_string methos.
+      // in this subroutine as well as in the wr_string method.
       string_storage_oct_type str_result;
 
       str_result.fill(static_cast<char>('\0'));
@@ -4424,7 +4424,7 @@
           >::type;
 
       // TBD: There is redundant storage of this kind both here
-      // in this subroutine as well as in the wr_string methos.
+      // in this subroutine as well as in the wr_string method.
       string_storage_dec_type str_result;
 
       str_result.fill(static_cast<char>('\0'));
@@ -4448,7 +4448,7 @@
           >::type;
 
       // TBD: There is redundant storage of this kind both here
-      // in this subroutine as well as in the wr_string methos.
+      // in this subroutine as well as in the wr_string method.
       string_storage_hex_type str_result;
 
       str_result.fill(static_cast<char>('\0'));
@@ -4481,7 +4481,7 @@
     return in;
   }
 
-  #endif
+  #endif // !defined(WIDE_INTEGER_DISABLE_IOSTREAM)
 
   #if(__cplusplus >= 201703L)
   } // namespace math::wide_integer
@@ -4583,9 +4583,8 @@
 
     return isfinite(x);
   }
-
   } // namespace my_own
-  #endif
+  #endif // !defined(WIDE_INTEGER_DISABLE_FLOAT_INTEROP)
 
   template<typename UnsignedIntegralType>
   inline WIDE_INTEGER_CONSTEXPR auto lsb_helper(const UnsignedIntegralType& u) -> unsigned_fast_type

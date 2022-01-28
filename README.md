@@ -56,7 +56,7 @@ the static `uint512_t` variable `x` is initialized with unsigned value `3U`.
 
 In particular,
 
-```C
+```cpp
 #include <math/wide_integer/uintwide_t.h>
 
 using uint512_t = math::wide_integer::uintwide_t<512U, std::uint32_t>;
@@ -74,7 +74,7 @@ the default limb type is 32 bits in width and unsigned.
 
 The complete template signature of the `uintwide_t` class is shown below.
 
-```C
+```cpp
 namespace math { namespace wide_integer {
 
 namespace detail { using size_t = std::uint32_t; }
@@ -278,7 +278,7 @@ programming environments.
 Various configuration features can optionally be
 enabled or disabled at compile time with the compiler switches:
 
-```C
+```cpp
 #define WIDE_INTEGER_DISABLE_IOSTREAM
 #define WIDE_INTEGER_DISABLE_FLOAT_INTEROP
 #define WIDE_INTEGER_DISABLE_IMPLEMENT_UTIL_DYNAMIC_ARRAY
@@ -291,7 +291,7 @@ enabled or disabled at compile time with the compiler switches:
 When working with even the most tiny microcontroller systems,
 I/O streaming can optionally be disabled with the compiler switch:
 
-```C
+```cpp
 #define WIDE_INTEGER_DISABLE_IOSTREAM
 ```
 
@@ -303,7 +303,7 @@ such as construct-from, cast-to, binary arithmetic with
 built-in floating-point types can be
 optionally disabled by defining:
 
-```C
+```cpp
 #define WIDE_INTEGER_DISABLE_FLOAT_INTEROP
 ```
 
@@ -312,7 +312,7 @@ and all available functions implementing construction-from,
 cast-to, binary arithmetic with built-in floating-point types
 are enabled.
 
-```C
+```cpp
 #define WIDE_INTEGER_DISABLE_IMPLEMENT_UTIL_DYNAMIC_ARRAY
 ```
 
@@ -336,14 +336,14 @@ a 64-bit limb of type `uint64_t` can be used.
 Enable the 64-bit limb type on such systems
 with the compiler switch:
 
-```C
+```cpp
 #define WIDE_INTEGER_HAS_LIMB_TYPE_UINT64
 ```
 
 or (when using GCC, clang or similar) on the compiler
 command line with:
 
-```C
+```cpp
 -DWIDE_INTEGER_HAS_LIMB_TYPE_UINT64
 ```
 
@@ -352,7 +352,7 @@ This macro is disabled by default.
 The example below, for instance, uses a 64-bit limb type
 on GCC or clang.
 
-```C
+```cpp
 #define WIDE_INTEGER_HAS_LIMB_TYPE_UINT64
 
 #include <math/wide_integer/uintwide_t.h>
@@ -364,7 +364,7 @@ static uint_fast256_t x = 42U;
 
 Another potential optimization macro can be activated with:
 
-```C
+```cpp
 #define WIDE_INTEGER_HAS_MUL_8_BY_8_UNROLL
 ```
 
@@ -373,7 +373,7 @@ by manually unrolling the multiplication loop(s) for
 `uintwide_t` instances having 8 limbs. This macro is disabled
 by default.
 
-```C
+```cpp
 #define WIDE_INTEGER_DISABLE_TRIVIAL_COPY_AND_STD_LAYOUT_CHECKS
 ```
 
@@ -388,7 +388,7 @@ these compile-time checks via activation of this macro.
 This macro is disabled by default and both the trivially-copyable
 as well as the standard-layout compile-time checks are active.
 
-```C
+```cpp
 #define WIDE_INTEGER_NAMESPACE
 ```
 
@@ -409,7 +409,7 @@ places all parts of the wide-integer implementation and its details
 within the prepended outer namespace `something_unique` ---
 as in
 
-```C
+```cpp
 namespace ::something_unique::math::wide_integer { }
 ```
 
@@ -429,7 +429,7 @@ We will now present various straightforward detailed examples.
 The code below performs some elementary algebraic calculations
 with a 256-bit unsigned integral type.
 
-```C
+```cpp
 #include <iomanip>
 #include <iostream>
 
@@ -472,7 +472,7 @@ and random number generation. These functions are be found via ADL.
 
 The example below calculates an integer square root.
 
-```C
+```cpp
 #include <iomanip>
 #include <iostream>
 
@@ -495,7 +495,7 @@ int main()
 
 The following sample performs add, subtract, multiply and divide of `uint48_t`.
 
-```C
+```cpp
 #include <iomanip>
 #include <iostream>
 
@@ -542,7 +542,7 @@ it is large enough to hold the value of
 <img src="https://render.githubusercontent.com/render/math?math=10^{3,333}">
 prior to (and following) the cube root operation.
 
-```C
+```cpp
 #include <iomanip>
 #include <iostream>
 
@@ -595,7 +595,7 @@ The following code, for instance, shows compile-time instantiations
 of `uintwide_t` from character strings with subsequent `constexpr` evaluations
 of binary operations multiply, divide, intergal cast and comparison.
 
-```C
+```cpp
 #include <math/wide_integer/uintwide_t.h>
 
 // Use a C++20 compiler for this example.
@@ -633,7 +633,7 @@ availability is unknown, the preprocessor symbols below can be useful.
 These symbols are defined or set directly within the header(s)
 of the wide_integer library.
 
-```C
+```cpp
 WIDE_INTEGER_CONSTEXPR
 WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST
 ```
@@ -662,7 +662,7 @@ signed-_ness_ (or unsigned-_ness_) of `uintwide_t`.
 The code below, for instance, uses an aliased version of
 signed `int256_t`.
 
-```C
+```cpp
 #include <math/wide_integer/uintwide_t.h>
 
 using int256_t = math::wide_integer::uintwide_t<256U, std::uint32_t, void, true>;
