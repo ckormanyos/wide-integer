@@ -4608,7 +4608,7 @@
     // Naive and basic LSB search.
     // TBD: This could be improved with a binary search
     // on the lowest bit position of the fundamental type.
-    while(static_cast<std::uint_fast8_t>(static_cast<std::uint_fast8_t>(mask) & UINT8_C(1)) == UINT8_C(0)) // NOLINT(altera-id-dependent-backward-branch)
+    while(static_cast<std::uint_fast8_t>(static_cast<std::uint_fast8_t>(mask) & UINT8_C(1)) == UINT8_C(0)) // NOLINT(hicpp-signed-bitwise,altera-id-dependent-backward-branch)
     {
       mask >>= 1U;
 
@@ -5161,7 +5161,7 @@
 
       v -= u;
 
-      while((static_cast<local_ushort_type>(v) & 1U) == 0U)
+      while(static_cast<std::uint_fast8_t>(static_cast<std::uint_fast8_t>(v) & UINT8_C(1)) == UINT8_C(0)) // NOLINT(hicpp-signed-bitwise,altera-id-dependent-backward-branch)
       {
         v >>= 1U;
       }
