@@ -229,21 +229,21 @@
     {
       pointer p = elems;
 
-      allocator_type my_a;
-
       auto last = static_cast<pointer>(elems + elem_count);
 
-      while(p != last)
-      {
-        using local_allocator_type = std::allocator_traits<allocator_type>;
+      using local_allocator_traits_type = std::allocator_traits<allocator_type>;
 
-        local_allocator_type::destroy(my_a, p);
+      allocator_type my_a;
+
+      while(p != last) // NOLINT(altera-id-dependent-backward-branch)
+      {
+        local_allocator_traits_type::destroy(my_a, p);
 
         ++p;
       }
 
       // Destroy the elements and deallocate the range.
-      std::allocator_traits<allocator_type>::deallocate(my_a, elems, elem_count);
+      local_allocator_traits_type::deallocate(my_a, elems, elem_count);
     }
 
     // Assignment operator.
@@ -265,20 +265,20 @@
       // Destroy the elements and deallocate the range.
       pointer p = elems;
 
-      allocator_type my_a;
-
       auto last = static_cast<pointer>(elems + elem_count);
 
-      while(p != last)
-      {
-        using local_allocator_type = std::allocator_traits<allocator_type>;
+      using local_allocator_traits_type = std::allocator_traits<allocator_type>;
 
-        local_allocator_type::destroy(my_a, p);
+      allocator_type my_a;
+
+      while(p != last) // NOLINT(altera-id-dependent-backward-branch)
+      {
+        local_allocator_traits_type::destroy(my_a, p);
 
         ++p;
       }
 
-      std::allocator_traits<allocator_type>::deallocate(my_a, elems, elem_count);
+      local_allocator_traits_type::deallocate(my_a, elems, elem_count);
 
       elem_count = other.elem_count;
       elems      = other.elems;
@@ -1051,7 +1051,7 @@
   {
     const char* p_str_copy{};
 
-    for(p_str_copy = p_str; (*p_str_copy != static_cast<char>('\0')); ++p_str_copy) { ; } // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+    for(p_str_copy = p_str; (*p_str_copy != static_cast<char>('\0')); ++p_str_copy) { ; } // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic,altera-id-dependent-backward-branch)
 
     return static_cast<unsigned_fast_type>(p_str_copy - p_str);
   }
@@ -2196,7 +2196,7 @@
           {
             uintwide_t<my_width2, limb_type, AllocatorType, false> tu(t);
 
-            while(!tu.is_zero())
+            while(!tu.is_zero()) // NOLINT(altera-id-dependent-backward-branch)
             {
               auto c = static_cast<char>(*tu.values.cbegin() & mask);
 
@@ -2229,7 +2229,7 @@
         {
           field_width = (std::min)(field_width, static_cast<unsigned_fast_type>(str_temp.size() - 1U));
 
-          while(static_cast<signed_fast_type>(pos) > static_cast<signed_fast_type>((str_temp.size() - 1U) - field_width))
+          while(static_cast<signed_fast_type>(pos) > static_cast<signed_fast_type>((str_temp.size() - 1U) - field_width)) // NOLINT(altera-id-dependent-backward-branch)
           {
             --pos;
 
@@ -2313,7 +2313,7 @@
         {
           field_width = (std::min)(field_width, static_cast<unsigned_fast_type>(str_temp.size() - 1U));
 
-          while(static_cast<signed_fast_type>(pos) > static_cast<signed_fast_type>((str_temp.size() - 1U) - field_width))
+          while(static_cast<signed_fast_type>(pos) > static_cast<signed_fast_type>((str_temp.size() - 1U) - field_width)) // NOLINT(altera-id-dependent-backward-branch)
           {
             --pos;
 
@@ -2375,7 +2375,7 @@
           {
             uintwide_t<my_width2, limb_type, AllocatorType, false> tu(t);
 
-            while(!tu.is_zero())
+            while(!tu.is_zero()) // NOLINT(altera-id-dependent-backward-branch)
             {
               char c(*tu.values.cbegin() & mask);
 
@@ -2413,7 +2413,7 @@
         {
           field_width = (std::min)(field_width, static_cast<unsigned_fast_type>(str_temp.size() - 1U));
 
-          while(static_cast<signed_fast_type>(pos) > static_cast<signed_fast_type>((str_temp.size() - 1U) - field_width))
+          while(static_cast<signed_fast_type>(pos) > static_cast<signed_fast_type>((str_temp.size() - 1U) - field_width)) // NOLINT(altera-id-dependent-backward-branch)
           {
             --pos;
 
@@ -2475,7 +2475,7 @@
 
       auto hi_part = static_cast<limb_type>(0U);
 
-      for(auto i = static_cast<signed_fast_type>(static_cast<unsigned_fast_type>(number_of_limbs - 1U) - u_offset); static_cast<signed_fast_type>(i) >= 0; --i)
+      for(auto i = static_cast<signed_fast_type>(static_cast<unsigned_fast_type>(number_of_limbs - 1U) - u_offset); static_cast<signed_fast_type>(i) >= 0; --i) // NOLINT(altera-id-dependent-backward-branch)
       {
         long_numerator =
           static_cast<double_limb_type>
@@ -2557,7 +2557,7 @@
       std::reverse_iterator<InputIteratorLeftType>  pa(a + count);
       std::reverse_iterator<InputIteratorRightType> pb(b + count);
 
-      for( ; pa != std::reverse_iterator<InputIteratorLeftType>(a); ++pa, ++pb)
+      for( ; pa != std::reverse_iterator<InputIteratorLeftType>(a); ++pa, ++pb) // NOLINT(altera-id-dependent-backward-branch)
       {
         using value_left_type =
           typename std::iterator_traits<InputIteratorLeftType>::value_type;
@@ -2650,7 +2650,7 @@
 
       long double ldexp_runner(one_ldbl);
 
-      for(auto i = static_cast<size_t>(0U); i < ilim; ++i)
+      for(auto i = static_cast<size_t>(0U); i < ilim; ++i) // NOLINT(altera-id-dependent-backward-branch)
       {
         auto ld      = static_cast<long double>(0.0L);
         auto lm_mask = static_cast<limb_type>(1ULL);
@@ -3423,7 +3423,7 @@
 
       local_limb_type carry_out = carry;
 
-      while((i < n) && (carry_out != static_cast<local_limb_type>(0U)))
+      while((i < n) && (carry_out != static_cast<local_limb_type>(0U))) // NOLINT(altera-id-dependent-backward-branch)
       {
         const local_double_limb_type uv_as_ularge = static_cast<local_double_limb_type>(*(t + static_cast<left_difference_type>(i))) + carry_out;
 
@@ -3452,7 +3452,7 @@
 
       bool has_borrow_out = has_borrow;
 
-      while((i < n) && (has_borrow_out))
+      while((i < n) && (has_borrow_out)) // NOLINT(altera-id-dependent-backward-branch)
       {
         auto uv_as_ularge = static_cast<local_double_limb_type>(*(t + static_cast<left_difference_type>(i)));
 
@@ -3640,8 +3640,8 @@
       auto v_offset = static_cast<local_uint_index_type>(0U);
 
       // Compute the offsets for u and v.
-      for(auto i = static_cast<local_uint_index_type>(0U); (i < number_of_limbs) && (*(      values.cbegin() + static_cast<size_t>(static_cast<local_uint_index_type>(number_of_limbs - 1U) - i)) == static_cast<limb_type>(0U)); ++i) { ++u_offset; }
-      for(auto i = static_cast<local_uint_index_type>(0U); (i < number_of_limbs) && (*(other.values.cbegin() + static_cast<size_t>(static_cast<local_uint_index_type>(number_of_limbs - 1U) - i)) == static_cast<limb_type>(0U)); ++i) { ++v_offset; }
+      for(auto i = static_cast<local_uint_index_type>(0U); (i < number_of_limbs) && (*(      values.cbegin() + static_cast<size_t>(static_cast<local_uint_index_type>(number_of_limbs - 1U) - i)) == static_cast<limb_type>(0U)); ++i) { ++u_offset; } // NOLINT(altera-id-dependent-backward-branch)
+      for(auto i = static_cast<local_uint_index_type>(0U); (i < number_of_limbs) && (*(other.values.cbegin() + static_cast<size_t>(static_cast<local_uint_index_type>(number_of_limbs - 1U) - i)) == static_cast<limb_type>(0U)); ++i) { ++v_offset; } // NOLINT(altera-id-dependent-backward-branch)
 
       if(v_offset == static_cast<local_uint_index_type>(number_of_limbs))
       {
@@ -3747,7 +3747,7 @@
           const auto m   = static_cast<local_uint_index_type> (number_of_limbs - u_offset) - n;
           const auto vj0 = static_cast<local_uint_index_type>((number_of_limbs - 1U) - v_offset);
 
-          for(auto j = static_cast<local_uint_index_type>(0U); j <= m; ++j)
+          for(auto j = static_cast<local_uint_index_type>(0U); j <= m; ++j) // NOLINT(altera-id-dependent-backward-branch)
           {
             // Step D3 [Calculate q_hat].
             //   if u[j] == v[j0]
@@ -3829,7 +3829,7 @@
             {
               auto previous_u = static_cast<limb_type>(0U);
 
-              for(auto rl = static_cast<signed_fast_type>(n - 1U), ul = static_cast<signed_fast_type>(number_of_limbs - (v_offset + 1U)); rl >= 0; --rl, --ul)
+              for(auto rl = static_cast<signed_fast_type>(n - 1U), ul = static_cast<signed_fast_type>(number_of_limbs - (v_offset + 1U)); rl >= 0; --rl, --ul) // NOLINT(altera-id-dependent-backward-branch)
               {
                 const auto t =
                   static_cast<double_limb_type>(  *(uu.cbegin() + static_cast<size_t>(ul))
@@ -3866,7 +3866,7 @@
       {
         auto part_from_previous_value = static_cast<limb_type>(0U);
 
-        for(unsigned_fast_type i = offset; i < static_cast<unsigned_fast_type>(number_of_limbs); ++i)
+        for(unsigned_fast_type i = offset; i < static_cast<unsigned_fast_type>(number_of_limbs); ++i) // NOLINT(altera-id-dependent-backward-branch)
         {
           const limb_type t = *(values.cbegin() + static_cast<size_t>(i));
 
@@ -3902,7 +3902,7 @@
             ? static_cast<limb_type>(0U)
             : static_cast<limb_type>((std::numeric_limits<limb_type>::max)() << static_cast<std::uint_fast16_t>(static_cast<std::uint_fast16_t>(std::numeric_limits<limb_type>::digits) - right_shift_amount));
 
-        for(auto i = static_cast<signed_fast_type>((number_of_limbs - 1U) - offset); i >= static_cast<signed_fast_type>(0); --i)
+        for(auto i = static_cast<signed_fast_type>((number_of_limbs - 1U) - offset); i >= static_cast<signed_fast_type>(0); --i) // NOLINT(altera-id-dependent-backward-branch)
         {
           const limb_type t = *(values.cbegin() + static_cast<size_t>(i));
 
@@ -3973,7 +3973,7 @@
 
       bool char_is_valid = true;
 
-      for( ; ((pos < str_length) && char_is_valid); ++pos)
+      for( ; ((pos < str_length) && char_is_valid); ++pos) // NOLINT(altera-id-dependent-backward-branch)
       {
         const auto c = static_cast<std::uint8_t>(str_input[pos]); // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
 
@@ -4050,7 +4050,7 @@
       // Implement pre-increment.
       unsigned_fast_type i = 0U;
 
-      for( ; (i < static_cast<unsigned_fast_type>(values.size() - 1U)) && (++(*(values.begin() + static_cast<size_t>(i))) == static_cast<limb_type>(0U)); ++i)
+      for( ; (i < static_cast<unsigned_fast_type>(values.size() - 1U)) && (++(*(values.begin() + static_cast<size_t>(i))) == static_cast<limb_type>(0U)); ++i) // NOLINT(altera-id-dependent-backward-branch)
       {
         ;
       }
@@ -4066,7 +4066,7 @@
       // Implement pre-decrement.
       unsigned_fast_type i = 0U;
 
-      for( ; (i < static_cast<unsigned_fast_type>(values.size() - 1U)) && ((*(values.begin() + static_cast<size_t>(i)))-- == static_cast<limb_type>(0U)); ++i)
+      for( ; (i < static_cast<unsigned_fast_type>(values.size() - 1U)) && ((*(values.begin() + static_cast<size_t>(i)))-- == static_cast<limb_type>(0U)); ++i) // NOLINT(altera-id-dependent-backward-branch)
       {
         ;
       }
@@ -4524,7 +4524,7 @@
     constexpr long double two_pow32 =
       static_cast<long double>(0x10000) * static_cast<long double>(0x10000);
 
-    while(f >= static_cast<local_floating_point_type>(two_pow32))
+    while(f >= static_cast<local_floating_point_type>(two_pow32)) // NOLINT(altera-id-dependent-backward-branch)
     {
       // TBD: Maybe optimize this exponent reduction
       // with a more clever kind of binary searching.
@@ -4535,7 +4535,7 @@
 
     constexpr long double one_ldbl(1.0L);
 
-    while(f >= static_cast<local_floating_point_type>(one_ldbl))
+    while(f >= static_cast<local_floating_point_type>(one_ldbl)) // NOLINT(altera-id-dependent-backward-branch)
     {
       constexpr long double two_ldbl(2.0L);
 
@@ -4612,7 +4612,7 @@
     // Naive and basic LSB search.
     // TBD: This could be improved with a binary search
     // on the lowest bit position of the fundamental type.
-    while((static_cast<unsigned_fast_type>(mask) & 1U) == 0U)
+    while(static_cast<std::uint_fast8_t>(static_cast<std::uint_fast8_t>(mask) & UINT8_C(1)) == UINT8_C(0)) // NOLINT(altera-id-dependent-backward-branch)
     {
       mask >>= 1U;
 
@@ -4728,7 +4728,7 @@
     auto bpos   = static_cast<unsigned_fast_type>(0U);
     auto offset = static_cast<unsigned_fast_type>(0U);
 
-    for(auto it = x.crepresentation().cbegin(); it != x.crepresentation().cend(); ++it, ++offset) // NOLINT(llvm-qualified-auto,readability-qualified-auto)
+    for(auto it = x.crepresentation().cbegin(); it != x.crepresentation().cend(); ++it, ++offset) // NOLINT(llvm-qualified-auto,readability-qualified-auto,altera-id-dependent-backward-branch)
     {
       const auto vi = static_cast<local_value_type>(*it & (std::numeric_limits<local_value_type>::max)());
 
@@ -4762,7 +4762,7 @@
     auto bpos   = static_cast<unsigned_fast_type>(0U);
     auto offset = static_cast<unsigned_fast_type>(x.crepresentation().size() - 1U);
 
-    for(auto ri = x.crepresentation().crbegin(); ri != x.crepresentation().crend(); ++ri, --offset)
+    for(auto ri = x.crepresentation().crbegin(); ri != x.crepresentation().crend(); ++ri, --offset) // NOLINT(altera-id-dependent-backward-branch)
     {
       const auto vr = static_cast<local_value_type>(*ri & (std::numeric_limits<local_value_type>::max)());
 
@@ -5030,7 +5030,7 @@
       local_wide_integer_type y      (b);
       local_wide_integer_type p_local(p);
 
-      while(((p0 = static_cast<local_limb_type>(p_local)) != 0U) || (p_local != 0U))
+      while(((p0 = static_cast<local_limb_type>(p_local)) != 0U) || (p_local != 0U)) // NOLINT(altera-id-dependent-backward-branch)
       {
         if((p0 & 1U) != 0U)
         {
@@ -5087,7 +5087,7 @@
       local_double_width_type x      (static_cast<std::uint8_t>(1U));
       OtherIntegralTypeP      p_local(p);
 
-      while(((p0 = static_cast<local_limb_type>(p_local)) != 0U) || (p_local != 0U))
+      while(((p0 = static_cast<local_limb_type>(p_local)) != 0U) || (p_local != 0U)) // NOLINT(altera-id-dependent-backward-branch)
       {
         if((p0 & 1U) != 0U)
         {
