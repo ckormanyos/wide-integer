@@ -352,7 +352,7 @@
 
   private:
     mutable size_type elem_count; // NOLINT(readability-identifier-naming)
-    pointer           elems;      // NOLINT(readability-identifier-naming)
+    pointer           elems;      // NOLINT(readability-identifier-naming,altera-id-dependent-backward-branch)
   };
 
   template<typename ValueType, typename AllocatorType>
