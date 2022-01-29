@@ -227,7 +227,7 @@
     // Destructor.
     WIDE_INTEGER_CONSTEXPR virtual ~dynamic_array()
     {
-      pointer p = elems;
+      pointer p = elems; // NOLINT(altera-id-dependent-backward-branch)
 
       using local_allocator_traits_type = std::allocator_traits<allocator_type>;
 
@@ -261,7 +261,7 @@
     auto operator=(dynamic_array&& other) noexcept -> dynamic_array&
     {
       // Destroy the elements and deallocate the range.
-      pointer p = elems;
+      pointer p = elems; // NOLINT(altera-id-dependent-backward-branch)
 
       using local_allocator_traits_type = std::allocator_traits<allocator_type>;
 
