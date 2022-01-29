@@ -147,9 +147,9 @@
     constexpr dynamic_array() : elem_count(0U),
                                 elems     (nullptr) { }
 
-    explicit dynamic_array(      size_type count,
-                                 const_reference v = value_type(),
-                           const allocator_type& a = allocator_type())
+    explicit WIDE_INTEGER_CONSTEXPR dynamic_array(      size_type count,
+                                                        const_reference v = value_type(),
+                                                  const allocator_type& a = allocator_type())
       : elem_count(count),
         elems     (nullptr)
     {
@@ -170,7 +170,7 @@
       }
     }
 
-    dynamic_array(const dynamic_array& other)
+    WIDE_INTEGER_CONSTEXPR dynamic_array(const dynamic_array& other)
       : elem_count(other.size()),
         elems     (nullptr)
     {
@@ -185,9 +185,9 @@
     }
 
     template<typename input_iterator>
-    dynamic_array(input_iterator first,
-                  input_iterator last,
-                  const allocator_type& a = allocator_type())
+    WIDE_INTEGER_CONSTEXPR dynamic_array(input_iterator first,
+                                         input_iterator last,
+                                         const allocator_type& a = allocator_type())
       : elem_count(static_cast<size_type>(std::distance(first, last))),
         elems     (nullptr)
     {
@@ -201,8 +201,8 @@
       std::copy(first, last, elems);
     }
 
-    dynamic_array(std::initializer_list<value_type> lst,
-                  const allocator_type& a = allocator_type())
+    WIDE_INTEGER_CONSTEXPR dynamic_array(std::initializer_list<value_type> lst,
+                                         const allocator_type& a = allocator_type())
       : elem_count(lst.size()),
         elems     (nullptr)
     {
@@ -217,8 +217,8 @@
     }
 
     // Move constructor.
-    dynamic_array(dynamic_array&& other) noexcept : elem_count(other.elem_count),
-                                                    elems     (other.elems)
+    WIDE_INTEGER_CONSTEXPR dynamic_array(dynamic_array&& other) noexcept : elem_count(other.elem_count),
+                                                                           elems     (other.elems)
     {
       other.elem_count = 0U;
       other.elems      = nullptr;
@@ -245,7 +245,7 @@
     }
 
     // Assignment operator.
-    auto operator=(const dynamic_array& other) -> dynamic_array&
+    WIDE_INTEGER_CONSTEXPR auto operator=(const dynamic_array& other) -> dynamic_array&
     {
       if(this != &other)
       {
@@ -258,7 +258,7 @@
     }
 
     // Move assignment operator.
-    auto operator=(dynamic_array&& other) noexcept -> dynamic_array&
+    WIDE_INTEGER_CONSTEXPR auto operator=(dynamic_array&& other) noexcept -> dynamic_array&
     {
       // Destroy the elements and deallocate the range.
       pointer p = elems; // NOLINT(altera-id-dependent-backward-branch)
@@ -286,48 +286,48 @@
     }
 
     // Iterator members:
-    auto begin  ()       -> iterator               { return elems; }
-    auto end    ()       -> iterator               { return elems + elem_count; }
-    auto begin  () const -> const_iterator         { return elems; }
-    auto end    () const -> const_iterator         { return elems + elem_count; }
-    auto cbegin () const -> const_iterator         { return elems; }
-    auto cend   () const -> const_iterator         { return elems + elem_count; }
-    auto rbegin ()       -> reverse_iterator       { return reverse_iterator(elems + elem_count); }
-    auto rend   ()       -> reverse_iterator       { return reverse_iterator(elems); }
-    auto rbegin () const -> const_reverse_iterator { return const_reverse_iterator(elems + elem_count); }
-    auto rend   () const -> const_reverse_iterator { return const_reverse_iterator(elems); }
-    auto crbegin() const -> const_reverse_iterator { return const_reverse_iterator(elems + elem_count); }
-    auto crend  () const -> const_reverse_iterator { return const_reverse_iterator(elems); }
+    WIDE_INTEGER_CONSTEXPR auto begin  ()       -> iterator               { return elems; }
+    WIDE_INTEGER_CONSTEXPR auto end    ()       -> iterator               { return elems + elem_count; }
+    WIDE_INTEGER_CONSTEXPR auto begin  () const -> const_iterator         { return elems; }
+    WIDE_INTEGER_CONSTEXPR auto end    () const -> const_iterator         { return elems + elem_count; }
+    WIDE_INTEGER_CONSTEXPR auto cbegin () const -> const_iterator         { return elems; }
+    WIDE_INTEGER_CONSTEXPR auto cend   () const -> const_iterator         { return elems + elem_count; }
+    WIDE_INTEGER_CONSTEXPR auto rbegin ()       -> reverse_iterator       { return reverse_iterator(elems + elem_count); }
+    WIDE_INTEGER_CONSTEXPR auto rend   ()       -> reverse_iterator       { return reverse_iterator(elems); }
+    WIDE_INTEGER_CONSTEXPR auto rbegin () const -> const_reverse_iterator { return const_reverse_iterator(elems + elem_count); }
+    WIDE_INTEGER_CONSTEXPR auto rend   () const -> const_reverse_iterator { return const_reverse_iterator(elems); }
+    WIDE_INTEGER_CONSTEXPR auto crbegin() const -> const_reverse_iterator { return const_reverse_iterator(elems + elem_count); }
+    WIDE_INTEGER_CONSTEXPR auto crend  () const -> const_reverse_iterator { return const_reverse_iterator(elems); }
 
     // Raw pointer access.
-    auto data()       -> pointer       { return elems; }
-    auto data() const -> const_pointer { return elems; }
+    WIDE_INTEGER_CONSTEXPR auto data()       -> pointer       { return elems; }
+    WIDE_INTEGER_CONSTEXPR auto data() const -> const_pointer { return elems; }
 
     // Size and capacity.
-    auto size    () const -> size_type { return  elem_count; }
-    auto max_size() const -> size_type { return  elem_count; }
-    auto empty   () const -> bool      { return (elem_count == 0U); }
+    constexpr auto size    () const -> size_type { return  elem_count; }
+    constexpr auto max_size() const -> size_type { return  elem_count; }
+    constexpr auto empty   () const -> bool      { return (elem_count == 0U); }
 
     // Element access members.
-    auto operator[](const size_type i)       -> reference       { return elems[i]; }
-    auto operator[](const size_type i) const -> const_reference { return elems[i]; }
+    WIDE_INTEGER_CONSTEXPR auto operator[](const size_type i)       -> reference       { return elems[i]; }
+    WIDE_INTEGER_CONSTEXPR auto operator[](const size_type i) const -> const_reference { return elems[i]; }
 
-    auto front()       -> reference       { return elems[0U]; }
-    auto front() const -> const_reference { return elems[0U]; }
+    WIDE_INTEGER_CONSTEXPR auto front()       -> reference       { return elems[0U]; }
+    WIDE_INTEGER_CONSTEXPR auto front() const -> const_reference { return elems[0U]; }
 
-    auto back()       -> reference       { return ((elem_count > static_cast<size_type>(0U)) ? elems[elem_count - 1U] : elems[0U]); }
-    auto back() const -> const_reference { return ((elem_count > static_cast<size_type>(0U)) ? elems[elem_count - 1U] : elems[0U]); }
+    WIDE_INTEGER_CONSTEXPR auto back()       -> reference       { return ((elem_count > static_cast<size_type>(0U)) ? elems[elem_count - 1U] : elems[0U]); }
+    WIDE_INTEGER_CONSTEXPR auto back() const -> const_reference { return ((elem_count > static_cast<size_type>(0U)) ? elems[elem_count - 1U] : elems[0U]); }
 
-    auto at(const size_type i)       -> reference       { return ((i < elem_count) ? elems[i] : elems[0U]); }
-    auto at(const size_type i) const -> const_reference { return ((i < elem_count) ? elems[i] : elems[0U]); }
+    WIDE_INTEGER_CONSTEXPR auto at(const size_type i)       -> reference       { return ((i < elem_count) ? elems[i] : elems[0U]); }
+    WIDE_INTEGER_CONSTEXPR auto at(const size_type i) const -> const_reference { return ((i < elem_count) ? elems[i] : elems[0U]); }
 
     // Element manipulation members.
-    void fill(const value_type& v)
+    WIDE_INTEGER_CONSTEXPR void fill(const value_type& v)
     {
       std::fill_n(begin(), elem_count, v);
     }
 
-    void swap(dynamic_array& other)
+    WIDE_INTEGER_CONSTEXPR void swap(dynamic_array& other)
     {
       if(this != &other)
       {
@@ -340,7 +340,7 @@
       }
     }
 
-    void swap(dynamic_array&& other)
+    WIDE_INTEGER_CONSTEXPR void swap(dynamic_array&& other)
     {
       pointer tmp_elems = elems;
 
@@ -356,8 +356,8 @@
   };
 
   template<typename ValueType, typename AllocatorType>
-  auto operator==(const dynamic_array<ValueType, AllocatorType>& lhs,
-                  const dynamic_array<ValueType, AllocatorType>& rhs) -> bool
+  WIDE_INTEGER_CONSTEXPR auto operator==(const dynamic_array<ValueType, AllocatorType>& lhs,
+                                         const dynamic_array<ValueType, AllocatorType>& rhs) -> bool
   {
     bool left_and_right_are_equal = false;
 
@@ -381,8 +381,8 @@
   }
 
   template<typename ValueType, typename AllocatorType>
-  auto operator<(const dynamic_array<ValueType, AllocatorType>& lhs,
-                 const dynamic_array<ValueType, AllocatorType>& rhs) -> bool
+  WIDE_INTEGER_CONSTEXPR auto operator<(const dynamic_array<ValueType, AllocatorType>& lhs,
+                                        const dynamic_array<ValueType, AllocatorType>& rhs) -> bool
   {
     using size_type = typename dynamic_array<ValueType, AllocatorType>::size_type;
 
@@ -419,36 +419,36 @@
   }
 
   template<typename ValueType, typename AllocatorType>
-  auto operator!=(const dynamic_array<ValueType, AllocatorType>& lhs,
-                  const dynamic_array<ValueType, AllocatorType>& rhs) -> bool
+  WIDE_INTEGER_CONSTEXPR auto operator!=(const dynamic_array<ValueType, AllocatorType>& lhs,
+                                         const dynamic_array<ValueType, AllocatorType>& rhs) -> bool
   {
     return (!(lhs == rhs));
   }
 
   template<typename ValueType, typename AllocatorType>
-  auto operator>(const dynamic_array<ValueType, AllocatorType>& lhs,
-                 const dynamic_array<ValueType, AllocatorType>& rhs) -> bool
+  WIDE_INTEGER_CONSTEXPR auto operator>(const dynamic_array<ValueType, AllocatorType>& lhs,
+                                        const dynamic_array<ValueType, AllocatorType>& rhs) -> bool
   {
     return (rhs < lhs);
   }
 
   template<typename ValueType, typename AllocatorType>
-  auto operator>=(const dynamic_array<ValueType, AllocatorType>& lhs,
-                  const dynamic_array<ValueType, AllocatorType>& rhs) -> bool
+  WIDE_INTEGER_CONSTEXPR auto operator>=(const dynamic_array<ValueType, AllocatorType>& lhs,
+                                         const dynamic_array<ValueType, AllocatorType>& rhs) -> bool
   {
     return (!(lhs < rhs));
   }
 
   template<typename ValueType, typename AllocatorType>
-  auto operator<=(const dynamic_array<ValueType, AllocatorType>& lhs,
-                  const dynamic_array<ValueType, AllocatorType>& rhs) -> bool
+  WIDE_INTEGER_CONSTEXPR auto operator<=(const dynamic_array<ValueType, AllocatorType>& lhs,
+                                         const dynamic_array<ValueType, AllocatorType>& rhs) -> bool
   {
     return (!(rhs < lhs));
   }
 
   template<typename ValueType, typename AllocatorType>
-  void swap(dynamic_array<ValueType, AllocatorType>& x,
-            dynamic_array<ValueType, AllocatorType>& y)
+  WIDE_INTEGER_CONSTEXPR void swap(dynamic_array<ValueType, AllocatorType>& x,
+                                   dynamic_array<ValueType, AllocatorType>& y)
   {
     x.swap(y);
   }
@@ -945,7 +945,7 @@
 
     static constexpr auto static_size() -> size_type { return MySize; }
 
-    constexpr fixed_static_array() = default;
+    WIDE_INTEGER_CONSTEXPR fixed_static_array() = default;
 
     explicit WIDE_INTEGER_CONSTEXPR fixed_static_array(const size_type   s,
                                                        const value_type& v = value_type())
@@ -985,8 +985,8 @@
                 value_type());
     }
 
-    constexpr fixed_static_array(const fixed_static_array&) = default;
-    constexpr fixed_static_array(fixed_static_array&&) noexcept = default;
+    WIDE_INTEGER_CONSTEXPR fixed_static_array(const fixed_static_array&) = default;
+    WIDE_INTEGER_CONSTEXPR fixed_static_array(fixed_static_array&&) noexcept = default;
 
     WIDE_INTEGER_CONSTEXPR ~fixed_static_array() = default;
 
