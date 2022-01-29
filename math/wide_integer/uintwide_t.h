@@ -229,13 +229,11 @@
     {
       pointer p = elems;
 
-      auto last = static_cast<pointer>(elems + elem_count);
-
       using local_allocator_traits_type = std::allocator_traits<allocator_type>;
 
       allocator_type my_a;
 
-      while(p != last) // NOLINT(altera-id-dependent-backward-branch)
+      while(p != elems + elem_count) // NOLINT(altera-id-dependent-backward-branch)
       {
         local_allocator_traits_type::destroy(my_a, p);
 
@@ -265,13 +263,11 @@
       // Destroy the elements and deallocate the range.
       pointer p = elems;
 
-      auto last = static_cast<pointer>(elems + elem_count);
-
       using local_allocator_traits_type = std::allocator_traits<allocator_type>;
 
       allocator_type my_a;
 
-      while(p != last) // NOLINT(altera-id-dependent-backward-branch)
+      while(p != elems + elem_count) // NOLINT(altera-id-dependent-backward-branch)
       {
         local_allocator_traits_type::destroy(my_a, p);
 
@@ -1365,7 +1361,7 @@
       auto right_shift_amount_v = static_cast<unsigned_fast_type>(0U);
       auto index_u              = static_cast<std::uint_fast8_t> (0U);
 
-      for( ; (   (index_u < values.size())
+      for( ; (   (index_u < values.size()) // NOLINT(altera-id-dependent-backward-branch)
               && (right_shift_amount_v < static_cast<unsigned_fast_type>(std::numeric_limits<UnsignedIntegralType>::digits)));
              ++index_u)
       {
@@ -2507,7 +2503,7 @@
     {
       auto it = values.cbegin(); // NOLINT(llvm-qualified-auto,readability-qualified-auto)
 
-      while((it != values.cend()) && (*it == static_cast<limb_type>(0U)))
+      while((it != values.cend()) && (*it == static_cast<limb_type>(0U))) // NOLINT(altera-id-dependent-backward-branch)
       {
         ++it;
       }
@@ -5530,7 +5526,7 @@
 
       unsigned_fast_type j = 0U;
 
-      while(it != result.representation().end())
+      while(it != result.representation().end()) // NOLINT(altera-id-dependent-backward-branch)
       {
         if((j % digits_gtor_ratio) == 0U)
         {
@@ -5776,7 +5772,7 @@
 
       auto j = static_cast<unsigned_fast_type>(0U);
 
-      while(y != nm1)
+      while(y != nm1) // NOLINT(altera-id-dependent-backward-branch)
       {
         const local_limb_type y0(y);
 
