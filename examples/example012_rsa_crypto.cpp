@@ -1,4 +1,4 @@
-///////////////////////////////////////////////////////////////////
+﻿///////////////////////////////////////////////////////////////////
 //  Copyright Christopher Kormanyos 2021.                        //
 //  Distributed under the Boost Software License,                //
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt          //
@@ -100,7 +100,7 @@ namespace local_rsa
                typename OutputIterator>
       void encrypt(InputIterator in_first, const std::size_t count, OutputIterator out)
       {
-        for(auto it = in_first; it != in_first + typename std::iterator_traits<InputIterator>::difference_type(count); ++it)
+        for(auto it = in_first; it != in_first + typename std::iterator_traits<InputIterator>::difference_type(count); ++it) // NOLINT(altera-id-dependent-backward-branch)
         {
           *out++ = powm(my_uintwide_t(*it), public_key.r, public_key.m);
         }
@@ -121,7 +121,7 @@ namespace local_rsa
       {
         InputIterator cry_end(cry_in + typename std::iterator_traits<InputIterator>::difference_type(count));
 
-        for(auto it = cry_in; it !=  cry_end; ++it)
+        for(auto it = cry_in; it !=  cry_end; ++it) // NOLINT(altera-id-dependent-backward-branch)
         {
           const my_uintwide_t tmp = powm(*it, private_key.s, private_key.q * private_key.p);
 
@@ -276,7 +276,7 @@ namespace local_rsa
     {
       my_uintwide_t tmp = number;
 
-      while(is_neg(tmp))
+      while(is_neg(tmp)) // NOLINT(altera-id-dependent-backward-branch)
       {
         tmp += modulus;
       }
