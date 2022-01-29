@@ -35,7 +35,7 @@
       const auto launch_range =
         [&parallel_function](index_type index_lo, index_type index_hi)
         {
-          for(index_type i = index_lo; i < index_hi; ++i)
+          for(index_type i = index_lo; i < index_hi; ++i) // NOLINT(altera-id-dependent-backward-branch)
           {
             parallel_function(i);
           }
