@@ -231,9 +231,13 @@
 
       allocator_type my_a;
 
-      while(p != elems + elem_count)
+      auto last = static_cast<pointer>(elems + elem_count);
+
+      while(p != last)
       {
-        std::allocator_traits<allocator_type>::destroy(my_a, p);
+        using local_allocator_type = std::allocator_traits<allocator_type>;
+
+        local_allocator_type::destroy(my_a, p);
 
         ++p;
       }
@@ -263,9 +267,13 @@
 
       allocator_type my_a;
 
-      while(p != elems + elem_count)
+      auto last = static_cast<pointer>(elems + elem_count);
+
+      while(p != last)
       {
-        std::allocator_traits<allocator_type>::destroy(my_a, p);
+        using local_allocator_type = std::allocator_traits<allocator_type>;
+
+        local_allocator_type::destroy(my_a, p);
 
         ++p;
       }
