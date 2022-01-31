@@ -945,44 +945,20 @@
 
     static constexpr auto static_size() -> size_type { return MySize; }
 
-    WIDE_INTEGER_CONSTEXPR fixed_static_array() = default;
+    constexpr fixed_static_array() = default;
 
     explicit WIDE_INTEGER_CONSTEXPR fixed_static_array(const size_type   s,
                                                        const value_type& v = value_type())
     {
-      std::fill(base_class_type::begin(),
-                base_class_type::begin() + (std::min)(MySize, static_cast<size_type>(s)),
-                v);
-
-      std::fill(base_class_type::begin() + (std::min)(MySize, static_cast<size_type>(s)),
-                base_class_type::end(),
-                value_type());
-    }
-
-    template<const size_type OtherSize>
-    WIDE_INTEGER_CONSTEXPR fixed_static_array(const fixed_static_array<size_type, OtherSize>& other_array,   // NOLINT(hicpp-explicit-conversions,google-explicit-constructor)
-                                              typename std::enable_if<OtherSize != MySize>::type* p_nullparam = nullptr)
-    {
-      static_cast<void>(p_nullparam == nullptr);
-
-      std::copy(other_array.cbegin(),
-                other_array.cbegin() + (std::min)(OtherSize, MySize),
-                base_class_type::begin());
-
-      std::fill(base_class_type::begin() + (std::min)(OtherSize, MySize),
-                base_class_type::end(),
-                value_type());
-    }
-
-    WIDE_INTEGER_CONSTEXPR fixed_static_array(std::initializer_list<value_type> lst)
-    {
-      std::copy(lst.begin(),
-                lst.begin() + (std::min)(static_cast<size_type>(lst.size()), MySize),
-                base_class_type::begin());
-
-      std::fill(base_class_type::begin() + (std::min)(static_cast<size_type>(lst.size()), MySize),
-                base_class_type::end(),
-                value_type());
+      if(s < static_size())
+      {
+        std::fill(base_class_type::begin(),     base_class_type::begin() + s, v);
+        std::fill(base_class_type::begin() + s, base_class_type::end(),       value_type());
+      }
+      else
+      {
+        base_class_type::fill(v);
+      }
     }
 
     WIDE_INTEGER_CONSTEXPR fixed_static_array(const fixed_static_array&) = default;
