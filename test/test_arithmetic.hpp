@@ -1,4 +1,4 @@
-///////////////////////////////////////////////////////////////
+﻿///////////////////////////////////////////////////////////////
 //  Copyright 2012 John Maddock. Distributed under the Boost
 //  Software License, Version 1.0. (See accompanying file
 //  LICENSE_1_0.txt or copy at https://www.boost.org/LICENSE_1_0.txt
@@ -53,11 +53,11 @@ inline const char* name_of<unsigned __int128>()
 }
 #endif
 #ifdef BOOST_HAS_FLOAT128
-template <>
-inline const char* name_of<__float128>()
-{
-   return "__float128";
-}
+//template <>
+//inline const char* name_of<__float128>()
+//{
+//   return "__float128";
+//}
 #endif
 
 #ifndef BOOST_MP_STANDALONE
@@ -3072,8 +3072,8 @@ void test()
    test_mixed<Real, double>(tag);
    test_mixed<Real, long double>(tag);
 #if defined(BOOST_HAS_FLOAT128) && !defined(BOOST_NO_CXX17_IF_CONSTEXPR)
-   if constexpr (std::is_constructible<Real, __float128>::value)
-      test_mixed<Real, __float128>(tag);
+   //if constexpr (std::is_constructible<Real, __float128>::value)
+   //   test_mixed<Real, __float128>(tag);
 #endif
 
    typedef typename related_type<Real>::type                                                                      related_type;

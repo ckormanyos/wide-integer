@@ -231,16 +231,23 @@
       return static_cast<int>(m_value.compare(representation_type(x)));
     }
 
-    WIDE_INTEGER_CONSTEXPR std::size_t hash() const
+    WIDE_INTEGER_NODISCARD WIDE_INTEGER_CONSTEXPR auto hash() const -> std::size_t
     {
       auto result = static_cast<std::size_t>(0U);
 
+      #if defined(BOOST_VERSION)
+      #if(BOOST_VERSION < 107800)
+      using boost::hash_combine;
+      #else
+      using boost::multiprecision::detail::hash_combine;
+      #endif
       for(auto   i = static_cast<typename representation_type::representation_type::size_type>(0U);
                  i < crepresentation().crepresentation().size();
                ++i)
       {
-        boost::multiprecision::detail::hash_combine(result, crepresentation().crepresentation()[i]);
+        hash_combine(result, crepresentation().crepresentation()[i]);
       }
+      #endif
 
       return result;
     }
