@@ -185,6 +185,8 @@
     <ClInclude Include="examples\example_uintwide_t.h" />
     <ClInclude Include="math\wide_integer\uintwide_t.h" />
     <ClInclude Include="test\parallel_for.h" />
+    <ClInclude Include="test\test.hpp" />
+    <ClInclude Include="test\test_arithmetic.hpp" />
     <ClInclude Include="test\test_uintwide_t.h" />
     <ClInclude Include="test\test_uintwide_t_n_base.h" />
     <ClInclude Include="test\test_uintwide_t_n_binary_ops_mul_div_4_by_4_template.h" />
@@ -217,6 +219,12 @@
     <ClCompile Include="examples\example012_rsa_crypto.cpp" />
     <ClCompile Include="test\test.cpp" />
     <ClCompile Include="test\test_uintwide_t_boost_backend.cpp" />
+    <ClCompile Include="test\test_uintwide_t_boost_backend_via_test_arithmetic.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="test\test_uintwide_t_edge_cases.cpp" />
     <ClCompile Include="test\test_uintwide_t_examples.cpp" />
     <ClCompile Include="test\test_uintwide_t_float_convert.cpp" />
