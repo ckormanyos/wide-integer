@@ -76,6 +76,12 @@
     <ClInclude Include="examples\example_uintwide_t.h">
       <Filter>Source Files\examples</Filter>
     </ClInclude>
+    <ClInclude Include="test\test.hpp">
+      <Filter>Source Files\test</Filter>
+    </ClInclude>
+    <ClInclude Include="test\test_arithmetic.hpp">
+      <Filter>Source Files\test</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="test\test.cpp">
@@ -164,6 +170,9 @@
     </ClCompile>
     <ClCompile Include="examples\example012_rsa_crypto.cpp">
       <Filter>Source Files\examples</Filter>
+    </ClCompile>
+    <ClCompile Include="test\test_uintwide_t_boost_backend_via_test_arithmetic.cpp">
+      <Filter>Source Files\test</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
