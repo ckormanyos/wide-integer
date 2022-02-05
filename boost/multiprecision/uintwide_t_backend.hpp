@@ -782,7 +782,7 @@
     static_assert((!std::is_signed<local_unsigned_integral_type>::value),
                   "Error: Wrong signed instantiation (destination type should be unsigned).");
 
-    *result = val.crepresentation().template operator local_unsigned_integral_type();
+    *result = static_cast<local_unsigned_integral_type>(val.crepresentation());
   }
 
   template<typename SignedIntegralType,
@@ -808,7 +808,7 @@
     static_assert(std::is_signed<local_signed_integral_type>::value,
                   "Error: Wrong unsigned instantiation (destination type should be signed).");
 
-    *result = val.crepresentation().template operator local_signed_integral_type();
+    *result = static_cast<local_signed_integral_type>(val.crepresentation());
   }
 
   template<
