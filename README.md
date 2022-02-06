@@ -410,7 +410,10 @@ within the prepended outer namespace `something_unique` ---
 as in
 
 ```cpp
-namespace ::something_unique::math::wide_integer { }
+namespace something_unique::math::wide_integer
+{
+  // ...
+}
 ```
 
 When utilizing the `WIDE_INTEGER_NAMESPACE` option,
@@ -554,16 +557,8 @@ int main()
 
   // Create the string '1' + 3,333 times '0', which is
   // equivalent to the decimal integral value 10^3333.
-  std::array<char, 3335U> str_a;
 
-  std::fill(str_a.begin() + 1U,
-            str_a.begin() + 1U + 3333U,
-            '0');
-
-  str_a.front() = '1';
-  str_a.back()  = '\0';
-
-  std::array<char, 1113U> str_control;
+  const std::string str_a = "1" + std::string(3333U, static_cast<char>('0'));
 
   const uint11264_t a = str_a.data();
 
@@ -572,14 +567,10 @@ int main()
   // Create the string '1' + 1,111 times '0', which is
   // equivalent to the decimal integral value 10^1111.
   // (This is the cube root of 10^3333.)
-  std::fill(str_control.begin() + 1U,
-            str_control.begin() + 1U + 1111U,
-            '0');
 
-  str_control.front() = '1';
-  str_control.back()  = '\0';
+  const std::string str_control = "1" + std::string(1111U, static_cast<char>('0'));
 
-  const bool result_is_ok = (s == str_control.data());
+  const bool result_is_ok = (s == uint11264_t(str_control.data()));
 
   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
 }
@@ -615,7 +606,7 @@ constexpr bool result_is_ok = (   (c == "0xE491A360C57EB4306C61F9A04F7F7D99BE367
                                && (std::uint_fast8_t(d) == 10U));
 
 // constexpr verification.
-static_assert(result_is_ok == true, "Error: example is not OK!");
+static_assert(result_is_ok, "Error: example is not OK!");
 ```
 
 `constexpr`-_ness_ of `uintwide_t` has been checked on GCC 10, GCC 11, clang 10
