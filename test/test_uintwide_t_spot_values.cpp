@@ -6,6 +6,7 @@
 //
 
 #include <cassert>
+#include <iostream>
 #include <sstream>
 
 #include <math/wide_integer/uintwide_t.h>
@@ -49,6 +50,13 @@ namespace local
 
     #if defined(__clang__)
     #pragma GCC diagnostic pop
+    #endif
+
+    #if defined(__clang__)
+    std::cout << "__clang__: "       << __clang__       << std::endl;
+    #endif
+    #if defined(__clang_major__)
+    std::cout << "__clang_major__: " << __clang_major__ << std::endl;
     #endif
 
     return local_result_is_ok;
