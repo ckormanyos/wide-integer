@@ -150,12 +150,15 @@ jobs:
           fetch-depth: '0'
       - name: clone-submods-bootstrap-headers-boost-develop
         run: |
-          git clone -b issue431 --depth 1 https://github.com/boostorg/boost.git ../boost-root
+          git clone -b develop --depth 1 https://github.com/boostorg/boost.git ../boost-root
           cd ../boost-root
           git submodule update --init tools
           git submodule update --init libs/config
           git submodule update --init libs/math
           git submodule update --init libs/multiprecision
+          cd libs/multiprecision
+          git checkout issue431
+          cd ../..
           ./bootstrap.sh
           ./b2 headers
       - name: gcc-clang-native
