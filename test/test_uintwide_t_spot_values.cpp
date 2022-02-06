@@ -6,7 +6,6 @@
 //
 
 #include <cassert>
-#include <iostream>
 #include <sstream>
 
 #include <math/wide_integer/uintwide_t.h>
@@ -25,7 +24,7 @@ namespace local
 
     const auto a0(x);
 
-    #if defined(__clang__)
+    #if defined(__clang__) && (defined(__clang_major__) && (__clang_major__ > 6))
     #pragma GCC diagnostic push
     #pragma GCC diagnostic ignored "-Wself-assign-overloaded"
     #endif
@@ -48,15 +47,8 @@ namespace local
       local_result_is_ok &= (a == 1U);
     }
 
-    #if defined(__clang__)
+    #if defined(__clang__) && (defined(__clang_major__) && (__clang_major__ > 6))
     #pragma GCC diagnostic pop
-    #endif
-
-    #if defined(__clang__)
-    std::cout << "__clang__: "       << __clang__       << std::endl;
-    #endif
-    #if defined(__clang_major__)
-    std::cout << "__clang_major__: " << __clang_major__ << std::endl;
     #endif
 
     return local_result_is_ok;
