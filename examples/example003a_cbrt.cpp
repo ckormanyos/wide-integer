@@ -25,7 +25,7 @@ auto math::wide_integer::example003a_cbrt() -> bool
   // Create the string '1' + 3,333 times '0', which is
   // equivalent to the decimal integral value 10^3333.
 
-  const std::string str_a = "1" + std::string(3333U, '0');
+  const std::string str_a = "1" + std::string(3333U, static_cast<char>('0'));
 
   const uint11264_t a = str_a.data();
 
@@ -35,7 +35,7 @@ auto math::wide_integer::example003a_cbrt() -> bool
   // equivalent to the decimal integral value 10^1111.
   // (This is the cube root of 10^3333.)
 
-  const std::string str_control = "1" + std::string(1111U, '0');
+  const std::string str_control = "1" + std::string(1111U, static_cast<char>('0'));
 
   const bool result_is_ok = (s == uint11264_t(str_control.data()));
 
