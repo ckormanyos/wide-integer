@@ -88,6 +88,69 @@ auto math::wide_integer::test_uintwide_t_spot_values() -> bool // NOLINT(readabi
   bool result_is_ok = true;
 
   {
+    // See also https://github.com/ckormanyos/wide-integer/issues/234
+    // In particular, how do I synthesize uint80_t?
+
+    #if defined(WIDE_INTEGER_NAMESPACE)
+    using local_uint80_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<static_cast<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t>(UINT32_C(80)), std::uint16_t>;
+    #else
+    using local_uint80_type = math::wide_integer::uintwide_t<static_cast<math::wide_integer::size_t>(UINT32_C(80)), std::uint16_t>;
+    #endif
+
+    local_uint80_type u(123); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
+    local_uint80_type v(456); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
+
+    u *= u; // 15129
+    u *= u; // 228886641
+    u *= u; // 52389094428262881
+
+    result_is_ok &= (u == local_uint80_type("52389094428262881"));
+
+    v *= v; // 207936
+    v *= v; // 43237380096
+    v *= v; // 1869471037565976969216
+
+    result_is_ok &= (v == local_uint80_type("1869471037565976969216"));
+
+    const std::uint16_t w = static_cast<std::uint16_t>(v / u);
+
+    result_is_ok &= (w == UINT16_C(35684));
+  }
+
+  {
+    // See also https://github.com/ckormanyos/wide-integer/issues/234
+    // In particular, how to find sint512_t.operator|(uint32_t).
+
+    #if defined(WIDE_INTEGER_NAMESPACE)
+    using local_sint512_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<static_cast<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t>(UINT32_C(512)), std::uint32_t, void, true>;
+    #else
+    using local_sint512_type = math::wide_integer::uintwide_t<static_cast<math::wide_integer::size_t>(UINT32_C(512)), std::uint32_t, void, true>;
+    #endif
+
+    WIDE_INTEGER_CONSTEXPR local_sint512_type u1("0x7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF55555555");
+    WIDE_INTEGER_CONSTEXPR std::uint32_t      v1 = UINT32_C(0xAAAAAAAA);
+    WIDE_INTEGER_CONSTEXPR local_sint512_type w1 = u1 | v1;
+
+    WIDE_INTEGER_CONSTEXPR local_sint512_type u2("0x7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF55555555");
+    WIDE_INTEGER_CONSTEXPR std::uint32_t      v2 = UINT32_C(0xAAAAAAAA);
+    WIDE_INTEGER_CONSTEXPR local_sint512_type w2 = v2 | u2;
+
+    WIDE_INTEGER_CONSTEXPR bool w1_is_ok = (w1  == (std::numeric_limits<local_sint512_type>::max)());
+    WIDE_INTEGER_CONSTEXPR bool w2_is_ok = (w2  == (std::numeric_limits<local_sint512_type>::max)());
+
+    #if(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST == 1)
+    static_assert(w1_is_ok, "Error: Bitwise OR with built-in type is not OK");
+    #endif
+
+    #if(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST == 1)
+    static_assert(w2_is_ok, "Error: Bitwise OR with built-in type is not OK");
+    #endif
+
+    result_is_ok &= w1_is_ok;
+    result_is_ok &= w2_is_ok;
+  }
+
+  {
     // See also https://github.com/ckormanyos/wide-integer/issues/213
 
     #if defined(WIDE_INTEGER_NAMESPACE)
@@ -700,13 +763,17 @@ auto math::wide_integer::test_uintwide_t_spot_values() -> bool // NOLINT(readabi
     WIDE_INTEGER_CONSTEXPR auto
     input
     {
-      math::wide_integer::uintwide_t<320U, std::uint32_t, void, true>
+      #if defined(WIDE_INTEGER_NAMESPACE)
+      WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<static_cast<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t>(UINT32_C(320)), std::uint32_t, void, true>
+      #else
+      math::wide_integer::uintwide_t<static_cast<math::wide_integer::size_t>(UINT32_C(320)), std::uint32_t, void, true>
+      #endif
       {
-        1729348762983LL
+        1729348762983LL // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
       }
     };
 
-    WIDE_INTEGER_CONSTEXPR bool result_ll_is_ok = (static_cast<long long>(input) == 1729348762983LL); // NOLINT(google-runtime-int)
+    WIDE_INTEGER_CONSTEXPR bool result_ll_is_ok = (static_cast<long long>(input) == 1729348762983LL); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers,google-runtime-int)
 
     #if defined(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST) && (WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST != 0)
     static_assert(result_ll_is_ok, "Error: test_uintwide_t_spot_values unsigned not OK!");
@@ -777,7 +844,7 @@ auto math::wide_integer::test_uintwide_t_spot_values() -> bool // NOLINT(readabi
 
     result_is_ok &= ((a * b) == c);
 
-    WIDE_INTEGER_CONSTEXPR uint256_t q(10U);
+    WIDE_INTEGER_CONSTEXPR uint256_t q(10U); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
 
     result_is_ok &= ((a / b) == q);
 

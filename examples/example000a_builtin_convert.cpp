@@ -28,9 +28,9 @@ auto math::wide_integer::example000a_builtin_convert() -> bool
   using math::wide_integer::int256_t;
 
   {
-    WIDE_INTEGER_CONSTEXPR int256_t n = -1234567.89;
+    WIDE_INTEGER_CONSTEXPR int256_t n = -1234567.89; // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
 
-    WIDE_INTEGER_CONSTEXPR bool result_n_is_ok = (n == -1234567);
+    WIDE_INTEGER_CONSTEXPR bool result_n_is_ok = (n == -1234567); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
 
     #if defined(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST) && (WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST != 0)
     static_assert(result_n_is_ok, "Error: example000a_builtin_convert not OK!");
@@ -46,7 +46,7 @@ auto math::wide_integer::example000a_builtin_convert() -> bool
 
     using local::fabs;
 
-    WIDE_INTEGER_CONSTEXPR float closeness     = fabs(1.0F - fabs(f / -1.23456789E31F));
+    WIDE_INTEGER_CONSTEXPR float closeness     = fabs(1.0F - fabs(f / -1.23456789E31F)); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
     WIDE_INTEGER_CONSTEXPR bool result_f_is_ok = (closeness < std::numeric_limits<float>::epsilon());
 
     #if defined(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST) && (WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST != 0)
