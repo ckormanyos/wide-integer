@@ -3965,7 +3965,7 @@
             {
               operator<<=(3);
 
-              *values.begin() |= uc_oct;
+              *values.begin() = static_cast<limb_type>(*values.begin() | uc_oct);
             }
           }
           else if(base == UINT8_C(10))
@@ -3995,7 +3995,7 @@
             {
               operator<<=(4);
 
-              *values.begin() |= uc_hex;
+              *values.begin() = static_cast<limb_type>(*values.begin() | uc_hex);
             }
           }
         }

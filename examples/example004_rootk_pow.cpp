@@ -20,7 +20,7 @@ auto math::wide_integer::example004_rootk_pow() -> bool
     using math::wide_integer::uint256_t;
 
     WIDE_INTEGER_CONSTEXPR uint256_t x("0x95E0E51079E1D11737D3FD01429AA745582FEB4381D61FA56948C1A949E43C32");
-    WIDE_INTEGER_CONSTEXPR uint256_t r = rootk(x, 7U);
+    WIDE_INTEGER_CONSTEXPR uint256_t r = rootk(x, 7U); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
 
     WIDE_INTEGER_CONSTEXPR bool result_is_ok_root = (r == UINT64_C(0x16067D1894));
 
@@ -35,7 +35,7 @@ auto math::wide_integer::example004_rootk_pow() -> bool
     using math::wide_integer::uint256_t;
 
     WIDE_INTEGER_CONSTEXPR uint256_t r(UINT64_C(0x16067D1894));
-    WIDE_INTEGER_CONSTEXPR uint256_t p = pow(r, 7U);
+    WIDE_INTEGER_CONSTEXPR uint256_t p = pow(r, 7U); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
 
     WIDE_INTEGER_CONSTEXPR bool result_is_ok_pow = (p == "0x95E0E5104B2F636571834936C982E40EFA25682E7370CD1C248051E1CDC34000");
 
