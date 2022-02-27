@@ -14,39 +14,62 @@
 namespace issue_234
 {
   // See also https://github.com/ckormanyos/wide-integer/issues/234#issuecomment-1052960210
-  using uint80  = math::wide_integer::uintwide_t<static_cast<size_t>(UINT32_C( 80)), std::uint16_t>;
-  using uint512 = math::wide_integer::uintwide_t<static_cast<size_t>(UINT32_C(512)), std::uint32_t>;
+  #if defined(WIDE_INTEGER_NAMESPACE)
+  using uint80  = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<static_cast<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t>(UINT32_C( 80)), std::uint16_t>;
+  using uint512 = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<static_cast<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t>(UINT32_C(512)), std::uint32_t>;
+  #else
+  using uint80  = math::wide_integer::uintwide_t<static_cast<math::wide_integer::size_t>(UINT32_C( 80)), std::uint16_t>;
+  using uint512 = math::wide_integer::uintwide_t<static_cast<math::wide_integer::size_t>(UINT32_C(512)), std::uint32_t>;
+  #endif
 
   inline WIDE_INTEGER_CONSTEXPR auto convert_to_uint80(uint512 value) -> uint80
   {
+    #if defined(WIDE_INTEGER_NAMESPACE)
+    using WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::make_lo;
+    using WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::make_hi;
+    #else
+    using math::wide_integer::detail::make_lo;
+    using math::wide_integer::detail::make_hi;
+    #endif
+
     static_assert(std::numeric_limits<typename uint80::limb_type>::digits * 2 == std::numeric_limits<typename uint512::limb_type>::digits,
                   "Error: Wrong input/output limb types for this conversion");
+
+    using local_value_type = typename uint80::representation_type::value_type;
 
     return
       uint80::from_rep
       (
         {
-          math::wide_integer::detail::make_lo<typename uint80::representation_type::value_type>(*(value.crepresentation().data() + 0U)),
-          math::wide_integer::detail::make_hi<typename uint80::representation_type::value_type>(*(value.crepresentation().data() + 0U)),
-          math::wide_integer::detail::make_lo<typename uint80::representation_type::value_type>(*(value.crepresentation().data() + 1U)),
-          math::wide_integer::detail::make_hi<typename uint80::representation_type::value_type>(*(value.crepresentation().data() + 1U)),
-          math::wide_integer::detail::make_lo<typename uint80::representation_type::value_type>(*(value.crepresentation().data() + 2U))
+          make_lo<local_value_type>(*(value.crepresentation().data() + 0U)),
+          make_hi<local_value_type>(*(value.crepresentation().data() + 0U)),
+          make_lo<local_value_type>(*(value.crepresentation().data() + 1U)),
+          make_hi<local_value_type>(*(value.crepresentation().data() + 1U)),
+          make_lo<local_value_type>(*(value.crepresentation().data() + 2U))
         }
       );
   }
 
   inline WIDE_INTEGER_CONSTEXPR auto convert_to_uint512(uint80 value) -> uint512
   {
+    #if defined(WIDE_INTEGER_NAMESPACE)
+    using WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::make_large;
+    #else
+    using math::wide_integer::detail::make_large;
+    #endif
+
     static_assert(std::numeric_limits<typename uint80::limb_type>::digits * 2 == std::numeric_limits<typename uint512::limb_type>::digits,
                   "Error: Wrong input/output limb types for this conversion");
+
+    using local_value_type = typename uint80::representation_type::value_type;
 
     return
       uint512::from_rep
       (
         {
-          math::wide_integer::detail::make_large(*(value.crepresentation().data() + 0U), *(value.crepresentation().data() + 1U)),
-          math::wide_integer::detail::make_large(*(value.crepresentation().data() + 2U), *(value.crepresentation().data() + 3U)),
-          math::wide_integer::detail::make_large(*(value.crepresentation().data() + 4U), static_cast<typename uint80::representation_type::value_type>(0U))
+          make_large(*(value.crepresentation().data() + 0U), *(value.crepresentation().data() + 1U)),
+          make_large(*(value.crepresentation().data() + 2U), *(value.crepresentation().data() + 3U)),
+          make_large(*(value.crepresentation().data() + 4U), static_cast<local_value_type>(0U))
         }
       );
   }
