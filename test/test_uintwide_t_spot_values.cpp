@@ -11,6 +11,47 @@
 #include <math/wide_integer/uintwide_t.h>
 #include <test/test_uintwide_t.h>
 
+namespace issue_234
+{
+  // See also https://github.com/ckormanyos/wide-integer/issues/234#issuecomment-1052960210
+  using uint80  = math::wide_integer::uintwide_t<static_cast<size_t>(UINT32_C( 80)), std::uint16_t>;
+  using uint512 = math::wide_integer::uintwide_t<static_cast<size_t>(UINT32_C(512)), std::uint32_t>;
+
+  inline WIDE_INTEGER_CONSTEXPR auto convert_to_uint80(uint512 value) -> uint80
+  {
+    static_assert(std::numeric_limits<typename uint80::limb_type>::digits * 2 == std::numeric_limits<typename uint512::limb_type>::digits,
+                  "Error: Wrong input/output limb types for this conversion");
+
+    return
+      uint80::from_rep
+      (
+        {
+          math::wide_integer::detail::make_lo<typename uint80::representation_type::value_type>(*(value.crepresentation().data() + 0U)),
+          math::wide_integer::detail::make_hi<typename uint80::representation_type::value_type>(*(value.crepresentation().data() + 0U)),
+          math::wide_integer::detail::make_lo<typename uint80::representation_type::value_type>(*(value.crepresentation().data() + 1U)),
+          math::wide_integer::detail::make_hi<typename uint80::representation_type::value_type>(*(value.crepresentation().data() + 1U)),
+          math::wide_integer::detail::make_lo<typename uint80::representation_type::value_type>(*(value.crepresentation().data() + 2U))
+        }
+      );
+  }
+
+  inline WIDE_INTEGER_CONSTEXPR auto convert_to_uint512(uint80 value) -> uint512
+  {
+    static_assert(std::numeric_limits<typename uint80::limb_type>::digits * 2 == std::numeric_limits<typename uint512::limb_type>::digits,
+                  "Error: Wrong input/output limb types for this conversion");
+
+    return
+      uint512::from_rep
+      (
+        {
+          math::wide_integer::detail::make_large(*(value.crepresentation().data() + 0U), *(value.crepresentation().data() + 1U)),
+          math::wide_integer::detail::make_large(*(value.crepresentation().data() + 2U), *(value.crepresentation().data() + 3U)),
+          math::wide_integer::detail::make_large(*(value.crepresentation().data() + 4U), static_cast<typename uint80::representation_type::value_type>(0U))
+        }
+      );
+  }
+} // namespace issue_234
+
 namespace local
 {
   template<typename UnknownIntegerType>
@@ -86,6 +127,34 @@ auto math::wide_integer::test_uintwide_t_spot_values() -> bool // NOLINT(readabi
 #endif
 {
   bool result_is_ok = true;
+
+  {
+    // See also https://github.com/ckormanyos/wide-integer/issues/234#issuecomment-1052960210
+    WIDE_INTEGER_CONSTEXPR issue_234::uint512 u512("0x123456780123456780");
+    WIDE_INTEGER_CONSTEXPR issue_234::uint80  u80 = issue_234::convert_to_uint80(u512);
+
+    const bool convert_512_to_80_is_ok = (u80 == issue_234::uint80("0x123456780123456780"));
+
+    result_is_ok &= convert_512_to_80_is_ok;
+
+    #if(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST == 1)
+    static_assert(convert_512_to_80_is_ok, "Error: Converting 512-bit type to 80-bit type is not OK");
+    #endif
+  }
+
+  {
+    // See also https://github.com/ckormanyos/wide-integer/issues/234#issuecomment-1052960210
+    WIDE_INTEGER_CONSTEXPR issue_234::uint80  u80("0x123456780123456780");
+    WIDE_INTEGER_CONSTEXPR issue_234::uint512 u512 = issue_234::convert_to_uint512(u80);
+
+    const bool convert_80_to_512_is_ok = (u512 == issue_234::uint512("0x123456780123456780"));
+
+    #if(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST == 1)
+    static_assert(convert_80_to_512_is_ok, "Error: Converting 80-bit type to 512-bit type is not OK");
+    #endif
+
+    result_is_ok &= convert_80_to_512_is_ok;
+  }
 
   {
     // See also https://github.com/ckormanyos/wide-integer/issues/234

@@ -21,6 +21,12 @@ In addition, small integer types such as software-synthesized versions of
 `uint24_t`, `uint48_t`, `uint64_t`, `uint96_t`, `uint128_t`, etc.
 (or signed counterparts of these) can also be created with wide-integer.
 
+We also emphasize here that less-common types (i.e., those less common than, say,
+`uint128_t`, `uint256_t`, `uint512_t`, etc.) can also be synthesized.
+Types such as `uint80_t` made from five 16-bit limbs,
+or `uint96_t` composed of three 32-bit limbs, or
+other similar types can be readily synthesized with wide-integer.
+
 Wide-integer also features basic realizations of several
 elementary and number theoretical functions such as root finding,
 random distribution, Miller-Rabin primality testing,
