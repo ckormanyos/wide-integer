@@ -964,6 +964,30 @@
     WIDE_INTEGER_CONSTEXPR fixed_static_array(const fixed_static_array&) = default;
     WIDE_INTEGER_CONSTEXPR fixed_static_array(fixed_static_array&&) noexcept = default;
 
+    WIDE_INTEGER_CONSTEXPR fixed_static_array(std::initializer_list<typename base_class_type::value_type> lst)
+    {
+      const auto size_to_copy =
+        (std::min)(static_cast<size_type>(lst.size()),
+                   static_cast<size_type>(MySize));
+
+      if(size_to_copy < static_cast<size_type>(base_class_type::size()))
+      {
+        std::copy(lst.begin(),
+                  lst.begin() + size_to_copy,
+                  base_class_type::begin());
+
+        std::fill(base_class_type::begin() + size_to_copy,
+                  base_class_type::end(),
+                  static_cast<typename base_class_type::value_type>(0U));
+      }
+      else
+      {
+        std::copy(lst.begin(),
+                  lst.begin() + size_to_copy,
+                  base_class_type::begin());
+      }
+    }
+
     WIDE_INTEGER_CONSTEXPR ~fixed_static_array() = default;
 
     WIDE_INTEGER_CONSTEXPR auto operator=(const fixed_static_array& other_array) -> fixed_static_array& = default;
@@ -2501,22 +2525,26 @@
       return (static_cast<std::uint_fast8_t>(static_cast<std::uint_fast8_t>(a.values.back() >> static_cast<size_t>(std::numeric_limits<typename uintwide_t<Width2, LimbType, AllocatorType, RePhraseIsSigned>::limb_type>::digits - 1)) & 1U) != 0U);
     }
 
+    static constexpr auto from_rep(const representation_type& other_rep) -> uintwide_t
+    {
+      // Create a factory-like object from the internal data representation.
+      return uintwide_t(static_cast<const representation_type&>(other_rep));
+    }
+
+    static constexpr auto from_rep(representation_type&& other_rep) -> uintwide_t
+    {
+      // Create a factory-like object from the internal data representation.
+      return uintwide_t(static_cast<representation_type&&>(other_rep));
+    }
+
   private:
     representation_type values { };  // NOLINT(readability-identifier-naming)
 
-    static constexpr auto from_rep(const representation_type& other_rep) -> uintwide_t
-    {
-      // Factory-like creator from the internal data representation.
+    explicit constexpr uintwide_t(const representation_type& other_rep)
+      : values(static_cast<const representation_type&>(other_rep)) { }
 
-      return [&other_rep]() -> uintwide_t
-      {
-        uintwide_t a;
-
-        a.values = other_rep;
-
-        return a;
-      }();
-    }
+    explicit constexpr uintwide_t(representation_type&& other_rep)
+      : values(static_cast<representation_type&&>(other_rep)) { }
 
     template<typename InputIteratorLeftType,
              typename InputIteratorRightType>
@@ -2544,20 +2572,20 @@
     template<typename UnknownBuiltInIntegralType>
     struct digits_ratio
     {
-      using local_unknown_integral_type  = UnknownBuiltInIntegralType;
+      using local_unknown_builtin_integral_type  = UnknownBuiltInIntegralType;
 
       using local_unsigned_conversion_type =
         typename detail::uint_type_helper<
-          std::numeric_limits<local_unknown_integral_type>::is_signed
-            ? static_cast<size_t>(std::numeric_limits<local_unknown_integral_type>::digits + 1)
-            : static_cast<size_t>(std::numeric_limits<local_unknown_integral_type>::digits + 0)>::exact_unsigned_type;
+          std::numeric_limits<local_unknown_builtin_integral_type>::is_signed
+            ? static_cast<size_t>(std::numeric_limits<local_unknown_builtin_integral_type>::digits + 1)
+            : static_cast<size_t>(std::numeric_limits<local_unknown_builtin_integral_type>::digits + 0)>::exact_unsigned_type;
 
       static constexpr unsigned_fast_type value = 
         static_cast<unsigned_fast_type>(  std::numeric_limits<local_unsigned_conversion_type>::digits
                                         / std::numeric_limits<limb_type>::digits);
 
       template<typename InputIteratorLeft>
-      static WIDE_INTEGER_CONSTEXPR auto extract(InputIteratorLeft  p_limb, unsigned_fast_type limb_count) -> local_unknown_integral_type
+      static WIDE_INTEGER_CONSTEXPR auto extract(InputIteratorLeft p_limb, unsigned_fast_type limb_count) -> local_unknown_builtin_integral_type
       {
         using local_limb_type      = typename std::iterator_traits<InputIteratorLeft>::value_type;
         using left_difference_type = typename std::iterator_traits<InputIteratorLeft>::difference_type;
@@ -2574,7 +2602,7 @@
             );
         }
 
-        return static_cast<local_unknown_integral_type>(u);
+        return static_cast<local_unknown_builtin_integral_type>(u);
       }
     };
 
