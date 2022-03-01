@@ -852,6 +852,8 @@
   } // namespace boost
   #endif
 
+  #if (BOOST_VERSION < 107900)
+
   #if(__cplusplus >= 201703L)
   namespace boost::math::policies {
   #else
@@ -894,6 +896,8 @@
   } // namespace policies
   } // namespace math
   } // namespace boost
+  #endif
+
   #endif
 
   namespace std // NOLINT(cert-dcl58-cpp)
