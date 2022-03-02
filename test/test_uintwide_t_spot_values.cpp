@@ -475,8 +475,13 @@ auto local_test_spot_values::test() -> bool // NOLINT(readability-function-cogni
   {
     // See also https://github.com/ckormanyos/wide-integer/issues/90
 
+    #if defined(WIDE_INTEGER_NAMESPACE)
+    using WIDE_INTEGER_NAMESPACE::math::wide_integer::uint128_t;
+    using WIDE_INTEGER_NAMESPACE::math::wide_integer::int128_t;
+    #else
     using math::wide_integer::uint128_t;
     using math::wide_integer::int128_t;
+    #endif
 
     // Get randoms via:
     // RandomInteger[{100000000000000000000000000000000000, 10000000000000000000000000000000000000}]
@@ -507,8 +512,13 @@ auto local_test_spot_values::test() -> bool // NOLINT(readability-function-cogni
   {
     // See also https://github.com/ckormanyos/wide-integer/issues/145#issuecomment-1006374713
 
+    #if defined(WIDE_INTEGER_NAMESPACE)
+    using WIDE_INTEGER_NAMESPACE::math::wide_integer::uint128_t;
+    using WIDE_INTEGER_NAMESPACE::math::wide_integer::int128_t;
+    #else
     using math::wide_integer::uint128_t;
     using math::wide_integer::int128_t;
+    #endif
 
     // Get randoms via:
     // RandomInteger[{100000000000000000000000000000000000, 10000000000000000000000000000000000000}]
@@ -534,6 +544,18 @@ auto local_test_spot_values::test() -> bool // NOLINT(readability-function-cogni
     // See also https://github.com/ckormanyos/wide-integer/issues/154
 
     {
+      #if defined(WIDE_INTEGER_NAMESPACE)
+      using local_uint64_type    = WIDE_INTEGER_NAMESPACE::math::wide_integer::uint64_t;
+      using local_uint128_type   = WIDE_INTEGER_NAMESPACE::math::wide_integer::uint128_t;
+      using local_uint512_type   = WIDE_INTEGER_NAMESPACE::math::wide_integer::uint512_t;
+      using local_uint1024_type  = WIDE_INTEGER_NAMESPACE::math::wide_integer::uint1024_t;
+      using local_uint2048_type  = WIDE_INTEGER_NAMESPACE::math::wide_integer::uint2048_t;
+      using local_uint4096_type  = WIDE_INTEGER_NAMESPACE::math::wide_integer::uint4096_t;
+      using local_uint8192_type  = WIDE_INTEGER_NAMESPACE::math::wide_integer::uint8192_t;
+      using local_uint16384_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::uint16384_t;
+      using local_uint32768_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::uint32768_t;
+      using local_uint65536_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::uint65536_t;
+      #else
       using local_uint64_type    = math::wide_integer::uint64_t;
       using local_uint128_type   = math::wide_integer::uint128_t;
       using local_uint512_type   = math::wide_integer::uint512_t;
@@ -544,6 +566,7 @@ auto local_test_spot_values::test() -> bool // NOLINT(readability-function-cogni
       using local_uint16384_type = math::wide_integer::uint16384_t;
       using local_uint32768_type = math::wide_integer::uint32768_t;
       using local_uint65536_type = math::wide_integer::uint65536_t;
+      #endif
 
       #if(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST == 1)
       static_assert((std::numeric_limits<local_uint64_type   >::max)() != 0U, "Error: Static check of convenience type fails");
@@ -593,6 +616,18 @@ auto local_test_spot_values::test() -> bool // NOLINT(readability-function-cogni
     }
 
     {
+      #if defined(WIDE_INTEGER_NAMESPACE)
+      using local_int64_type    = WIDE_INTEGER_NAMESPACE::math::wide_integer::int64_t;
+      using local_int128_type   = WIDE_INTEGER_NAMESPACE::math::wide_integer::int128_t;
+      using local_int512_type   = WIDE_INTEGER_NAMESPACE::math::wide_integer::int512_t;
+      using local_int1024_type  = WIDE_INTEGER_NAMESPACE::math::wide_integer::int1024_t;
+      using local_int2048_type  = WIDE_INTEGER_NAMESPACE::math::wide_integer::int2048_t;
+      using local_int4096_type  = WIDE_INTEGER_NAMESPACE::math::wide_integer::int4096_t;
+      using local_int8192_type  = WIDE_INTEGER_NAMESPACE::math::wide_integer::int8192_t;
+      using local_int16384_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::int16384_t;
+      using local_int32768_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::int32768_t;
+      using local_int65536_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::int65536_t;
+      #else
       using local_int64_type    = math::wide_integer::int64_t;
       using local_int128_type   = math::wide_integer::int128_t;
       using local_int512_type   = math::wide_integer::int512_t;
@@ -603,6 +638,7 @@ auto local_test_spot_values::test() -> bool // NOLINT(readability-function-cogni
       using local_int16384_type = math::wide_integer::int16384_t;
       using local_int32768_type = math::wide_integer::int32768_t;
       using local_int65536_type = math::wide_integer::int65536_t;
+      #endif
 
       #if(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST == 1)
       static_assert((std::numeric_limits<local_int64_type   >::max)() != 0, "Error: Static check of convenience type fails");
@@ -652,7 +688,11 @@ auto local_test_spot_values::test() -> bool // NOLINT(readability-function-cogni
     }
 
     {
+      #if defined(WIDE_INTEGER_NAMESPACE)
+      using local_uint131072_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<static_cast<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t>(UINT32_C(131072)), std::uint32_t, std::allocator<void>, false>;
+      #else
       using local_uint131072_type = math::wide_integer::uintwide_t<static_cast<math::wide_integer::size_t>(UINT32_C(131072)), std::uint32_t, std::allocator<void>, false>;
+      #endif
 
       local_uint131072_type u(123U); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
       local_uint131072_type v( 56U); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
@@ -760,7 +800,11 @@ auto local_test_spot_values::test() -> bool // NOLINT(readability-function-cogni
   }
 
   {
+    #if defined(WIDE_INTEGER_NAMESPACE)
+    using WIDE_INTEGER_NAMESPACE::math::wide_integer::uint256_t;
+    #else
     using math::wide_integer::uint256_t;
+    #endif
 
     // FromDigits["C9DD3EA24800F584CB28C25CC0E6FF1",16]
     // 16770224695321632575655872732632870897
@@ -784,7 +828,11 @@ auto local_test_spot_values::test() -> bool // NOLINT(readability-function-cogni
     // See also https://github.com/ckormanyos/wide-integer/issues/111
 
     {
+      #if defined(WIDE_INTEGER_NAMESPACE)
+      using WIDE_INTEGER_NAMESPACE::math::wide_integer::int256_t;
+      #else
       using math::wide_integer::int256_t;
+      #endif
 
       int256_t a("-578960446186580977117854925043439539266349923328202820197287920"
                  "03956564819968");
@@ -912,7 +960,11 @@ auto local_test_spot_values::test() -> bool // NOLINT(readability-function-cogni
   }
 
   {
+    #if defined(WIDE_INTEGER_NAMESPACE)
+    using WIDE_INTEGER_NAMESPACE::math::wide_integer::uint512_t;
+    #else
     using math::wide_integer::uint512_t;
+    #endif
 
     WIDE_INTEGER_CONSTEXPR uint512_t a("698937339790347543053797400564366118744312537138445607919548628175822115805812983955794321304304417541511379093392776018867245622409026835324102460829431");
     WIDE_INTEGER_CONSTEXPR uint512_t b("100041341335406267530943777943625254875702684549707174207105689918734693139781");
@@ -939,7 +991,11 @@ auto local_test_spot_values::test() -> bool // NOLINT(readability-function-cogni
   }
 
   {
+    #if defined(WIDE_INTEGER_NAMESPACE)
+    using WIDE_INTEGER_NAMESPACE::math::wide_integer::uint256_t;
+    #else
     using math::wide_integer::uint256_t;
+    #endif
 
     static_assert(std::numeric_limits<uint256_t>::digits == 256, // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
                   "Error: Incorrect digit count for this example");
