@@ -33,12 +33,18 @@ namespace local_edge_cases
 } // namespace local_edge_cases
 
 using local_uint_backend_type =
-  boost::multiprecision::uintwide_t_backend<local_edge_cases::local_digits2, std::uint32_t, std::allocator<void>>;
+  boost::multiprecision::uintwide_t_backend<local_edge_cases::local_digits2,
+                                            std::uint32_t,
+                                            std::allocator<std::uint32_t>>;
+
+using boost_uint_backend_allocator_type = void;
 
 using boost_uint_backend_type =
   boost::multiprecision::cpp_int_backend<local_edge_cases::local_digits2,
                                          local_edge_cases::local_digits2,
-                                         boost::multiprecision::unsigned_magnitude>;
+                                         boost::multiprecision::unsigned_magnitude,
+                                         boost::multiprecision::unchecked,
+                                         boost_uint_backend_allocator_type>;
 
 using local_uint_type =
   boost::multiprecision::number<local_uint_backend_type,

@@ -1,4 +1,4 @@
-///////////////////////////////////////////////////////////////////////////////
+﻿///////////////////////////////////////////////////////////////////////////////
 //  Copyright Christopher Kormanyos 2019 - 2022.
 //  Distributed under the Boost Software License,
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt
@@ -42,20 +42,32 @@
     WIDE_INTEGER_NODISCARD auto get_digits2 () const -> math::wide_integer::size_t override { return digits2a + digits2b; }
     #endif
 
+    using boost_uint_backend_a_allocator_type = void;
+
     using boost_uint_backend_a_type =
       boost::multiprecision::cpp_int_backend<digits2a,
                                              digits2a,
-                                             boost::multiprecision::unsigned_magnitude>;
+                                             boost::multiprecision::unsigned_magnitude,
+                                             boost::multiprecision::unchecked,
+                                             boost_uint_backend_a_allocator_type>;
+
+    using boost_uint_backend_b_allocator_type = void;
 
     using boost_uint_backend_b_type =
       boost::multiprecision::cpp_int_backend<digits2b,
                                              digits2b,
-                                             boost::multiprecision::unsigned_magnitude>;
+                                             boost::multiprecision::unsigned_magnitude,
+                                             boost::multiprecision::unchecked,
+                                             boost_uint_backend_b_allocator_type>;
+
+    using boost_uint_backend_c_allocator_type = void;
 
     using boost_uint_backend_c_type =
       boost::multiprecision::cpp_int_backend<digits2a + digits2b,
                                              digits2a + digits2b,
-                                             boost::multiprecision::unsigned_magnitude>;
+                                             boost::multiprecision::unsigned_magnitude,
+                                             boost::multiprecision::unchecked,
+                                             boost_uint_backend_c_allocator_type>;
 
     using boost_uint_a_type = boost::multiprecision::number<boost_uint_backend_a_type, boost::multiprecision::et_off>;
     using boost_uint_b_type = boost::multiprecision::number<boost_uint_backend_b_type, boost::multiprecision::et_off>;

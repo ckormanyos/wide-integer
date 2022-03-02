@@ -1,4 +1,4 @@
-///////////////////////////////////////////////////////////////////////////////
+﻿///////////////////////////////////////////////////////////////////////////////
 //  Copyright Christopher Kormanyos 2019 - 2022.
 //  Distributed under the Boost Software License,
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt
@@ -34,10 +34,14 @@
     static constexpr auto digits2 = static_cast<math::wide_integer::size_t>(MyDigits2);
     #endif
 
+    using boost_uint_backend_allocator_type = void;
+
     using boost_uint_backend_type =
       boost::multiprecision::cpp_int_backend<digits2,
                                              digits2,
-                                             boost::multiprecision::unsigned_magnitude>;
+                                             boost::multiprecision::unsigned_magnitude,
+                                             boost::multiprecision::unchecked,
+                                             boost_uint_backend_allocator_type>;
 
     using boost_uint_type = boost::multiprecision::number<boost_uint_backend_type, boost::multiprecision::et_on>;
 

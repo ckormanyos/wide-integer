@@ -11,7 +11,7 @@
 #include <math/wide_integer/uintwide_t.h>
 #include <test/test_uintwide_t.h>
 
-namespace issue_234
+namespace from_issue_234
 {
   // See also https://github.com/ckormanyos/wide-integer/issues/234#issuecomment-1052960210
   #if defined(WIDE_INTEGER_NAMESPACE)
@@ -67,15 +67,18 @@ namespace issue_234
       uint512::from_rep
       (
         {
-          make_large(*(value.crepresentation().data() + 0U), *(value.crepresentation().data() + 1U)),
-          make_large(*(value.crepresentation().data() + 2U), *(value.crepresentation().data() + 3U)),
-          make_large(*(value.crepresentation().data() + 4U), static_cast<local_value_type>(0U))
+          make_large(*(value.crepresentation().data() + 0U),
+                     *(value.crepresentation().data() + 1U)),
+          make_large(*(value.crepresentation().data() + 2U),
+                     *(value.crepresentation().data() + 3U)),
+          make_large(*(value.crepresentation().data() + 4U),
+                     static_cast<local_value_type>(0U))
         }
       );
   }
-} // namespace issue_234
+} // namespace from_issue_234
 
-namespace local
+namespace from_issue_145
 {
   template<typename UnknownIntegerType>
   auto test_uintwide_t_spot_values_from_issue_145(const UnknownIntegerType x) -> bool
@@ -118,6 +121,10 @@ namespace local
     return local_result_is_ok;
   }
 
+} // namespace from_issue_145
+
+namespace from_pull_request_130
+{
   template<typename UnknownIntegerType>
   WIDE_INTEGER_CONSTEXPR auto test_uintwide_t_spot_values_from_pull_request_130() -> bool
   {
@@ -141,22 +148,47 @@ namespace local
 
     return b_ok;
   }
-} // namespace local
+} // namespace from_pull_request_130
 
-#if defined(WIDE_INTEGER_NAMESPACE)
-auto WIDE_INTEGER_NAMESPACE::math::wide_integer::test_uintwide_t_spot_values() -> bool // NOLINT(readability-function-cognitive-complexity)
-#else
-auto math::wide_integer::test_uintwide_t_spot_values() -> bool // NOLINT(readability-function-cognitive-complexity)
-#endif
+namespace local_test_spot_values
+{
+  auto test() -> bool;
+} // namespace local_test_spot_values
+
+auto local_test_spot_values::test() -> bool // NOLINT(readability-function-cognitive-complexity)
 {
   bool result_is_ok = true;
 
   {
-    // See also https://github.com/ckormanyos/wide-integer/issues/234#issuecomment-1052960210
-    WIDE_INTEGER_CONSTEXPR issue_234::uint512 u512("0x123456780123456780");
-    WIDE_INTEGER_CONSTEXPR issue_234::uint80  u80 = issue_234::convert_to_uint80(u512);
+    // See also: https://github.com/ckormanyos/wide-integer/issues/234#issuecomment-1053733496
 
-    const bool convert_512_to_80_is_ok = (u80 == issue_234::uint80("0x123456780123456780"));
+    #if defined WIDE_INTEGER_NAMESPACE
+    using local_uint512_t = WIDE_INTEGER_NAMESPACE::math::wide_integer::uint512_t;
+    using local_int512_t  = WIDE_INTEGER_NAMESPACE::math::wide_integer::int512_t;
+    #else
+    using local_uint512_t = math::wide_integer::uint512_t;
+    using local_int512_t  = math::wide_integer::int512_t;
+    #endif
+
+    // BitOr[2^111, 31337]
+    // 2596148429267413814265248164641385
+
+    local_int512_t value = 1;
+    std::uint32_t to_shift = 111;   // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
+    local_uint512_t value2 = 31337; // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
+
+    local_int512_t shift = (value << to_shift);
+    value = shift | static_cast<local_int512_t>(value2); // math::wide_integer::int512_t | math::wide_integer::uint512_t
+
+    result_is_ok &= (value == local_int512_t("2596148429267413814265248164641385"));
+  }
+
+  {
+    // See also https://github.com/ckormanyos/wide-integer/issues/234#issuecomment-1052960210
+    WIDE_INTEGER_CONSTEXPR from_issue_234::uint512 u512("0x123456780123456780");
+    WIDE_INTEGER_CONSTEXPR from_issue_234::uint80  u80 = from_issue_234::convert_to_uint80(u512);
+
+    const bool convert_512_to_80_is_ok = (u80 == from_issue_234::uint80("0x123456780123456780"));
 
     result_is_ok &= convert_512_to_80_is_ok;
 
@@ -167,10 +199,10 @@ auto math::wide_integer::test_uintwide_t_spot_values() -> bool // NOLINT(readabi
 
   {
     // See also https://github.com/ckormanyos/wide-integer/issues/234#issuecomment-1052960210
-    WIDE_INTEGER_CONSTEXPR issue_234::uint80  u80("0x123456780123456780");
-    WIDE_INTEGER_CONSTEXPR issue_234::uint512 u512 = issue_234::convert_to_uint512(u80);
+    WIDE_INTEGER_CONSTEXPR from_issue_234::uint80  u80("0x123456780123456780");
+    WIDE_INTEGER_CONSTEXPR from_issue_234::uint512 u512 = from_issue_234::convert_to_uint512(u80);
 
-    const bool convert_80_to_512_is_ok = (u512 == issue_234::uint512("0x123456780123456780"));
+    const bool convert_80_to_512_is_ok = (u512 == from_issue_234::uint512("0x123456780123456780"));
 
     #if(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST == 1)
     static_assert(convert_80_to_512_is_ok, "Error: Converting 80-bit type to 512-bit type is not OK");
@@ -292,53 +324,58 @@ auto math::wide_integer::test_uintwide_t_spot_values() -> bool // NOLINT(readabi
 
     // Static test of construction rules.
 
-    // Move construction(s)
-    static_assert(std::is_move_constructible           <local_uint128_type>::value, "Error: Type is not move-constructible");
-    static_assert(std::is_move_constructible           <local_int128_type >::value, "Error: Type is not move-constructible");
-    static_assert(std::is_trivially_move_constructible <local_uint128_type>::value, "Error: Type is not trivially move-constructible");
-    static_assert(std::is_trivially_move_constructible <local_int128_type >::value, "Error: Type is not trivially move-constructible");
+    // Various construction(s)
+    static_assert(std::is_default_constructible            <local_uint128_type>::value, "Error: Type is not default-constructible");
+    static_assert(std::is_default_constructible            <local_int128_type >::value, "Error: Type is not default-constructible");
+    static_assert(std::is_copy_constructible               <local_uint128_type>::value, "Error: Type is not copy-constructible");
+    static_assert(std::is_copy_constructible               <local_int128_type >::value, "Error: Type is not copy-constructible");
+    static_assert(std::is_trivially_copy_constructible     <local_uint128_type>::value, "Error: Type is not trivially copy-constructible");
+    static_assert(std::is_trivially_copy_constructible     <local_int128_type >::value, "Error: Type is not trivially copy-constructible");
+    static_assert(std::is_move_constructible               <local_uint128_type>::value, "Error: Type is not move-constructible");
+    static_assert(std::is_move_constructible               <local_int128_type >::value, "Error: Type is not move-constructible");
+    static_assert(std::is_trivially_move_constructible     <local_uint128_type>::value, "Error: Type is not trivially move-constructible");
+    static_assert(std::is_trivially_move_constructible     <local_int128_type >::value, "Error: Type is not trivially move-constructible");
 
     // Constructible
-    static_assert(std::is_trivially_constructible<local_uint128_type, const local_uint128_type&>::value, "Error: Types are not constructible");
+    static_assert(std::is_trivially_constructible<local_uint128_type, const local_uint128_type&>::value, "Error: Types are not trivially constructible");
     static_assert(std::is_constructible          <local_uint128_type,       local_int128_type  >::value, "Error: Types are not constructible");
     static_assert(std::is_constructible          <local_uint128_type,       local_uint160_type >::value, "Error: Types are not constructible");
     static_assert(std::is_constructible          <local_uint128_type,       local_int160_type  >::value, "Error: Types are not constructible");
 
     static_assert(std::is_constructible          <local_int128_type,        local_uint128_type >::value, "Error: Types are not constructible");
-    static_assert(std::is_trivially_constructible<local_int128_type,  const local_int128_type& >::value, "Error: Types are not constructible");
-    static_assert(std::is_move_constructible     <local_int128_type                            >::value, "Error: Types are not constructible");
+    static_assert(std::is_trivially_constructible<local_int128_type,  const local_int128_type& >::value, "Error: Types are not trivially constructible");
     static_assert(std::is_constructible          <local_int128_type,        local_uint160_type >::value, "Error: Types are not constructible");
     static_assert(std::is_constructible          <local_int128_type,        local_int160_type  >::value, "Error: Types are not constructible");
 
     static_assert(std::is_constructible          <local_uint160_type,       local_uint128_type >::value, "Error: Types are not constructible");
     static_assert(std::is_constructible          <local_uint160_type,       local_int128_type  >::value, "Error: Types are not constructible");
-    static_assert(std::is_trivially_constructible<local_uint160_type, const local_uint160_type&>::value, "Error: Types are not constructible");
+    static_assert(std::is_trivially_constructible<local_uint160_type, const local_uint160_type&>::value, "Error: Types are not trivially constructible");
     static_assert(std::is_constructible          <local_uint160_type,       local_int160_type  >::value, "Error: Types are not constructible");
 
     static_assert(std::is_constructible          <local_int160_type,        local_uint128_type >::value, "Error: Types are not constructible");
     static_assert(std::is_constructible          <local_int160_type,        local_int128_type  >::value, "Error: Types are not constructible");
     static_assert(std::is_constructible          <local_int160_type,        local_uint160_type >::value, "Error: Types are not constructible");
-    static_assert(std::is_trivially_constructible<local_int160_type,  const local_int160_type& >::value, "Error: Types are not constructible");
+    static_assert(std::is_trivially_constructible<local_int160_type,  const local_int160_type& >::value, "Error: Types are not trivially constructible");
 
     // Static test of conversion rules.
     //                               <local_uint128_type, local_uint128_type>
-    static_assert(std::is_convertible<local_uint128_type, local_int128_type >::value, "Error: Types are not constructible");
-    static_assert(std::is_convertible<local_uint128_type, local_uint160_type>::value, "Error: Types are not constructible");
-    static_assert(std::is_convertible<local_uint128_type, local_int160_type >::value, "Error: Types are not constructible");
+    static_assert(std::is_convertible<local_uint128_type, local_int128_type >::value, "Error: Types are not convertible");
+    static_assert(std::is_convertible<local_uint128_type, local_uint160_type>::value, "Error: Types are not convertible");
+    static_assert(std::is_convertible<local_uint128_type, local_int160_type >::value, "Error: Types are not convertible");
 
-    static_assert(std::is_convertible<local_int128_type,  local_uint128_type>::value, "Error: Types are not constructible");
+    static_assert(std::is_convertible<local_int128_type,  local_uint128_type>::value, "Error: Types are not convertible");
     //                               <local_int128_type,  local_int128_type >
-    static_assert(std::is_convertible<local_int128_type,  local_uint160_type>::value, "Error: Types are not constructible");
-    static_assert(std::is_convertible<local_int128_type,  local_int160_type >::value, "Error: Types are not constructible");
+    static_assert(std::is_convertible<local_int128_type,  local_uint160_type>::value, "Error: Types are not convertible");
+    static_assert(std::is_convertible<local_int128_type,  local_int160_type >::value, "Error: Types are not convertible");
 
-    static_assert(std::is_convertible<local_uint160_type, local_uint128_type>::value, "Error: Types are not constructible");
-    static_assert(std::is_convertible<local_uint160_type, local_int128_type >::value, "Error: Types are not constructible");
+    static_assert(std::is_convertible<local_uint160_type, local_uint128_type>::value, "Error: Types are not convertible");
+    static_assert(std::is_convertible<local_uint160_type, local_int128_type >::value, "Error: Types are not convertible");
     //                               <local_uint160_type, local_uint160_type>
-    static_assert(std::is_convertible<local_uint160_type, local_int160_type >::value, "Error: Types are not constructible");
+    static_assert(std::is_convertible<local_uint160_type, local_int160_type >::value, "Error: Types are not convertible");
 
-    static_assert(std::is_convertible<local_int160_type,  local_uint128_type>::value, "Error: Types are not constructible");
-    static_assert(std::is_convertible<local_int160_type,  local_int128_type >::value, "Error: Types are not constructible");
-    static_assert(std::is_convertible<local_int160_type,  local_uint160_type>::value, "Error: Types are not constructible");
+    static_assert(std::is_convertible<local_int160_type,  local_uint128_type>::value, "Error: Types are not convertible");
+    static_assert(std::is_convertible<local_int160_type,  local_int128_type >::value, "Error: Types are not convertible");
+    static_assert(std::is_convertible<local_int160_type,  local_uint160_type>::value, "Error: Types are not convertible");
     //                               <local_int160_type,  local_int160_type >
   }
 
@@ -438,8 +475,13 @@ auto math::wide_integer::test_uintwide_t_spot_values() -> bool // NOLINT(readabi
   {
     // See also https://github.com/ckormanyos/wide-integer/issues/90
 
+    #if defined(WIDE_INTEGER_NAMESPACE)
+    using WIDE_INTEGER_NAMESPACE::math::wide_integer::uint128_t;
+    using WIDE_INTEGER_NAMESPACE::math::wide_integer::int128_t;
+    #else
     using math::wide_integer::uint128_t;
     using math::wide_integer::int128_t;
+    #endif
 
     // Get randoms via:
     // RandomInteger[{100000000000000000000000000000000000, 10000000000000000000000000000000000000}]
@@ -470,8 +512,13 @@ auto math::wide_integer::test_uintwide_t_spot_values() -> bool // NOLINT(readabi
   {
     // See also https://github.com/ckormanyos/wide-integer/issues/145#issuecomment-1006374713
 
+    #if defined(WIDE_INTEGER_NAMESPACE)
+    using WIDE_INTEGER_NAMESPACE::math::wide_integer::uint128_t;
+    using WIDE_INTEGER_NAMESPACE::math::wide_integer::int128_t;
+    #else
     using math::wide_integer::uint128_t;
     using math::wide_integer::int128_t;
+    #endif
 
     // Get randoms via:
     // RandomInteger[{100000000000000000000000000000000000, 10000000000000000000000000000000000000}]
@@ -480,23 +527,35 @@ auto math::wide_integer::test_uintwide_t_spot_values() -> bool // NOLINT(readabi
     WIDE_INTEGER_CONSTEXPR uint128_t u1("9784355713321885697254484081284759103");
     WIDE_INTEGER_CONSTEXPR uint128_t u2("1759644461251476961796845209840363274");
 
-    result_is_ok &= local::test_uintwide_t_spot_values_from_issue_145(u0);
-    result_is_ok &= local::test_uintwide_t_spot_values_from_issue_145(u1);
-    result_is_ok &= local::test_uintwide_t_spot_values_from_issue_145(u2);
+    result_is_ok &= from_issue_145::test_uintwide_t_spot_values_from_issue_145(u0);
+    result_is_ok &= from_issue_145::test_uintwide_t_spot_values_from_issue_145(u1);
+    result_is_ok &= from_issue_145::test_uintwide_t_spot_values_from_issue_145(u2);
 
     WIDE_INTEGER_CONSTEXPR int128_t n0("-3076659267683009403742876678609501102");
     WIDE_INTEGER_CONSTEXPR int128_t n1("-9784355713321885697254484081284759103");
     WIDE_INTEGER_CONSTEXPR int128_t n2("-1759644461251476961796845209840363274");
 
-    result_is_ok &= local::test_uintwide_t_spot_values_from_issue_145(n0);
-    result_is_ok &= local::test_uintwide_t_spot_values_from_issue_145(n1);
-    result_is_ok &= local::test_uintwide_t_spot_values_from_issue_145(n2);
+    result_is_ok &= from_issue_145::test_uintwide_t_spot_values_from_issue_145(n0);
+    result_is_ok &= from_issue_145::test_uintwide_t_spot_values_from_issue_145(n1);
+    result_is_ok &= from_issue_145::test_uintwide_t_spot_values_from_issue_145(n2);
   }
 
   {
     // See also https://github.com/ckormanyos/wide-integer/issues/154
 
     {
+      #if defined(WIDE_INTEGER_NAMESPACE)
+      using local_uint64_type    = WIDE_INTEGER_NAMESPACE::math::wide_integer::uint64_t;
+      using local_uint128_type   = WIDE_INTEGER_NAMESPACE::math::wide_integer::uint128_t;
+      using local_uint512_type   = WIDE_INTEGER_NAMESPACE::math::wide_integer::uint512_t;
+      using local_uint1024_type  = WIDE_INTEGER_NAMESPACE::math::wide_integer::uint1024_t;
+      using local_uint2048_type  = WIDE_INTEGER_NAMESPACE::math::wide_integer::uint2048_t;
+      using local_uint4096_type  = WIDE_INTEGER_NAMESPACE::math::wide_integer::uint4096_t;
+      using local_uint8192_type  = WIDE_INTEGER_NAMESPACE::math::wide_integer::uint8192_t;
+      using local_uint16384_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::uint16384_t;
+      using local_uint32768_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::uint32768_t;
+      using local_uint65536_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::uint65536_t;
+      #else
       using local_uint64_type    = math::wide_integer::uint64_t;
       using local_uint128_type   = math::wide_integer::uint128_t;
       using local_uint512_type   = math::wide_integer::uint512_t;
@@ -507,6 +566,7 @@ auto math::wide_integer::test_uintwide_t_spot_values() -> bool // NOLINT(readabi
       using local_uint16384_type = math::wide_integer::uint16384_t;
       using local_uint32768_type = math::wide_integer::uint32768_t;
       using local_uint65536_type = math::wide_integer::uint65536_t;
+      #endif
 
       #if(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST == 1)
       static_assert((std::numeric_limits<local_uint64_type   >::max)() != 0U, "Error: Static check of convenience type fails");
@@ -556,6 +616,18 @@ auto math::wide_integer::test_uintwide_t_spot_values() -> bool // NOLINT(readabi
     }
 
     {
+      #if defined(WIDE_INTEGER_NAMESPACE)
+      using local_int64_type    = WIDE_INTEGER_NAMESPACE::math::wide_integer::int64_t;
+      using local_int128_type   = WIDE_INTEGER_NAMESPACE::math::wide_integer::int128_t;
+      using local_int512_type   = WIDE_INTEGER_NAMESPACE::math::wide_integer::int512_t;
+      using local_int1024_type  = WIDE_INTEGER_NAMESPACE::math::wide_integer::int1024_t;
+      using local_int2048_type  = WIDE_INTEGER_NAMESPACE::math::wide_integer::int2048_t;
+      using local_int4096_type  = WIDE_INTEGER_NAMESPACE::math::wide_integer::int4096_t;
+      using local_int8192_type  = WIDE_INTEGER_NAMESPACE::math::wide_integer::int8192_t;
+      using local_int16384_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::int16384_t;
+      using local_int32768_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::int32768_t;
+      using local_int65536_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::int65536_t;
+      #else
       using local_int64_type    = math::wide_integer::int64_t;
       using local_int128_type   = math::wide_integer::int128_t;
       using local_int512_type   = math::wide_integer::int512_t;
@@ -566,6 +638,7 @@ auto math::wide_integer::test_uintwide_t_spot_values() -> bool // NOLINT(readabi
       using local_int16384_type = math::wide_integer::int16384_t;
       using local_int32768_type = math::wide_integer::int32768_t;
       using local_int65536_type = math::wide_integer::int65536_t;
+      #endif
 
       #if(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST == 1)
       static_assert((std::numeric_limits<local_int64_type   >::max)() != 0, "Error: Static check of convenience type fails");
@@ -615,7 +688,11 @@ auto math::wide_integer::test_uintwide_t_spot_values() -> bool // NOLINT(readabi
     }
 
     {
+      #if defined(WIDE_INTEGER_NAMESPACE)
+      using local_uint131072_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<static_cast<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t>(UINT32_C(131072)), std::uint32_t, std::allocator<void>, false>;
+      #else
       using local_uint131072_type = math::wide_integer::uintwide_t<static_cast<math::wide_integer::size_t>(UINT32_C(131072)), std::uint32_t, std::allocator<void>, false>;
+      #endif
 
       local_uint131072_type u(123U); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
       local_uint131072_type v( 56U); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
@@ -666,10 +743,10 @@ auto math::wide_integer::test_uintwide_t_spot_values() -> bool // NOLINT(readabi
       using type = math::wide_integer::uintwide_t<static_cast<math::wide_integer::size_t>(UINT32_C(64)), std::uint32_t, void, true>;
       #endif
 
-      result_is_ok &= local::test_uintwide_t_spot_values_from_pull_request_130<type>();
+      result_is_ok &= from_pull_request_130::test_uintwide_t_spot_values_from_pull_request_130<type>();
 
       #if(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST == 1)
-      static_assert(local::test_uintwide_t_spot_values_from_pull_request_130<type>(), "Error: Check conditions surrounding issue 130");
+      static_assert(from_pull_request_130::test_uintwide_t_spot_values_from_pull_request_130<type>(), "Error: Check conditions surrounding issue 130");
       #endif
     }
 
@@ -680,10 +757,10 @@ auto math::wide_integer::test_uintwide_t_spot_values() -> bool // NOLINT(readabi
       using type = math::wide_integer::uintwide_t<static_cast<math::wide_integer::size_t>(UINT32_C(64)), std::uint8_t, void, true>;
       #endif
 
-      result_is_ok &= local::test_uintwide_t_spot_values_from_pull_request_130<type>();
+      result_is_ok &= from_pull_request_130::test_uintwide_t_spot_values_from_pull_request_130<type>();
 
       #if(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST == 1)
-      static_assert(local::test_uintwide_t_spot_values_from_pull_request_130<type>(), "Error: Check conditions surrounding issue 130");
+      static_assert(from_pull_request_130::test_uintwide_t_spot_values_from_pull_request_130<type>(), "Error: Check conditions surrounding issue 130");
       #endif
     }
 
@@ -694,36 +771,40 @@ auto math::wide_integer::test_uintwide_t_spot_values() -> bool // NOLINT(readabi
       using type = math::wide_integer::uintwide_t<static_cast<math::wide_integer::size_t>(UINT32_C(256)), std::uint32_t, void, true>;
       #endif
 
-      result_is_ok &= local::test_uintwide_t_spot_values_from_pull_request_130<type>();
+      result_is_ok &= from_pull_request_130::test_uintwide_t_spot_values_from_pull_request_130<type>();
 
       #if(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST == 1)
-      static_assert(local::test_uintwide_t_spot_values_from_pull_request_130<type>(), "Error: Check conditions surrounding issue 130");
+      static_assert(from_pull_request_130::test_uintwide_t_spot_values_from_pull_request_130<type>(), "Error: Check conditions surrounding issue 130");
       #endif
     }
 
     {
       using type = std::int32_t;
 
-      result_is_ok &= local::test_uintwide_t_spot_values_from_pull_request_130<type>();
+      result_is_ok &= from_pull_request_130::test_uintwide_t_spot_values_from_pull_request_130<type>();
 
       #if(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST == 1)
-      static_assert(local::test_uintwide_t_spot_values_from_pull_request_130<type>(), "Error: Check conditions surrounding issue 130");
+      static_assert(from_pull_request_130::test_uintwide_t_spot_values_from_pull_request_130<type>(), "Error: Check conditions surrounding issue 130");
       #endif
     }
 
     {
       using type = std::int64_t;
 
-      result_is_ok &= local::test_uintwide_t_spot_values_from_pull_request_130<type>();
+      result_is_ok &= from_pull_request_130::test_uintwide_t_spot_values_from_pull_request_130<type>();
 
       #if(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST == 1)
-      static_assert(local::test_uintwide_t_spot_values_from_pull_request_130<type>(), "Error: Check conditions surrounding issue 130");
+      static_assert(from_pull_request_130::test_uintwide_t_spot_values_from_pull_request_130<type>(), "Error: Check conditions surrounding issue 130");
       #endif
     }
   }
 
   {
+    #if defined(WIDE_INTEGER_NAMESPACE)
+    using WIDE_INTEGER_NAMESPACE::math::wide_integer::uint256_t;
+    #else
     using math::wide_integer::uint256_t;
+    #endif
 
     // FromDigits["C9DD3EA24800F584CB28C25CC0E6FF1",16]
     // 16770224695321632575655872732632870897
@@ -747,7 +828,11 @@ auto math::wide_integer::test_uintwide_t_spot_values() -> bool // NOLINT(readabi
     // See also https://github.com/ckormanyos/wide-integer/issues/111
 
     {
+      #if defined(WIDE_INTEGER_NAMESPACE)
+      using WIDE_INTEGER_NAMESPACE::math::wide_integer::int256_t;
+      #else
       using math::wide_integer::int256_t;
+      #endif
 
       int256_t a("-578960446186580977117854925043439539266349923328202820197287920"
                  "03956564819968");
@@ -875,7 +960,11 @@ auto math::wide_integer::test_uintwide_t_spot_values() -> bool // NOLINT(readabi
   }
 
   {
+    #if defined(WIDE_INTEGER_NAMESPACE)
+    using WIDE_INTEGER_NAMESPACE::math::wide_integer::uint512_t;
+    #else
     using math::wide_integer::uint512_t;
+    #endif
 
     WIDE_INTEGER_CONSTEXPR uint512_t a("698937339790347543053797400564366118744312537138445607919548628175822115805812983955794321304304417541511379093392776018867245622409026835324102460829431");
     WIDE_INTEGER_CONSTEXPR uint512_t b("100041341335406267530943777943625254875702684549707174207105689918734693139781");
@@ -902,7 +991,11 @@ auto math::wide_integer::test_uintwide_t_spot_values() -> bool // NOLINT(readabi
   }
 
   {
+    #if defined(WIDE_INTEGER_NAMESPACE)
+    using WIDE_INTEGER_NAMESPACE::math::wide_integer::uint256_t;
+    #else
     using math::wide_integer::uint256_t;
+    #endif
 
     static_assert(std::numeric_limits<uint256_t>::digits == 256, // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
                   "Error: Incorrect digit count for this example");
@@ -946,4 +1039,13 @@ auto math::wide_integer::test_uintwide_t_spot_values() -> bool // NOLINT(readabi
   }
 
   return result_is_ok;
+}
+
+#if defined(WIDE_INTEGER_NAMESPACE)
+auto WIDE_INTEGER_NAMESPACE::math::wide_integer::test_uintwide_t_spot_values() -> bool // NOLINT(readability-function-cognitive-complexity)
+#else
+auto math::wide_integer::test_uintwide_t_spot_values() -> bool // NOLINT(readability-function-cognitive-complexity)
+#endif
+{
+  return local_test_spot_values::test();
 }

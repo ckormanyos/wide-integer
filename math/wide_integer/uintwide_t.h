@@ -1593,11 +1593,10 @@
     // Cast operator to built-in Boolean type.
     explicit constexpr operator bool() const { return (!is_zero()); }
 
-    // Cast operator that casts to a uintwide_t having a different width
-    // (but having the same limb type) and possibly a different signed-ness.
+    // Cast operator that casts to a uintwide_t possibly having a different width
+    // and/or possibly having a different signed-ness, but having the same limb type.
     template<const size_t OtherWidth2,
-             const bool OtherIsSigned,
-             typename = typename std::enable_if<(Width2 != OtherWidth2), uintwide_t<OtherWidth2, LimbType, AllocatorType, OtherIsSigned>>::type>
+             const bool OtherIsSigned>
     WIDE_INTEGER_CONSTEXPR operator uintwide_t<OtherWidth2, LimbType, AllocatorType, OtherIsSigned>() const // NOLINT(hicpp-explicit-conversions,google-explicit-constructor)
     {
       const bool this_is_neg = (is_neg(*this));
@@ -1641,23 +1640,6 @@
 
         other.negate();
       }
-
-      return other;
-    }
-
-    // Cast operator that casts to a uintwide_t having a type with the same width
-    // (and having the same limb type) but definitely having a different signed-ness.
-    template<const bool OtherIsSigned,
-             typename = typename std::enable_if<(OtherIsSigned != IsSigned), uintwide_t<Width2, LimbType, AllocatorType, OtherIsSigned>>::type>
-    WIDE_INTEGER_CONSTEXPR operator uintwide_t<Width2, LimbType, AllocatorType, OtherIsSigned>() const // NOLINT(hicpp-explicit-conversions,google-explicit-constructor)
-    {
-      using other_wide_integer_type = uintwide_t<Width2, LimbType, AllocatorType, OtherIsSigned>;
-
-      other_wide_integer_type other;
-
-      std::copy(crepresentation().cbegin(),
-                crepresentation().cend(),
-                other.representation().begin());
 
       return other;
     }
@@ -3307,11 +3289,13 @@
 
           for(auto j = static_cast<unsigned_fast_type>(0U); j < static_cast<unsigned_fast_type>(count - i); ++j)
           {
-            carry = static_cast<local_double_limb_type>(carry + static_cast<local_double_limb_type>(static_cast<local_double_limb_type>(*(a + static_cast<left_difference_type>(i))) * *(b + static_cast<right_difference_type>(j))));
-            carry = static_cast<local_double_limb_type>(carry + *(r + static_cast<result_difference_type>(i + j)));
+            const auto i_plus_j = static_cast<result_difference_type>(i + j);
 
-            *(r + static_cast<result_difference_type>(i + j)) = static_cast<local_limb_type>(carry);
-            carry                                             = detail::make_hi<local_limb_type>(carry);
+            carry = static_cast<local_double_limb_type>(carry + static_cast<local_double_limb_type>(static_cast<local_double_limb_type>(*(a + static_cast<left_difference_type>(i))) * *(b + static_cast<right_difference_type>(j))));
+            carry = static_cast<local_double_limb_type>(carry + *(r + i_plus_j));
+
+            *(r + i_plus_j) = static_cast<local_limb_type>(carry);
+            carry           = detail::make_hi<local_limb_type>(carry);
           }
         }
       }
@@ -3353,14 +3337,28 @@
 
           for( ; j < count; ++j)
           {
-            carry = static_cast<local_double_limb_type>(carry + static_cast<local_double_limb_type>(static_cast<local_double_limb_type>(*(a + static_cast<left_difference_type>(i))) * *(b + static_cast<right_difference_type>(j))));
-            carry = static_cast<local_double_limb_type>(carry + *(r + static_cast<result_difference_type>(i + j)));
+            const auto i_plus_j =
+              static_cast<result_difference_type>
+              (
+                static_cast<result_difference_type>(i) + static_cast<result_difference_type>(j)
+              );
 
-            *(r + static_cast<result_difference_type>(i + j)) = static_cast<local_limb_type>(carry);
-            carry                                             = detail::make_hi<local_limb_type>(carry);
+            carry = static_cast<local_double_limb_type>(carry + static_cast<local_double_limb_type>(static_cast<local_double_limb_type>(*(a + static_cast<left_difference_type>(i))) * *(b + static_cast<right_difference_type>(j))));
+            carry = static_cast<local_double_limb_type>(carry + *(r + i_plus_j));
+
+            *(r + i_plus_j) = static_cast<local_limb_type>(carry);
+            carry           = detail::make_hi<local_limb_type>(carry);
           }
 
-          *(r + static_cast<result_difference_type>(i + j)) = static_cast<local_limb_type>(carry);
+          {
+            const auto i_plus_count =
+              static_cast<result_difference_type>
+              (
+                static_cast<result_difference_type>(i) + static_cast<result_difference_type>(count)
+              );
+
+            *(r + i_plus_count) = static_cast<local_limb_type>(carry);
+          }
         }
       }
     }
@@ -3536,7 +3534,7 @@
         // Check the borrow signs. If a1-a0 and b0-b1 have the same signs,
         // then add |a1-a0|*|b0-b1| to r1, otherwise subtract it from r1.
 
-        const unsigned_fast_type  nh = n / 2U;
+        const auto nh = static_cast<unsigned_fast_type>(n / 2U);
 
         const InputIteratorLeft   a0 = a + static_cast<left_difference_type>(0);
         const InputIteratorLeft   a1 = a + static_cast<left_difference_type>(nh);
@@ -3547,12 +3545,12 @@
               ResultIterator      r0 = r + static_cast<result_difference_type>(0);
               ResultIterator      r1 = r + static_cast<result_difference_type>(nh);
               ResultIterator      r2 = r + static_cast<result_difference_type>(n);
-              ResultIterator      r3 = r + static_cast<result_difference_type>(n + nh);
+              ResultIterator      r3 = r + static_cast<result_difference_type>(static_cast<result_difference_type>(n) + static_cast<result_difference_type>(nh));
 
               InputIteratorTemp   t0 = t + static_cast<temp_difference_type>(0);
               InputIteratorTemp   t1 = t + static_cast<temp_difference_type>(nh);
               InputIteratorTemp   t2 = t + static_cast<temp_difference_type>(n);
-              InputIteratorTemp   t4 = t + static_cast<temp_difference_type>(n + n);
+              InputIteratorTemp   t4 = t + static_cast<temp_difference_type>(static_cast<result_difference_type>(n) + static_cast<result_difference_type>(n));
 
         // Step 1
         //   a1*b1 -> r2
@@ -3560,7 +3558,7 @@
         //   r -> t0
         eval_multiply_kara_n_by_n_to_2n(r2, a1, b1, nh, t0);
         eval_multiply_kara_n_by_n_to_2n(r0, a0, b0, nh, t0);
-        std::copy(r0, r0 + (2U * n), t0);
+        std::copy(r0, r0 + static_cast<result_difference_type>(static_cast<result_difference_type>(n) * static_cast<result_difference_type>(2U)), t0);
 
         local_limb_type carry;
 
@@ -3815,7 +3813,16 @@
 
           // Clear the data elements that have not
           // been computed in the division algorithm.
-          std::fill(values.begin() + static_cast<local_uint_index_type>(m + 1U), values.end(), static_cast<limb_type>(0U));
+          {
+            const auto m_plus_one =
+              static_cast<local_uint_index_type>
+              (
+                static_cast<local_uint_index_type>(m) + 1U
+              );
+
+            std::fill(values.begin() + m_plus_one, values.end(), static_cast<limb_type>(0U));
+          }
+
 
           if(remainder != nullptr)
           {
