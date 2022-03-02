@@ -29,9 +29,17 @@
   #pragma GCC diagnostic ignored "-Wdeprecated-copy"
   #endif
 
-  #include <boost/config.hpp>
-  #include <boost/multiprecision/number.hpp>
   #include <boost/version.hpp>
+
+  #if !defined(BOOST_VERSION)
+  #error BOOST_VERSION is not defined. Ensure that <boost/version.hpp> is properly included.
+  #endif
+
+  #if (BOOST_VERSION < 107900)
+  #include <boost/config.hpp>
+  #endif
+  #include <boost/multiprecision/number.hpp>
+
 
   #include <math/wide_integer/uintwide_t.h>
 
@@ -57,7 +65,7 @@
   // Define the number category as an integer number kind
   // for the uintwide_t_backend. This is needed for properly
   // interacting as a backend with boost::muliprecision.
-  #if (defined(BOOST_VERSION) && (BOOST_VERSION <= 107200))
+  #if (BOOST_VERSION <= 107200)
   template<
   #if defined(WIDE_INTEGER_NAMESPACE)
            const WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t MyWidth2,
@@ -68,7 +76,7 @@
            typename MyAllocatorType>
   struct number_category<uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>>
     : public boost::mpl::int_<number_kind_integer> { };
-  #elif (defined(BOOST_VERSION) && (BOOST_VERSION <= 107500))
+  #elif (BOOST_VERSION <= 107500)
   template<
   #if defined(WIDE_INTEGER_NAMESPACE)
            const WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t MyWidth2,
@@ -111,7 +119,7 @@
       ::math::wide_integer::uintwide_t<MyWidth2, MyLimbType, MyAllocatorType>;
     #endif
 
-    #if (defined(BOOST_VERSION) && (BOOST_VERSION <= 107500))
+    #if (BOOST_VERSION <= 107500)
     using signed_types   = mpl::list<std::int64_t>;
     using unsigned_types = mpl::list<std::uint64_t>;
     using float_types    = mpl::list<long double>;
@@ -235,8 +243,7 @@
     {
       auto result = static_cast<std::size_t>(0U);
 
-      #if defined(BOOST_VERSION)
-      #if(BOOST_VERSION < 107800)
+      #if (BOOST_VERSION < 107800)
       using boost::hash_combine;
       #else
       using boost::multiprecision::detail::hash_combine;
@@ -247,7 +254,6 @@
       {
         hash_combine(result, crepresentation().crepresentation()[i]);
       }
-      #endif
 
       return result;
     }
