@@ -10,11 +10,7 @@
 
   #include <algorithm>
   #include <array>
-  #if defined(__GNUC__) || defined(__clang__)
-  #if defined(WIDE_INTEGER_HAS_LIMB_TYPE_UINT64)
   #include <cinttypes>
-  #endif
-  #endif
   #if !defined(WIDE_INTEGER_DISABLE_FLOAT_INTEROP)
   #include <cmath>
   #endif
