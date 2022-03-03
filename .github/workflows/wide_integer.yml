@@ -15,7 +15,7 @@ on:
     - cron: '0 2 * * *' # run at 2 AM UTC
 jobs:
   gcc-clang-native-x86:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     defaults:
       run:
         shell: bash
@@ -31,7 +31,7 @@ jobs:
       - name: update-tools
         run: |
           sudo touch /etc/apt/sources.list
-          sudo apt install gcc-multilib g++-multilib
+          sudo apt install --fix-missing gcc-multilib g++-multilib
       - name: clone-submods-bootstrap-headers-boost-develop
         run: |
           git clone -b develop --depth 1 https://github.com/boostorg/boost.git ../boost-root
