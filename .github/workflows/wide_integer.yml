@@ -15,23 +15,21 @@ on:
     - cron: '0 2 * * *' # run at 2 AM UTC
 jobs:
   gcc-clang-native-x86:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-18.04
     defaults:
       run:
         shell: bash
     strategy:
       fail-fast: false
       matrix:
-        standard: [ c++11, c++14, c++17, c++20 ]
-        compiler: [ g++-11, clang++-12 ]
+        standard: [ c++11, c++14, c++17 ]
+        compiler: [ g++, clang++ ]
     steps:
       - uses: actions/checkout@v2
         with:
           fetch-depth: '0'
-      - name: update-multilib
-        run: sudo apt install gcc-11-multilib g++-11-multilib
       - name: update-tools
-        run: sudo apt install gcc-11 g++-11 clang-12
+        run: sudo apt install gcc-multilib g++-multilib
       - name: clone-submods-bootstrap-headers-boost-develop
         run: |
           git clone -b develop --depth 1 https://github.com/boostorg/boost.git ../boost-root
