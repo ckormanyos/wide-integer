@@ -1,4 +1,4 @@
-///////////////////////////////////////////////////////////////////////////////
+﻿///////////////////////////////////////////////////////////////////////////////
 //  Copyright Christopher Kormanyos 2021 - 2022.
 //  Distributed under the Boost Software License,
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt
@@ -38,15 +38,15 @@ namespace local_int_convert
 
   template<const std::size_t MaxDigitsToGet,
            const std::size_t MinDigitsToGet = 2U>
-  auto get_random_digit_string(std::string& str) -> void
+  auto get_random_digit_string(std::string& str) -> void // NOLINT(google-runtime-references)
   {
     static_assert(MinDigitsToGet >=  2U, "Error: The minimum number of digits to get must be  2 or more");
 
     static std::uniform_int_distribution<unsigned>
     dist_sgn
     (
-      0,
-      1
+      static_cast<unsigned>(UINT8_C(0)),
+      static_cast<unsigned>(UINT8_C(1))
     );
 
     static std::uniform_int_distribution<unsigned>
@@ -59,15 +59,15 @@ namespace local_int_convert
     static std::uniform_int_distribution<unsigned>
     dist_first
     (
-      1,
-      9  // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
+      static_cast<unsigned>(UINT8_C(1)),
+      static_cast<unsigned>(UINT8_C(9))
     );
 
     static std::uniform_int_distribution<unsigned>
     dist_following
     (
-      0,
-      9  // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
+      static_cast<unsigned>(UINT8_C(0)),
+      static_cast<unsigned>(UINT8_C(9))
     );
 
     const bool is_neg = (dist_sgn(engine_sgn()) != 0);

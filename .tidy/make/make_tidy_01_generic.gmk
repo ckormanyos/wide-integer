@@ -15,7 +15,7 @@ CAT              = cat
 GNUECHO          = echo
 LS               = ls
 MKDIR            = mkdir
-TIDY             = clang-tidy-12
+TIDY             = clang-tidy
 RM               = rm
 SED              = sed
 
