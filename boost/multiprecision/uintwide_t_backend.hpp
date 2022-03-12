@@ -159,7 +159,7 @@
 
     WIDE_INTEGER_CONSTEXPR ~uintwide_t_backend() = default;
 
-    WIDE_INTEGER_CONSTEXPR auto operator=(const uintwide_t_backend& other) -> uintwide_t_backend&
+    WIDE_INTEGER_CONSTEXPR auto operator=(const uintwide_t_backend& other) -> uintwide_t_backend& // NOLINT(cert-oop54-cpp)
     {
       if(this != &other)
       {
