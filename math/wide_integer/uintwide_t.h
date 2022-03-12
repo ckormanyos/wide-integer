@@ -256,27 +256,8 @@
     // Move assignment operator.
     WIDE_INTEGER_CONSTEXPR auto operator=(dynamic_array&& other) noexcept -> dynamic_array&
     {
-      // Destroy the elements and deallocate the range.
-      pointer p = elems; // NOLINT(altera-id-dependent-backward-branch)
-
-      using local_allocator_traits_type = std::allocator_traits<allocator_type>;
-
-      allocator_type my_a;
-
-      while(p != elems + elem_count) // NOLINT(altera-id-dependent-backward-branch)
-      {
-        local_allocator_traits_type::destroy(my_a, p);
-
-        ++p;
-      }
-
-      local_allocator_traits_type::deallocate(my_a, elems, elem_count);
-
-      elem_count = other.elem_count;
-      elems      = other.elems;
-
-      other.elem_count = 0U;
-      other.elems      = nullptr;
+      std::swap(elem_count, other.elem_count);
+      std::swap(elems,      other.elems);
 
       return *this;
     }
@@ -1210,7 +1191,7 @@
 
     WIDE_INTEGER_CONSTEXPR ~native_float_parts() = default;
 
-    WIDE_INTEGER_CONSTEXPR auto operator=(const native_float_parts& other) noexcept -> native_float_parts&
+    WIDE_INTEGER_CONSTEXPR auto operator=(const native_float_parts& other) noexcept -> native_float_parts& // NOLINT(cert-oop54-cpp)
     {
       if(this != &other)
       {
@@ -5386,27 +5367,27 @@
 
       ~param_type() = default;
 
-      param_type(const param_type& other_params) : param_a(other_params.param_a),
-                                                   param_b(other_params.param_b) { }
+      param_type(const param_type& other) : param_a(other.param_a),
+                                            param_b(other.param_b) { }
 
-      param_type(param_type&& other_params) noexcept : param_a(other_params.param_a),
-                                                       param_b(other_params.param_b) { }
+      param_type(param_type&& other) noexcept : param_a(other.param_a),
+                                                param_b(other.param_b) { }
 
-      auto operator=(const param_type& other_params) -> param_type&
+      auto operator=(const param_type& other) -> param_type& // NOLINT(cert-oop54-cpp)
       {
-        if(this != &other_params)
+        if(this != &other)
         {
-          param_a = other_params.param_a;
-          param_b = other_params.param_b;
+          param_a = other.param_a;
+          param_b = other.param_b;
         }
 
         return *this;
       }
 
-      auto operator=(param_type&& other_params) noexcept -> param_type&
+      auto operator=(param_type&& other) noexcept -> param_type&
       {
-        param_a = other_params.param_a;
-        param_b = other_params.param_b;
+        param_a = other.param_a;
+        param_b = other.param_b;
 
         return *this;
       }
@@ -5451,7 +5432,7 @@
 
     ~uniform_int_distribution() = default;
 
-    auto operator=(const uniform_int_distribution& other) -> uniform_int_distribution&
+    auto operator=(const uniform_int_distribution& other) -> uniform_int_distribution& // NOLINT(cert-oop54-cpp)
     {
       if(this != &other)
       {
