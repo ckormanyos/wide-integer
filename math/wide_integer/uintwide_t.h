@@ -1338,7 +1338,7 @@
       auto right_shift_amount_v = static_cast<unsigned_fast_type>(0U);
       auto index_u              = static_cast<std::uint_fast8_t> (0U);
 
-      for( ; (   (index_u < values.size()) // NOLINT(altera-id-dependent-backward-branch)
+      for( ; (   (index_u < static_cast<std::uint_fast8_t>(values.size())) // NOLINT(altera-id-dependent-backward-branch)
               && (right_shift_amount_v < static_cast<unsigned_fast_type>(std::numeric_limits<UnsignedIntegralType>::digits)));
              ++index_u)
       {
@@ -2472,14 +2472,14 @@
 
     template<const bool RePhraseIsSigned = IsSigned,
              typename std::enable_if<(!RePhraseIsSigned)>::type const* = nullptr>
-    static constexpr auto is_neg(uintwide_t<Width2, LimbType, AllocatorType, RePhraseIsSigned>) -> bool // NOLINT(hicpp-named-parameter,readability-named-parameter)
+    static constexpr auto is_neg(const uintwide_t<Width2, LimbType, AllocatorType, RePhraseIsSigned>&) -> bool // NOLINT(hicpp-named-parameter,readability-named-parameter)
     {
       return false;
     }
 
     template<const bool RePhraseIsSigned = IsSigned,
              typename std::enable_if<(RePhraseIsSigned)>::type const* = nullptr>
-    static constexpr auto is_neg(uintwide_t<Width2, LimbType, AllocatorType, RePhraseIsSigned> a) -> bool
+    static constexpr auto is_neg(const uintwide_t<Width2, LimbType, AllocatorType, RePhraseIsSigned>& a) -> bool
     {
       return (static_cast<std::uint_fast8_t>(static_cast<std::uint_fast8_t>(a.values.back() >> static_cast<size_t>(std::numeric_limits<typename uintwide_t<Width2, LimbType, AllocatorType, RePhraseIsSigned>::limb_type>::digits - 1)) & 1U) != 0U);
     }
@@ -5360,8 +5360,8 @@
     struct param_type
     {
     public:
-      explicit param_type(result_type p_a = (std::numeric_limits<result_type>::min)(),
-                          result_type p_b = (std::numeric_limits<result_type>::max)())
+      explicit param_type(result_type p_a = (std::numeric_limits<result_type>::min)(), // lgtm[cpp/large-parameter]
+                          result_type p_b = (std::numeric_limits<result_type>::max)()) // lgtm[cpp/large-parameter]
         : param_a(std::move(p_a)),
           param_b(std::move(p_b)) { }
 
