@@ -1336,9 +1336,9 @@
       static_cast<void>(p_nullparam == nullptr);
 
       auto right_shift_amount_v = static_cast<unsigned_fast_type>(0U);
-      auto index_u              = static_cast<std::uint_fast8_t> (0U);
+      auto index_u              = static_cast<std::uint_fast8_t>(0U);
 
-      for( ; (   (index_u < static_cast<std::uint_fast8_t>(values.size())) // NOLINT(altera-id-dependent-backward-branch)
+      for( ; (   (static_cast<size_t>(index_u) < values.size()) // NOLINT(altera-id-dependent-backward-branch)
               && (right_shift_amount_v < static_cast<unsigned_fast_type>(std::numeric_limits<UnsignedIntegralType>::digits)));
              ++index_u)
       {
@@ -1347,7 +1347,7 @@
         right_shift_amount_v += static_cast<unsigned_fast_type>(std::numeric_limits<limb_type>::digits);
       }
 
-      std::fill(values.begin() + index_u, values.end(), static_cast<limb_type>(0U));
+      std::fill(values.begin() + static_cast<size_t>(index_u), values.end(), static_cast<limb_type>(0U));
     }
 
     // Constructors from built-in signed integral types.
