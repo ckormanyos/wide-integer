@@ -1,5 +1,7 @@
 ﻿Wide-integer
 [![Build Status](https://github.com/ckormanyos/wide-integer/actions/workflows/wide_integer.yml/badge.svg)](https://github.com/ckormanyos/wide-integer/actions)
+[![Total alerts](https://img.shields.io/lgtm/alerts/g/ckormanyos/wide-integer.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/ckormanyos/wide-integer/alerts/)
+[![Language grade: C/C++](https://img.shields.io/lgtm/grade/cpp/g/ckormanyos/wide-integer.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/ckormanyos/wide-integer/context:cpp)
 ==================
 
 Wide-integer implements a generic C++ template for extended width
