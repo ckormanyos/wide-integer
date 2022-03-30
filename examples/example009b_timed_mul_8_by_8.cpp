@@ -118,15 +118,21 @@ auto math::wide_integer::example009b_timed_mul_8_by_8() -> bool
 
   const float kops_per_sec = float(count) / float(static_cast<std::uint32_t>(total_time));
 
-  std::cout << "bits: "
-            << std::numeric_limits<local_timed_mul_8_by_8::big_uint_type>::digits
-            << ", kops_per_sec: "
-            << std::fixed
-            << std::setprecision(2)
-            << kops_per_sec
-            << ", count: "
-            << count
-            << std::endl;
+  {
+    const auto flg = std::cout.flags();
+
+    std::cout << "bits: "
+              << std::numeric_limits<local_timed_mul_8_by_8::big_uint_type>::digits
+              << ", kops_per_sec: "
+              << std::fixed
+              << std::setprecision(2)
+              << kops_per_sec
+              << ", count: "
+              << count
+              << std::endl;
+
+    std::cout.flags(flg);
+  }
 
   const bool result_is_ok = (kops_per_sec > (std::numeric_limits<float>::min)());
 

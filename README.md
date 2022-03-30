@@ -4,6 +4,7 @@
 [![Build Status](https://github.com/ckormanyos/wide-integer/actions/workflows/wide_integer.yml/badge.svg)](https://github.com/ckormanyos/wide-integer/actions)
 [![Language grade: C/C++](https://img.shields.io/lgtm/grade/cpp/g/ckormanyos/wide-integer.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/ckormanyos/wide-integer/context:cpp)
 [![Total alerts](https://img.shields.io/lgtm/alerts/g/ckormanyos/wide-integer.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/ckormanyos/wide-integer/alerts/)
+[![Coverity Scan](https://scan.coverity.com/projects/24742/badge.svg)](https://scan.coverity.com/projects/ckormanyos-wide-integer)
 
 Wide-integer implements a generic C++ template for extended width
 unsigned and signed integral types.

@@ -149,20 +149,20 @@
       : elem_count(count),
         elems     (nullptr)
     {
-      allocator_type my_a(a);
-
       if(elem_count > 0U)
       {
+        allocator_type my_a(a);
+
         elems = std::allocator_traits<allocator_type>::allocate(my_a, elem_count);
-      }
 
-      iterator it = begin();
+        iterator it = begin();
 
-      while(it != end())
-      {
-        std::allocator_traits<allocator_type>::construct(my_a, it, v);
+        while(it != end())
+        {
+          std::allocator_traits<allocator_type>::construct(my_a, it, v);
 
-        ++it;
+          ++it;
+        }
       }
     }
 
@@ -2551,13 +2551,24 @@
 
         auto u = static_cast<local_unsigned_conversion_type>(0U);
 
-        for(auto i = static_cast<unsigned_fast_type>(0U); i < limb_count; ++i)
+        constexpr auto shift_lim =
+          static_cast<unsigned_fast_type>
+          (
+            std::numeric_limits<local_unsigned_conversion_type>::digits
+          );
+
+        for(auto   i = static_cast<unsigned_fast_type>(0U);
+                   (    // NOLINT(altera-id-dependent-backward-branch)
+                        (i < limb_count)
+                     && (static_cast<unsigned_fast_type>(static_cast<unsigned_fast_type>(std::numeric_limits<local_limb_type>::digits) * i) < shift_lim)
+                   );
+                 ++i)
         {
           u =
             static_cast<local_unsigned_conversion_type>
             (
                 u
-              | static_cast<local_unsigned_conversion_type>(static_cast<local_unsigned_conversion_type>(*(p_limb + static_cast<left_difference_type>(i))) << static_cast<unsigned>(std::numeric_limits<local_limb_type>::digits * static_cast<int>(i)))
+              | static_cast<local_unsigned_conversion_type>(static_cast<local_unsigned_conversion_type>(*(p_limb + static_cast<left_difference_type>(i))) << static_cast<unsigned_fast_type>(static_cast<unsigned_fast_type>(std::numeric_limits<local_limb_type>::digits) * i))
             );
         }
 
@@ -2592,15 +2603,15 @@
       using local_unsigned_wide_integer_type = uintwide_t<Width2, limb_type, AllocatorType, false>;
       using local_builtin_float_type         = FloatingPointType;
 
-      const bool u_is_neg = is_neg(*this);
+      const auto u_is_neg = is_neg(*this);
 
       const local_unsigned_wide_integer_type u((!u_is_neg) ? *this : -*this);
 
       const auto my_msb = static_cast<size_t>(msb(u));
       const auto ilim   = static_cast<size_t>
                           (
-                             static_cast<size_t>(  static_cast<size_t>(my_msb + 1U) / static_cast<size_t>(std::numeric_limits<limb_type>::digits))
-                           + static_cast<size_t>(((static_cast<size_t>(my_msb + 1U) % static_cast<size_t>(std::numeric_limits<limb_type>::digits)) != 0U) ? static_cast<size_t>(1U) : static_cast<size_t>(0U))
+                             static_cast<size_t>(                     static_cast<size_t>(my_msb + static_cast<size_t>(1U)) / static_cast<size_t>(std::numeric_limits<limb_type>::digits))
+                           + static_cast<size_t>((static_cast<size_t>(static_cast<size_t>(my_msb + static_cast<size_t>(1U)) % static_cast<size_t>(std::numeric_limits<limb_type>::digits)) != static_cast<size_t>(0U)) ? static_cast<size_t>(1U) : static_cast<size_t>(0U))
                           );
 
       auto a = static_cast<local_builtin_float_type>(0.0F);
@@ -3718,9 +3729,9 @@
           // Step D2: Initialize j.
           // Step D7: Loop on j from m to 0.
 
-          const auto n   = static_cast<local_uint_index_type> (number_of_limbs - v_offset);
-          const auto m   = static_cast<local_uint_index_type> (number_of_limbs - u_offset) - n;
-          const auto vj0 = static_cast<local_uint_index_type>((number_of_limbs - 1U) - v_offset);
+          const auto n   = static_cast<local_uint_index_type>                                   (number_of_limbs - v_offset);
+          const auto m   = static_cast<local_uint_index_type>(static_cast<local_uint_index_type>(number_of_limbs - u_offset) - n);
+          const auto vj0 = static_cast<local_uint_index_type>(static_cast<local_uint_index_type>(number_of_limbs - 1U) - v_offset);
 
           for(auto j = static_cast<local_uint_index_type>(0U); j <= m; ++j) // NOLINT(altera-id-dependent-backward-branch)
           {
