@@ -5399,8 +5399,8 @@
       WIDE_INTEGER_NODISCARD constexpr auto get_a() const -> result_type { return param_a; }
       WIDE_INTEGER_NODISCARD constexpr auto get_b() const -> result_type { return param_b; }
 
-      WIDE_INTEGER_NODISCARD WIDE_INTEGER_CONSTEXPR auto set_a(const result_type& p_a) -> void { param_a = p_a; }
-      WIDE_INTEGER_NODISCARD WIDE_INTEGER_CONSTEXPR auto set_b(const result_type& p_b) -> void { param_b = p_b; }
+      WIDE_INTEGER_CONSTEXPR auto set_a(const result_type& p_a) -> void { param_a = p_a; }
+      WIDE_INTEGER_CONSTEXPR auto set_b(const result_type& p_b) -> void { param_b = p_b; }
 
     private:
       result_type param_a; // NOLINT(readability-identifier-naming)
