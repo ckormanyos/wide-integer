@@ -5360,20 +5360,24 @@
     struct param_type
     {
     public:
-      explicit param_type(result_type p_a = (std::numeric_limits<result_type>::min)(), // lgtm[cpp/large-parameter]
-                          result_type p_b = (std::numeric_limits<result_type>::max)()) // lgtm[cpp/large-parameter]
-        : param_a(std::move(p_a)),
-          param_b(std::move(p_b)) { }
+      explicit WIDE_INTEGER_CONSTEXPR
+        param_type
+        (
+          const result_type& p_a = (std::numeric_limits<result_type>::min)(), // NOLINT(modernize-pass-by-value)
+          const result_type& p_b = (std::numeric_limits<result_type>::max)()  // NOLINT(modernize-pass-by-value)
+        ) : param_a(p_a),
+            param_b(p_b) { }
+
+      WIDE_INTEGER_CONSTEXPR param_type(const param_type& other) : param_a(other.param_a),
+                                                                   param_b(other.param_b) { }
+
+      WIDE_INTEGER_CONSTEXPR param_type(param_type&& other) noexcept
+        : param_a(static_cast<result_type&&>(other.param_a)),
+          param_b(static_cast<result_type&&>(other.param_b)) { }
 
       ~param_type() = default;
 
-      param_type(const param_type& other) : param_a(other.param_a),
-                                            param_b(other.param_b) { }
-
-      param_type(param_type&& other) noexcept : param_a(other.param_a),
-                                                param_b(other.param_b) { }
-
-      auto operator=(const param_type& other) -> param_type& // NOLINT(cert-oop54-cpp)
+      WIDE_INTEGER_CONSTEXPR auto operator=(const param_type& other) -> param_type& // NOLINT(cert-oop54-cpp)
       {
         if(this != &other)
         {
@@ -5384,7 +5388,7 @@
         return *this;
       }
 
-      auto operator=(param_type&& other) noexcept -> param_type&
+      WIDE_INTEGER_CONSTEXPR auto operator=(param_type&& other) noexcept -> param_type&
       {
         param_a = other.param_a;
         param_b = other.param_b;
@@ -5395,8 +5399,8 @@
       WIDE_INTEGER_NODISCARD constexpr auto get_a() const -> result_type { return param_a; }
       WIDE_INTEGER_NODISCARD constexpr auto get_b() const -> result_type { return param_b; }
 
-      void set_a(const result_type& p_a) { param_a = p_a; }
-      void set_b(const result_type& p_b) { param_b = p_b; }
+      WIDE_INTEGER_CONSTEXPR auto set_a(const result_type& p_a) -> void { param_a = p_a; }
+      WIDE_INTEGER_CONSTEXPR auto set_b(const result_type& p_b) -> void { param_b = p_b; }
 
     private:
       result_type param_a; // NOLINT(readability-identifier-naming)
@@ -5417,22 +5421,23 @@
       }
     };
 
-    uniform_int_distribution() : my_params() { }
+    explicit WIDE_INTEGER_CONSTEXPR
+      uniform_int_distribution
+      (
+        const result_type& p_a = (std::numeric_limits<result_type>::min)(),
+        const result_type& p_b = (std::numeric_limits<result_type>::max)()
+      ) : my_params(p_a, p_b) { }
 
-    explicit uniform_int_distribution(const result_type& p_a,
-                                      const result_type& p_b = (std::numeric_limits<result_type>::max)())
-        : my_params(param_type(p_a, p_b)) { }
-
-    explicit uniform_int_distribution(const param_type& other_params)
+    explicit WIDE_INTEGER_CONSTEXPR uniform_int_distribution(const param_type& other_params)
       : my_params(other_params) { }
 
-    uniform_int_distribution(const uniform_int_distribution& other_distribution) = delete;
+    WIDE_INTEGER_CONSTEXPR uniform_int_distribution(const uniform_int_distribution& other_distribution) = delete;
 
-    uniform_int_distribution(uniform_int_distribution&& other) noexcept : my_params(other.my_params) { }
+    WIDE_INTEGER_CONSTEXPR uniform_int_distribution(uniform_int_distribution&& other) noexcept : my_params(other.my_params) { }
 
     ~uniform_int_distribution() = default;
 
-    auto operator=(const uniform_int_distribution& other) -> uniform_int_distribution& // NOLINT(cert-oop54-cpp)
+    auto WIDE_INTEGER_CONSTEXPR operator=(const uniform_int_distribution& other) -> uniform_int_distribution& // NOLINT(cert-oop54-cpp)
     {
       if(this != &other)
       {
@@ -5442,14 +5447,14 @@
       return *this;
     }
 
-    auto operator=(uniform_int_distribution&& other) noexcept -> uniform_int_distribution&
+    auto WIDE_INTEGER_CONSTEXPR operator=(uniform_int_distribution&& other) noexcept -> uniform_int_distribution&
     {
       my_params = other.my_params;
 
       return *this;
     }
 
-    void param(const param_type& new_params)
+    auto WIDE_INTEGER_CONSTEXPR param(const param_type& new_params) -> void
     {
       my_params = new_params;
     }

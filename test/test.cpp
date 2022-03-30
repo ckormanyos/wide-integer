@@ -22,11 +22,11 @@
 #include <iomanip>
 #include <iostream>
 
-#include <test/test_uintwide_t.h>                       // NOLINT(llvm-include-order)
-#include <test/test_uintwide_t_n_binary_ops_template.h> // NOLINT(llvm-include-order)
-#include <test/test_uintwide_t_n_binary_ops_template_signed.h>
-#include <test/test_uintwide_t_n_binary_ops_mul_n_by_m_template.h>
+#include <test/test_uintwide_t.h>
 #include <test/test_uintwide_t_n_binary_ops_mul_div_4_by_4_template.h>
+#include <test/test_uintwide_t_n_binary_ops_mul_n_by_m_template.h>
+#include <test/test_uintwide_t_n_binary_ops_template.h>
+#include <test/test_uintwide_t_n_binary_ops_template_signed.h>
 
 #if defined(__clang__)
   #if defined __has_feature && __has_feature(thread_sanitizer)

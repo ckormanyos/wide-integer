@@ -11,6 +11,7 @@
   #include <atomic>
 
   #include <test/test_uintwide_t_n_base.h>
+  #include <test/test_uintwide_t_n_binary_ops_base.h>
 
   #if defined(WIDE_INTEGER_NAMESPACE)
   template<const WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t MyDigits2A,
