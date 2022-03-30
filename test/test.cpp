@@ -409,13 +409,30 @@ auto main() -> int // NOLINT(bugprone-exception-escape)
   const time_point_type start = local::clock_type::now();
 
   bool result_is_ok = true;
+  bool result_try   = false;
 
   result_is_ok &= local::test_uintwide_t_small_bits();                   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
-  result_is_ok &= local::test_uintwide_t_boost_backend();                std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
+  try
+  {
+  result_try    = local::test_uintwide_t_boost_backend();
+  }
+  catch(const std::exception&)
+  {
+  result_try    = false;
+  }
+  result_is_ok &= result_try;                                            std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
   result_is_ok &= local::test_uintwide_t_examples();                     std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
   result_is_ok &= local::test_uintwide_t_edge_cases();                   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
   result_is_ok &= local::test_uintwide_t_float_convert();                std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
-  result_is_ok &= local::test_uintwide_t_int_convert();                  std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
+  try
+  {
+  result_try    = local::test_uintwide_t_int_convert();
+  }
+  catch(const std::exception&)
+  {
+  result_try    = false;
+  }
+  result_is_ok &= result_try;                                            std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
   result_is_ok &= local::test_uintwide_t_spot_values();                  std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
   result_is_ok &= local::test_uintwide_t_0000024();                      std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
   result_is_ok &= local::test_uintwide_t_0000048();                      std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
