@@ -1,6 +1,9 @@
 ﻿Wide-integer
-[![Build Status](https://github.com/ckormanyos/wide-integer/actions/workflows/wide_integer.yml/badge.svg)](https://github.com/ckormanyos/wide-integer/actions)
 ==================
+
+[![Build Status](https://github.com/ckormanyos/wide-integer/actions/workflows/wide_integer.yml/badge.svg)](https://github.com/ckormanyos/wide-integer/actions)
+[![Language grade: C/C++](https://img.shields.io/lgtm/grade/cpp/g/ckormanyos/wide-integer.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/ckormanyos/wide-integer/context:cpp)
+[![Total alerts](https://img.shields.io/lgtm/alerts/g/ckormanyos/wide-integer.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/ckormanyos/wide-integer/alerts/)
 
 Wide-integer implements a generic C++ template for extended width
 unsigned and signed integral types.
@@ -152,10 +155,10 @@ on how to use wide-integer.
 ## Building, testing and CI
 
 ### Build Status
-[![Build Status](https://github.com/ckormanyos/wide-integer/actions/workflows/wide_integer.yml/badge.svg)](https://github.com/ckormanyos/wide-integer/actions)
 
 The recent status of building and executing the tests and examples
 in Continuous Integration (CI) is always shown in the Build Status banner.
+Additional banners from other syntax checks and builds may also be visible.
 
 It is also possible, if desired, to build and execute
 the tests and examples using various different OS/compiler
