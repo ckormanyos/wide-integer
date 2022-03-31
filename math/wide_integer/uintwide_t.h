@@ -1743,7 +1743,7 @@
           if(numererator_was_neg) { a.negate(); }
           if(denominator_was_neg) { b.negate(); }
 
-          a.eval_divide_knuth(b, nullptr);
+          a.eval_divide_knuth(b);
 
           if(numererator_was_neg != denominator_was_neg) { a.negate(); }
 
@@ -1751,7 +1751,7 @@
         }
         else
         {
-          eval_divide_knuth(other, nullptr);
+          eval_divide_knuth(other);
         }
       }
 
@@ -3606,8 +3606,8 @@
       }
     }
 
-    WIDE_INTEGER_CONSTEXPR void eval_divide_knuth(const uintwide_t& other, // NOLINT(readability-function-cognitive-complexity)
-                                                        uintwide_t* remainder)
+    WIDE_INTEGER_CONSTEXPR void eval_divide_knuth(const uintwide_t& other,
+                                                        uintwide_t* remainder = nullptr)
     {
       // Use Knuth's long division algorithm.
       // The loop-ordering of indices in Knuth's original
@@ -3626,8 +3626,8 @@
       auto v_offset = static_cast<local_uint_index_type>(0U);
 
       // Compute the offsets for u and v.
-      for(auto i = static_cast<local_uint_index_type>(0U); (i < number_of_limbs) && (*(      values.cbegin() + static_cast<size_t>(static_cast<local_uint_index_type>(number_of_limbs - 1U) - i)) == static_cast<limb_type>(0U)); ++i) { ++u_offset; } // NOLINT(altera-id-dependent-backward-branch)
-      for(auto i = static_cast<local_uint_index_type>(0U); (i < number_of_limbs) && (*(other.values.cbegin() + static_cast<size_t>(static_cast<local_uint_index_type>(number_of_limbs - 1U) - i)) == static_cast<limb_type>(0U)); ++i) { ++v_offset; } // NOLINT(altera-id-dependent-backward-branch)
+      for(auto i = static_cast<local_uint_index_type>(0U); (i < static_cast<local_uint_index_type>(number_of_limbs)) && (*(      values.cbegin() + static_cast<size_t>(static_cast<local_uint_index_type>(number_of_limbs - 1U) - i)) == static_cast<limb_type>(0U)); ++i) { ++u_offset; } // NOLINT(altera-id-dependent-backward-branch)
+      for(auto i = static_cast<local_uint_index_type>(0U); (i < static_cast<local_uint_index_type>(number_of_limbs)) && (*(other.values.cbegin() + static_cast<size_t>(static_cast<local_uint_index_type>(number_of_limbs - 1U) - i)) == static_cast<limb_type>(0U)); ++i) { ++v_offset; } // NOLINT(altera-id-dependent-backward-branch)
 
       if(v_offset == static_cast<local_uint_index_type>(number_of_limbs))
       {
@@ -3678,7 +3678,7 @@
             *remainder = uintwide_t(static_cast<std::uint8_t>(0U));
           }
         }
-        else if(v_offset == static_cast<local_uint_index_type>(number_of_limbs - 1U))
+        else if(static_cast<local_uint_index_type>(v_offset + static_cast<local_uint_index_type>(1U)) == static_cast<local_uint_index_type>(number_of_limbs))
         {
           // The denominator has one single limb.
           // Use a one-dimensional division algorithm.
@@ -3688,159 +3688,207 @@
         }
         else
         {
-          // We will now use the Knuth long division algorithm.
-
-          // Compute the normalization factor d.
-          const auto d =
-            static_cast<limb_type>(static_cast<double_limb_type>(  static_cast<double_limb_type>(static_cast<double_limb_type>(1U) << static_cast<unsigned>(std::numeric_limits<limb_type>::digits))
-                                                                 / static_cast<double_limb_type>(static_cast<double_limb_type>(*(other.values.cbegin() + static_cast<size_t>(static_cast<local_uint_index_type>(number_of_limbs - 1U) - v_offset))) + static_cast<limb_type>(1U))));
-
-          // Step D1(b), normalize u -> u * d = uu.
-          // Step D1(c): normalize v -> v * d = vv.
-
-          using uu_array_type =
-            typename std::conditional<std::is_same<AllocatorType, void>::value,
-                                      detail::fixed_static_array <limb_type, number_of_limbs + 1U>,
-                                      detail::fixed_dynamic_array<limb_type,
-                                                                  number_of_limbs + 1U,
-                                                                  typename std::allocator_traits<typename std::conditional<std::is_same<AllocatorType, void>::value,
-                                                                                                                           std::allocator<void>,
-                                                                                                                           AllocatorType>::type>::template rebind_alloc<limb_type>>>::type;
-
-          uu_array_type       uu;
-          representation_type vv;
-
-          if(d > static_cast<limb_type>(1U))
-          {
-            *(uu.begin() + static_cast<size_t>(static_cast<local_uint_index_type>(number_of_limbs) - u_offset)) =
-              eval_multiply_1d(uu.data(), values.data(), d, number_of_limbs - u_offset);
-
-            static_cast<void>(eval_multiply_1d(vv.data(), other.values.data(), d, number_of_limbs - v_offset));
-          }
-          else
-          {
-            std::copy(values.cbegin(), values.cend(), uu.begin());
-
-            *(uu.begin() + static_cast<size_t>(static_cast<local_uint_index_type>(number_of_limbs) - u_offset)) = static_cast<limb_type>(0U);
-
-            vv = other.values;
-          }
-
-          // Step D2: Initialize j.
-          // Step D7: Loop on j from m to 0.
-
-          const auto n   = static_cast<local_uint_index_type>                                   (number_of_limbs - v_offset);
-          const auto m   = static_cast<local_uint_index_type>(static_cast<local_uint_index_type>(number_of_limbs - u_offset) - n);
-          const auto vj0 = static_cast<local_uint_index_type>(static_cast<local_uint_index_type>(number_of_limbs - 1U) - v_offset);
-
-          for(auto j = static_cast<local_uint_index_type>(0U); j <= m; ++j) // NOLINT(altera-id-dependent-backward-branch)
-          {
-            // Step D3 [Calculate q_hat].
-            //   if u[j] == v[j0]
-            //     set q_hat = b - 1
-            //   else
-            //     set q_hat = (u[j] * b + u[j + 1]) / v[1]
-
-            const auto uj     = static_cast<local_uint_index_type>(static_cast<local_uint_index_type>(static_cast<local_uint_index_type>(static_cast<local_uint_index_type>(number_of_limbs + 1U) - 1U) - u_offset) - j);
-            const auto u_j_j1 = static_cast<double_limb_type>(static_cast<double_limb_type>(static_cast<double_limb_type>(*(uu.cbegin() + static_cast<size_t>(uj))) << static_cast<unsigned>(std::numeric_limits<limb_type>::digits)) + *(uu.cbegin() + static_cast<size_t>(uj - 1U)));
-
-            limb_type q_hat = ((*(uu.cbegin() + static_cast<size_t>(uj)) == *(vv.cbegin() + static_cast<size_t>(vj0)))
-              ? (std::numeric_limits<limb_type>::max)()
-              : static_cast<limb_type>(u_j_j1 / *(vv.cbegin() + static_cast<size_t>(vj0))));
-
-            // Decrease q_hat if necessary.
-            // This means that q_hat must be decreased if the
-            // expression [(u[uj] * b + u[uj - 1] - q_hat * v[vj0 - 1]) * b]
-            // exceeds the range of uintwide_t.
-
-            for(auto t = static_cast<double_limb_type>(u_j_j1 - static_cast<double_limb_type>(q_hat * static_cast<double_limb_type>(*(vv.cbegin() + static_cast<size_t>(vj0))))); ; --q_hat, t = static_cast<double_limb_type>(t + *(vv.cbegin() + static_cast<size_t>(vj0))))
-            {
-              if(   (detail::make_hi<limb_type>(t) != static_cast<limb_type>(0U))
-                 || (   static_cast<double_limb_type>(static_cast<double_limb_type>(*(vv.cbegin() + static_cast<size_t>(vj0 - 1U))) * q_hat)
-                     <= static_cast<double_limb_type>(static_cast<double_limb_type>(t << static_cast<unsigned>(std::numeric_limits<limb_type>::digits)) + *(uu.cbegin() + static_cast<size_t>(uj - 2U)))))
-              {
-                break;
-              }
-            }
-
-            // Step D4: Multiply and subtract.
-            // Replace u[j, ... j + n] by u[j, ... j + n] - q_hat * v[1, ... n].
-
-            // Set nv = q_hat * (v[1, ... n]).
-            uu_array_type nv;
-
-            *(nv.begin() + static_cast<size_t>(n)) = eval_multiply_1d(nv.data(), vv.data(), q_hat, n);
-
-            const bool has_borrow =
-              eval_subtract_n(uu.data() + static_cast<size_t>(static_cast<local_uint_index_type>(uj - n)),
-                              uu.data() + static_cast<size_t>(static_cast<local_uint_index_type>(uj - n)),
-                              nv.data(),
-                              n + 1U);
-
-
-            // Get the result data.
-            *(values.begin() + static_cast<size_t>(m - j)) = static_cast<limb_type>(q_hat - (has_borrow ? 1U : 0U));
-
-            // Step D5: Test the remainder.
-            // Set the result value: Set result.m_data[m - j] = q_hat.
-            // Use the condition (u[j] < 0), in other words if the borrow
-            // is non-zero, then step D6 needs to be carried out.
-
-            if(has_borrow)
-            {
-              // Step D6: Add back.
-              // Add v[1, ... n] back to u[j, ... j + n],
-              // and decrease the result by 1.
-
-              static_cast<void>(eval_add_n(uu.data() + static_cast<size_t>(static_cast<local_uint_index_type>(uj - n)),
-                                           uu.data() + static_cast<size_t>(static_cast<local_uint_index_type>(uj - n)),
-                                           vv.data(),
-                                           n));
-            }
-          }
-
-          // Clear the data elements that have not
-          // been computed in the division algorithm.
-          {
-            const auto m_plus_one =
-              static_cast<local_uint_index_type>
-              (
-                static_cast<local_uint_index_type>(m) + 1U
-              );
-
-            std::fill(values.begin() + m_plus_one, values.end(), static_cast<limb_type>(0U));
-          }
-
-
-          if(remainder != nullptr)
-          {
-            if(d == 1U)
-            {
-              std::copy(uu.cbegin(),
-                        uu.cbegin() + static_cast<size_t>(static_cast<local_uint_index_type>(number_of_limbs - v_offset)),
-                        remainder->values.begin());
-            }
-            else
-            {
-              auto previous_u = static_cast<limb_type>(0U);
-
-              for(auto rl = static_cast<signed_fast_type>(n - 1U), ul = static_cast<signed_fast_type>(number_of_limbs - (v_offset + 1U)); rl >= 0; --rl, --ul) // NOLINT(altera-id-dependent-backward-branch)
-              {
-                const auto t =
-                  static_cast<double_limb_type>(  *(uu.cbegin() + static_cast<size_t>(ul))
-                                                + static_cast<double_limb_type>(static_cast<double_limb_type>(previous_u) << static_cast<unsigned>(std::numeric_limits<limb_type>::digits)));
-
-                *(remainder->values.begin() + static_cast<size_t>(rl)) = static_cast<limb_type>(static_cast<double_limb_type>(t / d));
-                previous_u                                             = static_cast<limb_type>(static_cast<double_limb_type>(t - static_cast<double_limb_type>(static_cast<double_limb_type>(d) * *(remainder->values.cbegin() + static_cast<size_t>(rl)))));
-              }
-            }
-
-            std::fill(remainder->values.begin() + static_cast<size_t>(n),
-                      remainder->values.end(),
-                      static_cast<limb_type>(0U));
-          }
+          eval_divide_knuth_core(u_offset, v_offset, other, remainder);
         }
       }
+    }
+
+    template<const size_t RePhraseWidth2 = Width2,
+             typename std::enable_if<(RePhraseWidth2 > std::numeric_limits<limb_type>::digits)>::type const* = nullptr>
+    WIDE_INTEGER_CONSTEXPR auto eval_divide_knuth_core(const unsigned_fast_type u_offset, // NOLINT(readability-function-cognitive-complexity)
+                                                       const unsigned_fast_type v_offset,
+                                                       const uintwide_t& other,
+                                                             uintwide_t* remainder) -> void
+    {
+      // We will now use the Knuth long division algorithm.
+
+      using local_uint_index_type = unsigned_fast_type;
+
+      // Compute the normalization factor d.
+      const auto d =
+        static_cast<limb_type>
+        (
+            static_cast<double_limb_type>(static_cast<double_limb_type>(1U) << static_cast<unsigned>(std::numeric_limits<limb_type>::digits))
+          / static_cast<double_limb_type>(static_cast<double_limb_type>(*(other.values.cbegin() + static_cast<size_t>(static_cast<local_uint_index_type>(number_of_limbs - 1U) - v_offset))) + static_cast<limb_type>(1U))
+        );
+
+      // Step D1(b), normalize u -> u * d = uu.
+      // Step D1(c): normalize v -> v * d = vv.
+
+      using uu_array_type =
+        typename std::conditional<std::is_same<AllocatorType, void>::value,
+                                  detail::fixed_static_array <limb_type, number_of_limbs + 1U>,
+                                  detail::fixed_dynamic_array<limb_type,
+                                                              number_of_limbs + 1U,
+                                                              typename std::allocator_traits<typename std::conditional<std::is_same<AllocatorType, void>::value,
+                                                                                                                        std::allocator<void>,
+                                                                                                                        AllocatorType>::type>::template rebind_alloc<limb_type>>>::type;
+
+      uu_array_type       uu;
+      representation_type vv;
+
+      if(d > static_cast<limb_type>(1U))
+      {
+        const auto num_limbs_minus_u_ofs =
+          static_cast<size_t>
+          (
+            static_cast<local_uint_index_type>(number_of_limbs) - u_offset
+          );
+
+        *(uu.begin() + num_limbs_minus_u_ofs) =
+          eval_multiply_1d
+          (
+            uu.data(),
+            values.data(),
+            d,
+            static_cast<unsigned_fast_type>(num_limbs_minus_u_ofs)
+          );
+
+        static_cast<void>
+        (
+          eval_multiply_1d
+          (
+            vv.data(),
+            other.values.data(),
+            d,
+            static_cast<unsigned_fast_type>(number_of_limbs - v_offset)
+          )
+        );
+      }
+      else
+      {
+        std::copy(values.cbegin(), values.cend(), uu.begin());
+
+        *(uu.begin() + static_cast<size_t>(static_cast<local_uint_index_type>(number_of_limbs) - u_offset)) = static_cast<limb_type>(0U);
+
+        vv = other.values;
+      }
+
+      // Step D2: Initialize j.
+      // Step D7: Loop on j from m to 0.
+
+      const auto n   = static_cast<local_uint_index_type>                                   (number_of_limbs - v_offset);
+      const auto m   = static_cast<local_uint_index_type>(static_cast<local_uint_index_type>(number_of_limbs - u_offset) - n);
+      const auto vj0 = static_cast<local_uint_index_type>(static_cast<local_uint_index_type>(number_of_limbs - 1U) - v_offset);
+
+      for(auto j = static_cast<local_uint_index_type>(0U); j <= m; ++j) // NOLINT(altera-id-dependent-backward-branch)
+      {
+        // Step D3 [Calculate q_hat].
+        //   if u[j] == v[j0]
+        //     set q_hat = b - 1
+        //   else
+        //     set q_hat = (u[j] * b + u[j + 1]) / v[1]
+
+        const auto uj     = static_cast<local_uint_index_type>(static_cast<local_uint_index_type>(static_cast<local_uint_index_type>(static_cast<local_uint_index_type>(number_of_limbs + 1U) - 1U) - u_offset) - j);
+        const auto u_j_j1 = static_cast<double_limb_type>(static_cast<double_limb_type>(static_cast<double_limb_type>(*(uu.cbegin() + static_cast<size_t>(uj))) << static_cast<unsigned>(std::numeric_limits<limb_type>::digits)) + *(uu.cbegin() + static_cast<size_t>(uj - 1U)));
+
+        limb_type q_hat = ((*(uu.cbegin() + static_cast<size_t>(uj)) == *(vv.cbegin() + static_cast<size_t>(vj0)))
+          ? (std::numeric_limits<limb_type>::max)()
+          : static_cast<limb_type>(u_j_j1 / *(vv.cbegin() + static_cast<size_t>(vj0))));
+
+        // Decrease q_hat if necessary.
+        // This means that q_hat must be decreased if the
+        // expression [(u[uj] * b + u[uj - 1] - q_hat * v[vj0 - 1]) * b]
+        // exceeds the range of uintwide_t.
+
+        for(auto t = static_cast<double_limb_type>(u_j_j1 - static_cast<double_limb_type>(q_hat * static_cast<double_limb_type>(*(vv.cbegin() + static_cast<size_t>(vj0))))); ; --q_hat, t = static_cast<double_limb_type>(t + *(vv.cbegin() + static_cast<size_t>(vj0))))
+        {
+          if(   (detail::make_hi<limb_type>(t) != static_cast<limb_type>(0U))
+              || (   static_cast<double_limb_type>(static_cast<double_limb_type>(*(vv.cbegin() + static_cast<size_t>(vj0 - 1U))) * q_hat)
+                  <= static_cast<double_limb_type>(static_cast<double_limb_type>(t << static_cast<unsigned>(std::numeric_limits<limb_type>::digits)) + *(uu.cbegin() + static_cast<size_t>(uj - 2U)))))
+          {
+            break;
+          }
+        }
+
+        // Step D4: Multiply and subtract.
+        // Replace u[j, ... j + n] by u[j, ... j + n] - q_hat * v[1, ... n].
+
+        // Set nv = q_hat * (v[1, ... n]).
+        uu_array_type nv;
+
+        *(nv.begin() + static_cast<size_t>(n)) = eval_multiply_1d(nv.data(), vv.data(), q_hat, n);
+
+        const bool has_borrow =
+          eval_subtract_n(uu.data() + static_cast<size_t>(static_cast<local_uint_index_type>(uj - n)),
+                          uu.data() + static_cast<size_t>(static_cast<local_uint_index_type>(uj - n)),
+                          nv.data(),
+                          n + 1U);
+
+
+        // Get the result data.
+        *(values.begin() + static_cast<size_t>(m - j)) = static_cast<limb_type>(q_hat - (has_borrow ? 1U : 0U));
+
+        // Step D5: Test the remainder.
+        // Set the result value: Set result.m_data[m - j] = q_hat.
+        // Use the condition (u[j] < 0), in other words if the borrow
+        // is non-zero, then step D6 needs to be carried out.
+
+        if(has_borrow)
+        {
+          // Step D6: Add back.
+          // Add v[1, ... n] back to u[j, ... j + n],
+          // and decrease the result by 1.
+
+          static_cast<void>(eval_add_n(uu.data() + static_cast<size_t>(static_cast<local_uint_index_type>(uj - n)),
+                                        uu.data() + static_cast<size_t>(static_cast<local_uint_index_type>(uj - n)),
+                                        vv.data(),
+                                        n));
+        }
+      }
+
+      // Clear the data elements that have not
+      // been computed in the division algorithm.
+      {
+        const auto m_plus_one =
+          static_cast<local_uint_index_type>
+          (
+            static_cast<local_uint_index_type>(m) + 1U
+          );
+
+        std::fill(values.begin() + m_plus_one, values.end(), static_cast<limb_type>(0U));
+      }
+
+      if(remainder != nullptr)
+      {
+        if(d == 1U)
+        {
+          std::copy(uu.cbegin(),
+                    uu.cbegin() + static_cast<size_t>(static_cast<local_uint_index_type>(number_of_limbs - v_offset)),
+                    remainder->values.begin());
+        }
+        else
+        {
+          auto previous_u = static_cast<limb_type>(0U);
+
+          for(auto rl = static_cast<signed_fast_type>(n - 1U), ul = static_cast<signed_fast_type>(number_of_limbs - (v_offset + 1U)); rl >= 0; --rl, --ul) // NOLINT(altera-id-dependent-backward-branch)
+          {
+            const auto t =
+              static_cast<double_limb_type>(  *(uu.cbegin() + static_cast<size_t>(ul))
+                                            + static_cast<double_limb_type>(static_cast<double_limb_type>(previous_u) << static_cast<unsigned>(std::numeric_limits<limb_type>::digits)));
+
+            *(remainder->values.begin() + static_cast<size_t>(rl)) = static_cast<limb_type>(static_cast<double_limb_type>(t / d));
+            previous_u                                             = static_cast<limb_type>(static_cast<double_limb_type>(t - static_cast<double_limb_type>(static_cast<double_limb_type>(d) * *(remainder->values.cbegin() + static_cast<size_t>(rl)))));
+          }
+        }
+
+        std::fill(remainder->values.begin() + static_cast<size_t>(n),
+                  remainder->values.end(),
+                  static_cast<limb_type>(0U));
+      }
+    }
+
+    template<const size_t RePhraseWidth2 = Width2,
+             typename std::enable_if<(RePhraseWidth2 <= std::numeric_limits<limb_type>::digits)>::type const* = nullptr>
+    WIDE_INTEGER_CONSTEXPR auto eval_divide_knuth_core(const unsigned_fast_type u_offset,
+                                                       const unsigned_fast_type v_offset,
+                                                       const uintwide_t& other,
+                                                             uintwide_t* remainder) -> void
+    {
+      static_cast<void>(u_offset);
+      static_cast<void>(v_offset);
+      static_cast<void>(other);
+      static_cast<void>(remainder);
     }
 
     WIDE_INTEGER_CONSTEXPR void shl(const unsigned_fast_type offset, // NOLINT(bugprone-easily-swappable-parameters)
