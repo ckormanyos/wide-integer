@@ -404,10 +404,10 @@ auto run() -> bool
 {
   using time_point_type = std::chrono::high_resolution_clock::time_point;
 
-  const time_point_type start = clock_type::now();
+  auto result_is_ok = true;
+  auto result_try   = false;
 
-  bool result_is_ok = true;
-  bool result_try   = false;
+  const auto start = clock_type::now();
 
   result_is_ok &= test_uintwide_t_small_bits();                   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
   try
@@ -418,9 +418,17 @@ auto run() -> bool
   {
   result_try    = false;
   }
-  result_is_ok &= result_try;                                            std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
+  result_is_ok &= result_try;                                     std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
   result_is_ok &= test_uintwide_t_examples();                     std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
-  result_is_ok &= test_uintwide_t_edge_cases();                   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
+  try
+  {
+  result_try    = test_uintwide_t_edge_cases();
+  }
+  catch(const std::exception&)
+  {
+  result_try    = false;
+  }
+  result_is_ok &= result_try;                                     std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
   result_is_ok &= test_uintwide_t_float_convert();                std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
   try
   {
@@ -430,7 +438,7 @@ auto run() -> bool
   {
   result_try    = false;
   }
-  result_is_ok &= result_try;                                            std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
+  result_is_ok &= result_try;                                     std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
   result_is_ok &= test_uintwide_t_spot_values();                  std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
   result_is_ok &= test_uintwide_t_0000024();                      std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
   result_is_ok &= test_uintwide_t_0000048();                      std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
@@ -485,7 +493,7 @@ auto run() -> bool
 
 } // namespace local
 
-auto main() -> int
+auto main() noexcept -> int
 {
   const bool result_is_ok = local::run();
 

@@ -217,6 +217,7 @@
     <ClCompile Include="examples\example010_uint48_t.cpp" />
     <ClCompile Include="examples\example011_uint24_t.cpp" />
     <ClCompile Include="examples\example012_rsa_crypto.cpp" />
+    <ClCompile Include="test\coverity.c" />
     <ClCompile Include="test\test.cpp" />
     <ClCompile Include="test\test_uintwide_t_boost_backend.cpp" />
     <ClCompile Include="test\test_uintwide_t_boost_backend_via_test_arithmetic.cpp">
