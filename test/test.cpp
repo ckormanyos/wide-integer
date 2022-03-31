@@ -493,7 +493,7 @@ auto run() -> bool
 
 } // namespace local
 
-auto main() noexcept -> int
+auto main() -> int // NOLINT(bugprone-exception-escape)
 {
   const bool result_is_ok = local::run();
 
