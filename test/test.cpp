@@ -400,69 +400,67 @@ auto test_uintwide_t_0000064_by_0000064_4_by_4() -> bool
   return result_is_ok;
 }
 
-} // namespace local
-
-auto main() -> int // NOLINT(bugprone-exception-escape)
+auto run() -> bool
 {
   using time_point_type = std::chrono::high_resolution_clock::time_point;
 
-  const time_point_type start = local::clock_type::now();
+  const time_point_type start = clock_type::now();
 
   bool result_is_ok = true;
   bool result_try   = false;
 
-  result_is_ok &= local::test_uintwide_t_small_bits();                   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
+  result_is_ok &= test_uintwide_t_small_bits();                   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
   try
   {
-  result_try    = local::test_uintwide_t_boost_backend();
+  result_try    = test_uintwide_t_boost_backend();
   }
   catch(const std::exception&)
   {
   result_try    = false;
   }
   result_is_ok &= result_try;                                            std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
-  result_is_ok &= local::test_uintwide_t_examples();                     std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
-  result_is_ok &= local::test_uintwide_t_edge_cases();                   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
-  result_is_ok &= local::test_uintwide_t_float_convert();                std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
+  result_is_ok &= test_uintwide_t_examples();                     std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
+  result_is_ok &= test_uintwide_t_edge_cases();                   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
+  result_is_ok &= test_uintwide_t_float_convert();                std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
   try
   {
-  result_try    = local::test_uintwide_t_int_convert();
+  result_try    = test_uintwide_t_int_convert();
   }
   catch(const std::exception&)
   {
   result_try    = false;
   }
   result_is_ok &= result_try;                                            std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
-  result_is_ok &= local::test_uintwide_t_spot_values();                  std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
-  result_is_ok &= local::test_uintwide_t_0000024();                      std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
-  result_is_ok &= local::test_uintwide_t_0000048();                      std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
-  result_is_ok &= local::test_uintwide_t_0000064();                      std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
-  result_is_ok &= local::test_uintwide_t_0000064_signed();               std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
-  result_is_ok &= local::test_uintwide_t_0000096();                      std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
-  result_is_ok &= local::test_uintwide_t_0000128();                      std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
-  result_is_ok &= local::test_uintwide_t_0000256();                      std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
+  result_is_ok &= test_uintwide_t_spot_values();                  std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
+  result_is_ok &= test_uintwide_t_0000024();                      std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
+  result_is_ok &= test_uintwide_t_0000048();                      std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
+  result_is_ok &= test_uintwide_t_0000064();                      std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
+  result_is_ok &= test_uintwide_t_0000064_signed();               std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
+  result_is_ok &= test_uintwide_t_0000096();                      std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
+  result_is_ok &= test_uintwide_t_0000128();                      std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
+  result_is_ok &= test_uintwide_t_0000256();                      std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
   #if defined(WIDE_INTEGER_HAS_LIMB_TYPE_UINT64)
-  result_is_ok &= local::test_uintwide_t_0000256_limb_type_uint64_t();   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
+  result_is_ok &= test_uintwide_t_0000256_limb_type_uint64_t();   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
   #endif
-  result_is_ok &= local::test_uintwide_t_0000512();                      std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
-  result_is_ok &= local::test_uintwide_t_0000512_signed();               std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
-  result_is_ok &= local::test_uintwide_t_0001024();                      std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
-  result_is_ok &= local::test_uintwide_t_0002048();                      std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
-  result_is_ok &= local::test_uintwide_t_0008192();                      std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
+  result_is_ok &= test_uintwide_t_0000512();                      std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
+  result_is_ok &= test_uintwide_t_0000512_signed();               std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
+  result_is_ok &= test_uintwide_t_0001024();                      std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
+  result_is_ok &= test_uintwide_t_0002048();                      std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
+  result_is_ok &= test_uintwide_t_0008192();                      std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
   #if defined(WIDE_INTEGER_HAS_LIMB_TYPE_UINT64)
-  result_is_ok &= local::test_uintwide_t_0008192_limb_type_uint64_t();   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
+  result_is_ok &= test_uintwide_t_0008192_limb_type_uint64_t();   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
   #endif
-  result_is_ok &= local::test_uintwide_t_0012288();                      std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
-  result_is_ok &= local::test_uintwide_t_0032768();                      std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
+  result_is_ok &= test_uintwide_t_0012288();                      std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
+  result_is_ok &= test_uintwide_t_0032768();                      std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
   #if !defined(UINTWIDE_T_REDUCE_TEST_DEPTH)
-  result_is_ok &= local::test_uintwide_t_0065536_alloc();                std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
+  result_is_ok &= test_uintwide_t_0065536_alloc();                std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
   #endif
-  result_is_ok &= local::test_uintwide_t_0008192_by_0012288();           std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
-  result_is_ok &= local::test_uintwide_t_0012288_by_0008192();           std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
-  result_is_ok &= local::test_uintwide_t_0000032_by_0000032_4_by_4();    std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
-  result_is_ok &= local::test_uintwide_t_0000064_by_0000064_4_by_4();    std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
+  result_is_ok &= test_uintwide_t_0008192_by_0012288();           std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
+  result_is_ok &= test_uintwide_t_0012288_by_0008192();           std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
+  result_is_ok &= test_uintwide_t_0000032_by_0000032_4_by_4();    std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
+  result_is_ok &= test_uintwide_t_0000064_by_0000064_4_by_4();    std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
 
-  const time_point_type stop = local::clock_type::now();
+  const time_point_type stop = clock_type::now();
 
   {
     constexpr auto one_thousand_milliseconds = static_cast<float>(1000.0F);
@@ -481,6 +479,15 @@ auto main() -> int // NOLINT(bugprone-exception-escape)
 
     std::cout.flags(flg);
   }
+
+  return result_is_ok;
+}
+
+} // namespace local
+
+auto main() -> int
+{
+  const bool result_is_ok = local::run();
 
   return (result_is_ok ? 0 : -1);
 }

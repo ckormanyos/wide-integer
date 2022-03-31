@@ -1743,7 +1743,7 @@
           if(numererator_was_neg) { a.negate(); }
           if(denominator_was_neg) { b.negate(); }
 
-          a.eval_divide_knuth(b, nullptr);
+          a.eval_divide_knuth(b);
 
           if(numererator_was_neg != denominator_was_neg) { a.negate(); }
 
@@ -1751,7 +1751,7 @@
         }
         else
         {
-          eval_divide_knuth(other, nullptr);
+          eval_divide_knuth(other);
         }
       }
 
@@ -3607,7 +3607,7 @@
     }
 
     WIDE_INTEGER_CONSTEXPR void eval_divide_knuth(const uintwide_t& other, // NOLINT(readability-function-cognitive-complexity)
-                                                        uintwide_t* remainder)
+                                                        uintwide_t* remainder = nullptr)
     {
       // Use Knuth's long division algorithm.
       // The loop-ordering of indices in Knuth's original
@@ -3626,8 +3626,8 @@
       auto v_offset = static_cast<local_uint_index_type>(0U);
 
       // Compute the offsets for u and v.
-      for(auto i = static_cast<local_uint_index_type>(0U); (i < number_of_limbs) && (*(      values.cbegin() + static_cast<size_t>(static_cast<local_uint_index_type>(number_of_limbs - 1U) - i)) == static_cast<limb_type>(0U)); ++i) { ++u_offset; } // NOLINT(altera-id-dependent-backward-branch)
-      for(auto i = static_cast<local_uint_index_type>(0U); (i < number_of_limbs) && (*(other.values.cbegin() + static_cast<size_t>(static_cast<local_uint_index_type>(number_of_limbs - 1U) - i)) == static_cast<limb_type>(0U)); ++i) { ++v_offset; } // NOLINT(altera-id-dependent-backward-branch)
+      for(auto i = static_cast<local_uint_index_type>(0U); (i < static_cast<local_uint_index_type>(number_of_limbs)) && (*(      values.cbegin() + static_cast<size_t>(static_cast<local_uint_index_type>(number_of_limbs - 1U) - i)) == static_cast<limb_type>(0U)); ++i) { ++u_offset; } // NOLINT(altera-id-dependent-backward-branch)
+      for(auto i = static_cast<local_uint_index_type>(0U); (i < static_cast<local_uint_index_type>(number_of_limbs)) && (*(other.values.cbegin() + static_cast<size_t>(static_cast<local_uint_index_type>(number_of_limbs - 1U) - i)) == static_cast<limb_type>(0U)); ++i) { ++v_offset; } // NOLINT(altera-id-dependent-backward-branch)
 
       if(v_offset == static_cast<local_uint_index_type>(number_of_limbs))
       {
@@ -3678,7 +3678,7 @@
             *remainder = uintwide_t(static_cast<std::uint8_t>(0U));
           }
         }
-        else if(v_offset == static_cast<local_uint_index_type>(number_of_limbs - 1U))
+        else if(static_cast<local_uint_index_type>(v_offset + static_cast<local_uint_index_type>(1U)) == static_cast<local_uint_index_type>(number_of_limbs))
         {
           // The denominator has one single limb.
           // Use a one-dimensional division algorithm.
@@ -3692,8 +3692,11 @@
 
           // Compute the normalization factor d.
           const auto d =
-            static_cast<limb_type>(static_cast<double_limb_type>(  static_cast<double_limb_type>(static_cast<double_limb_type>(1U) << static_cast<unsigned>(std::numeric_limits<limb_type>::digits))
-                                                                 / static_cast<double_limb_type>(static_cast<double_limb_type>(*(other.values.cbegin() + static_cast<size_t>(static_cast<local_uint_index_type>(number_of_limbs - 1U) - v_offset))) + static_cast<limb_type>(1U))));
+            static_cast<limb_type>
+            (
+                static_cast<double_limb_type>(static_cast<double_limb_type>(1U) << static_cast<unsigned>(std::numeric_limits<limb_type>::digits))
+              / static_cast<double_limb_type>(static_cast<double_limb_type>(*(other.values.cbegin() + static_cast<size_t>(static_cast<local_uint_index_type>(number_of_limbs - 1U) - v_offset))) + static_cast<limb_type>(1U))
+            );
 
           // Step D1(b), normalize u -> u * d = uu.
           // Step D1(c): normalize v -> v * d = vv.
@@ -3712,10 +3715,31 @@
 
           if(d > static_cast<limb_type>(1U))
           {
-            *(uu.begin() + static_cast<size_t>(static_cast<local_uint_index_type>(number_of_limbs) - u_offset)) =
-              eval_multiply_1d(uu.data(), values.data(), d, number_of_limbs - u_offset);
+            const auto num_limbs_minus_u_ofs =
+              static_cast<size_t>
+              (
+                static_cast<local_uint_index_type>(number_of_limbs) - u_offset
+              );
 
-            static_cast<void>(eval_multiply_1d(vv.data(), other.values.data(), d, number_of_limbs - v_offset));
+            *(uu.begin() + num_limbs_minus_u_ofs) =
+              eval_multiply_1d
+              (
+                uu.data(),
+                values.data(),
+                d,
+                static_cast<unsigned_fast_type>(num_limbs_minus_u_ofs)
+              );
+
+            static_cast<void>
+            (
+              eval_multiply_1d
+              (
+                vv.data(),
+                other.values.data(),
+                d,
+                static_cast<unsigned_fast_type>(number_of_limbs - v_offset)
+              )
+            );
           }
           else
           {
