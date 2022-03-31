@@ -3606,17 +3606,91 @@
       }
     }
 
-    template<const size_t RePhraseWidth2 = Width2,
-             typename std::enable_if<(RePhraseWidth2 <= std::numeric_limits<limb_type>::digits)>::type const* = nullptr>
-    WIDE_INTEGER_CONSTEXPR auto eval_divide_knuth_core(const unsigned_fast_type u_offset,
-                                                       const unsigned_fast_type v_offset,
-                                                       const uintwide_t& other,
-                                                             uintwide_t* remainder) -> void
+    WIDE_INTEGER_CONSTEXPR void eval_divide_knuth(const uintwide_t& other,
+                                                        uintwide_t* remainder = nullptr)
     {
-      static_cast<void>(u_offset);
-      static_cast<void>(v_offset);
-      static_cast<void>(other);
-      static_cast<void>(remainder);
+      // Use Knuth's long division algorithm.
+      // The loop-ordering of indices in Knuth's original
+      // algorithm has been reversed due to the data format
+      // used here. Several optimizations and combinations
+      // of logic have been carried out in the source code.
+
+      // See also:
+      // D.E. Knuth, "The Art of Computer Programming, Volume 2:
+      // Seminumerical Algorithms", Addison-Wesley (1998),
+      // Section 4.3.1 Algorithm D and Exercise 16.
+
+      using local_uint_index_type = unsigned_fast_type;
+
+      auto u_offset = static_cast<local_uint_index_type>(0U);
+      auto v_offset = static_cast<local_uint_index_type>(0U);
+
+      // Compute the offsets for u and v.
+      for(auto i = static_cast<local_uint_index_type>(0U); (i < static_cast<local_uint_index_type>(number_of_limbs)) && (*(      values.cbegin() + static_cast<size_t>(static_cast<local_uint_index_type>(number_of_limbs - 1U) - i)) == static_cast<limb_type>(0U)); ++i) { ++u_offset; } // NOLINT(altera-id-dependent-backward-branch)
+      for(auto i = static_cast<local_uint_index_type>(0U); (i < static_cast<local_uint_index_type>(number_of_limbs)) && (*(other.values.cbegin() + static_cast<size_t>(static_cast<local_uint_index_type>(number_of_limbs - 1U) - i)) == static_cast<limb_type>(0U)); ++i) { ++v_offset; } // NOLINT(altera-id-dependent-backward-branch)
+
+      if(v_offset == static_cast<local_uint_index_type>(number_of_limbs))
+      {
+        // The denominator is zero. Set the maximum value and return.
+        // This also catches (0 / 0) and sets the maximum value for it.
+        operator=(limits_helper_max(IsSigned));
+
+        if(remainder != nullptr)
+        {
+          *remainder = uintwide_t(static_cast<std::uint8_t>(0U));
+        }
+      }
+      else if(u_offset == static_cast<local_uint_index_type>(number_of_limbs))
+      {
+        // The numerator is zero. Do nothing and return.
+
+        if(remainder != nullptr)
+        {
+          *remainder = uintwide_t(static_cast<std::uint8_t>(0U));
+        }
+      }
+      else
+      {
+        const auto result_of_compare_left_with_right = compare(other);
+
+        const bool left_is_less_than_right = (result_of_compare_left_with_right == INT8_C(-1));
+        const bool left_is_equal_to_right  = (result_of_compare_left_with_right == INT8_C( 0));
+
+        if(left_is_less_than_right)
+        {
+          // If the denominator is larger than the numerator,
+          // then the result of the division is zero.
+          if(remainder != nullptr)
+          {
+            *remainder = *this;
+          }
+
+          operator=(static_cast<std::uint8_t>(0U));
+        }
+        else if(left_is_equal_to_right)
+        {
+          // If the denominator is equal to the numerator,
+          // then the result of the division is one.
+          operator=(static_cast<std::uint8_t>(1U));
+
+          if(remainder != nullptr)
+          {
+            *remainder = uintwide_t(static_cast<std::uint8_t>(0U));
+          }
+        }
+        else if(static_cast<local_uint_index_type>(v_offset + static_cast<local_uint_index_type>(1U)) == static_cast<local_uint_index_type>(number_of_limbs))
+        {
+          // The denominator has one single limb.
+          // Use a one-dimensional division algorithm.
+          const limb_type short_denominator = *other.values.cbegin();
+
+          eval_divide_by_single_limb(short_denominator, u_offset, remainder);
+        }
+        else
+        {
+          eval_divide_knuth_core(u_offset, v_offset, other, remainder);
+        }
+      }
     }
 
     template<const size_t RePhraseWidth2 = Width2,
@@ -3804,91 +3878,17 @@
       }
     }
 
-    WIDE_INTEGER_CONSTEXPR void eval_divide_knuth(const uintwide_t& other,
-                                                        uintwide_t* remainder = nullptr)
+    template<const size_t RePhraseWidth2 = Width2,
+             typename std::enable_if<(RePhraseWidth2 <= std::numeric_limits<limb_type>::digits)>::type const* = nullptr>
+    WIDE_INTEGER_CONSTEXPR auto eval_divide_knuth_core(const unsigned_fast_type u_offset,
+                                                       const unsigned_fast_type v_offset,
+                                                       const uintwide_t& other,
+                                                             uintwide_t* remainder) -> void
     {
-      // Use Knuth's long division algorithm.
-      // The loop-ordering of indices in Knuth's original
-      // algorithm has been reversed due to the data format
-      // used here. Several optimizations and combinations
-      // of logic have been carried out in the source code.
-
-      // See also:
-      // D.E. Knuth, "The Art of Computer Programming, Volume 2:
-      // Seminumerical Algorithms", Addison-Wesley (1998),
-      // Section 4.3.1 Algorithm D and Exercise 16.
-
-      using local_uint_index_type = unsigned_fast_type;
-
-      auto u_offset = static_cast<local_uint_index_type>(0U);
-      auto v_offset = static_cast<local_uint_index_type>(0U);
-
-      // Compute the offsets for u and v.
-      for(auto i = static_cast<local_uint_index_type>(0U); (i < static_cast<local_uint_index_type>(number_of_limbs)) && (*(      values.cbegin() + static_cast<size_t>(static_cast<local_uint_index_type>(number_of_limbs - 1U) - i)) == static_cast<limb_type>(0U)); ++i) { ++u_offset; } // NOLINT(altera-id-dependent-backward-branch)
-      for(auto i = static_cast<local_uint_index_type>(0U); (i < static_cast<local_uint_index_type>(number_of_limbs)) && (*(other.values.cbegin() + static_cast<size_t>(static_cast<local_uint_index_type>(number_of_limbs - 1U) - i)) == static_cast<limb_type>(0U)); ++i) { ++v_offset; } // NOLINT(altera-id-dependent-backward-branch)
-
-      if(v_offset == static_cast<local_uint_index_type>(number_of_limbs))
-      {
-        // The denominator is zero. Set the maximum value and return.
-        // This also catches (0 / 0) and sets the maximum value for it.
-        operator=(limits_helper_max(IsSigned));
-
-        if(remainder != nullptr)
-        {
-          *remainder = uintwide_t(static_cast<std::uint8_t>(0U));
-        }
-      }
-      else if(u_offset == static_cast<local_uint_index_type>(number_of_limbs))
-      {
-        // The numerator is zero. Do nothing and return.
-
-        if(remainder != nullptr)
-        {
-          *remainder = uintwide_t(static_cast<std::uint8_t>(0U));
-        }
-      }
-      else
-      {
-        const auto result_of_compare_left_with_right = compare(other);
-
-        const bool left_is_less_than_right = (result_of_compare_left_with_right == INT8_C(-1));
-        const bool left_is_equal_to_right  = (result_of_compare_left_with_right == INT8_C( 0));
-
-        if(left_is_less_than_right)
-        {
-          // If the denominator is larger than the numerator,
-          // then the result of the division is zero.
-          if(remainder != nullptr)
-          {
-            *remainder = *this;
-          }
-
-          operator=(static_cast<std::uint8_t>(0U));
-        }
-        else if(left_is_equal_to_right)
-        {
-          // If the denominator is equal to the numerator,
-          // then the result of the division is one.
-          operator=(static_cast<std::uint8_t>(1U));
-
-          if(remainder != nullptr)
-          {
-            *remainder = uintwide_t(static_cast<std::uint8_t>(0U));
-          }
-        }
-        else if(static_cast<local_uint_index_type>(v_offset + static_cast<local_uint_index_type>(1U)) == static_cast<local_uint_index_type>(number_of_limbs))
-        {
-          // The denominator has one single limb.
-          // Use a one-dimensional division algorithm.
-          const limb_type short_denominator = *other.values.cbegin();
-
-          eval_divide_by_single_limb(short_denominator, u_offset, remainder);
-        }
-        else
-        {
-          eval_divide_knuth_core(u_offset, v_offset, other, remainder);
-        }
-      }
+      static_cast<void>(u_offset);
+      static_cast<void>(v_offset);
+      static_cast<void>(other);
+      static_cast<void>(remainder);
     }
 
     WIDE_INTEGER_CONSTEXPR void shl(const unsigned_fast_type offset, // NOLINT(bugprone-easily-swappable-parameters)
