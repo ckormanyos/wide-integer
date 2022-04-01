@@ -534,10 +534,10 @@
   #if !defined(WIDE_INTEGER_DISABLE_FLOAT_INTEROP)
   namespace my_own {
 
-  template<typename FloatingPointType> WIDE_INTEGER_CONSTEXPR auto frexp   (FloatingPointType x, int* expptr) -> typename std::enable_if<((std::is_floating_point<FloatingPointType>::value) &&   std::numeric_limits<FloatingPointType>::is_iec559),  FloatingPointType>::type;
-  template<typename FloatingPointType> WIDE_INTEGER_CONSTEXPR auto frexp   (FloatingPointType x, int* expptr) -> typename std::enable_if<((std::is_floating_point<FloatingPointType>::value) && (!std::numeric_limits<FloatingPointType>::is_iec559)), FloatingPointType>::type;
-  template<typename FloatingPointType> WIDE_INTEGER_CONSTEXPR auto isfinite(FloatingPointType x)              -> typename std::enable_if<((std::is_floating_point<FloatingPointType>::value) &&   std::numeric_limits<FloatingPointType>::is_iec559),  bool>::type;
-  template<typename FloatingPointType> WIDE_INTEGER_CONSTEXPR auto isfinite(FloatingPointType x)              -> typename std::enable_if<((std::is_floating_point<FloatingPointType>::value) && (!std::numeric_limits<FloatingPointType>::is_iec559)), bool>::type;
+  template<typename FloatingPointType> WIDE_INTEGER_CONSTEXPR auto frexp   (FloatingPointType x, int* expptr) -> typename std::enable_if<(std::is_floating_point<FloatingPointType>::value &&   std::numeric_limits<FloatingPointType>::is_iec559 ), FloatingPointType>::type;
+  template<typename FloatingPointType> WIDE_INTEGER_CONSTEXPR auto frexp   (FloatingPointType x, int* expptr) -> typename std::enable_if<(std::is_floating_point<FloatingPointType>::value && (!std::numeric_limits<FloatingPointType>::is_iec559)), FloatingPointType>::type;
+  template<typename FloatingPointType> WIDE_INTEGER_CONSTEXPR auto isfinite(FloatingPointType x)              -> typename std::enable_if<(std::is_floating_point<FloatingPointType>::value &&   std::numeric_limits<FloatingPointType>::is_iec559 ), bool>::type;
+  template<typename FloatingPointType> WIDE_INTEGER_CONSTEXPR auto isfinite(FloatingPointType x)              -> typename std::enable_if<(std::is_floating_point<FloatingPointType>::value && (!std::numeric_limits<FloatingPointType>::is_iec559)), bool>::type;
 
   } // namespace my_own
   #endif
@@ -4551,7 +4551,7 @@
   #if !defined(WIDE_INTEGER_DISABLE_FLOAT_INTEROP)
   namespace my_own {
 
-  template<typename FloatingPointType> WIDE_INTEGER_CONSTEXPR auto frexp(FloatingPointType x, int* expptr) -> typename std::enable_if<((std::is_floating_point<FloatingPointType>::value) && (std::numeric_limits<FloatingPointType>::is_iec559)), FloatingPointType>::type
+  template<typename FloatingPointType> WIDE_INTEGER_CONSTEXPR auto frexp(FloatingPointType x, int* expptr) -> typename std::enable_if<(std::is_floating_point<FloatingPointType>::value &&   std::numeric_limits<FloatingPointType>::is_iec559 ), FloatingPointType>::type
   {
     using local_floating_point_type = FloatingPointType;
 
@@ -4592,14 +4592,14 @@
     return ((!x_is_neg) ? f : -f);
   }
 
-  template<typename FloatingPointType> WIDE_INTEGER_CONSTEXPR auto frexp(FloatingPointType x, int* expptr) -> typename std::enable_if<((std::is_floating_point<FloatingPointType>::value) && (!std::numeric_limits<FloatingPointType>::is_iec559)), FloatingPointType>::type
+  template<typename FloatingPointType> WIDE_INTEGER_CONSTEXPR auto frexp(FloatingPointType x, int* expptr) -> typename std::enable_if<(std::is_floating_point<FloatingPointType>::value && (!std::numeric_limits<FloatingPointType>::is_iec559)), FloatingPointType>::type
   {
     using std::frexp;
 
     return frexp(x, expptr);
   }
 
-  template<typename FloatingPointType> WIDE_INTEGER_CONSTEXPR auto isfinite(FloatingPointType x) -> typename std::enable_if<((std::is_floating_point<FloatingPointType>::value) && (std::numeric_limits<FloatingPointType>::is_iec559)), bool>::type
+  template<typename FloatingPointType> WIDE_INTEGER_CONSTEXPR auto isfinite(FloatingPointType x) -> typename std::enable_if<(std::is_floating_point<FloatingPointType>::value &&   std::numeric_limits<FloatingPointType>::is_iec559 ), bool>::type
   {
     using local_floating_point_type = FloatingPointType;
 
@@ -4625,7 +4625,7 @@
     return x_is_finite;
   }
 
-  template<typename FloatingPointType> WIDE_INTEGER_CONSTEXPR auto isfinite(FloatingPointType x) -> typename std::enable_if<((std::is_floating_point<FloatingPointType>::value) && (!std::numeric_limits<FloatingPointType>::is_iec559)), bool>::type
+  template<typename FloatingPointType> WIDE_INTEGER_CONSTEXPR auto isfinite(FloatingPointType x) -> typename std::enable_if<(std::is_floating_point<FloatingPointType>::value && (!std::numeric_limits<FloatingPointType>::is_iec559)), bool>::type
   {
     using std::isfinite;
 
