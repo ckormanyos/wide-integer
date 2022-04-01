@@ -40,13 +40,16 @@ namespace from_issue_234
     return
       uint80::from_rep
       (
-        {
-          make_lo<local_value_type>(*(value.crepresentation().data() + 0U)),
-          make_hi<local_value_type>(*(value.crepresentation().data() + 0U)),
-          make_lo<local_value_type>(*(value.crepresentation().data() + 1U)),
-          make_hi<local_value_type>(*(value.crepresentation().data() + 1U)),
-          make_lo<local_value_type>(*(value.crepresentation().data() + 2U))
-        }
+        uint80::representation_type
+        (
+          {
+            make_lo<local_value_type>(*(value.crepresentation().data() + 0U)),
+            make_hi<local_value_type>(*(value.crepresentation().data() + 0U)),
+            make_lo<local_value_type>(*(value.crepresentation().data() + 1U)),
+            make_hi<local_value_type>(*(value.crepresentation().data() + 1U)),
+            make_lo<local_value_type>(*(value.crepresentation().data() + 2U))
+          }
+        )
       );
   }
 
@@ -66,14 +69,17 @@ namespace from_issue_234
     return
       uint512::from_rep
       (
-        {
-          make_large(*(value.crepresentation().data() + 0U),
-                     *(value.crepresentation().data() + 1U)),
-          make_large(*(value.crepresentation().data() + 2U),
-                     *(value.crepresentation().data() + 3U)),
-          make_large(*(value.crepresentation().data() + 4U),
-                     static_cast<local_value_type>(0U))
-        }
+        uint512::representation_type
+        (
+          {
+            make_large(*(value.crepresentation().data() + 0U),
+                       *(value.crepresentation().data() + 1U)),
+            make_large(*(value.crepresentation().data() + 2U),
+                       *(value.crepresentation().data() + 3U)),
+            make_large(*(value.crepresentation().data() + 4U),
+                       static_cast<local_value_type>(0U))
+          }
+        )
       );
   }
 } // namespace from_issue_234

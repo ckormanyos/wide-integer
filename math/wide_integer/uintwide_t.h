@@ -415,8 +415,8 @@
   }
 
   template<typename ValueType, typename AllocatorType>
-  WIDE_INTEGER_CONSTEXPR void swap(dynamic_array<ValueType, AllocatorType>& x,
-                                   dynamic_array<ValueType, AllocatorType>& y)
+  WIDE_INTEGER_CONSTEXPR auto swap(dynamic_array<ValueType, AllocatorType>& x,
+                                   dynamic_array<ValueType, AllocatorType>& y) noexcept -> void
   {
     x.swap(y);
   }
@@ -698,8 +698,8 @@
            typename LimbType,
            typename AllocatorType,
            const bool IsSigned>
-  WIDE_INTEGER_CONSTEXPR void swap(uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& x,
-                                   uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& y);
+  WIDE_INTEGER_CONSTEXPR auto swap(uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& x,
+                                   uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& y) noexcept -> void;
 
   template<const size_t Width2,
            typename LimbType,
@@ -872,7 +872,7 @@
     constexpr fixed_dynamic_array(const fixed_dynamic_array& other_array)
       : base_class_type(static_cast<const base_class_type&>(other_array)) { }
 
-    WIDE_INTEGER_CONSTEXPR fixed_dynamic_array(std::initializer_list<typename base_class_type::value_type> lst)
+    explicit WIDE_INTEGER_CONSTEXPR fixed_dynamic_array(std::initializer_list<typename base_class_type::value_type> lst)
       : base_class_type(MySize)
     {
       std::copy(lst.begin(),
@@ -932,7 +932,7 @@
     WIDE_INTEGER_CONSTEXPR fixed_static_array(const fixed_static_array&) = default;
     WIDE_INTEGER_CONSTEXPR fixed_static_array(fixed_static_array&&) noexcept = default;
 
-    WIDE_INTEGER_CONSTEXPR fixed_static_array(std::initializer_list<typename base_class_type::value_type> lst)
+    explicit WIDE_INTEGER_CONSTEXPR fixed_static_array(std::initializer_list<typename base_class_type::value_type> lst)
     {
       const auto size_to_copy =
         (std::min)(static_cast<size_type>(lst.size()),
@@ -1005,7 +1005,7 @@
   // Use a local implementation of string copy.
   inline WIDE_INTEGER_CONSTEXPR auto strcpy_unsafe(char* dst, const char* src) -> char*
   {
-    while((*dst++ = *src++) != static_cast<char>('\0')) { ; } // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+    while((*dst++ = *src++) != static_cast<char>('\0')) { } // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
 
     return dst;
   }
@@ -1013,7 +1013,7 @@
   // Use a local implementation of string length.
   inline WIDE_INTEGER_CONSTEXPR auto strlen_unsafe(const char* p_str) -> unsigned_fast_type
   {
-    const char* p_str_copy{};
+    const char* p_str_copy { };
 
     for(p_str_copy = p_str; (*p_str_copy != static_cast<char>('\0')); ++p_str_copy) { ; } // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic,altera-id-dependent-backward-branch)
 
@@ -1127,8 +1127,6 @@
     // types like float, double and long double. Note: For long double,
     // you need to verify that the mantissa fits in unsigned long long.
     explicit WIDE_INTEGER_CONSTEXPR native_float_parts(const FloatingPointType f)
-      : my_mantissa_part(0ULL),
-        my_exponent_part(0)
     {
       using native_float_type = FloatingPointType;
 
@@ -1207,8 +1205,8 @@
     WIDE_INTEGER_CONSTEXPR native_float_parts() = delete;
 
   private:
-    unsigned long long my_mantissa_part; // NOLINT(readability-identifier-naming,google-runtime-int)
-    int                my_exponent_part; // NOLINT(readability-identifier-naming)
+    unsigned long long my_mantissa_part { }; // NOLINT(readability-identifier-naming,google-runtime-int)
+    int                my_exponent_part { }; // NOLINT(readability-identifier-naming)
   };
   #endif
 
@@ -4739,8 +4737,8 @@
            typename LimbType,
            typename AllocatorType,
            const bool IsSigned>
-  WIDE_INTEGER_CONSTEXPR void swap(uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& x,
-                                   uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& y)
+  WIDE_INTEGER_CONSTEXPR auto swap(uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& x,
+                                   uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& y) noexcept -> void
   {
     if(&x != &y)
     {
