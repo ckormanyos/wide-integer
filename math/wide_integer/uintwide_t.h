@@ -299,12 +299,12 @@
     WIDE_INTEGER_CONSTEXPR auto at(const size_type i) const -> const_reference { return ((i < elem_count) ? elems[i] : elems[0U]); }
 
     // Element manipulation members.
-    WIDE_INTEGER_CONSTEXPR void fill(const value_type& v)
+    WIDE_INTEGER_CONSTEXPR auto fill(const value_type& v) -> void
     {
       std::fill_n(begin(), elem_count, v);
     }
 
-    WIDE_INTEGER_CONSTEXPR void swap(dynamic_array& other)
+    WIDE_INTEGER_CONSTEXPR auto swap(dynamic_array& other) noexcept -> void
     {
       if(this != &other)
       {
@@ -317,7 +317,7 @@
       }
     }
 
-    WIDE_INTEGER_CONSTEXPR void swap(dynamic_array&& other)
+    WIDE_INTEGER_CONSTEXPR auto swap(dynamic_array&& other) noexcept -> void
     {
       pointer tmp_elems = elems;
 
@@ -348,10 +348,6 @@
 
       left_and_right_are_equal =
         (size_of_left_is_zero || std::equal(lhs.cbegin(), lhs.cend(), rhs.cbegin()));
-    }
-    else
-    {
-      ;
     }
 
     return left_and_right_are_equal;
@@ -543,9 +539,9 @@
   #if !defined(WIDE_INTEGER_DISABLE_FLOAT_INTEROP)
   namespace my_own {
 
-  template<typename FloatingPointType> WIDE_INTEGER_CONSTEXPR auto frexp   (FloatingPointType x, int* expptr) -> typename std::enable_if<((std::is_floating_point<FloatingPointType>::value) && ( std::numeric_limits<FloatingPointType>::is_iec559)), FloatingPointType>::type;
+  template<typename FloatingPointType> WIDE_INTEGER_CONSTEXPR auto frexp   (FloatingPointType x, int* expptr) -> typename std::enable_if<((std::is_floating_point<FloatingPointType>::value) &&   std::numeric_limits<FloatingPointType>::is_iec559),  FloatingPointType>::type;
   template<typename FloatingPointType> WIDE_INTEGER_CONSTEXPR auto frexp   (FloatingPointType x, int* expptr) -> typename std::enable_if<((std::is_floating_point<FloatingPointType>::value) && (!std::numeric_limits<FloatingPointType>::is_iec559)), FloatingPointType>::type;
-  template<typename FloatingPointType> WIDE_INTEGER_CONSTEXPR auto isfinite(FloatingPointType x)              -> typename std::enable_if<((std::is_floating_point<FloatingPointType>::value) && ( std::numeric_limits<FloatingPointType>::is_iec559)), bool>::type;
+  template<typename FloatingPointType> WIDE_INTEGER_CONSTEXPR auto isfinite(FloatingPointType x)              -> typename std::enable_if<((std::is_floating_point<FloatingPointType>::value) &&   std::numeric_limits<FloatingPointType>::is_iec559),  bool>::type;
   template<typename FloatingPointType> WIDE_INTEGER_CONSTEXPR auto isfinite(FloatingPointType x)              -> typename std::enable_if<((std::is_floating_point<FloatingPointType>::value) && (!std::numeric_limits<FloatingPointType>::is_iec559)), bool>::type;
 
   } // namespace my_own
@@ -945,7 +941,7 @@
     {
       const auto size_to_copy =
         (std::min)(static_cast<size_type>(lst.size()),
-                   static_cast<size_type>(MySize));
+                   MySize);
 
       if(size_to_copy < static_cast<size_type>(base_class_type::size()))
       {
