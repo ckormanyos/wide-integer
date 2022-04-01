@@ -237,10 +237,12 @@
   <ItemGroup>
     <None Include=".clang-tidy" />
     <None Include=".github\workflows\wide_integer.yml" />
+    <None Include=".github\workflows\wide_integer_sonar.yml" />
     <None Include=".tidy\make\make_tidy_01_generic.gmk" />
     <None Include=".tidy\make\make_tidy_02_files.gmk" />
     <None Include=".tidy\make\make_tidy_03_flags.gmk" />
     <None Include="README.md" />
+    <None Include="sonar-project.properties" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="CMakeLists.txt" />
