@@ -308,22 +308,14 @@
     {
       if(this != &other)
       {
-        pointer tmp_elems = elems;
-
-        elems = other.elems;
-        other.elems = tmp_elems;
-
+        std::swap(elems,      other.elems);
         std::swap(elem_count, other.elem_count);
       }
     }
 
     WIDE_INTEGER_CONSTEXPR auto swap(dynamic_array&& other) noexcept -> void
     {
-      pointer tmp_elems = elems;
-
-      elems = other.elems;
-      other.elems = tmp_elems;
-
+      std::swap(elems,      other.elems);
       std::swap(elem_count, other.elem_count);
     }
 
@@ -1262,13 +1254,16 @@
     #endif
 
     // Helper constants for the digit characteristics.
-    static constexpr size_t my_width2 = Width2;
+    static constexpr auto my_width2 = Width2;
 
     // The number of limbs.
-    static constexpr size_t number_of_limbs =
-      static_cast<size_t>(my_width2 / static_cast<size_t>(std::numeric_limits<limb_type>::digits));
+    static constexpr auto number_of_limbs =
+      static_cast<size_t>
+      (
+        my_width2 / static_cast<size_t>(std::numeric_limits<limb_type>::digits)
+      );
 
-    static constexpr size_t number_of_limbs_karatsuba_threshold = static_cast<size_t>(128U + 1U);
+    static constexpr auto number_of_limbs_karatsuba_threshold = static_cast<size_t>(128U + 1U);
 
     // Verify that the Width2 template parameter (mirrored with my_width2):
     //   * Is equal to 2^n times 1...63.
@@ -4742,12 +4737,7 @@
   {
     if(&x != &y)
     {
-      using local_wide_integer_type = uintwide_t<Width2, LimbType, AllocatorType, IsSigned>;
-
-      const local_wide_integer_type tmp_x(x);
-
-      x = y;
-      y = tmp_x;
+      std::swap(x, y);
     }
   }
 
