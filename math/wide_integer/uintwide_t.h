@@ -872,7 +872,7 @@
     constexpr fixed_dynamic_array(const fixed_dynamic_array& other_array)
       : base_class_type(static_cast<const base_class_type&>(other_array)) { }
 
-    explicit WIDE_INTEGER_CONSTEXPR fixed_dynamic_array(std::initializer_list<typename base_class_type::value_type> lst)
+    WIDE_INTEGER_CONSTEXPR fixed_dynamic_array(std::initializer_list<typename base_class_type::value_type> lst)
       : base_class_type(MySize)
     {
       std::copy(lst.begin(),
@@ -932,7 +932,7 @@
     WIDE_INTEGER_CONSTEXPR fixed_static_array(const fixed_static_array&) = default;
     WIDE_INTEGER_CONSTEXPR fixed_static_array(fixed_static_array&&) noexcept = default;
 
-    explicit WIDE_INTEGER_CONSTEXPR fixed_static_array(std::initializer_list<typename base_class_type::value_type> lst)
+    WIDE_INTEGER_CONSTEXPR fixed_static_array(std::initializer_list<typename base_class_type::value_type> lst)
     {
       const auto size_to_copy =
         (std::min)(static_cast<size_type>(lst.size()),
