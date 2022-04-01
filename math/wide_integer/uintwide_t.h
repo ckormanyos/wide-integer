@@ -1005,7 +1005,7 @@
   // Use a local implementation of string copy.
   inline WIDE_INTEGER_CONSTEXPR auto strcpy_unsafe(char* dst, const char* src) -> char*
   {
-    while((*dst++ = *src++) != static_cast<char>('\0')) { } // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+    while((*dst++ = *src++) != static_cast<char>('\0')) { ; } // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
 
     return dst;
   }
