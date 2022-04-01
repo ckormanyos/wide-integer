@@ -333,24 +333,19 @@
   };
 
   template<typename ValueType, typename AllocatorType>
-  WIDE_INTEGER_CONSTEXPR auto operator==(const dynamic_array<ValueType, AllocatorType>& lhs,
-                                         const dynamic_array<ValueType, AllocatorType>& rhs) -> bool
+  constexpr auto operator==(const dynamic_array<ValueType, AllocatorType>& lhs,
+                            const dynamic_array<ValueType, AllocatorType>& rhs) -> bool
   {
-    bool left_and_right_are_equal = false;
+    using local_size_type = typename dynamic_array<ValueType, AllocatorType>::size_type;
 
-    const bool sizes_are_equal = (lhs.size() == rhs.size());
-
-    if(sizes_are_equal)
-    {
-      using size_type = typename dynamic_array<ValueType, AllocatorType>::size_type;
-
-      const bool size_of_left_is_zero = (lhs.size() == static_cast<size_type>(0U));
-
-      left_and_right_are_equal =
-        (size_of_left_is_zero || std::equal(lhs.cbegin(), lhs.cend(), rhs.cbegin()));
-    }
-
-    return left_and_right_are_equal;
+    return
+    (
+         (lhs.size() == rhs.size())
+      && (
+              (lhs.size() == static_cast<local_size_type>(0U))
+           || std::equal(lhs.cbegin(), lhs.cend(), rhs.cbegin())
+         )
+    );
   }
 
   template<typename ValueType, typename AllocatorType>
