@@ -308,22 +308,14 @@
     {
       if(this != &other)
       {
-        pointer tmp_elems = elems;
-
-        elems = other.elems;
-        other.elems = tmp_elems;
-
+        std::swap(elems,      other.elems);
         std::swap(elem_count, other.elem_count);
       }
     }
 
     WIDE_INTEGER_CONSTEXPR auto swap(dynamic_array&& other) noexcept -> void
     {
-      pointer tmp_elems = elems;
-
-      elems = other.elems;
-      other.elems = tmp_elems;
-
+      std::swap(elems,      other.elems);
       std::swap(elem_count, other.elem_count);
     }
 
@@ -4745,12 +4737,7 @@
   {
     if(&x != &y)
     {
-      using local_wide_integer_type = uintwide_t<Width2, LimbType, AllocatorType, IsSigned>;
-
-      const local_wide_integer_type tmp_x(x);
-
-      x = y;
-      y = tmp_x;
+      std::swap(x, y);
     }
   }
 
