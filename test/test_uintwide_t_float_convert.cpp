@@ -1,4 +1,4 @@
-﻿///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 //  Copyright Christopher Kormanyos 2021 - 2022.
 //  Distributed under the Boost Software License,
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt
@@ -36,6 +36,13 @@ namespace local_float_convert
   auto engine_sgn() -> std::ranlux24_base&                                                   { static std::ranlux24_base                                                   my_engine_sgn; return my_engine_sgn; } // NOLINT(cert-msc32-c,cert-msc51-cpp)
   auto engine_e10() -> std::linear_congruential_engine<std::uint32_t, 48271, 0, 2147483647>& { static std::linear_congruential_engine<std::uint32_t, 48271, 0, 2147483647> my_engine_e10; return my_engine_e10; } // NOLINT(cert-msc32-c,cert-msc51-cpp,cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
 
+  template<typename UnsignedIntegralType>
+  auto unsigned_dist_maker(const UnsignedIntegralType lo,
+                           const UnsignedIntegralType hi) -> std::uniform_int_distribution<UnsignedIntegralType>
+  {
+    return std::uniform_int_distribution<UnsignedIntegralType>(lo, hi);
+  };
+
   template<typename FloatingPointType,
            const std::int32_t LoExp10,
            const std::int32_t HiExp10>
@@ -50,23 +57,15 @@ namespace local_float_convert
       local_builtin_float_type(1.0F)
     );
 
-    static std::uniform_int_distribution<unsigned>
-    dist_sgn
-    (
-      0,
-      1
-    );
+    static auto dist_sgn = unsigned_dist_maker(static_cast<unsigned>(UINT8_C(0)),
+                                               static_cast<unsigned>(UINT8_C(1)));
 
-    static std::uniform_int_distribution<std::int32_t>
-    dist_e10
-    (
-      LoExp10,
-      HiExp10
-    );
+    static auto dist_e10 = unsigned_dist_maker(LoExp10, HiExp10);
 
     using std::pow;
 
-    const std::int32_t             p10 = dist_e10(engine_e10());
+    const auto p10 = dist_e10(engine_e10());
+
     const local_builtin_float_type e10 = pow(local_builtin_float_type(10.0F),
                                              local_builtin_float_type(p10));
 
@@ -85,45 +84,28 @@ namespace local_float_convert
   {
     static_assert(MinDigitsToGet >=  2U, "Error: The minimum number of digits to get must be  2 or more");
 
-    static std::uniform_int_distribution<unsigned>
-    dist_sgn
-    (
-      static_cast<unsigned>(UINT8_C(0)),
-      static_cast<unsigned>(UINT8_C(1))
-    );
+    static auto dist_sgn = unsigned_dist_maker(static_cast<unsigned>(UINT8_C(0)),
+                                               static_cast<unsigned>(UINT8_C(1)));
 
-    static std::uniform_int_distribution<unsigned>
-    dist_len
-    (
-      MinDigitsToGet,
-      MaxDigitsToGet
-    );
+    static auto dist_len = unsigned_dist_maker(MinDigitsToGet, MaxDigitsToGet);
 
-    static std::uniform_int_distribution<unsigned>
-    dist_first
-    (
-      static_cast<unsigned>(UINT8_C(1)),
-      static_cast<unsigned>(UINT8_C(9))
-    );
+    static auto dist_first = unsigned_dist_maker(static_cast<unsigned>(UINT8_C(1)),
+                                                 static_cast<unsigned>(UINT8_C(9)));
 
-    static std::uniform_int_distribution<unsigned>
-    dist_following
-    (
-      static_cast<unsigned>(UINT8_C(0)),
-      static_cast<unsigned>(UINT8_C(9))
-    );
+    static auto dist_following = unsigned_dist_maker(static_cast<unsigned>(UINT8_C(0)),
+                                                     static_cast<unsigned>(UINT8_C(9)));
 
     const bool is_neg = (dist_sgn(engine_sgn()) != 0);
 
     const auto len = static_cast<std::string::size_type>(dist_len(engine_e10()));
 
-    std::string::size_type pos = 0U;
+    auto pos = static_cast<std::string::size_type>(0U);
 
     if(is_neg)
     {
       str.resize(len + 1U);
 
-      str.at(pos) = char('-');
+      str.at(pos) = '-';
 
       ++pos;
     }

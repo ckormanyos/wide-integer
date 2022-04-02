@@ -80,7 +80,7 @@ namespace local_int_convert
     {
       str.resize(len + 1U);
 
-      str.at(pos) = char('-');
+      str.at(pos) = '-';
 
       ++pos;
     }

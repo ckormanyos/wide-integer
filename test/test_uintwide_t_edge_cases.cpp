@@ -77,7 +77,7 @@ auto math::wide_integer::test_uintwide_t_edge_cases() -> bool
   const bool result02_is_ok = ((result_local == 2U) && (result_boost == 2U));
 
   const std::string str_seven_and_effs =
-    "0x7" + std::string(std::string::size_type((local_edge_cases::local_digits2 / 4) - 1U), char('F'));
+    "0x7" + std::string(std::string::size_type((local_edge_cases::local_digits2 / 4) - 1U), 'F');
 
   const local_uint_type u_seven_and_effs_local(str_seven_and_effs.c_str());
   const boost_uint_type u_seven_and_effs_boost(str_seven_and_effs.c_str());
@@ -89,8 +89,8 @@ auto math::wide_integer::test_uintwide_t_edge_cases() -> bool
 
   const std::string str_three_quarter_effs_and_zeros =
       "0x"
-    + std::string(std::string::size_type((local_edge_cases::local_digits2 / 4) * 3U), char('F'))
-    + std::string(std::string::size_type((local_edge_cases::local_digits2 / 4) * 1U), char('0'))
+    + std::string(std::string::size_type((local_edge_cases::local_digits2 / 4) * 3U), 'F')
+    + std::string(std::string::size_type((local_edge_cases::local_digits2 / 4) * 1U), '0')
     ;
 
   const local_uint_type u_three_quarter_effs_and_zeros_local(str_three_quarter_effs_and_zeros.c_str());
@@ -103,8 +103,8 @@ auto math::wide_integer::test_uintwide_t_edge_cases() -> bool
 
   const std::string str_one_quarter_effs_and_zeros =
       "0x"
-    + std::string(std::string::size_type((local_edge_cases::local_digits2 / 4) * 1U), char('F'))
-    + std::string(std::string::size_type((local_edge_cases::local_digits2 / 4) * 3U), char('0'))
+    + std::string(std::string::size_type((local_edge_cases::local_digits2 / 4) * 1U), 'F')
+    + std::string(std::string::size_type((local_edge_cases::local_digits2 / 4) * 3U), '0')
     ;
 
   const local_uint_type u_one_quarter_effs_and_zeros_local(str_one_quarter_effs_and_zeros.c_str());
