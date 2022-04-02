@@ -2483,8 +2483,15 @@
         using value_left_type =
           typename std::iterator_traits<InputIteratorLeftType>::value_type;
 
-        if(*pa > static_cast<value_left_type>(*pb)) { n_return =  1; break; }
-        if(*pa < static_cast<value_left_type>(*pb)) { n_return = -1; break; }
+        const auto value_a = *pa;
+        const auto value_b = static_cast<value_left_type>(*pb);
+
+        if(value_a != value_b)
+        {
+          n_return = static_cast<std::int_fast8_t>((value_a > value_b) ? INT8_C(1) : INT8_C(-1));
+
+          break;
+        }
       }
 
       return n_return;
