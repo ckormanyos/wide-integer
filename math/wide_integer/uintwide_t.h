@@ -2363,15 +2363,27 @@
              typename std::enable_if<(RePhraseIsSigned)>::type const* = nullptr>
     WIDE_INTEGER_NODISCARD WIDE_INTEGER_CONSTEXPR auto compare(const uintwide_t<Width2, LimbType, AllocatorType, RePhraseIsSigned>& other) const -> std::int_fast8_t
     {
-      const bool other_is_neg = is_neg(other);
+      auto n_result = std::int_fast8_t { };
 
-      return
-      is_neg(*this)
-        ? (other_is_neg ? compare_ranges(values.data(), other.values.data(), uintwide_t<Width2, LimbType, AllocatorType, RePhraseIsSigned>::number_of_limbs)
-                        : INT8_C(-1))
-        : (other_is_neg ? INT8_C(1)
-                        : compare_ranges(values.data(), other.values.data(), uintwide_t<Width2, LimbType, AllocatorType, RePhraseIsSigned>::number_of_limbs))
-      ;
+      const auto other_is_neg = is_neg(other);
+      const auto my_is_neg    = is_neg(*this);
+
+      if(my_is_neg && (!other_is_neg))
+      {
+        n_result = static_cast<std::int_fast8_t>(INT8_C(-1));
+      }
+      else if((!my_is_neg) && other_is_neg)
+      {
+        n_result = static_cast<std::int_fast8_t>(INT8_C(1));
+      }
+      else
+      {
+        n_result = compare_ranges(values.data(),
+                                  other.values.data(),
+                                  uintwide_t<Width2, LimbType, AllocatorType, RePhraseIsSigned>::number_of_limbs);
+      }
+
+      return n_result;
     }
 
     WIDE_INTEGER_CONSTEXPR void negate()
@@ -3787,9 +3799,6 @@
                             n + 1U);
 
 
-          // Get the result data.
-          *(values.begin() + static_cast<size_t>(m - j)) = static_cast<limb_type>(q_hat - (has_borrow ? 1U : 0U));
-
           // Step D5: Test the remainder.
           // Set the result value: Set result.m_data[m - j] = q_hat.
           // Use the condition (u[j] < 0), in other words if the borrow
@@ -3797,6 +3806,8 @@
 
           if(has_borrow)
           {
+            --q_hat;
+
             // Step D6: Add back.
             // Add v[1, ... n] back to u[j, ... j + n],
             // and decrease the result by 1.
@@ -3806,6 +3817,9 @@
                                          vv.data(),
                                          n));
           }
+
+          // Get the result data.
+          *(values.begin() + static_cast<size_t>(m - j)) = static_cast<limb_type>(q_hat);
         }
 
         // Clear the data elements that have not

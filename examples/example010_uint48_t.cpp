@@ -34,8 +34,8 @@ auto math::wide_integer::example010_uint48_t() -> bool
 
   distribution_type distribution;
 
-  const std::uint64_t a64 = static_cast<std::uint64_t>(distribution(generator));
-  const std::uint64_t b64 = static_cast<std::uint64_t>(distribution(generator));
+  const auto a64 = static_cast<std::uint64_t>(distribution(generator));
+  const auto b64 = static_cast<std::uint64_t>(distribution(generator));
 
   const uint48_t a(a64);
   const uint48_t b(b64);
