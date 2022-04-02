@@ -3865,7 +3865,7 @@
       return (static_cast<size_t>(n) >= uintwide_t::my_width2);
     }
 
-    constexpr auto right_shift_fill_value() const -> limb_type
+    WIDE_INTEGER_NODISCARD constexpr auto right_shift_fill_value() const -> limb_type
     {
       return
         static_cast<limb_type>
