@@ -1853,27 +1853,26 @@
                                                                                                     && (std::is_signed  <SignedIntegralType>::value)), uintwide_t>::type&
     {
       // Implement left-shift operator for signed integral argument.
-      if(n < 0)
+      if(n < static_cast<SignedIntegralType>(0))
       {
         using local_unsigned_type =
           typename detail::uint_type_helper<static_cast<size_t>(std::numeric_limits<SignedIntegralType>::digits + 1)>::exact_unsigned_type;
 
         operator>>=(static_cast<local_unsigned_type>(detail::negate(n)));
       }
-      else if(n == 0)
+      else if(n > static_cast<SignedIntegralType>(0))
       {
-        ;
-      }
-      else if(static_cast<unsigned_fast_type>(n) >= my_width2)
-      {
-        std::fill(values.begin(), values.end(), static_cast<limb_type>(0U));
-      }
-      else
-      {
-        const auto offset            = static_cast<unsigned_fast_type>(static_cast<unsigned_fast_type>(n) / static_cast<unsigned_fast_type>(std::numeric_limits<limb_type>::digits));
-        const auto left_shift_amount = static_cast<std::uint_fast16_t>(static_cast<unsigned_fast_type>(n) % static_cast<unsigned_fast_type>(std::numeric_limits<limb_type>::digits));
+        if(static_cast<unsigned_fast_type>(n) >= my_width2)
+        {
+          std::fill(values.begin(), values.end(), static_cast<limb_type>(0U));
+        }
+        else
+        {
+          const auto offset            = static_cast<unsigned_fast_type>(static_cast<unsigned_fast_type>(n) / static_cast<unsigned_fast_type>(std::numeric_limits<limb_type>::digits));
+          const auto left_shift_amount = static_cast<std::uint_fast16_t>(static_cast<unsigned_fast_type>(n) % static_cast<unsigned_fast_type>(std::numeric_limits<limb_type>::digits));
 
-        shl(offset, left_shift_amount);
+          shl(offset, left_shift_amount);
+        }
       }
 
       return *this;
@@ -1884,20 +1883,19 @@
                                                                                                       && (!std::is_signed  <UnsignedIntegralType>::value)), uintwide_t>::type&
     {
       // Implement left-shift operator for unsigned integral argument.
-      if(n == 0)
+      if(n != static_cast<UnsignedIntegralType>(0))
       {
-        ;
-      }
-      else if(static_cast<unsigned_fast_type>(n) >= my_width2)
-      {
-        std::fill(values.begin(), values.end(), static_cast<limb_type>(0U));
-      }
-      else
-      {
-        const auto offset            = static_cast<unsigned_fast_type>(static_cast<unsigned_fast_type>(n) / static_cast<unsigned_fast_type>(std::numeric_limits<limb_type>::digits));
-        const auto left_shift_amount = static_cast<std::uint_fast16_t>(static_cast<unsigned_fast_type>(n) % static_cast<unsigned_fast_type>(std::numeric_limits<limb_type>::digits));
+        if(static_cast<unsigned_fast_type>(n) >= my_width2)
+        {
+          std::fill(values.begin(), values.end(), static_cast<limb_type>(0U));
+        }
+        else
+        {
+          const auto offset            = static_cast<unsigned_fast_type>(static_cast<unsigned_fast_type>(n) / static_cast<unsigned_fast_type>(std::numeric_limits<limb_type>::digits));
+          const auto left_shift_amount = static_cast<std::uint_fast16_t>(static_cast<unsigned_fast_type>(n) % static_cast<unsigned_fast_type>(std::numeric_limits<limb_type>::digits));
 
-        shl(offset, left_shift_amount);
+          shl(offset, left_shift_amount);
+        }
       }
 
       return *this;
@@ -1908,36 +1906,35 @@
                                                                                                     && (std::is_signed  <SignedIntegralType>::value)), uintwide_t>::type&
     {
       // Implement right-shift operator for signed integral argument.
-      if(n < 0)
+      if(n < static_cast<SignedIntegralType>(0))
       {
         using local_unsigned_type =
           typename detail::uint_type_helper<static_cast<size_t>(std::numeric_limits<SignedIntegralType>::digits + 1)>::exact_unsigned_type;
 
         operator<<=(static_cast<local_unsigned_type>(detail::negate(n)));
       }
-      else if(n == 0)
+      else if(n > static_cast<SignedIntegralType>(0))
       {
-        ;
-      }
-      else if(static_cast<unsigned_fast_type>(n) >= my_width2)
-      {
-        // Fill with either 0's or 1's. Note also the implementation-defined
-        // behavior of excessive right-shift of negative value.
-        if(!is_neg(*this))
+        if(static_cast<unsigned_fast_type>(n) >= my_width2)
         {
-          std::fill(values.begin(), values.end(), static_cast<limb_type>(0U));
+          // Fill with either 0's or 1's. Note also the implementation-defined
+          // behavior of excessive right-shift of negative value.
+          const auto fill_value =
+            static_cast<limb_type>
+            (
+              (!is_neg(*this)) ? static_cast<limb_type>(0U)
+                               : (std::numeric_limits<limb_type>::max)()
+            );
+
+          std::fill(values.begin(), values.end(), fill_value);
         }
         else
         {
-          std::fill(values.begin(), values.end(), (std::numeric_limits<limb_type>::max)());
-        }
-      }
-      else
-      {
-        const auto offset             = static_cast<unsigned_fast_type>(static_cast<unsigned_fast_type>(n) / static_cast<unsigned_fast_type>(std::numeric_limits<limb_type>::digits));
-        const auto right_shift_amount = static_cast<std::uint_fast16_t>(static_cast<unsigned_fast_type>(n) % static_cast<unsigned_fast_type>(std::numeric_limits<limb_type>::digits));
+          const auto offset             = static_cast<unsigned_fast_type>(static_cast<unsigned_fast_type>(n) / static_cast<unsigned_fast_type>(std::numeric_limits<limb_type>::digits));
+          const auto right_shift_amount = static_cast<std::uint_fast16_t>(static_cast<unsigned_fast_type>(n) % static_cast<unsigned_fast_type>(std::numeric_limits<limb_type>::digits));
 
-        shr(offset, right_shift_amount);
+          shr(offset, right_shift_amount);
+        }
       }
 
       return *this;
@@ -1948,20 +1945,19 @@
                                                                                                       && (!std::is_signed  <UnsignedIntegralType>::value)), uintwide_t>::type&
     {
       // Implement right-shift operator for unsigned integral argument.
-      if(n == 0)
+      if(n != static_cast<UnsignedIntegralType>(0))
       {
-        ;
-      }
-      else if(static_cast<unsigned_fast_type>(n) >= my_width2)
-      {
-        std::fill(values.begin(), values.end(), static_cast<limb_type>(0U));
-      }
-      else
-      {
-        const auto offset             = static_cast<unsigned_fast_type>(static_cast<unsigned_fast_type>(n) / static_cast<unsigned_fast_type>(std::numeric_limits<limb_type>::digits));
-        const auto right_shift_amount = static_cast<std::uint_fast16_t>(static_cast<unsigned_fast_type>(n) % static_cast<unsigned_fast_type>(std::numeric_limits<limb_type>::digits));
+        if(static_cast<unsigned_fast_type>(n) >= my_width2)
+        {
+          std::fill(values.begin(), values.end(), static_cast<limb_type>(0U));
+        }
+        else
+        {
+          const auto offset             = static_cast<unsigned_fast_type>(static_cast<unsigned_fast_type>(n) / static_cast<unsigned_fast_type>(std::numeric_limits<limb_type>::digits));
+          const auto right_shift_amount = static_cast<std::uint_fast16_t>(static_cast<unsigned_fast_type>(n) % static_cast<unsigned_fast_type>(std::numeric_limits<limb_type>::digits));
 
-        shr(offset, right_shift_amount);
+          shr(offset, right_shift_amount);
+        }
       }
 
       return *this;
@@ -3921,19 +3917,29 @@
                   values.begin() + static_cast<size_t>(number_of_limbs),
                   values.begin());
 
+        const auto fill_value =
+          static_cast<limb_type>
+          (
+            (!is_neg(*this)) ? static_cast<limb_type>(0U)
+                             : (std::numeric_limits<limb_type>::max)()
+          );
+
         std::fill(values.end() - static_cast<size_t>(offset),
                   values.end(),
-                  (!is_neg(*this)) ? static_cast<limb_type>(0U) : static_cast<limb_type>((std::numeric_limits<limb_type>::max)()));
+                  fill_value);
       }
 
       using local_integral_type = unsigned_fast_type;
 
       if(right_shift_amount != static_cast<local_integral_type>(0U))
       {
-        limb_type part_from_previous_value =
-          (!is_neg(*this))
-            ? static_cast<limb_type>(0U)
-            : static_cast<limb_type>((std::numeric_limits<limb_type>::max)() << static_cast<std::uint_fast16_t>(static_cast<std::uint_fast16_t>(std::numeric_limits<limb_type>::digits) - right_shift_amount));
+        auto part_from_previous_value =
+          static_cast<limb_type>
+          (
+            (!is_neg(*this))
+              ? static_cast<limb_type>(0U)
+              : static_cast<limb_type>((std::numeric_limits<limb_type>::max)() << static_cast<std::uint_fast16_t>(static_cast<std::uint_fast16_t>(std::numeric_limits<limb_type>::digits) - right_shift_amount))
+          );
 
         for(auto i = static_cast<signed_fast_type>((number_of_limbs - 1U) - offset); i >= static_cast<signed_fast_type>(0); --i) // NOLINT(altera-id-dependent-backward-branch)
         {
