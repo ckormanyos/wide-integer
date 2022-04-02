@@ -197,7 +197,7 @@ namespace local_rsa
 
     auto decrypt(const crypto_string& str) const -> std::string
     {
-      std::string res(str.size(), char('\0'));
+      std::string res(str.size(), '\0');
 
       decryptor(private_key).decrypt(str.cbegin(), str.size(), res.begin());
 
@@ -423,14 +423,14 @@ auto math::wide_integer::example012_rsa_crypto() -> bool
   const typename rsa_type::crypto_string out_str = rsa.encrypt(in_str);
   const std::string                     res_str = rsa.decrypt(out_str);
 
-  const char res_ch_a_manual = char(static_cast<typename rsa_integral_type::limb_type>(powm(out_str[0U], d, n)));
-  const char res_ch_b_manual = char(static_cast<typename rsa_integral_type::limb_type>(powm(out_str[1U], d, n)));
-  const char res_ch_c_manual = char(static_cast<typename rsa_integral_type::limb_type>(powm(out_str[2U], d, n)));
+  const auto res_ch_a_manual = static_cast<char>(static_cast<typename rsa_integral_type::limb_type>(powm(out_str[0U], d, n)));
+  const auto res_ch_b_manual = static_cast<char>(static_cast<typename rsa_integral_type::limb_type>(powm(out_str[1U], d, n)));
+  const auto res_ch_c_manual = static_cast<char>(static_cast<typename rsa_integral_type::limb_type>(powm(out_str[2U], d, n)));
 
   result_is_ok &= (res_str         == "abc");
-  result_is_ok &= (res_ch_a_manual == char('a'));
-  result_is_ok &= (res_ch_b_manual == char('b'));
-  result_is_ok &= (res_ch_c_manual == char('c'));
+  result_is_ok &= (res_ch_a_manual == 'a');
+  result_is_ok &= (res_ch_b_manual == 'b');
+  result_is_ok &= (res_ch_c_manual == 'c');
 
   return result_is_ok;
 }

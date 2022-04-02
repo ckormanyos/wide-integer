@@ -997,7 +997,7 @@
   // Use a local implementation of string copy.
   inline WIDE_INTEGER_CONSTEXPR auto strcpy_unsafe(char* dst, const char* src) -> char*
   {
-    while((*dst++ = *src++) != static_cast<char>('\0')) { ; } // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+    while((*dst++ = *src++) != '\0') { ; } // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
 
     return dst;
   }
@@ -1007,7 +1007,7 @@
   {
     const char* p_str_copy { };
 
-    for(p_str_copy = p_str; (*p_str_copy != static_cast<char>('\0')); ++p_str_copy) { ; } // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic,altera-id-dependent-backward-branch)
+    for(p_str_copy = p_str; (*p_str_copy != '\0'); ++p_str_copy) { ; } // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic,altera-id-dependent-backward-branch)
 
     return static_cast<unsigned_fast_type>(p_str_copy - p_str);
   }
@@ -2060,7 +2060,7 @@
                                           const bool               show_pos     = false,
                                           const bool               is_uppercase = true,
                                                 unsigned_fast_type field_width  = 0U,
-                                          const char               fill_char    = static_cast<char>('0')) const -> bool
+                                          const char               fill_char    = '0') const -> bool
     {
       bool wr_string_is_ok = true;
 
@@ -2090,7 +2090,7 @@
         {
           --pos;
 
-          str_temp[static_cast<typename string_storage_oct_type::size_type>(pos)] = static_cast<char>('0');
+          str_temp[static_cast<typename string_storage_oct_type::size_type>(pos)] = '0';
         }
         else
         {
@@ -2132,14 +2132,14 @@
         {
           --pos;
 
-          str_temp[static_cast<typename string_storage_oct_type::size_type>(pos)] = static_cast<char>('0');
+          str_temp[static_cast<typename string_storage_oct_type::size_type>(pos)] = '0';
         }
 
         if(show_pos)
         {
           --pos;
 
-          str_temp[static_cast<typename string_storage_oct_type::size_type>(pos)] = static_cast<char>('+');
+          str_temp[static_cast<typename string_storage_oct_type::size_type>(pos)] = '+';
         }
 
         if(field_width != 0U)
@@ -2154,7 +2154,7 @@
           }
         }
 
-        str_temp[static_cast<typename string_storage_oct_type::size_type>(str_temp.size() - 1U)] = static_cast<char>('\0');
+        str_temp[static_cast<typename string_storage_oct_type::size_type>(str_temp.size() - 1U)] = '\0';
 
         detail::strcpy_unsafe(str_result, str_temp.data() + pos);
       }
@@ -2189,7 +2189,7 @@
         {
           --pos;
 
-          str_temp[static_cast<typename string_storage_dec_type::size_type>(pos)] = static_cast<char>('0');
+          str_temp[static_cast<typename string_storage_dec_type::size_type>(pos)] = '0';
         }
         else
         {
@@ -2217,13 +2217,13 @@
         {
           --pos;
 
-          str_temp[static_cast<typename string_storage_dec_type::size_type>(pos)] = static_cast<char>('+');
+          str_temp[static_cast<typename string_storage_dec_type::size_type>(pos)] = '+';
         }
         else if(str_has_neg_sign)
         {
           --pos;
 
-          str_temp[static_cast<typename string_storage_dec_type::size_type>(pos)] = static_cast<char>('-');
+          str_temp[static_cast<typename string_storage_dec_type::size_type>(pos)] = '-';
         }
 
         if(field_width != 0U)
@@ -2238,7 +2238,7 @@
           }
         }
 
-        str_temp[static_cast<typename string_storage_dec_type::size_type>(str_temp.size() - 1U)] = static_cast<char>('\0');
+        str_temp[static_cast<typename string_storage_dec_type::size_type>(str_temp.size() - 1U)] = '\0';
 
         detail::strcpy_unsafe(str_result, str_temp.data() + pos);
       }
@@ -2268,7 +2268,7 @@
         {
           --pos;
 
-          str_temp[static_cast<typename string_storage_hex_type::size_type>(pos)] = static_cast<char>('0');
+          str_temp[static_cast<typename string_storage_hex_type::size_type>(pos)] = '0';
         }
         else
         {
@@ -2312,18 +2312,18 @@
         {
           --pos;
 
-          str_temp[static_cast<typename string_storage_hex_type::size_type>(pos)] = (is_uppercase ? static_cast<char>('X') : static_cast<char>('x'));
+          str_temp[static_cast<typename string_storage_hex_type::size_type>(pos)] = (is_uppercase ? 'X' : 'x');
 
           --pos;
 
-          str_temp[static_cast<typename string_storage_hex_type::size_type>(pos)] = static_cast<char>('0');
+          str_temp[static_cast<typename string_storage_hex_type::size_type>(pos)] = '0';
         }
 
         if(show_pos)
         {
           --pos;
 
-          str_temp[static_cast<typename string_storage_hex_type::size_type>(pos)] = static_cast<char>('+');
+          str_temp[static_cast<typename string_storage_hex_type::size_type>(pos)] = '+';
         }
 
         if(field_width != 0U)
@@ -2338,7 +2338,7 @@
           }
         }
 
-        str_temp[static_cast<typename string_storage_hex_type::size_type>(str_temp.size() - 1U)] = static_cast<char>('\0');
+        str_temp[static_cast<typename string_storage_hex_type::size_type>(str_temp.size() - 1U)] = '\0';
 
         detail::strcpy_unsafe(str_result, str_temp.data() + pos);
       }
@@ -2363,15 +2363,27 @@
              typename std::enable_if<(RePhraseIsSigned)>::type const* = nullptr>
     WIDE_INTEGER_NODISCARD WIDE_INTEGER_CONSTEXPR auto compare(const uintwide_t<Width2, LimbType, AllocatorType, RePhraseIsSigned>& other) const -> std::int_fast8_t
     {
-      const bool other_is_neg = is_neg(other);
+      auto n_result = std::int_fast8_t { };
 
-      return
-      is_neg(*this)
-        ? (other_is_neg ? compare_ranges(values.data(), other.values.data(), uintwide_t<Width2, LimbType, AllocatorType, RePhraseIsSigned>::number_of_limbs)
-                        : INT8_C(-1))
-        : (other_is_neg ? INT8_C(1)
-                        : compare_ranges(values.data(), other.values.data(), uintwide_t<Width2, LimbType, AllocatorType, RePhraseIsSigned>::number_of_limbs))
-      ;
+      const auto other_is_neg = is_neg(other);
+      const auto my_is_neg    = is_neg(*this);
+
+      if(my_is_neg && (!other_is_neg))
+      {
+        n_result = static_cast<std::int_fast8_t>(INT8_C(-1));
+      }
+      else if((!my_is_neg) && other_is_neg)
+      {
+        n_result = static_cast<std::int_fast8_t>(INT8_C(1));
+      }
+      else
+      {
+        n_result = compare_ranges(values.data(),
+                                  other.values.data(),
+                                  uintwide_t<Width2, LimbType, AllocatorType, RePhraseIsSigned>::number_of_limbs);
+      }
+
+      return n_result;
     }
 
     WIDE_INTEGER_CONSTEXPR void negate()
@@ -3787,9 +3799,6 @@
                             n + 1U);
 
 
-          // Get the result data.
-          *(values.begin() + static_cast<size_t>(m - j)) = static_cast<limb_type>(q_hat - (has_borrow ? 1U : 0U));
-
           // Step D5: Test the remainder.
           // Set the result value: Set result.m_data[m - j] = q_hat.
           // Use the condition (u[j] < 0), in other words if the borrow
@@ -3797,6 +3806,8 @@
 
           if(has_borrow)
           {
+            --q_hat;
+
             // Step D6: Add back.
             // Add v[1, ... n] back to u[j, ... j + n],
             // and decrease the result by 1.
@@ -3806,6 +3817,9 @@
                                          vv.data(),
                                          n));
           }
+
+          // Get the result data.
+          *(values.begin() + static_cast<size_t>(m - j)) = static_cast<limb_type>(q_hat);
         }
 
         // Clear the data elements that have not
@@ -3969,7 +3983,7 @@
 
       // Detect: Is there a plus sign?
       // And if there is a plus sign, skip over the plus sign.
-      if((str_length > 0U) && (str_input[0U] == static_cast<char>('+'))) // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+      if((str_length > 0U) && (str_input[0U] == '+')) // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
       {
         ++pos;
       }
@@ -3978,7 +3992,7 @@
 
       // Detect: Is there a minus sign?
       // And if there is a minus sign, skip over the minus sign.
-      if((str_length > 0U) && (str_input[0U] == static_cast<char>('-'))) // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+      if((str_length > 0U) && (str_input[0U] == '-')) // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
       {
         str_has_neg_sign = true;
 
@@ -3988,18 +4002,18 @@
       // Perform a dynamic detection of the base.
       if(str_length > (pos + 0U))
       {
-        const bool might_be_oct_or_hex = ((str_input[pos + 0U] == static_cast<char>('0')) && (str_length > (pos + 1U))); // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+        const bool might_be_oct_or_hex = ((str_input[pos + 0U] == '0') && (str_length > (pos + 1U))); // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
 
         if(might_be_oct_or_hex)
         {
-          if((str_input[pos + 1U] >= static_cast<char>('0')) && (str_input[pos + 1U] <= static_cast<char>('8'))) // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+          if((str_input[pos + 1U] >= '0') && (str_input[pos + 1U] <= '8')) // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
           {
             // The input format is octal.
             base = UINT8_C(8);
 
             pos += 1U;
           }
-          else if((str_input[pos + 1U] == static_cast<char>('x')) || (str_input[pos + 1U] == static_cast<char>('X'))) // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+          else if((str_input[pos + 1U] == 'x') || (str_input[pos + 1U] == 'X')) // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
           {
             // The input format is hexadecimal.
             base = UINT8_C(16);
@@ -4007,7 +4021,7 @@
             pos += 2U;
           }
         }
-        else if((str_input[pos + 0U] >= static_cast<char>('0')) && (str_input[pos + 0U] <= static_cast<char>('9'))) // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+        else if((str_input[pos + 0U] >= '0') && (str_input[pos + 0U] <= '9')) // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
         {
           // The input format is decimal.
           ;
@@ -4029,8 +4043,8 @@
           {
             std::uint8_t uc_oct { };
 
-            if  ((c >= static_cast<char>('0')) && (c <= static_cast<char>('8'))) { uc_oct = static_cast<std::uint8_t>(c - static_cast<std::uint8_t>(UINT8_C(0x30))); }
-            else                                                                 { uc_oct = static_cast<std::uint8_t>('\0'); char_is_valid = false; }
+            if  ((c >= '0') && (c <= '8')) { uc_oct = static_cast<std::uint8_t>(c - static_cast<std::uint8_t>(UINT8_C(0x30))); }
+            else                           { uc_oct = static_cast<std::uint8_t>('\0'); char_is_valid = false; }
 
             if(char_is_valid)
             {
@@ -4454,7 +4468,7 @@
       // in this subroutine as well as in the wr_string method.
       string_storage_oct_type str_result;
 
-      str_result.fill(static_cast<char>('\0'));
+      str_result.fill('\0');
 
       x.wr_string(str_result.data(), base_rep, show_base, show_pos, is_uppercase, field_width, fill_char);
 
@@ -4478,7 +4492,7 @@
       // in this subroutine as well as in the wr_string method.
       string_storage_dec_type str_result;
 
-      str_result.fill(static_cast<char>('\0'));
+      str_result.fill('\0');
 
       x.wr_string(str_result.data(), base_rep, show_base, show_pos, is_uppercase, field_width, fill_char);
 
@@ -4502,7 +4516,7 @@
       // in this subroutine as well as in the wr_string method.
       string_storage_hex_type str_result;
 
-      str_result.fill(static_cast<char>('\0'));
+      str_result.fill('\0');
 
       x.wr_string(str_result.data(), base_rep, show_base, show_pos, is_uppercase, field_width, fill_char);
 
