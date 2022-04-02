@@ -110,15 +110,19 @@ auto math::wide_integer::example008a_miller_rabin_prime() -> bool
   boost_wide_integer_type p0;
   boost_wide_integer_type p1;
 
+  auto dist_func =
+    [&dist, &gen1]() -> boost_wide_integer_type
+    {
+      const auto n = dist(gen1);
+
+      return boost_wide_integer_type(local_miller_rabin::lexical_cast(n));
+    };
+
   for(;;)
   {
-    {
-      const local_wide_integer_type n0 = dist(gen1);
+    p0 = dist_func();
 
-      p0 = boost_wide_integer_type(local_miller_rabin::lexical_cast(n0));
-    }
-
-    const bool p0_is_probably_prime = boost::multiprecision::miller_rabin_test(p0, 25U, gen2);
+    const auto p0_is_probably_prime = boost::multiprecision::miller_rabin_test(p0, 25U, gen2);
 
     if(p0_is_probably_prime)
     {
@@ -137,13 +141,9 @@ auto math::wide_integer::example008a_miller_rabin_prime() -> bool
 
   for(;;)
   {
-    {
-      const local_wide_integer_type n1 = dist(gen1);
+    p1 = dist_func();
 
-      p1 = boost_wide_integer_type(local_miller_rabin::lexical_cast(n1));
-    }
-
-    const bool p1_is_probably_prime = boost::multiprecision::miller_rabin_test(p1, 25U, gen2);
+    const auto p1_is_probably_prime = boost::multiprecision::miller_rabin_test(p1, 25U, gen2);
 
     if(p1_is_probably_prime)
     {
