@@ -111,7 +111,7 @@ namespace from_issue_145
     {
       local_unknown_integer_type a = a0; a /= a; // NOLINT(clang-diagnostic-self-assign-overloaded)
 
-      local_result_is_ok &= (a == 1U);
+      local_result_is_ok = ((a == 1U) && local_result_is_ok);
     }
 
     #if defined(__clang__) && (defined(__clang_major__) && (__clang_major__ > 6))
@@ -180,7 +180,7 @@ auto local_test_spot_values::test() -> bool // NOLINT(readability-function-cogni
     local_int512_t shift = (value << to_shift);
     value = shift | static_cast<local_int512_t>(value2); // math::wide_integer::int512_t | math::wide_integer::uint512_t
 
-    result_is_ok &= (value == local_int512_t("2596148429267413814265248164641385"));
+    result_is_ok = ((value == local_int512_t("2596148429267413814265248164641385")) && result_is_ok);
   }
 
   {
@@ -190,7 +190,7 @@ auto local_test_spot_values::test() -> bool // NOLINT(readability-function-cogni
 
     const bool convert_512_to_80_is_ok = (u80 == from_issue_234::uint80("0x123456780123456780"));
 
-    result_is_ok &= convert_512_to_80_is_ok;
+    result_is_ok = (convert_512_to_80_is_ok && result_is_ok);
 
     #if(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST == 1)
     static_assert(convert_512_to_80_is_ok, "Error: Converting 512-bit type to 80-bit type is not OK");
@@ -208,7 +208,7 @@ auto local_test_spot_values::test() -> bool // NOLINT(readability-function-cogni
     static_assert(convert_80_to_512_is_ok, "Error: Converting 80-bit type to 512-bit type is not OK");
     #endif
 
-    result_is_ok &= convert_80_to_512_is_ok;
+    result_is_ok = (convert_80_to_512_is_ok && result_is_ok);
   }
 
   {
@@ -297,7 +297,7 @@ auto local_test_spot_values::test() -> bool // NOLINT(readability-function-cogni
 
     WIDE_INTEGER_CONSTEXPR local_uint32_type lcm_result = lcm(p - 1U, q - 1U);
 
-    result_is_ok &= (static_cast<unsigned>(lcm_result) == static_cast<unsigned>(UINT16_C(780)));
+    result_is_ok = ((static_cast<unsigned>(lcm_result) == static_cast<unsigned>(UINT16_C(780))) && result_is_ok);
 
     #if(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST == 1)
     static_assert((static_cast<unsigned>(lcm_result) == static_cast<unsigned>(UINT16_C(780))),
@@ -411,9 +411,9 @@ auto local_test_spot_values::test() -> bool // NOLINT(readability-function-cogni
     WIDE_INTEGER_CONSTEXPR auto v128_1 = local_uint128_type(u160_1);
     WIDE_INTEGER_CONSTEXPR auto v128_2 = local_uint128_type(u160_2);
 
-    result_is_ok &= (u128_0 == v128_0);
-    result_is_ok &= (u128_1 == v128_1);
-    result_is_ok &= (u128_2 == v128_2);
+    result_is_ok = ((u128_0 == v128_0) && result_is_ok);
+    result_is_ok = ((u128_1 == v128_1) && result_is_ok);
+    result_is_ok = ((u128_2 == v128_2) && result_is_ok);
 
     #if(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST == 1)
     static_assert(u128_0 == v128_0, "Error: Static check of inter-width casting (unsigned) is not OK");
@@ -527,17 +527,17 @@ auto local_test_spot_values::test() -> bool // NOLINT(readability-function-cogni
     WIDE_INTEGER_CONSTEXPR uint128_t u1("9784355713321885697254484081284759103");
     WIDE_INTEGER_CONSTEXPR uint128_t u2("1759644461251476961796845209840363274");
 
-    result_is_ok &= from_issue_145::test_uintwide_t_spot_values_from_issue_145(u0);
-    result_is_ok &= from_issue_145::test_uintwide_t_spot_values_from_issue_145(u1);
-    result_is_ok &= from_issue_145::test_uintwide_t_spot_values_from_issue_145(u2);
+    result_is_ok = (from_issue_145::test_uintwide_t_spot_values_from_issue_145(u0) && result_is_ok);
+    result_is_ok = (from_issue_145::test_uintwide_t_spot_values_from_issue_145(u1) && result_is_ok);
+    result_is_ok = (from_issue_145::test_uintwide_t_spot_values_from_issue_145(u2) && result_is_ok);
 
     WIDE_INTEGER_CONSTEXPR int128_t n0("-3076659267683009403742876678609501102");
     WIDE_INTEGER_CONSTEXPR int128_t n1("-9784355713321885697254484081284759103");
     WIDE_INTEGER_CONSTEXPR int128_t n2("-1759644461251476961796845209840363274");
 
-    result_is_ok &= from_issue_145::test_uintwide_t_spot_values_from_issue_145(n0);
-    result_is_ok &= from_issue_145::test_uintwide_t_spot_values_from_issue_145(n1);
-    result_is_ok &= from_issue_145::test_uintwide_t_spot_values_from_issue_145(n2);
+    result_is_ok = (from_issue_145::test_uintwide_t_spot_values_from_issue_145(n0) && result_is_ok);
+    result_is_ok = (from_issue_145::test_uintwide_t_spot_values_from_issue_145(n1) && result_is_ok);
+    result_is_ok = (from_issue_145::test_uintwide_t_spot_values_from_issue_145(n2) && result_is_ok);
   }
 
   {
@@ -713,8 +713,8 @@ auto local_test_spot_values::test() -> bool // NOLINT(readability-function-cogni
 
         strm << w;
 
-        result_is_ok &=
-          (strm.str() == "3016988223108505362607102560314821693738482648596342283928988093842474437457679828842200");
+        result_is_ok =
+          ((strm.str() == "3016988223108505362607102560314821693738482648596342283928988093842474437457679828842200") && result_is_ok);
       }
     }
   }
@@ -743,7 +743,7 @@ auto local_test_spot_values::test() -> bool // NOLINT(readability-function-cogni
       using type = math::wide_integer::uintwide_t<static_cast<math::wide_integer::size_t>(UINT32_C(64)), std::uint32_t, void, true>;
       #endif
 
-      result_is_ok &= from_pull_request_130::test_uintwide_t_spot_values_from_pull_request_130<type>();
+      result_is_ok = (from_pull_request_130::test_uintwide_t_spot_values_from_pull_request_130<type>() && result_is_ok);
 
       #if(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST == 1)
       static_assert(from_pull_request_130::test_uintwide_t_spot_values_from_pull_request_130<type>(), "Error: Check conditions surrounding issue 130");
@@ -757,7 +757,7 @@ auto local_test_spot_values::test() -> bool // NOLINT(readability-function-cogni
       using type = math::wide_integer::uintwide_t<static_cast<math::wide_integer::size_t>(UINT32_C(64)), std::uint8_t, void, true>;
       #endif
 
-      result_is_ok &= from_pull_request_130::test_uintwide_t_spot_values_from_pull_request_130<type>();
+      result_is_ok = (from_pull_request_130::test_uintwide_t_spot_values_from_pull_request_130<type>() && result_is_ok);
 
       #if(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST == 1)
       static_assert(from_pull_request_130::test_uintwide_t_spot_values_from_pull_request_130<type>(), "Error: Check conditions surrounding issue 130");
@@ -771,7 +771,7 @@ auto local_test_spot_values::test() -> bool // NOLINT(readability-function-cogni
       using type = math::wide_integer::uintwide_t<static_cast<math::wide_integer::size_t>(UINT32_C(256)), std::uint32_t, void, true>;
       #endif
 
-      result_is_ok &= from_pull_request_130::test_uintwide_t_spot_values_from_pull_request_130<type>();
+      result_is_ok = (from_pull_request_130::test_uintwide_t_spot_values_from_pull_request_130<type>() && result_is_ok);
 
       #if(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST == 1)
       static_assert(from_pull_request_130::test_uintwide_t_spot_values_from_pull_request_130<type>(), "Error: Check conditions surrounding issue 130");
@@ -781,7 +781,7 @@ auto local_test_spot_values::test() -> bool // NOLINT(readability-function-cogni
     {
       using type = std::int32_t;
 
-      result_is_ok &= from_pull_request_130::test_uintwide_t_spot_values_from_pull_request_130<type>();
+      result_is_ok = (from_pull_request_130::test_uintwide_t_spot_values_from_pull_request_130<type>() && result_is_ok);
 
       #if(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST == 1)
       static_assert(from_pull_request_130::test_uintwide_t_spot_values_from_pull_request_130<type>(), "Error: Check conditions surrounding issue 130");
@@ -791,7 +791,7 @@ auto local_test_spot_values::test() -> bool // NOLINT(readability-function-cogni
     {
       using type = std::int64_t;
 
-      result_is_ok &= from_pull_request_130::test_uintwide_t_spot_values_from_pull_request_130<type>();
+      result_is_ok = (from_pull_request_130::test_uintwide_t_spot_values_from_pull_request_130<type>() && result_is_ok);
 
       #if(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST == 1)
       static_assert(from_pull_request_130::test_uintwide_t_spot_values_from_pull_request_130<type>(), "Error: Check conditions surrounding issue 130");
@@ -818,10 +818,10 @@ auto local_test_spot_values::test() -> bool // NOLINT(readability-function-cogni
     const uint256_t gd = gcd(a - 1U, b - 1U);
 
     // LCM[16770224695321632575655872732632870897 - 1, 40641612127094559121321599356729737321 - 1]
-    result_is_ok &= (lm == uint256_t("28398706972978513348490390087175345493497748446743697820448222113648043280"));
+    result_is_ok = ((lm == uint256_t("28398706972978513348490390087175345493497748446743697820448222113648043280")) && result_is_ok);
 
     // GCD[16770224695321632575655872732632870897 - 1, 40641612127094559121321599356729737321 - 1]
-    result_is_ok &= (gd == 24U); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
+    result_is_ok = ((gd == 24U) && result_is_ok); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
   }
 
   {
@@ -839,14 +839,14 @@ auto local_test_spot_values::test() -> bool // NOLINT(readability-function-cogni
 
       int256_t a_itself = (std::numeric_limits<int256_t>::min)();
 
-      result_is_ok &= (a == (std::numeric_limits<int256_t>::min)());
+      result_is_ok = ((a == (std::numeric_limits<int256_t>::min)()) && result_is_ok);
 
       int256_t b("1");
 
       const int256_t a_div_b = a / b;
 
-      result_is_ok &= (a_div_b == a);
-      result_is_ok &= (a / a_itself == b);
+      result_is_ok = ((a_div_b      == a) && result_is_ok);
+      result_is_ok = ((a / a_itself == b) && result_is_ok);
     }
 
     {
@@ -860,14 +860,14 @@ auto local_test_spot_values::test() -> bool // NOLINT(readability-function-cogni
 
       my_int32_t c_itself = (std::numeric_limits<my_int32_t>::min)();
 
-      result_is_ok &= (c == (std::numeric_limits<my_int32_t>::min)());
+      result_is_ok = ((c == (std::numeric_limits<my_int32_t>::min)()) && result_is_ok);
 
       my_int32_t d("1");
 
       const my_int32_t c_div_d = c / d;
-      result_is_ok &= (c / c_itself == d);
 
-      result_is_ok &= (c_div_d == c);
+      result_is_ok = ((c / c_itself == d) && result_is_ok);
+      result_is_ok = ((c_div_d      == c) && result_is_ok);
     }
   }
 
@@ -898,9 +898,9 @@ auto local_test_spot_values::test() -> bool // NOLINT(readability-function-cogni
       const bool result_neg_wide_is_ok      = (str_neg_wide      == "-2");
       const bool result_neg_wide_cast_is_ok = (str_neg_wide_cast == "-2");
 
-      result_is_ok &= (   result_neg_is_ok
+      result_is_ok = ((   result_neg_is_ok
                        && result_neg_wide_is_ok
-                       && result_neg_wide_cast_is_ok);
+                       && result_neg_wide_cast_is_ok) && result_is_ok);
     }
 
     {
@@ -928,9 +928,9 @@ auto local_test_spot_values::test() -> bool // NOLINT(readability-function-cogni
       const bool result_neg_wide_is_ok      = (str_neg_wide      == "-2");
       const bool result_neg_wide_cast_is_ok = (str_neg_wide_cast == "-2");
 
-      result_is_ok &= (   result_neg_is_ok
+      result_is_ok = ((   result_neg_is_ok
                        && result_neg_wide_is_ok
-                       && result_neg_wide_cast_is_ok);
+                       && result_neg_wide_cast_is_ok) && result_is_ok);
     }
   }
 
@@ -956,7 +956,7 @@ auto local_test_spot_values::test() -> bool // NOLINT(readability-function-cogni
     static_assert(result_ll_is_ok, "Error: test_uintwide_t_spot_values unsigned not OK!");
     #endif
 
-    result_is_ok &= result_ll_is_ok;
+    result_is_ok = (result_ll_is_ok && result_is_ok);
   }
 
   {
@@ -982,7 +982,7 @@ auto local_test_spot_values::test() -> bool // NOLINT(readability-function-cogni
     WIDE_INTEGER_CONSTEXPR bool c_is_ok = (c == "6986485091668619828842978360442127600954041171641881730123945989288792389271");
     WIDE_INTEGER_CONSTEXPR bool d_is_ok = (d == "100041341335406267530943777943625254875702684549707174207105689918734693139780");
 
-    result_is_ok &= (c_is_ok && d_is_ok);
+    result_is_ok = ((c_is_ok && d_is_ok) && result_is_ok);
 
     #if(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST == 1)
     static_assert(c_is_ok, "Error: Static check of spot value division is not OK");
@@ -1027,15 +1027,15 @@ auto local_test_spot_values::test() -> bool // NOLINT(readability-function-cogni
 
     WIDE_INTEGER_CONSTEXPR uint256_t c("0xE491A360C57EB4306C61F9A04F7F7D99BE3676AAD2D71C5592D5AE70F84AF076");
 
-    result_is_ok &= ((a * b) == c);
+    result_is_ok = (((a * b) == c) && result_is_ok);
 
     WIDE_INTEGER_CONSTEXPR uint256_t q(10U); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
 
-    result_is_ok &= ((a / b) == q);
+    result_is_ok = (((a / b) == q) && result_is_ok);
 
     WIDE_INTEGER_CONSTEXPR uint256_t m("0x14998D5CA3DB6385F7DEDF4621DE48A9104AC13797C6567713D7ABC216D7AB4C");
 
-    result_is_ok &= ((a % b) == m);
+    result_is_ok = (((a % b) == m) && result_is_ok);
   }
 
   return result_is_ok;

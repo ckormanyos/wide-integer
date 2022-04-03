@@ -36,7 +36,7 @@ auto math::wide_integer::example000a_builtin_convert() -> bool
     static_assert(result_n_is_ok, "Error: example000a_builtin_convert not OK!");
     #endif
 
-    result_is_ok &= result_n_is_ok;
+    result_is_ok = (result_n_is_ok && result_is_ok);
   }
 
   {
@@ -53,7 +53,7 @@ auto math::wide_integer::example000a_builtin_convert() -> bool
     static_assert(result_f_is_ok, "Error: example000a_builtin_convert not OK!");
     #endif
 
-    result_is_ok &= result_f_is_ok;
+    result_is_ok = (result_f_is_ok && result_is_ok);
   }
 
   {
@@ -67,7 +67,7 @@ auto math::wide_integer::example000a_builtin_convert() -> bool
     static_assert((n64 == INT64_C(-123456789000000000)), "Error: example000a_builtin_convert not OK!");
     #endif
 
-    result_is_ok &= result_n_is_ok;
+    result_is_ok = (result_n_is_ok && result_is_ok);
   }
 
   return result_is_ok;

@@ -24,7 +24,7 @@ auto math::wide_integer::example004_rootk_pow() -> bool
 
     WIDE_INTEGER_CONSTEXPR bool result_is_ok_root = (r == UINT64_C(0x16067D1894));
 
-    result_is_ok &= result_is_ok_root;
+    result_is_ok = (result_is_ok_root && result_is_ok);
 
     #if defined(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST) && (WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST != 0)
     static_assert(result_is_ok_root, "Error: example004_rootk_pow not OK!");
@@ -39,7 +39,7 @@ auto math::wide_integer::example004_rootk_pow() -> bool
 
     WIDE_INTEGER_CONSTEXPR bool result_is_ok_pow = (p == "0x95E0E5104B2F636571834936C982E40EFA25682E7370CD1C248051E1CDC34000");
 
-    result_is_ok &= result_is_ok_pow;
+    result_is_ok = (result_is_ok_pow && result_is_ok);
 
     #if defined(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST) && (WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST != 0)
     static_assert(result_is_ok_pow, "Error: example004_rootk_pow not OK!");
@@ -54,7 +54,7 @@ auto math::wide_integer::example004_rootk_pow() -> bool
 
     WIDE_INTEGER_CONSTEXPR bool result_is_ok_root = (r == int256_t("-26106060416733621800766427"));
 
-    result_is_ok &= result_is_ok_root;
+    result_is_ok = (result_is_ok_root && result_is_ok);
 
     #if defined(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST) && (WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST != 0)
     static_assert(result_is_ok_root, "Error: example004_rootk_pow not OK!");
@@ -69,7 +69,7 @@ auto math::wide_integer::example004_rootk_pow() -> bool
 
     WIDE_INTEGER_CONSTEXPR bool result_is_ok_root = (r == int256_t("-26106060416733621800766427"));
 
-    result_is_ok &= result_is_ok_root;
+    result_is_ok = (result_is_ok_root && result_is_ok);
 
     #if defined(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST) && (WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST != 0)
     static_assert(result_is_ok_root, "Error: example004_rootk_pow not OK!");

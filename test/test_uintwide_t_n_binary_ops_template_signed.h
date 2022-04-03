@@ -128,7 +128,7 @@
           const std::string str_local_signed = hexlexical_cast(static_cast<local_uint_type>(c_local_signed));
 
           while(test_lock.test_and_set()) { ; }
-          result_is_ok &= (str_boost_signed == str_local_signed);
+          result_is_ok = ((str_boost_signed == str_local_signed) && result_is_ok);
           test_lock.clear();
         }
       );
@@ -155,7 +155,7 @@
           const std::string str_local_signed = hexlexical_cast(static_cast<local_uint_type>(c_local_signed));
 
           while(test_lock.test_and_set()) { ; }
-          result_is_ok &= (str_boost_signed == str_local_signed);
+          result_is_ok = ((str_boost_signed == str_local_signed) && result_is_ok);
           test_lock.clear();
         }
       );
@@ -182,7 +182,7 @@
           const std::string str_local_signed = hexlexical_cast(static_cast<local_uint_type>(c_local_signed));
 
           while(test_lock.test_and_set()) { ; }
-          result_is_ok &= (str_boost_signed == str_local_signed);
+          result_is_ok = ((str_boost_signed == str_local_signed) && result_is_ok);
           test_lock.clear();
         }
       );
@@ -209,7 +209,7 @@
           const std::string str_local_signed = hexlexical_cast(static_cast<local_uint_type>(c_local_signed));
 
           while(test_lock.test_and_set()) { ; }
-          result_is_ok &= (str_boost_signed == str_local_signed);
+          result_is_ok = ((str_boost_signed == str_local_signed) && result_is_ok);
           test_lock.clear();
         }
       );
@@ -236,7 +236,7 @@
           const std::string str_local_signed = hexlexical_cast(static_cast<local_uint_type>(c_local_signed));
 
           while(test_lock.test_and_set()) { ; }
-          result_is_ok &= (str_boost_signed == str_local_signed);
+          result_is_ok = ((str_boost_signed == str_local_signed) && result_is_ok);
           test_lock.clear();
         }
       );
@@ -377,7 +377,7 @@
           const std::string str_local_signed  = declexical_cast(c_local_signed);
 
           while(test_lock.test_and_set()) { ; }
-          result_is_ok &= (str_native_signed == str_local_signed);
+          result_is_ok = ((str_native_signed == str_local_signed) && result_is_ok);
           test_lock.clear();
         }
       );
@@ -409,7 +409,7 @@
           const std::string str_local_signed  = declexical_cast(c_local_signed);
 
           while(test_lock.test_and_set()) { ; }
-          result_is_ok &= (str_native_signed == str_local_signed);
+          result_is_ok = ((str_native_signed == str_local_signed) && result_is_ok);
           test_lock.clear();
         }
       );
@@ -441,7 +441,7 @@
           const std::string str_local_signed  = declexical_cast(c_local_signed);
 
           while(test_lock.test_and_set()) { ; }
-          result_is_ok &= (str_native_signed == str_local_signed);
+          result_is_ok = ((str_native_signed == str_local_signed) && result_is_ok);
           test_lock.clear();
         }
       );
@@ -468,7 +468,7 @@
           const std::string str_local_signed  = declexical_cast(c_local_signed);
 
           while(test_lock.test_and_set()) { ; }
-          result_is_ok &= (str_native_signed == str_local_signed);
+          result_is_ok = ((str_native_signed == str_local_signed) && result_is_ok);
           test_lock.clear();
         }
       );
@@ -495,7 +495,7 @@
           const std::string str_local_signed  = declexical_cast(c_local_signed);
 
           while(test_lock.test_and_set()) { ; }
-          result_is_ok &= (str_native_signed == str_local_signed);
+          result_is_ok = ((str_native_signed == str_local_signed) && result_is_ok);
           test_lock.clear();
         }
       );
@@ -525,7 +525,7 @@
           const auto c_l = static_cast<local_signed_limb_type>(a_local_signed [i] % u);
 
           while(test_lock.test_and_set()) { ; }
-          result_is_ok &= (c_n == c_l);
+          result_is_ok = ((c_n == c_l) && result_is_ok);
           test_lock.clear();
         }
       );
@@ -558,7 +558,7 @@
           const bool current_result_is_ok   = (current_result_is_zero || (c_native_signed == static_cast<std::int64_t>(c_local_signed)));
 
           while(test_lock.test_and_set()) { ; }
-          result_is_ok &= current_result_is_ok;
+          result_is_ok = (current_result_is_ok && result_is_ok);
           test_lock.clear();
         }
       );

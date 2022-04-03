@@ -53,7 +53,7 @@ auto math::wide_integer::example000_numeric_limits() -> bool
     static_assert(result_uint256_t_is_ok, "Error: example000_numeric_limits unsigned not OK!");
     #endif
 
-    result_is_ok &= result_uint256_t_is_ok;
+    result_is_ok = (result_uint256_t_is_ok && result_is_ok);
   }
 
   {
@@ -75,7 +75,7 @@ auto math::wide_integer::example000_numeric_limits() -> bool
     static_assert(result_int256_t_is_ok, "Error: example000_numeric_limits signed not OK!");
     #endif
 
-    result_is_ok &= result_int256_t_is_ok;
+    result_is_ok = (result_int256_t_is_ok && result_is_ok);
   }
 
   {
@@ -92,7 +92,7 @@ auto math::wide_integer::example000_numeric_limits() -> bool
     static_assert(result_uint64_t_is_ok, "Error: example000_numeric_limits unsigned not OK!");
     #endif
 
-    result_is_ok &= result_uint64_t_is_ok;
+    result_is_ok = (result_uint64_t_is_ok && result_is_ok);
   }
 
   {
@@ -109,7 +109,7 @@ auto math::wide_integer::example000_numeric_limits() -> bool
     static_assert(result_int64_t_is_ok, "Error: example000_numeric_limits unsigned not OK!");
     #endif
 
-    result_is_ok &= result_int64_t_is_ok;
+    result_is_ok = (result_int64_t_is_ok && result_is_ok);
   }
 
   {
@@ -126,7 +126,7 @@ auto math::wide_integer::example000_numeric_limits() -> bool
     static_assert(result_uint32_t_is_ok, "Error: example000_numeric_limits unsigned not OK!");
     #endif
 
-    result_is_ok &= result_uint32_t_is_ok;
+    result_is_ok = (result_uint32_t_is_ok && result_is_ok);
   }
 
   {
@@ -143,7 +143,7 @@ auto math::wide_integer::example000_numeric_limits() -> bool
     static_assert(result_int32_t_is_ok, "Error: example000_numeric_limits unsigned not OK!");
     #endif
 
-    result_is_ok &= result_int32_t_is_ok;
+    result_is_ok = (result_int32_t_is_ok && result_is_ok);
   }
 
   return result_is_ok;
