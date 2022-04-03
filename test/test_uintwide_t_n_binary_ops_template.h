@@ -106,7 +106,7 @@
           const std::string str_local = hexlexical_cast(c_local);
 
           while(test_lock.test_and_set()) { ; }
-          result_is_ok &= (str_boost == str_local);
+          result_is_ok = ((str_boost == str_local) && result_is_ok);
           test_lock.clear();
         }
       );
@@ -133,7 +133,7 @@
           const std::string str_local = hexlexical_cast(c_local);
 
           while(test_lock.test_and_set()) { ; }
-          result_is_ok &= (str_boost == str_local);
+          result_is_ok = ((str_boost == str_local) && result_is_ok);
           test_lock.clear();
         }
       );
@@ -160,7 +160,7 @@
           const std::string str_local = hexlexical_cast(c_local);
 
           while(test_lock.test_and_set()) { ; }
-          result_is_ok &= (str_boost == str_local);
+          result_is_ok = ((str_boost == str_local) && result_is_ok);
           test_lock.clear();
         }
       );
@@ -194,7 +194,7 @@
           const std::string str_local = hexlexical_cast(c_local);
 
           while(test_lock.test_and_set()) { ; }
-          result_is_ok &= (str_boost == str_local);
+          result_is_ok = ((str_boost == str_local) && result_is_ok);
           test_lock.clear();
         }
       );
@@ -228,7 +228,7 @@
           const std::string str_local = hexlexical_cast(c_local);
 
           while(test_lock.test_and_set()) { ; }
-          result_is_ok &= (str_boost == str_local);
+          result_is_ok = ((str_boost == str_local) && result_is_ok);
           test_lock.clear();
         }
       );
@@ -255,7 +255,7 @@
           const std::string str_local = hexlexical_cast(c_local);
 
           while(test_lock.test_and_set()) { ; }
-          result_is_ok &= (str_boost == str_local);
+          result_is_ok = ((str_boost == str_local) && result_is_ok);
           test_lock.clear();
         }
       );

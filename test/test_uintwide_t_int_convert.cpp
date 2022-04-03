@@ -165,7 +165,7 @@ auto math::wide_integer::test_uintwide_t_int_convert() -> bool
 
     const bool result_n_is_ok = (n_ctrl_boost == n_ctrl_local);
 
-    result_is_ok &= result_n_is_ok;
+    result_is_ok = (result_n_is_ok && result_is_ok);
   }
 
   return result_is_ok;

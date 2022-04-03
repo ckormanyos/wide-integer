@@ -1,4 +1,4 @@
-﻿///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 //  Copyright Christopher Kormanyos 2021 - 2022.
 //  Distributed under the Boost Software License,
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt
@@ -192,7 +192,7 @@ auto math::wide_integer::test_uintwide_t_float_convert() -> bool
     const std::string str_boost_signed = local_float_convert::hexlexical_cast(static_cast<boost_uint_type>(n_boost));
     const std::string str_local_signed = local_float_convert::hexlexical_cast(static_cast<local_uint_type>(n_local));
 
-    result_is_ok &= (str_boost_signed == str_local_signed);
+    result_is_ok = ((str_boost_signed == str_local_signed) && result_is_ok);
   }
 
   for(auto i = static_cast<std::size_t>(0U); i < static_cast<std::size_t>(UINT32_C(0x80000)); ++i)
@@ -205,7 +205,7 @@ auto math::wide_integer::test_uintwide_t_float_convert() -> bool
     const std::string str_boost_signed = local_float_convert::hexlexical_cast(static_cast<boost_uint_type>(n_boost));
     const std::string str_local_signed = local_float_convert::hexlexical_cast(static_cast<local_uint_type>(n_local));
 
-    result_is_ok &= (str_boost_signed == str_local_signed);
+    result_is_ok = ((str_boost_signed == str_local_signed) && result_is_ok);
   }
 
   local_float_convert::engine_man().seed(static_cast<typename std::mt19937::result_type>                                                        (std::clock()));
@@ -231,7 +231,7 @@ auto math::wide_integer::test_uintwide_t_float_convert() -> bool
     const float closeness      = fabs(1.0F - fabs(f_boost / f_local));
     const bool  result_f_is_ok = (closeness < cast_tol_float);
 
-    result_is_ok &= result_f_is_ok;
+    result_is_ok = (result_f_is_ok && result_is_ok);
   }
 
   for(auto i = static_cast<std::size_t>(0U); i < static_cast<std::size_t>(UINT32_C(0x40000)); ++i)
@@ -253,7 +253,7 @@ auto math::wide_integer::test_uintwide_t_float_convert() -> bool
     const double closeness      = fabs(1.0 - fabs(d_boost / d_local));
     const bool   result_f_is_ok = (closeness < cast_tol_double);
 
-    result_is_ok &= result_f_is_ok;
+    result_is_ok = (result_f_is_ok && result_is_ok);
   }
 
   return result_is_ok;

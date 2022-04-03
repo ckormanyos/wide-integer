@@ -43,20 +43,20 @@ namespace local_rsa
     using crypto_string  = math::wide_integer::detail::dynamic_array<crypto_char, crypto_alloc>;
     #endif
 
-    typedef struct private_key_type // NOLINT(modernize-use-using)
-    {
-      my_uintwide_t s;
-      my_uintwide_t p;
-      my_uintwide_t q;
-    }
-    private_key_type;
+    using private_key_type =
+      struct
+      {
+        my_uintwide_t s;
+        my_uintwide_t p;
+        my_uintwide_t q;
+      };
 
-    typedef struct public_key_type // NOLINT(modernize-use-using)
-    {
-      my_uintwide_t r;
-      my_uintwide_t m;
-    }
-    public_key_type;
+    using public_key_type =
+      struct public_key_type
+      {
+        my_uintwide_t r;
+        my_uintwide_t m;
+      };
 
     virtual ~rsa_base() = default;
 
@@ -403,19 +403,19 @@ auto math::wide_integer::example012_rsa_crypto() -> bool
 
     const bool p_is_prime = rsa_type::is_prime(p, generator);
 
-    result_is_ok &= p_is_prime;
+    result_is_ok = (p_is_prime && result_is_ok);
   }
 
-  result_is_ok &= rsa_type::is_prime(q);
+  result_is_ok = (rsa_type::is_prime(q) && result_is_ok);
 
   const rsa_type rsa(p, q, e);
 
-  result_is_ok &= (   (rsa.get_p() == p)
+  result_is_ok = ((   (rsa.get_p() == p)
                    && (rsa.get_q() == q)
-                   && (rsa.get_d() == d));
+                   && (rsa.get_d() == d)) && result_is_ok);
 
-  result_is_ok &= (n == (p * q));
-  result_is_ok &= (n == rsa.get_n());
+  result_is_ok = ((n == (p * q)) && result_is_ok);
+  result_is_ok = ((n == rsa.get_n()) && result_is_ok);
 
   // Select "abc" as the sample string to encrypt.
   const std::string in_str("abc");
@@ -427,10 +427,10 @@ auto math::wide_integer::example012_rsa_crypto() -> bool
   const auto res_ch_b_manual = static_cast<char>(static_cast<typename rsa_integral_type::limb_type>(powm(out_str[1U], d, n)));
   const auto res_ch_c_manual = static_cast<char>(static_cast<typename rsa_integral_type::limb_type>(powm(out_str[2U], d, n)));
 
-  result_is_ok &= (res_str         == "abc");
-  result_is_ok &= (res_ch_a_manual == 'a');
-  result_is_ok &= (res_ch_b_manual == 'b');
-  result_is_ok &= (res_ch_c_manual == 'c');
+  result_is_ok = ((res_str         == "abc") && result_is_ok);
+  result_is_ok = ((res_ch_a_manual == 'a')   && result_is_ok);
+  result_is_ok = ((res_ch_b_manual == 'b')   && result_is_ok);
+  result_is_ok = ((res_ch_c_manual == 'c')   && result_is_ok);
 
   return result_is_ok;
 }
