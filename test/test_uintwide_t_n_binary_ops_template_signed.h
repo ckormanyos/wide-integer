@@ -67,15 +67,7 @@
 
   public:
     explicit test_uintwide_t_n_binary_ops_template_signed(const std::size_t count)
-      : test_uintwide_t_n_binary_ops_base(count),
-        a_local       (),
-        b_local       (),
-        a_local_signed(),
-        b_local_signed(),
-        a_boost       (),
-        b_boost       (),
-        a_boost_signed(),
-        b_boost_signed() { }
+      : test_uintwide_t_n_binary_ops_base(count) { }
 
     ~test_uintwide_t_n_binary_ops_template_signed() override = default;
 
@@ -262,34 +254,34 @@
         this->initialize();
 
         std::cout << "test_binary_add()  boost compare with uintwide_t: round " << i << ",  digits2: " << this->get_digits2() << std::endl;
-        result_is_ok &= this->test_binary_add();
+        result_is_ok = (this->test_binary_add() && result_is_ok);
 
         std::cout << "test_binary_sub()  boost compare with uintwide_t: round " << i << ",  digits2: " << this->get_digits2() << std::endl;
-        result_is_ok &= this->test_binary_sub();
+        result_is_ok = (this->test_binary_sub() && result_is_ok);
 
         std::cout << "test_binary_mul()  boost compare with uintwide_t: round " << i << ",  digits2: " << this->get_digits2() << std::endl;
-        result_is_ok &= this->test_binary_mul();
+        result_is_ok = (this->test_binary_mul() && result_is_ok);
 
         std::cout << "test_binary_div()  boost compare with uintwide_t: round " << i << ",  digits2: " << this->get_digits2() << std::endl;
-        result_is_ok &= this->test_binary_div();
+        result_is_ok = (this->test_binary_div() && result_is_ok);
 
         std::cout << "test_binary_mod()  boost compare with uintwide_t: round " << i << ",  digits2: " << this->get_digits2() << std::endl;
-        result_is_ok &= this->test_binary_mod();
+        result_is_ok = (this->test_binary_mod() && result_is_ok);
       }
 
       return result_is_ok;
     }
 
   private:
-    std::vector<local_uint_type> a_local;        // NOLINT(readability-identifier-naming)
-    std::vector<local_uint_type> b_local;        // NOLINT(readability-identifier-naming)
-    std::vector<local_sint_type> a_local_signed; // NOLINT(readability-identifier-naming)
-    std::vector<local_sint_type> b_local_signed; // NOLINT(readability-identifier-naming)
+    std::vector<local_uint_type> a_local { };        // NOLINT(readability-identifier-naming)
+    std::vector<local_uint_type> b_local { };        // NOLINT(readability-identifier-naming)
+    std::vector<local_sint_type> a_local_signed { }; // NOLINT(readability-identifier-naming)
+    std::vector<local_sint_type> b_local_signed { }; // NOLINT(readability-identifier-naming)
 
-    std::vector<boost_uint_type> a_boost;        // NOLINT(readability-identifier-naming)
-    std::vector<boost_uint_type> b_boost;        // NOLINT(readability-identifier-naming)
-    std::vector<boost_sint_type> a_boost_signed; // NOLINT(readability-identifier-naming)
-    std::vector<boost_sint_type> b_boost_signed; // NOLINT(readability-identifier-naming)
+    std::vector<boost_uint_type> a_boost { };        // NOLINT(readability-identifier-naming)
+    std::vector<boost_uint_type> b_boost { };        // NOLINT(readability-identifier-naming)
+    std::vector<boost_sint_type> a_boost_signed { }; // NOLINT(readability-identifier-naming)
+    std::vector<boost_sint_type> b_boost_signed { }; // NOLINT(readability-identifier-naming)
   };
 
 
@@ -323,11 +315,7 @@
 
   public:
     explicit test_uintwide_t_n_binary_ops_template_signed(const std::size_t count)
-      : test_uintwide_t_n_binary_ops_base(count),
-        a_local_signed (),
-        b_local_signed (),
-        a_native_signed(),    // NOLINT(readability-redundant-member-init)
-        b_native_signed() { } // NOLINT(readability-redundant-member-init)
+      : test_uintwide_t_n_binary_ops_base(count) { }
 
     ~test_uintwide_t_n_binary_ops_template_signed() override = default;
 
@@ -588,25 +576,25 @@
         this->initialize();
 
         std::cout << "test_binary_add()  boost compare with uintwide_t: round " << i << ",  digits2: " << this->get_digits2() << std::endl;
-        result_is_ok &= this->test_binary_add();
+        result_is_ok = (this->test_binary_add() && result_is_ok);
 
         std::cout << "test_binary_sub()  boost compare with uintwide_t: round " << i << ",  digits2: " << this->get_digits2() << std::endl;
-        result_is_ok &= this->test_binary_sub();
+        result_is_ok = (this->test_binary_sub() && result_is_ok);
 
         std::cout << "test_binary_mul()  boost compare with uintwide_t: round " << i << ",  digits2: " << this->get_digits2() << std::endl;
-        result_is_ok &= this->test_binary_mul();
+        result_is_ok = (this->test_binary_mul() && result_is_ok);
 
         std::cout << "test_binary_div()  boost compare with uintwide_t: round " << i << ",  digits2: " << this->get_digits2() << std::endl;
-        result_is_ok &= this->test_binary_div();
+        result_is_ok = (this->test_binary_div() && result_is_ok);
 
         std::cout << "test_binary_mod()  boost compare with uintwide_t: round " << i << ",  digits2: " << this->get_digits2() << std::endl;
-        result_is_ok &= this->test_binary_mod();
+        result_is_ok = (this->test_binary_mod() && result_is_ok);
 
         std::cout << "test_binary_mod1() boost compare with uintwide_t: round " << i << ",  digits2: " << this->get_digits2() << std::endl;
-        result_is_ok &= this->test_binary_mod1();
+        result_is_ok = (this->test_binary_mod1() && result_is_ok);
 
         std::cout << "test_binary_shr()  boost compare with uintwide_t: round " << i << ",  digits2: " << this->get_digits2() << std::endl;
-        result_is_ok &= this->test_binary_shr();
+        result_is_ok = (this->test_binary_shr() && result_is_ok);
       }
 
       return result_is_ok;
@@ -617,11 +605,11 @@
     static std::uniform_int_distribution<> my_distrib_0_to_63;     // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
     static std::uniform_int_distribution<> my_distrib_1_to_0xFFFF; // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
 
-    std::vector<local_sint_type> a_local_signed; // NOLINT(readability-identifier-naming)
-    std::vector<local_sint_type> b_local_signed; // NOLINT(readability-identifier-naming)
+    std::vector<local_sint_type> a_local_signed { }; // NOLINT(readability-identifier-naming)
+    std::vector<local_sint_type> b_local_signed { }; // NOLINT(readability-identifier-naming)
 
-    std::vector<native_sint_type> a_native_signed; // NOLINT(readability-identifier-naming)
-    std::vector<native_sint_type> b_native_signed; // NOLINT(readability-identifier-naming)
+    std::vector<native_sint_type> a_native_signed { }; // NOLINT(readability-identifier-naming)
+    std::vector<native_sint_type> b_native_signed { }; // NOLINT(readability-identifier-naming)
   };
 
   #if defined(WIDE_INTEGER_NAMESPACE)

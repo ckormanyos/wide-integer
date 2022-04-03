@@ -106,7 +106,7 @@
         this->initialize();
 
         std::cout << "test_binary_mul()  boost compare with uintwide_t: round " << i << ",  digits2: " << this->get_digits2() << std::endl;
-        result_is_ok &= this->test_binary_mul();
+        result_is_ok = (this->test_binary_mul() && result_is_ok);
       }
 
       return result_is_ok;
