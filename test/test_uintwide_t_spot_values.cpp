@@ -99,13 +99,13 @@ namespace from_issue_145
     {
       local_unknown_integer_type a = a0; a += a; // NOLINT(clang-diagnostic-self-assign-overloaded)
 
-      local_result_is_ok &= (a == (2U * a0));
+      local_result_is_ok = ((a == (2U * a0)) && local_result_is_ok);
     }
 
     {
       local_unknown_integer_type a = a0; a -= a; // NOLINT(clang-diagnostic-self-assign-overloaded)
 
-      local_result_is_ok &= (a == 0U);
+      local_result_is_ok = ((a == 0U) && local_result_is_ok);
     }
 
     {
@@ -228,17 +228,17 @@ auto local_test_spot_values::test() -> bool // NOLINT(readability-function-cogni
     u *= u; // 228886641
     u *= u; // 52389094428262881
 
-    result_is_ok &= (u == local_uint80_type("52389094428262881"));
+    result_is_ok = ((u == local_uint80_type("52389094428262881")) && result_is_ok);
 
     v *= v; // 207936
     v *= v; // 43237380096
     v *= v; // 1869471037565976969216
 
-    result_is_ok &= (v == local_uint80_type("1869471037565976969216"));
+    result_is_ok = ((v == local_uint80_type("1869471037565976969216")) && result_is_ok);
 
-    const std::uint16_t w = static_cast<std::uint16_t>(v / u);
+    const auto w = static_cast<std::uint16_t>(v / u);
 
-    result_is_ok &= (w == UINT16_C(35684));
+    result_is_ok = ((w == UINT16_C(35684)) && result_is_ok);
   }
 
   {
@@ -270,8 +270,8 @@ auto local_test_spot_values::test() -> bool // NOLINT(readability-function-cogni
     static_assert(w2_is_ok, "Error: Bitwise OR with built-in type is not OK");
     #endif
 
-    result_is_ok &= w1_is_ok;
-    result_is_ok &= w2_is_ok;
+    result_is_ok = (w1_is_ok && result_is_ok);
+    result_is_ok = (w2_is_ok && result_is_ok);
   }
 
   {
@@ -403,13 +403,13 @@ auto local_test_spot_values::test() -> bool // NOLINT(readability-function-cogni
     WIDE_INTEGER_CONSTEXPR local_uint128_type u128_1("9784355713321885697254484081284759103");
     WIDE_INTEGER_CONSTEXPR local_uint128_type u128_2("1759644461251476961796845209840363274");
 
-    WIDE_INTEGER_CONSTEXPR local_uint160_type u160_0 = local_uint160_type(u128_0);
-    WIDE_INTEGER_CONSTEXPR local_uint160_type u160_1 = local_uint160_type(u128_1);
-    WIDE_INTEGER_CONSTEXPR local_uint160_type u160_2 = local_uint160_type(u128_2);
+    WIDE_INTEGER_CONSTEXPR auto u160_0 = local_uint160_type(u128_0);
+    WIDE_INTEGER_CONSTEXPR auto u160_1 = local_uint160_type(u128_1);
+    WIDE_INTEGER_CONSTEXPR auto u160_2 = local_uint160_type(u128_2);
 
-    WIDE_INTEGER_CONSTEXPR local_uint128_type v128_0 = local_uint128_type(u160_0);
-    WIDE_INTEGER_CONSTEXPR local_uint128_type v128_1 = local_uint128_type(u160_1);
-    WIDE_INTEGER_CONSTEXPR local_uint128_type v128_2 = local_uint128_type(u160_2);
+    WIDE_INTEGER_CONSTEXPR auto v128_0 = local_uint128_type(u160_0);
+    WIDE_INTEGER_CONSTEXPR auto v128_1 = local_uint128_type(u160_1);
+    WIDE_INTEGER_CONSTEXPR auto v128_2 = local_uint128_type(u160_2);
 
     result_is_ok &= (u128_0 == v128_0);
     result_is_ok &= (u128_1 == v128_1);
@@ -425,17 +425,17 @@ auto local_test_spot_values::test() -> bool // NOLINT(readability-function-cogni
     WIDE_INTEGER_CONSTEXPR local_int128_type n128_1("-9784355713321885697254484081284759103");
     WIDE_INTEGER_CONSTEXPR local_int128_type n128_2("-1759644461251476961796845209840363274");
 
-    WIDE_INTEGER_CONSTEXPR local_int160_type n160_0 = local_int160_type(n128_0);
-    WIDE_INTEGER_CONSTEXPR local_int160_type n160_1 = local_int160_type(n128_1);
-    WIDE_INTEGER_CONSTEXPR local_int160_type n160_2 = local_int160_type(n128_2);
+    WIDE_INTEGER_CONSTEXPR auto n160_0 = local_int160_type(n128_0);
+    WIDE_INTEGER_CONSTEXPR auto n160_1 = local_int160_type(n128_1);
+    WIDE_INTEGER_CONSTEXPR auto n160_2 = local_int160_type(n128_2);
 
-    WIDE_INTEGER_CONSTEXPR local_int128_type m128_0 = static_cast<local_int128_type>(n160_0);
-    WIDE_INTEGER_CONSTEXPR local_int128_type m128_1 = static_cast<local_int128_type>(n160_1);
-    WIDE_INTEGER_CONSTEXPR local_int128_type m128_2 = static_cast<local_int128_type>(n160_2);
+    WIDE_INTEGER_CONSTEXPR auto m128_0 = static_cast<local_int128_type>(n160_0);
+    WIDE_INTEGER_CONSTEXPR auto m128_1 = static_cast<local_int128_type>(n160_1);
+    WIDE_INTEGER_CONSTEXPR auto m128_2 = static_cast<local_int128_type>(n160_2);
 
-    result_is_ok &= (n128_0 == m128_0);
-    result_is_ok &= (n128_1 == m128_1);
-    result_is_ok &= (n128_2 == m128_2);
+    result_is_ok = ((n128_0 == m128_0) && result_is_ok);
+    result_is_ok = ((n128_1 == m128_1) && result_is_ok);
+    result_is_ok = ((n128_2 == m128_2) && result_is_ok);
 
     #if(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST == 1)
     static_assert(u128_0 == v128_0, "Error: Static check of inter-width casting (signed) is not OK");
@@ -443,13 +443,13 @@ auto local_test_spot_values::test() -> bool // NOLINT(readability-function-cogni
     static_assert(u128_2 == v128_2, "Error: Static check of inter-width casting (signed) is not OK");
     #endif
 
-    WIDE_INTEGER_CONSTEXPR local_uint160_type un160_0 = local_uint160_type(-n128_0);
-    WIDE_INTEGER_CONSTEXPR local_uint160_type un160_1 = local_uint160_type(-n128_1);
-    WIDE_INTEGER_CONSTEXPR local_uint160_type un160_2 = local_uint160_type(-n128_2);
+    WIDE_INTEGER_CONSTEXPR auto un160_0 = local_uint160_type(-n128_0);
+    WIDE_INTEGER_CONSTEXPR auto un160_1 = local_uint160_type(-n128_1);
+    WIDE_INTEGER_CONSTEXPR auto un160_2 = local_uint160_type(-n128_2);
 
-    result_is_ok &= (un160_0 == u160_0);
-    result_is_ok &= (un160_1 == u160_1);
-    result_is_ok &= (un160_2 == u160_2);
+    result_is_ok = ((un160_0 == u160_0) && result_is_ok);
+    result_is_ok = ((un160_1 == u160_1) && result_is_ok);
+    result_is_ok = ((un160_2 == u160_2) && result_is_ok);
 
     #if(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST == 1)
     static_assert(un160_0 == u160_0, "Error: Static check of inter-width casting (mixed signes) is not OK");
@@ -457,13 +457,13 @@ auto local_test_spot_values::test() -> bool // NOLINT(readability-function-cogni
     static_assert(un160_2 == u160_2, "Error: Static check of inter-width casting (mixed signes) is not OK");
     #endif
 
-    WIDE_INTEGER_CONSTEXPR local_int128_type s128_0 = local_int128_type(un160_0);
-    WIDE_INTEGER_CONSTEXPR local_int128_type s128_1 = local_int128_type(un160_1);
-    WIDE_INTEGER_CONSTEXPR local_int128_type s128_2 = local_int128_type(un160_2);
+    WIDE_INTEGER_CONSTEXPR auto s128_0 = local_int128_type(un160_0);
+    WIDE_INTEGER_CONSTEXPR auto s128_1 = local_int128_type(un160_1);
+    WIDE_INTEGER_CONSTEXPR auto s128_2 = local_int128_type(un160_2);
 
-    result_is_ok &= (local_uint128_type(s128_0) == u128_0);
-    result_is_ok &= (local_uint128_type(s128_1) == u128_1);
-    result_is_ok &= (local_uint128_type(s128_2) == u128_2);
+    result_is_ok = ((local_uint128_type(s128_0) == u128_0) && result_is_ok);
+    result_is_ok = ((local_uint128_type(s128_1) == u128_1) && result_is_ok);
+    result_is_ok = ((local_uint128_type(s128_2) == u128_2) && result_is_ok);
 
     #if(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST == 1)
     static_assert(static_cast<local_uint128_type>(s128_0) == u128_0, "Error: Static check of inter-width casting (mixed signes) is not OK");
@@ -497,9 +497,9 @@ auto local_test_spot_values::test() -> bool // NOLINT(readability-function-cogni
       // 4ad2ae64368b98a810635e9cd49850b_16
       WIDE_INTEGER_CONSTEXPR uint128_t h_sep("0x4'AD'2A'E6'43'68'B9'8A'81'06'35'E9'CD'49'85'0B");
 
-      result_is_ok &= (u_sep == u);
-      result_is_ok &= (n_sep == n);
-      result_is_ok &= (h_sep == u);
+      result_is_ok = ((u_sep == u) && result_is_ok);
+      result_is_ok = ((n_sep == n) && result_is_ok);
+      result_is_ok = ((h_sep == u) && result_is_ok);
 
       #if(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST == 1)
       static_assert(u_sep == u, "Error: Static check of construction via string with digit separators fails");

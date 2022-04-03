@@ -453,7 +453,7 @@ auto run() -> bool
   const time_point_type stop = clock_type::now();
 
   {
-    constexpr auto one_thousand_milliseconds = static_cast<float>(1000.0F);
+    constexpr auto one_thousand_milliseconds = 1000.0F;
 
     const auto flg = std::cout.flags();
 
