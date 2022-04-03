@@ -400,7 +400,7 @@ auto test_uintwide_t_0000064_by_0000064_4_by_4() -> bool
   return result_is_ok;
 }
 
-auto run() -> bool
+auto run() -> bool // NOLINT(readability-function-cognitive-complexity)
 {
   using time_point_type = std::chrono::high_resolution_clock::time_point;
 
