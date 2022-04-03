@@ -567,19 +567,19 @@
   template<typename IntegralType, const size_t Width2, typename LimbType, typename AllocatorType, const bool IsSigned> constexpr auto operator/(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& u, const IntegralType& v) -> typename std::enable_if<std::is_integral<IntegralType>::value, uintwide_t<Width2, LimbType, AllocatorType, IsSigned>>::type;
 
   template<typename IntegralType, const size_t Width2, typename LimbType, typename AllocatorType, const bool IsSigned>
-  constexpr auto operator%(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& u, const IntegralType& v) -> typename std::enable_if<(   ( std::is_integral<IntegralType>::value)
+  constexpr auto operator%(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& u, const IntegralType& v) -> typename std::enable_if<(     std::is_integral<IntegralType>::value
                                                                                                                                               && (!std::is_unsigned<IntegralType>::value)),
                                                                                                                                               uintwide_t<Width2, LimbType, AllocatorType, IsSigned>>::type;
 
   template<typename IntegralType, const size_t Width2, typename LimbType, typename AllocatorType, const bool IsSigned>
-  WIDE_INTEGER_CONSTEXPR auto operator%(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& u, const IntegralType& v) -> typename std::enable_if<(   (std::is_integral   <IntegralType>::value)
-                                                                                                                                                           && (std::is_unsigned   <IntegralType>::value)
+  WIDE_INTEGER_CONSTEXPR auto operator%(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& u, const IntegralType& v) -> typename std::enable_if<(    std::is_integral   <IntegralType>::value
+                                                                                                                                                           &&  std::is_unsigned   <IntegralType>::value
                                                                                                                                                            && (std::numeric_limits<IntegralType>::digits <= std::numeric_limits<LimbType>::digits)),
                                                                                                                                                            typename uintwide_t<Width2, LimbType, AllocatorType, IsSigned>::limb_type>::type;
 
   template<typename IntegralType, const size_t Width2, typename LimbType, typename AllocatorType, const bool IsSigned>
-  constexpr auto operator%(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& u, const IntegralType& v) -> typename std::enable_if<(   (std::is_integral   <IntegralType>::value)
-                                                                                                                                              && (std::is_unsigned   <IntegralType>::value)
+  constexpr auto operator%(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& u, const IntegralType& v) -> typename std::enable_if<(    std::is_integral   <IntegralType>::value
+                                                                                                                                              &&  std::is_unsigned   <IntegralType>::value
                                                                                                                                               && (std::numeric_limits<IntegralType>::digits > std::numeric_limits<LimbType>::digits)),
                                                                                                                                               uintwide_t<Width2, LimbType, AllocatorType, IsSigned>>::type;
 
@@ -1269,7 +1269,7 @@
     //   * Is equal to 2^n times 1...63.
     //   * And that there are at least 16, 24 or 32 binary digits, or more.
     //   * And that the number of binary digits is an exact multiple of the number of limbs.
-    static_assert(   (detail::verify_power_of_two_times_granularity_one_sixty_fourth<my_width2>::conditional_value)
+    static_assert(    detail::verify_power_of_two_times_granularity_one_sixty_fourth<my_width2>::conditional_value
                   && (my_width2 >= 16U) // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
                   && (my_width2 == (number_of_limbs * static_cast<size_t>(std::numeric_limits<limb_type>::digits))),
                   "Error: Width2 must be 2^n times 1...63 (with n >= 3), while being 16, 24, 32 or larger, and exactly divisible by limb count");
@@ -1303,8 +1303,8 @@
     // are less wide than limb_type or exactly as wide as limb_type.
     template<typename UnsignedIntegralType>
     constexpr uintwide_t(const UnsignedIntegralType v, // NOLINT(google-explicit-constructor,hicpp-explicit-conversions)
-                         typename std::enable_if<(   (std::is_integral   <UnsignedIntegralType>::value)
-                                                  && (std::is_unsigned   <UnsignedIntegralType>::value)
+                         typename std::enable_if<(    std::is_integral   <UnsignedIntegralType>::value
+                                                  &&  std::is_unsigned   <UnsignedIntegralType>::value
                                                   && (std::numeric_limits<UnsignedIntegralType>::digits <= std::numeric_limits<limb_type>::digits))>::type* = nullptr) // NOLINT(hicpp-named-parameter,readability-named-parameter)
       : values(1U, v) { }
 
@@ -1313,8 +1313,8 @@
     // same width as limb_type.
     template<typename UnsignedIntegralType>
     WIDE_INTEGER_CONSTEXPR uintwide_t(const UnsignedIntegralType v, // NOLINT(google-explicit-constructor,hicpp-explicit-conversions)
-                                      typename std::enable_if<(   (std::is_integral   <UnsignedIntegralType>::value)
-                                                               && (std::is_unsigned   <UnsignedIntegralType>::value)
+                                      typename std::enable_if<(    std::is_integral   <UnsignedIntegralType>::value
+                                                               &&  std::is_unsigned   <UnsignedIntegralType>::value
                                                                && (std::numeric_limits<UnsignedIntegralType>::digits > std::numeric_limits<limb_type>::digits))>::type* p_nullparam = nullptr)
     {
       static_cast<void>(p_nullparam == nullptr);
@@ -1337,8 +1337,8 @@
     // Constructors from built-in signed integral types.
     template<typename SignedIntegralType>
     WIDE_INTEGER_CONSTEXPR uintwide_t(const SignedIntegralType v, // NOLINT(google-explicit-constructor,hicpp-explicit-conversions)
-                                      typename std::enable_if<(   (std::is_integral<SignedIntegralType>::value)
-                                                               && (std::is_signed  <SignedIntegralType>::value))>::type* p_nullparam = nullptr)
+                                      typename std::enable_if<(   std::is_integral<SignedIntegralType>::value
+                                                               && std::is_signed  <SignedIntegralType>::value)>::type* p_nullparam = nullptr)
     {
       static_cast<void>(p_nullparam == nullptr);
 
@@ -1849,8 +1849,8 @@
     }
 
     template<typename SignedIntegralType>
-    WIDE_INTEGER_CONSTEXPR auto operator<<=(const SignedIntegralType n) -> typename std::enable_if<(   (std::is_integral<SignedIntegralType>::value)
-                                                                                                    && (std::is_signed  <SignedIntegralType>::value)), uintwide_t>::type&
+    WIDE_INTEGER_CONSTEXPR auto operator<<=(const SignedIntegralType n) -> typename std::enable_if<(   std::is_integral<SignedIntegralType>::value
+                                                                                                    && std::is_signed  <SignedIntegralType>::value), uintwide_t>::type&
     {
       // Implement left-shift operator for signed integral argument.
       if(n < static_cast<SignedIntegralType>(0))
@@ -1876,7 +1876,7 @@
     }
 
     template<typename UnsignedIntegralType>
-    WIDE_INTEGER_CONSTEXPR auto operator<<=(const UnsignedIntegralType n) -> typename std::enable_if<(   ( std::is_integral<UnsignedIntegralType>::value)
+    WIDE_INTEGER_CONSTEXPR auto operator<<=(const UnsignedIntegralType n) -> typename std::enable_if<(     std::is_integral<UnsignedIntegralType>::value
                                                                                                       && (!std::is_signed  <UnsignedIntegralType>::value)), uintwide_t>::type&
     {
       // Implement left-shift operator for unsigned integral argument.
@@ -1896,8 +1896,8 @@
     }
 
     template<typename SignedIntegralType>
-    WIDE_INTEGER_CONSTEXPR auto operator>>=(const SignedIntegralType n) -> typename std::enable_if<(   (std::is_integral<SignedIntegralType>::value)
-                                                                                                    && (std::is_signed  <SignedIntegralType>::value)), uintwide_t>::type&
+    WIDE_INTEGER_CONSTEXPR auto operator>>=(const SignedIntegralType n) -> typename std::enable_if<(   std::is_integral<SignedIntegralType>::value
+                                                                                                    && std::is_signed  <SignedIntegralType>::value), uintwide_t>::type&
     {
       // Implement right-shift operator for signed integral argument.
       if(n < static_cast<SignedIntegralType>(0))
@@ -1926,7 +1926,7 @@
     }
 
     template<typename UnsignedIntegralType>
-    WIDE_INTEGER_CONSTEXPR auto operator>>=(const UnsignedIntegralType n) -> typename std::enable_if<(   ( std::is_integral<UnsignedIntegralType>::value)
+    WIDE_INTEGER_CONSTEXPR auto operator>>=(const UnsignedIntegralType n) -> typename std::enable_if<(     std::is_integral<UnsignedIntegralType>::value
                                                                                                       && (!std::is_signed  <UnsignedIntegralType>::value)), uintwide_t>::type&
     {
       // Implement right-shift operator for unsigned integral argument.
@@ -2360,7 +2360,7 @@
     }
 
     template<const bool RePhraseIsSigned = IsSigned,
-             typename std::enable_if<(RePhraseIsSigned)>::type const* = nullptr>
+             typename std::enable_if<RePhraseIsSigned>::type const* = nullptr>
     WIDE_INTEGER_NODISCARD WIDE_INTEGER_CONSTEXPR auto compare(const uintwide_t<Width2, LimbType, AllocatorType, RePhraseIsSigned>& other) const -> std::int_fast8_t
     {
       auto n_result = std::int_fast8_t { };
@@ -2452,7 +2452,7 @@
     }
 
     template<const bool RePhraseIsSigned = IsSigned,
-             typename std::enable_if<(RePhraseIsSigned)>::type const* = nullptr>
+             typename std::enable_if<RePhraseIsSigned>::type const* = nullptr>
     static constexpr auto is_neg(const uintwide_t<Width2, LimbType, AllocatorType, RePhraseIsSigned>& a) -> bool
     {
       return (static_cast<std::uint_fast8_t>(static_cast<std::uint_fast8_t>(a.values.back() >> static_cast<size_t>(std::numeric_limits<typename uintwide_t<Width2, LimbType, AllocatorType, RePhraseIsSigned>::limb_type>::digits - 1)) & 1U) != 0U);
@@ -3419,7 +3419,7 @@
 
       bool has_borrow_out = has_borrow;
 
-      while((i < n) && (has_borrow_out)) // NOLINT(altera-id-dependent-backward-branch)
+      while((i < n) && has_borrow_out) // NOLINT(altera-id-dependent-backward-branch)
       {
         auto uv_as_ularge = static_cast<local_double_limb_type>(*(t + static_cast<left_difference_type>(i)));
 
@@ -4313,8 +4313,8 @@
   { return uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(u).operator%=(uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(v)); }
 
   template<typename IntegralType, const size_t Width2, typename LimbType, typename AllocatorType, const bool IsSigned>
-  WIDE_INTEGER_CONSTEXPR auto operator%(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& u, const IntegralType& v) -> typename std::enable_if<(   (std::is_integral<IntegralType>::value)
-                                                                                                                                                           && (std::is_unsigned<IntegralType>::value)
+  WIDE_INTEGER_CONSTEXPR auto operator%(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& u, const IntegralType& v) -> typename std::enable_if<(    std::is_integral<IntegralType>::value
+                                                                                                                                                           &&  std::is_unsigned<IntegralType>::value
                                                                                                                                                            && (std::numeric_limits<IntegralType>::digits <= std::numeric_limits<LimbType>::digits)),
                                                                                                                                                            typename uintwide_t<Width2, LimbType, AllocatorType, IsSigned>::limb_type>::type
   {
@@ -4334,8 +4334,8 @@
   }
 
   template<typename IntegralType, const size_t Width2, typename LimbType, typename AllocatorType, const bool IsSigned>
-  constexpr auto operator%(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& u, const IntegralType& v) -> typename std::enable_if<(   (std::is_integral<IntegralType>::value)
-                                                                                                                                              && (std::is_unsigned<IntegralType>::value)
+  constexpr auto operator%(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& u, const IntegralType& v) -> typename std::enable_if<(    std::is_integral<IntegralType>::value
+                                                                                                                                              &&  std::is_unsigned<IntegralType>::value
                                                                                                                                               && (std::numeric_limits<IntegralType>::digits > std::numeric_limits<LimbType>::digits)),
                                                                                                                                               uintwide_t<Width2, LimbType, AllocatorType, IsSigned>>::type
   { return uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(u).operator%=(uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(v)); }
@@ -4631,7 +4631,7 @@
     else
     {
       const bool x_is_inf_pos = (x > (std::numeric_limits<local_floating_point_type>::max)());
-      const bool x_is_inf_neg = (x < (std::numeric_limits<local_floating_point_type>::lowest)());
+      const bool x_is_inf_neg = (x <  std::numeric_limits<local_floating_point_type>::lowest());
 
       if(x_is_inf_pos || x_is_inf_neg)
       {
@@ -4655,8 +4655,8 @@
   inline WIDE_INTEGER_CONSTEXPR auto lsb_helper(const UnsignedIntegralType& u) -> unsigned_fast_type
   {
     // Compile-time checks.
-    static_assert((   (std::is_integral<UnsignedIntegralType>::value)
-                   && (std::is_unsigned<UnsignedIntegralType>::value)),
+    static_assert((   std::is_integral<UnsignedIntegralType>::value
+                   && std::is_unsigned<UnsignedIntegralType>::value),
                    "Error: Please check the characteristics of UnsignedIntegralType");
 
     unsigned_fast_type result = 0U;
@@ -4683,8 +4683,8 @@
   inline WIDE_INTEGER_CONSTEXPR auto msb_helper(const UnsignedIntegralType& u) -> unsigned_fast_type
   {
     // Compile-time checks.
-    static_assert((   (std::is_integral<UnsignedIntegralType>::value)
-                   && (std::is_unsigned<UnsignedIntegralType>::value)),
+    static_assert((   std::is_integral<UnsignedIntegralType>::value
+                   && std::is_unsigned<UnsignedIntegralType>::value),
                    "Error: Please check the characteristics of UnsignedIntegralType");
 
     using local_unsigned_integral_type = UnsignedIntegralType;

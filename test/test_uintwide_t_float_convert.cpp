@@ -1,4 +1,4 @@
-///////////////////////////////////////////////////////////////////////////////
+﻿///////////////////////////////////////////////////////////////////////////////
 //  Copyright Christopher Kormanyos 2021 - 2022.
 //  Distributed under the Boost Software License,
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt
@@ -97,7 +97,7 @@ namespace local_float_convert
 
     const bool is_neg = (dist_sgn(engine_sgn()) != 0);
 
-    const auto len = static_cast<std::string::size_type>(dist_len(engine_e10()));
+    const auto len = dist_len(engine_e10());
 
     auto pos = static_cast<std::string::size_type>(0U);
 
@@ -218,8 +218,8 @@ auto math::wide_integer::test_uintwide_t_float_convert() -> bool
 
     local_float_convert::get_random_digit_string<31U>(str_digits); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
 
-    const boost_sint_type n_boost = boost_sint_type(str_digits.c_str());
-    const local_sint_type n_local = local_sint_type(str_digits.c_str());
+    const auto n_boost = boost_sint_type(str_digits.c_str());
+    const auto n_local = local_sint_type(str_digits.c_str());
 
     const auto f_boost = static_cast<float>(n_boost);
     const auto f_local = static_cast<float>(n_local);
@@ -240,8 +240,8 @@ auto math::wide_integer::test_uintwide_t_float_convert() -> bool
 
     local_float_convert::get_random_digit_string<71U>(str_digits); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
 
-    const boost_sint_type n_boost = boost_sint_type(str_digits.c_str());
-    const local_sint_type n_local = local_sint_type(str_digits.c_str());
+    const auto n_boost = boost_sint_type(str_digits.c_str());
+    const auto n_local = local_sint_type(str_digits.c_str());
 
     const auto d_boost = static_cast<double>(n_boost);
     const auto d_local = static_cast<double>(n_local);
