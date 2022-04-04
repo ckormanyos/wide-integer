@@ -4104,34 +4104,28 @@
 
     WIDE_INTEGER_CONSTEXPR void preincrement()
     {
-      // Implement pre-increment.
-      unsigned_fast_type i = 0U;
+      // Implement self-increment.
 
-      for( ; (i < static_cast<unsigned_fast_type>(values.size() - 1U)) && (++(*(values.begin() + static_cast<size_t>(i))) == static_cast<limb_type>(0U)); ++i) // NOLINT(altera-id-dependent-backward-branch)
-      {
-        ;
-      }
+      auto it = values.begin(); // NOLINT(llvm-qualified-auto,readability-qualified-auto)
 
-      if(i == static_cast<unsigned_fast_type>(values.size() - 1U))
+      do
       {
-        ++(*(values.begin() + static_cast<size_t>(i)));
+        ++(*it);
       }
+      while((*it == static_cast<limb_type>(0U)) && (++it != values.end()));
     }
 
     WIDE_INTEGER_CONSTEXPR void predecrement()
     {
-      // Implement pre-decrement.
-      unsigned_fast_type i = 0U;
+      // Implement self-decrement.
 
-      for( ; (i < static_cast<unsigned_fast_type>(values.size() - 1U)) && ((*(values.begin() + static_cast<size_t>(i)))-- == static_cast<limb_type>(0U)); ++i) // NOLINT(altera-id-dependent-backward-branch)
-      {
-        ;
-      }
+      auto it = values.begin(); // NOLINT(llvm-qualified-auto,readability-qualified-auto)
 
-      if(i == static_cast<unsigned_fast_type>(values.size() - 1U))
+      do
       {
-        --(*(values.begin() + static_cast<size_t>(i)));
+        --(*it);
       }
+      while((*it == (std::numeric_limits<limb_type>::max)()) && (++it != values.end()));
     }
   };
 

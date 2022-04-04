@@ -163,6 +163,38 @@ auto local_test_spot_values::test() -> bool // NOLINT(readability-function-cogni
     // See also: https://github.com/ckormanyos/wide-integer/issues/234#issuecomment-1053733496
 
     #if defined WIDE_INTEGER_NAMESPACE
+    using local_uint128_t = WIDE_INTEGER_NAMESPACE::math::wide_integer::uint128_t;
+    #else
+    using local_uint128_t = math::wide_integer::uint128_t;
+    #endif
+
+    {
+      WIDE_INTEGER_CONSTEXPR local_uint128_t inc_value("0x0000000000000001FFFFFFFFFFFFFFFF");
+      WIDE_INTEGER_CONSTEXPR local_uint128_t inc_value_p(++(local_uint128_t(inc_value)));
+
+      result_is_ok = ((inc_value_p == local_uint128_t("0x00000000000000020000000000000000")) && result_is_ok);
+
+      #if(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST == 1)
+      static_assert(inc_value_p == local_uint128_t("0x00000000000000020000000000000000"), "Error: Incrementing 128-bit type is not OK");
+      #endif
+    }
+
+    {
+      WIDE_INTEGER_CONSTEXPR local_uint128_t dec_value("0x00000000000000020000000000000000");
+      WIDE_INTEGER_CONSTEXPR local_uint128_t dec_value_p(--(local_uint128_t(dec_value)));
+
+      result_is_ok = ((dec_value_p == local_uint128_t("0x0000000000000001FFFFFFFFFFFFFFFF")) && result_is_ok);
+
+      #if(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST == 1)
+      static_assert(dec_value_p == local_uint128_t("0x0000000000000001FFFFFFFFFFFFFFFF"), "Error: Decrementing 128-bit type is not OK");
+      #endif
+    }
+  }
+
+  {
+    // See also: https://github.com/ckormanyos/wide-integer/issues/234#issuecomment-1053733496
+
+    #if defined WIDE_INTEGER_NAMESPACE
     using local_uint512_t = WIDE_INTEGER_NAMESPACE::math::wide_integer::uint512_t;
     using local_int512_t  = WIDE_INTEGER_NAMESPACE::math::wide_integer::int512_t;
     #else
