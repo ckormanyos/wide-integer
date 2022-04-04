@@ -26,6 +26,18 @@
   #pragma GCC diagnostic ignored "-Wdeprecated-copy"
   #endif
 
+  #include <boost/version.hpp>
+
+  #if !defined(BOOST_VERSION)
+  #error BOOST_VERSION is not defined. Ensure that <boost/version.hpp> is properly included.
+  #endif
+
+  #if (BOOST_VERSION >= 107900)
+  #if !defined(BOOST_NO_EXCEPTIONS)
+  #define BOOST_NO_EXCEPTIONS
+  #endif
+  #endif
+
   #include <boost/multiprecision/cpp_int.hpp>
 
   #include <math/wide_integer/uintwide_t.h>
