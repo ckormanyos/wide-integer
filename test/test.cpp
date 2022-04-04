@@ -33,13 +33,11 @@
 #error BOOST_VERSION is not defined. Ensure that <boost/version.hpp> is properly included.
 #endif
 
-#if (BOOST_VERSION < 107900)
-#if defined(__GNUC__)
+#if ((BOOST_VERSION < 107900) && defined(__GNUC__))
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wconversion"
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wsign-conversion"
-#endif
 #endif
 
 #if (BOOST_VERSION < 107900)
@@ -422,7 +420,8 @@ auto test_uintwide_t_0000064_by_0000064_4_by_4() -> bool
 auto run() -> bool // NOLINT(readability-function-cognitive-complexity)
 {
   #if (BOOST_VERSION < 107900)
-  using local_boost_exception_type = ::boost::wrapexcept<::boost::bad_lexical_cast>;
+  using boost_wrapexcept_lexical_type = ::boost::wrapexcept<::boost::bad_lexical_cast>;
+  using boost_wrapexcept_runtime_type = ::boost::wrapexcept<std::runtime_error>;
   #endif
 
   const auto start = clock_type::now();
@@ -471,9 +470,17 @@ auto run() -> bool // NOLINT(readability-function-cognitive-complexity)
 
   #if (BOOST_VERSION < 107900)
   }
-  catch(local_boost_exception_type&)
+  catch(boost_wrapexcept_lexical_type& e)
   {
     result_is_ok = false;
+
+    std::cout << "Exception: boost_wrapexcept_lexical_type: " << e.what() << std::endl;
+  }
+  catch(boost_wrapexcept_runtime_type& e)
+  {
+    result_is_ok = false;
+
+    std::cout << "Exception: boost_wrapexcept_runtime_type: " << e.what() << std::endl;
   }
   #endif
 
@@ -509,9 +516,7 @@ auto main() -> int // NOLINT(bugprone-exception-escape)
   return (result_is_ok ? 0 : -1);
 }
 
-#if (BOOST_VERSION < 107900)
-#if defined(__GNUC__)
+#if ((BOOST_VERSION < 107900) && defined(__GNUC__))
 #pragma GCC diagnostic pop
 #pragma GCC diagnostic pop
-#endif
 #endif
