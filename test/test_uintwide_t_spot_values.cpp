@@ -11,6 +11,53 @@
 #include <math/wide_integer/uintwide_t.h>
 #include <test/test_uintwide_t.h>
 
+namespace from_issue_266
+{
+  auto test_uintwide_t_spot_values_from_issue_266_inc() -> bool
+  {
+    // See also: https://github.com/ckormanyos/wide-integer/issues/266
+
+    #if defined WIDE_INTEGER_NAMESPACE
+    using local_uint128_t = WIDE_INTEGER_NAMESPACE::math::wide_integer::uint128_t;
+    #else
+    using local_uint128_t = math::wide_integer::uint128_t;
+    #endif
+
+    WIDE_INTEGER_CONSTEXPR local_uint128_t inc_value  ("0x0000000000000001FFFFFFFFFFFFFFFF");
+    WIDE_INTEGER_CONSTEXPR local_uint128_t inc_value_p(++(local_uint128_t(inc_value)));
+
+    const auto result_is_ok = (inc_value_p == local_uint128_t("0x00000000000000020000000000000000"));
+
+    #if(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST == 1)
+    static_assert(inc_value_p == local_uint128_t("0x00000000000000020000000000000000"), "Error: Incrementing 128-bit type is not OK");
+    #endif
+
+    return result_is_ok;
+  }
+
+  auto test_uintwide_t_spot_values_from_issue_266_dec() -> bool
+  {
+    // See also: https://github.com/ckormanyos/wide-integer/issues/266
+
+    #if defined WIDE_INTEGER_NAMESPACE
+    using local_uint128_t = WIDE_INTEGER_NAMESPACE::math::wide_integer::uint128_t;
+    #else
+    using local_uint128_t = math::wide_integer::uint128_t;
+    #endif
+
+    WIDE_INTEGER_CONSTEXPR local_uint128_t dec_value  ("0x00000000000000020000000000000000");
+    WIDE_INTEGER_CONSTEXPR local_uint128_t dec_value_d(--(local_uint128_t(dec_value)));
+
+    const auto result_is_ok = (dec_value_d == local_uint128_t("0x0000000000000001FFFFFFFFFFFFFFFF"));
+
+    #if(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST == 1)
+    static_assert(dec_value_d == local_uint128_t("0x0000000000000001FFFFFFFFFFFFFFFF"), "Error: Decrementing 128-bit type is not OK");
+    #endif
+
+    return result_is_ok;
+  }
+} // namespace from_issue_266
+
 namespace from_issue_234
 {
   // See also https://github.com/ckormanyos/wide-integer/issues/234#issuecomment-1052960210
@@ -158,6 +205,13 @@ namespace local_test_spot_values
 auto local_test_spot_values::test() -> bool // NOLINT(readability-function-cognitive-complexity)
 {
   bool result_is_ok = true;
+
+  {
+    // See also: https://github.com/ckormanyos/wide-integer/issues/266
+
+    result_is_ok = (from_issue_266::test_uintwide_t_spot_values_from_issue_266_inc() && result_is_ok);
+    result_is_ok = (from_issue_266::test_uintwide_t_spot_values_from_issue_266_dec() && result_is_ok);
+  }
 
   {
     // See also: https://github.com/ckormanyos/wide-integer/issues/234#issuecomment-1053733496
