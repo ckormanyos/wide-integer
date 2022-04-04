@@ -4112,7 +4112,7 @@
       {
         ++(*it);
       }
-      while((*it == static_cast<limb_type>(0U)) && (++it != values.end())); // NOLINT(altera-id-dependent-backward-branch)
+      while((*it++ == static_cast<limb_type>(0U)) && (it != values.end())); // NOLINT(altera-id-dependent-backward-branch)
     }
 
     WIDE_INTEGER_CONSTEXPR void predecrement()
@@ -4125,7 +4125,7 @@
       {
         --(*it);
       }
-      while((*it == (std::numeric_limits<limb_type>::max)()) && (++it != values.end())); // NOLINT(altera-id-dependent-backward-branch)
+      while((*it++ == (std::numeric_limits<limb_type>::max)()) && (it != values.end())); // NOLINT(altera-id-dependent-backward-branch)
     }
   };
 
