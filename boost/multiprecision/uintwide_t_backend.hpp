@@ -193,7 +193,7 @@
       m_value.representation().swap(other.m_value.representation());
     }
 
-    WIDE_INTEGER_CONSTEXPR auto swap(uintwide_t_backend&& other) -> void
+    WIDE_INTEGER_CONSTEXPR auto swap(uintwide_t_backend&& other) noexcept -> void
     {
       auto tmp = std::move(m_value.representation());
 
