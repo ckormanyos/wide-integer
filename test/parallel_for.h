@@ -47,7 +47,7 @@
       pool.reserve(number_of_threads);
 
       auto i1 = start;
-      auto i2 = (std::min)(index_type(start + slice), end);
+      auto i2 = (std::min)(static_cast<index_type>(start + slice), end);
 
       for(auto i = static_cast<index_type>(0U); ((static_cast<index_type>(i + 1) < static_cast<index_type>(number_of_threads)) && (i1 < end)); ++i) // NOLINT(altera-id-dependent-backward-branch)
       {
@@ -55,7 +55,7 @@
 
         i1 = i2;
 
-        i2 = (std::min)(index_type(i2 + slice), end);
+        i2 = (std::min)(static_cast<index_type>(i2 + slice), end);
       }
 
       if(i1 < end)
