@@ -315,8 +315,10 @@
 
     WIDE_INTEGER_CONSTEXPR auto swap(dynamic_array&& other) noexcept -> void
     {
-      std::swap(elems,      other.elems);
-      std::swap(elem_count, other.elem_count);
+      auto tmp = std::move(*this);
+
+      *this = std::move(other);
+      other = std::move(tmp);
     }
 
   private:
@@ -4030,38 +4032,35 @@
 
       bool char_is_valid = true;
 
-      for( ; ((pos < str_length) && char_is_valid); ++pos) // NOLINT(altera-id-dependent-backward-branch)
+      while((pos < str_length) && char_is_valid)
       {
-        const auto c = static_cast<std::uint8_t>(str_input[pos]); // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+        const auto c = str_input[pos++]; // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
 
-        // TBD: Handle other digit delimiters in addition to apostrophe.
-        const bool char_is_apostrophe = (c == static_cast<char>(39));
+        const auto char_is_apostrophe = (c == static_cast<char>(39));
 
         if(!char_is_apostrophe)
         {
           if(base == UINT8_C(8))
           {
-            std::uint8_t uc_oct { };
-
-            if  ((c >= '0') && (c <= '8')) { uc_oct = static_cast<std::uint8_t>(c - static_cast<std::uint8_t>(UINT8_C(0x30))); }
-            else                           { uc_oct = static_cast<std::uint8_t>('\0'); char_is_valid = false; }
+            char_is_valid = ((c >= '0') && (c <= '8'));
 
             if(char_is_valid)
             {
-              operator<<=(3);
+              const auto uc_oct = static_cast<std::uint8_t>(c - static_cast<char>(UINT8_C(0x30)));
+
+              operator<<=(3U);
 
               *values.begin() = static_cast<limb_type>(*values.begin() | uc_oct);
             }
           }
           else if(base == UINT8_C(10))
           {
-            std::uint8_t uc_dec { };
-
-            if   ((c >= static_cast<std::uint8_t>('0')) && (c <= static_cast<std::uint8_t>('9'))) { uc_dec = static_cast<std::uint8_t>(c - static_cast<std::uint8_t>(UINT8_C(0x30))); }
-            else                                                                                  { uc_dec = static_cast<std::uint8_t>('\0'); char_is_valid = false; }
+            char_is_valid = ((c >= '0') && (c <= '9'));
 
             if(char_is_valid)
             {
+              const auto uc_dec = static_cast<std::uint8_t>(c - static_cast<char>(UINT8_C(0x30)));
+
               mul_by_limb(static_cast<limb_type>(UINT8_C(10)));
 
               operator+=(uc_dec);
@@ -4069,16 +4068,21 @@
           }
           else if(base == UINT8_C(16))
           {
-            std::uint8_t uc_hex { };
+            const auto char_is_a_to_f_lo((c >= 'a') && (c <= 'f'));
+            const auto char_is_a_to_f_hi((c >= 'A') && (c <= 'F'));
+            const auto char_is_0_to_9   ((c >= '0') && (c <= '9'));
 
-            if     ((c >= static_cast<std::uint8_t>('a')) && (c <= static_cast<std::uint8_t>('f'))) { uc_hex = static_cast<std::uint8_t>(c - static_cast<std::uint8_t>(UINT8_C(  87))); }
-            else if((c >= static_cast<std::uint8_t>('A')) && (c <= static_cast<std::uint8_t>('F'))) { uc_hex = static_cast<std::uint8_t>(c - static_cast<std::uint8_t>(UINT8_C(  55))); }
-            else if((c >= static_cast<std::uint8_t>('0')) && (c <= static_cast<std::uint8_t>('9'))) { uc_hex = static_cast<std::uint8_t>(c - static_cast<std::uint8_t>(UINT8_C(0x30))); }
-            else                                                                                    { uc_hex = static_cast<std::uint8_t>('\0'); char_is_valid = false; }
+            char_is_valid = (char_is_a_to_f_lo || char_is_a_to_f_hi || char_is_0_to_9);
 
             if(char_is_valid)
             {
-              operator<<=(4);
+              auto uc_hex = static_cast<std::uint8_t>(0U);
+
+              if     (char_is_a_to_f_lo) { uc_hex = static_cast<std::uint8_t>(c - static_cast<char>(UINT8_C(  87))); }
+              else if(char_is_a_to_f_hi) { uc_hex = static_cast<std::uint8_t>(c - static_cast<char>(UINT8_C(  55))); }
+              else if(char_is_0_to_9)    { uc_hex = static_cast<std::uint8_t>(c - static_cast<char>(UINT8_C(0x30))); }
+
+              operator<<=(4U);
 
               *values.begin() = static_cast<limb_type>(*values.begin() | uc_hex);
             }

@@ -193,6 +193,15 @@
       m_value.representation().swap(other.m_value.representation());
     }
 
+    WIDE_INTEGER_CONSTEXPR auto swap(uintwide_t_backend&& other) -> void
+    {
+      auto tmp = std::move(m_value.representation());
+
+      m_value.representation() = std::move(other.m_value.representation());
+
+      other.m_value.representation() = std::move(tmp);
+    }
+
                            WIDE_INTEGER_CONSTEXPR auto  representation()       ->       representation_type& { return m_value; }
     WIDE_INTEGER_NODISCARD WIDE_INTEGER_CONSTEXPR auto  representation() const -> const representation_type& { return m_value; }
     WIDE_INTEGER_NODISCARD WIDE_INTEGER_CONSTEXPR auto crepresentation() const -> const representation_type& { return m_value; }
