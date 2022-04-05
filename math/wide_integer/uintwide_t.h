@@ -3977,11 +3977,11 @@
     {
       std::fill(values.begin(), values.end(), static_cast<limb_type>(0U));
 
-      const unsigned_fast_type str_length = detail::strlen_unsafe(str_input);
+      const auto str_length = detail::strlen_unsafe(str_input);
 
-      std::uint_fast8_t base = UINT8_C(10);
+      auto base = static_cast<std::uint_fast8_t>(UINT8_C(10));
 
-      unsigned_fast_type pos = 0U;
+      auto pos = static_cast<unsigned_fast_type>(0U);
 
       // Detect: Is there a plus sign?
       // And if there is a plus sign, skip over the plus sign.
@@ -4032,7 +4032,7 @@
 
       bool char_is_valid = true;
 
-      while((pos < str_length) && char_is_valid)
+      while((pos < str_length) && char_is_valid) // NOLINT(altera-id-dependent-backward-branch)
       {
         const auto c = str_input[pos++]; // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
 
