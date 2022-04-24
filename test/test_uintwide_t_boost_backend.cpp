@@ -5,7 +5,7 @@
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
 
-#if defined(__GNUC__)
+#if 0//defined(__GNUC__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wconversion"
 #pragma GCC diagnostic push
@@ -14,7 +14,7 @@
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 #endif
 
-#if (defined(__clang__) && (__clang_major__ > 9)) && !defined(__APPLE__)
+#if 0//(defined(__clang__) && (__clang_major__ > 9)) && !defined(__APPLE__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-copy"
 #endif
@@ -103,11 +103,11 @@ auto math::wide_integer::test_uintwide_t_boost_backend() -> bool
   return result_is_ok;
 }
 
-#if (defined(__clang__) && (__clang_major__ > 9)) && !defined(__APPLE__)
+#if 0//(defined(__clang__) && (__clang_major__ > 9)) && !defined(__APPLE__)
 #pragma GCC diagnostic pop
 #endif
 
-#if defined(__GNUC__)
+#if 0//defined(__GNUC__)
 #pragma GCC diagnostic pop
 #pragma GCC diagnostic pop
 #pragma GCC diagnostic pop

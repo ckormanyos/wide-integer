@@ -29,7 +29,11 @@
       const auto n = static_cast<index_type>(static_cast<index_type>(end - start) + static_cast<index_type>(1));
 
       const auto slice =
-        (std::max)(static_cast<index_type>(std::round(n / static_cast<double> (number_of_threads))), index_type(1));
+        (std::max)
+        (
+          static_cast<index_type>(std::round(static_cast<double>(n) / static_cast<double>(number_of_threads))),
+          static_cast<index_type>(1)
+        );
 
       // Inner loop.
       const auto launch_range =

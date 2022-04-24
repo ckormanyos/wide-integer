@@ -15,6 +15,13 @@
   #include <utility>
   #include <vector>
 
+  #include <boost/version.hpp>
+
+  #if !defined(BOOST_VERSION)
+  #error BOOST_VERSION is not defined. Ensure that <boost/version.hpp> is properly included.
+  #endif
+
+  #if (BOOST_VERSION < 107900)
   #if defined(__GNUC__)
   #pragma GCC diagnostic push
   #pragma GCC diagnostic ignored "-Wconversion"
@@ -23,16 +30,13 @@
   #pragma GCC diagnostic push
   #pragma GCC diagnostic ignored "-Wunused-parameter"
   #endif
+  #endif
 
+  #if (BOOST_VERSION < 107900)
   #if (defined(__clang__) && (__clang_major__ > 9)) && !defined(__APPLE__)
   #pragma GCC diagnostic push
   #pragma GCC diagnostic ignored "-Wdeprecated-copy"
   #endif
-
-  #include <boost/version.hpp>
-
-  #if !defined(BOOST_VERSION)
-  #error BOOST_VERSION is not defined. Ensure that <boost/version.hpp> is properly included.
   #endif
 
   #if (BOOST_VERSION < 107900)
@@ -1046,14 +1050,18 @@
 
   } // namespace std
 
+  #if (BOOST_VERSION < 107900)
   #if (defined(__clang__) && (__clang_major__ > 9)) && !defined(__APPLE__)
   #pragma GCC diagnostic pop
   #endif
+  #endif
 
+  #if (BOOST_VERSION < 107900)
   #if defined(__GNUC__)
   #pragma GCC diagnostic pop
   #pragma GCC diagnostic pop
   #pragma GCC diagnostic pop
+  #endif
   #endif
 
 #endif // UINTWIDE_T_BACKEND_2019_12_15_HPP
