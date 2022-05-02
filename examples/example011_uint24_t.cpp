@@ -45,7 +45,7 @@ auto math::wide_integer::example011_uint24_t() -> bool
   const uint24_t c_mul = (a * b);
   const uint24_t c_div = (a / b);
 
-  const bool result_is_ok = (   (   (c_add == static_cast<std::uint32_t>(static_cast<std::uint32_t>(a32 + b32) & UINT32_C(0x00FFFFFF)))
+  const auto result_is_ok = (   (   (c_add == static_cast<std::uint32_t>(static_cast<std::uint32_t>(a32 + b32) & UINT32_C(0x00FFFFFF)))
                                  && (c_sub == static_cast<std::uint32_t>(static_cast<std::uint32_t>(a32 - b32) & UINT32_C(0x00FFFFFF)))
                                  && (c_mul == static_cast<std::uint32_t>(static_cast<std::uint32_t>(a32 * b32) & UINT32_C(0x00FFFFFF)))
                                  && (c_div == static_cast<std::uint32_t>(static_cast<std::uint32_t>(a32 / b32) & UINT32_C(0x00FFFFFF))))
@@ -64,12 +64,12 @@ auto math::wide_integer::example011_uint24_t() -> bool
 #include <iomanip>
 #include <iostream>
 
-int main()
+auto main() -> int
 {
   #if defined(WIDE_INTEGER_NAMESPACE)
-  const bool result_is_ok = WIDE_INTEGER_NAMESPACE::math::wide_integer::example011_uint24_t();
+  const auto result_is_ok = WIDE_INTEGER_NAMESPACE::math::wide_integer::example011_uint24_t();
   #else
-  const bool result_is_ok = math::wide_integer::example011_uint24_t();
+  const auto result_is_ok = math::wide_integer::example011_uint24_t();
   #endif
 
   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;

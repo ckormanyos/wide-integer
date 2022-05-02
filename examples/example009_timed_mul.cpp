@@ -133,7 +133,7 @@ auto math::wide_integer::example009_timed_mul() -> bool
     std::cout.flags(flg);
   }
 
-  const bool result_is_ok = (kops_per_sec > (std::numeric_limits<float>::min)());
+  const auto result_is_ok = (kops_per_sec > (std::numeric_limits<float>::min)());
 
   return result_is_ok;
 }
@@ -141,12 +141,12 @@ auto math::wide_integer::example009_timed_mul() -> bool
 // Enable this if you would like to activate this main() as a standalone example.
 #if defined(WIDE_INTEGER_STANDALONE_EXAMPLE009_TIMED_MUL)
 
-int main()
+auto main() -> int
 {
   #if defined(WIDE_INTEGER_NAMESPACE)
-  const bool result_is_ok = WIDE_INTEGER_NAMESPACE::math::wide_integer::example009_timed_mul();
+  const auto result_is_ok = WIDE_INTEGER_NAMESPACE::math::wide_integer::example009_timed_mul();
   #else
-  const bool result_is_ok = math::wide_integer::example009_timed_mul();
+  const auto result_is_ok = math::wide_integer::example009_timed_mul();
   #endif
 
   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;

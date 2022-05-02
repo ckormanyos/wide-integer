@@ -49,7 +49,7 @@ namespace local_random
 
     const wide_integer_type n = distribution(generator);
 
-    const bool result_is_ok =
+    const auto result_is_ok =
       (n == wide_integer_type("0xF258D22D4DB91392B5EE8CB6ABE457F8401F7AC78BC80F1CC96D191CF6F6AEA6"));
 
     return result_is_ok;
@@ -66,7 +66,7 @@ auto math::wide_integer::example007_random_generator() -> bool
   const bool result_16_is_ok = local_random::generate<std::uint16_t>();
   const bool result_32_is_ok = local_random::generate<std::uint32_t>();
 
-  const bool result_is_ok = (   result_08_is_ok
+  const auto result_is_ok = (   result_08_is_ok
                              && result_16_is_ok
                              && result_32_is_ok);
 
@@ -79,12 +79,12 @@ auto math::wide_integer::example007_random_generator() -> bool
 #include <iomanip>
 #include <iostream>
 
-int main()
+auto main() -> int
 {
   #if defined(WIDE_INTEGER_NAMESPACE)
-  const bool result_is_ok = WIDE_INTEGER_NAMESPACE::math::wide_integer::example007_random_generator();
+  const auto result_is_ok = WIDE_INTEGER_NAMESPACE::math::wide_integer::example007_random_generator();
   #else
-  const bool result_is_ok = math::wide_integer::example007_random_generator();
+  const auto result_is_ok = math::wide_integer::example007_random_generator();
   #endif
 
   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;

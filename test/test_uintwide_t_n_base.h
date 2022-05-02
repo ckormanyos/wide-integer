@@ -12,6 +12,17 @@
   #include <random>
   #include <sstream>
 
+  #include <boost/version.hpp>
+
+  #if !defined(BOOST_VERSION)
+  #error BOOST_VERSION is not defined. Ensure that <boost/version.hpp> is properly included.
+  #endif
+
+  #if ((BOOST_VERSION >= 107900) && !defined(BOOST_MP_STANDALONE))
+  #define BOOST_MP_STANDALONE
+  #endif
+
+  #if (BOOST_VERSION < 108000)
   #if defined(__GNUC__)
   #pragma GCC diagnostic push
   #pragma GCC diagnostic ignored "-Wconversion"
@@ -20,10 +31,13 @@
   #pragma GCC diagnostic push
   #pragma GCC diagnostic ignored "-Wunused-parameter"
   #endif
+  #endif
 
+  #if (BOOST_VERSION < 108000)
   #if (defined(__clang__) && (__clang_major__ > 9)) && !defined(__APPLE__)
   #pragma GCC diagnostic push
   #pragma GCC diagnostic ignored "-Wdeprecated-copy"
+  #endif
   #endif
 
   #include <boost/multiprecision/cpp_int.hpp>
@@ -130,14 +144,18 @@
     const std::size_t number_of_cases;
   };
 
+  #if (BOOST_VERSION < 108000)
   #if (defined(__clang__) && (__clang_major__ > 9)) && !defined(__APPLE__)
   #pragma GCC diagnostic pop
   #endif
+  #endif
 
+  #if (BOOST_VERSION < 108000)
   #if defined(__GNUC__)
   #pragma GCC diagnostic pop
   #pragma GCC diagnostic pop
   #pragma GCC diagnostic pop
+  #endif
   #endif
 
 #endif // TEST_UINTWIDE_T_N_BASE_2019_12_29_H

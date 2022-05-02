@@ -15,6 +15,17 @@
 #include <sstream>
 #include <string>
 
+#include <boost/version.hpp>
+
+#if !defined(BOOST_VERSION)
+#error BOOST_VERSION is not defined. Ensure that <boost/version.hpp> is properly included.
+#endif
+
+#if ((BOOST_VERSION >= 107900) && !defined(BOOST_MP_STANDALONE))
+#define BOOST_MP_STANDALONE
+#endif
+
+#if (BOOST_VERSION < 108000)
 #if defined(__GNUC__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wconversion"
@@ -23,10 +34,13 @@
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 #endif
+#endif
 
+#if (BOOST_VERSION < 108000)
 #if (defined(__clang__) && (__clang_major__ > 9)) && !defined(__APPLE__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-copy"
+#endif
 #endif
 
 #include <boost/multiprecision/miller_rabin.hpp>
@@ -111,7 +125,7 @@ auto math::wide_integer::example008a_miller_rabin_prime() -> bool
   boost_wide_integer_type p1;
 
   auto dist_func =
-    [&dist, &gen1]() -> boost_wide_integer_type
+    [&dist, &gen1]() // NOLINT(modernize-use-trailing-return-type)
     {
       const auto n = dist(gen1);
 
@@ -153,7 +167,7 @@ auto math::wide_integer::example008a_miller_rabin_prime() -> bool
 
   const boost_wide_integer_type gd = gcd(p0, p1);
 
-  const bool result_is_ok = (   (p0  > boost_wide_integer_type(local_miller_rabin::lexical_cast(dist_min)))
+  const auto result_is_ok = (   (p0  > boost_wide_integer_type(local_miller_rabin::lexical_cast(dist_min)))
                              && (p1  > boost_wide_integer_type(local_miller_rabin::lexical_cast(dist_min)))
                              && (p0 != 0U)
                              && (p1 != 0U)
@@ -169,12 +183,12 @@ auto math::wide_integer::example008a_miller_rabin_prime() -> bool
 #include <iomanip>
 #include <iostream>
 
-int main()
+auto main() -> int // NOLINT(bugprone-exception-escape)
 {
   #if defined(WIDE_INTEGER_NAMESPACE)
-  const bool result_is_ok = WIDE_INTEGER_NAMESPACE::math::wide_integer::example008a_miller_rabin_prime();
+  const auto result_is_ok = WIDE_INTEGER_NAMESPACE::math::wide_integer::example008a_miller_rabin_prime();
   #else
-  const bool result_is_ok = math::wide_integer::example008a_miller_rabin_prime();
+  const auto result_is_ok = math::wide_integer::example008a_miller_rabin_prime();
   #endif
 
   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
@@ -184,12 +198,16 @@ int main()
 
 #endif
 
+#if (BOOST_VERSION < 108000)
 #if (defined(__clang__) && (__clang_major__ > 9)) && !defined(__APPLE__)
 #pragma GCC diagnostic pop
 #endif
+#endif
 
+#if (BOOST_VERSION < 108000)
 #if defined(__GNUC__)
 #pragma GCC diagnostic pop
 #pragma GCC diagnostic pop
 #pragma GCC diagnostic pop
+#endif
 #endif

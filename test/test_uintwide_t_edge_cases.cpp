@@ -7,6 +7,17 @@
 
 #include <string>
 
+#include <boost/version.hpp>
+
+#if !defined(BOOST_VERSION)
+#error BOOST_VERSION is not defined. Ensure that <boost/version.hpp> is properly included.
+#endif
+
+#if ((BOOST_VERSION >= 107900) && !defined(BOOST_MP_STANDALONE))
+#define BOOST_MP_STANDALONE
+#endif
+
+#if (BOOST_VERSION < 108000)
 #if defined(__GNUC__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wconversion"
@@ -15,10 +26,13 @@
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 #endif
+#endif
 
+#if (BOOST_VERSION < 108000)
 #if (defined(__clang__) && (__clang_major__ > 9)) && !defined(__APPLE__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-copy"
+#endif
 #endif
 
 #include <boost/multiprecision/cpp_int.hpp>
@@ -141,7 +155,7 @@ auto math::wide_integer::test_uintwide_t_edge_cases() -> bool
 
   const bool result08_is_ok = (result_local.convert_to<std::string>() == result_boost.convert_to<std::string>());
 
-  const bool result_is_ok = (   result01_is_ok
+  const auto result_is_ok = (   result01_is_ok
                              && result02_is_ok
                              && result03_is_ok
                              && result04_is_ok
@@ -153,12 +167,16 @@ auto math::wide_integer::test_uintwide_t_edge_cases() -> bool
   return result_is_ok;
 }
 
+#if (BOOST_VERSION < 108000)
 #if (defined(__clang__) && (__clang_major__ > 9)) && !defined(__APPLE__)
 #pragma GCC diagnostic pop
 #endif
+#endif
 
+#if (BOOST_VERSION < 108000)
 #if defined(__GNUC__)
 #pragma GCC diagnostic pop
 #pragma GCC diagnostic pop
 #pragma GCC diagnostic pop
+#endif
 #endif

@@ -451,7 +451,7 @@ with a 256-bit unsigned integral type.
 
 #include <math/wide_integer/uintwide_t.h>
 
-int main()
+auto main() -> int
 {
   using uint256_t = math::wide_integer::uint256_t;
 
@@ -466,7 +466,7 @@ int main()
   const uint256_t d = (a / b);
 
   // Logical comparison.
-  const bool result_is_ok = (   (c == "0xE491A360C57EB4306C61F9A04F7F7D99BE3676AAD2D71C5592D5AE70F84AF076")
+  const auto result_is_ok = (   (c == "0xE491A360C57EB4306C61F9A04F7F7D99BE3676AAD2D71C5592D5AE70F84AF076")
                              && (d == "0xA"));
 
   // Print the hexadecimal representation string output.
@@ -494,7 +494,7 @@ The example below calculates an integer square root.
 
 #include <math/wide_integer/uintwide_t.h>
 
-int main()
+auto main() -> int
 {
   using uint256_t = math::wide_integer::uint256_t;
 
@@ -502,7 +502,7 @@ int main()
 
   const uint256_t s = sqrt(a);
 
-  const bool result_is_ok =
+  const auto result_is_ok =
     (s == "0xFA5FE7853F1D4AD92BDF244179CA178B");
 
   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
@@ -517,7 +517,7 @@ The following sample performs add, subtract, multiply and divide of `uint48_t`.
 
 #include <math/wide_integer/uintwide_t.h>
 
-int main()
+auto main() -> int
 {
   using uint48_t = math::wide_integer::uintwide_t<48U, std::uint8_t>;
 
@@ -539,7 +539,7 @@ int main()
   const uint48_t c_mul = (a * b);
   const uint48_t c_div = (a / b);
 
-  const bool result_is_ok = (   (c_add == ((a64 + b64) & UINT64_C(0x0000FFFFFFFFFFFF)))
+  const auto result_is_ok = (   (c_add == ((a64 + b64) & UINT64_C(0x0000FFFFFFFFFFFF)))
                              && (c_sub == ((a64 - b64) & UINT64_C(0x0000FFFFFFFFFFFF)))
                              && (c_mul == ((a64 * b64) & UINT64_C(0x0000FFFFFFFFFFFF)))
                              && (c_div == ((a64 / b64) & UINT64_C(0x0000FFFFFFFFFFFF))));
@@ -564,7 +564,7 @@ prior to (and following) the cube root operation.
 
 #include <math/wide_integer/uintwide_t.h>
 
-int main()
+auto main() -> int
 {
   using uint11264_t = math::wide_integer::uintwide_t<11264U, std::uint32_t>;
 
@@ -583,7 +583,7 @@ int main()
 
   const std::string str_control = "1" + std::string(1111U, '0');
 
-  const bool result_is_ok = (s == uint11264_t(str_control.data()));
+  const auto result_is_ok = (s == uint11264_t(str_control.data()));
 
   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
 }

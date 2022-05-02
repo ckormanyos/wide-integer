@@ -23,7 +23,7 @@ auto WIDE_INTEGER_NAMESPACE::math::wide_integer::example000a_builtin_convert() -
 auto math::wide_integer::example000a_builtin_convert() -> bool
 #endif
 {
-  bool result_is_ok = true;
+  auto result_is_ok = true;
 
   using math::wide_integer::int256_t;
 
@@ -79,12 +79,12 @@ auto math::wide_integer::example000a_builtin_convert() -> bool
 #include <iomanip>
 #include <iostream>
 
-int main()
+auto main() -> int
 {
   #if defined(WIDE_INTEGER_NAMESPACE)
-  const bool result_is_ok = WIDE_INTEGER_NAMESPACE::math::wide_integer::example000a_builtin_convert();
+  const auto result_is_ok = WIDE_INTEGER_NAMESPACE::math::wide_integer::example000a_builtin_convert();
   #else
-  const bool result_is_ok = math::wide_integer::example000a_builtin_convert();
+  const auto result_is_ok = math::wide_integer::example000a_builtin_convert();
   #endif
 
   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;

@@ -40,12 +40,12 @@ auto math::wide_integer::example001_mul_div() -> bool
 #include <iostream>
 #endif
 
-int main()
+auto main() -> int
 {
   #if defined(WIDE_INTEGER_NAMESPACE)
-  const bool result_is_ok = WIDE_INTEGER_NAMESPACE::math::wide_integer::example001_mul_div();
+  const auto result_is_ok = WIDE_INTEGER_NAMESPACE::math::wide_integer::example001_mul_div();
   #else
-  const bool result_is_ok = math::wide_integer::example001_mul_div();
+  const auto result_is_ok = math::wide_integer::example001_mul_div();
   #endif
 
   #if !defined(WIDE_INTEGER_DISABLE_IOSTREAM)

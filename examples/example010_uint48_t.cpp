@@ -45,7 +45,7 @@ auto math::wide_integer::example010_uint48_t() -> bool
   const uint48_t c_mul = (a * b);
   const uint48_t c_div = (a / b);
 
-  const bool result_is_ok = (   (   (c_add == ((a64 + b64) & 0x0000FFFFFFFFFFFFULL))
+  const auto result_is_ok = (   (   (c_add == ((a64 + b64) & 0x0000FFFFFFFFFFFFULL))
                                  && (c_sub == ((a64 - b64) & 0x0000FFFFFFFFFFFFULL))
                                  && (c_mul == ((a64 * b64) & 0x0000FFFFFFFFFFFFULL))
                                  && (c_div == ((a64 / b64) & 0x0000FFFFFFFFFFFFULL)))
@@ -64,12 +64,12 @@ auto math::wide_integer::example010_uint48_t() -> bool
 #include <iomanip>
 #include <iostream>
 
-int main()
+auto main() -> int
 {
   #if defined(WIDE_INTEGER_NAMESPACE)
-  const bool result_is_ok = WIDE_INTEGER_NAMESPACE::math::wide_integer::example010_uint48_t();
+  const auto result_is_ok = WIDE_INTEGER_NAMESPACE::math::wide_integer::example010_uint48_t();
   #else
-  const bool result_is_ok = math::wide_integer::example010_uint48_t();
+  const auto result_is_ok = math::wide_integer::example010_uint48_t();
   #endif
 
   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;

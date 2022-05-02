@@ -134,7 +134,7 @@ auto math::wide_integer::example009b_timed_mul_8_by_8() -> bool
     std::cout.flags(flg);
   }
 
-  const bool result_is_ok = (kops_per_sec > (std::numeric_limits<float>::min)());
+  const auto result_is_ok = (kops_per_sec > (std::numeric_limits<float>::min)());
 
   return result_is_ok;
 }
@@ -142,12 +142,12 @@ auto math::wide_integer::example009b_timed_mul_8_by_8() -> bool
 // Enable this if you would like to activate this main() as a standalone example.
 #if defined(WIDE_INTEGER_STANDALONE_EXAMPLE009B_TIMED_MUL_8_BY_8)
 
-int main()
+auto main() -> int
 {
   #if defined(WIDE_INTEGER_NAMESPACE)
-  const bool result_is_ok = WIDE_INTEGER_NAMESPACE::math::wide_integer::example009b_timed_mul_8_by_8();
+  const auto result_is_ok = WIDE_INTEGER_NAMESPACE::math::wide_integer::example009b_timed_mul_8_by_8();
   #else
-  const bool result_is_ok = math::wide_integer::example009b_timed_mul_8_by_8();
+  const auto result_is_ok = math::wide_integer::example009b_timed_mul_8_by_8();
   #endif
 
   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
