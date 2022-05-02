@@ -125,7 +125,7 @@ auto math::wide_integer::example008a_miller_rabin_prime() -> bool
   boost_wide_integer_type p1;
 
   auto dist_func =
-    [&dist, &gen1]() -> boost_wide_integer_type
+    [&dist, &gen1]() // NOLINT(modernize-use-trailing-return-type)
     {
       const auto n = dist(gen1);
 
@@ -167,7 +167,7 @@ auto math::wide_integer::example008a_miller_rabin_prime() -> bool
 
   const boost_wide_integer_type gd = gcd(p0, p1);
 
-  const bool result_is_ok = (   (p0  > boost_wide_integer_type(local_miller_rabin::lexical_cast(dist_min)))
+  const auto result_is_ok = (   (p0  > boost_wide_integer_type(local_miller_rabin::lexical_cast(dist_min)))
                              && (p1  > boost_wide_integer_type(local_miller_rabin::lexical_cast(dist_min)))
                              && (p0 != 0U)
                              && (p1 != 0U)
@@ -183,12 +183,12 @@ auto math::wide_integer::example008a_miller_rabin_prime() -> bool
 #include <iomanip>
 #include <iostream>
 
-int main()
+auto main() -> int // NOLINT(bugprone-exception-escape)
 {
   #if defined(WIDE_INTEGER_NAMESPACE)
-  const bool result_is_ok = WIDE_INTEGER_NAMESPACE::math::wide_integer::example008a_miller_rabin_prime();
+  const auto result_is_ok = WIDE_INTEGER_NAMESPACE::math::wide_integer::example008a_miller_rabin_prime();
   #else
-  const bool result_is_ok = math::wide_integer::example008a_miller_rabin_prime();
+  const auto result_is_ok = math::wide_integer::example008a_miller_rabin_prime();
   #endif
 
   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;

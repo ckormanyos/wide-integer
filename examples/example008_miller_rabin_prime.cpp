@@ -74,9 +74,9 @@ auto math::wide_integer::example008_miller_rabin_prime() -> bool
     }
   }
 
-  const wide_integer_type gd = gcd(p0, p1);
+  const auto gd = gcd(p0, p1);
 
-  const bool result_is_ok = (   (p0 != 0U)
+  const auto result_is_ok = (   (p0 != 0U)
                              && (p1 != 0U)
                              && (p0 != p1)
                              && (gd == 1U));
@@ -90,12 +90,12 @@ auto math::wide_integer::example008_miller_rabin_prime() -> bool
 #include <iomanip>
 #include <iostream>
 
-int main()
+auto main() -> int
 {
   #if defined(WIDE_INTEGER_NAMESPACE)
-  const bool result_is_ok = WIDE_INTEGER_NAMESPACE::math::wide_integer::example008_miller_rabin_prime();
+  const auto result_is_ok = WIDE_INTEGER_NAMESPACE::math::wide_integer::example008_miller_rabin_prime();
   #else
-  const bool result_is_ok = math::wide_integer::example008_miller_rabin_prime();
+  const auto result_is_ok = math::wide_integer::example008_miller_rabin_prime();
   #endif
 
   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;

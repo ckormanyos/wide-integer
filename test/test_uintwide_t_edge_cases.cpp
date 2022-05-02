@@ -155,7 +155,7 @@ auto math::wide_integer::test_uintwide_t_edge_cases() -> bool
 
   const bool result08_is_ok = (result_local.convert_to<std::string>() == result_boost.convert_to<std::string>());
 
-  const bool result_is_ok = (   result01_is_ok
+  const auto result_is_ok = (   result01_is_ok
                              && result02_is_ok
                              && result03_is_ok
                              && result04_is_ok

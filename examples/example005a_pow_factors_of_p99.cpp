@@ -51,7 +51,7 @@ auto math::wide_integer::example005a_pow_factors_of_p99() -> bool
     * uint384_t("362853724342990469324766235474268869786311886053883")
   };
 
-  const bool result_is_ok = (c == control_p99);
+  const auto result_is_ok = (c == control_p99);
 
   return result_is_ok;
 }
@@ -62,12 +62,12 @@ auto math::wide_integer::example005a_pow_factors_of_p99() -> bool
 #include <iomanip>
 #include <iostream>
 
-int main()
+auto main() -> int
 {
   #if defined(WIDE_INTEGER_NAMESPACE)
-  const bool result_is_ok = WIDE_INTEGER_NAMESPACE::math::wide_integer::example005a_pow_factors_of_p99();
+  const auto result_is_ok = WIDE_INTEGER_NAMESPACE::math::wide_integer::example005a_pow_factors_of_p99();
   #else
-  const bool result_is_ok = math::wide_integer::example005a_pow_factors_of_p99();
+  const auto result_is_ok = math::wide_integer::example005a_pow_factors_of_p99();
   #endif
 
   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;

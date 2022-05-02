@@ -37,7 +37,7 @@ auto math::wide_integer::example003a_cbrt() -> bool
 
   const std::string str_control = "1" + std::string(1111U, '0');
 
-  const bool result_is_ok = (s == uint11264_t(str_control.data()));
+  const auto result_is_ok = (s == uint11264_t(str_control.data()));
 
   return result_is_ok;
 }
@@ -48,12 +48,12 @@ auto math::wide_integer::example003a_cbrt() -> bool
 #include <iomanip>
 #include <iostream>
 
-int main()
+auto main() -> int
 {
   #if defined(WIDE_INTEGER_NAMESPACE)
-  const bool result_is_ok = WIDE_INTEGER_NAMESPACE::math::wide_integer::example003a_cbrt();
+  const auto result_is_ok = WIDE_INTEGER_NAMESPACE::math::wide_integer::example003a_cbrt();
   #else
-  const bool result_is_ok = math::wide_integer::example003a_cbrt();
+  const auto result_is_ok = math::wide_integer::example003a_cbrt();
   #endif
 
   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;

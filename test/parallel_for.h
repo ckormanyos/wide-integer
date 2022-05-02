@@ -21,12 +21,16 @@
                       callable_function_type parallel_function)
     {
       // Estimate the number of threads available.
-      static const auto number_of_threads_hint = static_cast<unsigned>(std::thread::hardware_concurrency());
+      const auto number_of_threads_hint = static_cast<unsigned>(std::thread::hardware_concurrency());
 
-      static const auto number_of_threads = static_cast<unsigned>(((number_of_threads_hint == 0U) ? 4U : number_of_threads_hint)); // NOLINT(altera-id-dependent-backward-branch)
+      const auto number_of_threads = static_cast<unsigned>(((number_of_threads_hint == 0U) ? 4U : number_of_threads_hint)); // NOLINT(altera-id-dependent-backward-branch)
 
       // Set the size of a slice for the range functions.
-      const auto n = static_cast<index_type>(static_cast<index_type>(end - start) + static_cast<index_type>(1));
+      const auto n =
+        static_cast<index_type>
+        (
+          static_cast<index_type>(end - start) + static_cast<index_type>(1)
+        );
 
       const auto slice =
         (std::max)

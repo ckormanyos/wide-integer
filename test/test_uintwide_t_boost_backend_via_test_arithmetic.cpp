@@ -43,7 +43,7 @@
 // cd /mnt/c/Users/User/Documents/Ks/PC_Software/NumericalPrograms/ExtendedNumberTypes/wide_integer
 // g++-10 -finline-functions -march=native -mtune=native -O3 -Wall -std=gnu++20 -DWIDE_INTEGER_HAS_LIMB_TYPE_UINT64 -I. -I/mnt/c/boost/boost_1_78_0 test/test_uintwide_t_boost_backend_via_test_arithmetic.cpp -o test_uintwide_t_boost_backend_via_test_arithmetic.exe
 
-int main()
+auto main() -> int
 {
   using local_big_uint_backend_type =
     boost::multiprecision::uintwide_t_backend<static_cast<math::wide_integer::size_t>(UINT32_C(1024)), std::uint8_t, std::allocator<void>>;

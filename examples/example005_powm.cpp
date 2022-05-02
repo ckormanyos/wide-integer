@@ -22,7 +22,7 @@ auto math::wide_integer::example005_powm() -> bool
 
   const uint256_t c = powm(b, p, m);
 
-  const bool result_is_ok =
+  const auto result_is_ok =
     (c == "0x5231F0EF6BBB3E78B9D7B1FA5F86EFA932E71BABD8A1CFF2C9EE5C396284ED07");
 
   return result_is_ok;
@@ -34,12 +34,12 @@ auto math::wide_integer::example005_powm() -> bool
 #include <iomanip>
 #include <iostream>
 
-int main()
+auto main() -> int
 {
   #if defined(WIDE_INTEGER_NAMESPACE)
-  const bool result_is_ok = WIDE_INTEGER_NAMESPACE::math::wide_integer::example005_powm();
+  const auto result_is_ok = WIDE_INTEGER_NAMESPACE::math::wide_integer::example005_powm();
   #else
-  const bool result_is_ok = math::wide_integer::example005_powm();
+  const auto result_is_ok = math::wide_integer::example005_powm();
   #endif
 
   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;

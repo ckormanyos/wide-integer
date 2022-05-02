@@ -36,12 +36,12 @@ auto math::wide_integer::example006_gcd() -> bool
 #include <iomanip>
 #include <iostream>
 
-int main()
+auto main() -> int
 {
   #if defined(WIDE_INTEGER_NAMESPACE)
-  const bool result_is_ok = WIDE_INTEGER_NAMESPACE::math::wide_integer::example006_gcd();
+  const auto result_is_ok = WIDE_INTEGER_NAMESPACE::math::wide_integer::example006_gcd();
   #else
-  const bool result_is_ok = math::wide_integer::example006_gcd();
+  const auto result_is_ok = math::wide_integer::example006_gcd();
   #endif
 
   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
