@@ -2492,7 +2492,7 @@
       std::reverse_iterator<InputIteratorLeftType>  pa(a + count);
       std::reverse_iterator<InputIteratorRightType> pb(b + count);
 
-      while(pa != std::reverse_iterator<InputIteratorLeftType>(a))
+      while(pa != std::reverse_iterator<InputIteratorLeftType>(a)) // NOLINT(altera-id-dependent-backward-branch)
       {
         using value_left_type =
           typename std::iterator_traits<InputIteratorLeftType>::value_type;

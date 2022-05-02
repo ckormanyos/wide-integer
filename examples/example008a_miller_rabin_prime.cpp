@@ -21,7 +21,11 @@
 #error BOOST_VERSION is not defined. Ensure that <boost/version.hpp> is properly included.
 #endif
 
-#if (BOOST_VERSION < 107900)
+#if ((BOOST_VERSION >= 107900) && !defined(BOOST_MP_STANDALONE))
+#define BOOST_MP_STANDALONE
+#endif
+
+#if (BOOST_VERSION < 108000)
 #if defined(__GNUC__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wconversion"
@@ -32,7 +36,7 @@
 #endif
 #endif
 
-#if (BOOST_VERSION < 107900)
+#if (BOOST_VERSION < 108000)
 #if (defined(__clang__) && (__clang_major__ > 9)) && !defined(__APPLE__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-copy"
@@ -194,13 +198,13 @@ int main()
 
 #endif
 
-#if (BOOST_VERSION < 107900)
+#if (BOOST_VERSION < 108000)
 #if (defined(__clang__) && (__clang_major__ > 9)) && !defined(__APPLE__)
 #pragma GCC diagnostic pop
 #endif
 #endif
 
-#if (BOOST_VERSION < 107900)
+#if (BOOST_VERSION < 108000)
 #if defined(__GNUC__)
 #pragma GCC diagnostic pop
 #pragma GCC diagnostic pop

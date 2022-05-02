@@ -5,7 +5,18 @@
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
 
-#if 0//defined(__GNUC__)
+#include <boost/version.hpp>
+
+#if !defined(BOOST_VERSION)
+#error BOOST_VERSION is not defined. Ensure that <boost/version.hpp> is properly included.
+#endif
+
+#if ((BOOST_VERSION >= 107900) && !defined(BOOST_MP_STANDALONE))
+#define BOOST_MP_STANDALONE
+#endif
+
+#if (BOOST_VERSION < 108000)
+#if defined(__GNUC__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wconversion"
 #pragma GCC diagnostic push
@@ -13,10 +24,13 @@
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 #endif
+#endif
 
-#if 0//(defined(__clang__) && (__clang_major__ > 9)) && !defined(__APPLE__)
+#if (BOOST_VERSION < 108000)
+#if (defined(__clang__) && (__clang_major__ > 9)) && !defined(__APPLE__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-copy"
+#endif
 #endif
 
 #include <boost/multiprecision/cpp_int.hpp>
@@ -103,12 +117,16 @@ auto math::wide_integer::test_uintwide_t_boost_backend() -> bool
   return result_is_ok;
 }
 
-#if 0//(defined(__clang__) && (__clang_major__ > 9)) && !defined(__APPLE__)
+#if (BOOST_VERSION < 108000)
+#if (defined(__clang__) && (__clang_major__ > 9)) && !defined(__APPLE__)
 #pragma GCC diagnostic pop
 #endif
+#endif
 
-#if 0//defined(__GNUC__)
+#if (BOOST_VERSION < 108000)
+#if defined(__GNUC__)
 #pragma GCC diagnostic pop
 #pragma GCC diagnostic pop
 #pragma GCC diagnostic pop
+#endif
 #endif
