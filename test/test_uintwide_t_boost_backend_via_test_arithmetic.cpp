@@ -32,6 +32,11 @@
 #endif
 #endif
 
+#if defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wshadow"
+#endif
+
 #include <boost/multiprecision/cpp_int.hpp>
 #include <boost/multiprecision/uintwide_t_backend.hpp>
 
@@ -58,6 +63,10 @@ auto main() -> int
 
   return ((n_errors == 0) ? 0 : -1);
 }
+
+#if defined(__GNUC__)
+#pragma GCC diagnostic pop
+#endif
 
 #if (BOOST_VERSION < 108000)
 #if (defined(__clang__) && (__clang_major__ > 9)) && !defined(__APPLE__)

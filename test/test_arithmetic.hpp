@@ -472,7 +472,7 @@ void test_signed_integer_ops(const std::integral_constant<bool, true>&)
    BOOST_CHECK_EQUAL(lcm(a, -45), boost::integer::lcm(400, 45));
    BOOST_CHECK_EQUAL(gcd(-400, b), boost::integer::gcd(400, 45));
    BOOST_CHECK_EQUAL(lcm(-400, b), boost::integer::lcm(400, 45));
-   #elif __cpp_lib_gcd_lcm >= 201606L
+   #elif (defined(__cpp_lib_gcd_lcm) && (__cpp_lib_gcd_lcm >= 201606L))
    BOOST_CHECK_EQUAL(gcd(a, -45), std::gcd(400, 45));
    BOOST_CHECK_EQUAL(lcm(a, -45), std::lcm(400, 45));
    BOOST_CHECK_EQUAL(gcd(-400, b), std::gcd(400, 45));
@@ -496,7 +496,7 @@ void test_signed_integer_ops(const std::integral_constant<bool, true>&)
    BOOST_CHECK_EQUAL(lcm(a, 45), boost::integer::lcm(-400, 45));
    BOOST_CHECK_EQUAL(gcd(-400, b), boost::integer::gcd(-400, 45));
    BOOST_CHECK_EQUAL(lcm(-400, b), boost::integer::lcm(-400, 45));
-   #elif __cpp_lib_gcd_lcm >= 201606L
+   #elif (defined(__cpp_lib_gcd_lcm) && (__cpp_lib_gcd_lcm >= 201606L))
    BOOST_CHECK_EQUAL(gcd(a, b), std::gcd(-400, 45));
    BOOST_CHECK_EQUAL(lcm(a, b), std::lcm(-400, 45));
    BOOST_CHECK_EQUAL(gcd(a, 45), std::gcd(-400, 45));
@@ -872,7 +872,7 @@ void test_integer_ops(const std::integral_constant<int, boost::multiprecision::n
    BOOST_CHECK_EQUAL(lcm(400, b), boost::integer::lcm(400, 45));
    BOOST_CHECK_EQUAL(gcd(400u, b), boost::integer::gcd(400, 45));
    BOOST_CHECK_EQUAL(lcm(400u, b), boost::integer::lcm(400, 45));
-   #elif __cpp_lib_gcd_lcm >= 201606L
+   #elif (defined(__cpp_lib_gcd_lcm) && (__cpp_lib_gcd_lcm >= 201606L))
    BOOST_CHECK_EQUAL(gcd(a, b), std::gcd(400, 45));
    BOOST_CHECK_EQUAL(lcm(a, b), std::lcm(400, 45));
    BOOST_CHECK_EQUAL(gcd(a, 45), std::gcd(400, 45));
@@ -1957,6 +1957,7 @@ inline bool check_is_nan(const Real& val, const std::integral_constant<bool, tru
    #ifndef BOOST_MP_STANDALONE
    return (boost::math::isnan)(val);
    #else
+   static_cast<void>(val);
    return true; // Avoids warnings. This functionality is never used in standalone mode
    #endif
 }
