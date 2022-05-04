@@ -1957,6 +1957,7 @@ inline bool check_is_nan(const Real& val, const std::integral_constant<bool, tru
    #ifndef BOOST_MP_STANDALONE
    return (boost::math::isnan)(val);
    #else
+   static_cast<void>(val);
    return true; // Avoids warnings. This functionality is never used in standalone mode
    #endif
 }
