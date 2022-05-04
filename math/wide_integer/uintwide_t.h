@@ -5137,7 +5137,7 @@
       local_double_width_type x      (static_cast<std::uint8_t>(1U));
       OtherIntegralTypeP      p_local(p);
 
-      while(((p0 = static_cast<local_limb_type>(p_local)) != 0U) || (p_local != 0U)) // NOLINT(altera-id-dependent-backward-branch)
+      while(((p0 = static_cast<local_limb_type>(p_local)) != 0U) || (p_local != static_cast<OtherIntegralTypeP>(0))) // NOLINT(altera-id-dependent-backward-branch)
       {
         if((p0 & 1U) != 0U)
         {
