@@ -1081,15 +1081,47 @@ auto local_test_spot_values::test() -> bool // NOLINT(readability-function-cogni
 
     WIDE_INTEGER_CONSTEXPR uint256_t c("0xE491A360C57EB4306C61F9A04F7F7D99BE3676AAD2D71C5592D5AE70F84AF076");
 
-    result_is_ok = (((a * b) == c) && result_is_ok);
+    WIDE_INTEGER_CONSTEXPR auto result_mul_is_ok = ((a * b) == c);
+
+    #if(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST == 1)
+    static_assert(result_mul_is_ok, "Error: Static check of spot value multiplication is not OK");
+    #endif
+
+    result_is_ok = (result_mul_is_ok && result_is_ok);
 
     WIDE_INTEGER_CONSTEXPR uint256_t q(10U); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
 
-    result_is_ok = (((a / b) == q) && result_is_ok);
+    WIDE_INTEGER_CONSTEXPR auto result_div_is_ok = ((a / b) == q);
+
+    #if(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST == 1)
+    static_assert(result_div_is_ok, "Error: Static check of spot value division is not OK");
+    #endif
+
+    result_is_ok = (result_div_is_ok && result_is_ok);
 
     WIDE_INTEGER_CONSTEXPR uint256_t m("0x14998D5CA3DB6385F7DEDF4621DE48A9104AC13797C6567713D7ABC216D7AB4C");
 
-    result_is_ok = (((a % b) == m) && result_is_ok);
+    WIDE_INTEGER_CONSTEXPR auto result_mod_is_ok = ((a % b) == m);
+
+    #if(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST == 1)
+    static_assert(result_mod_is_ok, "Error: Static check of spot value modulus is not OK");
+    #endif
+
+    result_is_ok = (result_mod_is_ok && result_is_ok);
+
+    {
+      // See also: https://github.com/ckormanyos/wide-integer/issues/274
+
+      WIDE_INTEGER_CONSTEXPR auto result_mod1_is_ok  = ((a % 1) == 0);
+      WIDE_INTEGER_CONSTEXPR auto result_mod7u_is_ok = ((a % 7U) == 3U); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
+
+      #if(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST == 1)
+      static_assert(result_mod1_is_ok,  "Error: Static check of spot value modulus with 1 is not OK");
+      static_assert(result_mod7u_is_ok, "Error: Static check of spot value modulus with 7U is not OK");
+      #endif
+
+      result_is_ok = ((result_mod1_is_ok && result_mod7u_is_ok) && result_is_ok);
+    }
   }
 
   return result_is_ok;
