@@ -240,6 +240,9 @@ jobs:
           git submodule update --init tools
           git submodule update --init libs/config
           git submodule update --init libs/multiprecision
+          cd libs/multiprecision
+          git checkout closer_look_gcc12_clang14_jammy
+          cd ../..
           ./bootstrap.sh
           ./b2 headers
       - name: gcc-12-clang-14
