@@ -82,7 +82,7 @@ jobs:
         working-directory: ${{runner.workspace}}/build
         run: ctest --verbose --output-on-failure
   gnumake-clang-tidy-12-native:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     defaults:
       run:
         shell: bash
@@ -642,7 +642,7 @@ jobs:
           ls -la ./wide_integer.exe
           ./wide_integer.exe
   gcc-clang-boost_backend:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     defaults:
       run:
         shell: bash

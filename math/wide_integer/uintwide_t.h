@@ -569,9 +569,9 @@
   template<typename IntegralType, const size_t Width2, typename LimbType, typename AllocatorType, const bool IsSigned> constexpr auto operator/(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& u, const IntegralType& v) -> typename std::enable_if<std::is_integral<IntegralType>::value, uintwide_t<Width2, LimbType, AllocatorType, IsSigned>>::type;
 
   template<typename IntegralType, const size_t Width2, typename LimbType, typename AllocatorType, const bool IsSigned>
-  constexpr auto operator%(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& u, const IntegralType& v) -> typename std::enable_if<(     std::is_integral<IntegralType>::value
-                                                                                                                                              && (!std::is_unsigned<IntegralType>::value)),
-                                                                                                                                              uintwide_t<Width2, LimbType, AllocatorType, IsSigned>>::type;
+  constexpr auto operator%(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& u, const IntegralType& v) -> typename std::enable_if<(   std::is_integral<IntegralType>::value
+                                                                                                                                              && std::is_signed<IntegralType>::value),
+                                                                                                                                                 uintwide_t<Width2, LimbType, AllocatorType, IsSigned>>::type;
 
   template<typename IntegralType, const size_t Width2, typename LimbType, typename AllocatorType, const bool IsSigned>
   WIDE_INTEGER_CONSTEXPR auto operator%(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& u, const IntegralType& v) -> typename std::enable_if<(    std::is_integral   <IntegralType>::value
@@ -4305,9 +4305,9 @@
   template<typename IntegralType, const size_t Width2, typename LimbType, typename AllocatorType, const bool IsSigned> constexpr auto operator/(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& u, const IntegralType& v) -> typename std::enable_if<std::is_integral<IntegralType>::value, uintwide_t<Width2, LimbType, AllocatorType, IsSigned>>::type { return uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(u).operator/=(uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(v)); }
 
   template<typename IntegralType, const size_t Width2, typename LimbType, typename AllocatorType, const bool IsSigned>
-  constexpr auto operator%(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& u, const IntegralType& v) -> typename std::enable_if<(   ( std::is_integral<IntegralType>::value)
-                                                                                                                                              && (!std::is_unsigned<IntegralType>::value)),
-                                                                                                                                              uintwide_t<Width2, LimbType, AllocatorType, IsSigned>>::type
+  constexpr auto operator%(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& u, const IntegralType& v) -> typename std::enable_if<(   std::is_integral<IntegralType>::value
+                                                                                                                                              && std::is_signed<IntegralType>::value),
+                                                                                                                                                 uintwide_t<Width2, LimbType, AllocatorType, IsSigned>>::type
   { return uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(u).operator%=(uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(v)); }
 
   template<typename IntegralType, const size_t Width2, typename LimbType, typename AllocatorType, const bool IsSigned>
