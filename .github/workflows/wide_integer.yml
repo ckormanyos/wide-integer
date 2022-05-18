@@ -217,10 +217,6 @@ jobs:
           echo "ls ./wide_integer.exe"
           ls -la ./wide_integer.exe
           ./wide_integer.exe
-www.bregenzerwald.at/s/de/fliegenfischen-bregenzerwald
-
-www.hotelpostbezau.com
-
   gcc-12-clang-14:
     runs-on: ubuntu-22.04
     defaults:
