@@ -49,6 +49,11 @@
 #endif
 #endif
 
+#if (defined(__GNUC__) && !defined(__clang__) && (__GNUC__ >= 12))
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wrestrict"
+#endif
+
 #if (BOOST_VERSION < 107900)
 #include <boost/lexical_cast.hpp>
 #endif
@@ -524,6 +529,10 @@ auto main() -> int // NOLINT(bugprone-exception-escape)
 
   return (result_is_ok ? 0 : -1);
 }
+
+#if (defined(__GNUC__) && !defined(__clang__) && (__GNUC__ >= 12))
+#pragma GCC diagnostic pop
+#endif
 
 #if (BOOST_VERSION < 107900)
 #if defined(__GNUC__)
