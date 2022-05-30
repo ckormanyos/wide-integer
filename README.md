@@ -7,6 +7,7 @@
 [![Coverity Scan](https://scan.coverity.com/projects/24742/badge.svg)](https://scan.coverity.com/projects/ckormanyos-wide-integer)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=ckormanyos_wide-integer&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=ckormanyos_wide-integer)
 [![Boost Software License 1.0](https://img.shields.io/badge/license-BSL%201.0-blue.svg)](https://github.com/ckormanyos/wide-integer/blob/master/LICENSE_1_0.txt)
+[![GitHub commit activity](https://img.shields.io/github/commit-activity/y/ckormanyos/wide-integer)](https://img.shields.io/github/commit-activity/y/ckormanyos/wide-integer)
 [![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/ckormanyos/wide-integer)](https://github.com/ckormanyos/wide-integer)
 
 Wide-integer implements a generic C++ template for extended width

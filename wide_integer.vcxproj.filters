@@ -38,6 +38,12 @@
     <Filter Include=".tidy\make">
       <UniqueIdentifier>{c8663027-03cc-43d3-a3bc-927bbbdb3b3f}</UniqueIdentifier>
     </Filter>
+    <Filter Include=".gcov">
+      <UniqueIdentifier>{d3d4d6ad-0796-4bd5-b015-cd9c948caccf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include=".gcov\make">
+      <UniqueIdentifier>{09bf1894-26c1-40a4-870e-f338f0940b7b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="boost\multiprecision\uintwide_t_backend.hpp">
@@ -199,6 +205,18 @@
       <Filter>.github\workflows</Filter>
     </None>
     <None Include="sonar-project.properties" />
+    <None Include=".gcov\make\make_gcov_01_generic.gmk">
+      <Filter>.gcov\make</Filter>
+    </None>
+    <None Include=".gcov\make\make_gcov_02_files.gmk">
+      <Filter>.gcov\make</Filter>
+    </None>
+    <None Include=".gcov\make\make_gcov_03_flags.gmk">
+      <Filter>.gcov\make</Filter>
+    </None>
+    <None Include=".github\workflows\wide_integer_codecov.yml">
+      <Filter>.github\workflows</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Text Include="examples\CMakeLists.txt">
