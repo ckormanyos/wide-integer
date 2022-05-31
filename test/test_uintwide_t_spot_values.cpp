@@ -11,6 +11,35 @@
 #include <math/wide_integer/uintwide_t.h>
 #include <test/test_uintwide_t.h>
 
+namespace exercise_octal
+{
+  auto test_uintwide_t_spot_values_exercise_octal() -> bool
+  {
+    #if defined WIDE_INTEGER_NAMESPACE
+    using local_uint128_t = WIDE_INTEGER_NAMESPACE::math::wide_integer::uint128_t;
+    #else
+    using local_uint128_t = math::wide_integer::uint128_t;
+    #endif
+
+    WIDE_INTEGER_CONSTEXPR local_uint128_t u_dec("100000000000000000000777772222211111");
+    WIDE_INTEGER_CONSTEXPR local_uint128_t u_oct("0464114134543515404256122464446501262047");
+
+    auto result_is_ok = (u_dec == u_oct);
+
+    #if(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST == 1)
+    static_assert(u_dec == u_oct, "Error: Conversion decimal to octal is not OK");
+    #endif
+
+    std::stringstream strm;
+
+    strm << std::showbase << std::oct << u_oct;
+
+    result_is_ok = ((strm.str() == "0464114134543515404256122464446501262047") && result_is_ok);
+
+    return result_is_ok;
+  }
+} // namespace exercise_octal
+
 namespace from_issue_266
 {
   auto test_uintwide_t_spot_values_from_issue_266_inc() -> bool
@@ -205,6 +234,10 @@ namespace local_test_spot_values
 auto local_test_spot_values::test() -> bool // NOLINT(readability-function-cognitive-complexity)
 {
   bool result_is_ok = true;
+
+  {
+    result_is_ok = (exercise_octal::test_uintwide_t_spot_values_exercise_octal() && result_is_ok);
+  }
 
   {
     // See also: https://github.com/ckormanyos/wide-integer/issues/266
