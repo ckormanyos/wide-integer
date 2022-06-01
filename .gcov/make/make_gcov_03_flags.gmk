@@ -45,7 +45,8 @@ CXXFLAGS     = -march=native                                                   \
                -ftest-coverage
 
 C_DEFINES    = WIDE_INTEGER_HAS_COVERAGE                                       \
-               WIDE_INTEGER_HAS_LIMB_TYPE_UINT64
+               WIDE_INTEGER_HAS_LIMB_TYPE_UINT64                               \
+               WIDE_INTEGER_HAS_MUL_8_BY_8_UNROLL
 
 C_INCLUDES   = $(PATH_SRC)                                                     \
                $(BOOST_ROOT_FOR_GCOV)
