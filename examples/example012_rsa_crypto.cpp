@@ -98,7 +98,7 @@ namespace local_rsa
 
       template<typename InputIterator,
                typename OutputIterator>
-      void encrypt(InputIterator in_first, const std::size_t count, OutputIterator out)
+      auto encrypt(InputIterator in_first, const std::size_t count, OutputIterator out) -> void
       {
         for(auto it = in_first; it != in_first + typename std::iterator_traits<InputIterator>::difference_type(count); ++it) // NOLINT(altera-id-dependent-backward-branch)
         {
@@ -117,7 +117,7 @@ namespace local_rsa
 
       template<typename InputIterator,
                typename OutputIterator>
-      void decrypt(InputIterator cry_in, const std::size_t count, OutputIterator cypher_out)
+      auto decrypt(InputIterator cry_in, const std::size_t count, OutputIterator cypher_out) -> void
       {
         InputIterator cry_end(cry_in + typename std::iterator_traits<InputIterator>::difference_type(count));
 
@@ -249,7 +249,7 @@ namespace local_rsa
       public_key = public_key_type { my_r, my_m }; // NOLINT(cppcoreguidelines-prefer-member-initializer)
     }
 
-    void calculate_private_key()
+    auto calculate_private_key() -> void
     {
       my_uintwide_t a = phi_of_m;
       my_uintwide_t b = my_r;

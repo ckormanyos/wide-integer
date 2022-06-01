@@ -37,7 +37,7 @@
     virtual auto get_digits2() const -> math::wide_integer::size_t { return digits2; }
     #endif
 
-    virtual void initialize() { }
+    virtual auto initialize() -> void { }
   };
 
 #endif // TEST_UINTWIDE_T_N_NUMBER_THEORY_FUNCS_TEMPLATE_2019_12_29_H

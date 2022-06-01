@@ -66,7 +66,7 @@
     WIDE_INTEGER_NODISCARD
     auto size() const -> std::size_t { return number_of_cases; }
 
-    virtual void initialize() = 0;
+    virtual auto initialize() -> void = 0;
 
     test_uintwide_t_n_base() = delete;
 
@@ -108,9 +108,9 @@
     template<typename OtherLocalUintType,
              typename OtherBoostUintType,
              typename AllocatorType = void>
-    static void get_equal_random_test_values_boost_and_local_n(OtherLocalUintType* u_local,
-                                                               OtherBoostUintType* u_boost,
-                                                               const std::size_t count)
+    static auto get_equal_random_test_values_boost_and_local_n(      OtherLocalUintType* u_local,
+                                                                     OtherBoostUintType* u_boost,
+                                                               const std::size_t         count) -> void
     {
       using other_local_uint_type = OtherLocalUintType;
       using other_boost_uint_type = OtherBoostUintType;

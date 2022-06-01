@@ -16,9 +16,9 @@
   {
     template<typename index_type,
              typename callable_function_type>
-    void parallel_for(index_type             start,
+    auto parallel_for(index_type             start,
                       index_type             end,
-                      callable_function_type parallel_function)
+                      callable_function_type parallel_function) -> void
     {
       // Estimate the number of threads available.
       const auto number_of_threads_hint = static_cast<unsigned>(std::thread::hardware_concurrency());
@@ -84,9 +84,9 @@
     // Provide a serial version for easy comparison.
     template<typename index_type,
              typename callable_function_type>
-    void sequential_for(index_type             start,
+    auto sequential_for(index_type             start,
                         index_type             end,
-                        callable_function_type sequential_function)
+                        callable_function_type sequential_function) -> void
     {
       for(index_type i = start; i < end; ++i)
       {

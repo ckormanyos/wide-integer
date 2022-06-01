@@ -91,16 +91,16 @@
         this->initialize();
 
         std::cout << "test_binary_mul()  native compare with uintwide_t: round " << i << ",  digits2: " << this->get_digits2() << std::endl;
-        result_is_ok = (this->test_binary_mul() && result_is_ok);
+        result_is_ok = (test_binary_mul() && result_is_ok);
 
         std::cout << "test_binary_div()  native compare with uintwide_t: round " << i << ",  digits2: " << this->get_digits2() << std::endl;
-        result_is_ok = (this->test_binary_div() && result_is_ok);
+        result_is_ok = (test_binary_div() && result_is_ok);
       }
 
       return result_is_ok;
     }
 
-    void initialize() override
+    auto initialize() -> void override
     {
       a_local.clear();
       b_local.clear();
@@ -118,7 +118,7 @@
       get_equal_random_test_values_cntrl_and_local_n(b_local.data(), b_cntrl.data(), size());
     }
 
-    WIDE_INTEGER_NODISCARD auto test_binary_mul() const -> bool override
+    WIDE_INTEGER_NODISCARD auto test_binary_mul() const -> bool
     {
       std::atomic_flag test_lock = ATOMIC_FLAG_INIT;
 
@@ -148,7 +148,7 @@
       return result_is_ok;
     }
 
-    WIDE_INTEGER_NODISCARD auto test_binary_div() const -> bool override
+    WIDE_INTEGER_NODISCARD auto test_binary_div() const -> bool
     {
       std::atomic_flag test_lock = ATOMIC_FLAG_INIT;
 
@@ -191,9 +191,9 @@
 
     template<typename OtherLocalUintType,
              typename OtherCntrlUintType>
-    static void get_equal_random_test_values_cntrl_and_local_n(OtherLocalUintType* u_local,
-                                                               OtherCntrlUintType* u_cntrl,
-                                                               const std::size_t count)
+    static auto get_equal_random_test_values_cntrl_and_local_n(      OtherLocalUintType* u_local,
+                                                                     OtherCntrlUintType* u_cntrl,
+                                                               const std::size_t         count) -> void
     {
       using other_local_uint_type = OtherLocalUintType;
       using other_cntrl_uint_type = OtherCntrlUintType;
