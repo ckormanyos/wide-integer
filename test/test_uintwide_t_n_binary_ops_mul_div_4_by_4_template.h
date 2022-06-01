@@ -81,7 +81,7 @@
 
     ~test_uintwide_t_n_binary_ops_mul_div_4_by_4_template() override = default;
 
-    auto do_test(const std::size_t rounds) -> bool override
+    auto do_test(std::size_t rounds) -> bool override
     {
       bool result_is_ok = true;
 

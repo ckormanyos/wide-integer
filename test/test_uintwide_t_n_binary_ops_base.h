@@ -31,7 +31,7 @@
 
     ~test_uintwide_t_n_binary_ops_base() override = default;
 
-    virtual auto do_test(const std::size_t rounds) -> bool = 0;
+    virtual auto do_test(std::size_t rounds) -> bool = 0;
 
   protected:
     using random_generator_type = std::mersenne_twister_engine<std::uint32_t,

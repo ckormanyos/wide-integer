@@ -244,7 +244,7 @@
       return result_is_ok;
     }
 
-    auto do_test(const std::size_t rounds) -> bool override
+    auto do_test(std::size_t rounds) -> bool override
     {
       bool result_is_ok = true;
 
@@ -566,7 +566,7 @@
       return result_is_ok;
     }
 
-    auto do_test(const std::size_t rounds) -> bool override
+    auto do_test(std::size_t rounds) -> bool override
     {
       bool result_is_ok = true;
 

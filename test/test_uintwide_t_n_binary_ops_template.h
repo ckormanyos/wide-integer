@@ -87,7 +87,7 @@
       get_equal_random_test_values_boost_and_local_n<local_uint_type, boost_uint_type, AllocatorType>(b_local.data(), b_boost.data(), size());
     }
 
-    auto do_test(const std::size_t rounds) -> bool override
+    auto do_test(std::size_t rounds) -> bool override
     {
       bool result_is_ok = true;
 
