@@ -69,7 +69,7 @@
     WIDE_INTEGER_NODISCARD auto get_digits2() const -> math::wide_integer::size_t override { return digits2; }
     #endif
 
-    void initialize() override
+    auto initialize() -> void override
     {
       a_local.clear();
       b_local.clear();
@@ -87,7 +87,38 @@
       get_equal_random_test_values_boost_and_local_n<local_uint_type, boost_uint_type, AllocatorType>(b_local.data(), b_boost.data(), size());
     }
 
-    WIDE_INTEGER_NODISCARD auto test_binary_add() const -> bool override
+    auto do_test(std::size_t rounds) -> bool override
+    {
+      bool result_is_ok = true;
+
+      for(std::size_t i = 0U; i < rounds; ++i)
+      {
+        std::cout << "initialize()       boost compare with uintwide_t: round " << i << ",  digits2: " << this->get_digits2() << std::endl;
+        this->initialize();
+
+        std::cout << "test_binary_add()  boost compare with uintwide_t: round " << i << ",  digits2: " << this->get_digits2() << std::endl;
+        result_is_ok = (test_binary_add() && result_is_ok);
+
+        std::cout << "test_binary_sub()  boost compare with uintwide_t: round " << i << ",  digits2: " << this->get_digits2() << std::endl;
+        result_is_ok = (test_binary_sub() && result_is_ok);
+
+        std::cout << "test_binary_mul()  boost compare with uintwide_t: round " << i << ",  digits2: " << this->get_digits2() << std::endl;
+        result_is_ok = (test_binary_mul() && result_is_ok);
+
+        std::cout << "test_binary_div()  boost compare with uintwide_t: round " << i << ",  digits2: " << this->get_digits2() << std::endl;
+        result_is_ok = (test_binary_div() && result_is_ok);
+
+        std::cout << "test_binary_mod()  boost compare with uintwide_t: round " << i << ",  digits2: " << this->get_digits2() << std::endl;
+        result_is_ok = (test_binary_mod() && result_is_ok);
+
+        std::cout << "test_binary_sqrt() boost compare with uintwide_t: round " << i << ",  digits2: " << this->get_digits2() << std::endl;
+        result_is_ok = (test_binary_sqrt() && result_is_ok);
+      }
+
+      return result_is_ok;
+    }
+
+    WIDE_INTEGER_NODISCARD auto test_binary_add() const -> bool
     {
       bool result_is_ok = true;
 
@@ -114,7 +145,7 @@
       return result_is_ok;
     }
 
-    WIDE_INTEGER_NODISCARD auto test_binary_sub() const -> bool override
+    WIDE_INTEGER_NODISCARD auto test_binary_sub() const -> bool
     {
       bool result_is_ok = true;
 
@@ -141,7 +172,7 @@
       return result_is_ok;
     }
 
-    WIDE_INTEGER_NODISCARD auto test_binary_mul() const -> bool override
+    WIDE_INTEGER_NODISCARD auto test_binary_mul() const -> bool
     {
       bool result_is_ok = true;
 
@@ -168,7 +199,7 @@
       return result_is_ok;
     }
 
-    WIDE_INTEGER_NODISCARD auto test_binary_div() const -> bool override
+    WIDE_INTEGER_NODISCARD auto test_binary_div() const -> bool
     {
       std::atomic_flag test_lock = ATOMIC_FLAG_INIT;
 
@@ -202,7 +233,7 @@
       return result_is_ok;
     }
 
-    WIDE_INTEGER_NODISCARD auto test_binary_mod() const -> bool override
+    WIDE_INTEGER_NODISCARD auto test_binary_mod() const -> bool
     {
       std::atomic_flag test_lock = ATOMIC_FLAG_INIT;
 
@@ -236,7 +267,7 @@
       return result_is_ok;
     }
 
-    WIDE_INTEGER_NODISCARD auto test_binary_sqrt() const -> bool override
+    WIDE_INTEGER_NODISCARD auto test_binary_sqrt() const -> bool
     {
       bool result_is_ok = true;
 

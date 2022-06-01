@@ -99,7 +99,7 @@ namespace local_float_convert
 
   template<const std::size_t MaxDigitsToGet,
            const std::size_t MinDigitsToGet = 2U>
-  void get_random_digit_string(std::string& str) // NOLINT(google-runtime-references)
+  auto get_random_digit_string(std::string& str) -> void // NOLINT(google-runtime-references)
   {
     static_assert(MinDigitsToGet >=  2U, "Error: The minimum number of digits to get must be  2 or more");
 

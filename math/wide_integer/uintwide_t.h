@@ -2388,16 +2388,16 @@
       return n_result;
     }
 
-    WIDE_INTEGER_CONSTEXPR void negate()
+    WIDE_INTEGER_CONSTEXPR auto negate() -> void
     {
       bitwise_not();
 
       preincrement();
     }
 
-    WIDE_INTEGER_CONSTEXPR void eval_divide_by_single_limb(const limb_type          short_denominator,
+    WIDE_INTEGER_CONSTEXPR auto eval_divide_by_single_limb(const limb_type          short_denominator,
                                                            const unsigned_fast_type u_offset,
-                                                                 uintwide_t*        remainder)
+                                                                 uintwide_t*        remainder) -> void
     {
       // The denominator has one single limb.
       // Use a one-dimensional division algorithm.
@@ -2629,9 +2629,9 @@
     #endif
 
     template<const size_t OtherWidth2>
-    static WIDE_INTEGER_CONSTEXPR void eval_mul_unary(      uintwide_t<OtherWidth2, LimbType, AllocatorType, IsSigned>& u,
+    static WIDE_INTEGER_CONSTEXPR auto eval_mul_unary(      uintwide_t<OtherWidth2, LimbType, AllocatorType, IsSigned>& u,
                                                       const uintwide_t<OtherWidth2, LimbType, AllocatorType, IsSigned>& v,
-                                                      typename std::enable_if<((OtherWidth2 / std::numeric_limits<LimbType>::digits) < number_of_limbs_karatsuba_threshold)>::type* p_nullparam = nullptr)
+                                                      typename std::enable_if<((OtherWidth2 / std::numeric_limits<LimbType>::digits) < number_of_limbs_karatsuba_threshold)>::type* p_nullparam = nullptr) -> void
     {
       static_cast<void>(p_nullparam == nullptr);
 
@@ -2655,9 +2655,9 @@
     }
 
     template<const size_t OtherWidth2>
-    static WIDE_INTEGER_CONSTEXPR void eval_mul_unary(      uintwide_t<OtherWidth2, LimbType, AllocatorType, IsSigned>& u,
+    static WIDE_INTEGER_CONSTEXPR auto eval_mul_unary(      uintwide_t<OtherWidth2, LimbType, AllocatorType, IsSigned>& u,
                                                       const uintwide_t<OtherWidth2, LimbType, AllocatorType, IsSigned>& v,
-                                                      typename std::enable_if<((OtherWidth2 / std::numeric_limits<LimbType>::digits) >= number_of_limbs_karatsuba_threshold)>::type* p_nullparam = nullptr)
+                                                      typename std::enable_if<((OtherWidth2 / std::numeric_limits<LimbType>::digits) >= number_of_limbs_karatsuba_threshold)>::type* p_nullparam = nullptr) -> void
     {
       static_cast<void>(p_nullparam == nullptr);
 
@@ -2785,10 +2785,10 @@
              typename InputIteratorRight,
              const size_t RePhraseWidth2 = Width2,
              typename std::enable_if<(uintwide_t<RePhraseWidth2, LimbType, AllocatorType, IsSigned>::number_of_limbs == 4U)>::type const* = nullptr>
-    static WIDE_INTEGER_CONSTEXPR void eval_multiply_n_by_n_to_lo_part(      ResultIterator     r,
+    static WIDE_INTEGER_CONSTEXPR auto eval_multiply_n_by_n_to_lo_part(      ResultIterator     r,
                                                                              InputIteratorLeft  a,
                                                                              InputIteratorRight b,
-                                                                       const unsigned_fast_type count)
+                                                                       const unsigned_fast_type count) -> void
     {
       static_cast<void>(count);
 
@@ -2928,10 +2928,10 @@
              typename InputIteratorRight,
              const size_t RePhraseWidth2 = Width2,
              typename std::enable_if<(uintwide_t<RePhraseWidth2, LimbType, AllocatorType, IsSigned>::number_of_limbs == static_cast<size_t>(UINT32_C(8)))>::type const* = nullptr>
-    static WIDE_INTEGER_CONSTEXPR void eval_multiply_n_by_n_to_lo_part(      ResultIterator     r,
+    static WIDE_INTEGER_CONSTEXPR auto eval_multiply_n_by_n_to_lo_part(      ResultIterator     r,
                                                                              InputIteratorLeft  a,
                                                                              InputIteratorRight b,
-                                                                       const unsigned_fast_type count)
+                                                                       const unsigned_fast_type count) -> void
     {
       static_cast<void>(count);
 
@@ -3229,10 +3229,10 @@
                                       && (uintwide_t<RePhraseWidth2, LimbType, AllocatorType>::number_of_limbs != static_cast<size_t>(UINT32_C(8)))
     #endif
                                      )>::type const* = nullptr>
-    static WIDE_INTEGER_CONSTEXPR void eval_multiply_n_by_n_to_lo_part(      ResultIterator     r,
+    static WIDE_INTEGER_CONSTEXPR auto eval_multiply_n_by_n_to_lo_part(      ResultIterator     r,
                                                                              InputIteratorLeft  a,
                                                                              InputIteratorRight b,
-                                                                       const unsigned_fast_type count)
+                                                                       const unsigned_fast_type count) -> void
     {
       static_assert
       (
@@ -3275,10 +3275,10 @@
     template<typename ResultIterator,
              typename InputIteratorLeft,
              typename InputIteratorRight>
-    static WIDE_INTEGER_CONSTEXPR void eval_multiply_n_by_n_to_2n(      ResultIterator     r,
+    static WIDE_INTEGER_CONSTEXPR auto eval_multiply_n_by_n_to_2n(      ResultIterator     r,
                                                                         InputIteratorLeft  a,
                                                                         InputIteratorRight b,
-                                                                  const unsigned_fast_type count)
+                                                                  const unsigned_fast_type count) -> void
     {
       static_assert
       (
@@ -3377,9 +3377,9 @@
 
     template<typename InputIteratorLeft>
     static WIDE_INTEGER_CONSTEXPR
-    void eval_multiply_kara_propagate_carry(      InputIteratorLeft                                            t,
+    auto eval_multiply_kara_propagate_carry(      InputIteratorLeft                                            t,
                                             const unsigned_fast_type                                           n,
-                                            const typename std::iterator_traits<InputIteratorLeft>::value_type carry)
+                                            const typename std::iterator_traits<InputIteratorLeft>::value_type carry) -> void
     {
       using local_limb_type = typename std::iterator_traits<InputIteratorLeft>::value_type;
 
@@ -3406,9 +3406,9 @@
 
     template<typename InputIteratorLeft>
     static WIDE_INTEGER_CONSTEXPR
-    void eval_multiply_kara_propagate_borrow(      InputIteratorLeft  t,
+    auto eval_multiply_kara_propagate_borrow(      InputIteratorLeft  t,
                                              const unsigned_fast_type n,
-                                             const bool               has_borrow)
+                                             const bool               has_borrow) -> void
     {
       using local_limb_type = typename std::iterator_traits<InputIteratorLeft>::value_type;
 
@@ -3443,11 +3443,11 @@
              typename InputIteratorRight,
              typename InputIteratorTemp>
     static WIDE_INTEGER_CONSTEXPR
-    void eval_multiply_kara_n_by_n_to_2n(      ResultIterator     r, // NOLINT(misc-no-recursion)
+    auto eval_multiply_kara_n_by_n_to_2n(      ResultIterator     r, // NOLINT(misc-no-recursion)
                                          const InputIteratorLeft  a,
                                          const InputIteratorRight b,
                                          const unsigned_fast_type n,
-                                               InputIteratorTemp  t)
+                                               InputIteratorTemp  t) -> void
     {
       if(n <= static_cast<unsigned_fast_type>(UINT32_C(48)))
       {
@@ -3589,8 +3589,8 @@
       }
     }
 
-    WIDE_INTEGER_CONSTEXPR void eval_divide_knuth(const uintwide_t& other,
-                                                        uintwide_t* remainder = nullptr)
+    WIDE_INTEGER_CONSTEXPR auto eval_divide_knuth(const uintwide_t& other,
+                                                        uintwide_t* remainder = nullptr) -> void
     {
       // Use Knuth's long division algorithm.
       // The loop-ordering of indices in Knuth's original
@@ -4098,7 +4098,7 @@
       return char_is_valid;
     }
 
-    WIDE_INTEGER_CONSTEXPR void bitwise_not()
+    WIDE_INTEGER_CONSTEXPR auto bitwise_not() -> void
     {
       for(auto i = static_cast<unsigned_fast_type>(0U); i < number_of_limbs; ++i)
       {
@@ -4106,7 +4106,7 @@
       }
     }
 
-    WIDE_INTEGER_CONSTEXPR void preincrement()
+    WIDE_INTEGER_CONSTEXPR auto preincrement() -> void
     {
       // Implement self-increment.
 
@@ -4119,7 +4119,7 @@
       while((*it++ == static_cast<limb_type>(0U)) && (it != values.end())); // NOLINT(altera-id-dependent-backward-branch)
     }
 
-    WIDE_INTEGER_CONSTEXPR void predecrement()
+    WIDE_INTEGER_CONSTEXPR auto predecrement() -> void
     {
       // Implement self-decrement.
 

@@ -23,7 +23,7 @@ namespace local_timed_mul_4_by_4
 {
   template<typename UnsignedIntegralIteratorType,
            typename RandomEngineType>
-  void get_random_big_uint(RandomEngineType& rng, UnsignedIntegralIteratorType it_out)
+  auto get_random_big_uint(RandomEngineType& rng, UnsignedIntegralIteratorType it_out) -> void
   {
     using local_uint_type = typename std::iterator_traits<UnsignedIntegralIteratorType>::value_type;
 

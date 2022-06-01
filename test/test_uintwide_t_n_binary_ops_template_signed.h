@@ -109,7 +109,7 @@
       std::copy(b_boost.cbegin(), b_boost.cend(), b_boost_signed.begin());
     }
 
-    WIDE_INTEGER_NODISCARD auto test_binary_add() const -> bool override
+    WIDE_INTEGER_NODISCARD auto test_binary_add() const -> bool
     {
       bool result_is_ok = true;
 
@@ -136,7 +136,7 @@
       return result_is_ok;
     }
 
-    WIDE_INTEGER_NODISCARD auto test_binary_sub() const -> bool override
+    WIDE_INTEGER_NODISCARD auto test_binary_sub() const -> bool
     {
       bool result_is_ok = true;
 
@@ -163,7 +163,7 @@
       return result_is_ok;
     }
 
-    WIDE_INTEGER_NODISCARD auto test_binary_mul() const -> bool override
+    WIDE_INTEGER_NODISCARD auto test_binary_mul() const -> bool
     {
       bool result_is_ok = true;
 
@@ -190,7 +190,7 @@
       return result_is_ok;
     }
 
-    WIDE_INTEGER_NODISCARD auto test_binary_div() const -> bool override
+    WIDE_INTEGER_NODISCARD auto test_binary_div() const -> bool
     {
       bool result_is_ok = true;
 
@@ -217,7 +217,7 @@
       return result_is_ok;
     }
 
-    WIDE_INTEGER_NODISCARD auto test_binary_mod() const -> bool override
+    WIDE_INTEGER_NODISCARD auto test_binary_mod() const -> bool
     {
       bool result_is_ok = true;
 
@@ -244,7 +244,7 @@
       return result_is_ok;
     }
 
-    auto do_test(const std::size_t rounds) -> bool override
+    auto do_test(std::size_t rounds) -> bool override
     {
       bool result_is_ok = true;
 
@@ -254,19 +254,19 @@
         this->initialize();
 
         std::cout << "test_binary_add()  boost compare with uintwide_t: round " << i << ",  digits2: " << this->get_digits2() << std::endl;
-        result_is_ok = (this->test_binary_add() && result_is_ok);
+        result_is_ok = (test_binary_add() && result_is_ok);
 
         std::cout << "test_binary_sub()  boost compare with uintwide_t: round " << i << ",  digits2: " << this->get_digits2() << std::endl;
-        result_is_ok = (this->test_binary_sub() && result_is_ok);
+        result_is_ok = (test_binary_sub() && result_is_ok);
 
         std::cout << "test_binary_mul()  boost compare with uintwide_t: round " << i << ",  digits2: " << this->get_digits2() << std::endl;
-        result_is_ok = (this->test_binary_mul() && result_is_ok);
+        result_is_ok = (test_binary_mul() && result_is_ok);
 
         std::cout << "test_binary_div()  boost compare with uintwide_t: round " << i << ",  digits2: " << this->get_digits2() << std::endl;
-        result_is_ok = (this->test_binary_div() && result_is_ok);
+        result_is_ok = (test_binary_div() && result_is_ok);
 
         std::cout << "test_binary_mod()  boost compare with uintwide_t: round " << i << ",  digits2: " << this->get_digits2() << std::endl;
-        result_is_ok = (this->test_binary_mod() && result_is_ok);
+        result_is_ok = (test_binary_mod() && result_is_ok);
       }
 
       return result_is_ok;
@@ -353,7 +353,7 @@
       }
     }
 
-    WIDE_INTEGER_NODISCARD auto test_binary_add() const -> bool override
+    WIDE_INTEGER_NODISCARD auto test_binary_add() const -> bool
     {
       bool result_is_ok = true;
 
@@ -385,7 +385,7 @@
       return result_is_ok;
     }
 
-    WIDE_INTEGER_NODISCARD auto test_binary_sub() const -> bool override
+    WIDE_INTEGER_NODISCARD auto test_binary_sub() const -> bool
     {
       bool result_is_ok = true;
 
@@ -417,7 +417,7 @@
       return result_is_ok;
     }
 
-    WIDE_INTEGER_NODISCARD auto test_binary_mul() const -> bool override
+    WIDE_INTEGER_NODISCARD auto test_binary_mul() const -> bool
     {
       bool result_is_ok = true;
 
@@ -449,7 +449,7 @@
       return result_is_ok;
     }
 
-    WIDE_INTEGER_NODISCARD auto test_binary_div() const -> bool override
+    WIDE_INTEGER_NODISCARD auto test_binary_div() const -> bool
     {
       bool result_is_ok = true;
 
@@ -476,7 +476,7 @@
       return result_is_ok;
     }
 
-    WIDE_INTEGER_NODISCARD auto test_binary_mod() const -> bool override
+    WIDE_INTEGER_NODISCARD auto test_binary_mod() const -> bool
     {
       bool result_is_ok = true;
 
@@ -566,7 +566,7 @@
       return result_is_ok;
     }
 
-    auto do_test(const std::size_t rounds) -> bool override
+    auto do_test(std::size_t rounds) -> bool override
     {
       bool result_is_ok = true;
 
@@ -576,25 +576,25 @@
         this->initialize();
 
         std::cout << "test_binary_add()  boost compare with uintwide_t: round " << i << ",  digits2: " << this->get_digits2() << std::endl;
-        result_is_ok = (this->test_binary_add() && result_is_ok);
+        result_is_ok = (test_binary_add() && result_is_ok);
 
         std::cout << "test_binary_sub()  boost compare with uintwide_t: round " << i << ",  digits2: " << this->get_digits2() << std::endl;
-        result_is_ok = (this->test_binary_sub() && result_is_ok);
+        result_is_ok = (test_binary_sub() && result_is_ok);
 
         std::cout << "test_binary_mul()  boost compare with uintwide_t: round " << i << ",  digits2: " << this->get_digits2() << std::endl;
-        result_is_ok = (this->test_binary_mul() && result_is_ok);
+        result_is_ok = (test_binary_mul() && result_is_ok);
 
         std::cout << "test_binary_div()  boost compare with uintwide_t: round " << i << ",  digits2: " << this->get_digits2() << std::endl;
-        result_is_ok = (this->test_binary_div() && result_is_ok);
+        result_is_ok = (test_binary_div() && result_is_ok);
 
         std::cout << "test_binary_mod()  boost compare with uintwide_t: round " << i << ",  digits2: " << this->get_digits2() << std::endl;
-        result_is_ok = (this->test_binary_mod() && result_is_ok);
+        result_is_ok = (test_binary_mod() && result_is_ok);
 
         std::cout << "test_binary_mod1() boost compare with uintwide_t: round " << i << ",  digits2: " << this->get_digits2() << std::endl;
-        result_is_ok = (this->test_binary_mod1() && result_is_ok);
+        result_is_ok = (test_binary_mod1() && result_is_ok);
 
         std::cout << "test_binary_shr()  boost compare with uintwide_t: round " << i << ",  digits2: " << this->get_digits2() << std::endl;
-        result_is_ok = (this->test_binary_shr() && result_is_ok);
+        result_is_ok = (test_binary_shr() && result_is_ok);
       }
 
       return result_is_ok;

@@ -96,7 +96,7 @@
 
     ~test_uintwide_t_n_binary_ops_mul_n_by_m_template() override = default;
 
-    auto do_test(const std::size_t rounds) -> bool override
+    auto do_test(std::size_t rounds) -> bool override
     {
       bool result_is_ok = true;
 
@@ -106,13 +106,13 @@
         this->initialize();
 
         std::cout << "test_binary_mul()  boost compare with uintwide_t: round " << i << ",  digits2: " << this->get_digits2() << std::endl;
-        result_is_ok = (this->test_binary_mul() && result_is_ok);
+        result_is_ok = (test_binary_mul() && result_is_ok);
       }
 
       return result_is_ok;
     }
 
-    void initialize() override
+    auto initialize() -> void override
     {
       a_local.clear();
       b_local.clear();
@@ -130,7 +130,7 @@
       get_equal_random_test_values_boost_and_local_n(b_local.data(), b_boost.data(), size());
     }
 
-    WIDE_INTEGER_NODISCARD auto test_binary_mul() const -> bool override
+    WIDE_INTEGER_NODISCARD auto test_binary_mul() const -> bool
     {
       bool result_is_ok = true;
 
