@@ -11,6 +11,63 @@
 #include <math/wide_integer/uintwide_t.h>
 #include <test/test_uintwide_t.h>
 
+namespace exercise_bad_string_input
+{
+  auto test_uintwide_t_spot_values_exercise_bad_string_input() -> bool
+  {
+    #if defined WIDE_INTEGER_NAMESPACE
+    using local_uint128_t = WIDE_INTEGER_NAMESPACE::math::wide_integer::uint128_t;
+    #else
+    using local_uint128_t = math::wide_integer::uint128_t;
+    #endif
+
+    WIDE_INTEGER_CONSTEXPR local_uint128_t u("bad-string-input");
+
+    const bool result_bad_string_input_is_ok = (u == (std::numeric_limits<local_uint128_t>::max)());
+
+    #if(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST == 1)
+    static_assert(u == (std::numeric_limits<local_uint128_t>::max)(), "Error: Reaction to bad string input is not OK");
+    #endif
+
+    return result_bad_string_input_is_ok;
+  }
+} // namespace exercise_bad_string_input
+
+namespace exercise_pow_zero_one_two
+{
+  auto test_uintwide_t_spot_values_exercise_pow_zero_one_two() -> bool
+  {
+    #if defined WIDE_INTEGER_NAMESPACE
+    using local_uint128_t = WIDE_INTEGER_NAMESPACE::math::wide_integer::uint128_t;
+    #else
+    using local_uint128_t = math::wide_integer::uint128_t;
+    #endif
+
+    WIDE_INTEGER_CONSTEXPR local_uint128_t u(UINT64_C(9999999978787878));
+
+    using std::pow;
+
+    WIDE_INTEGER_CONSTEXPR local_uint128_t u0 = pow(u, 0);
+    WIDE_INTEGER_CONSTEXPR local_uint128_t u1 = pow(u, 1);
+    WIDE_INTEGER_CONSTEXPR local_uint128_t u2 = pow(u, 2);
+
+    const bool result_pow_is_ok =
+      (
+           (u0 == 1)
+        && (u1 == u)
+        && (u2 == u * u)
+      );
+
+    #if(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST == 1)
+    static_assert(u0 == 1,     "Error: Power of zero is not OK");
+    static_assert(u1 == u,     "Error: Power of one  is not OK");
+    static_assert(u2 == u * u, "Error: Power of two  is not OK");
+    #endif
+
+    return result_pow_is_ok;
+  }
+} // namespace exercise_pow_zero_one_two
+
 namespace exercise_octal
 {
   auto test_uintwide_t_spot_values_exercise_octal() -> bool
@@ -24,7 +81,7 @@ namespace exercise_octal
     WIDE_INTEGER_CONSTEXPR local_uint128_t u_dec("100000000000000000000777772222211111");
     WIDE_INTEGER_CONSTEXPR local_uint128_t u_oct("0464114134543515404256122464446501262047");
 
-    auto result_is_ok = (u_dec == u_oct);
+    auto result_conversion_is_ok = (u_dec == u_oct);
 
     #if(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST == 1)
     static_assert(u_dec == u_oct, "Error: Conversion decimal to octal is not OK");
@@ -34,9 +91,9 @@ namespace exercise_octal
 
     strm << std::showbase << std::oct << u_oct;
 
-    result_is_ok = ((strm.str() == "0464114134543515404256122464446501262047") && result_is_ok);
+    result_conversion_is_ok = ((strm.str() == "0464114134543515404256122464446501262047") && result_conversion_is_ok);
 
-    return result_is_ok;
+    return result_conversion_is_ok;
   }
 } // namespace exercise_octal
 
@@ -234,6 +291,14 @@ namespace local_test_spot_values
 auto local_test_spot_values::test() -> bool // NOLINT(readability-function-cognitive-complexity)
 {
   bool result_is_ok = true;
+
+  {
+    result_is_ok = (exercise_bad_string_input::test_uintwide_t_spot_values_exercise_bad_string_input() && result_is_ok);
+  }
+
+  {
+    result_is_ok = (exercise_pow_zero_one_two::test_uintwide_t_spot_values_exercise_pow_zero_one_two() && result_is_ok);
+  }
 
   {
     result_is_ok = (exercise_octal::test_uintwide_t_spot_values_exercise_octal() && result_is_ok);
