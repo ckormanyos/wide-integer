@@ -7,7 +7,7 @@
 
 BOOST_ROOT_FOR_GCOV = /mnt/c/boost/boost_1_78_0
 CC                  = g++
-STD                 = c++11
+STD                 = c++14
 ALL_COV             = 0
 
 ifneq ($(MY_BOOST_ROOT),)
