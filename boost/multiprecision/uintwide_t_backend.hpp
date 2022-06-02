@@ -152,17 +152,17 @@
       : m_value(static_cast<representation_type&&>(other.m_value)) { }
 
     template<typename UnsignedIntegralType,
-             typename std::enable_if<(   (std::is_integral<UnsignedIntegralType>::value)
-                                      && (std::is_unsigned<UnsignedIntegralType>::value))>::type const* = nullptr>
+             std::enable_if_t<(   (std::is_integral<UnsignedIntegralType>::value)
+                               && (std::is_unsigned<UnsignedIntegralType>::value))> const* = nullptr>
     constexpr uintwide_t_backend(UnsignedIntegralType u) : m_value(representation_type(std::uint64_t(u))) { } // NOLINT(google-explicit-constructor,hicpp-explicit-conversions)
 
     template<typename SignedIntegralType,
-             typename std::enable_if<(   (std::is_integral<SignedIntegralType>::value)
-                                      && (std::is_signed  <SignedIntegralType>::value))>::type const* = nullptr>
+             std::enable_if_t<(   (std::is_integral<SignedIntegralType>::value)
+                               && (std::is_signed  <SignedIntegralType>::value))> const* = nullptr>
     constexpr uintwide_t_backend(SignedIntegralType n) : m_value(representation_type(std::int64_t(n))) { } // NOLINT(google-explicit-constructor,hicpp-explicit-conversions)
 
     template<typename FloatingPointType,
-             typename std::enable_if<std::is_floating_point<FloatingPointType>::value>::type const* = nullptr>
+             std::enable_if_t<std::is_floating_point<FloatingPointType>::value> const* = nullptr>
     constexpr uintwide_t_backend(FloatingPointType f) : m_value(representation_type(static_cast<long double>(f))) { } // NOLINT(google-explicit-constructor,hicpp-explicit-conversions)
 
     constexpr uintwide_t_backend(const char* c) : m_value(c) { } // NOLINT(google-explicit-constructor,hicpp-explicit-conversions)
@@ -189,7 +189,7 @@
     }
 
     template<typename ArithmeticType,
-             typename std::enable_if<std::is_arithmetic<ArithmeticType>::value>::type const* = nullptr>
+             std::enable_if_t<std::is_arithmetic<ArithmeticType>::value> const* = nullptr>
     WIDE_INTEGER_CONSTEXPR auto operator=(const ArithmeticType& x) -> uintwide_t_backend&
     {
       m_value = representation_type(x);
@@ -254,7 +254,7 @@
     }
 
     template<typename ArithmeticType,
-             typename std::enable_if<std::is_arithmetic<ArithmeticType>::value>::type const* = nullptr>
+             std::enable_if_t<std::is_arithmetic<ArithmeticType>::value> const* = nullptr>
     WIDE_INTEGER_NODISCARD constexpr auto compare(ArithmeticType x) const -> int
     {
       return static_cast<int>(m_value.compare(representation_type(x)));
@@ -333,7 +333,7 @@
            typename MyLimbType,
            typename MyAllocatorType,
            typename IntegralType,
-           typename std::enable_if<(std::is_integral<IntegralType>::value)>::type const* = nullptr>
+           std::enable_if_t<(std::is_integral<IntegralType>::value)> const* = nullptr>
   WIDE_INTEGER_CONSTEXPR auto eval_multiply(uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& result, const IntegralType& n) -> void
   {
     result.representation() *= n;
@@ -361,9 +361,9 @@
            typename MyLimbType,
            typename MyAllocatorType,
            typename IntegralType,
-           typename std::enable_if<(   (std::is_integral   <IntegralType>::value)
-                                    && (std::is_unsigned   <IntegralType>::value)
-                                    && (std::numeric_limits<IntegralType>::digits <= std::numeric_limits<MyLimbType>::digits))>::type const* = nullptr>
+           std::enable_if_t<(   (std::is_integral   <IntegralType>::value)
+                             && (std::is_unsigned   <IntegralType>::value)
+                             && (std::numeric_limits<IntegralType>::digits <= std::numeric_limits<MyLimbType>::digits))> const* = nullptr>
   WIDE_INTEGER_CONSTEXPR auto eval_divide(uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& result, const IntegralType& n) -> void
   {
     using local_wide_integer_type = typename uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>::representation_type;
@@ -382,9 +382,9 @@
            typename MyLimbType,
            typename MyAllocatorType,
            typename IntegralType,
-           typename std::enable_if<(   (std::is_integral   <IntegralType>::value)
-                                    && (std::is_unsigned   <IntegralType>::value)
-                                    && (std::numeric_limits<IntegralType>::digits) > std::numeric_limits<MyLimbType>::digits)>::type const* = nullptr>
+           std::enable_if_t<(   (std::is_integral   <IntegralType>::value)
+                             && (std::is_unsigned   <IntegralType>::value)
+                             && (std::numeric_limits<IntegralType>::digits) > std::numeric_limits<MyLimbType>::digits)> const* = nullptr>
   WIDE_INTEGER_CONSTEXPR auto eval_divide(uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& result, const IntegralType& n) -> void
   {
     result.representation() /= n;
@@ -412,9 +412,9 @@
            typename MyLimbType,
            typename MyAllocatorType,
            typename IntegralType,
-           typename std::enable_if<(   (std::is_integral   <IntegralType>::value)
-                                    && (std::is_unsigned   <IntegralType>::value)
-                                    && (std::numeric_limits<IntegralType>::digits <= std::numeric_limits<MyLimbType>::digits))>::type const* = nullptr>
+           std::enable_if_t<(   (std::is_integral   <IntegralType>::value)
+                             && (std::is_unsigned   <IntegralType>::value)
+                             && (std::numeric_limits<IntegralType>::digits <= std::numeric_limits<MyLimbType>::digits))> const* = nullptr>
   WIDE_INTEGER_CONSTEXPR auto eval_integer_modulus(uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& x, const IntegralType& n) -> IntegralType
   {
     using local_wide_integer_type = typename uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>::representation_type;
@@ -435,9 +435,9 @@
            typename MyLimbType,
            typename MyAllocatorType,
            typename IntegralType,
-           typename std::enable_if<(   (std::is_integral   <IntegralType>::value)
-                                    && (std::is_unsigned   <IntegralType>::value)
-                                    && (std::numeric_limits<IntegralType>::digits) > std::numeric_limits<MyLimbType>::digits)>::type const* = nullptr>
+           std::enable_if_t<(   (std::is_integral   <IntegralType>::value)
+                             && (std::is_unsigned   <IntegralType>::value)
+                             && (std::numeric_limits<IntegralType>::digits) > std::numeric_limits<MyLimbType>::digits)> const* = nullptr>
   WIDE_INTEGER_CONSTEXPR auto eval_integer_modulus(uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& x, const IntegralType& n) -> IntegralType
   {
     const uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType> rem = x.crepresentation() % uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>(n);
@@ -542,7 +542,7 @@
            typename MyLimbType,
            typename MyAllocatorType,
            typename OtherIntegralTypeM,
-           typename std::enable_if<(std::is_integral<OtherIntegralTypeM>::value)>::type const* = nullptr>
+           std::enable_if_t<(std::is_integral<OtherIntegralTypeM>::value)> const* = nullptr>
   WIDE_INTEGER_CONSTEXPR auto eval_powm(      uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& result,
                                         const uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& b,
                                         const uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& p,
@@ -562,7 +562,7 @@
            typename MyLimbType,
            typename MyAllocatorType,
            typename OtherIntegralTypeP,
-           typename std::enable_if<(std::is_integral<OtherIntegralTypeP>::value)>::type const* = nullptr>
+           std::enable_if_t<(std::is_integral<OtherIntegralTypeP>::value)> const* = nullptr>
   WIDE_INTEGER_CONSTEXPR auto eval_powm(      uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& result,
                                         const uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& b,
                                         const OtherIntegralTypeP                                         p,
@@ -582,7 +582,7 @@
            typename MyLimbType,
            typename MyAllocatorType,
            typename IntegralType,
-           typename std::enable_if<(std::is_integral<IntegralType>::value)>::type const* = nullptr>
+           std::enable_if_t<(std::is_integral<IntegralType>::value)> const* = nullptr>
   WIDE_INTEGER_CONSTEXPR auto eval_left_shift(uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& result, const IntegralType& n) -> void
   {
     result.representation() <<= n;
@@ -597,7 +597,7 @@
            typename MyLimbType,
            typename MyAllocatorType,
            typename IntegralType,
-           typename std::enable_if<(std::is_integral<IntegralType>::value)>::type const* = nullptr>
+           std::enable_if_t<(std::is_integral<IntegralType>::value)> const* = nullptr>
   WIDE_INTEGER_CONSTEXPR auto eval_right_shift(uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& result, const IntegralType& n) -> void
   {
     result.representation() >>= n;
@@ -652,7 +652,7 @@
            typename MyLimbType,
            typename MyAllocatorType,
            typename ArithmeticType,
-           typename std::enable_if<(std::is_arithmetic <ArithmeticType>::value)>::type const* = nullptr>
+           std::enable_if_t<(std::is_arithmetic <ArithmeticType>::value)> const* = nullptr>
   constexpr auto eval_eq(const uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& a,
                                ArithmeticType                                             b) -> bool
   {
@@ -668,7 +668,7 @@
            typename MyLimbType,
            typename MyAllocatorType,
            typename ArithmeticType,
-           typename std::enable_if<(std::is_arithmetic <ArithmeticType>::value)>::type const* = nullptr>
+           std::enable_if_t<(std::is_arithmetic <ArithmeticType>::value)> const* = nullptr>
   constexpr auto eval_eq(      ArithmeticType                                             a,
                          const uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& b) -> bool
   {
@@ -698,7 +698,7 @@
            typename MyLimbType,
            typename MyAllocatorType,
            typename ArithmeticType,
-           typename std::enable_if<(std::is_arithmetic <ArithmeticType>::value)>::type const* = nullptr>
+           std::enable_if_t<(std::is_arithmetic <ArithmeticType>::value)> const* = nullptr>
   constexpr auto eval_gt(const uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& a,
                                ArithmeticType                                             b) -> bool
   {
@@ -714,7 +714,7 @@
            typename MyLimbType,
            typename MyAllocatorType,
            typename ArithmeticType,
-           typename std::enable_if<(std::is_arithmetic <ArithmeticType>::value)>::type const* = nullptr>
+           std::enable_if_t<(std::is_arithmetic <ArithmeticType>::value)> const* = nullptr>
   constexpr auto eval_gt(      ArithmeticType                                             a,
                          const uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& b) -> bool
   {
@@ -744,7 +744,7 @@
            typename MyLimbType,
            typename MyAllocatorType,
            typename ArithmeticType,
-           typename std::enable_if<(std::is_arithmetic <ArithmeticType>::value)>::type const* = nullptr>
+           std::enable_if_t<(std::is_arithmetic <ArithmeticType>::value)> const* = nullptr>
   constexpr auto eval_lt(const uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& a,
                                ArithmeticType                                             b) -> bool
   {
@@ -760,7 +760,7 @@
            typename MyLimbType,
            typename MyAllocatorType,
            typename ArithmeticType,
-           typename std::enable_if<(std::is_arithmetic <ArithmeticType>::value)>::type const* = nullptr>
+           std::enable_if_t<(std::is_arithmetic <ArithmeticType>::value)> const* = nullptr>
   constexpr auto eval_lt(      ArithmeticType                                             a,
                          const uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& b) -> bool
   {
@@ -805,8 +805,8 @@
   (
           UnsignedIntegralType*                                                                 result,
     const uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>&                            val,
-          typename std::enable_if<(    (std::is_integral<UnsignedIntegralType>::value)
-                                   && (!std::is_signed  <UnsignedIntegralType>::value))>::type* p_nullparam = nullptr
+          std::enable_if_t<(    (std::is_integral<UnsignedIntegralType>::value)
+                            && (!std::is_signed  <UnsignedIntegralType>::value))>* p_nullparam = nullptr
   ) -> void
   {
     static_cast<void>(p_nullparam);
@@ -831,8 +831,8 @@
   (
           SignedIntegralType*                                                                result,
     const uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>&                         val,
-          typename std::enable_if<(   (std::is_integral<SignedIntegralType>::value)
-                                   && (std::is_signed  <SignedIntegralType>::value))>::type* p_nullparam = nullptr
+          std::enable_if_t<(   (std::is_integral<SignedIntegralType>::value)
+                            && (std::is_signed  <SignedIntegralType>::value))>* p_nullparam = nullptr
   ) -> void
   {
     static_cast<void>(p_nullparam);

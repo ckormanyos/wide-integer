@@ -7,7 +7,7 @@
 
 BOOST_ROOT_FOR_TIDY = /mnt/c/boost/boost_1_78_0
 CC                  = clang++
-STD                 = c++11
+STD                 = c++14
 
 ifneq ($(MY_BOOST_ROOT),)
 BOOST_ROOT_FOR_TIDY := $(MY_BOOST_ROOT)

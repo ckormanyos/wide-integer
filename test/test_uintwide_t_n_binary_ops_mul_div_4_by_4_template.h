@@ -36,10 +36,10 @@
   class test_uintwide_t_n_binary_ops_mul_div_4_by_4_template // NOLINT(cppcoreguidelines-special-member-functions,hicpp-special-member-functions)
     <MyWidth2,
      MyLimbType,
-     typename std::enable_if<(   (std::numeric_limits<MyLimbType>::digits * 4 == MyWidth2)
-                              && (std::is_fundamental<MyLimbType>::value)
-                              && (std::is_integral   <MyLimbType>::value)
-                              && (std::is_unsigned   <MyLimbType>::value))>::type>
+     std::enable_if_t<(   (std::numeric_limits<MyLimbType>::digits * 4 == MyWidth2)
+                       && (std::is_fundamental<MyLimbType>::value)
+                       && (std::is_integral   <MyLimbType>::value)
+                       && (std::is_unsigned   <MyLimbType>::value))>>
     : public test_uintwide_t_n_binary_ops_base
   {
   private:

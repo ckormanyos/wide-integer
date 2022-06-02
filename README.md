@@ -1,6 +1,9 @@
 ﻿Wide-integer
 ==================
 
+>ANNOUNCEMENT: Support for C++11 will be deprecated in this library starting in summer 2022.
+>New features will require _at_ _least_ C++14, as will existing features starting with the deprecation.
+
 [![Build Status](https://github.com/ckormanyos/wide-integer/actions/workflows/wide_integer.yml/badge.svg)](https://github.com/ckormanyos/wide-integer/actions)
 [![Language grade: C/C++](https://img.shields.io/lgtm/grade/cpp/g/ckormanyos/wide-integer.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/ckormanyos/wide-integer/context:cpp)
 [![Total alerts](https://img.shields.io/lgtm/alerts/g/ckormanyos/wide-integer.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/ckormanyos/wide-integer/alerts/)

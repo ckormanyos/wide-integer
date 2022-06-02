@@ -576,7 +576,7 @@ jobs:
       fail-fast: false
       matrix:
         example: [ example001_mul_div, example003_sqrt ]
-        standard: [ c++11, c++14, c++17, c++2a ]
+        standard: [ c++14, c++17, c++2a ]
     steps:
       - uses: actions/checkout@v2
         with:
@@ -611,7 +611,7 @@ jobs:
       fail-fast: false
       matrix:
         example: [ example001_mul_div, example003_sqrt ]
-        standard: [ c++11, c++14 ]
+        standard: [ c++14 ]
     steps:
       - uses: actions/checkout@v2
         with:
