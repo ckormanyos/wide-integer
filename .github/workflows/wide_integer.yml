@@ -563,6 +563,32 @@ jobs:
           MSBuild -m wide_integer_vs2022.sln -p:useenv=true -p:Configuration=Release -p:Platform=x64 /t:Rebuild
           dir %cd%\x64\Release\wide_integer_vs2022.exe
           %cd%\x64\Release\wide_integer_vs2022.exe
+  msvc-release-x64-vs2022-asan:
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: '0'
+      - name: clone-submods-bootstrap-headers-boost-develop
+        run: |
+          git clone -b develop --depth 1 https://github.com/boostorg/boost.git ../boost-root
+          cd ../boost-root
+          git submodule update --init tools
+          git submodule update --init libs/config
+          git submodule update --init libs/multiprecision
+          ./bootstrap.bat
+          ./b2 headers
+      - uses: actions/checkout@v1
+      - uses: ilammy/msvc-dev-cmd@v1
+      - name: msvc-release-x64-vs2022-asan
+        shell: cmd
+        working-directory: ./
+        run: |
+          set INCLUDE=%cd%;%cd%\..\boost-root;%INCLUDE%
+          copy /Y .props\Directory.Build.props .
+          MSBuild -m wide_integer_vs2022.sln -p:useenv=true -p:Configuration=Release -p:Platform=x64 /t:Rebuild
+          dir %cd%\x64\Release\wide_integer_vs2022.exe
+          %cd%\x64\Release\wide_integer_vs2022.exe
   mingw-winhost-x64:
     runs-on: windows-2019
     strategy:
