@@ -1099,18 +1099,19 @@
   }
 
   template<typename UnsignedIntegralType>
-  constexpr auto negate(UnsignedIntegralType u) -> std::enable_if_t<   (std::is_integral<UnsignedIntegralType>::value)
-                                                                    && (std::is_unsigned<UnsignedIntegralType>::value), UnsignedIntegralType>
+  constexpr auto negate(UnsignedIntegralType u) -> std::enable_if_t<(   std::is_integral<UnsignedIntegralType>::value
+                                                                     && std::is_unsigned<UnsignedIntegralType>::value), UnsignedIntegralType>
   {
-    return static_cast<UnsignedIntegralType>((static_cast<UnsignedIntegralType>(~u)) + 1U);
+    using local_unsigned_type = UnsignedIntegralType;
+
+    return static_cast<local_unsigned_type>((static_cast<local_unsigned_type>(~u)) + 1U);
   }
 
   template<typename SignedIntegralType>
-  constexpr auto negate(SignedIntegralType n) -> std::enable_if_t<   (std::is_integral<SignedIntegralType>::value)
-                                                                  && (std::is_signed  <SignedIntegralType>::value), SignedIntegralType>
+  constexpr auto negate(SignedIntegralType n) -> std::enable_if_t<(   std::is_integral<SignedIntegralType>::value
+                                                                   && std::is_signed  <SignedIntegralType>::value), SignedIntegralType>
   {
-    using local_unsigned_type =
-      typename detail::uint_type_helper<static_cast<size_t>(std::numeric_limits<SignedIntegralType>::digits + 1)>::exact_unsigned_type;
+    using local_unsigned_type = std::make_unsigned_t<SignedIntegralType>;
 
     return static_cast<SignedIntegralType>(negate(static_cast<local_unsigned_type>(n)));
   }
