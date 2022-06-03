@@ -1102,18 +1102,21 @@
   constexpr auto negate(UnsignedIntegralType u) -> std::enable_if_t<(   std::is_integral<UnsignedIntegralType>::value
                                                                      && std::is_unsigned<UnsignedIntegralType>::value), UnsignedIntegralType>
   {
-    using local_unsigned_type = UnsignedIntegralType;
+    using local_unsigned_integral_type = UnsignedIntegralType;
 
-    return static_cast<local_unsigned_type>((static_cast<local_unsigned_type>(~u)) + 1U);
+    return static_cast<local_unsigned_integral_type>((static_cast<local_unsigned_integral_type>(~u)) + 1U);
   }
 
   template<typename SignedIntegralType>
   constexpr auto negate(SignedIntegralType n) -> std::enable_if_t<(   std::is_integral<SignedIntegralType>::value
-                                                                   && std::is_signed  <SignedIntegralType>::value), SignedIntegralType>
+                                                                   && std::is_signed<SignedIntegralType>::value), SignedIntegralType>
   {
-    using local_unsigned_type = std::make_unsigned_t<SignedIntegralType>;
+    using local_signed_integral_type = SignedIntegralType;
 
-    return static_cast<SignedIntegralType>(negate(static_cast<local_unsigned_type>(n)));
+    using local_unsigned_integral_type =
+      typename detail::uint_type_helper<static_cast<size_t>(std::numeric_limits<local_signed_integral_type>::digits + 1)>::exact_unsigned_type;
+
+    return static_cast<local_signed_integral_type>(negate(static_cast<local_unsigned_integral_type>(n)));
   }
 
   #if !defined(WIDE_INTEGER_DISABLE_FLOAT_INTEROP)
