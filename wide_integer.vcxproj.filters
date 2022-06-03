@@ -223,6 +223,7 @@
     <None Include=".props\Directory.Build.props">
       <Filter>.props</Filter>
     </None>
+    <None Include="codecov.yml" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="examples\CMakeLists.txt">

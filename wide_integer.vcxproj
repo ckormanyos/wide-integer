@@ -246,6 +246,7 @@
     <None Include=".tidy\make\make_tidy_01_generic.gmk" />
     <None Include=".tidy\make\make_tidy_02_files.gmk" />
     <None Include=".tidy\make\make_tidy_03_flags.gmk" />
+    <None Include="codecov.yml" />
     <None Include="README.md" />
     <None Include="sonar-project.properties" />
   </ItemGroup>
