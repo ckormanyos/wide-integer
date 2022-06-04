@@ -44,7 +44,7 @@ elementary and number theoretical functions such as root finding,
 random distribution, Miller-Rabin primality testing,
 greatest common denominator (GCD) and more.
 
-Inclusion of a single C++11 header file
+Inclusion of a single C++14 header file
 is all that is needed for using wide-integer,
 as shown in the [examples](./examples).
 
@@ -53,8 +53,8 @@ as shown in the [examples](./examples).
   - Signed and unsigned versions of `uintwide_t` should behave as closely as possible to the behaviors of signed and unsigned versions of built-in `int`.
   - Relatively wide precision range from 24, 32, 64 bits up to tens of thousands of bits.
   - Moderately good efficiency over the entire wide precision range.
-  - Clean header-only C++11 design.
-  - Seamless portability to any modern C++11, 14, 17, 20 compiler.
+  - Clean header-only C++14 design.
+  - Seamless portability to any modern C++14, 17, 20, 23 compiler.
   - Scalability with small memory footprint and efficiency suitable for both PC/workstation systems as well as _bare-metal_ embedded systems.
   - C++20 `constexpr`-_ness_ for construction, cast to built-in types, binary arithmetic, comparison operations, some elementary functions and more.
 
@@ -67,7 +67,7 @@ its directory. Include this header path to the compiler's set
 of include paths or in your project.
 Then simply `#include <uintwide_t.h>` the normal C++ way.
 
-Easy application follows via traditional C-style typedef or C++11 alias
+Easy application follows via traditional C-style typedef or alias
 such as `uint512_t`. An instance of the defined type can be used very much
 like a built-in integral type. In the following code, for example,
 the static `uint512_t` variable `x` is initialized with unsigned value `3U`.
@@ -83,7 +83,7 @@ static uint512_t x = 3U;
 ```
 
 The code sequence above defines the local data type `uint512_t` with
-a C++11 alias. The first template parameter `512U` sets the binary width
+an alias. The first template parameter `512U` sets the binary width
 (or bit count) while the second optional template parameter `std::uint32_t`
 sets the internal _limb_ _type_. The limb type must be unsigned and one of
 `std::uint8_t`, `std::uint16_t`, `std::uint32_t` or on some systems
@@ -161,7 +161,7 @@ on how to use wide-integer.
   - ![`example011_uint24_t.cpp`](./examples/example011_uint24_t.cpp) performs calculations with 24-bits, which is definitely on the small side of the range of wide-integer.
   - ![`example012_rsa_crypto.cpp`](./examples/example012_rsa_crypto.cpp) performs cryptographic calculations with 2048-bits, exploring a standardized test case.
 
-## Building, testing and CI
+## Building
 
 ### Build Status
 
@@ -177,8 +177,8 @@ combinations.
 
 Building and running the tests and examples can be accomplished
 using the Microsoft VisualStudio solution workspace provided
-in `wide_integer.sln`. The MSVC solution file
-is located in the project's root directory.
+in `wide_integer.sln`, `wide_integer_vs2022.sln`, etc.
+The MSVC solution file(s) are located in the project's root directory.
 
 ### Build with CMake
 
@@ -217,7 +217,7 @@ g++                                         \
 -Wextra                                     \
 -Wno-maybe-uninitialized                    \
 -Wno-cast-function-type                     \
--std=gnu++11                                \
+-std=c++14                                  \
 -DWIDE_INTEGER_HAS_LIMB_TYPE_UINT64         \
 -I.                                         \
 -I../boost-root                             \
@@ -255,6 +255,8 @@ examples/example012_rsa_crypto.cpp          \
 -o wide_integer.exe
 ```
 
+## Testing, CI and quality checks
+
 ### Testing
 
 Testing is definitely a big issue. A growing, supported
@@ -265,9 +267,38 @@ project or a variety of other build/make options that use easy-to-understand
 subroutines called from `main()`. These exercise the various
 examples and the full suite of test cases.
 
-CI runs on push and pull request using GitHub Actions.
+If an issue is reported, reproduced and verified, an attempt
+is made to correct it without breaking any other
+code. Upon successful correction, specific test cases
+exercising the reported issue are usually added as part
+of the issue resolution process.
+
+### CI and Quality checks
+
+CI runs on push-to-branch and pull request using GitHub Actions.
 Various compilers, operating systems, and C++ standards
-ranging from C++11, 14, 17, 20 are included in CI.
+ranging from C++14, 17, 20, 23 are included in CI.
+
+In CI, we use both elevated GCC/clang compiler warnings
+as well as MSVC level 4 warnings active on the correspondoing platforms.
+A wide variety of run-time sanitizers
+are also used in CI assure dynamic quality.
+For syntax checking, clang-tidy is used both in CI
+as well as in offline checks to improve static code quality.
+
+Additional quality checks are performed on pull-request
+and merge to master using modern third party open-source services.
+These include
+[LGTM](https://lgtm.com/projects/g/ckormanyos/wide-integer/alerts/?mode=list),
+[Synopsis Coverity](https://scan.coverity.com/projects/ckormanyos-wide-integer),
+and [CodeSonar](https://sonarcloud.io/summary/new_code?id=ckormanyos_wide-integer).
+At the moment, the Coverity check is run with manual report submission,
+automation of this is, however, planned.
+Code coverage uses GCC/gcov/lcov and has a
+quality-gate with comparison/baseline-check provided by
+[Codecov](https://app.codecov.io/gh/ckormanyos/wide-integer).
+Quality badges are displayed at the top of this repository's
+readme page.
 
 ## Additional details
 
@@ -627,10 +658,10 @@ constexpr bool result_is_ok = (   (c == "0xE491A360C57EB4306C61F9A04F7F7D99BE367
 static_assert(result_is_ok, "Error: example is not OK!");
 ```
 
-`constexpr`-_ness_ of `uintwide_t` has been checked on GCC 10, GCC 11, clang 10
+`constexpr`-_ness_ of `uintwide_t` has been checked on GCC 10 and up, clang 10 and up
 (with `-std=c++20`) and VC 14.2 (with `/std:c++latest`),
-also for various embedded compilers such as `avr-gcc` 10 and 11,
-`arm-non-eabi-gcc` 10, and more. In addition,
+also for various embedded compilers such as `avr-gcc` 10 and up,
+`arm-non-eabi-gcc` 10 and up, and more. In addition,
 less modern compiler versions in addition to some other compilers
 having standards such as C++14, 17, 2a have also been checked
 for `constexpr` usage of `uintwide_t`. If you have an older
@@ -707,3 +738,25 @@ in the wide-integer project.
   - All of both constructions-from as well as casts-to wider/less-wide and signed/unsigned wide-integer types are implicit (even if the conversion at hand is narrowing via having fewer bits). Casts such as `int128_t` to/from `uint160_t` and similar, for instance, are implicit.
   - All wide-integer-types are move constructible.
   - All wide-integer types having the same widths and having the same limb-type (but possibly different sign) are move-assignable and `std::move()`-capable.
+
+### Alternatives and limitations
+
+Alternative libraries for big integral types include,
+among others, most notably
+[GMP](https://gmplib.org/)
+and
+[`Boost.Multiprecision`](https://www.boost.org/doc/libs/1_79_0/libs/multiprecision/doc/html/index.html).
+
+At the moment, the digit range of wide-integer is limited
+to the granularity of the full limb type.
+This means that less-common bit counts
+that would require non-full use of the limbs
+are not supported. It is not possible with this library,
+for instance, to synthesize, let's say, a 61-bit integral type.
+
+This can have performance impact. If you would like
+to synthesize an 80-bit integral type, for example, this can
+be done, but at the cost of using five 16-bit limbs.
+This degrades performance due to the higher limb count.
+This phenomenon was discussed in
+[issue 234](https://github.com/ckormanyos/wide-integer/issues/234)
