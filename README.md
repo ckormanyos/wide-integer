@@ -298,6 +298,7 @@ Automation of this is, however, planned.
 Code coverage uses GCC/gcov/lcov and has a
 quality-gate with comparison/baseline-check provided by
 [Codecov](https://app.codecov.io/gh/ckormanyos/wide-integer).
+
 Quality badges are displayed at the top of this repository's
 readme page.
 
@@ -728,6 +729,8 @@ negative arguments in number theoretical functions.
   - Miller-Rabin primality testing treats negative inetegers as positive when testing for prime, thus extending the set of primes <img src="https://render.githubusercontent.com/render/math?math=p\,\in\,\mathbb{Z}">.
   - MSB/LSB (most/least significant bit) do not differentiate between positive or negative argument such that MSB of a negative integer will be the highest bit of the corresponding unsigned type.
   - Printing both positive-valued and negative-valued signed integers in hexadecimal format is supported. When printing negative-valued, signed  `uintwide_t` in hexadecimal format, the sign bit and all other bits are treated as if the integer were unsigned. The negative sign is not explicitly shown when using hexadecimal format, even if the underlying integer is signed and negative-valued. A potential positive sign, however, will be shown for positive-valued signed integers in hexadecimal form in the presence of `std::showpos`.
+
+## Further details
 
 ### Notable construction/conversion rules
 
