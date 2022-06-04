@@ -282,7 +282,7 @@ ranging from C++14, 17, 20, 23 are included in CI.
 In CI, we use both elevated GCC/clang compiler warnings
 as well as MSVC level 4 warnings active on the correspondoing platforms.
 A wide variety of run-time sanitizers
-are also used in CI assure dynamic quality.
+are also used in CI in order to assure dynamic quality.
 For syntax checking, clang-tidy is used both in CI
 as well as in offline checks to improve static code quality.
 
@@ -292,8 +292,9 @@ These include
 [LGTM](https://lgtm.com/projects/g/ckormanyos/wide-integer/alerts/?mode=list),
 [Synopsis Coverity](https://scan.coverity.com/projects/ckormanyos-wide-integer),
 and [CodeSonar](https://sonarcloud.io/summary/new_code?id=ckormanyos_wide-integer).
-At the moment, the Coverity check is run with manual report submission,
-automation of this is, however, planned.
+At the moment, the Coverity check is run with manual report submission.
+Automation of this is, however, planned.
+
 Code coverage uses GCC/gcov/lcov and has a
 quality-gate with comparison/baseline-check provided by
 [Codecov](https://app.codecov.io/gh/ckormanyos/wide-integer).
@@ -750,8 +751,8 @@ and
 At the moment, the digit range of wide-integer is limited
 to the granularity of the full limb type.
 This means that less-common bit counts
-that would require non-full use of the limbs
-are not supported. It is not possible with this library,
+requiring the use of non-full limbs
+are not supported. It is **not** possible with this library,
 for instance, to synthesize, let's say, a 61-bit integral type.
 
 This can have performance impact. If you would like
