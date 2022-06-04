@@ -44,6 +44,9 @@
     <Filter Include=".gcov\make">
       <UniqueIdentifier>{09bf1894-26c1-40a4-870e-f338f0940b7b}</UniqueIdentifier>
     </Filter>
+    <Filter Include=".props">
+      <UniqueIdentifier>{78812fa7-c747-46fb-861d-bb6cfe3070ab}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="boost\multiprecision\uintwide_t_backend.hpp">
@@ -217,6 +220,10 @@
     <None Include=".github\workflows\wide_integer_codecov.yml">
       <Filter>.github\workflows</Filter>
     </None>
+    <None Include=".props\Directory.Build.props">
+      <Filter>.props</Filter>
+    </None>
+    <None Include="codecov.yml" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="examples\CMakeLists.txt">
