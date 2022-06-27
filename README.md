@@ -4,15 +4,28 @@
 >ANNOUNCEMENT: Support for C++11 will be deprecated in this library starting in summer 2022.
 >New features will require _at_ _least_ C++14, as will existing features starting with the deprecation.
 
-[![Build Status](https://github.com/ckormanyos/wide-integer/actions/workflows/wide_integer.yml/badge.svg)](https://github.com/ckormanyos/wide-integer/actions)
-[![Language grade: C/C++](https://img.shields.io/lgtm/grade/cpp/g/ckormanyos/wide-integer.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/ckormanyos/wide-integer/context:cpp)
-[![Total alerts](https://img.shields.io/lgtm/alerts/g/ckormanyos/wide-integer.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/ckormanyos/wide-integer/alerts/)
-[![Coverity Scan](https://scan.coverity.com/projects/24742/badge.svg)](https://scan.coverity.com/projects/ckormanyos-wide-integer)
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=ckormanyos_wide-integer&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=ckormanyos_wide-integer)
-[![codecov](https://codecov.io/gh/ckormanyos/wide-integer/branch/master/graph/badge.svg?token=kiBP4MAjdV)](https://codecov.io/gh/ckormanyos/wide-integer)
-[![Boost Software License 1.0](https://img.shields.io/badge/license-BSL%201.0-blue.svg)](https://github.com/ckormanyos/wide-integer/blob/master/LICENSE_1_0.txt)
-[![GitHub commit activity](https://img.shields.io/github/commit-activity/y/ckormanyos/wide-integer)](https://img.shields.io/github/commit-activity/y/ckormanyos/wide-integer)
-[![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/ckormanyos/wide-integer)](https://github.com/ckormanyos/wide-integer)
+<p align="center">
+    <a href="https://github.com/ckormanyos/wide-integer/actions">
+        <img src="https://github.com/ckormanyos/wide-integer/actions/workflows/wide_integer.yml/badge.svg" alt="Build Status"></a>
+    <a href="https://github.com/ckormanyos/wide-integer/issues?q=is%3Aissue+is%3Aopen+sort%3Aupdated-desc">
+        <img src="https://custom-icon-badges.herokuapp.com/github/issues-raw/ckormanyos/wide-integer?logo=github" alt="Issues" /></a>
+    <a href="https://lgtm.com/projects/g/ckormanyos/wide-integer/context:cpp">
+        <img src="https://img.shields.io/lgtm/grade/cpp/g/ckormanyos/wide-integer.svg?logo=lgtm&logoWidth=18" alt="Language grade: C/C++"></a>
+    <a href="https://lgtm.com/projects/g/ckormanyos/wide-integer/alerts/">
+        <img src="https://img.shields.io/lgtm/alerts/g/ckormanyos/wide-integer.svg?logo=lgtm&logoWidth=18" alt="Total alerts"></a>
+    <a href="https://scan.coverity.com/projects/ckormanyos-wide-integer">
+        <img src="https://scan.coverity.com/projects/24742/badge.svg" alt="Coverity Scan"></a>
+    <a href="https://sonarcloud.io/summary/new_code?id=ckormanyos_wide-integer">
+        <img src="(https://sonarcloud.io/api/project_badges/measure?project=ckormanyos_wide-integer&metric=alert_status" alt="Quality Gate Status"></a>
+    <a href="https://codecov.io/gh/ckormanyos/wide-integer">
+        <img src="(https://sonarcloud.io/api/project_badges/measure?project=ckormanyos_wide-integer&metric=alert_status" alt="codecov"></a>
+    <a href="https://github.com/ckormanyos/wide-integer/blob/master/LICENSE_1_0.txt">
+        <img src="(https://img.shields.io/badge/license-BSL%201.0-blue.svg" alt="Boost Software License 1.0"></a>
+    <a href="https://img.shields.io/github/commit-activity/y/ckormanyos/wide-integer">
+        <img src="(https://img.shields.io/github/commit-activity/y/ckormanyos/wide-integer" alt="GitHub commit activity"></a>
+    <a href="https://github.com/ckormanyos/wide-integer">
+        <img src="(https://img.shields.io/github/languages/code-size/ckormanyos/wide-integer" alt="GitHub code size in bytes"></a>
+</p>
 
 Wide-integer implements a generic C++ template for extended width
 unsigned and signed integral types.
