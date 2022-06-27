@@ -14,17 +14,9 @@
     <a href="https://lgtm.com/projects/g/ckormanyos/wide-integer/alerts/">
         <img src="https://img.shields.io/lgtm/alerts/g/ckormanyos/wide-integer.svg?logo=lgtm&logoWidth=18" alt="Total alerts" /></a>
     <a href="https://scan.coverity.com/projects/ckormanyos-wide-integer">
-        <img src="https://scan.coverity.com/projects/24742/badge.svg" alt="Coverity Scan" /></a>
+        <img src="https://scan.coverity.com/projects/24742/badge.svg" alt="Coverity Scan"></a>
     <a href="https://sonarcloud.io/summary/new_code?id=ckormanyos_wide-integer">
         <img src="(https://sonarcloud.io/api/project_badges/measure?project=ckormanyos_wide-integer&metric=alert_status" alt="Quality Gate Status"></a>
-    <a href="https://codecov.io/gh/ckormanyos/wide-integer">
-        <img src="(https://codecov.io/gh/ckormanyos/wide-integer/branch/master/graph/badge.svg?token=kiBP4MAjdV" alt="code coverage"></a>
-    <a href="https://github.com/ckormanyos/wide-integer/blob/master/LICENSE_1_0.txt">
-        <img src="(https://img.shields.io/badge/license-BSL%201.0-blue.svg" alt="Boost Software License 1.0"></a>
-    <a href="https://img.shields.io/github/commit-activity/y/ckormanyos/wide-integer">
-        <img src="(https://img.shields.io/github/commit-activity/y/ckormanyos/wide-integer" alt="GitHub commit activity" /></a>
-    <a href="https://github.com/ckormanyos/wide-integer">
-        <img src="(https://img.shields.io/github/languages/code-size/ckormanyos/wide-integer" alt="GitHub code size in bytes" /></a>
 </p>
 
 Wide-integer implements a generic C++ template for extended width
