@@ -149,12 +149,7 @@ auto math::wide_integer::example008a_miller_rabin_prime() -> bool
     }
   }
 
-  auto seed_next = std::clock();
-
-  while(seed_next == seed_start)
-  {
-    seed_next = std::clock();
-  }
+  const auto seed_next = std::clock();
 
   gen1.seed(static_cast<typename random_engine1_type::result_type>(seed_next));
 

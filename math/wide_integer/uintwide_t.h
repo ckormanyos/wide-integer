@@ -4585,11 +4585,11 @@
   {
     using local_floating_point_type = FloatingPointType;
 
-    const bool x_is_neg = (x < static_cast<local_floating_point_type>(0.0L));
+    const auto x_is_neg = (x < static_cast<local_floating_point_type>(0.0L));
 
     local_floating_point_type f = (x_is_neg ? -x : x);
 
-    int e2 = 0;
+    auto e2 = static_cast<int>(INT8_C(0));
 
     constexpr long double two_pow32 =
       static_cast<long double>(0x10000) * static_cast<long double>(0x10000);
@@ -4603,11 +4603,11 @@
       e2 += static_cast<int>(INT32_C(32));
     }
 
-    constexpr long double one_ldbl(1.0L);
+    constexpr auto one_ldbl = static_cast<long double>(1.0L);
 
     while(f >= static_cast<local_floating_point_type>(one_ldbl)) // NOLINT(altera-id-dependent-backward-branch)
     {
-      constexpr long double two_ldbl(2.0L);
+      constexpr auto two_ldbl = static_cast<long double>(2.0L);
 
       f = static_cast<local_floating_point_type>(f / static_cast<local_floating_point_type>(two_ldbl));
 
@@ -4633,9 +4633,9 @@
   {
     using local_floating_point_type = FloatingPointType;
 
-    bool x_is_finite = true;
+    auto x_is_finite = true;
 
-    const bool x_is_nan = (x != x);
+    const auto x_is_nan = (x != x);
 
     if(x_is_nan)
     {
@@ -4643,8 +4643,8 @@
     }
     else
     {
-      const bool x_is_inf_pos = (x > (std::numeric_limits<local_floating_point_type>::max)());
-      const bool x_is_inf_neg = (x <  std::numeric_limits<local_floating_point_type>::lowest());
+      const auto x_is_inf_pos = (x > (std::numeric_limits<local_floating_point_type>::max)());
+      const auto x_is_inf_neg = (x <  std::numeric_limits<local_floating_point_type>::lowest());
 
       if(x_is_inf_pos || x_is_inf_neg)
       {
@@ -4672,9 +4672,11 @@
                    && std::is_unsigned<UnsignedIntegralType>::value),
                    "Error: Please check the characteristics of UnsignedIntegralType");
 
-    unsigned_fast_type result = 0U;
+    auto result = static_cast<unsigned_fast_type>(UINT8_C(0));
 
-    UnsignedIntegralType mask(u);
+    using local_unsigned_integral_type = UnsignedIntegralType;
+
+    auto mask = static_cast<local_unsigned_integral_type>(u);
 
     // This assumes that at least one bit is set.
     // Otherwise saturation of the index will occur.
@@ -4684,7 +4686,7 @@
     // on the lowest bit position of the fundamental type.
     while(static_cast<std::uint_fast8_t>(static_cast<std::uint_fast8_t>(mask) & UINT8_C(1)) == UINT8_C(0)) // NOLINT(hicpp-signed-bitwise,altera-id-dependent-backward-branch)
     {
-      mask >>= 1U;
+      mask = static_cast<local_unsigned_integral_type>(mask >> 1U);
 
       ++result;
     }
@@ -4799,11 +4801,12 @@
 
       if(vi != static_cast<local_value_type>(0U))
       {
-        bpos = static_cast<unsigned_fast_type>
-               (
-                   detail::lsb_helper(*it)
-                 + static_cast<unsigned_fast_type>(static_cast<unsigned_fast_type>(std::numeric_limits<local_value_type>::digits) * offset)
-               );
+        bpos =
+          static_cast<unsigned_fast_type>
+          (
+              detail::lsb_helper(*it)
+            + static_cast<unsigned_fast_type>(static_cast<unsigned_fast_type>(std::numeric_limits<local_value_type>::digits) * offset)
+          );
 
         break;
       }
@@ -4833,11 +4836,12 @@
 
       if(vr != static_cast<local_value_type>(0U))
       {
-        bpos = static_cast<unsigned_fast_type>
-               (
-                    detail::msb_helper(*ri)
-                  + static_cast<unsigned_fast_type>(static_cast<unsigned_fast_type>(std::numeric_limits<local_value_type>::digits) * offset)
-               );
+        bpos =
+          static_cast<unsigned_fast_type>
+          (
+              detail::msb_helper(*ri)
+            + static_cast<unsigned_fast_type>(static_cast<unsigned_fast_type>(std::numeric_limits<local_value_type>::digits) * offset)
+          );
 
         break;
       }
@@ -4877,13 +4881,16 @@
     {
       // Obtain the initial guess via algorithms
       // involving the position of the msb.
-      const unsigned_fast_type msb_pos = msb(m);
+      const auto msb_pos = msb(m);
 
       // Obtain the initial value.
-      const unsigned_fast_type left_shift_amount =
-        ((static_cast<unsigned_fast_type>(msb_pos % 2U) == 0U)
-          ? static_cast<unsigned_fast_type>(1U + static_cast<unsigned_fast_type>((msb_pos + 0U) / 2U))
-          : static_cast<unsigned_fast_type>(1U + static_cast<unsigned_fast_type>((msb_pos + 1U) / 2U)));
+      const auto left_shift_amount =
+        static_cast<unsigned_fast_type>
+        (
+          ((static_cast<unsigned_fast_type>(msb_pos % 2U) == 0U)
+            ? static_cast<unsigned_fast_type>(1U + static_cast<unsigned_fast_type>((msb_pos + 0U) / 2U))
+            : static_cast<unsigned_fast_type>(1U + static_cast<unsigned_fast_type>((msb_pos + 1U) / 2U)))
+        );
 
       local_wide_integer_type
       u
@@ -4936,15 +4943,18 @@
     {
       // Obtain the initial guess via algorithms
       // involving the position of the msb.
-      const unsigned_fast_type msb_pos = msb(m);
+      const auto msb_pos = msb(m);
 
       // Obtain the initial value.
       const auto msb_pos_mod_3 = static_cast<unsigned_fast_type>(msb_pos % UINT8_C(3));
 
-      const unsigned_fast_type left_shift_amount =
-        ((msb_pos_mod_3 == 0U)
-          ? static_cast<unsigned_fast_type>(1U + static_cast<unsigned_fast_type>((msb_pos +                  0U ) / 3U))
-          : static_cast<unsigned_fast_type>(1U + static_cast<unsigned_fast_type>((msb_pos + (3U - msb_pos_mod_3)) / 3U)));
+      const auto left_shift_amount =
+        static_cast<unsigned_fast_type>
+        (
+          ((msb_pos_mod_3 == 0U)
+            ? static_cast<unsigned_fast_type>(1U + static_cast<unsigned_fast_type>((msb_pos +                  0U ) / 3U))
+            : static_cast<unsigned_fast_type>(1U + static_cast<unsigned_fast_type>((msb_pos + (3U - msb_pos_mod_3)) / 3U)))
+        );
 
       local_wide_integer_type u(local_wide_integer_type(static_cast<std::uint_fast8_t>(1U)) << left_shift_amount);
 
