@@ -73,11 +73,7 @@
 
   public:
     explicit test_uintwide_t_n_binary_ops_mul_div_4_by_4_template(const std::size_t count)
-      : test_uintwide_t_n_binary_ops_base(count),
-        a_local(),
-        b_local(),
-        a_cntrl(),
-        b_cntrl() { }
+      : test_uintwide_t_n_binary_ops_base(count) { }
 
     ~test_uintwide_t_n_binary_ops_mul_div_4_by_4_template() override = default;
 
@@ -183,11 +179,11 @@
     }
 
   private:
-    std::vector<local_uint_ab_type> a_local; // NOLINT(readability-identifier-naming)
-    std::vector<local_uint_ab_type> b_local; // NOLINT(readability-identifier-naming)
+    std::vector<local_uint_ab_type> a_local { }; // NOLINT(readability-identifier-naming)
+    std::vector<local_uint_ab_type> b_local { }; // NOLINT(readability-identifier-naming)
 
-    std::vector<native_uint_cntrl_type> a_cntrl; // NOLINT(readability-identifier-naming)
-    std::vector<native_uint_cntrl_type> b_cntrl; // NOLINT(readability-identifier-naming)
+    std::vector<native_uint_cntrl_type> a_cntrl { }; // NOLINT(readability-identifier-naming)
+    std::vector<native_uint_cntrl_type> b_cntrl { }; // NOLINT(readability-identifier-naming)
 
     template<typename OtherLocalUintType,
              typename OtherCntrlUintType>

@@ -55,11 +55,7 @@
 
   public:
     explicit test_uintwide_t_n_binary_ops_template(const std::size_t count)
-      : test_uintwide_t_n_binary_ops_base(count),
-        a_local(),
-        b_local(),
-        a_boost(),
-        b_boost() { }
+      : test_uintwide_t_n_binary_ops_base(count) { }
 
     ~test_uintwide_t_n_binary_ops_template() override = default;
 
@@ -295,11 +291,11 @@
     }
 
   private:
-    std::vector<local_uint_type> a_local; // NOLINT(readability-identifier-naming)
-    std::vector<local_uint_type> b_local; // NOLINT(readability-identifier-naming)
+    std::vector<local_uint_type> a_local { }; // NOLINT(readability-identifier-naming)
+    std::vector<local_uint_type> b_local { }; // NOLINT(readability-identifier-naming)
 
-    std::vector<boost_uint_type> a_boost; // NOLINT(readability-identifier-naming)
-    std::vector<boost_uint_type> b_boost; // NOLINT(readability-identifier-naming)
+    std::vector<boost_uint_type> a_boost { }; // NOLINT(readability-identifier-naming)
+    std::vector<boost_uint_type> b_boost { }; // NOLINT(readability-identifier-naming)
   };
 
 #endif // TEST_UINTWIDE_T_N_BINARY_OPS_TEMPLATE_2019_12_19_H

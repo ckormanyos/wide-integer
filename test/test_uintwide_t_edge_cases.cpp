@@ -466,6 +466,31 @@ auto test_various_ostream_ops() -> bool
   return result_is_ok;
 }
 
+auto test_various_roots() -> bool
+{
+  auto result_is_ok = true;
+
+  {
+    const auto u      = local_uintwide_t_small_unsigned_type("1000000000000000000000000000000");
+    const auto u_root = rootk(u, static_cast<std::uint_fast8_t>(UINT8_C(1)));
+
+    const bool result_u_root_is_ok = u_root == local_uintwide_t_small_unsigned_type("1000000000000000000000000000000");
+
+    result_is_ok = (result_u_root_is_ok && result_is_ok);
+  }
+
+  {
+    const auto u      = local_uintwide_t_small_unsigned_type("1000000000000000000000000000000");
+    const auto u_root = rootk(u, static_cast<std::uint_fast8_t>(UINT8_C(2)));
+
+    const bool result_u_root_is_ok = u_root == local_uintwide_t_small_unsigned_type("1000000000000000");
+
+    result_is_ok = (result_u_root_is_ok && result_is_ok);
+  }
+
+  return result_is_ok;
+}
+
 } // namespace test_uintwide_t_edge
 
 #if defined(WIDE_INTEGER_NAMESPACE)
@@ -478,6 +503,7 @@ auto math::wide_integer::test_uintwide_t_edge_cases() -> bool
 
   result_is_ok = (test_uintwide_t_edge::test_various_edge_operations() && result_is_ok);
   result_is_ok = (test_uintwide_t_edge::test_various_ostream_ops    () && result_is_ok);
+  result_is_ok = (test_uintwide_t_edge::test_various_roots          () && result_is_ok);
 
   return result_is_ok;
 
