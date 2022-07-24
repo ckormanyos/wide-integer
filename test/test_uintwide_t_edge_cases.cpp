@@ -70,7 +70,7 @@ using local_uintwide_t_small_signed_type =
   ::math::wide_integer::uintwide_t<local_edge_cases::local_digits2_small, std::uint16_t, void, true>;
   #endif
 
-const typename local_uintwide_t_small_unsigned_type::limb_type& zero_as_limb();
+auto zero_as_limb() -> const typename local_uintwide_t_small_unsigned_type::limb_type&;
 
 std::uniform_int_distribution<std::uint32_t> dist_sgn    (UINT32_C(0), UINT32_C(1));  // NOLINT(cert-err58-cpp,cppcoreguidelines-avoid-non-const-global-variables)
 std::uniform_int_distribution<std::uint32_t> dist_dig_dec(UINT32_C(1), UINT32_C(9));  // NOLINT(cert-err58-cpp,cppcoreguidelines-avoid-non-const-global-variables)
@@ -587,7 +587,14 @@ auto test_various_isolated_edge_cases() -> bool
     const auto b(local_uintwide_t_small_unsigned_type("10000000000000000000000000000000000000000"));
 
     const auto c(a %= b);
-    const auto d(a %= a);
+    #if defined(__clang__)
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wself-assign-overloaded"
+    #endif
+    const auto d(a %= a); // NOLINT(clang-diagnostic-self-assign-overloaded)
+    #if defined(__clang__)
+    #pragma GCC diagnostic pop
+    #endif
 
     const auto result_self_mod_is_ok = ((c == 0) && (d == 0));
 
@@ -656,7 +663,7 @@ auto math::wide_integer::test_uintwide_t_edge_cases() -> bool
   return result_is_ok;
 }
 
-const typename test_uintwide_t_edge::local_uintwide_t_small_unsigned_type::limb_type& test_uintwide_t_edge::zero_as_limb()
+auto test_uintwide_t_edge::zero_as_limb() -> const typename test_uintwide_t_edge::local_uintwide_t_small_unsigned_type::limb_type&
 {
   static const auto my_zero_as_limb =
     static_cast<typename local_uintwide_t_small_unsigned_type::limb_type>(UINT8_C(0));
