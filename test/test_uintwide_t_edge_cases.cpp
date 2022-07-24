@@ -587,12 +587,15 @@ auto test_various_isolated_edge_cases() -> bool
     const auto b(local_uintwide_t_small_unsigned_type("10000000000000000000000000000000000000000"));
 
     const auto c(a %= b);
-    #if defined(__clang__)
+
+    #if (defined(__clang__) && (defined(__clang_major__) && (__clang_major__ > 6)))
     #pragma GCC diagnostic push
     #pragma GCC diagnostic ignored "-Wself-assign-overloaded"
     #endif
+
     const auto d(a %= a); // NOLINT(clang-diagnostic-self-assign-overloaded)
-    #if defined(__clang__)
+
+    #if (defined(__clang__) && (defined(__clang_major__) && (__clang_major__ > 6)))
     #pragma GCC diagnostic pop
     #endif
 
