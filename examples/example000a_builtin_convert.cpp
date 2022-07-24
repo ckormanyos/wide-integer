@@ -13,7 +13,7 @@ namespace local
   template<typename NumericType>
   constexpr auto fabs(NumericType a) -> NumericType
   {
-    return ((a < NumericType(0)) ? -a : a);
+    return ((a < NumericType(0)) ? -a : a); // LCOV_EXCL_LINE
   }
 } // namespace local
 

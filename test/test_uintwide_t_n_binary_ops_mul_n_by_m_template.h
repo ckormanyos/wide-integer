@@ -88,11 +88,7 @@
 
   public:
     explicit test_uintwide_t_n_binary_ops_mul_n_by_m_template(const std::size_t count)
-      : test_uintwide_t_n_binary_ops_base(count),
-        a_local(),
-        b_local(),
-        a_boost(),
-        b_boost() { }
+      : test_uintwide_t_n_binary_ops_base(count) { }
 
     ~test_uintwide_t_n_binary_ops_mul_n_by_m_template() override = default;
 
@@ -161,11 +157,11 @@
     }
 
   private:
-    std::vector<local_uint_a_type> a_local; // NOLINT(readability-identifier-naming)
-    std::vector<local_uint_b_type> b_local; // NOLINT(readability-identifier-naming)
+    std::vector<local_uint_a_type> a_local { }; // NOLINT(readability-identifier-naming)
+    std::vector<local_uint_b_type> b_local { }; // NOLINT(readability-identifier-naming)
 
-    std::vector<boost_uint_a_type> a_boost; // NOLINT(readability-identifier-naming)
-    std::vector<boost_uint_b_type> b_boost; // NOLINT(readability-identifier-naming)
+    std::vector<boost_uint_a_type> a_boost { }; // NOLINT(readability-identifier-naming)
+    std::vector<boost_uint_b_type> b_boost { }; // NOLINT(readability-identifier-naming)
   };
 
 #endif // TEST_UINTWIDE_T_N_BINARY_OPS_MUL_N_BY_M_TEMPLATE_2019_12_26_H

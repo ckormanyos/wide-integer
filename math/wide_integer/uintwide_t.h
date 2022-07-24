@@ -2046,20 +2046,16 @@
     static constexpr auto wr_string_max_buffer_size_hex =
       static_cast<size_t>
       (
-        (
-            8U
-          + (((my_width2 % 4U) != 0U) ? 1U : 0U)
-          +   (my_width2 / 4U)
-        )
+          8U
+        + (((my_width2 % 4U) != 0U) ? 1U : 0U)
+        +   (my_width2 / 4U)
       );
 
     static constexpr auto wr_string_max_buffer_size_dec =
       static_cast<size_t>
       (
-        (
-            10U
-          + static_cast<size_t>((static_cast<std::uintmax_t>(my_width2) * UINTMAX_C(301)) / UINTMAX_C(1000))
-        )
+          static_cast<size_t>(UINT8_C(10))
+        + static_cast<size_t>((static_cast<std::uintmax_t>(my_width2) * UINTMAX_C(301)) / UINTMAX_C(1000))
       );
 
     // Write string function.
@@ -2615,7 +2611,9 @@
         auto ld      = static_cast<long double>(0.0L);
         auto lm_mask = static_cast<limb_type>(1ULL);
 
-        for(auto j = static_cast<size_t>(0U); j < static_cast<size_t>(std::numeric_limits<limb_type>::digits); ++j)
+        for(auto   j = static_cast<size_t>(0U);
+                   j < static_cast<size_t>(std::numeric_limits<limb_type>::digits);
+                 ++j)
         {
           if(static_cast<limb_type>(*(u.values.cbegin() + static_cast<size_t>(i)) & lm_mask) != static_cast<limb_type>(0U))
           {
@@ -2775,7 +2773,7 @@
       using left_difference_type   = typename std::iterator_traits<InputIteratorLeft>::difference_type;
       using right_difference_type  = typename std::iterator_traits<InputIteratorRight>::difference_type;
 
-      for(auto i = static_cast<unsigned_fast_type>(0U); i < count; ++i)
+      for(auto i = static_cast<unsigned_fast_type>(UINT8_C(0)); i < count; ++i)
       {
         const auto uv_as_ularge = static_cast<local_double_limb_type>(static_cast<local_double_limb_type>(static_cast<local_double_limb_type>(*(u + static_cast<left_difference_type>(i))) - *(v + static_cast<right_difference_type>(i))) - has_borrow_out);
 
@@ -2856,7 +2854,7 @@
                 (
                   static_cast<local_double_limb_type>
                   (
-                    detail::make_hi<local_limb_type>(a0b0)
+                    detail::make_hi<local_limb_type>(a0b0) // LCOV_EXCL_LINE
                   )
                   + detail::make_lo<local_limb_type>(a1b0)
                   + detail::make_lo<local_limb_type>(a0b1)
@@ -2866,7 +2864,7 @@
                 (
                   static_cast<local_double_limb_type>
                   (
-                    detail::make_hi<local_limb_type>(r1)
+                    detail::make_hi<local_limb_type>(r1) // LCOV_EXCL_LINE
                   )
                   + detail::make_lo<local_limb_type>(a1b1)
                   + detail::make_hi<local_limb_type>(a0b1)
@@ -3303,7 +3301,7 @@
       using left_difference_type   = typename std::iterator_traits<InputIteratorLeft>::difference_type;
       using right_difference_type  = typename std::iterator_traits<InputIteratorRight>::difference_type;
 
-      std::fill_n(r, (count * 2U), static_cast<local_limb_type>(0U));
+      std::fill_n(r, static_cast<size_t>(count * 2U), static_cast<local_limb_type>(0U));
 
       for(auto i = static_cast<unsigned_fast_type>(0U); i < count; ++i)
       {
@@ -3311,7 +3309,7 @@
         {
           unsigned_fast_type j = 0U;
 
-          local_double_limb_type carry = 0U;
+          auto carry = static_cast<local_double_limb_type>(UINT8_C(0));
 
           for( ; j < count; ++j)
           {
@@ -3552,24 +3550,24 @@
         //   |a1-a0| -> t0
         const std::int_fast8_t cmp_result_a1a0 = compare_ranges(a1, a0, nh);
 
-        if(cmp_result_a1a0 == 1)
+        if(cmp_result_a1a0 == static_cast<std::int_fast8_t>(INT8_C(1)))
         {
           static_cast<void>(eval_subtract_n(t0, a1, a0, nh));
         }
-        else if(cmp_result_a1a0 == -1)
+        else if(cmp_result_a1a0 == static_cast<std::int_fast8_t>(INT8_C(-1)))
         {
           static_cast<void>(eval_subtract_n(t0, a0, a1, nh));
         }
 
         // Step 4
         //   |b0-b1| -> t1
-        const std::int_fast8_t cmp_result_b0b1 = compare_ranges(b0, b1, nh);
+        const auto cmp_result_b0b1 = compare_ranges(b0, b1, nh);
 
-        if(cmp_result_b0b1 == 1)
+        if(cmp_result_b0b1 == static_cast<std::int_fast8_t>(INT8_C(1)))
         {
           static_cast<void>(eval_subtract_n(t1, b0, b1, nh));
         }
-        else if(cmp_result_b0b1 == -1)
+        else if(cmp_result_b0b1 == static_cast<std::int_fast8_t>(INT8_C(-1)))
         {
           static_cast<void>(eval_subtract_n(t1, b1, b0, nh));
         }
@@ -3581,15 +3579,15 @@
         // Step 6
         //   either r1 += |a1-a0|*|b0-b1|
         //   or     r1 -= |a1-a0|*|b0-b1|
-        if((cmp_result_a1a0 * cmp_result_b0b1) == 1)
+        if(static_cast<std::int_fast8_t>(cmp_result_a1a0 * cmp_result_b0b1) == static_cast<std::int_fast8_t>(INT8_C(1)))
         {
           carry = eval_add_n(r1, r1, t2, n);
 
           eval_multiply_kara_propagate_carry(r3, nh, carry);
         }
-        else if((cmp_result_a1a0 * cmp_result_b0b1) == -1)
+        else if(static_cast<std::int_fast8_t>(cmp_result_a1a0 * cmp_result_b0b1) == static_cast<std::int_fast8_t>(INT8_C(-1)))
         {
-          const bool has_borrow = eval_subtract_n(r1, r1, t2, n);
+          const auto has_borrow = eval_subtract_n(r1, r1, t2, n);
 
           eval_multiply_kara_propagate_borrow(r3, nh, has_borrow);
         }
@@ -3774,9 +3772,13 @@
           const auto uj     = static_cast<local_uint_index_type>(static_cast<local_uint_index_type>(static_cast<local_uint_index_type>(static_cast<local_uint_index_type>(number_of_limbs + 1U) - 1U) - u_offset) - j);
           const auto u_j_j1 = static_cast<double_limb_type>(static_cast<double_limb_type>(static_cast<double_limb_type>(*(uu.cbegin() + static_cast<size_t>(uj))) << static_cast<unsigned>(std::numeric_limits<limb_type>::digits)) + *(uu.cbegin() + static_cast<size_t>(uj - 1U)));
 
-          limb_type q_hat = ((*(uu.cbegin() + static_cast<size_t>(uj)) == *(vv.cbegin() + static_cast<size_t>(vj0)))
-            ? (std::numeric_limits<limb_type>::max)()
-            : static_cast<limb_type>(u_j_j1 / *(vv.cbegin() + static_cast<size_t>(vj0))));
+          auto q_hat =
+            static_cast<limb_type>
+            (
+              (*(uu.cbegin() + static_cast<size_t>(uj)) == *(vv.cbegin() + static_cast<size_t>(vj0)))
+                ? (std::numeric_limits<limb_type>::max)()
+                : static_cast<limb_type>(u_j_j1 / *(vv.cbegin() + static_cast<size_t>(vj0)))
+            );
 
           // Decrease q_hat if necessary.
           // This means that q_hat must be decreased if the
@@ -3786,8 +3788,8 @@
           for(auto t = static_cast<double_limb_type>(u_j_j1 - static_cast<double_limb_type>(q_hat * static_cast<double_limb_type>(*(vv.cbegin() + static_cast<size_t>(vj0))))); ; --q_hat, t = static_cast<double_limb_type>(t + *(vv.cbegin() + static_cast<size_t>(vj0))))
           {
             if(   (detail::make_hi<limb_type>(t) != static_cast<limb_type>(0U))
-                || (   static_cast<double_limb_type>(static_cast<double_limb_type>(*(vv.cbegin() + static_cast<size_t>(vj0 - 1U))) * q_hat)
-                    <= static_cast<double_limb_type>(static_cast<double_limb_type>(t << static_cast<unsigned>(std::numeric_limits<limb_type>::digits)) + *(uu.cbegin() + static_cast<size_t>(uj - 2U)))))
+               || (   static_cast<double_limb_type>(static_cast<double_limb_type>(*(vv.cbegin() + static_cast<size_t>(vj0 - 1U))) * q_hat)
+                   <= static_cast<double_limb_type>(static_cast<double_limb_type>(t << static_cast<unsigned>(std::numeric_limits<limb_type>::digits)) + *(uu.cbegin() + static_cast<size_t>(uj - 2U)))))
             {
               break;
             }
@@ -4463,7 +4465,7 @@
 
     using local_wide_integer_type = uintwide_t<Width2, LimbType, AllocatorType, IsSigned>;
 
-    if(base_rep == UINT8_C(8))
+    if(base_rep == static_cast<std::uint_fast8_t>(UINT8_C(8)))
     {
       using string_storage_oct_type =
         typename std::conditional
@@ -4479,7 +4481,7 @@
 
       // TBD: There is redundant storage of this kind both here
       // in this subroutine as well as in the wr_string method.
-      string_storage_oct_type str_result;
+      string_storage_oct_type str_result; // LCOV_EXCL_LINE
 
       str_result.fill('\0');
 
@@ -4487,7 +4489,7 @@
 
       static_cast<void>(ostr << str_result.data());
     }
-    else if(base_rep == UINT8_C(10))
+    else if(base_rep == static_cast<std::uint_fast8_t>(UINT8_C(10)))
     {
       using string_storage_dec_type =
         typename std::conditional
@@ -4511,7 +4513,7 @@
 
       static_cast<void>(ostr << str_result.data());
     }
-    else if(base_rep == UINT8_C(16))
+    else if(base_rep == static_cast<std::uint_fast8_t>(UINT8_C(16)))
     {
       using string_storage_hex_type =
         typename std::conditional
@@ -4995,7 +4997,7 @@
            typename LimbType,
            typename AllocatorType,
            const bool IsSigned>
-  WIDE_INTEGER_CONSTEXPR auto rootk(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& m, const std::uint_fast8_t k) -> uintwide_t<Width2, LimbType, AllocatorType, IsSigned>
+  WIDE_INTEGER_CONSTEXPR auto rootk(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& m, std::uint_fast8_t k) -> uintwide_t<Width2, LimbType, AllocatorType, IsSigned>
   {
     // Calculate the k'th root.
 
