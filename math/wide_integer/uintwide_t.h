@@ -2483,7 +2483,7 @@
         if      (c <= static_cast<char>(INT8_C(  9)))                                           { c = static_cast<char>(c + static_cast<char>(INT8_C(0x30))); }
         else if((c >= static_cast<char>(INT8_C(0xA))) && (c <= static_cast<char>(INT8_C(0xF)))) { c = static_cast<char>(c + (is_uppercase ? static_cast<char>(INT8_C(55)) : static_cast<char>(INT8_C(87)))); }
 
-        *(--pstr) = c;
+        *(--pstr) = c; // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
 
         ++dst;
 
