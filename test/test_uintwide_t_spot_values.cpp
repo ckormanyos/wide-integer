@@ -224,7 +224,7 @@ namespace from_issue_145
 
     const auto a0(x);
 
-    #if defined(__clang__) && (defined(__clang_major__) && (__clang_major__ > 6))
+    #if (defined(__clang__) && (defined(__clang_major__) && (__clang_major__ > 6)))
     #pragma GCC diagnostic push
     #pragma GCC diagnostic ignored "-Wself-assign-overloaded"
     #endif
@@ -247,7 +247,7 @@ namespace from_issue_145
       local_result_is_ok = ((a == 1U) && local_result_is_ok);
     }
 
-    #if defined(__clang__) && (defined(__clang_major__) && (__clang_major__ > 6))
+    #if (defined(__clang__) && (defined(__clang_major__) && (__clang_major__ > 6)))
     #pragma GCC diagnostic pop
     #endif
 

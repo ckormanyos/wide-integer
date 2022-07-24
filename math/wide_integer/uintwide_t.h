@@ -106,6 +106,10 @@
     #define WIDE_INTEGER_NAMESPACE_END
   #endif
 
+  namespace test_uintwide_t_edge {
+  auto test_various_isolated_edge_cases() -> bool;
+  } // namespace test_uintwide_t_edge
+
   #if !defined(WIDE_INTEGER_DISABLE_IMPLEMENT_UTIL_DYNAMIC_ARRAY)
 
   WIDE_INTEGER_NAMESPACE_BEGIN
@@ -1630,7 +1634,7 @@
         const uintwide_t self(other);
 
         // Unary addition function.
-        const limb_type carry = eval_add_n(values.data(),
+        const limb_type carry = eval_add_n(values.data(), // LCOV_EXCL_LINE
                                            values.data(),
                                            self.values.data(),
                                            static_cast<unsigned_fast_type>(number_of_limbs),
@@ -1943,7 +1947,10 @@
       {
         if(exceeds_width(n))
         {
-          std::fill(values.begin(), values.end(), static_cast<limb_type>(0U));
+          // Fill with either 0's or 1's. Note also the implementation-defined
+          // behavior of excessive right-shift of negative value.
+
+          std::fill(values.begin(), values.end(), right_shift_fill_value());
         }
         else
         {
@@ -2249,9 +2256,7 @@
       }
       else if(base_rep == UINT8_C(16))
       {
-        uintwide_t t(*this);
-
-        const auto mask = static_cast<limb_type>(static_cast<std::uint8_t>(0xFU));
+        uintwide_t<my_width2, limb_type, AllocatorType, false> t(*this);
 
         using string_storage_hex_type =
           typename std::conditional
@@ -2277,40 +2282,15 @@
         }
         else
         {
-          if(!is_neg(t))
-          {
-            while(!t.is_zero())
-            {
-              char c(*t.values.cbegin() & mask);
+          const auto dst =
+            extract_hex_digits<false>
+            (
+              t,
+              &str_temp[static_cast<typename string_storage_hex_type::size_type>(pos)],
+              is_uppercase
+            );
 
-              if      (c <= static_cast<char>(INT8_C(  9)))                                           { c = static_cast<char>(c + static_cast<char>(INT8_C(0x30))); }
-              else if((c >= static_cast<char>(INT8_C(0xA))) && (c <= static_cast<char>(INT8_C(0xF)))) { c = static_cast<char>(c + (is_uppercase ? static_cast<char>(INT8_C(55)) : static_cast<char>(INT8_C(87)))); }
-
-              --pos;
-
-              str_temp[static_cast<typename string_storage_hex_type::size_type>(pos)] = c;
-
-              t >>= 4;
-            }
-          }
-          else
-          {
-            uintwide_t<my_width2, limb_type, AllocatorType, false> tu(t);
-
-            while(!tu.is_zero()) // NOLINT(altera-id-dependent-backward-branch)
-            {
-              char c(*tu.values.cbegin() & mask);
-
-              if      (c <= static_cast<char>(INT8_C(  9)))                                           { c = static_cast<char>(c + static_cast<char>(INT8_C(0x30))); }
-              else if((c >= static_cast<char>(INT8_C(0xA))) && (c <= static_cast<char>(INT8_C(0xF)))) { c = static_cast<char>(c + (is_uppercase ? static_cast<char>(INT8_C(55)) : static_cast<char>(INT8_C(87)))); }
-
-              --pos;
-
-              str_temp[static_cast<typename string_storage_hex_type::size_type>(pos)] = c;
-
-              tu >>= 4;
-            }
-          }
+          pos -= dst;
         }
 
         if(show_base)
@@ -2478,11 +2458,40 @@
   private:
     representation_type values { };  // NOLINT(readability-identifier-naming)
 
+    friend auto ::test_uintwide_t_edge::test_various_isolated_edge_cases() -> bool;
+
     explicit constexpr uintwide_t(const representation_type& other_rep)
       : values(static_cast<const representation_type&>(other_rep)) { }
 
     explicit constexpr uintwide_t(representation_type&& other_rep)
       : values(static_cast<representation_type&&>(other_rep)) { }
+
+    template<const bool RePhraseIsSigned,
+             std::enable_if_t<(!RePhraseIsSigned)> const* = nullptr>
+    static WIDE_INTEGER_CONSTEXPR auto extract_hex_digits(uintwide_t<Width2, LimbType, AllocatorType, RePhraseIsSigned>& tu,
+                                                          char* pstr,
+                                                          const bool is_uppercase) -> unsigned_fast_type
+    {
+      constexpr auto mask = static_cast<limb_type>(UINT8_C(0xF));
+
+      auto dst = static_cast<unsigned_fast_type>(UINT8_C(0));
+
+      while(!tu.is_zero()) // NOLINT(altera-id-dependent-backward-branch)
+      {
+        char c(*tu.values.cbegin() & mask);
+
+        if      (c <= static_cast<char>(INT8_C(  9)))                                           { c = static_cast<char>(c + static_cast<char>(INT8_C(0x30))); }
+        else if((c >= static_cast<char>(INT8_C(0xA))) && (c <= static_cast<char>(INT8_C(0xF)))) { c = static_cast<char>(c + (is_uppercase ? static_cast<char>(INT8_C(55)) : static_cast<char>(INT8_C(87)))); }
+
+        *(--pstr) = c; // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+
+        ++dst;
+
+        tu >>= 4;
+      }
+
+      return dst;
+    }
 
     template<typename InputIteratorLeftType,
              typename InputIteratorRightType>
@@ -2602,9 +2611,9 @@
 
       auto a = static_cast<local_builtin_float_type>(0.0F);
 
-      constexpr long double one_ldbl(1.0L);
+      constexpr auto one_ldbl = static_cast<long double>(1.0L);
 
-      long double ldexp_runner(one_ldbl);
+      auto ldexp_runner = one_ldbl;
 
       for(auto i = static_cast<size_t>(0U); i < ilim; ++i) // NOLINT(altera-id-dependent-backward-branch)
       {
@@ -2755,7 +2764,7 @@
                                                        const unsigned_fast_type count,
                                                        const bool               has_borrow_in = false) -> bool
     {
-      std::uint_fast8_t has_borrow_out = (has_borrow_in ? 1U : 0U);
+      auto has_borrow_out = static_cast<std::uint_fast8_t>(has_borrow_in ? 1U : 0U);
 
       static_assert
       (
