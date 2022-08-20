@@ -48,6 +48,17 @@
 #define BOOST_NO_EXCEPTIONS
 #endif
 
+#if ((BOOST_VERSION == 108000) && defined(BOOST_NO_EXCEPTIONS))
+#if defined(__clang__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsometimes-uninitialized"
+#endif
+#if defined(_MSC_VER)
+#pragma warning(push)
+#pragma warning(disable : 4701)
+#endif
+#endif
+
 #if (BOOST_VERSION < 107900)
 #if defined(__GNUC__)
 #pragma GCC diagnostic push
@@ -554,5 +565,14 @@ auto main() -> int // NOLINT(bugprone-exception-escape)
 #if defined(__GNUC__)
 #pragma GCC diagnostic pop
 #pragma GCC diagnostic pop
+#endif
+#endif
+
+#if ((BOOST_VERSION == 108000) && defined(BOOST_NO_EXCEPTIONS))
+#if defined(__clang__)
+#pragma GCC diagnostic pop
+#endif
+#if defined(_MSC_VER)
+#pragma warning(pop)
 #endif
 #endif

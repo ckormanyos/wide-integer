@@ -22,6 +22,17 @@
 #define BOOST_NO_EXCEPTIONS
 #endif
 
+#if ((BOOST_VERSION == 108000) && defined(BOOST_NO_EXCEPTIONS))
+#if defined(__clang__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsometimes-uninitialized"
+#endif
+#if defined(_MSC_VER)
+#pragma warning(push)
+#pragma warning(disable : 4701)
+#endif
+#endif
+
 #if (BOOST_VERSION < 108000)
 #if defined(__GNUC__)
 #pragma GCC diagnostic push
@@ -829,5 +840,14 @@ auto test_uintwide_t_edge::m_one_as_small_signed_type() -> const test_uintwide_t
 #pragma GCC diagnostic pop
 #pragma GCC diagnostic pop
 #pragma GCC diagnostic pop
+#endif
+#endif
+
+#if ((BOOST_VERSION == 108000) && defined(BOOST_NO_EXCEPTIONS))
+#if defined(__clang__)
+#pragma GCC diagnostic pop
+#endif
+#if defined(_MSC_VER)
+#pragma warning(pop)
 #endif
 #endif
