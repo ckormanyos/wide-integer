@@ -783,9 +783,9 @@ auto test_uintwide_t_edge::zero_as_limb() -> const typename test_uintwide_t_edge
 {
   using local_limb_type = typename local_uintwide_t_small_unsigned_type::limb_type;
 
-  static const local_limb_type lt = static_cast<local_limb_type>(UINT8_C(0));
+  static const auto local_zero_limb = static_cast<local_limb_type>(UINT8_C(0));
 
-  return lt;
+  return local_zero_limb;
 }
 
 auto test_uintwide_t_edge::zero_as_small_unsigned_type() -> const test_uintwide_t_edge::local_uintwide_t_small_unsigned_type&
