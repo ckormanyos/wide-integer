@@ -1877,7 +1877,10 @@
       {
         if(exceeds_width(n))
         {
-          std::fill(values.begin(), values.end(), static_cast<limb_type>(0U));
+          // Exclude this line from code coverage, even though explicit
+          // test cases (search for "result_overshift_is_ok") are known
+          // to cover this line.
+          std::fill(values.begin(), values.end(), static_cast<limb_type>(0U)); // LCOV_EXCL_LINE
         }
         else
         {
@@ -1897,7 +1900,10 @@
       {
         if(exceeds_width(n))
         {
-          std::fill(values.begin(), values.end(), static_cast<limb_type>(0U));
+          // Exclude this line from code coverage, even though explicit
+          // test cases (search for "result_overshift_is_ok") are known
+          // to cover this line.
+          std::fill(values.begin(), values.end(), static_cast<limb_type>(0U)); // LCOV_EXCL_LINE
         }
         else
         {
@@ -1927,7 +1933,10 @@
           // Fill with either 0's or 1's. Note also the implementation-defined
           // behavior of excessive right-shift of negative value.
 
-          std::fill(values.begin(), values.end(), right_shift_fill_value());
+          // Exclude this line from code coverage, even though explicit
+          // test cases (search for "result_overshift_is_ok") are known
+          // to cover this line.
+          std::fill(values.begin(), values.end(), right_shift_fill_value()); // LCOV_EXCL_LINE
         }
         else
         {
@@ -1950,7 +1959,10 @@
           // Fill with either 0's or 1's. Note also the implementation-defined
           // behavior of excessive right-shift of negative value.
 
-          std::fill(values.begin(), values.end(), right_shift_fill_value());
+          // Exclude this line from code coverage, even though explicit
+          // test cases (search for "result_overshift_is_ok") are known
+          // to cover this line.
+          std::fill(values.begin(), values.end(), right_shift_fill_value()); // LCOV_EXCL_LINE
         }
         else
         {
