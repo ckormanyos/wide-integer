@@ -15,6 +15,10 @@
 #define BOOST_MP_STANDALONE
 #endif
 
+#if ((BOOST_VERSION >= 108000) && !defined(BOOST_NO_EXCEPTIONS))
+#define BOOST_NO_EXCEPTIONS
+#endif
+
 #if (BOOST_VERSION < 108000)
 #if defined(__GNUC__)
 #pragma GCC diagnostic push

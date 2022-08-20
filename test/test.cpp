@@ -44,6 +44,10 @@
 #define BOOST_MP_STANDALONE
 #endif
 
+#if ((BOOST_VERSION >= 108000) && !defined(BOOST_NO_EXCEPTIONS))
+#define BOOST_NO_EXCEPTIONS
+#endif
+
 #if (BOOST_VERSION < 107900)
 #if defined(__GNUC__)
 #pragma GCC diagnostic push
@@ -456,7 +460,7 @@ auto run() -> bool // NOLINT(readability-function-cognitive-complexity)
 
   bool result_is_ok = true;
 
-  #if (BOOST_VERSION < 107900)
+  #if ((BOOST_VERSION < 107900) || ((BOOST_VERSION >= 108000) && !defined(BOOST_NO_EXCEPTIONS)))
   try
   {
   #endif
@@ -494,7 +498,7 @@ auto run() -> bool // NOLINT(readability-function-cognitive-complexity)
   result_is_ok = (test_uintwide_t_0000032_by_0000032_4_by_4()  && result_is_ok);   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
   result_is_ok = (test_uintwide_t_0000064_by_0000064_4_by_4()  && result_is_ok);   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
 
-  #if (BOOST_VERSION < 107900)
+  #if ((BOOST_VERSION < 107900) || ((BOOST_VERSION >= 108000) && !defined(BOOST_NO_EXCEPTIONS)))
   }
   catch(boost_wrapexcept_lexical_type& e)
   {
