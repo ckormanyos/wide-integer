@@ -558,7 +558,7 @@ auto test_various_roots() -> bool
   return result_is_ok;
 }
 
-auto test_various_isolated_edge_cases() -> bool
+auto test_various_isolated_edge_cases() -> bool // NOLINT(readability-function-cognitive-complexity)
 {
   auto result_is_ok = true;
 
@@ -617,6 +617,48 @@ auto test_various_isolated_edge_cases() -> bool
     result_is_ok = (result_overflow_is_ok && result_is_ok);
   }
 
+  for(auto   i = static_cast<unsigned>(UINT32_C(0));
+             i < static_cast<unsigned>(UINT32_C(256));
+           ++i)
+  {
+    // Verify division of finite numerator by zero which returns the maximum of the type.
+
+    auto u_gen = generate_wide_integer_value<local_uintwide_t_small_unsigned_type>();
+
+    u_gen /= zero_as_small_unsigned_type();
+
+    const auto result_div_by_zero_is_ok = (u_gen == (std::numeric_limits<local_uintwide_t_small_unsigned_type>::max)());
+
+    result_is_ok = (result_div_by_zero_is_ok && result_is_ok);
+  }
+
+  {
+    // Verify division of zero by zero which returns the maximum of the type.
+
+    auto z = zero_as_small_unsigned_type();
+
+    z /= zero_as_small_unsigned_type();
+
+    const auto result_zero_div_by_zero_is_ok = (z == (std::numeric_limits<local_uintwide_t_small_unsigned_type>::max)());
+
+    result_is_ok = (result_zero_div_by_zero_is_ok && result_is_ok);
+  }
+
+  for(auto   i = static_cast<unsigned>(UINT32_C(0));
+             i < static_cast<unsigned>(UINT32_C(256));
+           ++i)
+  {
+    // Verify modulus of zero with a finite denominator which returns zero modulus.
+
+    auto u_gen = generate_wide_integer_value<local_uintwide_t_small_unsigned_type>();
+
+    const auto mod = zero_as_small_unsigned_type() % u_gen;
+
+    const auto result_zero_mod_with_finite_is_ok = (mod == zero_as_small_unsigned_type());
+
+    result_is_ok = (result_zero_mod_with_finite_is_ok && result_is_ok);
+  }
+
   {
     const auto ten_pow_forty = local_uintwide_t_small_unsigned_type("10000000000000000000000000000000000000000");
 
@@ -650,14 +692,14 @@ auto test_various_isolated_edge_cases() -> bool
       static_cast<unsigned>
       (
           (
-                (std::numeric_limits<local_uintwide_t_small_unsigned_type>::digits / 100)
-            + (((std::numeric_limits<local_uintwide_t_small_unsigned_type>::digits % 100) != 0) ? 1 : 0)
+                (std::numeric_limits<local_uintwide_t_small_unsigned_type>::digits / 100)                // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
+            + (((std::numeric_limits<local_uintwide_t_small_unsigned_type>::digits % 100) != 0) ? 1 : 0) // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
           )
         *
-          100
+          100 // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
       );
 
-    for( ; shift_amount  < static_cast<unsigned>(UINT32_C(2000));
+    for( ; shift_amount  < static_cast<unsigned>(UINT32_C(2000)); // NOLINT(altera-id-dependent-backward-branch)
            shift_amount += static_cast<unsigned>(UINT32_C(100)))
     {
       const auto u_gen = generate_wide_integer_value<local_uintwide_t_small_unsigned_type>();
@@ -686,14 +728,14 @@ auto test_various_isolated_edge_cases() -> bool
       static_cast<unsigned>
       (
           (
-                (std::numeric_limits<local_uintwide_t_small_signed_type>::digits / 100)
-            + (((std::numeric_limits<local_uintwide_t_small_signed_type>::digits % 100) != 0) ? 1 : 0)
+                (std::numeric_limits<local_uintwide_t_small_signed_type>::digits / 100)                // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
+            + (((std::numeric_limits<local_uintwide_t_small_signed_type>::digits % 100) != 0) ? 1 : 0) // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
           )
         *
-          100
+          100 // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
       );
 
-    for( ; shift_amount  < static_cast<unsigned>(UINT32_C(2000));
+    for( ; shift_amount  < static_cast<unsigned>(UINT32_C(2000)); // NOLINT(altera-id-dependent-backward-branch)
            shift_amount += static_cast<unsigned>(UINT32_C(100)))
     {
       const auto n_gen = generate_wide_integer_value<local_uintwide_t_small_signed_type>(false);
