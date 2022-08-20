@@ -44,7 +44,8 @@ TIDY_CHECKS  = "*,                                                              
                 -altera-struct-pack-align,                                        \
                 -altera-unroll-loops,                                             \
                 -fuchsia-*,                                                       \
-                -llvmlibc-*"
+                -llvmlibc-*                                                       \
+                -clang-analyzer-core.uninitialized.Assign"
 
 TIDY_FLAGS   = --extra-arg-before=--driver-mode=g++                 \
                --header-filter=uintwide_t                           \
