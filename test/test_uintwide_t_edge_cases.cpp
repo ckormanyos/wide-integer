@@ -609,19 +609,35 @@ auto test_various_isolated_edge_cases() -> bool
              i < static_cast<unsigned>(UINT32_C(256));
            ++i)
   {
-    const auto u_gen = generate_wide_integer_value<local_uintwide_t_small_unsigned_type>();
+    constexpr auto shift_min_for_overshifting =
+      static_cast<unsigned>
+      (
+          (
+                (std::numeric_limits<local_uintwide_t_small_unsigned_type>::digits / 100)
+            + (((std::numeric_limits<local_uintwide_t_small_unsigned_type>::digits % 100) != 0) ? 1 : 0)
+          )
+        *
+          100
+      );
 
-    auto u_left_n  = local_uintwide_t_small_unsigned_type(u_gen); u_left_n  <<= static_cast<std::int32_t>(INT32_C(1000));
-    auto u_left_u  = local_uintwide_t_small_unsigned_type(u_gen); u_left_u  <<= static_cast<std::uint32_t>(UINT32_C(1000));
-    auto u_right_n = local_uintwide_t_small_unsigned_type(u_gen); u_right_n >>= static_cast<std::int32_t>(INT32_C(1000));
-    auto u_right_u = local_uintwide_t_small_unsigned_type(u_gen); u_right_u >>= static_cast<std::uint32_t>(UINT32_C(1000));
+    for(auto shift_amount  = shift_min_for_overshifting;
+             shift_amount  < static_cast<unsigned>(UINT32_C(2000));
+             shift_amount += static_cast<unsigned>(UINT32_C(100)))
+    {
+      const auto u_gen = generate_wide_integer_value<local_uintwide_t_small_unsigned_type>();
 
-    const auto result_overshift_is_ok = (   (u_left_n  == 0)
-                                         && (u_left_u  == 0)
-                                         && (u_right_n == 0)
-                                         && (u_right_u == 0));
+      auto u_left_n  = local_uintwide_t_small_unsigned_type(u_gen); u_left_n  <<= static_cast<std::int32_t> (shift_amount);
+      auto u_left_u  = local_uintwide_t_small_unsigned_type(u_gen); u_left_u  <<= static_cast<std::uint32_t>(shift_amount);
+      auto u_right_n = local_uintwide_t_small_unsigned_type(u_gen); u_right_n >>= static_cast<std::int32_t> (shift_amount);
+      auto u_right_u = local_uintwide_t_small_unsigned_type(u_gen); u_right_u >>= static_cast<std::uint32_t>(shift_amount);
 
-    result_is_ok = (result_overshift_is_ok && result_is_ok);
+      const auto result_overshift_is_ok = (   (u_left_n  == 0)
+                                           && (u_left_u  == 0)
+                                           && (u_right_n == 0)
+                                           && (u_right_u == 0));
+
+      result_is_ok = (result_overshift_is_ok && result_is_ok);
+    }
   }
 
   for(auto   i = static_cast<unsigned>(UINT32_C(0));
