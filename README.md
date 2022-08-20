@@ -737,7 +737,7 @@ negative arguments in number theoretical functions.
   - `cbrt` of `x` nexative integer returns `-cbrt(-x)`.
   - $k^{th}$ root of `x` negative returns zero unless the cube root is being computed, in which case `-cbrt(-x)` is returned.
   - GCD of `a`, `b` signed converts both arguments to positive and negates the result for `a`, `b` having opposite signs.
-  - Miller-Rabin primality testing treats negative inetegers as positive when testing for prime, thus extending the set of primes $p{\in}{\mathbb}{Z}$.
+  - Miller-Rabin primality testing treats negative inetegers as positive when testing for prime, thus extending the set of primes $p{\in}{\mathbb{Z}}$.
   - MSB/LSB (most/least significant bit) do not differentiate between positive or negative argument such that MSB of a negative integer will be the highest bit of the corresponding unsigned type.
   - Printing both positive-valued and negative-valued signed integers in hexadecimal format is supported. When printing negative-valued, signed  `uintwide_t` in hexadecimal format, the sign bit and all other bits are treated as if the integer were unsigned. The negative sign is not explicitly shown when using hexadecimal format, even if the underlying integer is signed and negative-valued. A potential positive sign, however, will be shown for positive-valued signed integers in hexadecimal form in the presence of `std::showpos`.
 
