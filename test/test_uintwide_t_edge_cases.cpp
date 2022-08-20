@@ -621,7 +621,7 @@ auto test_various_isolated_edge_cases() -> bool
       );
 
     for(auto shift_amount  = shift_min_for_overshifting;
-             shift_amount  < static_cast<unsigned>(UINT32_C(2000));
+             shift_amount  < static_cast<unsigned>(UINT32_C(2000)); // NOLINT(altera-id-dependent-backward-branch)
              shift_amount += static_cast<unsigned>(UINT32_C(100)))
     {
       const auto u_gen = generate_wide_integer_value<local_uintwide_t_small_unsigned_type>();
