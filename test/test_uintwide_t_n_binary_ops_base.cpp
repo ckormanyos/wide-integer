@@ -19,7 +19,7 @@
 #define BOOST_NO_EXCEPTIONS
 #endif
 
-#if ((BOOST_VERSION == 108000) && defined(BOOST_NO_EXCEPTIONS))
+#if (((BOOST_VERSION == 108000) || (BOOST_VERSION == 108100)) && defined(BOOST_NO_EXCEPTIONS))
 #if defined(__clang__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wsometimes-uninitialized"
@@ -87,7 +87,7 @@ auto test_uintwide_t_n_binary_ops_base::my_gen() -> test_uintwide_t_n_binary_ops
 #endif
 #endif
 
-#if ((BOOST_VERSION == 108000) && defined(BOOST_NO_EXCEPTIONS))
+#if (((BOOST_VERSION == 108000) || (BOOST_VERSION == 108100)) && defined(BOOST_NO_EXCEPTIONS))
 #if defined(__clang__)
 #pragma GCC diagnostic pop
 #endif

@@ -19,7 +19,7 @@
 #define BOOST_NO_EXCEPTIONS
 #endif
 
-#if ((BOOST_VERSION == 108000) && defined(BOOST_NO_EXCEPTIONS))
+#if (((BOOST_VERSION == 108000) || (BOOST_VERSION == 108100)) && defined(BOOST_NO_EXCEPTIONS))
 #if defined(__clang__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wsometimes-uninitialized"
@@ -155,7 +155,7 @@ auto math::wide_integer::test_uintwide_t_boost_backend() -> bool
 #endif
 #endif
 
-#if ((BOOST_VERSION == 108000) && defined(BOOST_NO_EXCEPTIONS))
+#if (((BOOST_VERSION == 108000) || (BOOST_VERSION == 108100)) && defined(BOOST_NO_EXCEPTIONS))
 #if defined(__clang__)
 #pragma GCC diagnostic pop
 #endif
