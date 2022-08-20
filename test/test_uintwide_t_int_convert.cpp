@@ -21,6 +21,21 @@
 #define BOOST_MP_STANDALONE
 #endif
 
+#if ((BOOST_VERSION >= 108000) && !defined(BOOST_NO_EXCEPTIONS))
+#define BOOST_NO_EXCEPTIONS
+#endif
+
+#if (((BOOST_VERSION == 108000) || (BOOST_VERSION == 108100)) && defined(BOOST_NO_EXCEPTIONS))
+#if defined(__clang__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsometimes-uninitialized"
+#endif
+#if defined(_MSC_VER)
+#pragma warning(push)
+#pragma warning(disable : 4701)
+#endif
+#endif
+
 #if (BOOST_VERSION < 108000)
 #if defined(__GNUC__)
 #pragma GCC diagnostic push
@@ -170,14 +185,14 @@ auto math::wide_integer::test_uintwide_t_int_convert() -> bool
 
   bool result_is_ok = true;
 
-  for(auto i = static_cast<std::size_t>(UINT32_C(0)); i < static_cast<std::size_t>(UINT32_C(0x100000)); ++i)
+  for(auto i = static_cast<std::size_t>(UINT32_C(0)); i < static_cast<std::size_t>(UINT32_C(0x100000)); ++i) // NOLINT
   {
     std::string str_digits;
 
     local_int_convert::get_random_digit_string<static_cast<std::size_t>(UINT32_C(18)), static_cast<std::size_t>(UINT32_C(2))>(str_digits);
 
-    const auto n_boost = boost_sint_type(str_digits.c_str());
-    const auto n_local = local_sint_type(str_digits.c_str());
+    const auto n_boost = boost_sint_type(str_digits.c_str()); // NOLINT
+    const auto n_local = local_sint_type(str_digits.c_str()); // NOLINT
 
     const auto n_ctrl_boost = static_cast<std::int64_t>(n_boost);
     const auto n_ctrl_local = static_cast<std::int64_t>(n_local);
@@ -205,5 +220,14 @@ auto math::wide_integer::test_uintwide_t_int_convert() -> bool
 #pragma GCC diagnostic pop
 #pragma GCC diagnostic pop
 #pragma GCC diagnostic pop
+#endif
+#endif
+
+#if (((BOOST_VERSION == 108000) || (BOOST_VERSION == 108100)) && defined(BOOST_NO_EXCEPTIONS))
+#if defined(__clang__)
+#pragma GCC diagnostic pop
+#endif
+#if defined(_MSC_VER)
+#pragma warning(pop)
 #endif
 #endif

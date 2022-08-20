@@ -1877,7 +1877,10 @@
       {
         if(exceeds_width(n))
         {
-          std::fill(values.begin(), values.end(), static_cast<limb_type>(0U));
+          // Exclude this line from code coverage, even though explicit
+          // test cases (search for "result_overshift_is_ok") are known
+          // to cover this line.
+          std::fill(values.begin(), values.end(), static_cast<limb_type>(0U)); // LCOV_EXCL_LINE
         }
         else
         {
@@ -1897,7 +1900,10 @@
       {
         if(exceeds_width(n))
         {
-          std::fill(values.begin(), values.end(), static_cast<limb_type>(0U));
+          // Exclude this line from code coverage, even though explicit
+          // test cases (search for "result_overshift_is_ok") are known
+          // to cover this line.
+          std::fill(values.begin(), values.end(), static_cast<limb_type>(0U)); // LCOV_EXCL_LINE
         }
         else
         {
@@ -1927,7 +1933,10 @@
           // Fill with either 0's or 1's. Note also the implementation-defined
           // behavior of excessive right-shift of negative value.
 
-          std::fill(values.begin(), values.end(), right_shift_fill_value());
+          // Exclude this line from code coverage, even though explicit
+          // test cases (search for "result_overshift_is_ok") are known
+          // to cover this line.
+          std::fill(values.begin(), values.end(), right_shift_fill_value()); // LCOV_EXCL_LINE
         }
         else
         {
@@ -1950,7 +1959,10 @@
           // Fill with either 0's or 1's. Note also the implementation-defined
           // behavior of excessive right-shift of negative value.
 
-          std::fill(values.begin(), values.end(), right_shift_fill_value());
+          // Exclude this line from code coverage, even though explicit
+          // test cases (search for "result_overshift_is_ok") are known
+          // to cover this line.
+          std::fill(values.begin(), values.end(), right_shift_fill_value()); // LCOV_EXCL_LINE
         }
         else
         {
@@ -2100,9 +2112,7 @@
 
         if(t.is_zero())
         {
-          --pos;
-
-          str_temp[static_cast<typename string_storage_oct_type::size_type>(pos)] = '0';
+          str_temp[static_cast<typename string_storage_oct_type::size_type>(--pos)] = '0';
         }
         else
         {
@@ -2114,9 +2124,7 @@
 
               if(c <= static_cast<char>(INT8_C(8))) { c = static_cast<char>(c + static_cast<char>(INT8_C(0x30))); }
 
-              --pos;
-
-              str_temp[static_cast<typename string_storage_oct_type::size_type>(pos)] = c;
+              str_temp[static_cast<typename string_storage_oct_type::size_type>(--pos)] = c;
 
               t >>= 3;
             }
@@ -2131,9 +2139,7 @@
 
               if(c <= static_cast<char>(INT8_C(8))) { c = static_cast<char>(c + static_cast<char>(INT8_C(0x30))); }
 
-              --pos;
-
-              str_temp[static_cast<typename string_storage_oct_type::size_type>(pos)] = c;
+              str_temp[static_cast<typename string_storage_oct_type::size_type>(--pos)] = c;
 
               tu >>= 3;
             }
@@ -2142,16 +2148,12 @@
 
         if(show_base)
         {
-          --pos;
-
-          str_temp[static_cast<typename string_storage_oct_type::size_type>(pos)] = '0';
+          str_temp[static_cast<typename string_storage_oct_type::size_type>(--pos)] = '0';
         }
 
         if(show_pos)
         {
-          --pos;
-
-          str_temp[static_cast<typename string_storage_oct_type::size_type>(pos)] = '+';
+          str_temp[static_cast<typename string_storage_oct_type::size_type>(--pos)] = '+';
         }
 
         if(field_width != 0U)
@@ -2160,9 +2162,7 @@
 
           while(static_cast<signed_fast_type>(pos) > static_cast<signed_fast_type>((str_temp.size() - 1U) - field_width)) // NOLINT(altera-id-dependent-backward-branch)
           {
-            --pos;
-
-            str_temp[static_cast<typename string_storage_oct_type::size_type>(pos)] = fill_char;
+            str_temp[static_cast<typename string_storage_oct_type::size_type>(--pos)] = fill_char;
           }
         }
 
@@ -2199,9 +2199,7 @@
 
         if(t.is_zero())
         {
-          --pos;
-
-          str_temp[static_cast<typename string_storage_dec_type::size_type>(pos)] = '0';
+          str_temp[static_cast<typename string_storage_dec_type::size_type>(--pos)] = '0';
         }
         else
         {
@@ -2211,9 +2209,7 @@
 
             t.eval_divide_by_single_limb(static_cast<limb_type>(UINT8_C(10)), 0U, nullptr);
 
-            --pos;
-
-            str_temp[static_cast<typename string_storage_dec_type::size_type>(pos)] =
+            str_temp[static_cast<typename string_storage_dec_type::size_type>(--pos)] =
               static_cast<char>
               (
                   static_cast<limb_type>
@@ -2227,15 +2223,11 @@
 
         if(show_pos && (!str_has_neg_sign))
         {
-          --pos;
-
-          str_temp[static_cast<typename string_storage_dec_type::size_type>(pos)] = '+';
+          str_temp[static_cast<typename string_storage_dec_type::size_type>(--pos)] = '+';
         }
         else if(str_has_neg_sign)
         {
-          --pos;
-
-          str_temp[static_cast<typename string_storage_dec_type::size_type>(pos)] = '-';
+          str_temp[static_cast<typename string_storage_dec_type::size_type>(--pos)] = '-';
         }
 
         if(field_width != 0U)
@@ -2244,9 +2236,7 @@
 
           while(static_cast<signed_fast_type>(pos) > static_cast<signed_fast_type>((str_temp.size() - 1U) - field_width)) // NOLINT(altera-id-dependent-backward-branch)
           {
-            --pos;
-
-            str_temp[static_cast<typename string_storage_dec_type::size_type>(pos)] = fill_char;
+            str_temp[static_cast<typename string_storage_dec_type::size_type>(--pos)] = fill_char;
           }
         }
 
@@ -2276,9 +2266,7 @@
 
         if(t.is_zero())
         {
-          --pos;
-
-          str_temp[static_cast<typename string_storage_hex_type::size_type>(pos)] = '0';
+          str_temp[static_cast<typename string_storage_hex_type::size_type>(--pos)] = '0';
         }
         else
         {
@@ -2295,20 +2283,14 @@
 
         if(show_base)
         {
-          --pos;
+          str_temp[static_cast<typename string_storage_hex_type::size_type>(--pos)] = (is_uppercase ? 'X' : 'x');
 
-          str_temp[static_cast<typename string_storage_hex_type::size_type>(pos)] = (is_uppercase ? 'X' : 'x');
-
-          --pos;
-
-          str_temp[static_cast<typename string_storage_hex_type::size_type>(pos)] = '0';
+          str_temp[static_cast<typename string_storage_hex_type::size_type>(--pos)] = '0';
         }
 
         if(show_pos)
         {
-          --pos;
-
-          str_temp[static_cast<typename string_storage_hex_type::size_type>(pos)] = '+';
+          str_temp[static_cast<typename string_storage_hex_type::size_type>(--pos)] = '+';
         }
 
         if(field_width != 0U)
@@ -2317,9 +2299,7 @@
 
           while(static_cast<signed_fast_type>(pos) > static_cast<signed_fast_type>((str_temp.size() - 1U) - field_width)) // NOLINT(altera-id-dependent-backward-branch)
           {
-            --pos;
-
-            str_temp[static_cast<typename string_storage_hex_type::size_type>(pos)] = fill_char;
+            str_temp[static_cast<typename string_storage_hex_type::size_type>(--pos)] = fill_char;
           }
         }
 
@@ -2371,12 +2351,18 @@
       return n_result;
     }
 
+    // What seems to be an optimization or parsing error prevents
+    // getting any LCOV hits in the negate() subroutine, even though
+    // this is known to be used in the coverage tests.
+
+    // LCOV_EXCL_START
     WIDE_INTEGER_CONSTEXPR auto negate() -> void
     {
       bitwise_not();
 
       preincrement();
     }
+    // LCOV_EXCL_STOP
 
     WIDE_INTEGER_CONSTEXPR auto eval_divide_by_single_limb(const limb_type          short_denominator,
                                                            const unsigned_fast_type u_offset,
