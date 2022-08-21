@@ -185,14 +185,16 @@ auto math::wide_integer::test_uintwide_t_int_convert() -> bool
 
   bool result_is_ok = true;
 
-  for(auto i = static_cast<std::size_t>(UINT32_C(0)); i < static_cast<std::size_t>(UINT32_C(0x100000)); ++i) // NOLINT
+  for(auto   i = static_cast<std::size_t>(UINT32_C(0));
+             i < static_cast<std::size_t>(UINT32_C(0x100000));
+           ++i)
   {
     std::string str_digits;
 
     local_int_convert::get_random_digit_string<static_cast<std::size_t>(UINT32_C(18)), static_cast<std::size_t>(UINT32_C(2))>(str_digits);
 
-    const auto n_boost = boost_sint_type(str_digits.c_str()); // NOLINT
-    const auto n_local = local_sint_type(str_digits.c_str()); // NOLINT
+    const auto n_boost = boost_sint_type(str_digits.c_str());
+    const auto n_local = local_sint_type(str_digits.c_str());
 
     const auto n_ctrl_boost = static_cast<std::int64_t>(n_boost);
     const auto n_ctrl_local = static_cast<std::int64_t>(n_local);

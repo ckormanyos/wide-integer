@@ -87,6 +87,7 @@ using local_uintwide_t_small_signed_type =
 
 auto zero_as_limb               () -> const typename local_uintwide_t_small_unsigned_type::limb_type&;
 auto zero_as_small_unsigned_type() -> const local_uintwide_t_small_unsigned_type&;
+auto one_as_small_unsigned_type () -> const local_uintwide_t_small_unsigned_type&;
 auto m_one_as_small_signed_type () -> const local_uintwide_t_small_signed_type&;
 
 std::uniform_int_distribution<std::uint32_t> dist_sgn    (UINT32_C(0), UINT32_C(1));  // NOLINT(cert-err58-cpp,cppcoreguidelines-avoid-non-const-global-variables)
@@ -211,18 +212,18 @@ auto test_various_edge_operations() -> bool
   result_local = u_max_local * u_max_local;
   result_boost = u_max_boost * u_max_boost;
 
-  const auto result01_is_ok = ((result_local == local_uint_type(1U)) && (result_boost == boost_uint_type(1U))); // NOLINT
+  const auto result01_is_ok = ((result_local == local_uint_type(1U)) && (result_boost == boost_uint_type(1U)));
 
   result_local = (u_max_local - 1U) * u_max_local;
   result_boost = (u_max_boost - 1U) * u_max_boost;
 
-  const auto result02_is_ok = ((result_local == local_uint_type(2U)) && (result_boost == boost_uint_type(2U))); // NOLINT
+  const auto result02_is_ok = ((result_local == local_uint_type(2U)) && (result_boost == boost_uint_type(2U)));
 
   const std::string str_seven_and_effs =
     "0x7" + std::string(std::string::size_type((local_edge_cases::local_digits2 / 4) - 1U), 'F');
 
-  const local_uint_type u_seven_and_effs_local(str_seven_and_effs.c_str()); // NOLINT
-  const boost_uint_type u_seven_and_effs_boost(str_seven_and_effs.c_str()); // NOLINT
+  const local_uint_type u_seven_and_effs_local(str_seven_and_effs.c_str());
+  const boost_uint_type u_seven_and_effs_boost(str_seven_and_effs.c_str());
 
   result_local = u_seven_and_effs_local * u_seven_and_effs_local;
   result_boost = u_seven_and_effs_boost * u_seven_and_effs_boost;
@@ -543,7 +544,7 @@ auto test_various_ostream_ops() -> bool
   return result_is_ok;
 }
 
-auto test_various_roots() -> bool
+auto test_various_roots_and_pow_etc() -> bool
 {
   auto result_is_ok = true;
 
@@ -568,6 +569,118 @@ auto test_various_roots() -> bool
                                       && (u_root == sqrt(u)));
 
     result_is_ok = (result_u_root_is_ok && result_is_ok);
+  }
+
+  {
+    const auto u      = zero_as_small_unsigned_type();
+    const auto u_root = sqrt(u);
+
+    const auto result_sqrt_zero_is_ok = (u_root == 0U);
+
+    result_is_ok = (result_sqrt_zero_is_ok && result_is_ok);
+  }
+
+  {
+    const auto u      = zero_as_small_unsigned_type();
+    const auto u_root = cbrt(u);
+
+    const auto result_cbrt_zero_is_ok = (u_root == zero_as_small_unsigned_type());
+
+    result_is_ok = (result_cbrt_zero_is_ok && result_is_ok);
+  }
+
+  {
+    const auto u      = zero_as_small_unsigned_type();
+    const auto u_root = rootk(u, 7U);
+
+    const auto result_rootk_zero_is_ok = (u_root == zero_as_small_unsigned_type());
+
+    result_is_ok = (result_rootk_zero_is_ok && result_is_ok);
+  }
+
+  for(auto   i = static_cast<unsigned>(UINT32_C(0));
+             i < static_cast<unsigned>(UINT32_C(256));
+           ++i)
+  {
+    auto b_gen = generate_wide_integer_value<local_uintwide_t_small_unsigned_type>(); // NOLINT
+    auto m_gen = generate_wide_integer_value<local_uintwide_t_small_unsigned_type>();
+
+    while(!(b_gen > m_gen)) // NOLINT(altera-id-dependent-backward-branch)
+    {
+      b_gen = generate_wide_integer_value<local_uintwide_t_small_unsigned_type>();
+      m_gen = generate_wide_integer_value<local_uintwide_t_small_unsigned_type>();
+    }
+
+    const auto powm_zero_result = powm(b_gen, 0U, m_gen);
+    const auto powm_one_result  = powm(b_gen, 1U, m_gen);
+
+    const auto result_powm_checks_are_ok = (   (powm_zero_result == one_as_small_unsigned_type())
+                                            && (powm_one_result  == (b_gen % m_gen)));
+
+    result_is_ok = (result_powm_checks_are_ok && result_is_ok);
+  }
+
+  for(auto   i = static_cast<unsigned>(UINT32_C(0));
+             i < static_cast<unsigned>(UINT32_C(256));
+           ++i)
+  {
+    const auto b_gen = generate_wide_integer_value<local_uintwide_t_small_unsigned_type>();
+
+    const auto powm_zero_one_result = powm(b_gen, 0U, one_as_small_unsigned_type());
+
+    const auto result_powm_zero_one_is_ok = (powm_zero_one_result == zero_as_small_unsigned_type());
+
+    result_is_ok = (result_powm_zero_one_is_ok && result_is_ok);
+  }
+
+  {
+    constexpr auto local_my_width2 = local_uintwide_t_small_unsigned_type::my_width2;
+
+    using local_limb_type = typename local_uintwide_t_small_unsigned_type::limb_type;
+
+    #if defined(WIDE_INTEGER_NAMESPACE)
+    using local_distribution_type =
+      WIDE_INTEGER_NAMESPACE::math::wide_integer::uniform_int_distribution<local_my_width2, local_limb_type, void>;
+    #else
+    using local_distribution_type =
+      ::math::wide_integer::uniform_int_distribution<local_my_width2, local_limb_type, void>;
+    #endif
+
+    using random_engine_type = std::minstd_rand;
+
+    local_distribution_type distribution;
+
+    auto generator = random_engine_type(static_cast<typename random_engine_type::result_type>(std::clock()));
+
+    random_engine_type local_generator(generator);
+
+    constexpr std::array<int, static_cast<std::size_t>(UINT8_C(49))> small_primes =
+    {
+        2,
+        3,   5,   7,  11,  13,  17,  19,  23,
+       29,  31,  37,  41,  43,  47,  53,  59,
+       61,  67,  71,  73,  79,  83,  89,  97,
+      101, 103, 107, 109, 113, 127, 131, 137,
+      139, 149, 151, 157, 163, 167, 173, 179,
+      181, 191, 193, 197, 199, 211, 223, 227
+    };
+
+    auto result_p_is_prime_is_ok = true;
+
+    for(const auto& p : small_primes)
+    {
+      const auto p_is_prime =
+        miller_rabin(local_uintwide_t_small_unsigned_type(p), 25U, distribution, local_generator);
+
+      result_p_is_prime_is_ok = (p_is_prime && result_p_is_prime_is_ok);
+    }
+
+    const auto one_is_prime =
+        miller_rabin(one_as_small_unsigned_type(), 25U, distribution, local_generator);
+
+    const auto result_one_is_not_prime_is_ok = (!one_is_prime);
+
+    result_is_ok = (result_one_is_not_prime_is_ok && result_is_ok);
   }
 
   return result_is_ok;
@@ -636,15 +749,31 @@ auto test_various_isolated_edge_cases() -> bool // NOLINT(readability-function-c
              i < static_cast<unsigned>(UINT32_C(256));
            ++i)
   {
-    // Verify division of finite numerator by zero which returns the maximum of the type.
+    // Verify division of finite, unsigned numerator by zero which returns the maximum of the type.
 
     auto u_gen = generate_wide_integer_value<local_uintwide_t_small_unsigned_type>();
 
     u_gen /= zero_as_small_unsigned_type();
 
-    const auto result_div_by_zero_is_ok = (u_gen == (std::numeric_limits<local_uintwide_t_small_unsigned_type>::max)());
+    const auto result_unsigned_div_by_zero_is_ok = (u_gen == (std::numeric_limits<local_uintwide_t_small_unsigned_type>::max)());
 
-    result_is_ok = (result_div_by_zero_is_ok && result_is_ok);
+    result_is_ok = (result_unsigned_div_by_zero_is_ok && result_is_ok);
+  }
+
+  for(auto   i = static_cast<unsigned>(UINT32_C(0));
+             i < static_cast<unsigned>(UINT32_C(256));
+           ++i)
+  {
+    // Verify division of finite, signed numerator by zero which returns the maximum of the type.
+
+    const auto u_gen = generate_wide_integer_value<local_uintwide_t_small_unsigned_type>();
+    auto n_gen = local_uintwide_t_small_signed_type(u_gen);
+
+    n_gen /= local_uintwide_t_small_signed_type(zero_as_small_unsigned_type());
+
+    const auto result_signed_div_by_zero_is_ok = (n_gen == (std::numeric_limits<local_uintwide_t_small_signed_type>::max)());
+
+    result_is_ok = (result_signed_div_by_zero_is_ok && result_is_ok);
   }
 
   {
@@ -786,14 +915,15 @@ auto math::wide_integer::test_uintwide_t_edge_cases() -> bool
 {
   bool result_is_ok = true;
 
-  result_is_ok = (test_uintwide_t_edge::test_various_edge_operations    () && result_is_ok); // NOLINT
+  result_is_ok = (test_uintwide_t_edge::test_various_edge_operations    () && result_is_ok);
   result_is_ok = (test_uintwide_t_edge::test_various_ostream_ops        () && result_is_ok);
-  result_is_ok = (test_uintwide_t_edge::test_various_roots              () && result_is_ok);
+  result_is_ok = (test_uintwide_t_edge::test_various_roots_and_pow_etc  () && result_is_ok);
   result_is_ok = (test_uintwide_t_edge::test_various_isolated_edge_cases() && result_is_ok);
 
   return result_is_ok;
 }
 
+// LCOV_EXCL_START
 auto test_uintwide_t_edge::zero_as_limb() -> const typename test_uintwide_t_edge::local_uintwide_t_small_unsigned_type::limb_type&
 {
   using local_limb_type = typename local_uintwide_t_small_unsigned_type::limb_type;
@@ -802,6 +932,7 @@ auto test_uintwide_t_edge::zero_as_limb() -> const typename test_uintwide_t_edge
 
   return local_zero_limb;
 }
+// LCOV_EXCL_STOP
 
 auto test_uintwide_t_edge::zero_as_small_unsigned_type() -> const test_uintwide_t_edge::local_uintwide_t_small_unsigned_type&
 {
@@ -812,9 +943,22 @@ auto test_uintwide_t_edge::zero_as_small_unsigned_type() -> const test_uintwide_
   return local_zero_as_small_unsigned_type;
 }
 
-auto test_uintwide_t_edge::m_one_as_small_signed_type() -> const test_uintwide_t_edge::local_uintwide_t_small_signed_type&
+auto test_uintwide_t_edge::one_as_small_unsigned_type() -> const test_uintwide_t_edge::local_uintwide_t_small_unsigned_type&
 {
   using local_limb_type = typename local_uintwide_t_small_unsigned_type::limb_type;
+
+  static const local_uintwide_t_small_unsigned_type local_one_as_small_signed_type =
+    local_uintwide_t_small_unsigned_type
+    (
+      static_cast<typename std::make_signed<local_limb_type>::type>(UINT8_C(1))
+    );
+
+  return local_one_as_small_signed_type;
+}
+
+auto test_uintwide_t_edge::m_one_as_small_signed_type() -> const test_uintwide_t_edge::local_uintwide_t_small_signed_type&
+{
+  using local_limb_type = typename local_uintwide_t_small_signed_type::limb_type;
 
   static const local_uintwide_t_small_signed_type local_m_one_as_small_signed_type =
     local_uintwide_t_small_signed_type

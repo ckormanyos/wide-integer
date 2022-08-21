@@ -2106,9 +2106,9 @@
                                                                                                   AllocatorType>::type>::template rebind_alloc<limb_type>>
             >::type;
 
-        string_storage_oct_type str_temp;
+        string_storage_oct_type str_temp; // LCOV_EXCL_LINE
 
-        auto pos = static_cast<unsigned_fast_type>(str_temp.size() - 1U);
+        auto pos = static_cast<unsigned_fast_type>(str_temp.size() - 1U); // LCOV_EXCL_LINE
 
         if(t.is_zero())
         {
@@ -2141,7 +2141,7 @@
 
               str_temp[static_cast<typename string_storage_oct_type::size_type>(--pos)] = c;
 
-              tu >>= 3;
+              tu >>= 3; // LCOV_EXCL_LINE
             }
           }
         }
@@ -3616,11 +3616,11 @@
       {
         // The denominator is zero. Set the maximum value and return.
         // This also catches (0 / 0) and sets the maximum value for it.
-        operator=(limits_helper_max(IsSigned));
+        static_cast<void>(operator=(limits_helper_max(IsSigned))); // LCOV_EXCL_LINE
 
-        if(remainder != nullptr)
+        if(remainder != nullptr) // LCOV_EXCL_LINE
         {
-          *remainder = uintwide_t(static_cast<std::uint8_t>(0U));
+          remainder->values.fill(static_cast<limb_type>(UINT8_C(0)));
         }
       }
       else if(u_offset == static_cast<local_uint_index_type>(number_of_limbs))
@@ -4114,7 +4114,7 @@
     {
       // Implement self-increment.
 
-      auto it = values.begin(); // NOLINT(llvm-qualified-auto,readability-qualified-auto)
+      auto it = values.begin(); // NOLINT(llvm-qualified-auto,readability-qualified-auto) // LCOV_EXCL_LINE
 
       do
       {
@@ -4906,10 +4906,7 @@
 
         u = (s + (m / s)) >> 1;
 
-        if(u >= s)
-        {
-          break;
-        }
+        if(u >= s) { break; }
       }
     }
 
@@ -4978,10 +4975,7 @@
 
         u = ((s * three_minus_one) + m_over_s_pow_3_minus_one) / 3U;
 
-        if(u >= s)
-        {
-          break;
-        }
+        if(u >= s) { break; }
       }
     }
 
@@ -5170,7 +5164,7 @@
         y *= y;
         y %= m_local;
 
-        p_local >>= 1U; // NOLINT(hicpp-signed-bitwise)
+        p_local >>= 1U; // NOLINT(hicpp-signed-bitwise) // LCOV_EXCL_LINE
       }
 
       result = local_normal_width_type(x);
@@ -5321,8 +5315,10 @@
         {
           if(v <= (std::numeric_limits<local_ushort_type>::max)())
           {
-            u = detail::integer_gcd_reduce_short(*(v.crepresentation().cbegin() + 0U),
-                                                 *(u.crepresentation().cbegin() + 0U));
+            const auto vs = *(v.crepresentation().cbegin() + 0U);
+            const auto us = *(u.crepresentation().cbegin() + 0U);
+
+            u = detail::integer_gcd_reduce_short(vs, us);
           }
           else
           {
@@ -5696,18 +5692,29 @@
     {
       const auto n0 = static_cast<local_limb_type>(np);
 
-      if((n0 & 1U) == 0U)
+      const auto n_is_even =
+        (static_cast<local_limb_type>(n0 & static_cast<local_limb_type>(UINT8_C(1))) == static_cast<local_limb_type>(UINT8_C(0)));
+
+      if(n_is_even)
       {
-        // Not prime because n is even.
-        return false;
+        // The prime candidate is not prime because n is even.
+        // Also handle the trivial special case of (n = 2).
+
+        const auto n_is_two =
+          ((n0 == static_cast<local_limb_type>(UINT8_C(2))) && (np == static_cast<local_limb_type>(UINT8_C(2))));
+
+        return n_is_two;
       }
 
       if((n0 <= static_cast<local_limb_type>(UINT8_C(227))) && (np <= static_cast<local_limb_type>(UINT8_C(227))))
       {
-        if((n0 == static_cast<local_limb_type>(UINT8_C(2))) && (np == static_cast<local_limb_type>(UINT8_C(2))))
+        // This handles the trivial special case of the (non-primality) of 1.
+        const auto n_is_one =
+          ((n0 == static_cast<local_limb_type>(UINT8_C(1))) && (np == static_cast<local_limb_type>(UINT8_C(1))));
+
+        if(n_is_one)
         {
-          // Trivial special case of (n = 2).
-          return true;
+          return false;
         }
 
         // Exclude pure small primes from 3...227.
