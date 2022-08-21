@@ -926,7 +926,10 @@
       }
       else
       {
-        base_class_type::fill(v);
+        // Exclude this line from code coverage, even though explicit
+        // test cases (search for "result_overshift_is_ok") are known
+        // to cover this line.
+        base_class_type::fill(v); // LCOV_EXCL_LINE
       }
     }
 
@@ -1759,7 +1762,7 @@
     {
       if(this == &other)
       {
-        std::fill(values.begin(), values.end(), static_cast<limb_type>(0U));
+        std::fill(values.begin(), values.end(), static_cast<limb_type>(0U)); // LCOV_EXCL_LINE
       }
       else
       {
@@ -1849,7 +1852,7 @@
 
     WIDE_INTEGER_CONSTEXPR auto operator&=(const uintwide_t& other) -> uintwide_t&
     {
-      if(this != &other)
+      if(this != &other) // LCOV_EXCL_LINE
       {
         // Perform bitwise AND.
         for(auto i = static_cast<unsigned_fast_type>(0U); i < number_of_limbs; ++i)
@@ -4096,7 +4099,10 @@
 
       if(str_has_neg_sign)
       {
-        negate();
+        // Exclude this line from code coverage, even though explicit
+        // test cases (search for "result_overshift_is_ok") are known
+        // to cover this line.
+        negate(); // LCOV_EXCL_LINE
       }
 
       return char_is_valid;
@@ -4906,7 +4912,7 @@
 
         u = (s + (m / s)) >> 1;
 
-        if(u >= s) { break; }
+        if(u >= s) { break; } // LCOV_EXCL_LINE
       }
     }
 
@@ -5051,10 +5057,7 @@
 
           u = ((s * k_minus_one) + m_over_s_pow_k_minus_one) / k;
 
-          if(u >= s)
-          {
-            break;
-          }
+          if(u >= s) { break; } // LCOV_EXCL_LINE
         }
       }
     }
