@@ -544,7 +544,7 @@ auto test_various_ostream_ops() -> bool
   return result_is_ok;
 }
 
-auto test_various_roots_and_pow() -> bool
+auto test_various_roots_and_pow_etc() -> bool
 {
   auto result_is_ok = true;
 
@@ -602,7 +602,7 @@ auto test_various_roots_and_pow() -> bool
              i < static_cast<unsigned>(UINT32_C(256));
            ++i)
   {
-    auto b_gen = generate_wide_integer_value<local_uintwide_t_small_unsigned_type>();
+    auto b_gen = generate_wide_integer_value<local_uintwide_t_small_unsigned_type>(); // NOLINT
     auto m_gen = generate_wide_integer_value<local_uintwide_t_small_unsigned_type>();
 
     while(!(b_gen > m_gen)) // NOLINT(altera-id-dependent-backward-branch)
@@ -631,6 +631,49 @@ auto test_various_roots_and_pow() -> bool
     const auto result_powm_zero_one_is_ok = (powm_zero_one_result == zero_as_small_unsigned_type());
 
     result_is_ok = (result_powm_zero_one_is_ok && result_is_ok);
+  }
+
+  {
+    using local_distribution_type =
+      math::wide_integer::uniform_int_distribution<local_uintwide_t_small_unsigned_type::my_width2,
+                                                   typename local_uintwide_t_small_unsigned_type::limb_type,
+                                                   void>;
+
+    using random_engine_type = std::minstd_rand;
+
+    local_distribution_type distribution;
+
+    random_engine_type generator = random_engine_type(static_cast<typename random_engine_type::result_type>(std::clock()));
+
+    random_engine_type local_generator(generator);
+
+    constexpr std::array<int, 49U> small_primes =
+    {
+        2,
+        3,   5,   7,  11,  13,  17,  19,  23,
+       29,  31,  37,  41,  43,  47,  53,  59,
+       61,  67,  71,  73,  79,  83,  89,  97,
+      101, 103, 107, 109, 113, 127, 131, 137,
+      139, 149, 151, 157, 163, 167, 173, 179,
+      181, 191, 193, 197, 199, 211, 223, 227
+    };
+
+    auto result_p_is_prime_is_ok = true;
+
+    for(const auto& p : small_primes)
+    {
+      const auto p_is_prime =
+        miller_rabin(local_uintwide_t_small_unsigned_type(p), 25U, distribution, local_generator);
+
+      result_p_is_prime_is_ok = (p_is_prime && result_p_is_prime_is_ok);
+    }
+
+    const auto one_is_prime =
+        miller_rabin(one_as_small_unsigned_type(), 25U, distribution, local_generator);
+
+    const auto result_one_is_not_prime_is_ok = (!one_is_prime);
+
+    result_is_ok = (result_one_is_not_prime_is_ok && result_is_ok);
   }
 
   return result_is_ok;
@@ -867,7 +910,7 @@ auto math::wide_integer::test_uintwide_t_edge_cases() -> bool
 
   result_is_ok = (test_uintwide_t_edge::test_various_edge_operations    () && result_is_ok);
   result_is_ok = (test_uintwide_t_edge::test_various_ostream_ops        () && result_is_ok);
-  result_is_ok = (test_uintwide_t_edge::test_various_roots_and_pow      () && result_is_ok);
+  result_is_ok = (test_uintwide_t_edge::test_various_roots_and_pow_etc  () && result_is_ok);
   result_is_ok = (test_uintwide_t_edge::test_various_isolated_edge_cases() && result_is_ok);
 
   return result_is_ok;

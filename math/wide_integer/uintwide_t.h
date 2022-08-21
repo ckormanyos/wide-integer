@@ -5698,18 +5698,35 @@
     {
       const auto n0 = static_cast<local_limb_type>(np);
 
-      if((n0 & 1U) == 0U)
+      const auto n_is_even =
+        (static_cast<local_limb_type>(n0 & static_cast<local_limb_type>(UINT8_C(1))) == static_cast<local_limb_type>(UINT8_C(0)));
+
+      if(n_is_even)
       {
-        // Not prime because n is even.
-        return false;
+        const auto n_is_two =
+          ((n0 == static_cast<local_limb_type>(UINT8_C(2))) && (np == static_cast<local_limb_type>(UINT8_C(2))));
+
+        if(n_is_two)
+        {
+          // Trivial special case of (n = 2).
+          return true;
+        }
+        else
+        {
+          // The prime candidate is not prime because n is even.
+          return false;
+        }
       }
 
       if((n0 <= static_cast<local_limb_type>(UINT8_C(227))) && (np <= static_cast<local_limb_type>(UINT8_C(227))))
       {
-        if((n0 == static_cast<local_limb_type>(UINT8_C(2))) && (np == static_cast<local_limb_type>(UINT8_C(2))))
+        // This handles the trivial special case of the (non-primality) of 1.
+        const auto n_is_one =
+          ((n0 == static_cast<local_limb_type>(UINT8_C(1))) && (np == static_cast<local_limb_type>(UINT8_C(1))));
+
+        if(n_is_one)
         {
-          // Trivial special case of (n = 2).
-          return true;
+          return false;
         }
 
         // Exclude pure small primes from 3...227.
