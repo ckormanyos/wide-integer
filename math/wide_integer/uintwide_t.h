@@ -1759,7 +1759,7 @@
     {
       if(this == &other)
       {
-        std::fill(values.begin(), values.end(), static_cast<limb_type>(0U));
+        std::fill(values.begin(), values.end(), static_cast<limb_type>(0U)); // LCOV_EXCL_LINE
       }
       else
       {
@@ -1849,7 +1849,7 @@
 
     WIDE_INTEGER_CONSTEXPR auto operator&=(const uintwide_t& other) -> uintwide_t&
     {
-      if(this != &other)
+      if(this != &other) // LCOV_EXCL_LINE
       {
         // Perform bitwise AND.
         for(auto i = static_cast<unsigned_fast_type>(0U); i < number_of_limbs; ++i)

@@ -707,6 +707,13 @@ auto test_various_isolated_edge_cases() -> bool // NOLINT(readability-function-c
       (local_uintwide_t_small_unsigned_type(rep) == 0);
 
     result_is_ok = (rep_as_zero_is_ok && result_is_ok);
+
+    rep.fill((std::numeric_limits<local_value_type>::max)());
+
+    const auto rep_as_max2_is_ok =
+      (local_uintwide_t_small_unsigned_type(rep) == (std::numeric_limits<local_uintwide_t_small_unsigned_type>::max)());
+
+    result_is_ok = (rep_as_max2_is_ok && result_is_ok);
   }
 
   {
@@ -938,7 +945,11 @@ auto test_uintwide_t_edge::zero_as_small_unsigned_type() -> const test_uintwide_
 {
   using local_limb_type = typename local_uintwide_t_small_unsigned_type::limb_type;
 
-  static const local_uintwide_t_small_unsigned_type local_zero_as_small_unsigned_type(static_cast<local_limb_type>(UINT8_C(0)));
+  static const auto local_zero_as_small_unsigned_type =
+    local_uintwide_t_small_unsigned_type
+    (
+      static_cast<local_limb_type>(UINT8_C(0))
+    );
 
   return local_zero_as_small_unsigned_type;
 }
@@ -947,7 +958,7 @@ auto test_uintwide_t_edge::one_as_small_unsigned_type() -> const test_uintwide_t
 {
   using local_limb_type = typename local_uintwide_t_small_unsigned_type::limb_type;
 
-  static const local_uintwide_t_small_unsigned_type local_one_as_small_signed_type =
+  static const auto local_one_as_small_signed_type =
     local_uintwide_t_small_unsigned_type
     (
       static_cast<typename std::make_signed<local_limb_type>::type>(UINT8_C(1))
@@ -960,7 +971,7 @@ auto test_uintwide_t_edge::m_one_as_small_signed_type() -> const test_uintwide_t
 {
   using local_limb_type = typename local_uintwide_t_small_signed_type::limb_type;
 
-  static const local_uintwide_t_small_signed_type local_m_one_as_small_signed_type =
+  static const auto local_m_one_as_small_signed_type =
     local_uintwide_t_small_signed_type
     (
       static_cast<typename std::make_signed<local_limb_type>::type>(INT8_C(-1))
