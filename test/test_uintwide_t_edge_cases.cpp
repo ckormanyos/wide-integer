@@ -650,7 +650,7 @@ auto test_various_roots_and_pow_etc() -> bool
 
     local_distribution_type distribution;
 
-    random_engine_type generator = random_engine_type(static_cast<typename random_engine_type::result_type>(std::clock()));
+    auto generator = random_engine_type(static_cast<typename random_engine_type::result_type>(std::clock()));
 
     random_engine_type local_generator(generator);
 
@@ -923,6 +923,7 @@ auto math::wide_integer::test_uintwide_t_edge_cases() -> bool
   return result_is_ok;
 }
 
+// LCOV_EXCL_START
 auto test_uintwide_t_edge::zero_as_limb() -> const typename test_uintwide_t_edge::local_uintwide_t_small_unsigned_type::limb_type&
 {
   using local_limb_type = typename local_uintwide_t_small_unsigned_type::limb_type;
@@ -931,6 +932,7 @@ auto test_uintwide_t_edge::zero_as_limb() -> const typename test_uintwide_t_edge
 
   return local_zero_limb;
 }
+// LCOV_EXCL_STOP
 
 auto test_uintwide_t_edge::zero_as_small_unsigned_type() -> const test_uintwide_t_edge::local_uintwide_t_small_unsigned_type&
 {

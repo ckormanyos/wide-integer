@@ -4906,10 +4906,7 @@
 
         u = (s + (m / s)) >> 1;
 
-        if(u >= s)
-        {
-          break;
-        }
+        if(u >= s) { break; }
       }
     }
 
@@ -4978,10 +4975,7 @@
 
         u = ((s * three_minus_one) + m_over_s_pow_3_minus_one) / 3U;
 
-        if(u >= s)
-        {
-          break;
-        }
+        if(u >= s) { break; }
       }
     }
 
