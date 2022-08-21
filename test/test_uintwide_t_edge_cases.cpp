@@ -87,6 +87,7 @@ using local_uintwide_t_small_signed_type =
 
 auto zero_as_limb               () -> const typename local_uintwide_t_small_unsigned_type::limb_type&;
 auto zero_as_small_unsigned_type() -> const local_uintwide_t_small_unsigned_type&;
+auto one_as_small_unsigned_type () -> const local_uintwide_t_small_unsigned_type&;
 auto m_one_as_small_signed_type () -> const local_uintwide_t_small_signed_type&;
 
 std::uniform_int_distribution<std::uint32_t> dist_sgn    (UINT32_C(0), UINT32_C(1));  // NOLINT(cert-err58-cpp,cppcoreguidelines-avoid-non-const-global-variables)
@@ -543,7 +544,7 @@ auto test_various_ostream_ops() -> bool
   return result_is_ok;
 }
 
-auto test_various_roots() -> bool
+auto test_various_roots_and_pow() -> bool
 {
   auto result_is_ok = true;
 
@@ -568,6 +569,68 @@ auto test_various_roots() -> bool
                                       && (u_root == sqrt(u)));
 
     result_is_ok = (result_u_root_is_ok && result_is_ok);
+  }
+
+  {
+    const auto u      = zero_as_small_unsigned_type();
+    const auto u_root = sqrt(u);
+
+    const auto result_sqrt_zero_is_ok = (u_root == 0U);
+
+    result_is_ok = (result_sqrt_zero_is_ok && result_is_ok);
+  }
+
+  {
+    const auto u      = zero_as_small_unsigned_type();
+    const auto u_root = cbrt(u);
+
+    const auto result_cbrt_zero_is_ok = (u_root == zero_as_small_unsigned_type());
+
+    result_is_ok = (result_cbrt_zero_is_ok && result_is_ok);
+  }
+
+  {
+    const auto u      = zero_as_small_unsigned_type();
+    const auto u_root = rootk(u, 7U);
+
+    const auto result_rootk_zero_is_ok = (u_root == zero_as_small_unsigned_type());
+
+    result_is_ok = (result_rootk_zero_is_ok && result_is_ok);
+  }
+
+  for(auto   i = static_cast<unsigned>(UINT32_C(0));
+             i < static_cast<unsigned>(UINT32_C(256));
+           ++i)
+  {
+    auto b_gen = generate_wide_integer_value<local_uintwide_t_small_unsigned_type>();
+    auto m_gen = generate_wide_integer_value<local_uintwide_t_small_unsigned_type>();
+
+    while(!(b_gen > m_gen))
+    {
+      b_gen = generate_wide_integer_value<local_uintwide_t_small_unsigned_type>();
+      m_gen = generate_wide_integer_value<local_uintwide_t_small_unsigned_type>();
+    }
+
+    const auto powm_zero_result = powm(b_gen, 0U, m_gen);
+    const auto powm_one_result  = powm(b_gen, 1U, m_gen);
+
+    const auto result_powm_checks_are_ok = (   (powm_zero_result == one_as_small_unsigned_type())
+                                            && (powm_one_result  == (b_gen % m_gen)));
+
+    result_is_ok = (result_powm_checks_are_ok && result_is_ok);
+  }
+
+  for(auto   i = static_cast<unsigned>(UINT32_C(0));
+             i < static_cast<unsigned>(UINT32_C(256));
+           ++i)
+  {
+    const auto b_gen = generate_wide_integer_value<local_uintwide_t_small_unsigned_type>();
+
+    const auto powm_zero_one_result = powm(b_gen, 0U, one_as_small_unsigned_type());
+
+    const auto result_powm_zero_one_is_ok = (powm_zero_one_result == zero_as_small_unsigned_type());
+
+    result_is_ok = (result_powm_zero_one_is_ok && result_is_ok);
   }
 
   return result_is_ok;
@@ -636,15 +699,31 @@ auto test_various_isolated_edge_cases() -> bool // NOLINT(readability-function-c
              i < static_cast<unsigned>(UINT32_C(256));
            ++i)
   {
-    // Verify division of finite numerator by zero which returns the maximum of the type.
+    // Verify division of finite, unsigned numerator by zero which returns the maximum of the type.
 
     auto u_gen = generate_wide_integer_value<local_uintwide_t_small_unsigned_type>();
 
     u_gen /= zero_as_small_unsigned_type();
 
-    const auto result_div_by_zero_is_ok = (u_gen == (std::numeric_limits<local_uintwide_t_small_unsigned_type>::max)());
+    const auto result_unsigned_div_by_zero_is_ok = (u_gen == (std::numeric_limits<local_uintwide_t_small_unsigned_type>::max)());
 
-    result_is_ok = (result_div_by_zero_is_ok && result_is_ok);
+    result_is_ok = (result_unsigned_div_by_zero_is_ok && result_is_ok);
+  }
+
+  for(auto   i = static_cast<unsigned>(UINT32_C(0));
+             i < static_cast<unsigned>(UINT32_C(256));
+           ++i)
+  {
+    // Verify division of finite, signed numerator by zero which returns the maximum of the type.
+
+    const auto u_gen = generate_wide_integer_value<local_uintwide_t_small_unsigned_type>();
+    auto n_gen = local_uintwide_t_small_signed_type(u_gen);
+
+    n_gen /= local_uintwide_t_small_signed_type(zero_as_small_unsigned_type());
+
+    const auto result_signed_div_by_zero_is_ok = (n_gen == (std::numeric_limits<local_uintwide_t_small_signed_type>::max)());
+
+    result_is_ok = (result_signed_div_by_zero_is_ok && result_is_ok);
   }
 
   {
@@ -788,7 +867,7 @@ auto math::wide_integer::test_uintwide_t_edge_cases() -> bool
 
   result_is_ok = (test_uintwide_t_edge::test_various_edge_operations    () && result_is_ok); // NOLINT
   result_is_ok = (test_uintwide_t_edge::test_various_ostream_ops        () && result_is_ok);
-  result_is_ok = (test_uintwide_t_edge::test_various_roots              () && result_is_ok);
+  result_is_ok = (test_uintwide_t_edge::test_various_roots_and_pow      () && result_is_ok);
   result_is_ok = (test_uintwide_t_edge::test_various_isolated_edge_cases() && result_is_ok);
 
   return result_is_ok;
@@ -812,9 +891,22 @@ auto test_uintwide_t_edge::zero_as_small_unsigned_type() -> const test_uintwide_
   return local_zero_as_small_unsigned_type;
 }
 
-auto test_uintwide_t_edge::m_one_as_small_signed_type() -> const test_uintwide_t_edge::local_uintwide_t_small_signed_type&
+auto test_uintwide_t_edge::one_as_small_unsigned_type() -> const test_uintwide_t_edge::local_uintwide_t_small_unsigned_type&
 {
   using local_limb_type = typename local_uintwide_t_small_unsigned_type::limb_type;
+
+  static const local_uintwide_t_small_unsigned_type local_one_as_small_signed_type =
+    local_uintwide_t_small_unsigned_type
+    (
+      static_cast<typename std::make_signed<local_limb_type>::type>(UINT8_C(1))
+    );
+
+  return local_one_as_small_signed_type;
+}
+
+auto test_uintwide_t_edge::m_one_as_small_signed_type() -> const test_uintwide_t_edge::local_uintwide_t_small_signed_type&
+{
+  using local_limb_type = typename local_uintwide_t_small_signed_type::limb_type;
 
   static const local_uintwide_t_small_signed_type local_m_one_as_small_signed_type =
     local_uintwide_t_small_signed_type
