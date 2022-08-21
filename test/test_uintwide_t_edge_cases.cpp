@@ -634,10 +634,17 @@ auto test_various_roots_and_pow_etc() -> bool
   }
 
   {
+    constexpr auto local_my_width2 = local_uintwide_t_small_unsigned_type::my_width2;
+
+    using local_limb_type = typename local_uintwide_t_small_unsigned_type::limb_type;
+
+    #if defined(WIDE_INTEGER_NAMESPACE)
     using local_distribution_type =
-      math::wide_integer::uniform_int_distribution<local_uintwide_t_small_unsigned_type::my_width2,
-                                                   typename local_uintwide_t_small_unsigned_type::limb_type,
-                                                   void>;
+      WIDE_INTEGER_NAMESPACE::math::wide_integer::uniform_int_distribution<local_my_width2, local_limb_type, void>;
+    #else
+    using local_distribution_type =
+      ::math::wide_integer::uniform_int_distribution<local_my_width2, local_limb_type, void>;
+    #endif
 
     using random_engine_type = std::minstd_rand;
 
@@ -647,7 +654,7 @@ auto test_various_roots_and_pow_etc() -> bool
 
     random_engine_type local_generator(generator);
 
-    constexpr std::array<int, 49U> small_primes =
+    constexpr std::array<int, static_cast<std::size_t>(UINT8_C(49))> small_primes =
     {
         2,
         3,   5,   7,  11,  13,  17,  19,  23,

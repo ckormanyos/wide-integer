@@ -5703,19 +5703,13 @@
 
       if(n_is_even)
       {
+        // The prime candidate is not prime because n is even.
+        // Also handle the trivial special case of (n = 2).
+
         const auto n_is_two =
           ((n0 == static_cast<local_limb_type>(UINT8_C(2))) && (np == static_cast<local_limb_type>(UINT8_C(2))));
 
-        if(n_is_two)
-        {
-          // Trivial special case of (n = 2).
-          return true;
-        }
-        else
-        {
-          // The prime candidate is not prime because n is even.
-          return false;
-        }
+        return n_is_two;
       }
 
       if((n0 <= static_cast<local_limb_type>(UINT8_C(227))) && (np <= static_cast<local_limb_type>(UINT8_C(227))))
