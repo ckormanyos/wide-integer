@@ -85,6 +85,28 @@ using local_uintwide_t_small_signed_type =
   ::math::wide_integer::uintwide_t<local_edge_cases::local_digits2_small, std::uint16_t, void, true>;
   #endif
 
+using local_uint_backend_type =
+  boost::multiprecision::uintwide_t_backend<local_edge_cases::local_digits2,
+                                            std::uint32_t,
+                                            std::allocator<std::uint32_t>>;
+
+using boost_uint_backend_allocator_type = void;
+
+using boost_uint_backend_type =
+  boost::multiprecision::cpp_int_backend<local_edge_cases::local_digits2,
+                                         local_edge_cases::local_digits2,
+                                         boost::multiprecision::unsigned_magnitude,
+                                         boost::multiprecision::unchecked,
+                                         boost_uint_backend_allocator_type>;
+
+using local_uint_type =
+  boost::multiprecision::number<local_uint_backend_type,
+                                boost::multiprecision::et_off>;
+
+using boost_uint_type =
+  boost::multiprecision::number<boost_uint_backend_type,
+                                boost::multiprecision::et_off>;
+
 auto zero_as_limb               () -> const typename local_uintwide_t_small_unsigned_type::limb_type&;
 auto zero_as_small_unsigned_type() -> const local_uintwide_t_small_unsigned_type&;
 auto one_as_small_unsigned_type () -> const local_uintwide_t_small_unsigned_type&;
@@ -179,28 +201,6 @@ auto generate_wide_integer_value(bool       is_positive           = true,
   return local_integral_type(str_x.c_str());
 }
 
-using local_uint_backend_type =
-  boost::multiprecision::uintwide_t_backend<local_edge_cases::local_digits2,
-                                            std::uint32_t,
-                                            std::allocator<std::uint32_t>>;
-
-using boost_uint_backend_allocator_type = void;
-
-using boost_uint_backend_type =
-  boost::multiprecision::cpp_int_backend<local_edge_cases::local_digits2,
-                                         local_edge_cases::local_digits2,
-                                         boost::multiprecision::unsigned_magnitude,
-                                         boost::multiprecision::unchecked,
-                                         boost_uint_backend_allocator_type>;
-
-using local_uint_type =
-  boost::multiprecision::number<local_uint_backend_type,
-                                boost::multiprecision::et_off>;
-
-using boost_uint_type =
-  boost::multiprecision::number<boost_uint_backend_type,
-                                boost::multiprecision::et_off>;
-
 auto test_various_edge_operations() -> bool
 {
   const auto u_max_local = (std::numeric_limits<local_uint_type>::max)();
@@ -287,14 +287,33 @@ auto test_various_edge_operations() -> bool
 
   const auto result08_is_ok = (result_local.convert_to<std::string>() == result_boost.convert_to<std::string>());
 
-  const auto result_is_ok = (   result01_is_ok
-                             && result02_is_ok
-                             && result03_is_ok
-                             && result04_is_ok
-                             && result05_is_ok
-                             && result06_is_ok
-                             && result07_is_ok
-                             && result08_is_ok);
+  auto result_is_ok = (   result01_is_ok
+                       && result02_is_ok
+                       && result03_is_ok
+                       && result04_is_ok
+                       && result05_is_ok
+                       && result06_is_ok
+                       && result07_is_ok
+                       && result08_is_ok);
+
+  {
+    using local_derived_uint_type = typename local_uint_type::backend_type::representation_type;
+    using local_limb_type         = local_derived_uint_type::limb_type;
+
+    local_derived_uint_type dt(static_cast<local_limb_type>(INT8_C(-3)));
+
+    dt.representation().fill(static_cast<local_limb_type>(UINT8_C(0)));
+
+    const auto result_fill_with_zero_is_ok = (dt == 0U);
+
+    result_is_ok = (result_fill_with_zero_is_ok && result_is_ok);
+
+    dt.representation().fill((std::numeric_limits<local_limb_type>::max)());
+
+    const auto result_fill_with_effs_is_ok = (dt == (std::numeric_limits<local_derived_uint_type>::max)());
+
+    result_is_ok = (result_fill_with_effs_is_ok && result_is_ok);
+  }
 
   return result_is_ok;
 }
@@ -401,7 +420,6 @@ auto test_various_ostream_ops() -> bool
       result_is_ok = (result_zero_print_as_hex_is_ok && result_is_ok);
     }
   }
-
 
   for(auto   i = static_cast<unsigned>(UINT32_C(0));
              i < static_cast<unsigned>(UINT32_C(1024));
@@ -539,6 +557,23 @@ auto test_various_ostream_ops() -> bool
     const auto result_n_is_ok = (n == n_strm);
 
     result_is_ok = (result_n_is_ok && result_is_ok);
+  }
+
+  {
+    const local_uintwide_t_small_unsigned_type m1("-0x1");
+
+    std::stringstream strm;
+
+    strm << std::hex << m1;
+
+    const local_uintwide_t_small_unsigned_type m1_from_strm(strm.str().c_str());
+
+    const auto result_read_and_round_trip_neg_hex_str_is_ok =
+    (
+      m1_from_strm == (std::numeric_limits<local_uintwide_t_small_unsigned_type>::max)()
+    );
+
+    result_is_ok = (result_read_and_round_trip_neg_hex_str_is_ok && result_is_ok);
   }
 
   return result_is_ok;
@@ -714,6 +749,18 @@ auto test_various_isolated_edge_cases() -> bool // NOLINT(readability-function-c
       (local_uintwide_t_small_unsigned_type(rep) == (std::numeric_limits<local_uintwide_t_small_unsigned_type>::max)());
 
     result_is_ok = (rep_as_max2_is_ok && result_is_ok);
+
+    rep =
+      local_rep_type
+      (
+        static_cast<typename local_rep_type::size_type>(rep.size()),
+        (std::numeric_limits<local_value_type>::max)()
+      );
+
+    const auto rep_as_max3_is_ok =
+      (local_uintwide_t_small_unsigned_type(rep) == (std::numeric_limits<local_uintwide_t_small_unsigned_type>::max)());
+
+    result_is_ok = (rep_as_max3_is_ok && result_is_ok);
   }
 
   {
