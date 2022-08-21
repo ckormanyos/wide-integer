@@ -212,18 +212,18 @@ auto test_various_edge_operations() -> bool
   result_local = u_max_local * u_max_local;
   result_boost = u_max_boost * u_max_boost;
 
-  const auto result01_is_ok = ((result_local == local_uint_type(1U)) && (result_boost == boost_uint_type(1U))); // NOLINT
+  const auto result01_is_ok = ((result_local == local_uint_type(1U)) && (result_boost == boost_uint_type(1U)));
 
   result_local = (u_max_local - 1U) * u_max_local;
   result_boost = (u_max_boost - 1U) * u_max_boost;
 
-  const auto result02_is_ok = ((result_local == local_uint_type(2U)) && (result_boost == boost_uint_type(2U))); // NOLINT
+  const auto result02_is_ok = ((result_local == local_uint_type(2U)) && (result_boost == boost_uint_type(2U)));
 
   const std::string str_seven_and_effs =
     "0x7" + std::string(std::string::size_type((local_edge_cases::local_digits2 / 4) - 1U), 'F');
 
-  const local_uint_type u_seven_and_effs_local(str_seven_and_effs.c_str()); // NOLINT
-  const boost_uint_type u_seven_and_effs_boost(str_seven_and_effs.c_str()); // NOLINT
+  const local_uint_type u_seven_and_effs_local(str_seven_and_effs.c_str());
+  const boost_uint_type u_seven_and_effs_boost(str_seven_and_effs.c_str());
 
   result_local = u_seven_and_effs_local * u_seven_and_effs_local;
   result_boost = u_seven_and_effs_boost * u_seven_and_effs_boost;
@@ -605,7 +605,7 @@ auto test_various_roots_and_pow() -> bool
     auto b_gen = generate_wide_integer_value<local_uintwide_t_small_unsigned_type>();
     auto m_gen = generate_wide_integer_value<local_uintwide_t_small_unsigned_type>();
 
-    while(!(b_gen > m_gen))
+    while(!(b_gen > m_gen)) // NOLINT(altera-id-dependent-backward-branch)
     {
       b_gen = generate_wide_integer_value<local_uintwide_t_small_unsigned_type>();
       m_gen = generate_wide_integer_value<local_uintwide_t_small_unsigned_type>();
@@ -865,7 +865,7 @@ auto math::wide_integer::test_uintwide_t_edge_cases() -> bool
 {
   bool result_is_ok = true;
 
-  result_is_ok = (test_uintwide_t_edge::test_various_edge_operations    () && result_is_ok); // NOLINT
+  result_is_ok = (test_uintwide_t_edge::test_various_edge_operations    () && result_is_ok);
   result_is_ok = (test_uintwide_t_edge::test_various_ostream_ops        () && result_is_ok);
   result_is_ok = (test_uintwide_t_edge::test_various_roots_and_pow      () && result_is_ok);
   result_is_ok = (test_uintwide_t_edge::test_various_isolated_edge_cases() && result_is_ok);
