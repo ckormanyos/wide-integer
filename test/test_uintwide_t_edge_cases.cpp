@@ -675,6 +675,76 @@ auto test_various_roots_and_pow_etc() -> bool
     result_is_ok = (result_powm_checks_are_ok && result_is_ok);
   }
 
+  {
+    using cbrt_data_array_type =
+      std::array<local_uintwide_t_small_unsigned_type, static_cast<std::size_t>(UINT8_C(8))>;
+
+    const cbrt_data_array_type cbrt_data =
+    {
+      local_uintwide_t_small_unsigned_type("18591464226570188482335556583014877010846157439279636364391601416685181826739"),
+      local_uintwide_t_small_unsigned_type("24869148812823078727957239966988831661117348394458694469456199133058710898385"),
+      local_uintwide_t_small_unsigned_type("20459458343813048156944305915719699283327972187060973139957135785389371035384"),
+      local_uintwide_t_small_unsigned_type("14620686446043874872839614028059874940322205392189694911311629821668169781732"),
+      local_uintwide_t_small_unsigned_type("17821535577791196895879219168648157479307137216422486411619070994784542180479"),
+      local_uintwide_t_small_unsigned_type("26137902304313423217616265990724469870496614497751748575831158442693919358350"),
+      local_uintwide_t_small_unsigned_type("22930448724778053209881203230969838173104034812172121699967816633496783088660"),
+      local_uintwide_t_small_unsigned_type("26883616747626003420727205040885702064145191328639541284352659531403029317825")
+    };
+
+    const cbrt_data_array_type cbrt_ctrl =
+    {
+      local_uintwide_t_small_unsigned_type("26491376915050506068793105"),
+      local_uintwide_t_small_unsigned_type("29189073292091075910108472"),
+      local_uintwide_t_small_unsigned_type("27350464759232979333618024"),
+      local_uintwide_t_small_unsigned_type("24452461725247199874379429"),
+      local_uintwide_t_small_unsigned_type("26120513312504351566364004"),
+      local_uintwide_t_small_unsigned_type("29677244642290681532029432"),
+      local_uintwide_t_small_unsigned_type("28409974974531996382554712"),
+      local_uintwide_t_small_unsigned_type("29956833008533036762648591")
+    };
+
+    auto i = static_cast<typename cbrt_data_array_type::size_type>(UINT8_C(0));
+
+    for(const auto& u : cbrt_data)
+    {
+      const auto cbrt_u = cbrt(u);
+
+      const auto result_cbrt_is_ok = (cbrt_u == cbrt_ctrl[i++]);
+
+      result_is_ok = (result_cbrt_is_ok && result_is_ok);
+    }
+  }
+
+  for(auto   i = static_cast<unsigned>(UINT32_C(0));
+             i < static_cast<unsigned>(UINT32_C(256));
+           ++i)
+  {
+    const auto high_bit =
+      static_cast<local_uintwide_t_small_unsigned_type>
+      (
+           local_uintwide_t_small_unsigned_type(1)
+        << (std::numeric_limits<local_uintwide_t_small_unsigned_type>::digits - 1)
+      );
+
+    const auto u =
+      static_cast<local_uintwide_t_small_unsigned_type>
+      (
+        static_cast<local_uintwide_t_small_unsigned_type>
+        (
+            generate_wide_integer_value<local_uintwide_t_small_unsigned_type>()
+          | high_bit
+        )
+        >> 3U
+      );
+
+    const auto sqrt_sqrt_u    = sqrt(sqrt(u));
+    const auto quartic_root_u = rootk(u, 4U);
+
+    const auto result_quartic_root_is_ok = (sqrt_sqrt_u == quartic_root_u);
+
+    result_is_ok = (result_quartic_root_is_ok && result_is_ok);
+  }
+
   for(auto   i = static_cast<unsigned>(UINT32_C(0));
              i < static_cast<unsigned>(UINT32_C(256));
            ++i)
