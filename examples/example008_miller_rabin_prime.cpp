@@ -102,7 +102,6 @@ namespace local_example008_miller_rabin_prime
     return result_is_ok;
   }
 
-
   auto example008_miller_rabin_prime_check_known_primes() -> bool
   {
     using known_primes_array_type = std::array<wide_integer_type, static_cast<std::size_t>(UINT8_C(28))>;
@@ -157,7 +156,7 @@ namespace local_example008_miller_rabin_prime
 
     return result_is_ok;
   }
-}
+} // namespace local_example008_miller_rabin_prime
 
 #if defined(WIDE_INTEGER_NAMESPACE)
 auto WIDE_INTEGER_NAMESPACE::math::wide_integer::example008_miller_rabin_prime() -> bool
