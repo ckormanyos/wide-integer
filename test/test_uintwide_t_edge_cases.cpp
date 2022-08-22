@@ -677,30 +677,20 @@ auto test_various_roots_and_pow_etc() -> bool
 
   {
     using cbrt_data_array_type =
-      std::array<local_uintwide_t_small_unsigned_type, static_cast<std::size_t>(UINT8_C(8))>;
+      std::array<local_uintwide_t_small_unsigned_type, static_cast<std::size_t>(UINT8_C(3))>;
 
     const cbrt_data_array_type cbrt_data =
     {
-      local_uintwide_t_small_unsigned_type("18591464226570188482335556583014877010846157439279636364391601416685181826739"),
-      local_uintwide_t_small_unsigned_type("24869148812823078727957239966988831661117348394458694469456199133058710898385"),
-      local_uintwide_t_small_unsigned_type("20459458343813048156944305915719699283327972187060973139957135785389371035384"),
-      local_uintwide_t_small_unsigned_type("14620686446043874872839614028059874940322205392189694911311629821668169781732"),
-      local_uintwide_t_small_unsigned_type("17821535577791196895879219168648157479307137216422486411619070994784542180479"),
-      local_uintwide_t_small_unsigned_type("26137902304313423217616265990724469870496614497751748575831158442693919358350"),
-      local_uintwide_t_small_unsigned_type("22930448724778053209881203230969838173104034812172121699967816633496783088660"),
-      local_uintwide_t_small_unsigned_type("26883616747626003420727205040885702064145191328639541284352659531403029317825")
+      local_uintwide_t_small_unsigned_type("67828177552242475987719934121374621432592443433392865437894564885546642548776"),
+      local_uintwide_t_small_unsigned_type("114688795833607759436755318000801811092546159899778523634298604873518327575437"),
+      local_uintwide_t_small_unsigned_type("97147734462982474181332761989635722126392718381938387792632943975979168194114"),
     };
 
     const cbrt_data_array_type cbrt_ctrl =
     {
-      local_uintwide_t_small_unsigned_type("26491376915050506068793105"),
-      local_uintwide_t_small_unsigned_type("29189073292091075910108472"),
-      local_uintwide_t_small_unsigned_type("27350464759232979333618024"),
-      local_uintwide_t_small_unsigned_type("24452461725247199874379429"),
-      local_uintwide_t_small_unsigned_type("26120513312504351566364004"),
-      local_uintwide_t_small_unsigned_type("29677244642290681532029432"),
-      local_uintwide_t_small_unsigned_type("28409974974531996382554712"),
-      local_uintwide_t_small_unsigned_type("29956833008533036762648591")
+      local_uintwide_t_small_unsigned_type("40782143592716585610825381"),
+      local_uintwide_t_small_unsigned_type("48585535929752371864326912"),
+      local_uintwide_t_small_unsigned_type("45970323401457076345923126"),
     };
 
     auto i = static_cast<typename cbrt_data_array_type::size_type>(UINT8_C(0));
