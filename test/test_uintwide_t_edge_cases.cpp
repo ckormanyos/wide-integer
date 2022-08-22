@@ -692,14 +692,14 @@ auto test_various_roots_and_pow_etc() -> bool
              i < static_cast<unsigned>(UINT32_C(256));
            ++i)
   {
-    constexpr int digits10_to_get_b =
+    constexpr auto digits10_to_get_b =
       static_cast<int>
       (
           static_cast<float>(std::numeric_limits<local_uintwide_t_small_unsigned_type>::digits10)
         * 0.45F
       );
 
-    constexpr int digits10_to_get_m =
+    constexpr auto digits10_to_get_m =
       static_cast<int>
       (
           static_cast<float>(std::numeric_limits<local_uintwide_t_small_unsigned_type>::digits10)
