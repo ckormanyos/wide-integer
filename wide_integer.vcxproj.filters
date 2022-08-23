@@ -65,6 +65,9 @@
     <Filter Include="target\micros\stm32f429\make\single">
       <UniqueIdentifier>{083f53f0-1b7d-4be6-8adf-c6a9ab7671c1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\examples\build">
+      <UniqueIdentifier>{24de4171-df89-40f3-87b7-3dfdee251467}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="boost\multiprecision\uintwide_t_backend.hpp">
@@ -250,6 +253,9 @@
     </None>
     <None Include="target\build\test_examples_emulator.py">
       <Filter>target\build</Filter>
+    </None>
+    <None Include="examples\build\test_examples.sh">
+      <Filter>Source Files\examples\build</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

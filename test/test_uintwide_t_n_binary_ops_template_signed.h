@@ -348,8 +348,8 @@
         a_native_signed[i] = static_cast<std::int64_t>(dst_u64(eng64));
         b_native_signed[i] = static_cast<std::int64_t>(dst_u64(eng64));
 
-        a_local_signed[i] = local_sint_type(local_uint_type(a_native_signed[i]));
-        b_local_signed[i] = local_sint_type(local_uint_type(b_native_signed[i]));
+        a_local_signed[i] = static_cast<local_sint_type>(a_native_signed[i]);
+        b_local_signed[i] = static_cast<local_sint_type>(b_native_signed[i]);
       }
     }
 
