@@ -22,7 +22,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        example: [ example003_sqrt ]
+        example: [ example001_mul_div, example003_sqrt ]
         standard: [ c++14, c++17, c++2a ]
     steps:
       - uses: actions/checkout@v2
