@@ -5,6 +5,7 @@
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
 
+#include <chrono>
 #include <random>
 #include <string>
 
@@ -107,28 +108,47 @@ using boost_uint_type =
   boost::multiprecision::number<boost_uint_backend_type,
                                 boost::multiprecision::et_off>;
 
-auto zero_as_limb               () -> const typename local_uintwide_t_small_unsigned_type::limb_type&;
-auto zero_as_small_unsigned_type() -> const local_uintwide_t_small_unsigned_type&;
-auto one_as_small_unsigned_type () -> const local_uintwide_t_small_unsigned_type&;
-auto m_one_as_small_signed_type () -> const local_uintwide_t_small_signed_type&;
-
-std::uniform_int_distribution<std::uint32_t> dist_sgn    (UINT32_C(0), UINT32_C(1));  // NOLINT(cert-err58-cpp,cppcoreguidelines-avoid-non-const-global-variables)
-std::uniform_int_distribution<std::uint32_t> dist_dig_dec(UINT32_C(1), UINT32_C(9));  // NOLINT(cert-err58-cpp,cppcoreguidelines-avoid-non-const-global-variables)
-std::uniform_int_distribution<std::uint32_t> dist_dig_hex(UINT32_C(1), UINT32_C(15)); // NOLINT(cert-err58-cpp,cppcoreguidelines-avoid-non-const-global-variables)
-std::uniform_int_distribution<std::uint32_t> dist_dig_oct(UINT32_C(1), UINT32_C(7));  // NOLINT(cert-err58-cpp,cppcoreguidelines-avoid-non-const-global-variables)
-
-using eng_sgn_type = std::ranlux24;
-using eng_dig_type = std::minstd_rand0;
-
-eng_sgn_type eng_sgn; // NOLINT(cert-msc32-c,cert-msc51-cpp,cert-err58-cpp,cppcoreguidelines-avoid-non-const-global-variables)
-eng_dig_type eng_dig; // NOLINT(cert-msc32-c,cert-msc51-cpp,cert-err58-cpp,cppcoreguidelines-avoid-non-const-global-variables)
-
 enum class local_base
 {
   dec,
   hex,
   oct
 };
+
+using eng_sgn_type = std::ranlux24;
+using eng_dig_type = std::minstd_rand0;
+
+std::uniform_int_distribution<std::uint32_t> dist_sgn    (UINT32_C(0), UINT32_C(1));  // NOLINT(cert-err58-cpp,cppcoreguidelines-avoid-non-const-global-variables)
+std::uniform_int_distribution<std::uint32_t> dist_dig_dec(UINT32_C(1), UINT32_C(9));  // NOLINT(cert-err58-cpp,cppcoreguidelines-avoid-non-const-global-variables)
+std::uniform_int_distribution<std::uint32_t> dist_dig_hex(UINT32_C(1), UINT32_C(15)); // NOLINT(cert-err58-cpp,cppcoreguidelines-avoid-non-const-global-variables)
+std::uniform_int_distribution<std::uint32_t> dist_dig_oct(UINT32_C(1), UINT32_C(7));  // NOLINT(cert-err58-cpp,cppcoreguidelines-avoid-non-const-global-variables)
+
+eng_sgn_type eng_sgn; // NOLINT(cert-msc32-c,cert-msc51-cpp,cert-err58-cpp,cppcoreguidelines-avoid-non-const-global-variables)
+eng_dig_type eng_dig; // NOLINT(cert-msc32-c,cert-msc51-cpp,cert-err58-cpp,cppcoreguidelines-avoid-non-const-global-variables)
+
+auto zero_as_limb               () -> const typename local_uintwide_t_small_unsigned_type::limb_type&;
+auto zero_as_small_unsigned_type() -> const local_uintwide_t_small_unsigned_type&;
+auto one_as_small_unsigned_type () -> const local_uintwide_t_small_unsigned_type&;
+auto m_one_as_small_signed_type () -> const local_uintwide_t_small_signed_type&;
+
+template<typename IntegralTimePointType,
+          typename ClockType = std::chrono::high_resolution_clock>
+auto time_point() -> IntegralTimePointType
+{
+  using local_integral_time_point_type = IntegralTimePointType;
+  using local_clock_type               = ClockType;
+
+  const auto current_now =
+    static_cast<std::uintmax_t>
+    (
+      std::chrono::duration_cast<std::chrono::nanoseconds>
+      (
+        local_clock_type::now().time_since_epoch()
+      ).count()
+    );
+
+  return static_cast<local_integral_time_point_type>(current_now);
+}
 
 template<typename IntegralTypeWithStringConstruction>
 auto generate_wide_integer_value(bool       is_positive           = true,
@@ -655,6 +675,66 @@ auto test_various_roots_and_pow_etc() -> bool
     result_is_ok = (result_powm_checks_are_ok && result_is_ok);
   }
 
+  {
+    using cbrt_data_array_type =
+      std::array<local_uintwide_t_small_unsigned_type, static_cast<std::size_t>(UINT8_C(3))>;
+
+    const cbrt_data_array_type cbrt_data =
+    {
+      local_uintwide_t_small_unsigned_type("67828177552242475987719934121374621432592443433392865437894564885546642548776"),
+      local_uintwide_t_small_unsigned_type("114688795833607759436755318000801811092546159899778523634298604873518327575437"),
+      local_uintwide_t_small_unsigned_type("97147734462982474181332761989635722126392718381938387792632943975979168194114"),
+    };
+
+    const cbrt_data_array_type cbrt_ctrl =
+    {
+      local_uintwide_t_small_unsigned_type("40782143592716585610825381"),
+      local_uintwide_t_small_unsigned_type("48585535929752371864326912"),
+      local_uintwide_t_small_unsigned_type("45970323401457076345923126"),
+    };
+
+    auto i = static_cast<typename cbrt_data_array_type::size_type>(UINT8_C(0));
+
+    for(const auto& u : cbrt_data)
+    {
+      const auto cbrt_u = cbrt(u);
+
+      const auto result_cbrt_is_ok = (cbrt_u == cbrt_ctrl[i++]);
+
+      result_is_ok = (result_cbrt_is_ok && result_is_ok);
+    }
+  }
+
+  for(auto   i = static_cast<unsigned>(UINT32_C(0));
+             i < static_cast<unsigned>(UINT32_C(256));
+           ++i)
+  {
+    const auto high_bit =
+      static_cast<local_uintwide_t_small_unsigned_type>
+      (
+           local_uintwide_t_small_unsigned_type(1)
+        << (std::numeric_limits<local_uintwide_t_small_unsigned_type>::digits - 1)
+      );
+
+    const auto u =
+      static_cast<local_uintwide_t_small_unsigned_type>
+      (
+        static_cast<local_uintwide_t_small_unsigned_type>
+        (
+            generate_wide_integer_value<local_uintwide_t_small_unsigned_type>()
+          | high_bit
+        )
+        >> 3U
+      );
+
+    const auto sqrt_sqrt_u    = sqrt(sqrt(u));
+    const auto quartic_root_u = rootk(u, 4U);
+
+    const auto result_quartic_root_is_ok = (sqrt_sqrt_u == quartic_root_u);
+
+    result_is_ok = (result_quartic_root_is_ok && result_is_ok);
+  }
+
   for(auto   i = static_cast<unsigned>(UINT32_C(0));
              i < static_cast<unsigned>(UINT32_C(256));
            ++i)
@@ -666,6 +746,35 @@ auto test_various_roots_and_pow_etc() -> bool
     const auto result_powm_zero_one_is_ok = (powm_zero_one_result == zero_as_small_unsigned_type());
 
     result_is_ok = (result_powm_zero_one_is_ok && result_is_ok);
+  }
+
+  for(auto   i = static_cast<unsigned>(UINT32_C(0));
+             i < static_cast<unsigned>(UINT32_C(256));
+           ++i)
+  {
+    constexpr auto digits10_to_get_b =
+      static_cast<int>
+      (
+          static_cast<float>(std::numeric_limits<local_uintwide_t_small_unsigned_type>::digits10)
+        * 0.45F
+      );
+
+    constexpr auto digits10_to_get_m =
+      static_cast<int>
+      (
+          static_cast<float>(std::numeric_limits<local_uintwide_t_small_unsigned_type>::digits10)
+        * 0.55F
+      );
+
+    const auto b_gen = generate_wide_integer_value<local_uintwide_t_small_unsigned_type>(true, local_base::dec, digits10_to_get_b);
+    const auto m_gen = generate_wide_integer_value<local_uintwide_t_small_unsigned_type>(true, local_base::dec, digits10_to_get_m);
+
+    const auto powm_two_result  = powm(b_gen, 2U, m_gen);
+    const auto powm_two_control = local_uintwide_t_small_unsigned_type((b_gen * b_gen) % m_gen);
+
+    const auto result_powm_two_is_ok = (powm_two_result == powm_two_control);
+
+    result_is_ok = (result_powm_two_is_ok && result_is_ok);
   }
 
   {
@@ -685,7 +794,9 @@ auto test_various_roots_and_pow_etc() -> bool
 
     local_distribution_type distribution;
 
-    auto generator = random_engine_type(static_cast<typename random_engine_type::result_type>(std::clock()));
+    using local_random_engine_result_type = typename random_engine_type::result_type;
+
+    auto generator = random_engine_type(time_point<local_random_engine_result_type>());
 
     random_engine_type local_generator(generator);
 

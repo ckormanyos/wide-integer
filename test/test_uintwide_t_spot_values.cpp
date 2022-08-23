@@ -966,14 +966,25 @@ auto local_test_spot_values::test() -> bool // NOLINT(readability-function-cogni
     // 40641612127094559121321599356729737321
     const uint256_t b("0x1E934A2EEA60A2AD14ECCAE7AD82C069");
 
-    const uint256_t lm = lcm(a - 1U, b - 1U);
-    const uint256_t gd = gcd(a - 1U, b - 1U);
+    const auto v  = b - 1U;
+    const auto lm = lcm(a - 1U, v);
+    const auto gd = gcd(a - 1U, v);
 
     // LCM[16770224695321632575655872732632870897 - 1, 40641612127094559121321599356729737321 - 1]
     result_is_ok = ((lm == uint256_t("28398706972978513348490390087175345493497748446743697820448222113648043280")) && result_is_ok);
 
     // GCD[16770224695321632575655872732632870897 - 1, 40641612127094559121321599356729737321 - 1]
     result_is_ok = ((gd == 24U) && result_is_ok); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
+
+    {
+      // Check GCD(0, v) to be equal to v (found mssing in code coverage analyses).
+
+      using local_limb_type = typename uint256_t::limb_type;
+
+      const auto gd0 = gcd(uint256_t(static_cast<local_limb_type>(UINT8_C(0))), v);
+
+      result_is_ok = ((gd0 == v) && result_is_ok);
+    }
   }
 
   {
