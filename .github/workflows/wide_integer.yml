@@ -49,7 +49,6 @@ jobs:
           ls -la ./bin/${{ matrix.example }}.elf ./bin/${{ matrix.example }}.hex ./bin/${{ matrix.example }}.map
         working-directory: ./
       - name: gcc-arm-none-eabi
-      - name: emulate-target-stm32f429
         run: |
           ./emu_env/xpack-qemu-arm-2.8.0-13/bin/qemu-system-gnuarmeclipse --verbose --mcu STM32F429ZI --nographic --gdb tcp::9999 -d unimp,guest_errors &
         working-directory: ./
