@@ -1,4 +1,4 @@
-///////////////////////////////////////////////////////////////////
+﻿///////////////////////////////////////////////////////////////////
 //  Copyright Christopher Kormanyos 2018 - 2022.                 //
 //  Distributed under the Boost Software License,                //
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt          //
@@ -40,19 +40,63 @@ auto math::wide_integer::example001_mul_div() -> bool
 #include <iostream>
 #endif
 
+constexpr auto example_standalone_foodcafe = static_cast<std::uint32_t>(UINT32_C(0xF00DCAFE));
+
+extern "C"
+{
+  extern volatile std::uint32_t example_standalone_result;
+
+  auto example_run_standalone       (void) -> bool;
+  auto example_get_standalone_result(void) -> bool;
+
+  auto example_run_standalone(void) -> bool
+  {
+    bool result_is_ok = true;
+
+    for(unsigned i = 0U; i < 64U; ++i)
+    {
+      #if defined(WIDE_INTEGER_NAMESPACE)
+      result_is_ok &= WIDE_INTEGER_NAMESPACE::math::wide_integer::example001_mul_div();
+      #else
+      result_is_ok &= ::math::wide_integer::example001_mul_div();
+      #endif
+    }
+
+    example_standalone_result =
+      static_cast<std::uint32_t>
+      (
+        result_is_ok ? example_standalone_foodcafe : UINT32_C(0xFFFFFFFF)
+      );
+
+    #if !defined(WIDE_INTEGER_DISABLE_IOSTREAM)
+    std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
+    #endif
+
+    return result_is_ok;
+  }
+
+  auto example_get_standalone_result(void) -> bool
+  {
+    volatile auto result_is_ok =
+      (example_standalone_result == UINT32_C(0xF00DCAFE));
+
+    return result_is_ok;
+  }
+}
+
 auto main() -> int
 {
-  #if defined(WIDE_INTEGER_NAMESPACE)
-  const auto result_is_ok = WIDE_INTEGER_NAMESPACE::math::wide_integer::example001_mul_div();
-  #else
-  const auto result_is_ok = math::wide_integer::example001_mul_div();
-  #endif
+  auto result_is_ok = true;
 
-  #if !defined(WIDE_INTEGER_DISABLE_IOSTREAM)
-  std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
-  #endif
+  result_is_ok = (::example_run_standalone       () && result_is_ok);
+  result_is_ok = (::example_get_standalone_result() && result_is_ok);
 
   return (result_is_ok ? 0 : -1);
+}
+
+extern "C"
+{
+  volatile std::uint32_t example_standalone_result;
 }
 
 #endif
