@@ -285,7 +285,7 @@ jobs:
           echo "ls ./wide_integer.exe"
           ls -la ./wide_integer.exe
           ./wide_integer.exe
-  gcc-clang-8-9:
+  gcc-clang-7-9:
     runs-on: ubuntu-20.04
     defaults:
       run:
@@ -294,13 +294,13 @@ jobs:
       fail-fast: false
       matrix:
         standard: [ c++14, c++17 ]
-        compiler: [ g++-8, g++-9, clang++-8, clang++-9 ]
+        compiler: [ g++-7, g++-8, g++-9, clang++-8, clang++-9 ]
     steps:
       - uses: actions/checkout@v2
         with:
           fetch-depth: '0'
       - name: update-tools
-        run: sudo apt install gcc-8 g++-8 g++-9 clang-9
+        run: sudo apt install g++-7 g++-8 g++-9 clang-8 clang-9
       - name: clone-submods-bootstrap-headers-boost-develop
         run: |
           git clone -b develop --depth 1 https://github.com/boostorg/boost.git ../boost-root
@@ -310,7 +310,7 @@ jobs:
           git submodule update --init libs/multiprecision
           ./bootstrap.sh
           ./b2 headers
-      - name: gcc-clang-8-9
+      - name: gcc-clang-7-9
         run: |
           grep BOOST_VERSION ../boost-root/boost/version.hpp
           echo "compile ./wide_integer.exe"
