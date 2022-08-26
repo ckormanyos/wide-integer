@@ -10,6 +10,9 @@
 
   #include <algorithm>
   #include <array>
+  #if defined(__cpp_lib_to_chars)
+  #include <charconv>
+  #endif
   #include <cinttypes>
   #if !defined(WIDE_INTEGER_DISABLE_FLOAT_INTEROP)
   #include <cmath>
@@ -31,6 +34,9 @@
   #if !defined(WIDE_INTEGER_DISABLE_IOSTREAM)
   #include <ostream>
   #include <sstream>
+  #endif
+  #if !defined(WIDE_INTEGER_DISABLE_TO_STRING)
+  #include <string>
   #endif
   #include <type_traits>
 
@@ -813,6 +819,25 @@
                     const unsigned_fast_type                                     number_of_trials, // NOLINT(readability-avoid-const-params-in-decls)
                           DistributionType&                                      distribution,
                           GeneratorType&                                         generator) -> bool;
+
+  #if defined(__cpp_lib_to_chars)
+  template<const size_t Width2,
+           typename LimbType,
+           typename AllocatorType,
+           const bool IsSigned>
+  auto to_chars(char* first,
+                char* last,
+                const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& x,
+                int base = 10 ) -> std::to_chars_result;
+  #endif
+
+  #if !defined(WIDE_INTEGER_DISABLE_TO_STRING)
+  template<const size_t Width2,
+           typename LimbType,
+           typename AllocatorType,
+           const bool IsSigned>
+  auto to_string(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& x) -> std::string;
+  #endif
 
   #if(__cplusplus >= 201703L)
   } // namespace math::wide_integer
@@ -5901,6 +5926,138 @@
     // of the very high probability resulting from Miller-Rabin.
     return is_probably_prime;
   }
+
+  #if defined(__cpp_lib_to_chars)
+  template<const size_t Width2,
+           typename LimbType,
+           typename AllocatorType,
+           const bool IsSigned>
+  auto to_chars(char* first,
+                char* last,
+                const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& x,
+                int base) -> std::to_chars_result
+  {
+    using local_wide_integer_type = uintwide_t<Width2, LimbType, AllocatorType, IsSigned>;
+
+    using to_chars_storage_array_type =
+      std::array<char, static_cast<typename std::size_t>(local_wide_integer_type::wr_string_max_buffer_size_dec)>;
+
+    // TBD: This causes very large stack size if the wide-integer is very wide.
+    // TBD: This can be solved using the allocator type, as has been done elsewhere
+    // at times in the project.
+    to_chars_storage_array_type str_as_array { };
+
+    constexpr auto char_fill = '.';
+
+    str_as_array.fill(char_fill);
+
+    const auto base_rep     = static_cast<std::uint_fast8_t>(base);
+    const auto show_base    = false;
+    const auto show_pos     = false;
+    const auto is_uppercase = false;
+
+    const auto wr_string_is_ok = x.wr_string(str_as_array.data(), base_rep, show_base, show_pos, is_uppercase);
+
+    auto rit_trim = std::find_if(str_as_array.crbegin(),
+                                 str_as_array.crend(),
+                                 [](const char& c)
+                                 {
+                                   return (c != char_fill);
+                                 });
+
+    const auto wr_string_and_trim_is_ok =
+      (
+           (rit_trim != str_as_array.crend())
+        &&  wr_string_is_ok
+      );
+
+    std::to_chars_result result;
+
+    if(wr_string_and_trim_is_ok)
+    {
+      const auto chars_retrieved =
+        static_cast<std::size_t>
+        (
+          str_as_array.size() - static_cast<std::size_t>(std::distance(str_as_array.crbegin(), rit_trim))
+        );
+
+      const auto chars_to_get = static_cast<std::size_t>(std::distance(first, last));
+
+      result.ptr = std::copy(str_as_array.data(),
+                             str_as_array.data() + (std::min)(chars_retrieved, chars_to_get),
+                             first);
+
+      result.ec = std::errc();
+    }
+    else
+    {
+      result.ptr = last;
+
+      result.ec = std::errc::value_too_large;
+    }
+
+    return result;
+  }
+  #endif
+
+  #if !defined(WIDE_INTEGER_DISABLE_TO_STRING)
+  template<const size_t Width2,
+           typename LimbType,
+           typename AllocatorType,
+           const bool IsSigned>
+  auto to_string(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& x) -> std::string
+  {
+    using local_wide_integer_type = uintwide_t<Width2, LimbType, AllocatorType, IsSigned>;
+
+    using to_string_storage_array_type =
+      std::array<char, static_cast<typename std::size_t>(local_wide_integer_type::wr_string_max_buffer_size_dec)>;
+
+    // TBD: This causes very large stack size if the wide-integer is very wide.
+    // TBD: This can be solved using the allocator type, as has been done elsewhere
+    // at times in the project.
+    to_string_storage_array_type str_as_array { };
+
+    constexpr auto char_fill = '.';
+
+    str_as_array.fill(char_fill);
+
+    const auto base_rep     = static_cast<std::uint_fast8_t>(UINT8_C(10));
+    const auto show_base    = false;
+    const auto show_pos     = false;
+    const auto is_uppercase = false;
+
+    const auto wr_string_is_ok = x.wr_string(str_as_array.data(), base_rep, show_base, show_pos, is_uppercase);
+
+    auto rit_trim = std::find_if(str_as_array.crbegin(),
+                                 str_as_array.crend(),
+                                 [](const char& c)
+                                 {
+                                   return (c != char_fill);
+                                 });
+
+    const auto wr_string_and_trim_is_ok =
+      (
+           (rit_trim != str_as_array.crend())
+        &&  wr_string_is_ok
+      );
+
+    std::string str_result { };
+
+    if(wr_string_and_trim_is_ok)
+    {
+      const auto str_result_size =
+        static_cast<std::size_t>
+        (
+            str_as_array.size()
+          - static_cast<std::size_t>(std::distance(str_as_array.crbegin(), rit_trim))
+        );
+
+      str_result = std::string(str_as_array.cbegin(), str_as_array.cbegin() + str_result_size);
+    }
+
+    return str_result;
+  }
+  #endif
 
   #if(__cplusplus >= 201703L)
   } // namespace math::wide_integer

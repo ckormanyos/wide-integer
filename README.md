@@ -347,6 +347,7 @@ enabled or disabled at compile time with the compiler switches:
 
 ```cpp
 #define WIDE_INTEGER_DISABLE_IOSTREAM
+#define WIDE_INTEGER_DISABLE_TO_STRING
 #define WIDE_INTEGER_DISABLE_FLOAT_INTEROP
 #define WIDE_INTEGER_DISABLE_IMPLEMENT_UTIL_DYNAMIC_ARRAY
 #define WIDE_INTEGER_HAS_LIMB_TYPE_UINT64
@@ -364,6 +365,17 @@ I/O streaming can optionally be disabled with the compiler switch:
 
 The default setting is `WIDE_INTEGER_DISABLE_IOSTREAM` not set
 and I/O streaming operations are enabled.
+
+Conversion to `std::string` is supported with the namespace-specific function
+`to_string`. This analagous to the standard library's `std::to_string` function,
+but implemented specifically for instances of `uintwide_t`.
+Wide-integer's local, namespace-specific `to_string`
+function (and the inclusion of the necessary `<string>` header)
+are both deactivated with:
+
+```cpp
+#define WIDE_INTEGER_DISABLE_TO_STRING
+```
 
 Interoperability with built-in floating-point types
 such as construct-from, cast-to, binary arithmetic with
