@@ -828,7 +828,7 @@
   auto to_chars(char* first,
                 char* last,
                 const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& x,
-                int base = 10 ) -> std::to_chars_result;
+                int base = static_cast<int>(INT8_C(10))) -> std::to_chars_result;
   #endif
 
   #if !defined(WIDE_INTEGER_DISABLE_TO_STRING)
@@ -5971,7 +5971,7 @@
         &&  wr_string_is_ok
       );
 
-    std::to_chars_result result;
+    std::to_chars_result result { last, std::errc::value_too_large };
 
     if(wr_string_and_trim_is_ok)
     {
@@ -5988,12 +5988,6 @@
                              first);
 
       result.ec = std::errc();
-    }
-    else
-    {
-      result.ptr = last;
-
-      result.ec = std::errc::value_too_large;
     }
 
     return result;
