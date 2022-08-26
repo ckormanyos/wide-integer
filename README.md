@@ -42,8 +42,8 @@ The big integer class is called `math::wide_integer::uintwide_t`
 as shown in greater detail below.
 
 Wide-integer supports both unsigned as well as
-signed integral types having width of $1{\ldots}63{\times}2^{N}$
-while being $16$, $24$, $32$ or larger.
+signed integral types having width of $ 1 {\ldots} 63 {\times} 2^{N} $
+while being 16, 24, 32 or larger.
 In addition, small integer types such as software-synthesized versions of
 `uint24_t`, `uint48_t`, `uint64_t`, `uint96_t`, `uint128_t`, etc.
 (or signed counterparts of these) can also be created with wide-integer.
@@ -322,10 +322,10 @@ readme page.
 Wide-Integer has been tested with numerous compilers, for target systems ranging from 8 to 64 bits.
 The library is specifically designed for efficiency with small to medium bit counts.
 Supported bit counts include integers
-$1{\ldots}63{\times}2^{N}$
-while being $16$, $24$, $32$ or larger such as
-$256$, $384$, $512$, $768$, $1024$,
-or other less common bit counts such as $11,264$, etc.
+$ 1 {\ldots} 63 {\times} 2^{N} $
+while being 16, 24, 32 or larger such as
+256, 384, 512, 768, 1024,
+or other less common bit counts such as 11,264, etc.
 
 Small, medium and large bit counts are supported.
 Common applications might use the range of `uint128_t`, `uint256_t` or `uint512_t`.
@@ -548,7 +548,7 @@ auto main() -> int
 
 Wide-integer also supports a small selection of number-theoretical
 functions such as least and most significant bit, square root,
-$k^{th}$ root,
+$ k^{th} $ root,
 power, power-modulus, greatest common denominator
 and random number generation. These functions are be found via ADL.
 
@@ -614,11 +614,11 @@ auto main() -> int
 }
 ```
 
-The next example computes the real-valued cube root of $10^{3,333}$.
-The real-valued cube root of this very large unsigned integer is $10^{1,111}$.
+The next example computes the real-valued cube root of $ 10^{3,333} $.
+The real-valued cube root of this very large unsigned integer is $ 10^{1,111} $.
 We will use the (somewhat uncommon) integral data type `uint11264_t`.
-Since `uint11264_t` has approximately $3,390$ decimal digits of precision,
-it is large enough to hold the value of $10^{3,333}$
+Since `uint11264_t` has approximately 3,390 decimal digits of precision,
+it is large enough to hold the value of $ 10^{3,333} $
 prior to (and following) the cube root operation.
 
 ```cpp
@@ -749,9 +749,9 @@ negative arguments in number theoretical functions.
   - Right shift by `n` bits via `operator>>(n)` performs a so-called _arithmetic_ right shift (ASHR). For signed integers having negative value, right-shift continually fills the sign bit with 1 while shifting right. The result is similar to signed division and closely mimics common compiler behavior for right-shift of negative-valued built-in signed `int`.
   - `sqrt` of `x` negative returns zero.
   - `cbrt` of `x` nexative integer returns `-cbrt(-x)`.
-  - $k^{th}$ root of `x` negative returns zero unless the cube root is being computed, in which case `-cbrt(-x)` is returned.
+  - $ k^{th} $ root of `x` negative returns zero unless the cube root is being computed, in which case `-cbrt(-x)` is returned.
   - GCD of `a`, `b` signed converts both arguments to positive and negates the result for `a`, `b` having opposite signs.
-  - Miller-Rabin primality testing treats negative inetegers as positive when testing for prime, thus extending the set of primes $p{\in}{\mathbb{Z}}$.
+  - Miller-Rabin primality testing treats negative inetegers as positive when testing for prime, thus extending the set of primes to negative integers.
   - MSB/LSB (most/least significant bit) do not differentiate between positive or negative argument such that MSB of a negative integer will be the highest bit of the corresponding unsigned type.
   - Printing both positive-valued and negative-valued signed integers in hexadecimal format is supported. When printing negative-valued, signed  `uintwide_t` in hexadecimal format, the sign bit and all other bits are treated as if the integer were unsigned. The negative sign is not explicitly shown when using hexadecimal format, even if the underlying integer is signed and negative-valued. A potential positive sign, however, will be shown for positive-valued signed integers in hexadecimal form in the presence of `std::showpos`.
 
