@@ -1,9 +1,6 @@
 ﻿Wide-integer
 ==================
 
->ANNOUNCEMENT: Support for C++11 will be deprecated in this library starting in summer 2022.
->New features will require _at_ _least_ C++14, as will existing features starting with the deprecation.
-
 <p align="center">
     <a href="https://github.com/ckormanyos/wide-integer/actions">
         <img src="https://github.com/ckormanyos/wide-integer/actions/workflows/wide_integer.yml/badge.svg" alt="Build Status"></a>
@@ -35,14 +32,15 @@ unsigned and signed integral types.
 This C++ template header-only library implements drop-in big integer types
 such as `uint128_t`, `uint256_t`, `uint384_t`, `uint512_t`, `uint1024_t`, `uint1536_t`, etc.
 These can be used essentially like regular built-in integers.
-Corresponding _signed_ integer types such as `int128_t`, `int256_t`, etc. can also be used.
+Corresponding _signed_ integer types such as `int128_t`, `int256_t`, and the like
+can also be used.
 
 The big integer class is called `math::wide_integer::uintwide_t`
 (i.e., `uintwide_t` residing in the `namespace` `math::wide_integer`),
 as shown in greater detail below.
 
 Wide-integer supports both unsigned as well as
-signed integral types having width of $ 1 {\ldots} 63 {\times} 2^{N} $
+signed integral types having width of $ 1 {\ldots} 63 {\times} 2^N $
 while being 16, 24, 32 or larger.
 In addition, small integer types such as software-synthesized versions of
 `uint24_t`, `uint48_t`, `uint64_t`, `uint96_t`, `uint128_t`, etc.
@@ -322,7 +320,7 @@ readme page.
 Wide-Integer has been tested with numerous compilers, for target systems ranging from 8 to 64 bits.
 The library is specifically designed for efficiency with small to medium bit counts.
 Supported bit counts include integers
-$ 1 {\ldots} 63 {\times} 2^{N} $
+$ 1 {\ldots} 63 {\times} 2^N $
 while being 16, 24, 32 or larger such as
 256, 384, 512, 768, 1024,
 or other less common bit counts such as 11,264, etc.
