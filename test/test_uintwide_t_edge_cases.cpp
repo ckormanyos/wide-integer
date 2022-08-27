@@ -1070,7 +1070,7 @@ auto test_various_isolated_edge_cases() -> bool // NOLINT(readability-function-c
   return result_is_ok;
 }
 
-auto test_to_chars_and_to_string() -> bool
+auto test_to_chars_and_to_string() -> bool // NOLINT(readability-function-cognitive-complexity)
 {
   auto result_is_ok = true;
 
@@ -1105,10 +1105,6 @@ auto test_to_chars_and_to_string() -> bool
     const auto result_dec_as_chars = to_chars(arr_dec.data(), arr_dec.data() + arr_dec.size(), u_gen, 10);
     const auto result_hex_as_chars = to_chars(arr_hex.data(), arr_hex.data() + arr_hex.size(), u_gen, 16);
 
-    static_cast<void>(result_oct_as_chars);
-    static_cast<void>(result_dec_as_chars);
-    static_cast<void>(result_hex_as_chars);
-
     const auto result_oct_as_str = "0"  + std::string(arr_oct.data());
     const auto result_dec_as_str =        std::string(arr_dec.data());
     const auto result_hex_as_str = "0x" + std::string(arr_hex.data());
@@ -1117,9 +1113,9 @@ auto test_to_chars_and_to_string() -> bool
     const local_uintwide_t_small_unsigned_type u_from_string_dec(result_dec_as_str.c_str());
     const local_uintwide_t_small_unsigned_type u_from_string_hex(result_hex_as_str.c_str());
 
-    const auto result_u_to_from_string_oct_is_ok = (u_gen == u_from_string_oct);
-    const auto result_u_to_from_string_dec_is_ok = (u_gen == u_from_string_dec);
-    const auto result_u_to_from_string_hex_is_ok = (u_gen == u_from_string_hex);
+    const auto result_u_to_from_string_oct_is_ok = ((u_gen == u_from_string_oct) && (result_oct_as_chars.ec == std::errc()));
+    const auto result_u_to_from_string_dec_is_ok = ((u_gen == u_from_string_dec) && (result_dec_as_chars.ec == std::errc()));
+    const auto result_u_to_from_string_hex_is_ok = ((u_gen == u_from_string_hex) && (result_hex_as_chars.ec == std::errc()));
 
     result_is_ok = (result_u_to_from_string_oct_is_ok && result_is_ok);
     result_is_ok = (result_u_to_from_string_dec_is_ok && result_is_ok);
@@ -1228,6 +1224,31 @@ auto test_to_chars_and_to_string() -> bool
                                            && (!str2_ni.empty()));
 
     result_is_ok = (result_to_strings_are_ok && result_is_ok);
+  }
+
+  for(auto   i = static_cast<unsigned>(UINT32_C(0));
+             i < static_cast<unsigned>(UINT32_C(32));
+           ++i)
+  {
+    // Verify write to_string() and read back from string of
+    // this test file's wide unsigned uintwide_t type.
+    // Thereby we ensure that the to_string() function
+    // will use dynamic allocation instead of stack allocation
+    // in this particular test.
+
+    using local_derived_uint_type = typename local_uint_backend_type::representation_type;
+
+    using std::to_string;
+
+    const auto u_gen = generate_wide_integer_value<local_derived_uint_type>();
+
+    const auto str_u = to_string(u_gen);
+
+    const local_derived_uint_type u_from_string(str_u.c_str());
+
+    const auto result_u_to_from_string_is_ok = (u_gen == u_from_string);
+
+    result_is_ok = (result_u_to_from_string_is_ok && result_is_ok);
   }
   #endif // !WIDE_INTEGER_DISABLE_TO_STRING
 

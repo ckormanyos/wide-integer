@@ -14,6 +14,8 @@
         <img src="https://scan.coverity.com/projects/24742/badge.svg" alt="Coverity Scan"></a>
     <a href="https://sonarcloud.io/summary/new_code?id=ckormanyos_wide-integer">
         <img src="https://sonarcloud.io/api/project_badges/measure?project=ckormanyos_wide-integer&metric=alert_status" alt="Quality Gate Status"></a>
+    <a href="https://www.codacy.com/gh/ckormanyos/wide-integer/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=ckormanyos/wide-integer&amp;utm_campaign=Badge_Grade">
+        <img src="https://app.codacy.com/project/badge/Grade/40d129959071441b9780e68998514226"/></a>
     <a href="https://codecov.io/gh/ckormanyos/wide-integer">
         <img src="https://codecov.io/gh/ckormanyos/wide-integer/branch/master/graph/badge.svg?token=kiBP4MAjdV" alt="code coverage"></a>
     <a href="https://github.com/ckormanyos/wide-integer/blob/master/LICENSE_1_0.txt">
@@ -317,8 +319,7 @@ readme page.
 
 Wide-Integer has been tested with numerous compilers, for target systems ranging from 8 to 64 bits.
 The library is specifically designed for efficiency with small to medium bit counts.
-Supported bit counts include integers
-$1{\ldots}63{\times}2^N$
+Supported bit counts include integers $1{\ldots}63{\times}2^N$
 while being 16, 24, 32 or larger such as
 256, 384, 512, 768, 1024,
 or other less common bit counts such as 11,264, etc.
@@ -543,8 +544,8 @@ auto main() -> int
 ```
 
 Wide-integer also supports a small selection of number-theoretical
-functions such as least and most significant bit, square root,
-$k^{th}$ root,
+functions such as least and most significant bit,
+square root, $k^{th}$ root,
 power, power-modulus, greatest common denominator
 and random number generation. These functions are be found via ADL.
 
