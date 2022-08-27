@@ -1317,16 +1317,15 @@
 
     // The type of the internal data representation.
     using representation_type =
-      typename std::conditional
+      std::conditional_t
         <std::is_same<AllocatorType, void>::value,
          detail::fixed_static_array <limb_type,
                                      number_of_limbs>,
          detail::fixed_dynamic_array<limb_type,
                                      number_of_limbs,
-                                     typename std::allocator_traits<typename std::conditional<std::is_same<AllocatorType, void>::value,
-                                                                                              std::allocator<void>,
-                                                                                              AllocatorType>::type>::template rebind_alloc<limb_type>>
-        >::type;
+                                     typename std::allocator_traits<std::conditional_t<std::is_same<AllocatorType, void>::value,
+                                                                                       std::allocator<void>,
+                                                                                       AllocatorType>>::template rebind_alloc<limb_type>>>;
 
     // The iterator types of the internal data representation.
     using iterator               = typename representation_type::iterator;
@@ -2123,16 +2122,15 @@
         const auto mask = static_cast<limb_type>(static_cast<std::uint8_t>(0x7U));
 
         using string_storage_oct_type =
-          typename std::conditional
+          std::conditional_t
             <my_width2 <= static_cast<size_t>(UINT32_C(2048)),
              detail::fixed_static_array <char,
                                          wr_string_max_buffer_size_oct>,
              detail::fixed_dynamic_array<char,
                                          wr_string_max_buffer_size_oct,
-                                         typename std::allocator_traits<typename std::conditional<std::is_same<AllocatorType, void>::value,
-                                                                                                  std::allocator<void>,
-                                                                                                  AllocatorType>::type>::template rebind_alloc<limb_type>>
-            >::type;
+                                         typename std::allocator_traits<std::conditional_t<std::is_same<AllocatorType, void>::value,
+                                                                                           std::allocator<void>,
+                                                                                           AllocatorType>>::template rebind_alloc<limb_type>>>;
 
         string_storage_oct_type str_temp; // LCOV_EXCL_LINE
 
@@ -2210,16 +2208,15 @@
         }
 
         using string_storage_dec_type =
-          typename std::conditional
+          std::conditional_t
             <my_width2 <= static_cast<size_t>(UINT32_C(2048)),
              detail::fixed_static_array <char,
                                          wr_string_max_buffer_size_dec>,
              detail::fixed_dynamic_array<char,
                                          wr_string_max_buffer_size_dec,
-                                         typename std::allocator_traits<typename std::conditional<std::is_same<AllocatorType, void>::value,
-                                                                                                  std::allocator<void>,
-                                                                                                  AllocatorType>::type>::template rebind_alloc<limb_type>>
-            >::type;
+                                         typename std::allocator_traits<std::conditional_t<std::is_same<AllocatorType, void>::value,
+                                                                                           std::allocator<void>,
+                                                                                           AllocatorType>>::template rebind_alloc<limb_type>>>;
 
         string_storage_dec_type str_temp;
 
@@ -2277,16 +2274,15 @@
         uintwide_t<my_width2, limb_type, AllocatorType, false> t(*this);
 
         using string_storage_hex_type =
-          typename std::conditional
+          std::conditional_t
             <my_width2 <= static_cast<size_t>(UINT32_C(2048)),
              detail::fixed_static_array <char,
                                          wr_string_max_buffer_size_hex>,
              detail::fixed_dynamic_array<char,
                                          wr_string_max_buffer_size_hex,
-                                         typename std::allocator_traits<typename std::conditional<std::is_same<AllocatorType, void>::value,
-                                                                                                  std::allocator<void>,
-                                                                                                  AllocatorType>::type>::template rebind_alloc<limb_type>>
-            >::type;
+                                         typename std::allocator_traits<std::conditional_t<std::is_same<AllocatorType, void>::value,
+                                                                                           std::allocator<void>,
+                                                                                           AllocatorType>>::template rebind_alloc<limb_type>>>;
 
         string_storage_hex_type str_temp;
 
@@ -2698,22 +2694,22 @@
       // Good examples for this (both threaded as well as non-threaded)
       // can be found in the wide_decimal project.
       using result_array_type =
-        typename std::conditional<std::is_same<AllocatorType, void>::value,
-                                  detail::fixed_static_array <limb_type, number_of_limbs * 2U>,
-                                  detail::fixed_dynamic_array<limb_type,
-                                                              number_of_limbs * 2U,
-                                                              typename std::allocator_traits<typename std::conditional<std::is_same<AllocatorType, void>::value,
-                                                                                                                       std::allocator<void>,
-                                                                                                                       AllocatorType>::type>::template rebind_alloc<limb_type>>>::type;
+        std::conditional_t<std::is_same<AllocatorType, void>::value,
+                           detail::fixed_static_array <limb_type, number_of_limbs * 2U>,
+                           detail::fixed_dynamic_array<limb_type,
+                                                       number_of_limbs * 2U,
+                                                       typename std::allocator_traits<std::conditional_t<std::is_same<AllocatorType, void>::value,
+                                                                                                         std::allocator<void>,
+                                                                                                         AllocatorType>>::template rebind_alloc<limb_type>>>;
 
       using storage_array_type =
-        typename std::conditional<std::is_same<AllocatorType, void>::value,
-                                  detail::fixed_static_array <limb_type, number_of_limbs * 4U>,
-                                  detail::fixed_dynamic_array<limb_type,
-                                                              number_of_limbs * 4U,
-                                                              typename std::allocator_traits<typename std::conditional<std::is_same<AllocatorType, void>::value,
-                                                                                                                       std::allocator<void>,
-                                                                                                                       AllocatorType>::type>::template rebind_alloc<limb_type>>>::type;
+        std::conditional_t<std::is_same<AllocatorType, void>::value,
+                           detail::fixed_static_array <limb_type, number_of_limbs * 4U>,
+                           detail::fixed_dynamic_array<limb_type,
+                                                       number_of_limbs * 4U,
+                                                       typename std::allocator_traits<std::conditional_t<std::is_same<AllocatorType, void>::value,
+                                                                                                         std::allocator<void>,
+                                                                                                         AllocatorType>>::template rebind_alloc<limb_type>>>;
 
       result_array_type  result;
       storage_array_type t;
@@ -3729,13 +3725,13 @@
         // Step D1(c): normalize v -> v * d = vv.
 
         using uu_array_type =
-          typename std::conditional<std::is_same<AllocatorType, void>::value,
-                                    detail::fixed_static_array <limb_type, number_of_limbs + 1U>,
-                                    detail::fixed_dynamic_array<limb_type,
-                                                                number_of_limbs + 1U,
-                                                                typename std::allocator_traits<typename std::conditional<std::is_same<AllocatorType, void>::value,
-                                                                                                                          std::allocator<void>,
-                                                                                                                          AllocatorType>::type>::template rebind_alloc<limb_type>>>::type;
+          std::conditional_t<std::is_same<AllocatorType, void>::value,
+                             detail::fixed_static_array <limb_type, number_of_limbs + 1U>,
+                             detail::fixed_dynamic_array<limb_type,
+                                                         number_of_limbs + 1U,
+                                                         typename std::allocator_traits<std::conditional_t<std::is_same<AllocatorType, void>::value,
+                                                                                                           std::allocator<void>,
+                                                                                                           AllocatorType>>::template rebind_alloc<limb_type>>>;
 
         uu_array_type       uu;
         representation_type vv;
@@ -4254,7 +4250,7 @@
            typename AllocatorType,
            const bool IsSigned>
   WIDE_INTEGER_NUM_LIMITS_CLASS_TYPE numeric_limits_uintwide_t_base
-    : public std::numeric_limits<typename std::conditional<(!IsSigned), unsigned int, signed int>::type>
+    : public std::numeric_limits<std::conditional_t<(!IsSigned), unsigned int, signed int>>
   {
   private:
     using local_wide_integer_type = uintwide_t<Width2, LimbType, AllocatorType, IsSigned>;
@@ -4494,16 +4490,15 @@
     if(base_rep == static_cast<std::uint_fast8_t>(UINT8_C(8)))
     {
       using string_storage_oct_type =
-        typename std::conditional
+        std::conditional_t
           <local_wide_integer_type::my_width2 <= static_cast<size_t>(UINT32_C(2048)),
             detail::fixed_static_array <char,
                                         local_wide_integer_type::wr_string_max_buffer_size_oct>,
             detail::fixed_dynamic_array<char,
                                         local_wide_integer_type::wr_string_max_buffer_size_oct,
-                                        typename std::allocator_traits<typename std::conditional<std::is_same<AllocatorType, void>::value,
-                                                                                                std::allocator<void>,
-                                                                                                AllocatorType>::type>::template rebind_alloc<typename local_wide_integer_type::limb_type>>
-          >::type;
+                                        typename std::allocator_traits<std::conditional_t<std::is_same<AllocatorType, void>::value,
+                                                                                         std::allocator<void>,
+                                                                                         AllocatorType>>::template rebind_alloc<typename local_wide_integer_type::limb_type>>>;
 
       // TBD: There is redundant storage of this kind both here
       // in this subroutine as well as in the wr_string method.
@@ -4518,16 +4513,15 @@
     else if(base_rep == static_cast<std::uint_fast8_t>(UINT8_C(10)))
     {
       using string_storage_dec_type =
-        typename std::conditional
+        std::conditional_t
           <local_wide_integer_type::my_width2 <= static_cast<size_t>(UINT32_C(2048)),
             detail::fixed_static_array <char,
                                         local_wide_integer_type::wr_string_max_buffer_size_dec>,
             detail::fixed_dynamic_array<char,
                                         local_wide_integer_type::wr_string_max_buffer_size_dec,
-                                        typename std::allocator_traits<typename std::conditional<std::is_same<AllocatorType, void>::value,
-                                                                                                std::allocator<void>,
-                                                                                                AllocatorType>::type>::template rebind_alloc<typename local_wide_integer_type::limb_type>>
-          >::type;
+                                        typename std::allocator_traits<std::conditional_t<std::is_same<AllocatorType, void>::value,
+                                                                                          std::allocator<void>,
+                                                                                          AllocatorType>>::template rebind_alloc<typename local_wide_integer_type::limb_type>>>;
 
       // TBD: There is redundant storage of this kind both here
       // in this subroutine as well as in the wr_string method.
@@ -4542,16 +4536,15 @@
     else if(base_rep == static_cast<std::uint_fast8_t>(UINT8_C(16)))
     {
       using string_storage_hex_type =
-        typename std::conditional
+        std::conditional_t
           <local_wide_integer_type::my_width2 <= static_cast<size_t>(UINT32_C(2048)),
             detail::fixed_static_array <char,
                                         local_wide_integer_type::wr_string_max_buffer_size_hex>,
             detail::fixed_dynamic_array<char,
                                         local_wide_integer_type::wr_string_max_buffer_size_hex,
-                                        typename std::allocator_traits<typename std::conditional<std::is_same<AllocatorType, void>::value,
-                                                                                                std::allocator<void>,
-                                                                                                AllocatorType>::type>::template rebind_alloc<typename local_wide_integer_type::limb_type>>
-          >::type;
+                                        typename std::allocator_traits<std::conditional_t<std::is_same<AllocatorType, void>::value,
+                                                                                         std::allocator<void>,
+                                                                                         AllocatorType>>::template rebind_alloc<typename local_wide_integer_type::limb_type>>>;
 
       // TBD: There is redundant storage of this kind both here
       // in this subroutine as well as in the wr_string method.
@@ -5954,16 +5947,15 @@
     if(base_rep == static_cast<std::uint_fast8_t>(UINT8_C(8)))
     {
       using string_storage_oct_type =
-        typename std::conditional
+        std::conditional_t
           <local_my_width2 <= static_cast<size_t>(UINT32_C(2048)),
             detail::fixed_static_array <char,
                                         local_wide_integer_type::wr_string_max_buffer_size_oct>,
             detail::fixed_dynamic_array<char,
                                         local_wide_integer_type::wr_string_max_buffer_size_oct,
-                                        typename std::allocator_traits<typename std::conditional<std::is_same<AllocatorType, void>::value,
-                                                                                                std::allocator<void>,
-                                                                                                AllocatorType>::type>::template rebind_alloc<local_limb_type>>
-          >::type;
+                                        typename std::allocator_traits<std::conditional_t<std::is_same<AllocatorType, void>::value,
+                                                                                         std::allocator<void>,
+                                                                                         AllocatorType>>::template rebind_alloc<local_limb_type>>>;
 
       string_storage_oct_type str_temp { };
 
@@ -6004,16 +5996,15 @@
     else if(base_rep == static_cast<std::uint_fast8_t>(UINT8_C(16)))
     {
       using string_storage_hex_type =
-        typename std::conditional
+        std::conditional_t
           <local_my_width2 <= static_cast<size_t>(UINT32_C(2048)),
             detail::fixed_static_array <char,
                                         local_wide_integer_type::wr_string_max_buffer_size_hex>,
             detail::fixed_dynamic_array<char,
                                         local_wide_integer_type::wr_string_max_buffer_size_hex,
-                                        typename std::allocator_traits<typename std::conditional<std::is_same<AllocatorType, void>::value,
-                                                                                                std::allocator<void>,
-                                                                                                AllocatorType>::type>::template rebind_alloc<local_limb_type>>
-          >::type;
+                                        typename std::allocator_traits<std::conditional_t<std::is_same<AllocatorType, void>::value,
+                                                                                         std::allocator<void>,
+                                                                                         AllocatorType>>::template rebind_alloc<local_limb_type>>>;
 
       string_storage_hex_type str_temp { };
 
@@ -6054,16 +6045,15 @@
     else
     {
       using string_storage_dec_type =
-        typename std::conditional
+        std::conditional_t
           <local_my_width2 <= static_cast<size_t>(UINT32_C(2048)),
             detail::fixed_static_array <char,
                                         local_wide_integer_type::wr_string_max_buffer_size_dec>,
             detail::fixed_dynamic_array<char,
                                         local_wide_integer_type::wr_string_max_buffer_size_dec,
-                                        typename std::allocator_traits<typename std::conditional<std::is_same<AllocatorType, void>::value,
-                                                                                                std::allocator<void>,
-                                                                                                AllocatorType>::type>::template rebind_alloc<local_limb_type>>
-          >::type;
+                                        typename std::allocator_traits<std::conditional_t<std::is_same<AllocatorType, void>::value,
+                                                                                         std::allocator<void>,
+                                                                                         AllocatorType>>::template rebind_alloc<local_limb_type>>>;
 
       string_storage_dec_type str_temp { };
 
@@ -6119,16 +6109,15 @@
     constexpr auto local_my_width2 = local_wide_integer_type::my_width2;
 
     using string_storage_dec_type =
-      typename std::conditional
+      std::conditional_t
         <local_my_width2 <= static_cast<size_t>(UINT32_C(2048)),
           detail::fixed_static_array <char,
                                       local_wide_integer_type::wr_string_max_buffer_size_dec>,
           detail::fixed_dynamic_array<char,
                                       local_wide_integer_type::wr_string_max_buffer_size_dec,
-                                      typename std::allocator_traits<typename std::conditional<std::is_same<AllocatorType, void>::value,
-                                                                                              std::allocator<void>,
-                                                                                              AllocatorType>::type>::template rebind_alloc<local_limb_type>>
-        >::type;
+                                      typename std::allocator_traits<std::conditional_t<std::is_same<AllocatorType, void>::value,
+                                                                                       std::allocator<void>,
+                                                                                       AllocatorType>>::template rebind_alloc<local_limb_type>>>;
 
     string_storage_dec_type str_temp; // LCOV_EXCL_LINE
 
