@@ -44,6 +44,24 @@
     <Filter Include=".gcov\make">
       <UniqueIdentifier>{09bf1894-26c1-40a4-870e-f338f0940b7b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="target">
+      <UniqueIdentifier>{6e3f5c2f-92fc-41d4-ac03-2821505331c0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="target\build">
+      <UniqueIdentifier>{0cfae90f-72ab-4f83-8fa7-2265a8abf5d5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="target\micros">
+      <UniqueIdentifier>{8fcd7c05-1f4e-436c-87ca-3b1e998b7b67}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="target\micros\stm32f429">
+      <UniqueIdentifier>{9439d123-c5a3-4434-bf7a-bed02e95fb0d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="target\micros\stm32f429\make">
+      <UniqueIdentifier>{43cc559c-46e6-4ba2-a6e6-f3e29fc3cf42}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="target\micros\stm32f429\make\single">
+      <UniqueIdentifier>{d00c386f-1e4f-4741-8c73-e2c26bc38edb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="boost\multiprecision\uintwide_t_backend.hpp">
@@ -183,6 +201,9 @@
     <ClCompile Include="test\coverity.c">
       <Filter>Source Files\test</Filter>
     </ClCompile>
+    <ClCompile Include="target\micros\stm32f429\make\single\crt.cpp">
+      <Filter>target\micros\stm32f429\make\single</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include=".github\workflows\wide_integer.yml">
@@ -218,6 +239,12 @@
       <Filter>.github\workflows</Filter>
     </None>
     <None Include="codecov.yml" />
+    <None Include="target\build\test_examples_emulator.py">
+      <Filter>target\build</Filter>
+    </None>
+    <None Include="target\micros\stm32f429\make\stm32f429.ld">
+      <Filter>target\micros\stm32f429\make</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Text Include="examples\CMakeLists.txt">
@@ -227,5 +254,6 @@
       <Filter>Source Files\test</Filter>
     </Text>
     <Text Include="CMakeLists.txt" />
+    <Text Include="LICENSE_1_0.txt" />
   </ItemGroup>
 </Project>
