@@ -1,9 +1,6 @@
 ﻿Wide-integer
 ==================
 
->ANNOUNCEMENT: Support for C++11 will be deprecated in this library starting in summer 2022.
->New features will require _at_ _least_ C++14, as will existing features starting with the deprecation.
-
 <p align="center">
     <a href="https://github.com/ckormanyos/wide-integer/actions">
         <img src="https://github.com/ckormanyos/wide-integer/actions/workflows/wide_integer.yml/badge.svg" alt="Build Status"></a>
@@ -35,15 +32,16 @@ unsigned and signed integral types.
 This C++ template header-only library implements drop-in big integer types
 such as `uint128_t`, `uint256_t`, `uint384_t`, `uint512_t`, `uint1024_t`, `uint1536_t`, etc.
 These can be used essentially like regular built-in integers.
-Corresponding _signed_ integer types such as `int128_t`, `int256_t`, etc. can also be used.
+Corresponding _signed_ integer types such as `int128_t`, `int256_t`, and the like
+can also be used.
 
 The big integer class is called `math::wide_integer::uintwide_t`
 (i.e., `uintwide_t` residing in the `namespace` `math::wide_integer`),
 as shown in greater detail below.
 
 Wide-integer supports both unsigned as well as
-signed integral types having width of $1{\ldots}63{\times}2^{N}$
-while being $16$, $24$, $32$ or larger.
+signed integral types having width of $1{\ldots}63{\times}2^N$
+while being 16, 24, 32 or larger.
 In addition, small integer types such as software-synthesized versions of
 `uint24_t`, `uint48_t`, `uint64_t`, `uint96_t`, `uint128_t`, etc.
 (or signed counterparts of these) can also be created with wide-integer.
@@ -321,11 +319,10 @@ readme page.
 
 Wide-Integer has been tested with numerous compilers, for target systems ranging from 8 to 64 bits.
 The library is specifically designed for efficiency with small to medium bit counts.
-Supported bit counts include integers
-$1{\ldots}63{\times}2^{N}$
-while being $16$, $24$, $32$ or larger such as
-$256$, $384$, $512$, $768$, $1024$,
-or other less common bit counts such as $11,264$, etc.
+Supported bit counts include integers $1{\ldots}63{\times}2^N$
+while being 16, 24, 32 or larger such as
+256, 384, 512, 768, 1024,
+or other less common bit counts such as 11,264, etc.
 
 Small, medium and large bit counts are supported.
 Common applications might use the range of `uint128_t`, `uint256_t` or `uint512_t`.
@@ -347,6 +344,7 @@ enabled or disabled at compile time with the compiler switches:
 
 ```cpp
 #define WIDE_INTEGER_DISABLE_IOSTREAM
+#define WIDE_INTEGER_DISABLE_TO_STRING
 #define WIDE_INTEGER_DISABLE_FLOAT_INTEROP
 #define WIDE_INTEGER_DISABLE_IMPLEMENT_UTIL_DYNAMIC_ARRAY
 #define WIDE_INTEGER_HAS_LIMB_TYPE_UINT64
@@ -364,6 +362,17 @@ I/O streaming can optionally be disabled with the compiler switch:
 
 The default setting is `WIDE_INTEGER_DISABLE_IOSTREAM` not set
 and I/O streaming operations are enabled.
+
+Conversion to `std::string` is supported with the namespace-specific function
+`to_string`. This analagous to the standard library's `std::to_string` function,
+but implemented specifically for instances of `uintwide_t`.
+Wide-integer's local, namespace-specific `to_string`
+function (and the inclusion of the necessary `<string>` header)
+are both deactivated with:
+
+```cpp
+#define WIDE_INTEGER_DISABLE_TO_STRING
+```
 
 Interoperability with built-in floating-point types
 such as construct-from, cast-to, binary arithmetic with
@@ -535,8 +544,8 @@ auto main() -> int
 ```
 
 Wide-integer also supports a small selection of number-theoretical
-functions such as least and most significant bit, square root,
-$k^{th}$ root,
+functions such as least and most significant bit,
+square root, $k^{th}$ root,
 power, power-modulus, greatest common denominator
 and random number generation. These functions are be found via ADL.
 
@@ -605,7 +614,7 @@ auto main() -> int
 The next example computes the real-valued cube root of $10^{3,333}$.
 The real-valued cube root of this very large unsigned integer is $10^{1,111}$.
 We will use the (somewhat uncommon) integral data type `uint11264_t`.
-Since `uint11264_t` has approximately $3,390$ decimal digits of precision,
+Since `uint11264_t` has approximately 3,390 decimal digits of precision,
 it is large enough to hold the value of $10^{3,333}$
 prior to (and following) the cube root operation.
 
@@ -739,7 +748,7 @@ negative arguments in number theoretical functions.
   - `cbrt` of `x` nexative integer returns `-cbrt(-x)`.
   - $k^{th}$ root of `x` negative returns zero unless the cube root is being computed, in which case `-cbrt(-x)` is returned.
   - GCD of `a`, `b` signed converts both arguments to positive and negates the result for `a`, `b` having opposite signs.
-  - Miller-Rabin primality testing treats negative inetegers as positive when testing for prime, thus extending the set of primes $p{\in}{\mathbb{Z}}$.
+  - Miller-Rabin primality testing treats negative inetegers as positive when testing for prime, thus extending the set of primes to negative integers.
   - MSB/LSB (most/least significant bit) do not differentiate between positive or negative argument such that MSB of a negative integer will be the highest bit of the corresponding unsigned type.
   - Printing both positive-valued and negative-valued signed integers in hexadecimal format is supported. When printing negative-valued, signed  `uintwide_t` in hexadecimal format, the sign bit and all other bits are treated as if the integer were unsigned. The negative sign is not explicitly shown when using hexadecimal format, even if the underlying integer is signed and negative-valued. A potential positive sign, however, will be shown for positive-valued signed integers in hexadecimal form in the presence of `std::showpos`.
 

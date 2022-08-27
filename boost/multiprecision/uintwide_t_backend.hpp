@@ -235,16 +235,14 @@
           static_cast<typename std::vector<char>::size_type>(representation_type::wr_string_max_buffer_size_dec)
         );
 
-      const std::uint_fast8_t base_rep     = (((format_flags & std::ios::hex)       != 0) ? 16U : 10U);
-      const bool              show_base    = ( (format_flags & std::ios::showbase)  != 0);
-      const bool              show_pos     = ( (format_flags & std::ios::showpos)   != 0);
-      const bool              is_uppercase = ( (format_flags & std::ios::uppercase) != 0);
+      const auto base_rep     = static_cast<std::uint_fast8_t>(((format_flags & std::ios::hex) != 0) ? 16U : 10U);
+      const auto show_base    = ((format_flags & std::ios::showbase)  != 0);
+      const auto show_pos     = ((format_flags & std::ios::showpos)   != 0);
+      const auto is_uppercase = ((format_flags & std::ios::uppercase) != 0);
 
-      const bool wr_string_is_ok = m_value.wr_string(pstr.data(), base_rep, show_base, show_pos, is_uppercase);
+      const auto wr_string_is_ok = m_value.wr_string(pstr.data(), base_rep, show_base, show_pos, is_uppercase);
 
-      std::string str_result = (wr_string_is_ok ? std::string(pstr.data()) : std::string());
-
-      return str_result;
+      return (wr_string_is_ok ? std::string(pstr.data()) : std::string());
     }
 
     WIDE_INTEGER_CONSTEXPR auto negate() -> void
