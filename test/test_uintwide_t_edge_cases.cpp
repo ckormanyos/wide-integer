@@ -1305,7 +1305,7 @@ auto test_uintwide_t_edge::one_as_small_unsigned_type() -> const test_uintwide_t
   static const auto local_one_as_small_signed_type =
     local_uintwide_t_small_unsigned_type
     (
-      static_cast<typename std::make_signed<local_limb_type>::type>(UINT8_C(1))
+      static_cast<std::make_signed_t<local_limb_type>>(UINT8_C(1))
     );
 
   return local_one_as_small_signed_type;
@@ -1318,7 +1318,7 @@ auto test_uintwide_t_edge::m_one_as_small_signed_type() -> const test_uintwide_t
   static const auto local_m_one_as_small_signed_type =
     local_uintwide_t_small_signed_type
     (
-      static_cast<typename std::make_signed<local_limb_type>::type>(INT8_C(-1))
+      static_cast<std::make_signed_t<local_limb_type>>(INT8_C(-1))
     );
 
   return local_m_one_as_small_signed_type;
