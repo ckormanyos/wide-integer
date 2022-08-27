@@ -627,8 +627,8 @@ auto test_various_roots_and_pow_etc() -> bool
   }
 
   {
-    const auto u      = zero_as_small_unsigned_type();
-    const auto u_root = sqrt(u);
+    const auto& u      = zero_as_small_unsigned_type();
+    const auto  u_root = sqrt(u);
 
     const auto result_sqrt_zero_is_ok = (u_root == 0U);
 
@@ -636,8 +636,8 @@ auto test_various_roots_and_pow_etc() -> bool
   }
 
   {
-    const auto u      = zero_as_small_unsigned_type();
-    const auto u_root = cbrt(u);
+    const auto& u      = zero_as_small_unsigned_type();
+    const auto  u_root = cbrt(u);
 
     const auto result_cbrt_zero_is_ok = (u_root == zero_as_small_unsigned_type());
 
@@ -645,8 +645,8 @@ auto test_various_roots_and_pow_etc() -> bool
   }
 
   {
-    const auto u      = zero_as_small_unsigned_type();
-    const auto u_root = rootk(u, 7U);
+    const auto& u      = zero_as_small_unsigned_type();
+    const auto  u_root = rootk(u, 7U);
 
     const auto result_rootk_zero_is_ok = (u_root == zero_as_small_unsigned_type());
 
@@ -974,14 +974,14 @@ auto test_various_isolated_edge_cases() -> bool // NOLINT(readability-function-c
           auto a(ten_pow_forty);
     const auto b(local_uintwide_t_small_unsigned_type("10000000000000000000000000000000000000000"));
 
-    const auto c(a %= b);
+    const auto& c(a %= b);
 
     #if (defined(__clang__) && (defined(__clang_major__) && (__clang_major__ > 6)))
     #pragma GCC diagnostic push
     #pragma GCC diagnostic ignored "-Wself-assign-overloaded"
     #endif
 
-    const auto d(a %= a); // NOLINT(clang-diagnostic-self-assign-overloaded)
+    const auto& d(a %= a); // NOLINT(clang-diagnostic-self-assign-overloaded)
 
     #if (defined(__clang__) && (defined(__clang_major__) && (__clang_major__ > 6)))
     #pragma GCC diagnostic pop

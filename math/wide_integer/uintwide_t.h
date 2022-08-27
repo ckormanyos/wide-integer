@@ -3284,7 +3284,12 @@
 
           for(auto j = static_cast<unsigned_fast_type>(0U); j < static_cast<unsigned_fast_type>(count - i); ++j)
           {
-            const auto i_plus_j = static_cast<result_difference_type>(i + j);
+            const auto i_plus_j =
+              static_cast<result_difference_type>
+              (
+                  static_cast<result_difference_type>(i)
+                + static_cast<result_difference_type>(j)
+              );
 
             carry = static_cast<local_double_limb_type>(carry + static_cast<local_double_limb_type>(static_cast<local_double_limb_type>(*(a + static_cast<left_difference_type>(i))) * *(b + static_cast<right_difference_type>(j))));
             carry = static_cast<local_double_limb_type>(carry + *(r + i_plus_j));
