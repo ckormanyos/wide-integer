@@ -627,8 +627,8 @@ auto test_various_roots_and_pow_etc() -> bool
   }
 
   {
-    const auto u      = zero_as_small_unsigned_type();
-    const auto u_root = sqrt(u);
+    const auto& u      = zero_as_small_unsigned_type();
+    const auto  u_root = sqrt(u);
 
     const auto result_sqrt_zero_is_ok = (u_root == 0U);
 
@@ -636,8 +636,8 @@ auto test_various_roots_and_pow_etc() -> bool
   }
 
   {
-    const auto u      = zero_as_small_unsigned_type();
-    const auto u_root = cbrt(u);
+    const auto& u      = zero_as_small_unsigned_type();
+    const auto  u_root = cbrt(u);
 
     const auto result_cbrt_zero_is_ok = (u_root == zero_as_small_unsigned_type());
 
@@ -645,8 +645,8 @@ auto test_various_roots_and_pow_etc() -> bool
   }
 
   {
-    const auto u      = zero_as_small_unsigned_type();
-    const auto u_root = rootk(u, 7U);
+    const auto& u      = zero_as_small_unsigned_type();
+    const auto  u_root = rootk(u, 7U);
 
     const auto result_rootk_zero_is_ok = (u_root == zero_as_small_unsigned_type());
 
@@ -974,14 +974,14 @@ auto test_various_isolated_edge_cases() -> bool // NOLINT(readability-function-c
           auto a(ten_pow_forty);
     const auto b(local_uintwide_t_small_unsigned_type("10000000000000000000000000000000000000000"));
 
-    const auto c(a %= b);
+    const auto& c(a %= b);
 
     #if (defined(__clang__) && (defined(__clang_major__) && (__clang_major__ > 6)))
     #pragma GCC diagnostic push
     #pragma GCC diagnostic ignored "-Wself-assign-overloaded"
     #endif
 
-    const auto d(a %= a); // NOLINT(clang-diagnostic-self-assign-overloaded)
+    const auto& d(a %= a); // NOLINT(clang-diagnostic-self-assign-overloaded)
 
     #if (defined(__clang__) && (defined(__clang_major__) && (__clang_major__ > 6)))
     #pragma GCC diagnostic pop
@@ -1070,6 +1070,191 @@ auto test_various_isolated_edge_cases() -> bool // NOLINT(readability-function-c
   return result_is_ok;
 }
 
+auto test_to_chars_and_to_string() -> bool // NOLINT(readability-function-cognitive-complexity)
+{
+  auto result_is_ok = true;
+
+  #if defined(__cpp_lib_to_chars)
+  for(auto   i = static_cast<unsigned>(UINT32_C(0));
+             i < static_cast<unsigned>(UINT32_C(256));
+           ++i)
+  {
+    // Verify write to_chars() and read back from string of unsigned uintwide_t.
+    // Use all three bases octal, decimal, and hexadecimal.
+
+    using to_chars_storage_array_oct_type =
+      std::array<char, static_cast<typename std::size_t>(local_uintwide_t_small_unsigned_type::wr_string_max_buffer_size_oct)>;
+
+    using to_chars_storage_array_dec_type =
+      std::array<char, static_cast<typename std::size_t>(local_uintwide_t_small_unsigned_type::wr_string_max_buffer_size_dec)>;
+
+    using to_chars_storage_array_hex_type =
+      std::array<char, static_cast<typename std::size_t>(local_uintwide_t_small_unsigned_type::wr_string_max_buffer_size_hex)>;
+
+    constexpr auto char_fill = '\0';
+
+    to_chars_storage_array_oct_type arr_oct { }; arr_oct.fill(char_fill);
+    to_chars_storage_array_dec_type arr_dec { }; arr_dec.fill(char_fill);
+    to_chars_storage_array_hex_type arr_hex { }; arr_hex.fill(char_fill);
+
+    auto u_gen = generate_wide_integer_value<local_uintwide_t_small_unsigned_type>();
+
+    using std::to_chars;
+
+    const auto result_oct_as_chars = to_chars(arr_oct.data(), arr_oct.data() + arr_oct.size(), u_gen,  8);
+    const auto result_dec_as_chars = to_chars(arr_dec.data(), arr_dec.data() + arr_dec.size(), u_gen, 10);
+    const auto result_hex_as_chars = to_chars(arr_hex.data(), arr_hex.data() + arr_hex.size(), u_gen, 16);
+
+    const auto result_oct_as_str = "0"  + std::string(arr_oct.data());
+    const auto result_dec_as_str =        std::string(arr_dec.data());
+    const auto result_hex_as_str = "0x" + std::string(arr_hex.data());
+
+    const local_uintwide_t_small_unsigned_type u_from_string_oct(result_oct_as_str.c_str());
+    const local_uintwide_t_small_unsigned_type u_from_string_dec(result_dec_as_str.c_str());
+    const local_uintwide_t_small_unsigned_type u_from_string_hex(result_hex_as_str.c_str());
+
+    const auto result_u_to_from_string_oct_is_ok = ((u_gen == u_from_string_oct) && (result_oct_as_chars.ec == std::errc()));
+    const auto result_u_to_from_string_dec_is_ok = ((u_gen == u_from_string_dec) && (result_dec_as_chars.ec == std::errc()));
+    const auto result_u_to_from_string_hex_is_ok = ((u_gen == u_from_string_hex) && (result_hex_as_chars.ec == std::errc()));
+
+    result_is_ok = (result_u_to_from_string_oct_is_ok && result_is_ok);
+    result_is_ok = (result_u_to_from_string_dec_is_ok && result_is_ok);
+    result_is_ok = (result_u_to_from_string_hex_is_ok && result_is_ok);
+  }
+
+  for(auto   i = static_cast<unsigned>(UINT32_C(0));
+             i < static_cast<unsigned>(UINT32_C(256));
+           ++i)
+  {
+    // Verify write to_chars() and read back from string of signed uintwide_t.
+    // Use only base decimal.
+
+    using to_chars_storage_array_dec_type =
+      std::array<char, static_cast<typename std::size_t>(local_uintwide_t_small_signed_type::wr_string_max_buffer_size_dec)>;
+
+    constexpr auto char_fill = '\0';
+
+    to_chars_storage_array_dec_type arr_dec { }; arr_dec.fill(char_fill);
+
+    auto n_gen = generate_wide_integer_value<local_uintwide_t_small_signed_type>(false);
+
+    using std::to_chars;
+
+    const auto result_dec_as_chars = to_chars(arr_dec.data(), arr_dec.data() + arr_dec.size(), n_gen, 10);
+
+    static_cast<void>(result_dec_as_chars);
+
+    const auto result_dec_as_str = std::string(arr_dec.data());
+
+    const local_uintwide_t_small_signed_type n_from_string_dec(result_dec_as_str.c_str());
+
+    const auto result_n_to_from_string_dec_is_ok = (n_gen == n_from_string_dec);
+
+    result_is_ok = (result_n_to_from_string_dec_is_ok && result_is_ok);
+  }
+  #endif // __cpp_lib_to_chars
+
+  #if !defined(WIDE_INTEGER_DISABLE_TO_STRING)
+  for(auto   i = static_cast<unsigned>(UINT32_C(0));
+             i < static_cast<unsigned>(UINT32_C(256));
+           ++i)
+  {
+    // Verify write to_string() and read back from string of unsigned uintwide_t.
+
+    auto u_gen = generate_wide_integer_value<local_uintwide_t_small_unsigned_type>();
+
+    using std::to_string;
+
+    const auto str_u = to_string(u_gen);
+
+    const local_uintwide_t_small_unsigned_type u_from_string(str_u.c_str());
+
+    const auto result_u_to_from_string_is_ok = (u_gen == u_from_string);
+
+    result_is_ok = (result_u_to_from_string_is_ok && result_is_ok);
+  }
+
+  for(auto   i = static_cast<unsigned>(UINT32_C(0));
+             i < static_cast<unsigned>(UINT32_C(256));
+           ++i)
+  {
+    // Verify write to_string() and read back from string of signed uintwide_t.
+
+    auto n_gen = generate_wide_integer_value<local_uintwide_t_small_signed_type>(false);
+
+    using std::to_string;
+
+    const auto str_n = to_string(n_gen);
+
+    const local_uintwide_t_small_signed_type n_from_string(str_n.c_str());
+
+    const auto result_n_to_from_string_is_ok = (n_gen == n_from_string);
+
+    result_is_ok = (result_n_to_from_string_is_ok && result_is_ok);
+  }
+
+  {
+    // Ensure that uintwide_t's function to_string (in namespace
+    // math::wide_integer) does *not* conflict with the standard library's
+    // std::to_string function name. Also ensure that ADL works properly
+    // for uintwide_t's namespace-specific to_string function.
+
+    using std::to_string;
+
+    const auto u_gen = generate_wide_integer_value<local_uintwide_t_small_unsigned_type>();
+    const auto n_gen = generate_wide_integer_value<local_uintwide_t_small_signed_type>(false);
+
+    const auto str_u = to_string(u_gen);
+    const auto str_n = to_string(n_gen);
+
+    const auto u64 = static_cast<std::uint64_t>(UINT64_C(0xFFFFFFFF55555555));
+    const auto ni  = static_cast<int>(INT8_C(42));
+
+    const auto str_u64 = to_string(u64);
+    const auto str_ni  = to_string(ni);
+
+    const auto str2_u64 = std::to_string(u64);
+    const auto str2_ni  = std::to_string(ni);
+
+    const auto result_to_strings_are_ok = (   (!str_u.empty())
+                                           && (!str_n.empty())
+                                           && (!str_u64.empty())
+                                           && (!str_ni.empty())
+                                           && (!str2_u64.empty())
+                                           && (!str2_ni.empty()));
+
+    result_is_ok = (result_to_strings_are_ok && result_is_ok);
+  }
+
+  for(auto   i = static_cast<unsigned>(UINT32_C(0));
+             i < static_cast<unsigned>(UINT32_C(32));
+           ++i)
+  {
+    // Verify write to_string() and read back from string of
+    // this test file's wide unsigned uintwide_t type.
+    // Thereby we ensure that the to_string() function
+    // will use dynamic allocation instead of stack allocation
+    // in this particular test.
+
+    using local_derived_uint_type = typename local_uint_backend_type::representation_type;
+
+    using std::to_string;
+
+    const auto u_gen = generate_wide_integer_value<local_derived_uint_type>();
+
+    const auto str_u = to_string(u_gen);
+
+    const local_derived_uint_type u_from_string(str_u.c_str());
+
+    const auto result_u_to_from_string_is_ok = (u_gen == u_from_string);
+
+    result_is_ok = (result_u_to_from_string_is_ok && result_is_ok);
+  }
+  #endif // !WIDE_INTEGER_DISABLE_TO_STRING
+
+  return result_is_ok;
+}
+
 } // namespace test_uintwide_t_edge
 
 #if defined(WIDE_INTEGER_NAMESPACE)
@@ -1084,6 +1269,7 @@ auto math::wide_integer::test_uintwide_t_edge_cases() -> bool
   result_is_ok = (test_uintwide_t_edge::test_various_ostream_ops        () && result_is_ok);
   result_is_ok = (test_uintwide_t_edge::test_various_roots_and_pow_etc  () && result_is_ok);
   result_is_ok = (test_uintwide_t_edge::test_various_isolated_edge_cases() && result_is_ok);
+  result_is_ok = (test_uintwide_t_edge::test_to_chars_and_to_string     () && result_is_ok);
 
   return result_is_ok;
 }
@@ -1119,7 +1305,7 @@ auto test_uintwide_t_edge::one_as_small_unsigned_type() -> const test_uintwide_t
   static const auto local_one_as_small_signed_type =
     local_uintwide_t_small_unsigned_type
     (
-      static_cast<typename std::make_signed<local_limb_type>::type>(UINT8_C(1))
+      static_cast<std::make_signed_t<local_limb_type>>(UINT8_C(1))
     );
 
   return local_one_as_small_signed_type;
@@ -1132,7 +1318,7 @@ auto test_uintwide_t_edge::m_one_as_small_signed_type() -> const test_uintwide_t
   static const auto local_m_one_as_small_signed_type =
     local_uintwide_t_small_signed_type
     (
-      static_cast<typename std::make_signed<local_limb_type>::type>(INT8_C(-1))
+      static_cast<std::make_signed_t<local_limb_type>>(INT8_C(-1))
     );
 
   return local_m_one_as_small_signed_type;
