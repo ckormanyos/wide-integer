@@ -1255,6 +1255,151 @@ auto test_to_chars_and_to_string() -> bool // NOLINT(readability-function-cognit
   return result_is_ok;
 }
 
+auto test_import_export_bits() -> bool
+{
+  using local_boost_small_uint_backend_type =
+    boost::multiprecision::cpp_int_backend<local_edge_cases::local_digits2_small,
+                                           local_edge_cases::local_digits2_small,
+                                           boost::multiprecision::unsigned_magnitude,
+                                           boost::multiprecision::unchecked,
+                                           void>;
+
+  using local_boost_small_uint_type =
+    boost::multiprecision::number<local_boost_small_uint_backend_type,
+                                  boost::multiprecision::et_off>;
+
+  auto result_is_ok = true;
+
+  constexpr std::array<bool, static_cast<std::size_t>(UINT8_C(2))> msv_options = { true, false };
+
+  for(const auto msv_first : msv_options)
+  {
+    for(auto   i = static_cast<unsigned>(UINT32_C(0));
+               i < static_cast<unsigned>(UINT32_C(64));
+             ++i)
+    {
+      // Verify import_bits() and compare with Boost control value(s).
+      // Use the full bit width and representation length of uintwide_t.
+
+      using local_representation_type = typename local_uintwide_t_small_unsigned_type::representation_type;
+      using local_input_value_type    = typename local_representation_type::value_type;
+
+      auto u_gen = generate_wide_integer_value<local_uintwide_t_small_unsigned_type>();
+
+      local_representation_type bits(u_gen.crepresentation());
+
+      if(msv_first)
+      {
+        std::reverse(bits.begin(), bits.end());
+      }
+
+      local_uintwide_t_small_unsigned_type val_uintwide_t { };
+      local_boost_small_uint_type          val_boost      { };
+
+      using std::to_string;
+
+      const auto str_uintwide_t = to_string(import_bits(val_uintwide_t, bits.cbegin(), bits.cend(), static_cast<unsigned>(std::numeric_limits<local_input_value_type>::digits), msv_first));
+      const auto str_boost      =           import_bits(val_boost,      bits.cbegin(), bits.cend(), static_cast<unsigned>(std::numeric_limits<local_input_value_type>::digits), msv_first).str();
+
+      const auto result_import_bits_is_ok = (str_uintwide_t == str_boost);
+
+      result_is_ok = (result_import_bits_is_ok && result_is_ok);
+    }
+  }
+
+  {
+    for(const auto msv_first : msv_options)
+    {
+      constexpr std::array<unsigned, 3U> bits_for_chunks = { 7U, 8U, 15U };
+
+      for(const auto chunk_size : bits_for_chunks)
+      {
+        for(auto   i = static_cast<unsigned>(UINT32_C(0));
+                   i < static_cast<unsigned>(UINT32_C(64));
+                 ++i)
+        {
+          // Verify import_bits() and compare with Boost control value(s).
+          // Use various input bit counts less than the result limb's width.
+
+          using local_representation_type = typename local_uintwide_t_small_unsigned_type::representation_type;
+
+          auto u_gen = generate_wide_integer_value<local_uintwide_t_small_unsigned_type>();
+
+          local_representation_type bits(u_gen.crepresentation());
+
+          if(msv_first)
+          {
+            std::reverse(bits.begin(), bits.end());
+          }
+
+          local_uintwide_t_small_unsigned_type val_uintwide_t { };
+          local_boost_small_uint_type          val_boost      { };
+
+          using std::to_string;
+
+          const auto str_uintwide_t = to_string(import_bits(val_uintwide_t, bits.cbegin(), bits.cend(), chunk_size, msv_first));
+          const auto str_boost      =           import_bits(val_boost,      bits.cbegin(), bits.cend(), chunk_size, msv_first).str();
+
+          const auto result_import_bits_is_ok = (str_uintwide_t == str_boost);
+
+          result_is_ok = (result_import_bits_is_ok && result_is_ok);
+        }
+      }
+    }
+  }
+
+  for(auto   i = static_cast<unsigned>(UINT32_C(0));
+             i < static_cast<unsigned>(UINT32_C(64));
+           ++i)
+  {
+    // Verify import_bits() and compare with Boost control value(s).
+    // Use various input bit counts exceeding the result limb's width.
+
+    using local_representation_type = typename local_uintwide_t_small_unsigned_type::representation_type;
+
+    using local_input_value_type = typename local_representation_type::value_type;
+
+    auto u_gen = generate_wide_integer_value<local_uintwide_t_small_unsigned_type>();
+
+    local_representation_type bits(u_gen.crepresentation());
+
+    using local_input_double_width_value_type =
+      typename ::math::wide_integer::detail::uint_type_helper<static_cast<std::size_t>(std::numeric_limits<local_input_value_type>::digits * 2)>::exact_unsigned_type;
+
+    using local_double_width_input_array_type =
+      std::array<local_input_double_width_value_type, local_representation_type::static_size() / 2U>;
+
+    local_double_width_input_array_type bits_double_width;
+
+    {
+      using local_size_type = typename local_representation_type::size_type;
+
+      auto index = static_cast<local_size_type>(UINT8_C(0));
+
+      for(auto& elem : bits_double_width)
+      {
+        elem = ::math::wide_integer::detail::make_large(bits[index], bits[index + 1U]);
+
+        index = static_cast<local_size_type>(index + static_cast<local_size_type>(UINT8_C(2)));
+      }
+    }
+
+    local_uintwide_t_small_unsigned_type val_uintwide_t { };
+    local_boost_small_uint_type          val_boost      { };
+
+    using std::to_string;
+
+    const auto str_uintwide_t = to_string(import_bits(val_uintwide_t, bits_double_width.cbegin(), bits_double_width.cend(), static_cast<unsigned>(std::numeric_limits<local_input_double_width_value_type>::digits)));
+    const auto str_boost      =           import_bits(val_boost,      bits_double_width.cbegin(), bits_double_width.cend(), static_cast<unsigned>(std::numeric_limits<local_input_double_width_value_type>::digits)).str();
+
+    const auto result_import_bits_is_ok = (str_uintwide_t == str_boost);
+
+    result_is_ok = (result_import_bits_is_ok && result_is_ok);
+  }
+
+  return result_is_ok;
+}
+
 } // namespace test_uintwide_t_edge
 
 #if defined(WIDE_INTEGER_NAMESPACE)
@@ -1263,13 +1408,14 @@ auto WIDE_INTEGER_NAMESPACE::math::wide_integer::test_uintwide_t_edge_cases() ->
 auto math::wide_integer::test_uintwide_t_edge_cases() -> bool
 #endif
 {
-  bool result_is_ok = true;
+  auto result_is_ok = true;
 
   result_is_ok = (test_uintwide_t_edge::test_various_edge_operations    () && result_is_ok);
   result_is_ok = (test_uintwide_t_edge::test_various_ostream_ops        () && result_is_ok);
   result_is_ok = (test_uintwide_t_edge::test_various_roots_and_pow_etc  () && result_is_ok);
   result_is_ok = (test_uintwide_t_edge::test_various_isolated_edge_cases() && result_is_ok);
   result_is_ok = (test_uintwide_t_edge::test_to_chars_and_to_string     () && result_is_ok);
+  result_is_ok = (test_uintwide_t_edge::test_import_export_bits         () && result_is_ok);
 
   return result_is_ok;
 }
