@@ -553,16 +553,16 @@
            typename OutputIterator>
   auto import_export_helper(      ForwardIterator    in,
                                   OutputIterator     out,
-                            const   signed_fast_type total_bits_to_use,
+                            const   signed_fast_type total_bits_to_use, // NOLINT(bugprone-easily-swappable-parameters)
                             const unsigned_fast_type chunk_size_in,
                             const unsigned_fast_type chunk_size_out) -> void
   {
     for(auto   i  = static_cast<signed_fast_type>(total_bits_to_use - 1U);
-               i >= static_cast<signed_fast_type>(INT8_C(0));
+               i >= static_cast<signed_fast_type>(INT8_C(0)); // NOLINT(altera-id-dependent-backward-branch)
              --i)
     {
-      using local_input_value_type  = std::iterator_traits<ForwardIterator>::value_type;
-      using local_result_value_type = std::iterator_traits<OutputIterator>::value_type;
+      using local_input_value_type  = typename std::iterator_traits<ForwardIterator>::value_type;
+      using local_result_value_type = typename std::iterator_traits<OutputIterator>::value_type;
 
       const auto input_bpos =
         static_cast<unsigned_fast_type>
@@ -6376,10 +6376,8 @@
 
     using local_input_value_type = typename std::iterator_traits<local_input_iterator_type>::value_type;
 
-    using local_input_reverse_iterator_type = std::reverse_iterator<local_input_iterator_type>;
-
     static_assert(std::numeric_limits<local_result_value_type>::digits != std::numeric_limits<local_input_value_type>::digits,
-                  "Error: Erroneaous match for input element width and result uintwide_t limb width");
+                  "Error: Erroneous match for input element width and result uintwide_t limb width");
 
     const auto input_distance = static_cast<std::size_t>(std::distance(first, last));
 
