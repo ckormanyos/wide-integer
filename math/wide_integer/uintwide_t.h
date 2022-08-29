@@ -557,7 +557,7 @@
                             const unsigned_fast_type chunk_size_in,
                             const unsigned_fast_type chunk_size_out) -> void
   {
-    for(auto   i  = static_cast<signed_fast_type>(total_bits_to_use - 1U);
+    for(auto   i  = static_cast<signed_fast_type>(total_bits_to_use - static_cast<signed_fast_type>(INT8_C(1)));
                i >= static_cast<signed_fast_type>(INT8_C(0)); // NOLINT(altera-id-dependent-backward-branch)
              --i)
     {
@@ -6303,7 +6303,7 @@
       else
       {
         std::copy(local_input_reverse_iterator_type(last),
-                  local_input_reverse_iterator_type(last) + copy_len,
+                  local_input_reverse_iterator_type(last) + static_cast<typename local_result_reverse_iterator_type::difference_type>(copy_len),
                   local_result_reverse_iterator_type(val.representation().begin() + copy_len));
       }
 
@@ -6327,8 +6327,8 @@
       const auto total_bits_to_use =
         (std::min)
         (
-          total_bits_input,
-          static_cast<unsigned_fast_type>(std::numeric_limits<local_wide_integer_type>::digits)
+          static_cast<signed_fast_type>(total_bits_input),
+          static_cast<signed_fast_type>(std::numeric_limits<local_wide_integer_type>::digits)
         );
 
       auto it_result =
@@ -6337,7 +6337,7 @@
             val.representation().begin()
           + static_cast<size_t>
             (
-              total_bits_to_use / static_cast<unsigned_fast_type>(std::numeric_limits<local_result_value_type>::digits)
+              static_cast<unsigned_fast_type>(total_bits_to_use) / static_cast<unsigned_fast_type>(std::numeric_limits<local_result_value_type>::digits)
             )
         );
 
@@ -6395,8 +6395,8 @@
     const auto total_bits_to_use =
       (std::min)
       (
-        total_bits_input,
-        static_cast<unsigned_fast_type>(std::numeric_limits<local_wide_integer_type>::digits)
+        static_cast<signed_fast_type>(total_bits_input),
+        static_cast<signed_fast_type>(std::numeric_limits<local_wide_integer_type>::digits)
       );
 
     auto it_result =
@@ -6405,7 +6405,7 @@
           val.representation().begin()
         + static_cast<size_t>
           (
-            total_bits_to_use / static_cast<unsigned_fast_type>(std::numeric_limits<local_result_value_type>::digits)
+            static_cast<unsigned_fast_type>(total_bits_to_use) / static_cast<unsigned_fast_type>(std::numeric_limits<local_result_value_type>::digits)
           )
       );
 

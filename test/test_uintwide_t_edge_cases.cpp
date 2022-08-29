@@ -34,14 +34,17 @@
 #endif
 #endif
 
-#if (BOOST_VERSION < 108000)
 #if defined(__GNUC__)
+#if (BOOST_VERSION < 108000)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wconversion"
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wsign-conversion"
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
+#else
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsign-conversion"
 #endif
 #endif
 
@@ -71,6 +74,11 @@ namespace local_edge_cases {
   constexpr auto local_digits2_small = static_cast<std::size_t>(UINT32_C(  256));
 
 } // namespace local_edge_cases
+
+// Forward declaration
+template<typename IntegralTimePointType,
+         typename ClockType = std::chrono::high_resolution_clock>
+auto time_point() -> IntegralTimePointType;
 
 using local_uintwide_t_small_unsigned_type =
   #if defined(WIDE_INTEGER_NAMESPACE)
@@ -116,7 +124,7 @@ enum class local_base
 };
 
 using eng_sgn_type = std::ranlux24;
-using eng_dig_type = std::minstd_rand0;
+using eng_dig_type = std::ranlux48;
 
 std::uniform_int_distribution<std::uint32_t> dist_sgn    (UINT32_C(0), UINT32_C(1));  // NOLINT(cert-err58-cpp,cppcoreguidelines-avoid-non-const-global-variables)
 std::uniform_int_distribution<std::uint32_t> dist_dig_dec(UINT32_C(1), UINT32_C(9));  // NOLINT(cert-err58-cpp,cppcoreguidelines-avoid-non-const-global-variables)
@@ -132,7 +140,7 @@ auto one_as_small_unsigned_type () -> const local_uintwide_t_small_unsigned_type
 auto m_one_as_small_signed_type () -> const local_uintwide_t_small_signed_type&;
 
 template<typename IntegralTimePointType,
-          typename ClockType = std::chrono::high_resolution_clock>
+         typename ClockType>
 auto time_point() -> IntegralTimePointType
 {
   using local_integral_time_point_type = IntegralTimePointType;
@@ -342,8 +350,8 @@ auto test_various_ostream_ops() -> bool
 {
   auto result_is_ok = true;
 
-  eng_sgn.seed(static_cast<typename eng_sgn_type::result_type>(std::random_device{ }()));
-  eng_dig.seed(static_cast<typename eng_dig_type::result_type>(std::random_device{ }()));
+  eng_sgn.seed(time_point<typename eng_sgn_type::result_type>());
+  eng_dig.seed(time_point<typename eng_dig_type::result_type>());
 
   {
     const auto u = local_uintwide_t_small_unsigned_type(static_cast<std::uint32_t>(UINT32_C(29363)));
@@ -1072,6 +1080,9 @@ auto test_various_isolated_edge_cases() -> bool // NOLINT(readability-function-c
 
 auto test_to_chars_and_to_string() -> bool // NOLINT(readability-function-cognitive-complexity)
 {
+  eng_sgn.seed(time_point<typename eng_sgn_type::result_type>());
+  eng_dig.seed(time_point<typename eng_dig_type::result_type>());
+
   auto result_is_ok = true;
 
   #if defined(__cpp_lib_to_chars)
@@ -1257,6 +1268,9 @@ auto test_to_chars_and_to_string() -> bool // NOLINT(readability-function-cognit
 
 auto test_import_export_bits() -> bool
 {
+  eng_sgn.seed(time_point<typename eng_sgn_type::result_type>());
+  eng_dig.seed(time_point<typename eng_dig_type::result_type>());
+
   using local_boost_small_uint_backend_type =
     boost::multiprecision::cpp_int_backend<local_edge_cases::local_digits2_small,
                                            local_edge_cases::local_digits2_small,
@@ -1298,8 +1312,11 @@ auto test_import_export_bits() -> bool
 
       using std::to_string;
 
-      const auto str_uintwide_t = to_string(import_bits(val_uintwide_t, bits.cbegin(), bits.cend(), static_cast<unsigned>(std::numeric_limits<local_input_value_type>::digits), msv_first));
-      const auto str_boost      =           import_bits(val_boost,      bits.cbegin(), bits.cend(), static_cast<unsigned>(std::numeric_limits<local_input_value_type>::digits), msv_first).str();
+      static_cast<void>(import_bits(val_uintwide_t, bits.cbegin(), bits.cend(), static_cast<unsigned>(std::numeric_limits<local_input_value_type>::digits), msv_first));
+      static_cast<void>(import_bits(val_boost,      bits.cbegin(), bits.cend(), static_cast<unsigned>(std::numeric_limits<local_input_value_type>::digits), msv_first));
+
+      const auto str_uintwide_t = to_string(val_uintwide_t);
+      const auto str_boost      = val_boost.str();
 
       const auto result_import_bits_is_ok = (str_uintwide_t == str_boost);
 
@@ -1310,7 +1327,7 @@ auto test_import_export_bits() -> bool
   {
     for(const auto msv_first : msv_options)
     {
-      constexpr std::array<unsigned, 3U> bits_for_chunks = { 7U, 8U, 15U };
+      constexpr std::array<unsigned, static_cast<std::size_t>(UINT8_C(3))> bits_for_chunks = { 7U, 9U, 15U };
 
       for(const auto chunk_size : bits_for_chunks)
       {
@@ -1337,8 +1354,11 @@ auto test_import_export_bits() -> bool
 
           using std::to_string;
 
-          const auto str_uintwide_t = to_string(import_bits(val_uintwide_t, bits.cbegin(), bits.cend(), chunk_size, msv_first));
-          const auto str_boost      =           import_bits(val_boost,      bits.cbegin(), bits.cend(), chunk_size, msv_first).str();
+          static_cast<void>(import_bits(val_uintwide_t, bits.cbegin(), bits.cend(), chunk_size, msv_first));
+          static_cast<void>(import_bits(val_boost,      bits.cbegin(), bits.cend(), chunk_size, msv_first));
+
+          const auto str_uintwide_t = to_string(val_uintwide_t);
+          const auto str_boost      =           val_boost.str();
 
           const auto result_import_bits_is_ok = (str_uintwide_t == str_boost);
 
@@ -1389,8 +1409,11 @@ auto test_import_export_bits() -> bool
 
     using std::to_string;
 
-    const auto str_uintwide_t = to_string(import_bits(val_uintwide_t, bits_double_width.cbegin(), bits_double_width.cend(), static_cast<unsigned>(std::numeric_limits<local_input_double_width_value_type>::digits)));
-    const auto str_boost      =           import_bits(val_boost,      bits_double_width.cbegin(), bits_double_width.cend(), static_cast<unsigned>(std::numeric_limits<local_input_double_width_value_type>::digits)).str();
+    static_cast<void>(import_bits(val_uintwide_t, bits_double_width.cbegin(), bits_double_width.cend(), static_cast<unsigned>(std::numeric_limits<local_input_double_width_value_type>::digits)));
+    static_cast<void>(import_bits(val_boost,      bits_double_width.cbegin(), bits_double_width.cend(), static_cast<unsigned>(std::numeric_limits<local_input_double_width_value_type>::digits)));
+
+    const auto str_uintwide_t = to_string(val_uintwide_t);
+    const auto str_boost      =           val_boost.str();
 
     const auto result_import_bits_is_ok = (str_uintwide_t == str_boost);
 
@@ -1408,6 +1431,9 @@ auto WIDE_INTEGER_NAMESPACE::math::wide_integer::test_uintwide_t_edge_cases() ->
 auto math::wide_integer::test_uintwide_t_edge_cases() -> bool
 #endif
 {
+  test_uintwide_t_edge::eng_sgn.seed(test_uintwide_t_edge::time_point<typename test_uintwide_t_edge::eng_sgn_type::result_type>());
+  test_uintwide_t_edge::eng_dig.seed(test_uintwide_t_edge::time_point<typename test_uintwide_t_edge::eng_dig_type::result_type>());
+
   auto result_is_ok = true;
 
   result_is_ok = (test_uintwide_t_edge::test_various_edge_operations    () && result_is_ok);
@@ -1480,10 +1506,12 @@ auto test_uintwide_t_edge::m_one_as_small_signed_type() -> const test_uintwide_t
 #pragma GCC diagnostic pop
 #endif
 
-#if (BOOST_VERSION < 108000)
 #if defined(__GNUC__)
+#if (BOOST_VERSION < 108000)
 #pragma GCC diagnostic pop
 #pragma GCC diagnostic pop
+#pragma GCC diagnostic pop
+#else
 #pragma GCC diagnostic pop
 #endif
 #endif
