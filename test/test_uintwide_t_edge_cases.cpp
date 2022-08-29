@@ -1290,7 +1290,7 @@ auto test_import_export_bits() -> bool
 
   static const std::array<bool, static_cast<std::size_t>(UINT8_C(2))> msv_options = { true, false };
 
-  for(const auto& msv_first : msv_options)
+  for(const auto& msv_first : msv_options) // NOLINT
   {
     for(auto   i = static_cast<unsigned>(UINT32_C(0));
                i < static_cast<unsigned>(UINT32_C(64));
@@ -1329,7 +1329,7 @@ auto test_import_export_bits() -> bool
   }
 
   {
-    for(const auto msv_first : msv_options)
+    for(const auto& msv_first : msv_options) // NOLINT
     {
       static const std::array<unsigned, static_cast<std::size_t>(UINT8_C(3))> bits_for_chunks = { 7U, 9U, 15U };
 
