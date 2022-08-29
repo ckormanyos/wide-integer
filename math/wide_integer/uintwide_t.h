@@ -549,6 +549,61 @@
   } // namespace my_own
   #endif
 
+  template<typename ForwardIterator,
+           typename OutputIterator>
+  auto import_export_helper(      ForwardIterator    in,
+                                  OutputIterator     out,
+                            const   signed_fast_type total_bits_to_use, // NOLINT(bugprone-easily-swappable-parameters)
+                            const unsigned_fast_type chunk_size_in,
+                            const unsigned_fast_type chunk_size_out) -> void
+  {
+    for(auto   i  = static_cast<signed_fast_type>(total_bits_to_use - static_cast<signed_fast_type>(INT8_C(1)));
+               i >= static_cast<signed_fast_type>(INT8_C(0)); // NOLINT(altera-id-dependent-backward-branch)
+             --i)
+    {
+      using local_input_value_type  = typename std::iterator_traits<ForwardIterator>::value_type;
+      using local_result_value_type = typename std::iterator_traits<OutputIterator>::value_type;
+
+      const auto input_bpos =
+        static_cast<unsigned_fast_type>
+        (
+          static_cast<unsigned_fast_type>(i) % chunk_size_in
+        );
+
+      const auto input_bval_is_set =
+      (
+        static_cast<local_input_value_type>
+        (
+            *in
+          & static_cast<local_input_value_type>(static_cast<local_input_value_type>(UINT8_C(1)) << input_bpos)
+        )
+        != static_cast<local_input_value_type>(UINT8_C(0))
+      );
+
+      const auto result_bpos =
+        static_cast<local_result_value_type>
+        (
+          static_cast<unsigned_fast_type>(i) % chunk_size_out
+        );
+
+      if(input_bval_is_set)
+      {
+        *out |= static_cast<local_result_value_type>(static_cast<local_result_value_type>(UINT8_C(1)) << result_bpos);
+      }
+
+      if(i != static_cast<signed_fast_type>(INT8_C(0)))
+      {
+        const auto go_to_next_result_elem = (result_bpos == static_cast<local_result_value_type>(UINT8_C(0)));
+
+        if(go_to_next_result_elem) { ++out; }
+
+        const auto go_to_next_input_elem = (input_bpos == static_cast<unsigned_fast_type>(UINT8_C(0)));
+
+        if(go_to_next_input_elem) { ++in; }
+      }
+    }
+  }
+
   } // namespace detail
 
   using detail::size_t;
@@ -838,6 +893,28 @@
            const bool IsSigned>
   auto to_string(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& x) -> std::string;
   #endif
+
+  template<typename ForwardIterator,
+           const size_t Width2,
+           typename LimbType,
+           typename AllocatorType,
+           std::enable_if_t<std::numeric_limits<typename std::iterator_traits<ForwardIterator>::value_type>::digits == std::numeric_limits<LimbType>::digits> const* = nullptr>
+  auto import_bits(uintwide_t<Width2, LimbType, AllocatorType, false>& val,
+                   ForwardIterator first,
+                   ForwardIterator last,
+                   unsigned        chunk_size = static_cast<unsigned>(UINT8_C(0)),
+                   bool            msv_first  = true) -> uintwide_t<Width2, LimbType, AllocatorType, false>&;
+
+  template<typename ForwardIterator,
+           const size_t Width2,
+           typename LimbType,
+           typename AllocatorType,
+           std::enable_if_t<!(std::numeric_limits<typename std::iterator_traits<ForwardIterator>::value_type>::digits == std::numeric_limits<LimbType>::digits)> const* = nullptr>
+  auto import_bits(uintwide_t<Width2, LimbType, AllocatorType, false>& val,
+                   ForwardIterator first,
+                   ForwardIterator last,
+                   unsigned        chunk_size = static_cast<unsigned>(UINT8_C(0)),
+                   bool            msv_first  = true) -> uintwide_t<Width2, LimbType, AllocatorType, false>&;
 
   #if(__cplusplus >= 201703L)
   } // namespace math::wide_integer
@@ -6161,12 +6238,190 @@
           - static_cast<std::size_t>(std::distance(str_temp.crbegin(), rit_trim))
         );
 
-      str_result = std::string(str_temp.cbegin(), str_temp.cbegin() + str_result_size);
+      std::fill(str_temp.begin() + str_result_size, str_temp.end(), '\0');
+
+      str_result = std::string(str_temp.data());
     }
 
     return str_result;
   }
   #endif
+
+  template<typename ForwardIterator,
+           const size_t Width2,
+           typename LimbType,
+           typename AllocatorType,
+           std::enable_if_t<std::numeric_limits<typename std::iterator_traits<ForwardIterator>::value_type>::digits == std::numeric_limits<LimbType>::digits> const*>
+  auto import_bits(uintwide_t<Width2, LimbType, AllocatorType, false>& val,
+                   ForwardIterator first,
+                   ForwardIterator last,
+                   unsigned        chunk_size,
+                   bool            msv_first) -> uintwide_t<Width2, LimbType, AllocatorType, false>&
+  {
+    // This subroutine implements limb-to-limb import of bits, which is optimized.
+    // Note, however, that limb order needs to be handled for each input ordering.
+    // Also note that if a non-full chunk size is provided, then slow bit-or
+    // methods are used.
+
+    using local_wide_integer_type = uintwide_t<Width2, LimbType, AllocatorType, false>;
+
+    using local_result_reverse_iterator_type =
+      typename local_wide_integer_type::representation_type::reverse_iterator;
+
+    using local_result_value_type = typename local_result_reverse_iterator_type::value_type;
+
+    using local_input_iterator_type = ForwardIterator;
+
+    using local_input_value_type = typename std::iterator_traits<local_input_iterator_type>::value_type;
+
+    using local_input_reverse_iterator_type = std::reverse_iterator<local_input_iterator_type>;
+
+    static_assert(std::numeric_limits<local_result_value_type>::digits == std::numeric_limits<local_input_value_type>::digits,
+                  "Error: Mismatch for input element width and result uintwide_t limb width");
+
+    chunk_size = (std::min)(static_cast<unsigned>(std::numeric_limits<local_input_value_type>::digits), chunk_size);
+
+    const auto chunk_is_whole =
+    (
+         (chunk_size == static_cast<unsigned>(UINT8_C(0)))
+      || (chunk_size == static_cast<unsigned>(std::numeric_limits<local_result_value_type>::digits))
+    );
+
+    const auto input_distance = static_cast<std::size_t>(std::distance(first, last));
+
+    if(chunk_is_whole)
+    {
+      const auto copy_len =
+        (std::min)(static_cast<std::size_t>(val.crepresentation().size()), input_distance);
+
+      if(msv_first)
+      {
+        std::copy(first,
+                  first + copy_len,
+                  local_result_reverse_iterator_type(val.representation().begin() + copy_len));
+      }
+      else
+      {
+        std::copy(local_input_reverse_iterator_type(last),
+                  local_input_reverse_iterator_type(last) + static_cast<typename local_result_reverse_iterator_type::difference_type>(copy_len),
+                  local_result_reverse_iterator_type(val.representation().begin() + copy_len));
+      }
+
+      std::fill(val.representation().begin() + copy_len,
+                val.representation().end(),
+                static_cast<local_result_value_type>(UINT8_C(0)));
+    }
+    else
+    {
+      val = 0;
+
+      const auto chunk_size_in  = static_cast<unsigned_fast_type>(chunk_size);
+      const auto chunk_size_out = static_cast<unsigned_fast_type>(std::numeric_limits<local_result_value_type>::digits);
+
+      const auto total_bits_input =
+        static_cast<unsigned_fast_type>
+        (
+          static_cast<std::size_t>(chunk_size_in) * input_distance
+        );
+
+      const auto total_bits_to_use =
+        (std::min)
+        (
+          static_cast<signed_fast_type>(total_bits_input),
+          static_cast<signed_fast_type>(std::numeric_limits<local_wide_integer_type>::digits)
+        );
+
+      auto it_result =
+        local_result_reverse_iterator_type
+        (
+            val.representation().begin()
+          + static_cast<size_t>
+            (
+              static_cast<unsigned_fast_type>(total_bits_to_use) / static_cast<unsigned_fast_type>(std::numeric_limits<local_result_value_type>::digits)
+            )
+        );
+
+      if(msv_first)
+      {
+        detail::import_export_helper(first, it_result, total_bits_to_use, chunk_size_in, chunk_size_out);
+      }
+      else
+      {
+        detail::import_export_helper(local_input_reverse_iterator_type(last), it_result, total_bits_to_use, chunk_size_in, chunk_size_out);
+      }
+    }
+
+    return val;
+  }
+
+  template<typename ForwardIterator,
+           const size_t Width2,
+           typename LimbType,
+           typename AllocatorType,
+           std::enable_if_t<!(std::numeric_limits<typename std::iterator_traits<ForwardIterator>::value_type>::digits == std::numeric_limits<LimbType>::digits)> const*>
+  auto import_bits(uintwide_t<Width2, LimbType, AllocatorType, false>& val,
+                   ForwardIterator first,
+                   ForwardIterator last,
+                   unsigned        chunk_size,
+                   bool            msv_first) -> uintwide_t<Width2, LimbType, AllocatorType, false>&
+  {
+    using local_wide_integer_type = uintwide_t<Width2, LimbType, AllocatorType, false>;
+
+    using local_result_reverse_iterator_type =
+      typename local_wide_integer_type::representation_type::reverse_iterator;
+
+    using local_result_value_type = typename local_result_reverse_iterator_type::value_type;
+
+    using local_input_iterator_type = ForwardIterator;
+
+    using local_input_value_type = typename std::iterator_traits<local_input_iterator_type>::value_type;
+
+    static_assert(std::numeric_limits<local_result_value_type>::digits != std::numeric_limits<local_input_value_type>::digits,
+                  "Error: Erroneous match for input element width and result uintwide_t limb width");
+
+    const auto input_distance = static_cast<std::size_t>(std::distance(first, last));
+
+    val = 0;
+
+    const auto chunk_size_in  = static_cast<unsigned_fast_type>(chunk_size);
+    const auto chunk_size_out = static_cast<unsigned_fast_type>(std::numeric_limits<local_result_value_type>::digits);
+
+    const auto total_bits_input =
+      static_cast<unsigned_fast_type>
+      (
+        static_cast<std::size_t>(chunk_size_in) * input_distance
+      );
+
+    const auto total_bits_to_use =
+      (std::min)
+      (
+        static_cast<signed_fast_type>(total_bits_input),
+        static_cast<signed_fast_type>(std::numeric_limits<local_wide_integer_type>::digits)
+      );
+
+    auto it_result =
+      local_result_reverse_iterator_type
+      (
+          val.representation().begin()
+        + static_cast<size_t>
+          (
+            static_cast<unsigned_fast_type>(total_bits_to_use) / static_cast<unsigned_fast_type>(std::numeric_limits<local_result_value_type>::digits)
+          )
+      );
+
+    if(msv_first)
+    {
+      detail::import_export_helper(first, it_result, total_bits_to_use, chunk_size_in, chunk_size_out);
+    }
+    else
+    {
+      using local_input_reverse_iterator_type = std::reverse_iterator<local_input_iterator_type>;
+
+      detail::import_export_helper(local_input_reverse_iterator_type(last), it_result, total_bits_to_use, chunk_size_in, chunk_size_out);
+    }
+
+    return val;
+  }
 
   #if(__cplusplus >= 201703L)
   } // namespace math::wide_integer
