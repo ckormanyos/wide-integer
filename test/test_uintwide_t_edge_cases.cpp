@@ -43,10 +43,8 @@
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 #else
-#if defined(__clang__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wconversion"
-#endif
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wsign-conversion"
 #endif
@@ -814,7 +812,7 @@ auto test_various_roots_and_pow_etc() -> bool
 
     random_engine_type local_generator(generator);
 
-    constexpr std::array<int, static_cast<std::size_t>(UINT8_C(49))> small_primes =
+    static const std::array<int, static_cast<std::size_t>(UINT8_C(49))> small_primes =
     {
         2,
         3,   5,   7,  11,  13,  17,  19,  23,
@@ -1290,9 +1288,9 @@ auto test_import_export_bits() -> bool
 
   auto result_is_ok = true;
 
-  constexpr std::array<bool, static_cast<std::size_t>(UINT8_C(2))> msv_options = { true, false };
+  static const std::array<bool, static_cast<std::size_t>(UINT8_C(2))> msv_options = { true, false };
 
-  for(const auto msv_first : msv_options)
+  for(const auto& msv_first : msv_options)
   {
     for(auto   i = static_cast<unsigned>(UINT32_C(0));
                i < static_cast<unsigned>(UINT32_C(64));
@@ -1333,9 +1331,9 @@ auto test_import_export_bits() -> bool
   {
     for(const auto msv_first : msv_options)
     {
-      constexpr std::array<unsigned, static_cast<std::size_t>(UINT8_C(3))> bits_for_chunks = { 7U, 9U, 15U };
+      static const std::array<unsigned, static_cast<std::size_t>(UINT8_C(3))> bits_for_chunks = { 7U, 9U, 15U };
 
-      for(const auto chunk_size : bits_for_chunks)
+      for(const auto& chunk_size : bits_for_chunks)
       {
         for(auto   i = static_cast<unsigned>(UINT32_C(0));
                    i < static_cast<unsigned>(UINT32_C(64));
@@ -1527,9 +1525,7 @@ auto test_uintwide_t_edge::m_one_as_small_signed_type() -> const test_uintwide_t
 #pragma GCC diagnostic pop
 #pragma GCC diagnostic pop
 #else
-#if defined(__clang__)
 #pragma GCC diagnostic pop
-#endif
 #pragma GCC diagnostic pop
 #endif
 #endif
