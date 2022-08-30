@@ -555,7 +555,7 @@
                                   OutputIterator     out,
                             const   signed_fast_type total_bits_to_use, // NOLINT(bugprone-easily-swappable-parameters)
                             const unsigned_fast_type chunk_size_in,
-                            const unsigned_fast_type chunk_size_out) -> void
+                            const unsigned_fast_type chunk_size_out) -> OutputIterator
   {
     for(auto   i  = static_cast<signed_fast_type>(total_bits_to_use - static_cast<signed_fast_type>(INT8_C(1)));
                i >= static_cast<signed_fast_type>(INT8_C(0)); // NOLINT(altera-id-dependent-backward-branch)
@@ -591,17 +591,16 @@
         *out |= static_cast<local_result_value_type>(static_cast<local_result_value_type>(UINT8_C(1)) << result_bpos);
       }
 
-      if(i != static_cast<signed_fast_type>(INT8_C(0)))
-      {
-        const auto go_to_next_result_elem = (result_bpos == static_cast<local_result_value_type>(UINT8_C(0)));
+      const auto go_to_next_result_elem = (result_bpos == static_cast<local_result_value_type>(UINT8_C(0)));
 
-        if(go_to_next_result_elem) { ++out; }
+      if(go_to_next_result_elem) { if(i != static_cast<signed_fast_type>(INT8_C(0))) { ++out; } }
 
-        const auto go_to_next_input_elem = (input_bpos == static_cast<unsigned_fast_type>(UINT8_C(0)));
+      const auto go_to_next_input_elem = (input_bpos == static_cast<unsigned_fast_type>(UINT8_C(0)));
 
-        if(go_to_next_input_elem) { ++in; }
-      }
+      if(go_to_next_input_elem) { if(i != static_cast<signed_fast_type>(INT8_C(0))) { ++in; } }
     }
+
+    return out;
   }
 
   } // namespace detail
@@ -6258,34 +6257,33 @@
                    unsigned        chunk_size,
                    bool            msv_first) -> uintwide_t<Width2, LimbType, AllocatorType, false>&
   {
-    // This subroutine implements limb-to-limb import of bits, which is optimized.
-    // Note, however, that limb order needs to be handled for each input ordering.
-    // Also note that if a non-full chunk size is provided, then slow bit-or
-    // methods are used.
+    // This subroutine implements limb-by-limb import of bits, which is optimized.
+    // Also note that if a non-full chunk size is provided, then slow bit-by-bit
+    // methods are used. The limb order is handled depending on the input msv_first.
 
-    using local_wide_integer_type = uintwide_t<Width2, LimbType, AllocatorType, false>;
+    using local_unsigned_wide_integer_type = uintwide_t<Width2, LimbType, AllocatorType, false>;
 
-    using local_result_reverse_iterator_type =
-      typename local_wide_integer_type::representation_type::reverse_iterator;
+    using local_result_iterator_type = typename local_unsigned_wide_integer_type::representation_type::reverse_iterator;
 
-    using local_result_value_type = typename local_result_reverse_iterator_type::value_type;
+    using local_result_value_type = typename local_result_iterator_type::value_type;
 
     using local_input_iterator_type = ForwardIterator;
 
     using local_input_value_type = typename std::iterator_traits<local_input_iterator_type>::value_type;
 
-    using local_input_reverse_iterator_type = std::reverse_iterator<local_input_iterator_type>;
-
     static_assert(std::numeric_limits<local_result_value_type>::digits == std::numeric_limits<local_input_value_type>::digits,
                   "Error: Mismatch for input element width and result uintwide_t limb width");
+
+
+    if(chunk_size == static_cast<unsigned>(UINT8_C(0)))
+    {
+      chunk_size = static_cast<unsigned>(std::numeric_limits<local_input_value_type>::digits);
+    }
 
     chunk_size = (std::min)(static_cast<unsigned>(std::numeric_limits<local_input_value_type>::digits), chunk_size);
 
     const auto chunk_is_whole =
-    (
-         (chunk_size == static_cast<unsigned>(UINT8_C(0)))
-      || (chunk_size == static_cast<unsigned>(std::numeric_limits<local_result_value_type>::digits))
-    );
+      (chunk_size == static_cast<unsigned>(std::numeric_limits<local_result_value_type>::digits));
 
     const auto input_distance = static_cast<std::size_t>(std::distance(first, last));
 
@@ -6298,13 +6296,15 @@
       {
         std::copy(first,
                   first + copy_len,
-                  local_result_reverse_iterator_type(val.representation().begin() + copy_len));
+                  local_result_iterator_type(val.representation().begin() + copy_len));
       }
       else
       {
+        using local_input_reverse_iterator_type = std::reverse_iterator<local_input_iterator_type>;
+
         std::copy(local_input_reverse_iterator_type(last),
-                  local_input_reverse_iterator_type(last) + static_cast<typename local_result_reverse_iterator_type::difference_type>(copy_len),
-                  local_result_reverse_iterator_type(val.representation().begin() + copy_len));
+                  local_input_reverse_iterator_type(last) + static_cast<typename local_result_iterator_type::difference_type>(copy_len),
+                  local_result_iterator_type(val.representation().begin() + copy_len));
       }
 
       std::fill(val.representation().begin() + copy_len,
@@ -6328,18 +6328,22 @@
         (std::min)
         (
           static_cast<signed_fast_type>(total_bits_input),
-          static_cast<signed_fast_type>(std::numeric_limits<local_wide_integer_type>::digits)
+          static_cast<signed_fast_type>(std::numeric_limits<local_unsigned_wide_integer_type>::digits)
         );
 
-      auto it_result =
-        local_result_reverse_iterator_type
+      const auto result_distance =
+        static_cast<std::size_t>
         (
-            val.representation().begin()
-          + static_cast<size_t>
+            static_cast<unsigned_fast_type>(total_bits_to_use / chunk_size_out)
+          + static_cast<unsigned_fast_type>
             (
-              static_cast<unsigned_fast_type>(total_bits_to_use) / static_cast<unsigned_fast_type>(std::numeric_limits<local_result_value_type>::digits)
+              (static_cast<unsigned_fast_type>(total_bits_to_use % chunk_size_out) != static_cast<unsigned_fast_type>(UINT8_C(0)))
+                ? static_cast<unsigned_fast_type>(UINT8_C(1))
+                : static_cast<unsigned_fast_type>(UINT8_C(0))
             )
         );
+
+      auto it_result = local_result_iterator_type(val.representation().begin() + result_distance);
 
       if(msv_first)
       {
@@ -6347,6 +6351,8 @@
       }
       else
       {
+        using local_input_reverse_iterator_type = std::reverse_iterator<local_input_iterator_type>;
+
         detail::import_export_helper(local_input_reverse_iterator_type(last), it_result, total_bits_to_use, chunk_size_in, chunk_size_out);
       }
     }
@@ -6365,12 +6371,15 @@
                    unsigned        chunk_size,
                    bool            msv_first) -> uintwide_t<Width2, LimbType, AllocatorType, false>&
   {
-    using local_wide_integer_type = uintwide_t<Width2, LimbType, AllocatorType, false>;
+    // This subroutine implements limb-by-limb import of bits. This template
+    // specialization is intended for non-full chunk sizes and uses slow bit-by-bit
+    // methods. The limb order is handled depending on the input msv_first.
 
-    using local_result_reverse_iterator_type =
-      typename local_wide_integer_type::representation_type::reverse_iterator;
+    using local_unsigned_wide_integer_type = uintwide_t<Width2, LimbType, AllocatorType, false>;
 
-    using local_result_value_type = typename local_result_reverse_iterator_type::value_type;
+    using local_result_iterator_type = typename local_unsigned_wide_integer_type::representation_type::reverse_iterator;
+
+    using local_result_value_type = typename local_result_iterator_type::value_type;
 
     using local_input_iterator_type = ForwardIterator;
 
@@ -6382,6 +6391,13 @@
     const auto input_distance = static_cast<std::size_t>(std::distance(first, last));
 
     val = 0;
+
+    if(chunk_size == static_cast<unsigned>(UINT8_C(0)))
+    {
+      chunk_size = static_cast<unsigned>(std::numeric_limits<local_input_value_type>::digits);
+    }
+
+    chunk_size = (std::min)(static_cast<unsigned>(std::numeric_limits<local_input_value_type>::digits), chunk_size);
 
     const auto chunk_size_in  = static_cast<unsigned_fast_type>(chunk_size);
     const auto chunk_size_out = static_cast<unsigned_fast_type>(std::numeric_limits<local_result_value_type>::digits);
@@ -6396,18 +6412,22 @@
       (std::min)
       (
         static_cast<signed_fast_type>(total_bits_input),
-        static_cast<signed_fast_type>(std::numeric_limits<local_wide_integer_type>::digits)
+        static_cast<signed_fast_type>(std::numeric_limits<local_unsigned_wide_integer_type>::digits)
       );
 
-    auto it_result =
-      local_result_reverse_iterator_type
+    const auto result_distance =
+      static_cast<std::size_t>
       (
-          val.representation().begin()
-        + static_cast<size_t>
+          static_cast<unsigned_fast_type>(total_bits_to_use / chunk_size_out)
+        + static_cast<unsigned_fast_type>
           (
-            static_cast<unsigned_fast_type>(total_bits_to_use) / static_cast<unsigned_fast_type>(std::numeric_limits<local_result_value_type>::digits)
+            (static_cast<unsigned_fast_type>(total_bits_to_use % chunk_size_out) != static_cast<unsigned_fast_type>(UINT8_C(0)))
+              ? static_cast<unsigned_fast_type>(UINT8_C(1))
+              : static_cast<unsigned_fast_type>(UINT8_C(0))
           )
       );
+
+    auto it_result = local_result_iterator_type(val.representation().begin() + result_distance);
 
     if(msv_first)
     {
