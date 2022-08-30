@@ -1314,10 +1314,18 @@ auto test_import_export_bits() -> bool // NOLINT(readability-function-cognitive-
       local_uintwide_t_small_unsigned_type val_uintwide_t { };
       local_boost_small_uint_type          val_boost      { };
 
-      using std::to_string;
+      const auto oscillated_chunk_size =
+        static_cast<unsigned>
+        (
+          static_cast<unsigned>(i % 2U) == 0U
+            ? static_cast<unsigned>(std::numeric_limits<local_input_value_type>::digits)
+            : 0U
+        );
 
-      static_cast<void>(import_bits(val_uintwide_t, bits.cbegin(), bits.cend(), static_cast<unsigned>(std::numeric_limits<local_input_value_type>::digits), msv_first));
-      static_cast<void>(import_bits(val_boost,      bits.cbegin(), bits.cend(), static_cast<unsigned>(std::numeric_limits<local_input_value_type>::digits), msv_first)); // NOLINT
+      static_cast<void>(import_bits(val_uintwide_t, bits.cbegin(), bits.cend(), oscillated_chunk_size, msv_first));
+      static_cast<void>(import_bits(val_boost,      bits.cbegin(), bits.cend(), oscillated_chunk_size, msv_first)); // NOLINT
+
+      using std::to_string;
 
       const auto str_uintwide_t = to_string(val_uintwide_t);
       const auto str_boost      = val_boost.str();
@@ -1439,13 +1447,16 @@ auto test_import_export_bits() -> bool // NOLINT(readability-function-cognitive-
 
     const std::array<std::uint32_t, 1U> bits_in = { static_cast<std::uint32_t>(UINT32_C(0x5555AAAA)) };
 
-    static const std::array<unsigned, static_cast<std::size_t>(UINT8_C(3))> various_chunk_sizes =
+    using chunk_sizes_array_type = std::array<unsigned, static_cast<std::size_t>(UINT8_C(4))>;
+
+    static const chunk_sizes_array_type various_chunk_sizes =
     {
-      32U, 24U, 2U
+      0U, 32U, 24U, 2U
     };
 
-    static const std::array<std::uint32_t, static_cast<std::size_t>(UINT8_C(3))> various_import_results =
+    static const std::array<std::uint32_t, std::tuple_size<chunk_sizes_array_type>::value> various_import_results =
     {
+      static_cast<std::uint32_t>(UINT32_C(0x5555AAAA)),
       static_cast<std::uint32_t>(UINT32_C(0x5555AAAA)),
       static_cast<std::uint32_t>(UINT32_C(0x0055AAAA)),
       static_cast<std::uint32_t>(UINT32_C(2))
