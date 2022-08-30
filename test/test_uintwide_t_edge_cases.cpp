@@ -1270,7 +1270,7 @@ auto test_to_chars_and_to_string() -> bool // NOLINT(readability-function-cognit
   return result_is_ok;
 }
 
-auto test_import_export_bits() -> bool
+auto test_import_export_bits() -> bool // NOLINT(readability-function-cognitive-complexity)
 {
   eng_sgn.seed(time_point<typename eng_sgn_type::result_type>());
   eng_dig.seed(time_point<typename eng_dig_type::result_type>());
@@ -1314,10 +1314,18 @@ auto test_import_export_bits() -> bool
       local_uintwide_t_small_unsigned_type val_uintwide_t { };
       local_boost_small_uint_type          val_boost      { };
 
-      using std::to_string;
+      const auto oscillated_chunk_size =
+        static_cast<unsigned>
+        (
+          static_cast<unsigned>(i % 2U) == 0U
+            ? static_cast<unsigned>(std::numeric_limits<local_input_value_type>::digits)
+            : 0U
+        );
 
-      static_cast<void>(import_bits(val_uintwide_t, bits.cbegin(), bits.cend(), static_cast<unsigned>(std::numeric_limits<local_input_value_type>::digits), msv_first));
-      static_cast<void>(import_bits(val_boost,      bits.cbegin(), bits.cend(), static_cast<unsigned>(std::numeric_limits<local_input_value_type>::digits), msv_first)); // NOLINT
+      static_cast<void>(import_bits(val_uintwide_t, bits.cbegin(), bits.cend(), oscillated_chunk_size, msv_first));
+      static_cast<void>(import_bits(val_boost,      bits.cbegin(), bits.cend(), oscillated_chunk_size, msv_first)); // NOLINT
+
+      using std::to_string;
 
       const auto str_uintwide_t = to_string(val_uintwide_t);
       const auto str_boost      = val_boost.str();
@@ -1431,6 +1439,41 @@ auto test_import_export_bits() -> bool
       const auto result_import_bits_is_ok = (str_uintwide_t == str_boost);
 
       result_is_ok = (result_import_bits_is_ok && result_is_ok);
+    }
+  }
+
+  {
+    // Additional verification of import_bits().
+
+    const std::array<std::uint32_t, 1U> bits_in = { static_cast<std::uint32_t>(UINT32_C(0x5555AAAA)) };
+
+    using chunk_sizes_array_type = std::array<unsigned, static_cast<std::size_t>(UINT8_C(4))>;
+
+    static const chunk_sizes_array_type various_chunk_sizes =
+    {
+      0U, 32U, 24U, 2U
+    };
+
+    static const std::array<std::uint32_t, std::tuple_size<chunk_sizes_array_type>::value> various_import_results =
+    {
+      static_cast<std::uint32_t>(UINT32_C(0x5555AAAA)),
+      static_cast<std::uint32_t>(UINT32_C(0x5555AAAA)),
+      static_cast<std::uint32_t>(UINT32_C(0x0055AAAA)),
+      static_cast<std::uint32_t>(UINT32_C(2))
+    };
+
+    for(auto i = static_cast<std::size_t>(UINT8_C(0)); i < various_chunk_sizes.size(); ++i)
+    {
+      auto u = local_uintwide_t_small_unsigned_type { };
+
+      static_cast<void>
+      (
+        import_bits(u, bits_in.cbegin(), bits_in.cend(), various_chunk_sizes[i]) // NOLINT(cppcoreguidelines-pro-bounds-constant-array-index)
+      );
+
+      const auto result_import_is_ok = (u == various_import_results[i]); // NOLINT(cppcoreguidelines-pro-bounds-constant-array-index)
+
+      result_is_ok = (result_import_is_ok && result_is_ok);
     }
   }
 
