@@ -1437,10 +1437,6 @@ auto test_import_export_bits() -> bool // NOLINT(readability-function-cognitive-
   {
     // Additional verification of import_bits().
 
-    using local_representation_type = typename local_uintwide_t_small_unsigned_type::representation_type;
-
-    using local_input_value_type = typename local_representation_type::value_type;
-
     const std::array<std::uint32_t, 1U> bits_in = { static_cast<std::uint32_t>(UINT32_C(0x5555AAAA)) };
 
     static const std::array<unsigned, static_cast<std::size_t>(UINT8_C(3))> various_chunk_sizes =
@@ -1461,10 +1457,10 @@ auto test_import_export_bits() -> bool // NOLINT(readability-function-cognitive-
 
       static_cast<void>
       (
-        import_bits(u, bits_in.cbegin(), bits_in.cend(), various_chunk_sizes[i])
+        import_bits(u, bits_in.cbegin(), bits_in.cend(), various_chunk_sizes[i]) // NOLINT(cppcoreguidelines-pro-bounds-constant-array-index)
       );
 
-      const auto result_import_is_ok = (u == various_import_results[i]);
+      const auto result_import_is_ok = (u == various_import_results[i]); // NOLINT(cppcoreguidelines-pro-bounds-constant-array-index)
 
       result_is_ok = (result_import_is_ok && result_is_ok);
     }
