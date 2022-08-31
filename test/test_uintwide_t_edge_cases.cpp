@@ -1651,8 +1651,8 @@ auto test_export_bits() -> bool // NOLINT(readability-function-cognitive-complex
     std::uint32_t control_one_as_uint32_t_uintwide_t { };
     std::uint32_t control_one_as_uint32_t_boost      { };
 
-    auto ptr_one_uintwide_t = &control_one_as_uint32_t_uintwide_t;
-    auto ptr_one_boost      = &control_one_as_uint32_t_boost;
+    auto ptr_one_uintwide_t = &control_one_as_uint32_t_uintwide_t; // NOLINT(llvm-qualified-auto,readability-qualified-auto)
+    auto ptr_one_boost      = &control_one_as_uint32_t_boost;      // NOLINT(llvm-qualified-auto,readability-qualified-auto)
 
     static_cast<void>(export_bits(val_uintwide_t, ptr_one_uintwide_t, static_cast<unsigned>(std::numeric_limits<std::uint32_t>::digits)));
     static_cast<void>(export_bits(val_boost,      ptr_one_boost,      static_cast<unsigned>(std::numeric_limits<std::uint32_t>::digits)));
