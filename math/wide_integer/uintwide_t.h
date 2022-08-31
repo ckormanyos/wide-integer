@@ -6462,11 +6462,14 @@
            typename AllocatorType,
            const bool IsSigned,
            std::enable_if_t<std::numeric_limits<typename std::iterator_traits<OutputIterator>::value_type>::digits == std::numeric_limits<LimbType>::digits> const*>
-  OutputIterator export_bits(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& val,
-                                   OutputIterator out,
-                                   unsigned       chunk_size,
-                                   bool           msv_first)
+  auto export_bits(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& val,
+                         OutputIterator out,
+                         unsigned       chunk_size,
+                         bool           msv_first) -> OutputIterator
   {
+    static_cast<void>(val);
+    static_cast<void>(chunk_size);
+    static_cast<void>(msv_first);
     return out;
   }
 
@@ -6476,10 +6479,10 @@
            typename AllocatorType,
            const bool IsSigned,
            std::enable_if_t<!(std::numeric_limits<typename std::iterator_traits<OutputIterator>::value_type>::digits == std::numeric_limits<LimbType>::digits)> const*>
-  OutputIterator export_bits(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& val,
-                                   OutputIterator out,
-                                   unsigned       chunk_size,
-                                   bool           msv_first)
+  auto export_bits(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& val,
+                         OutputIterator out,
+                         unsigned       chunk_size,
+                         bool           msv_first) -> OutputIterator
   {
     // This subroutine implements limb-by-limb export of bits. This template
     // specialization is intended for non-full chunk sizes and uses slow bit-by-bit
