@@ -915,6 +915,28 @@
                    unsigned        chunk_size = static_cast<unsigned>(UINT8_C(0)),
                    bool            msv_first  = true) -> uintwide_t<Width2, LimbType, AllocatorType, false>&;
 
+  template<typename OutputIterator,
+           const size_t Width2,
+           typename LimbType,
+           typename AllocatorType,
+           const bool IsSigned,
+           std::enable_if_t<std::numeric_limits<typename std::iterator_traits<OutputIterator>::value_type>::digits == std::numeric_limits<LimbType>::digits> const* = nullptr>
+  OutputIterator export_bits(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& val,
+                                   OutputIterator out,
+                                   unsigned       chunk_size,
+                                   bool           msv_first = true);
+
+  template<typename OutputIterator,
+           const size_t Width2,
+           typename LimbType,
+           typename AllocatorType,
+           const bool IsSigned,
+           std::enable_if_t<!(std::numeric_limits<typename std::iterator_traits<OutputIterator>::value_type>::digits == std::numeric_limits<LimbType>::digits)> const* = nullptr>
+  OutputIterator export_bits(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& val,
+                                   OutputIterator out,
+                                   unsigned       chunk_size,
+                                   bool           msv_first = true);
+
   #if(__cplusplus >= 201703L)
   } // namespace math::wide_integer
   #else
@@ -6262,18 +6284,13 @@
     // methods are used. The limb order is handled depending on the input msv_first.
 
     using local_unsigned_wide_integer_type = uintwide_t<Width2, LimbType, AllocatorType, false>;
-
-    using local_result_iterator_type = typename local_unsigned_wide_integer_type::representation_type::reverse_iterator;
-
-    using local_result_value_type = typename local_result_iterator_type::value_type;
-
-    using local_input_iterator_type = ForwardIterator;
-
-    using local_input_value_type = typename std::iterator_traits<local_input_iterator_type>::value_type;
+    using local_result_iterator_type       = typename local_unsigned_wide_integer_type::representation_type::reverse_iterator;
+    using local_result_value_type          = typename local_result_iterator_type::value_type;
+    using local_input_iterator_type        = ForwardIterator;
+    using local_input_value_type           = typename std::iterator_traits<local_input_iterator_type>::value_type;
 
     static_assert(std::numeric_limits<local_result_value_type>::digits == std::numeric_limits<local_input_value_type>::digits,
                   "Error: Mismatch for input element width and result uintwide_t limb width");
-
 
     if(chunk_size == static_cast<unsigned>(UINT8_C(0)))
     {
@@ -6376,14 +6393,10 @@
     // methods. The limb order is handled depending on the input msv_first.
 
     using local_unsigned_wide_integer_type = uintwide_t<Width2, LimbType, AllocatorType, false>;
-
-    using local_result_iterator_type = typename local_unsigned_wide_integer_type::representation_type::reverse_iterator;
-
-    using local_result_value_type = typename local_result_iterator_type::value_type;
-
-    using local_input_iterator_type = ForwardIterator;
-
-    using local_input_value_type = typename std::iterator_traits<local_input_iterator_type>::value_type;
+    using local_result_iterator_type       = typename local_unsigned_wide_integer_type::representation_type::reverse_iterator;
+    using local_result_value_type          = typename local_result_iterator_type::value_type;
+    using local_input_iterator_type        = ForwardIterator;
+    using local_input_value_type           = typename std::iterator_traits<local_input_iterator_type>::value_type;
 
     static_assert(std::numeric_limits<local_result_value_type>::digits != std::numeric_limits<local_input_value_type>::digits,
                   "Error: Erroneous match for input element width and result uintwide_t limb width");
@@ -6441,6 +6454,88 @@
     }
 
     return val;
+  }
+
+  template<typename OutputIterator,
+           const size_t Width2,
+           typename LimbType,
+           typename AllocatorType,
+           const bool IsSigned,
+           std::enable_if_t<std::numeric_limits<typename std::iterator_traits<OutputIterator>::value_type>::digits == std::numeric_limits<LimbType>::digits> const*>
+  OutputIterator export_bits(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& val,
+                                   OutputIterator out,
+                                   unsigned       chunk_size,
+                                   bool           msv_first)
+  {
+    return out;
+  }
+
+  template<typename OutputIterator,
+           const size_t Width2,
+           typename LimbType,
+           typename AllocatorType,
+           const bool IsSigned,
+           std::enable_if_t<!(std::numeric_limits<typename std::iterator_traits<OutputIterator>::value_type>::digits == std::numeric_limits<LimbType>::digits)> const*>
+  OutputIterator export_bits(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& val,
+                                   OutputIterator out,
+                                   unsigned       chunk_size,
+                                   bool           msv_first)
+  {
+    // This subroutine implements limb-by-limb export of bits. This template
+    // specialization is intended for non-full chunk sizes and uses slow bit-by-bit
+    // methods. The limb order is handled depending on the input msv_first.
+
+    using local_unsigned_wide_integer_type = uintwide_t<Width2, LimbType, AllocatorType, false>;
+    using local_result_iterator_type       = OutputIterator;
+    using local_result_value_type          = typename std::iterator_traits<local_result_iterator_type>::value_type;
+    using local_input_value_type           = typename local_unsigned_wide_integer_type::representation_type::value_type;
+
+    const auto val_unsigned =
+    (
+      (!uintwide_t<Width2, LimbType, AllocatorType, IsSigned>::is_neg(val))
+        ? local_unsigned_wide_integer_type(val)
+        : local_unsigned_wide_integer_type(-val)
+    );
+
+    static_assert(std::numeric_limits<local_result_value_type>::digits != std::numeric_limits<local_input_value_type>::digits,
+                  "Error: Erroneous match for input element width and result uintwide_t limb width");
+
+    chunk_size = (std::min)(static_cast<unsigned>(std::numeric_limits<local_result_value_type>::digits), chunk_size);
+
+    const auto chunk_size_in  = static_cast<unsigned_fast_type>(std::numeric_limits<local_input_value_type>::digits);
+    const auto chunk_size_out = chunk_size;
+
+    const auto msb_plus_one =
+      static_cast<unsigned_fast_type>(msb(val_unsigned) + static_cast<unsigned_fast_type>(UINT8_C(1)));
+
+    const auto input_distance_chunk_size_has_mod =
+      (static_cast<unsigned_fast_type>(msb_plus_one % chunk_size_in) != static_cast<unsigned_fast_type>(UINT8_C(0)));
+
+    const auto input_distance =
+      static_cast<std::size_t>
+      (
+          static_cast<unsigned_fast_type>(msb_plus_one / chunk_size_in)
+        + static_cast<unsigned_fast_type>
+          (
+            input_distance_chunk_size_has_mod ? static_cast<unsigned_fast_type>(UINT8_C(1))
+                                              : static_cast<unsigned_fast_type>(UINT8_C(0))
+          )
+      );
+
+    const auto total_bits_to_use = static_cast<unsigned_fast_type>(input_distance * chunk_size_in);
+
+    if(msv_first)
+    {
+      using local_input_reverse_iterator_type = typename local_unsigned_wide_integer_type::representation_type::const_reverse_iterator;
+
+      out = detail::import_export_helper(local_input_reverse_iterator_type(val_unsigned.crepresentation().cbegin() + input_distance), out, total_bits_to_use, chunk_size_in, chunk_size_out);
+    }
+    else
+    {
+      out = detail::import_export_helper(val_unsigned.crepresentation().cbegin(), out, total_bits_to_use, chunk_size_in, chunk_size_out);
+    }
+
+    return ++out;
   }
 
   #if(__cplusplus >= 201703L)
