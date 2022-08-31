@@ -1506,7 +1506,13 @@ auto test_import_bits() -> bool // NOLINT(readability-function-cognitive-complex
           using ::math::wide_integer::detail::make_large;
           #endif
 
-          elem = make_large(bits[index], bits[index + 1U]);
+          const auto index_plus_one =
+            static_cast<local_size_type>
+            (
+              index + static_cast<local_size_type>(UINT8_C(1))
+            );
+
+          elem = make_large(bits[index], bits[index_plus_one]);
 
           index = static_cast<local_size_type>(index + static_cast<local_size_type>(UINT8_C(2)));
         }
@@ -1627,29 +1633,6 @@ auto test_export_bits() -> bool // NOLINT(readability-function-cognitive-complex
 
       static_cast<void>(export_bits(val_uintwide_t, bits_result_double_width_from_uintwide_t.begin(), static_cast<unsigned>(std::numeric_limits<local_result_double_width_value_type>::digits), msv_first));
       static_cast<void>(export_bits(val_boost,      bits_result_double_width_from_boost.begin(),      static_cast<unsigned>(std::numeric_limits<local_result_double_width_value_type>::digits), msv_first)); // NOLINT
-
-      if(!msv_first)
-      {
-        for(auto   reverse_index = static_cast<std::size_t>(0U);
-                   reverse_index < bits_result_double_width_from_boost.size();
-                 ++reverse_index)
-        {
-          #if defined(WIDE_INTEGER_NAMESPACE)
-          using WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::make_large;
-          using WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::make_lo;
-          using WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::make_hi;
-          #else
-          using ::math::wide_integer::detail::make_large;
-          using ::math::wide_integer::detail::make_lo;
-          using ::math::wide_integer::detail::make_hi;
-          #endif
-
-          const auto lo = make_lo<local_input_value_type>(bits_result_double_width_from_boost[reverse_index]);
-          const auto hi = make_hi<local_input_value_type>(bits_result_double_width_from_boost[reverse_index]);
-
-          bits_result_double_width_from_boost[reverse_index] = make_large(hi, lo);
-        }
-      }
 
       const auto result_export_bits_is_ok = std::equal(bits_result_double_width_from_uintwide_t.cbegin(),
                                                        bits_result_double_width_from_uintwide_t.cend(),

@@ -921,10 +921,10 @@
            typename AllocatorType,
            const bool IsSigned,
            std::enable_if_t<std::numeric_limits<typename std::iterator_traits<OutputIterator>::value_type>::digits == std::numeric_limits<LimbType>::digits> const* = nullptr>
-  OutputIterator export_bits(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& val,
-                                   OutputIterator out,
-                                   unsigned       chunk_size,
-                                   bool           msv_first = true);
+  auto export_bits(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& val,
+                         OutputIterator out,
+                         unsigned       chunk_size,
+                         bool           msv_first = true) -> OutputIterator;
 
   template<typename OutputIterator,
            const size_t Width2,
@@ -932,10 +932,10 @@
            typename AllocatorType,
            const bool IsSigned,
            std::enable_if_t<!(std::numeric_limits<typename std::iterator_traits<OutputIterator>::value_type>::digits == std::numeric_limits<LimbType>::digits)> const* = nullptr>
-  OutputIterator export_bits(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& val,
-                                   OutputIterator out,
-                                   unsigned       chunk_size,
-                                   bool           msv_first = true);
+  auto export_bits(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& val,
+                         OutputIterator out,
+                         unsigned       chunk_size,
+                         bool           msv_first = true) -> OutputIterator;
 
   #if(__cplusplus >= 201703L)
   } // namespace math::wide_integer
@@ -6351,12 +6351,12 @@
       const auto result_distance =
         static_cast<std::size_t>
         (
-            static_cast<unsigned_fast_type>(total_bits_to_use / chunk_size_out)
-          + static_cast<unsigned_fast_type>
+            static_cast<std::size_t>(total_bits_to_use / chunk_size_out)
+          + static_cast<std::size_t>
             (
-              (static_cast<unsigned_fast_type>(total_bits_to_use % chunk_size_out) != static_cast<unsigned_fast_type>(UINT8_C(0)))
-                ? static_cast<unsigned_fast_type>(UINT8_C(1))
-                : static_cast<unsigned_fast_type>(UINT8_C(0))
+              (static_cast<std::size_t>(total_bits_to_use % chunk_size_out) != static_cast<std::size_t>(UINT8_C(0)))
+                ? static_cast<std::size_t>(UINT8_C(1))
+                : static_cast<std::size_t>(UINT8_C(0))
             )
         );
 
@@ -6431,12 +6431,12 @@
     const auto result_distance =
       static_cast<std::size_t>
       (
-          static_cast<unsigned_fast_type>(total_bits_to_use / chunk_size_out)
-        + static_cast<unsigned_fast_type>
+          static_cast<std::size_t>(total_bits_to_use / chunk_size_out)
+        + static_cast<std::size_t>
           (
-            (static_cast<unsigned_fast_type>(total_bits_to_use % chunk_size_out) != static_cast<unsigned_fast_type>(UINT8_C(0)))
-              ? static_cast<unsigned_fast_type>(UINT8_C(1))
-              : static_cast<unsigned_fast_type>(UINT8_C(0))
+            (static_cast<std::size_t>(total_bits_to_use % chunk_size_out) != static_cast<std::size_t>(UINT8_C(0)))
+              ? static_cast<std::size_t>(UINT8_C(1))
+              : static_cast<std::size_t>(UINT8_C(0))
           )
       );
 
@@ -6467,9 +6467,9 @@
                          unsigned       chunk_size,
                          bool           msv_first) -> OutputIterator
   {
-    static_cast<void>(val);
-    static_cast<void>(chunk_size);
-    static_cast<void>(msv_first);
+    static_cast<void>(val);        // LCOV_EXCL_LINE
+    static_cast<void>(chunk_size); // LCOV_EXCL_LINE
+    static_cast<void>(msv_first);  // LCOV_EXCL_LINE
     return out;
   }
 
@@ -6517,11 +6517,11 @@
     const auto input_distance =
       static_cast<std::size_t>
       (
-          static_cast<unsigned_fast_type>(msb_plus_one / chunk_size_in)
-        + static_cast<unsigned_fast_type>
+          static_cast<std::size_t>(msb_plus_one / chunk_size_in)
+        + static_cast<std::size_t>
           (
-            input_distance_chunk_size_has_mod ? static_cast<unsigned_fast_type>(UINT8_C(1))
-                                              : static_cast<unsigned_fast_type>(UINT8_C(0))
+            input_distance_chunk_size_has_mod ? static_cast<std::size_t>(UINT8_C(1))
+                                              : static_cast<std::size_t>(UINT8_C(0))
           )
       );
 
@@ -6532,13 +6532,38 @@
       using local_input_reverse_iterator_type = typename local_unsigned_wide_integer_type::representation_type::const_reverse_iterator;
 
       out = detail::import_export_helper(local_input_reverse_iterator_type(val_unsigned.crepresentation().cbegin() + input_distance), out, total_bits_to_use, chunk_size_in, chunk_size_out);
+
+      ++out;
     }
     else
     {
-      out = detail::import_export_helper(val_unsigned.crepresentation().cbegin(), out, total_bits_to_use, chunk_size_in, chunk_size_out);
+      const auto output_distance_chunk_size_has_mod =
+        (static_cast<unsigned_fast_type>(total_bits_to_use % chunk_size_out) != static_cast<unsigned_fast_type>(UINT8_C(0)));
+
+      const auto output_distance =
+        static_cast<std::size_t>
+        (
+            static_cast<std::size_t>(total_bits_to_use / chunk_size_out)
+          + static_cast<std::size_t>
+            (
+              output_distance_chunk_size_has_mod ? static_cast<std::size_t>(UINT8_C(1))
+                                                 : static_cast<std::size_t>(UINT8_C(0))
+            )
+        );
+
+      using local_input_reverse_iterator_type  = typename local_unsigned_wide_integer_type::representation_type::const_reverse_iterator;
+      using local_result_reverse_iterator_type = std::reverse_iterator<local_result_iterator_type>;
+
+      static_cast<void>(detail::import_export_helper(local_input_reverse_iterator_type (val_unsigned.crepresentation().cbegin() + input_distance),
+                                                     local_result_reverse_iterator_type(out + output_distance),
+                                                     total_bits_to_use,
+                                                     chunk_size_in,
+                                                     chunk_size_out));
+
+      out += output_distance;
     }
 
-    return ++out;
+    return out;
   }
 
   #if(__cplusplus >= 201703L)
