@@ -1606,6 +1606,107 @@ auto test_export_bits() -> bool // NOLINT(readability-function-cognitive-complex
              ++i)
     {
       // Verify export_bits() and compare with Boost control value(s).
+      // The input and output ranges have elements having the same widths.
+      // Use the full bit width and representation length of uintwide_t.
+
+      using local_representation_type = typename local_uintwide_t_small_unsigned_type::representation_type;
+
+      using local_input_value_type = typename local_representation_type::value_type;
+
+      using std::to_string;
+
+            auto val_uintwide_t = generate_wide_integer_value<local_uintwide_t_small_unsigned_type>();
+      const auto val_boost      = local_boost_small_uint_type(to_string(val_uintwide_t));
+
+      using local_output_array_type =
+        std::array<local_input_value_type, local_representation_type::static_size()>;
+
+      using local_result_value_type = typename local_output_array_type::value_type;
+
+      local_output_array_type bits_result_from_uintwide_t { };
+      local_output_array_type bits_result_from_boost      { };
+
+      static_cast<void>(export_bits(val_uintwide_t, bits_result_from_uintwide_t.begin(), static_cast<unsigned>(std::numeric_limits<local_result_value_type>::digits), msv_first));
+      static_cast<void>(export_bits(val_boost,      bits_result_from_boost.begin(),      static_cast<unsigned>(std::numeric_limits<local_result_value_type>::digits), msv_first)); // NOLINT
+
+      const auto result_export_bits_is_ok = std::equal(bits_result_from_uintwide_t.cbegin(),
+                                                       bits_result_from_uintwide_t.cend(),
+                                                       bits_result_from_boost.cbegin());
+
+      result_is_ok = (result_export_bits_is_ok && result_is_ok);
+    }
+  }
+
+  for(const auto& msv_first : msv_options) // NOLINT
+  {
+    static const std::array<unsigned, static_cast<std::size_t>(UINT8_C(3))> bits_for_chunks = { 7U, 9U, 15U };
+
+    for(const auto& chunk_size : bits_for_chunks)
+    {
+      for(auto   i = static_cast<unsigned>(UINT32_C(0));
+                 i < static_cast<unsigned>(UINT32_C(64));
+               ++i)
+      {
+        // Verify export_bits() and compare with Boost control value(s).
+        // The input and output ranges have elements having the same widths.
+        // Use various input bit counts less than the result limb's width.
+        // Use the full size of elements in the wide integer for the
+        // distance of the input range.
+
+        using local_representation_type = typename local_uintwide_t_small_unsigned_type::representation_type;
+
+        using local_input_value_type = typename local_representation_type::value_type;
+
+        using std::to_string;
+
+              auto val_uintwide_t = generate_wide_integer_value<local_uintwide_t_small_unsigned_type>();
+        const auto val_boost      = local_boost_small_uint_type(to_string(val_uintwide_t));
+
+        using local_output_vector_type = std::vector<local_input_value_type>;
+
+        using local_result_value_type = typename local_output_vector_type::value_type;
+
+        const auto output_distance_chunk_size_has_mod =
+        (
+          static_cast<int>
+          (
+            std::numeric_limits<local_uintwide_t_small_unsigned_type>::digits % static_cast<int>(chunk_size)
+          ) != 0
+        );
+
+        const auto output_distance =
+          static_cast<std::size_t>
+          (
+              static_cast<std::size_t>(std::numeric_limits<local_uintwide_t_small_unsigned_type>::digits / static_cast<int>(chunk_size))
+            + static_cast<std::size_t>
+              (
+                output_distance_chunk_size_has_mod ? static_cast<std::size_t>(UINT8_C(1))
+                                                   : static_cast<std::size_t>(UINT8_C(0))
+              )
+          );
+
+        local_output_vector_type bits_result_from_uintwide_t(output_distance, static_cast<local_result_value_type>(UINT8_C(0)));
+        local_output_vector_type bits_result_from_boost     (output_distance, static_cast<local_result_value_type>(UINT8_C(0)));
+
+        static_cast<void>(export_bits(val_uintwide_t, bits_result_from_uintwide_t.begin(), static_cast<unsigned>(std::numeric_limits<local_result_value_type>::digits), msv_first));
+        static_cast<void>(export_bits(val_boost,      bits_result_from_boost.begin(),      static_cast<unsigned>(std::numeric_limits<local_result_value_type>::digits), msv_first)); // NOLINT
+
+        const auto result_export_bits_is_ok = std::equal(bits_result_from_uintwide_t.cbegin(),
+                                                         bits_result_from_uintwide_t.cend(),
+                                                         bits_result_from_boost.cbegin());
+
+        result_is_ok = (result_export_bits_is_ok && result_is_ok);
+      }
+    }
+  }
+
+  for(const auto& msv_first : msv_options) // NOLINT
+  {
+    for(auto   i = static_cast<unsigned>(UINT32_C(0));
+               i < static_cast<unsigned>(UINT32_C(64));
+             ++i)
+    {
+      // Verify export_bits() and compare with Boost control value(s).
       // The input and output ranges have elements having different widths.
       // Use various input bit counts exceeding the result limb's width.
       // Use the full size of elements in the wide integer for the
@@ -1628,11 +1729,11 @@ auto test_export_bits() -> bool // NOLINT(readability-function-cognitive-complex
         typename ::math::wide_integer::detail::uint_type_helper<static_cast<std::size_t>(std::numeric_limits<local_input_value_type>::digits * 2)>::exact_unsigned_type;
       #endif
 
-      using local_double_width_input_array_type =
+      using local_double_width_output_array_type =
         std::array<local_result_double_width_value_type, local_representation_type::static_size() / 2U>;
 
-      local_double_width_input_array_type bits_result_double_width_from_uintwide_t { };
-      local_double_width_input_array_type bits_result_double_width_from_boost      { };
+      local_double_width_output_array_type bits_result_double_width_from_uintwide_t { };
+      local_double_width_output_array_type bits_result_double_width_from_boost      { };
 
       static_cast<void>(export_bits(val_uintwide_t, bits_result_double_width_from_uintwide_t.begin(), static_cast<unsigned>(std::numeric_limits<local_result_double_width_value_type>::digits), msv_first));
       static_cast<void>(export_bits(val_boost,      bits_result_double_width_from_boost.begin(),      static_cast<unsigned>(std::numeric_limits<local_result_double_width_value_type>::digits), msv_first)); // NOLINT

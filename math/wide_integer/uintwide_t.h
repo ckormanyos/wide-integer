@@ -6478,9 +6478,83 @@
     // subroutine uses slow bit-by-bit methods.
     // The order of bit-chunks exported is set by msv_first.
 
-    static_cast<void>(val);        // LCOV_EXCL_LINE
-    static_cast<void>(chunk_size); // LCOV_EXCL_LINE
-    static_cast<void>(msv_first);  // LCOV_EXCL_LINE
+    // TBD: Optimize the upper part of this subroutine for "full" chunks.
+
+    using local_unsigned_wide_integer_type = uintwide_t<Width2, LimbType, AllocatorType, false>;
+    using local_result_iterator_type       = OutputIterator;
+    using local_result_value_type          = typename std::iterator_traits<local_result_iterator_type>::value_type;
+    using local_input_value_type           = typename local_unsigned_wide_integer_type::representation_type::value_type;
+
+    const auto val_unsigned =
+    (
+      (!uintwide_t<Width2, LimbType, AllocatorType, IsSigned>::is_neg(val))
+        ? local_unsigned_wide_integer_type(val)
+        : local_unsigned_wide_integer_type(-val)
+    );
+
+    static_assert(std::numeric_limits<local_result_value_type>::digits == std::numeric_limits<local_input_value_type>::digits,
+                  "Error: Erroneous mismatch for input element width and result uintwide_t limb width");
+
+    chunk_size = (std::min)(static_cast<unsigned>(std::numeric_limits<local_result_value_type>::digits), chunk_size);
+
+    const auto chunk_size_in  = static_cast<unsigned_fast_type>(std::numeric_limits<local_input_value_type>::digits);
+    const auto chunk_size_out = chunk_size;
+
+    const auto msb_plus_one =
+      static_cast<unsigned_fast_type>(msb(val_unsigned) + static_cast<unsigned_fast_type>(UINT8_C(1)));
+
+    const auto input_distance_chunk_size_has_mod =
+      (static_cast<unsigned_fast_type>(msb_plus_one % chunk_size_in) != static_cast<unsigned_fast_type>(UINT8_C(0)));
+
+    const auto input_distance =
+      static_cast<std::size_t>
+      (
+          static_cast<std::size_t>(msb_plus_one / chunk_size_in)
+        + static_cast<std::size_t>
+          (
+            input_distance_chunk_size_has_mod ? static_cast<std::size_t>(UINT8_C(1))
+                                              : static_cast<std::size_t>(UINT8_C(0))
+          )
+      );
+
+    const auto total_bits_to_use = static_cast<unsigned_fast_type>(input_distance * chunk_size_in);
+
+    if(msv_first)
+    {
+      using local_input_reverse_iterator_type = typename local_unsigned_wide_integer_type::representation_type::const_reverse_iterator;
+
+      out = detail::import_export_helper(local_input_reverse_iterator_type(val_unsigned.crepresentation().cbegin() + input_distance), out, total_bits_to_use, chunk_size_in, chunk_size_out);
+
+      ++out;
+    }
+    else
+    {
+      const auto output_distance_chunk_size_has_mod =
+        (static_cast<unsigned_fast_type>(total_bits_to_use % chunk_size_out) != static_cast<unsigned_fast_type>(UINT8_C(0)));
+
+      const auto output_distance =
+        static_cast<std::size_t>
+        (
+            static_cast<std::size_t>(total_bits_to_use / chunk_size_out)
+          + static_cast<std::size_t>
+            (
+              output_distance_chunk_size_has_mod ? static_cast<std::size_t>(UINT8_C(1))
+                                                 : static_cast<std::size_t>(UINT8_C(0))
+            )
+        );
+
+      using local_input_reverse_iterator_type  = typename local_unsigned_wide_integer_type::representation_type::const_reverse_iterator;
+      using local_result_reverse_iterator_type = std::reverse_iterator<local_result_iterator_type>;
+
+      static_cast<void>(detail::import_export_helper(local_input_reverse_iterator_type (val_unsigned.crepresentation().cbegin() + input_distance),
+                                                     local_result_reverse_iterator_type(out + output_distance),
+                                                     total_bits_to_use,
+                                                     chunk_size_in,
+                                                     chunk_size_out));
+
+      out += output_distance;
+    }
+
     return out;
   }
 
