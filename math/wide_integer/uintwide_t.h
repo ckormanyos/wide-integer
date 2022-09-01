@@ -6279,9 +6279,12 @@
                    unsigned        chunk_size,
                    bool            msv_first) -> uintwide_t<Width2, LimbType, AllocatorType, false>&
   {
-    // This subroutine implements limb-by-limb import of bits, which is optimized.
-    // Also note that if a non-full chunk size is provided, then slow bit-by-bit
-    // methods are used. The limb order is handled depending on the input msv_first.
+    // This subroutine implements limb-by-limb import of bit-chunks.
+    // This template specialization is intended for full chunk sizes,
+    // whereby the width of the chunk's value type equals the limb's width.
+    // If, however, the chunk_size to import is not "full", then this
+    // subroutine uses slow bit-by-bit methods.
+    // The order of bit-chunks imported is set by msv_first.
 
     using local_unsigned_wide_integer_type = uintwide_t<Width2, LimbType, AllocatorType, false>;
     using local_result_iterator_type       = typename local_unsigned_wide_integer_type::representation_type::reverse_iterator;
@@ -6388,9 +6391,10 @@
                    unsigned        chunk_size,
                    bool            msv_first) -> uintwide_t<Width2, LimbType, AllocatorType, false>&
   {
-    // This subroutine implements limb-by-limb import of bits. This template
-    // specialization is intended for non-full chunk sizes and uses slow bit-by-bit
-    // methods. The limb order is handled depending on the input msv_first.
+    // This subroutine implements limb-by-limb import of bit-chunks.
+    // This template specialization is intended for non-full chunk sizes,
+    // whereby the width of the chunk's value type differs from the limb's width.
+    // The order of bit-chunks imported is set by msv_first.
 
     using local_unsigned_wide_integer_type = uintwide_t<Width2, LimbType, AllocatorType, false>;
     using local_result_iterator_type       = typename local_unsigned_wide_integer_type::representation_type::reverse_iterator;
@@ -6467,6 +6471,13 @@
                          unsigned       chunk_size,
                          bool           msv_first) -> OutputIterator
   {
+    // This subroutine implements limb-by-limb export of bit-chunks.
+    // This template specialization is intended for full chunk sizes,
+    // whereby the width of the chunk's value type equals the limb's width.
+    // If, however, the chunk_size to export is not "full", then this
+    // subroutine uses slow bit-by-bit methods.
+    // The order of bit-chunks exported is set by msv_first.
+
     static_cast<void>(val);        // LCOV_EXCL_LINE
     static_cast<void>(chunk_size); // LCOV_EXCL_LINE
     static_cast<void>(msv_first);  // LCOV_EXCL_LINE
@@ -6484,9 +6495,10 @@
                          unsigned       chunk_size,
                          bool           msv_first) -> OutputIterator
   {
-    // This subroutine implements limb-by-limb export of bits. This template
-    // specialization is intended for non-full chunk sizes and uses slow bit-by-bit
-    // methods. The limb order is handled depending on the input msv_first.
+    // This subroutine implements limb-by-limb export of bit-chunks.
+    // This template specialization is intended for non-full chunk sizes,
+    // whereby the width of the chunk's value type differs from the limb's width.
+    // The order of bit-chunks exported is set by msv_first.
 
     using local_unsigned_wide_integer_type = uintwide_t<Width2, LimbType, AllocatorType, false>;
     using local_result_iterator_type       = OutputIterator;

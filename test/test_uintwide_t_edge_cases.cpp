@@ -1428,7 +1428,13 @@ auto test_import_bits() -> bool // NOLINT(readability-function-cognitive-complex
           using ::math::wide_integer::detail::make_large;
           #endif
 
-          elem = make_large(bits[index], bits[index + 1U]);
+          const auto index_plus_one =
+            static_cast<local_size_type>
+            (
+              index + static_cast<local_size_type>(UINT8_C(1))
+            );
+
+          elem = make_large(bits[index], bits[index_plus_one]);
 
           index = static_cast<local_size_type>(index + static_cast<local_size_type>(UINT8_C(2)));
         }
@@ -1628,9 +1634,6 @@ auto test_export_bits() -> bool // NOLINT(readability-function-cognitive-complex
       local_double_width_input_array_type bits_result_double_width_from_uintwide_t { };
       local_double_width_input_array_type bits_result_double_width_from_boost      { };
 
-      bits_result_double_width_from_uintwide_t.fill(0U);
-      bits_result_double_width_from_boost.fill(0U);
-
       static_cast<void>(export_bits(val_uintwide_t, bits_result_double_width_from_uintwide_t.begin(), static_cast<unsigned>(std::numeric_limits<local_result_double_width_value_type>::digits), msv_first));
       static_cast<void>(export_bits(val_boost,      bits_result_double_width_from_boost.begin(),      static_cast<unsigned>(std::numeric_limits<local_result_double_width_value_type>::digits), msv_first)); // NOLINT
 
@@ -1648,17 +1651,13 @@ auto test_export_bits() -> bool // NOLINT(readability-function-cognitive-complex
     const auto val_uintwide_t = local_uintwide_t_small_signed_type(-1);
     const auto val_boost      = local_boost_small_uint_type(1);
 
-    std::uint32_t control_one_as_uint32_t_uintwide_t { };
-    std::uint32_t control_one_as_uint32_t_boost      { };
+    using local_result_type = std::uint32_t;
 
-    auto ptr_one_uintwide_t = &control_one_as_uint32_t_uintwide_t; // NOLINT(llvm-qualified-auto,readability-qualified-auto)
-    auto ptr_one_boost      = &control_one_as_uint32_t_boost;      // NOLINT(llvm-qualified-auto,readability-qualified-auto)
+    auto result_one_uintwide_t = local_result_type { };
+    auto result_one_boost      = local_result_type { };
 
-    static_cast<void>(export_bits(val_uintwide_t, ptr_one_uintwide_t, static_cast<unsigned>(std::numeric_limits<std::uint32_t>::digits)));
-    static_cast<void>(export_bits(val_boost,      ptr_one_boost,      static_cast<unsigned>(std::numeric_limits<std::uint32_t>::digits)));
-
-    const auto result_one_uintwide_t = *ptr_one_uintwide_t;
-    const auto result_one_boost      = *ptr_one_boost;
+    static_cast<void>(export_bits(val_uintwide_t, &result_one_uintwide_t, static_cast<unsigned>(std::numeric_limits<local_result_type>::digits)));
+    static_cast<void>(export_bits(val_boost,      &result_one_boost,      static_cast<unsigned>(std::numeric_limits<local_result_type>::digits)));
 
     const auto result_is_one_and_compare_one_is_ok = (   (result_one_uintwide_t == result_one_boost)
                                                       && (result_one_uintwide_t == 1));
