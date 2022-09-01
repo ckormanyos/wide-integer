@@ -765,6 +765,13 @@ in the wide-integer project.
   - All wide-integer-types are move constructible.
   - All wide-integer types having the same widths and having the same limb-type (but possibly different sign) are move-assignable and `std::move()`-capable.
 
+### Importing and exporting bits
+
+Support for importing and exporting bits is granted by the subroutines
+`import_bits()` and `export_bits()`. Their interfaces, input/output forms
+and constraints are intended to be identical with those used in
+[Boost's import/export-bits functions](https://www.boost.org/doc/libs/1_80_0/libs/multiprecision/doc/html/boost_multiprecision/tut/import_export.html).
+
 ### Alternatives and limitations
 
 Alternative libraries for big integral types include,
