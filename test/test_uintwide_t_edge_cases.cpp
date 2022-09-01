@@ -8,6 +8,7 @@
 #include <chrono>
 #include <random>
 #include <string>
+#include <vector>
 
 #include <boost/version.hpp>
 
@@ -1688,8 +1689,8 @@ auto test_export_bits() -> bool // NOLINT(readability-function-cognitive-complex
         local_output_vector_type bits_result_from_uintwide_t(output_distance, static_cast<local_result_value_type>(UINT8_C(0)));
         local_output_vector_type bits_result_from_boost     (output_distance, static_cast<local_result_value_type>(UINT8_C(0)));
 
-        static_cast<void>(export_bits(val_uintwide_t, bits_result_from_uintwide_t.begin(), static_cast<unsigned>(std::numeric_limits<local_result_value_type>::digits), msv_first));
-        static_cast<void>(export_bits(val_boost,      bits_result_from_boost.begin(),      static_cast<unsigned>(std::numeric_limits<local_result_value_type>::digits), msv_first)); // NOLINT
+        static_cast<void>(export_bits(val_uintwide_t, bits_result_from_uintwide_t.begin(), chunk_size, msv_first));
+        static_cast<void>(export_bits(val_boost,      bits_result_from_boost.begin(),      chunk_size, msv_first)); // NOLINT
 
         const auto result_export_bits_is_ok = std::equal(bits_result_from_uintwide_t.cbegin(),
                                                          bits_result_from_uintwide_t.cend(),
