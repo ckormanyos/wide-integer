@@ -6441,10 +6441,10 @@
     const auto result_distance =
       static_cast<std::size_t>
       (
-          static_cast<std::size_t>(total_bits_to_use / chunk_size_out)
+          static_cast<std::size_t>(static_cast<unsigned_fast_type>(total_bits_to_use) / chunk_size_out)
         + static_cast<std::size_t>
           (
-            (static_cast<std::size_t>(total_bits_to_use % chunk_size_out) != static_cast<std::size_t>(UINT8_C(0)))
+            (static_cast<std::size_t>(static_cast<unsigned_fast_type>(total_bits_to_use) % chunk_size_out) != static_cast<std::size_t>(UINT8_C(0)))
               ? static_cast<std::size_t>(UINT8_C(1))
               : static_cast<std::size_t>(UINT8_C(0))
           )
@@ -6642,7 +6642,15 @@
     {
       using local_input_reverse_iterator_type = typename local_unsigned_wide_integer_type::representation_type::const_reverse_iterator;
 
-      out = detail::import_export_helper(local_input_reverse_iterator_type(val_unsigned.crepresentation().cbegin() + input_distance), out, msb_plus_one, chunk_size_in, chunk_size_out);
+      out =
+        detail::import_export_helper
+        (
+          local_input_reverse_iterator_type(val_unsigned.crepresentation().cbegin() + input_distance),
+          out,
+          static_cast<signed_fast_type>(msb_plus_one),
+          chunk_size_in,
+          chunk_size_out
+        );
 
       ++out;
     }
@@ -6665,11 +6673,17 @@
       using local_input_reverse_iterator_type  = typename local_unsigned_wide_integer_type::representation_type::const_reverse_iterator;
       using local_result_reverse_iterator_type = std::reverse_iterator<local_result_iterator_type>;
 
-      static_cast<void>(detail::import_export_helper(local_input_reverse_iterator_type (val_unsigned.crepresentation().cbegin() + input_distance),
-                                                     local_result_reverse_iterator_type(out + output_distance),
-                                                     msb_plus_one,
-                                                     chunk_size_in,
-                                                     chunk_size_out));
+      static_cast<void>
+      (
+        detail::import_export_helper
+        (
+          local_input_reverse_iterator_type (val_unsigned.crepresentation().cbegin() + input_distance),
+          local_result_reverse_iterator_type(out + output_distance),
+          static_cast<signed_fast_type>(msb_plus_one),
+          chunk_size_in,
+          chunk_size_out
+        )
+      );
 
       out += output_distance;
     }
