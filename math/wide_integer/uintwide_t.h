@@ -898,6 +898,7 @@
            typename LimbType,
            typename AllocatorType,
            std::enable_if_t<std::numeric_limits<typename std::iterator_traits<ForwardIterator>::value_type>::digits == std::numeric_limits<LimbType>::digits> const* = nullptr>
+  WIDE_INTEGER_CONSTEXPR
   auto import_bits(uintwide_t<Width2, LimbType, AllocatorType, false>& val,
                    ForwardIterator first,
                    ForwardIterator last,
@@ -909,6 +910,7 @@
            typename LimbType,
            typename AllocatorType,
            std::enable_if_t<!(std::numeric_limits<typename std::iterator_traits<ForwardIterator>::value_type>::digits == std::numeric_limits<LimbType>::digits)> const* = nullptr>
+  WIDE_INTEGER_CONSTEXPR
   auto import_bits(uintwide_t<Width2, LimbType, AllocatorType, false>& val,
                    ForwardIterator first,
                    ForwardIterator last,
@@ -921,6 +923,7 @@
            typename AllocatorType,
            const bool IsSigned,
            std::enable_if_t<std::numeric_limits<typename std::iterator_traits<OutputIterator>::value_type>::digits == std::numeric_limits<LimbType>::digits> const* = nullptr>
+  WIDE_INTEGER_CONSTEXPR
   auto export_bits(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& val,
                          OutputIterator out,
                          unsigned       chunk_size,
@@ -932,6 +935,7 @@
            typename AllocatorType,
            const bool IsSigned,
            std::enable_if_t<!(std::numeric_limits<typename std::iterator_traits<OutputIterator>::value_type>::digits == std::numeric_limits<LimbType>::digits)> const* = nullptr>
+  WIDE_INTEGER_CONSTEXPR
   auto export_bits(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& val,
                          OutputIterator out,
                          unsigned       chunk_size,
@@ -6273,6 +6277,7 @@
            typename LimbType,
            typename AllocatorType,
            std::enable_if_t<std::numeric_limits<typename std::iterator_traits<ForwardIterator>::value_type>::digits == std::numeric_limits<LimbType>::digits> const*>
+  WIDE_INTEGER_CONSTEXPR
   auto import_bits(uintwide_t<Width2, LimbType, AllocatorType, false>& val,
                    ForwardIterator first,
                    ForwardIterator last,
@@ -6385,6 +6390,7 @@
            typename LimbType,
            typename AllocatorType,
            std::enable_if_t<!(std::numeric_limits<typename std::iterator_traits<ForwardIterator>::value_type>::digits == std::numeric_limits<LimbType>::digits)> const*>
+  WIDE_INTEGER_CONSTEXPR
   auto import_bits(uintwide_t<Width2, LimbType, AllocatorType, false>& val,
                    ForwardIterator first,
                    ForwardIterator last,
@@ -6466,6 +6472,7 @@
            typename AllocatorType,
            const bool IsSigned,
            std::enable_if_t<std::numeric_limits<typename std::iterator_traits<OutputIterator>::value_type>::digits == std::numeric_limits<LimbType>::digits> const*>
+  WIDE_INTEGER_CONSTEXPR
   auto export_bits(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& val,
                          OutputIterator out,
                          unsigned       chunk_size,
@@ -6583,6 +6590,7 @@
            typename AllocatorType,
            const bool IsSigned,
            std::enable_if_t<!(std::numeric_limits<typename std::iterator_traits<OutputIterator>::value_type>::digits == std::numeric_limits<LimbType>::digits)> const*>
+  WIDE_INTEGER_CONSTEXPR
   auto export_bits(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& val,
                          OutputIterator out,
                          unsigned       chunk_size,

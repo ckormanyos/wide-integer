@@ -97,6 +97,62 @@ namespace exercise_octal
   }
 } // namespace exercise_octal
 
+namespace from_issue_316
+{
+  using import_array_type = std::array<std::uint8_t, static_cast<std::size_t>(128U)>;
+
+  constexpr import_array_type bin_128_source_of_bits_imported =
+  {
+    142, 215,  17, 233, 75,    7, 202,  91,
+    88,   53, 153, 106,  94, 112, 136,  40,
+    229,   3, 176, 116,  42, 179,  23, 109,
+    103,  70,  57, 154, 157, 110, 148,  87,
+     86,  78, 175,  99,   6, 111,  16, 103,
+    142,  61, 253, 224,  39,  52, 137, 252,
+     56, 116, 147,  71, 168,  16, 155, 245,
+    197,  97,  57,  69, 226,  13, 239, 164,
+     40, 228, 250, 130, 128, 186, 150,   3,
+     64,  81, 241, 165,  43, 136,  99,  79,
+    124, 188,  50,  46, 152, 197, 205, 204,
+    103, 254,  61, 143, 94,  31,    6,  98,
+    165,  16, 223, 175,  30,  87, 156, 176,
+    232,  56, 179,  56, 184, 220, 100, 141,
+    212, 201,  55, 246, 199, 117,  28, 154,
+     51, 140,   5,  95, 102, 187, 133, 248
+  };
+
+  import_array_type bin_128_made_from_bits_exported;
+
+  auto test_uintwide_t_spot_values_from_issue_316_import_export() -> bool
+  {
+    // See also: https://github.com/ckormanyos/wide-integer/issues/266
+
+    #if defined WIDE_INTEGER_NAMESPACE
+    using local_uint1024_t = WIDE_INTEGER_NAMESPACE::math::wide_integer::uint1024_t;
+    #else
+    using local_uint1024_t = math::wide_integer::uint1024_t;
+    #endif
+
+    local_uint1024_t val_made_from_bits_imported;
+
+    import_bits(val_made_from_bits_imported,
+                bin_128_source_of_bits_imported.cbegin(),
+                bin_128_source_of_bits_imported.cend());
+
+    export_bits(val_made_from_bits_imported,
+                bin_128_made_from_bits_exported.begin(),
+                static_cast<unsigned int>(std::numeric_limits<typename import_array_type::value_type>::digits));
+
+    const auto result_import_and_export_same_is_ok =
+      std::equal(bin_128_source_of_bits_imported.cbegin(),
+                 bin_128_source_of_bits_imported.cend(),
+                 bin_128_made_from_bits_exported.cbegin());
+
+    return result_import_and_export_same_is_ok;
+  }
+} // namespace from_issue_316
+
+
 namespace from_issue_266
 {
   auto test_uintwide_t_spot_values_from_issue_266_inc() -> bool
@@ -302,6 +358,12 @@ auto local_test_spot_values::test() -> bool // NOLINT(readability-function-cogni
 
   {
     result_is_ok = (exercise_octal::test_uintwide_t_spot_values_exercise_octal() && result_is_ok);
+  }
+
+  {
+    // See also: https://github.com/ckormanyos/wide-integer/issues/316
+
+    result_is_ok = (from_issue_316::test_uintwide_t_spot_values_from_issue_316_import_export() && result_is_ok);
   }
 
   {
