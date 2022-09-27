@@ -103,7 +103,7 @@ namespace from_issue_316
   {
     // See also: https://github.com/ckormanyos/wide-integer/issues/266
 
-    using import_export_array_type = std::array<std::uint8_t, static_cast<std::size_t>(128U)>;
+    using import_export_array_type = std::array<std::uint8_t, static_cast<std::size_t>(128U)>; // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
 
     constexpr import_export_array_type bin_128_source_of_bits_imported =
     {
