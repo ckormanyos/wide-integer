@@ -170,8 +170,6 @@ namespace from_issue_316
                     static_cast<unsigned int>(std::numeric_limits<typename import_export_array_type::value_type>::digits));
       }
 
-      auto big_int_incremented_imported = local_uint1024_t { };
-
       import_bits(val_made_from_bits_imported,
                   out.cbegin(),
                   out.cend());
