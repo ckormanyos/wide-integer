@@ -37,8 +37,8 @@ namespace local_random
     using wide_integer_type  = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<static_cast<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t>(UINT32_C(256)), std::uint32_t, AllocatorType>;
     using distribution_type  = WIDE_INTEGER_NAMESPACE::math::wide_integer::uniform_int_distribution<wide_integer_type::my_width2, typename wide_integer_type::limb_type>;
     #else
-    using wide_integer_type  = math::wide_integer::uintwide_t<static_cast<math::wide_integer::size_t>(UINT32_C(256)), std::uint32_t, AllocatorType>;
-    using distribution_type  = math::wide_integer::uniform_int_distribution<wide_integer_type::my_width2, typename wide_integer_type::limb_type>;
+    using wide_integer_type  = ::math::wide_integer::uintwide_t<static_cast<math::wide_integer::size_t>(UINT32_C(256)), std::uint32_t, AllocatorType>;
+    using distribution_type  = ::math::wide_integer::uniform_int_distribution<wide_integer_type::my_width2, typename wide_integer_type::limb_type>;
     #endif
 
     // Generate a random number with wide_integer_type having limbs of type LimbType.
@@ -84,7 +84,7 @@ auto main() -> int
   #if defined(WIDE_INTEGER_NAMESPACE)
   const auto result_is_ok = WIDE_INTEGER_NAMESPACE::math::wide_integer::example007_random_generator();
   #else
-  const auto result_is_ok = math::wide_integer::example007_random_generator();
+  const auto result_is_ok = ::math::wide_integer::example007_random_generator();
   #endif
 
   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;

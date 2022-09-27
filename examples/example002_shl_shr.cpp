@@ -42,7 +42,7 @@ auto main() -> int
   #if defined(WIDE_INTEGER_NAMESPACE)
   const auto result_is_ok = WIDE_INTEGER_NAMESPACE::math::wide_integer::example002_shl_shr();
   #else
-  const auto result_is_ok = math::wide_integer::example002_shl_shr();
+  const auto result_is_ok = ::math::wide_integer::example002_shl_shr();
   #endif
 
   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;

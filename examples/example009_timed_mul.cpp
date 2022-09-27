@@ -45,7 +45,7 @@ namespace local_timed_mul
   #if defined(WIDE_INTEGER_NAMESPACE)
   using big_uint_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<wide_integer_test9_digits2>;
   #else
-  using big_uint_type = math::wide_integer::uintwide_t<wide_integer_test9_digits2>;
+  using big_uint_type = ::math::wide_integer::uintwide_t<wide_integer_test9_digits2>;
   #endif
 
   auto local_a() -> std::vector<big_uint_type>&
@@ -146,7 +146,7 @@ auto main() -> int
   #if defined(WIDE_INTEGER_NAMESPACE)
   const auto result_is_ok = WIDE_INTEGER_NAMESPACE::math::wide_integer::example009_timed_mul();
   #else
-  const auto result_is_ok = math::wide_integer::example009_timed_mul();
+  const auto result_is_ok = ::math::wide_integer::example009_timed_mul();
   #endif
 
   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;

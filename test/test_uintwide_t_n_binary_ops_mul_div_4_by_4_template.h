@@ -68,7 +68,7 @@
     #if defined(WIDE_INTEGER_NAMESPACE)
     using local_uint_ab_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<digits2, local_limb_type>;
     #else
-    using local_uint_ab_type = math::wide_integer::uintwide_t<digits2, local_limb_type>;
+    using local_uint_ab_type = ::math::wide_integer::uintwide_t<digits2, local_limb_type>;
     #endif
 
   public:

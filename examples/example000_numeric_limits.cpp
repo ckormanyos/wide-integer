@@ -22,8 +22,8 @@ namespace local
   using uint32_t = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t(UINT32_C(32)), std::uint8_t, void, false>;
   using  int32_t = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t(UINT32_C(32)), std::uint8_t, void, true>;
   #else
-  using uint32_t = math::wide_integer::uintwide_t<math::wide_integer::size_t(UINT32_C(32)), std::uint8_t, void, false>;
-  using  int32_t = math::wide_integer::uintwide_t<math::wide_integer::size_t(UINT32_C(32)), std::uint8_t, void, true>;
+  using uint32_t = ::math::wide_integer::uintwide_t<math::wide_integer::size_t(UINT32_C(32)), std::uint8_t, void, false>;
+  using  int32_t = ::math::wide_integer::uintwide_t<math::wide_integer::size_t(UINT32_C(32)), std::uint8_t, void, true>;
   #endif
 } // namespace local
 
@@ -160,7 +160,7 @@ auto main() -> int
   #if defined(WIDE_INTEGER_NAMESPACE)
   const auto result_is_ok = WIDE_INTEGER_NAMESPACE::math::wide_integer::example000_numeric_limits();
   #else
-  const auto result_is_ok = math::wide_integer::example000_numeric_limits();
+  const auto result_is_ok = ::math::wide_integer::example000_numeric_limits();
   #endif
 
   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;

@@ -90,7 +90,7 @@ auto main() -> int
   #if defined(WIDE_INTEGER_NAMESPACE)
   const auto result_is_ok = WIDE_INTEGER_NAMESPACE::math::wide_integer::example004_rootk_pow();
   #else
-  const auto result_is_ok = math::wide_integer::example004_rootk_pow();
+  const auto result_is_ok = ::math::wide_integer::example004_rootk_pow();
   #endif
 
   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;

@@ -39,7 +39,7 @@ auto main() -> int
   #if defined(WIDE_INTEGER_NAMESPACE)
   const auto result_is_ok = WIDE_INTEGER_NAMESPACE::math::wide_integer::example005_powm();
   #else
-  const auto result_is_ok = math::wide_integer::example005_powm();
+  const auto result_is_ok = ::math::wide_integer::example005_powm();
   #endif
 
   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;

@@ -95,8 +95,8 @@ auto math::wide_integer::example008a_miller_rabin_prime() -> bool
   using local_wide_integer_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t              <static_cast<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t>(std::numeric_limits<boost_wide_integer_type>::digits)>;
   using local_distribution_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::uniform_int_distribution<static_cast<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t>(std::numeric_limits<boost_wide_integer_type>::digits)>;
   #else
-  using local_wide_integer_type = math::wide_integer::uintwide_t              <static_cast<math::wide_integer::size_t>(std::numeric_limits<boost_wide_integer_type>::digits)>;
-  using local_distribution_type = math::wide_integer::uniform_int_distribution<static_cast<math::wide_integer::size_t>(std::numeric_limits<boost_wide_integer_type>::digits)>;
+  using local_wide_integer_type = ::math::wide_integer::uintwide_t              <static_cast<math::wide_integer::size_t>(std::numeric_limits<boost_wide_integer_type>::digits)>;
+  using local_distribution_type = ::math::wide_integer::uniform_int_distribution<static_cast<math::wide_integer::size_t>(std::numeric_limits<boost_wide_integer_type>::digits)>;
   #endif
 
   using random_engine1_type = std::mt19937;
@@ -192,7 +192,7 @@ auto main() -> int // NOLINT(bugprone-exception-escape)
   #if defined(WIDE_INTEGER_NAMESPACE)
   const auto result_is_ok = WIDE_INTEGER_NAMESPACE::math::wide_integer::example008a_miller_rabin_prime();
   #else
-  const auto result_is_ok = math::wide_integer::example008a_miller_rabin_prime();
+  const auto result_is_ok = ::math::wide_integer::example008a_miller_rabin_prime();
   #endif
 
   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;

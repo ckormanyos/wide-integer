@@ -90,7 +90,7 @@ In particular,
 ```cpp
 #include <math/wide_integer/uintwide_t.h>
 
-using uint512_t = math::wide_integer::uintwide_t<512U, std::uint32_t>;
+using uint512_t = ::math::wide_integer::uintwide_t<512U, std::uint32_t>;
 
 static uint512_t x = 3U;
 ```
@@ -433,7 +433,7 @@ on GCC or clang.
 
 #include <math/wide_integer/uintwide_t.h>
 
-using uint_fast256_t = math::wide_integer::uintwide_t<256U, std::uint64_t>;
+using uint_fast256_t = ::math::wide_integer::uintwide_t<256U, std::uint64_t>;
 
 static uint_fast256_t x = 42U;
 ```
@@ -516,7 +516,7 @@ with a 256-bit unsigned integral type.
 
 auto main() -> int
 {
-  using uint256_t = math::wide_integer::uint256_t;
+  using uint256_t = ::math::wide_integer::uint256_t;
 
   // Construction from string. Additional constructors
   // are available from other built-in types.
@@ -559,7 +559,7 @@ The example below calculates an integer square root.
 
 auto main() -> int
 {
-  using uint256_t = math::wide_integer::uint256_t;
+  using uint256_t = ::math::wide_integer::uint256_t;
 
   const uint256_t a("0xF4DF741DE58BCB2F37F18372026EF9CBCFC456CB80AF54D53BDEED78410065DE");
 
@@ -582,10 +582,10 @@ The following sample performs add, subtract, multiply and divide of `uint48_t`.
 
 auto main() -> int
 {
-  using uint48_t = math::wide_integer::uintwide_t<48U, std::uint8_t>;
+  using uint48_t = ::math::wide_integer::uintwide_t<48U, std::uint8_t>;
 
-  using distribution_type  = math::wide_integer::uniform_int_distribution<48U, std::uint8_t>;
-  using random_engine_type = math::wide_integer::default_random_engine   <48U, std::uint8_t>;
+  using distribution_type  = ::math::wide_integer::uniform_int_distribution<48U, std::uint8_t>;
+  using random_engine_type = ::math::wide_integer::default_random_engine   <48U, std::uint8_t>;
 
   random_engine_type generator(0xF00DCAFEULL);
 
@@ -626,7 +626,7 @@ prior to (and following) the cube root operation.
 
 auto main() -> int
 {
-  using uint11264_t = math::wide_integer::uintwide_t<11264U, std::uint32_t>;
+  using uint11264_t = ::math::wide_integer::uintwide_t<11264U, std::uint32_t>;
 
   // Create the string '1' + 3,333 times '0', which is
   // equivalent to the decimal integral value 10^3333.
@@ -664,7 +664,7 @@ of binary operations multiply, divide, intergal cast and comparison.
 
 // Use a C++20 compiler for this example.
 
-using uint256_t = math::wide_integer::uintwide_t<256U>;
+using uint256_t = ::math::wide_integer::uintwide_t<256U>;
 
 // Compile-time construction from string.
 constexpr uint256_t a("0xF4DF741DE58BCB2F37F18372026EF9CBCFC456CB80AF54D53BDEED78410065DE");
@@ -729,7 +729,7 @@ signed `int256_t`.
 ```cpp
 #include <math/wide_integer/uintwide_t.h>
 
-using int256_t = math::wide_integer::uintwide_t<256U, std::uint32_t, void, true>;
+using int256_t = ::math::wide_integer::uintwide_t<256U, std::uint32_t, void, true>;
 
 const int256_t n1(-3);
 const int256_t n2(-3);

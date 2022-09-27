@@ -19,13 +19,13 @@ auto math::wide_integer::example010_uint48_t() -> bool
   #if defined(WIDE_INTEGER_NAMESPACE)
   using uint48_t = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<static_cast<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t>(UINT32_C(48)), std::uint8_t>;
   #else
-  using uint48_t = math::wide_integer::uintwide_t<static_cast<math::wide_integer::size_t>(UINT32_C(48)), std::uint8_t>;
+  using uint48_t = ::math::wide_integer::uintwide_t<static_cast<math::wide_integer::size_t>(UINT32_C(48)), std::uint8_t>;
   #endif
 
   #if defined(WIDE_INTEGER_NAMESPACE)
-  using distribution_type  = math::wide_integer::uniform_int_distribution<static_cast<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t>(UINT32_C(48)), typename uint48_t::limb_type>;
+  using distribution_type  = ::math::wide_integer::uniform_int_distribution<static_cast<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t>(UINT32_C(48)), typename uint48_t::limb_type>;
   #else
-  using distribution_type  = math::wide_integer::uniform_int_distribution<static_cast<math::wide_integer::size_t>(UINT32_C(48)), typename uint48_t::limb_type>;
+  using distribution_type  = ::math::wide_integer::uniform_int_distribution<static_cast<math::wide_integer::size_t>(UINT32_C(48)), typename uint48_t::limb_type>;
   #endif
 
   using random_engine_type = std::linear_congruential_engine<std::uint32_t, UINT32_C(48271), UINT32_C(0), UINT32_C(2147483647)>;
@@ -69,7 +69,7 @@ auto main() -> int
   #if defined(WIDE_INTEGER_NAMESPACE)
   const auto result_is_ok = WIDE_INTEGER_NAMESPACE::math::wide_integer::example010_uint48_t();
   #else
-  const auto result_is_ok = math::wide_integer::example010_uint48_t();
+  const auto result_is_ok = ::math::wide_integer::example010_uint48_t();
   #endif
 
   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;

@@ -62,7 +62,7 @@
       #define WIDE_INTEGER_CONSTEXPR constexpr               // NOLINT(cppcoreguidelines-macro-usage)
       #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 1 // NOLINT(cppcoreguidelines-macro-usage)
       #define WIDE_INTEGER_NODISCARD [[nodiscard]]           // NOLINT(cppcoreguidelines-macro-usage)
-      #elif (defined(__cpp_lib_constexpr_algorithms) && (__cpp_lib_constexpr_algorithms>=201806))
+      #elif (defined(__cpp_lib_constexpr_algorithms) && (__cpp_lib_constexpr_algorithms >= 201806))
         #if defined(__clang__)
           #if (__clang_major__ > 9)
           #define WIDE_INTEGER_CONSTEXPR constexpr               // NOLINT(cppcoreguidelines-macro-usage)
@@ -6069,7 +6069,12 @@
 
     constexpr auto local_my_width2 = local_wide_integer_type::my_width2;
 
-    constexpr auto char_fill = '.';
+    constexpr auto fill_char = '.';
+
+    const auto is_not_fill_char = [&fill_char](const char& c)
+                                  {
+                                    return (c != fill_char);
+                                  };
 
     const auto base_rep     = static_cast<std::uint_fast8_t>(base);
     const auto show_base    = false;
@@ -6093,22 +6098,18 @@
 
       string_storage_oct_type str_temp { };
 
-      str_temp.fill(char_fill);
+      str_temp.fill(fill_char);
 
       const auto wr_string_is_ok = x.wr_string(str_temp.data(), base_rep, show_base, show_pos, is_uppercase);
 
       auto rit_trim = std::find_if(str_temp.crbegin(),
                                    str_temp.crend(),
-                                   [](const char& c)
-                                   {
-                                     return (c != char_fill);
-                                   });
+                                   is_not_fill_char);
 
       const auto wr_string_and_trim_is_ok =
-        (
-             (rit_trim != str_temp.crend())
-          &&  wr_string_is_ok
-        );
+      (
+        (rit_trim != str_temp.crend()) && wr_string_is_ok
+      );
 
       if(wr_string_and_trim_is_ok)
       {
@@ -6142,16 +6143,13 @@
 
       string_storage_hex_type str_temp { };
 
-      str_temp.fill(char_fill);
+      str_temp.fill(fill_char);
 
       const auto wr_string_is_ok = x.wr_string(str_temp.data(), base_rep, show_base, show_pos, is_uppercase);
 
       auto rit_trim = std::find_if(str_temp.crbegin(),
                                    str_temp.crend(),
-                                   [](const char& c)
-                                   {
-                                     return (c != char_fill);
-                                   });
+                                   is_not_fill_char);
 
       const auto wr_string_and_trim_is_ok =
         (
@@ -6191,16 +6189,13 @@
 
       string_storage_dec_type str_temp { };
 
-      str_temp.fill(char_fill);
+      str_temp.fill(fill_char);
 
       const auto wr_string_is_ok = x.wr_string(str_temp.data(), base_rep, show_base, show_pos, is_uppercase);
 
       auto rit_trim = std::find_if(str_temp.crbegin(),
                                    str_temp.crend(),
-                                   [](const char& c)
-                                   {
-                                     return (c != char_fill);
-                                   });
+                                   is_not_fill_char);
 
       const auto wr_string_and_trim_is_ok =
         (
@@ -6255,9 +6250,14 @@
 
     string_storage_dec_type str_temp; // LCOV_EXCL_LINE
 
-    constexpr auto char_fill = '.';
+    constexpr auto fill_char = '.';
 
-    str_temp.fill(char_fill);
+    const auto is_not_fill_char = [&fill_char](const char& c)
+                                  {
+                                    return (c != fill_char);
+                                  };
+
+    str_temp.fill(fill_char);
 
     const auto base_rep     = static_cast<std::uint_fast8_t>(UINT8_C(10));
     const auto show_base    = false;
@@ -6268,10 +6268,7 @@
 
     auto rit_trim = std::find_if(str_temp.crbegin(),
                                  str_temp.crend(),
-                                 [](const char& c)
-                                 {
-                                   return (c != char_fill);
-                                 });
+                                 is_not_fill_char);
 
     const auto wr_string_and_trim_is_ok =
       (

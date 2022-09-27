@@ -28,7 +28,7 @@ namespace local_rsa
                                                                                   LimbType,
                                                                                   allocator_type>;
     #else
-    using my_uintwide_t  = math::wide_integer::uintwide_t<static_cast<math::wide_integer::size_t>(bit_count),
+    using my_uintwide_t  = ::math::wide_integer::uintwide_t<static_cast<math::wide_integer::size_t>(bit_count),
                                                           LimbType,
                                                           allocator_type>;
     #endif
@@ -40,7 +40,7 @@ namespace local_rsa
     #if defined(WIDE_INTEGER_NAMESPACE)
     using crypto_string  = WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::dynamic_array<crypto_char, crypto_alloc>;
     #else
-    using crypto_string  = math::wide_integer::detail::dynamic_array<crypto_char, crypto_alloc>;
+    using crypto_string  = ::math::wide_integer::detail::dynamic_array<crypto_char, crypto_alloc>;
     #endif
 
     using private_key_type =
@@ -443,7 +443,7 @@ auto main() -> int
   #if defined(WIDE_INTEGER_NAMESPACE)
   const auto result_is_ok = WIDE_INTEGER_NAMESPACE::math::wide_integer::example012_rsa_crypto();
   #else
-  const auto result_is_ok = math::wide_integer::example012_rsa_crypto();
+  const auto result_is_ok = ::math::wide_integer::example012_rsa_crypto();
   #endif
 
   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
