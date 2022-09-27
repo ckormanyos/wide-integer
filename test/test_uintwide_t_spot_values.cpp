@@ -99,35 +99,93 @@ namespace exercise_octal
 
 namespace from_issue_316
 {
-  auto test_uintwide_t_spot_values_from_issue_316_import_export() -> bool
+  // See also: https://github.com/ckormanyos/wide-integer/issues/266
+
+  using import_export_array_type = std::array<std::uint8_t, static_cast<std::size_t>(128U)>; // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
+
+  constexpr import_export_array_type bin_128_source_of_bits_imported =
+  {
+    142, 215,  17, 233, 75,    7, 202,  91,
+    88,   53, 153, 106,  94, 112, 136,  40,
+    229,   3, 176, 116,  42, 179,  23, 109,
+    103,  70,  57, 154, 157, 110, 148,  87,
+      86,  78, 175,  99,   6, 111,  16, 103,
+    142,  61, 253, 224,  39,  52, 137, 252,
+      56, 116, 147,  71, 168,  16, 155, 245,
+    197,  97,  57,  69, 226,  13, 239, 164,
+      40, 228, 250, 130, 128, 186, 150,   3,
+      64,  81, 241, 165,  43, 136,  99,  79,
+    124, 188,  50,  46, 152, 197, 205, 204,
+    103, 254,  61, 143, 94,  31,    6,  98,
+    165,  16, 223, 175,  30,  87, 156, 176,
+    232,  56, 179,  56, 184, 220, 100, 141,
+    212, 201,  55, 246, 199, 117,  28, 154,
+      51, 140,   5,  95, 102, 187, 133, 248
+  };
+
+  auto test_uintwide_t_spot_values_from_issue_316_import_export_original() -> bool
   {
     // See also: https://github.com/ckormanyos/wide-integer/issues/266
 
-    using import_export_array_type = std::array<std::uint8_t, static_cast<std::size_t>(128U)>; // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
+    #if defined WIDE_INTEGER_NAMESPACE
+    using local_uint1024_t = WIDE_INTEGER_NAMESPACE::math::wide_integer::uint1024_t;
+    #else
+    using local_uint1024_t = math::wide_integer::uint1024_t;
+    #endif
 
-    constexpr import_export_array_type bin_128_source_of_bits_imported =
+    auto result_is_ok = true;
+
+    auto big_int = local_uint1024_t { };
+
+    import_bits(big_int,
+                bin_128_source_of_bits_imported.cbegin(),
+                bin_128_source_of_bits_imported.cend());
+
+    constexpr auto j = static_cast<int>(INT8_C(50));
+
+    const auto big_int_50 = big_int + j;
+
+    import_export_array_type out;
+
+    for(auto i = static_cast<int>(INT8_C(0)); i < j; ++i)
     {
-      142, 215,  17, 233, 75,    7, 202,  91,
-      88,   53, 153, 106,  94, 112, 136,  40,
-      229,   3, 176, 116,  42, 179,  23, 109,
-      103,  70,  57, 154, 157, 110, 148,  87,
-       86,  78, 175,  99,   6, 111,  16, 103,
-      142,  61, 253, 224,  39,  52, 137, 252,
-       56, 116, 147,  71, 168,  16, 155, 245,
-      197,  97,  57,  69, 226,  13, 239, 164,
-       40, 228, 250, 130, 128, 186, 150,   3,
-       64,  81, 241, 165,  43, 136,  99,  79,
-      124, 188,  50,  46, 152, 197, 205, 204,
-      103, 254,  61, 143, 94,  31,    6,  98,
-      165,  16, 223, 175,  30,  87, 156, 176,
-      232,  56, 179,  56, 184, 220, 100, 141,
-      212, 201,  55, 246, 199, 117,  28, 154,
-       51, 140,   5,  95, 102, 187, 133, 248
-    };
+      // Fill the output with erroneous values.
+      out.fill(static_cast<uint8_t>(UINT8_C(0x55)));
+
+      ++big_int;
+
+      static_cast<void>
+      (
+        export_bits
+        (
+          big_int,
+          out.begin(),
+          static_cast<unsigned int>
+          (
+            std::numeric_limits<typename import_export_array_type::value_type>::digits
+          )
+        )
+      );
+    }
+
+    const auto result_increment_and_export_is_ok = (big_int == big_int_50);
+
+    import_bits(big_int, out.cbegin(), out.cend());
+
+    const auto result_increment_export_and_import_is_ok = (big_int == big_int_50);
+
+    result_is_ok = (   result_increment_and_export_is_ok
+                    && result_increment_export_and_import_is_ok
+                    && result_is_ok);
+
+    return result_is_ok;
+  }
+
+  auto test_uintwide_t_spot_values_from_issue_316_import_export_extended() -> bool
+  {
+    // See also: https://github.com/ckormanyos/wide-integer/issues/266
 
     import_export_array_type bin_128_made_from_bits_exported;
-
-    bin_128_made_from_bits_exported.fill(0U);
 
     #if defined WIDE_INTEGER_NAMESPACE
     using local_uint1024_t = WIDE_INTEGER_NAMESPACE::math::wide_integer::uint1024_t;
@@ -143,9 +201,18 @@ namespace from_issue_316
                 bin_128_source_of_bits_imported.cbegin(),
                 bin_128_source_of_bits_imported.cend());
 
-    export_bits(val_made_from_bits_imported,
-                bin_128_made_from_bits_exported.begin(),
-                static_cast<unsigned int>(std::numeric_limits<typename import_export_array_type::value_type>::digits));
+    static_cast<void>
+    (
+      export_bits
+      (
+        val_made_from_bits_imported,
+        bin_128_made_from_bits_exported.begin(),
+        static_cast<unsigned int>
+        (
+          std::numeric_limits<typename import_export_array_type::value_type>::digits
+        )
+      )
+    );
 
     const auto result_import_and_export_same_is_ok =
       std::equal(bin_128_source_of_bits_imported.cbegin(),
@@ -154,33 +221,9 @@ namespace from_issue_316
 
     result_is_ok = (result_import_and_export_same_is_ok && result_is_ok);
 
-    {
-      auto big_int = val_made_from_bits_imported;
-      const auto j = static_cast<int>(INT8_C(50));
-      const auto big_int_50 = big_int + j;
-
-      import_export_array_type out;
-
-      for(auto i = static_cast<int>(INT8_C(0)); i < j; ++i)
-      {
-        ++big_int;
-
-        export_bits(big_int,
-                    out.begin(),
-                    static_cast<unsigned int>(std::numeric_limits<typename import_export_array_type::value_type>::digits));
-      }
-
-      import_bits(val_made_from_bits_imported,
-                  out.cbegin(),
-                  out.cend());
-
-      const auto result_increment_export_and_import_is_ok = (big_int == big_int_50);
-
-      result_is_ok = (result_increment_export_and_import_is_ok && result_is_ok);
-    }
-
     return result_is_ok;
   }
+
 } // namespace from_issue_316
 
 
@@ -394,7 +437,8 @@ auto local_test_spot_values::test() -> bool // NOLINT(readability-function-cogni
   {
     // See also: https://github.com/ckormanyos/wide-integer/issues/316
 
-    result_is_ok = (from_issue_316::test_uintwide_t_spot_values_from_issue_316_import_export() && result_is_ok);
+    result_is_ok = (from_issue_316::test_uintwide_t_spot_values_from_issue_316_import_export_original() && result_is_ok);
+    result_is_ok = (from_issue_316::test_uintwide_t_spot_values_from_issue_316_import_export_extended() && result_is_ok);
   }
 
   {

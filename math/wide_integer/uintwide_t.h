@@ -557,47 +557,74 @@
                             const unsigned_fast_type chunk_size_in,
                             const unsigned_fast_type chunk_size_out) -> OutputIterator
   {
-    for(auto   i  = static_cast<signed_fast_type>(total_bits_to_use - static_cast<signed_fast_type>(INT8_C(1)));
-               i >= static_cast<signed_fast_type>(INT8_C(0)); // NOLINT(altera-id-dependent-backward-branch)
-             --i)
-    {
-      using local_input_value_type  = typename std::iterator_traits<ForwardIterator>::value_type;
-      using local_result_value_type = typename std::iterator_traits<OutputIterator>::value_type;
-
-      const auto input_bpos =
-        static_cast<unsigned_fast_type>
-        (
-          static_cast<unsigned_fast_type>(i) % chunk_size_in
-        );
-
-      const auto input_bval_is_set =
+    const auto size_to_loop_through =
+      (std::max)
       (
-        static_cast<local_input_value_type>
-        (
-            *in
-          & static_cast<local_input_value_type>(static_cast<local_input_value_type>(UINT8_C(1)) << input_bpos)
-        )
-        != static_cast<local_input_value_type>(UINT8_C(0))
+        static_cast<signed_fast_type>(total_bits_to_use - static_cast<signed_fast_type>(INT8_C(1))),
+        static_cast<signed_fast_type>(INT8_C(-1))
       );
 
-      const auto result_bpos =
-        static_cast<local_result_value_type>
+    using local_output_value_type = typename std::iterator_traits<OutputIterator>::value_type;
+
+    *out = static_cast<local_output_value_type>(UINT8_C(0));
+
+    if(size_to_loop_through > static_cast<signed_fast_type>(INT8_C(-1)))
+    {
+      for(auto   i  = size_to_loop_through;
+                 i >= static_cast<signed_fast_type>(INT8_C(0)); // NOLINT(altera-id-dependent-backward-branch)
+               --i)
+      {
+        using local_input_value_type  = typename std::iterator_traits<ForwardIterator>::value_type;
+
+        const auto input_bpos =
+          static_cast<unsigned_fast_type>
+          (
+            static_cast<unsigned_fast_type>(i) % chunk_size_in
+          );
+
+        const auto input_bval_is_set =
         (
-          static_cast<unsigned_fast_type>(i) % chunk_size_out
+          static_cast<local_input_value_type>
+          (
+              *in
+            & static_cast<local_input_value_type>(static_cast<local_input_value_type>(UINT8_C(1)) << input_bpos)
+          )
+          != static_cast<local_input_value_type>(UINT8_C(0))
         );
 
-      if(input_bval_is_set)
-      {
-        *out |= static_cast<local_result_value_type>(static_cast<local_result_value_type>(UINT8_C(1)) << result_bpos);
+        const auto result_bpos =
+          static_cast<local_output_value_type>
+          (
+            static_cast<unsigned_fast_type>(i) % chunk_size_out
+          );
+
+        if(input_bval_is_set)
+        {
+          *out =
+            static_cast<local_output_value_type>
+            (
+                *out
+              | static_cast<local_output_value_type>
+                (
+                  static_cast<local_output_value_type>(UINT8_C(1)) << result_bpos
+                )
+            );
+        }
+
+        const auto go_to_next_result_elem = (result_bpos == static_cast<local_output_value_type>(UINT8_C(0)));
+
+        if(go_to_next_result_elem && (i != static_cast<signed_fast_type>(INT8_C(0))))
+        {
+          *(++out) = static_cast<local_output_value_type>(UINT8_C(0));
+        }
+
+        const auto go_to_next_input_elem = (input_bpos == static_cast<unsigned_fast_type>(UINT8_C(0)));
+
+        if(go_to_next_input_elem && (i != static_cast<signed_fast_type>(INT8_C(0))))
+        {
+          ++in;
+        }
       }
-
-      const auto go_to_next_result_elem = (result_bpos == static_cast<local_result_value_type>(UINT8_C(0)));
-
-      if(go_to_next_result_elem && (i != static_cast<signed_fast_type>(INT8_C(0)))) { ++out; }
-
-      const auto go_to_next_input_elem = (input_bpos == static_cast<unsigned_fast_type>(UINT8_C(0)));
-
-      if(go_to_next_input_elem && (i != static_cast<signed_fast_type>(INT8_C(0)))) { ++in; }
     }
 
     return out;
