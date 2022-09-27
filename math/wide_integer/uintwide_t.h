@@ -2594,6 +2594,10 @@
       return uintwide_t(static_cast<representation_type&&>(other_rep));
     }
 
+    static constexpr auto my_fill_char = '.';
+
+    static constexpr auto is_not_fill_char(char c) -> bool { return (c != my_fill_char); }
+
   private:
     representation_type values { };  // NOLINT(readability-identifier-naming)
 
@@ -6069,13 +6073,6 @@
 
     constexpr auto local_my_width2 = local_wide_integer_type::my_width2;
 
-    constexpr auto fill_char = '.';
-
-    const auto is_not_fill_char = [&fill_char](const char& c)
-                                  {
-                                    return (c != fill_char);
-                                  };
-
     const auto base_rep     = static_cast<std::uint_fast8_t>(base);
     const auto show_base    = false;
     const auto show_pos     = false;
@@ -6098,13 +6095,13 @@
 
       string_storage_oct_type str_temp { };
 
-      str_temp.fill(fill_char);
+      str_temp.fill(local_wide_integer_type::my_fill_char);
 
       const auto wr_string_is_ok = x.wr_string(str_temp.data(), base_rep, show_base, show_pos, is_uppercase);
 
       auto rit_trim = std::find_if(str_temp.crbegin(),
                                    str_temp.crend(),
-                                   is_not_fill_char);
+                                   local_wide_integer_type::is_not_fill_char);
 
       const auto wr_string_and_trim_is_ok =
       (
@@ -6143,13 +6140,13 @@
 
       string_storage_hex_type str_temp { };
 
-      str_temp.fill(fill_char);
+      str_temp.fill(local_wide_integer_type::my_fill_char);
 
       const auto wr_string_is_ok = x.wr_string(str_temp.data(), base_rep, show_base, show_pos, is_uppercase);
 
       auto rit_trim = std::find_if(str_temp.crbegin(),
                                    str_temp.crend(),
-                                   is_not_fill_char);
+                                   local_wide_integer_type::is_not_fill_char);
 
       const auto wr_string_and_trim_is_ok =
         (
@@ -6189,13 +6186,13 @@
 
       string_storage_dec_type str_temp { };
 
-      str_temp.fill(fill_char);
+      str_temp.fill(local_wide_integer_type::my_fill_char);
 
       const auto wr_string_is_ok = x.wr_string(str_temp.data(), base_rep, show_base, show_pos, is_uppercase);
 
       auto rit_trim = std::find_if(str_temp.crbegin(),
                                    str_temp.crend(),
-                                   is_not_fill_char);
+                                   local_wide_integer_type::is_not_fill_char);
 
       const auto wr_string_and_trim_is_ok =
         (
@@ -6250,14 +6247,7 @@
 
     string_storage_dec_type str_temp; // LCOV_EXCL_LINE
 
-    constexpr auto fill_char = '.';
-
-    const auto is_not_fill_char = [&fill_char](const char& c)
-                                  {
-                                    return (c != fill_char);
-                                  };
-
-    str_temp.fill(fill_char);
+    str_temp.fill(local_wide_integer_type::my_fill_char);
 
     const auto base_rep     = static_cast<std::uint_fast8_t>(UINT8_C(10));
     const auto show_base    = false;
@@ -6268,7 +6258,7 @@
 
     auto rit_trim = std::find_if(str_temp.crbegin(),
                                  str_temp.crend(),
-                                 is_not_fill_char);
+                                 local_wide_integer_type::is_not_fill_char);
 
     const auto wr_string_and_trim_is_ok =
       (
