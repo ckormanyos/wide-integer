@@ -40,7 +40,8 @@ The big integer class is called `math::wide_integer::uintwide_t`
 as shown in greater detail below.
 
 Wide-integer supports both unsigned as well as
-signed integral types having width of $1{\ldots}63{\times}2^N$
+signed integral types having width of
+$1 {\phantom{.}} {\ldots} {\phantom{.}} 63 {\phantom{.}} {\times} {\phantom{.}} 2^N$
 while being 16, 24, 32 or larger.
 In addition, small integer types such as software-synthesized versions of
 `uint24_t`, `uint48_t`, `uint64_t`, `uint96_t`, `uint128_t`, etc.
@@ -319,7 +320,8 @@ readme page.
 
 Wide-Integer has been tested with numerous compilers, for target systems ranging from 8 to 64 bits.
 The library is specifically designed for efficiency with small to medium bit counts.
-Supported bit counts include integers $1{\ldots}63{\times}2^N$
+Supported bit counts include integers
+$1 {\phantom{.}} {\ldots} {\phantom{.}} 63 {\phantom{.}} {\times} {\phantom{.}} 2^N$
 while being 16, 24, 32 or larger such as
 256, 384, 512, 768, 1024,
 or other less common bit counts such as 11,264, etc.
@@ -547,7 +549,8 @@ Wide-integer also supports a small selection of number-theoretical
 functions such as least and most significant bit,
 square root, $k^{th}$ root,
 power, power-modulus, greatest common denominator
-and random number generation. These functions are be found via ADL.
+and random number generation.
+These functions are found via ADL.
 
 The example below calculates an integer square root.
 
@@ -762,7 +765,7 @@ in the wide-integer project.
   - Constructions-from built-in types are implicit. These are considered widening conversions.
   - Casts to built-in types are explicit and considered narrowing, regardless of the widths of left-and-right hand sides of the conversion.
   - All of both constructions-from as well as casts-to wider/less-wide and signed/unsigned wide-integer types are implicit (even if the conversion at hand is narrowing via having fewer bits). Casts such as `int128_t` to/from `uint160_t` and similar, for instance, are implicit.
-  - All wide-integer-types are move constructible.
+  - All wide-integer-types are move constructable.
   - All wide-integer types having the same widths and having the same limb-type (but possibly different sign) are move-assignable and `std::move()`-capable.
 
 ### Importing and exporting bits
