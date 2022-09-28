@@ -13,7 +13,7 @@
 #if defined(WIDE_INTEGER_NAMESPACE)
 auto WIDE_INTEGER_NAMESPACE::math::wide_integer::example003a_cbrt() -> bool
 #else
-auto math::wide_integer::example003a_cbrt() -> bool
+auto ::math::wide_integer::example003a_cbrt() -> bool
 #endif
 {
   #if defined(WIDE_INTEGER_NAMESPACE)

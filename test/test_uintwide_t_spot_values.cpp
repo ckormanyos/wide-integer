@@ -291,8 +291,8 @@ namespace from_issue_234
     using WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::make_lo;
     using WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::make_hi;
     #else
-    using math::wide_integer::detail::make_lo;
-    using math::wide_integer::detail::make_hi;
+    using ::math::wide_integer::detail::make_lo;
+    using ::math::wide_integer::detail::make_hi;
     #endif
 
     static_assert(std::numeric_limits<typename uint80::limb_type>::digits * 2 == std::numeric_limits<typename uint512::limb_type>::digits,
@@ -318,7 +318,7 @@ namespace from_issue_234
     #if defined(WIDE_INTEGER_NAMESPACE)
     using WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::make_large;
     #else
-    using math::wide_integer::detail::make_large;
+    using ::math::wide_integer::detail::make_large;
     #endif
 
     static_assert(std::numeric_limits<typename uint80::limb_type>::digits * 2 == std::numeric_limits<typename uint512::limb_type>::digits,
@@ -467,7 +467,7 @@ auto local_test_spot_values::test() -> bool // NOLINT(readability-function-cogni
     local_uint512_t value2 = 31337; // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
 
     local_int512_t shift = (value << to_shift);
-    value = shift | static_cast<local_int512_t>(value2); // math::wide_integer::int512_t | math::wide_integer::uint512_t
+    value = shift | static_cast<local_int512_t>(value2); // ::math::wide_integer::int512_t | ::math::wide_integer::uint512_t
 
     result_is_ok = ((value == local_int512_t("2596148429267413814265248164641385")) && result_is_ok);
   }
@@ -768,8 +768,8 @@ auto local_test_spot_values::test() -> bool // NOLINT(readability-function-cogni
     using WIDE_INTEGER_NAMESPACE::math::wide_integer::uint128_t;
     using WIDE_INTEGER_NAMESPACE::math::wide_integer::int128_t;
     #else
-    using math::wide_integer::uint128_t;
-    using math::wide_integer::int128_t;
+    using ::math::wide_integer::uint128_t;
+    using ::math::wide_integer::int128_t;
     #endif
 
     // Get randoms via:
@@ -805,8 +805,8 @@ auto local_test_spot_values::test() -> bool // NOLINT(readability-function-cogni
     using WIDE_INTEGER_NAMESPACE::math::wide_integer::uint128_t;
     using WIDE_INTEGER_NAMESPACE::math::wide_integer::int128_t;
     #else
-    using math::wide_integer::uint128_t;
-    using math::wide_integer::int128_t;
+    using ::math::wide_integer::uint128_t;
+    using ::math::wide_integer::int128_t;
     #endif
 
     // Get randoms via:
@@ -1092,7 +1092,7 @@ auto local_test_spot_values::test() -> bool // NOLINT(readability-function-cogni
     #if defined(WIDE_INTEGER_NAMESPACE)
     using WIDE_INTEGER_NAMESPACE::math::wide_integer::uint256_t;
     #else
-    using math::wide_integer::uint256_t;
+    using ::math::wide_integer::uint256_t;
     #endif
 
     // FromDigits["C9DD3EA24800F584CB28C25CC0E6FF1",16]
@@ -1131,7 +1131,7 @@ auto local_test_spot_values::test() -> bool // NOLINT(readability-function-cogni
       #if defined(WIDE_INTEGER_NAMESPACE)
       using WIDE_INTEGER_NAMESPACE::math::wide_integer::int256_t;
       #else
-      using math::wide_integer::int256_t;
+      using ::math::wide_integer::int256_t;
       #endif
 
       int256_t a("-578960446186580977117854925043439539266349923328202820197287920"
@@ -1243,7 +1243,7 @@ auto local_test_spot_values::test() -> bool // NOLINT(readability-function-cogni
       #if defined(WIDE_INTEGER_NAMESPACE)
       WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<static_cast<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t>(UINT32_C(320)), std::uint32_t, void, true>
       #else
-      math::wide_integer::uintwide_t<static_cast<math::wide_integer::size_t>(UINT32_C(320)), std::uint32_t, void, true>
+      ::math::wide_integer::uintwide_t<static_cast<math::wide_integer::size_t>(UINT32_C(320)), std::uint32_t, void, true>
       #endif
       {
         1729348762983LL // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
@@ -1263,7 +1263,7 @@ auto local_test_spot_values::test() -> bool // NOLINT(readability-function-cogni
     #if defined(WIDE_INTEGER_NAMESPACE)
     using WIDE_INTEGER_NAMESPACE::math::wide_integer::uint512_t;
     #else
-    using math::wide_integer::uint512_t;
+    using ::math::wide_integer::uint512_t;
     #endif
 
     WIDE_INTEGER_CONSTEXPR uint512_t a("698937339790347543053797400564366118744312537138445607919548628175822115805812983955794321304304417541511379093392776018867245622409026835324102460829431");
@@ -1294,7 +1294,7 @@ auto local_test_spot_values::test() -> bool // NOLINT(readability-function-cogni
     #if defined(WIDE_INTEGER_NAMESPACE)
     using WIDE_INTEGER_NAMESPACE::math::wide_integer::uint256_t;
     #else
-    using math::wide_integer::uint256_t;
+    using ::math::wide_integer::uint256_t;
     #endif
 
     static_assert(std::numeric_limits<uint256_t>::digits == 256, // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
@@ -1376,7 +1376,7 @@ auto local_test_spot_values::test() -> bool // NOLINT(readability-function-cogni
 #if defined(WIDE_INTEGER_NAMESPACE)
 auto WIDE_INTEGER_NAMESPACE::math::wide_integer::test_uintwide_t_spot_values() -> bool // NOLINT(readability-function-cognitive-complexity)
 #else
-auto math::wide_integer::test_uintwide_t_spot_values() -> bool // NOLINT(readability-function-cognitive-complexity)
+auto ::math::wide_integer::test_uintwide_t_spot_values() -> bool // NOLINT(readability-function-cognitive-complexity)
 #endif
 {
   return local_test_spot_values::test();

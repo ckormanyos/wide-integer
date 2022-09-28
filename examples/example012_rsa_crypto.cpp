@@ -213,7 +213,7 @@ namespace local_rsa
         WIDE_INTEGER_NAMESPACE::math::wide_integer::uniform_int_distribution<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t(bit_count), limb_type, allocator_type>;
       #else
       using local_distribution_type =
-        math::wide_integer::uniform_int_distribution<math::wide_integer::size_t(bit_count), limb_type, allocator_type>;
+        ::math::wide_integer::uniform_int_distribution<math::wide_integer::size_t(bit_count), limb_type, allocator_type>;
       #endif
 
       local_distribution_type distribution;
@@ -370,7 +370,7 @@ namespace local_rsa
 #if defined(WIDE_INTEGER_NAMESPACE)
 auto WIDE_INTEGER_NAMESPACE::math::wide_integer::example012_rsa_crypto() -> bool
 #else
-auto math::wide_integer::example012_rsa_crypto() -> bool
+auto ::math::wide_integer::example012_rsa_crypto() -> bool
 #endif
 {
   // Consider lines 25-30 in the file "KeyGen_186-3.rsp".

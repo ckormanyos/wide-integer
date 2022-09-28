@@ -32,7 +32,7 @@ namespace local_timed_mul_8_by_8
       WIDE_INTEGER_NAMESPACE::math::wide_integer::uniform_int_distribution<std::numeric_limits<local_uint_type>::digits, typename local_uint_type::limb_type>;
     #else
     using distribution_type =
-      math::wide_integer::uniform_int_distribution<std::numeric_limits<local_uint_type>::digits, typename local_uint_type::limb_type>;
+      ::math::wide_integer::uniform_int_distribution<std::numeric_limits<local_uint_type>::digits, typename local_uint_type::limb_type>;
     #endif
 
     distribution_type distribution;
@@ -68,7 +68,7 @@ namespace local_timed_mul_8_by_8
 #if defined(WIDE_INTEGER_NAMESPACE)
 auto WIDE_INTEGER_NAMESPACE::math::wide_integer::example009b_timed_mul_8_by_8() -> bool
 #else
-auto math::wide_integer::example009b_timed_mul_8_by_8() -> bool
+auto ::math::wide_integer::example009b_timed_mul_8_by_8() -> bool
 #endif
 {
   using random_engine_type =

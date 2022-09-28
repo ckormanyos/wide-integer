@@ -14,8 +14,8 @@ namespace local
   using WIDE_INTEGER_NAMESPACE::math::wide_integer::uint64_t;
   using WIDE_INTEGER_NAMESPACE::math::wide_integer::int64_t;
   #else
-  using math::wide_integer::uint64_t;
-  using math::wide_integer::int64_t;
+  using ::math::wide_integer::uint64_t;
+  using ::math::wide_integer::int64_t;
   #endif
 
   #if defined(WIDE_INTEGER_NAMESPACE)
@@ -30,13 +30,17 @@ namespace local
 #if defined(WIDE_INTEGER_NAMESPACE)
 auto WIDE_INTEGER_NAMESPACE::math::wide_integer::example000_numeric_limits() -> bool
 #else
-auto math::wide_integer::example000_numeric_limits() -> bool
+auto ::math::wide_integer::example000_numeric_limits() -> bool
 #endif
 {
   bool result_is_ok = true;
 
   {
-    using math::wide_integer::uint256_t;
+    #if defined(WIDE_INTEGER_NAMESPACE)
+    using WIDE_INTEGER_NAMESPACE::math::wide_integer::uint256_t;
+    #else
+    using ::math::wide_integer::uint256_t;
+    #endif
 
     WIDE_INTEGER_CONSTEXPR uint256_t my_max("0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF");
     WIDE_INTEGER_CONSTEXPR uint256_t my_min(0U);
@@ -57,7 +61,11 @@ auto math::wide_integer::example000_numeric_limits() -> bool
   }
 
   {
-    using math::wide_integer::int256_t;
+    #if defined(WIDE_INTEGER_NAMESPACE)
+    using WIDE_INTEGER_NAMESPACE::math::wide_integer::int256_t;
+    #else
+    using ::math::wide_integer::int256_t;
+    #endif
 
     WIDE_INTEGER_CONSTEXPR int256_t my_max   ("0x7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF");
     WIDE_INTEGER_CONSTEXPR int256_t my_min   ("-57896044618658097711785492504343953926634992332820282019728792003956564819968");

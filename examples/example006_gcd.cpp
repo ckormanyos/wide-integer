@@ -11,10 +11,14 @@
 #if defined(WIDE_INTEGER_NAMESPACE)
 auto WIDE_INTEGER_NAMESPACE::math::wide_integer::example006_gcd() -> bool
 #else
-auto math::wide_integer::example006_gcd() -> bool
+auto ::math::wide_integer::example006_gcd() -> bool
 #endif
 {
-  using math::wide_integer::uint256_t;
+  #if defined(WIDE_INTEGER_NAMESPACE)
+  using WIDE_INTEGER_NAMESPACE::math::wide_integer::uint256_t;
+  #else
+  using ::math::wide_integer::uint256_t;
+  #endif
 
   WIDE_INTEGER_CONSTEXPR uint256_t a("0xD2690CD26CD57A3C443993851A70D3B62F841573668DF7B229508371A0AEDE7F");
   WIDE_INTEGER_CONSTEXPR uint256_t b("0xFE719235CD0B1A314D4CA6940AEDC38BDF8E9484E68CE814EDAA17D87B0B4CC8");

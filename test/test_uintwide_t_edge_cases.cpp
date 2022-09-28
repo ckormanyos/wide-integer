@@ -1775,7 +1775,7 @@ auto test_export_bits() -> bool // NOLINT(readability-function-cognitive-complex
 #if defined(WIDE_INTEGER_NAMESPACE)
 auto WIDE_INTEGER_NAMESPACE::math::wide_integer::test_uintwide_t_edge_cases() -> bool
 #else
-auto math::wide_integer::test_uintwide_t_edge_cases() -> bool
+auto ::math::wide_integer::test_uintwide_t_edge_cases() -> bool
 #endif
 {
   test_uintwide_t_edge::eng_sgn.seed(test_uintwide_t_edge::time_point<typename test_uintwide_t_edge::eng_sgn_type::result_type>());

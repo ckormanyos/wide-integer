@@ -59,7 +59,7 @@ namespace local_random
 #if defined(WIDE_INTEGER_NAMESPACE)
 auto WIDE_INTEGER_NAMESPACE::math::wide_integer::example007_random_generator() -> bool
 #else
-auto math::wide_integer::example007_random_generator() -> bool
+auto ::math::wide_integer::example007_random_generator() -> bool
 #endif
 {
   const bool result_08_is_ok = local_random::generate<std::uint8_t> ();

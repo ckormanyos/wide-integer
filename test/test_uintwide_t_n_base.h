@@ -64,7 +64,7 @@
     virtual auto get_digits2() const -> WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t = 0;
     #else
     WIDE_INTEGER_NODISCARD
-    virtual auto get_digits2() const -> math::wide_integer::size_t = 0;
+    virtual auto get_digits2() const -> ::math::wide_integer::size_t = 0;
     #endif
 
     WIDE_INTEGER_NODISCARD
@@ -126,7 +126,7 @@
         WIDE_INTEGER_NAMESPACE::math::wide_integer::uniform_int_distribution<other_local_uint_type::my_width2, typename other_local_uint_type::limb_type, AllocatorType>;
       #else
       using distribution_type =
-        math::wide_integer::uniform_int_distribution<other_local_uint_type::my_width2, typename other_local_uint_type::limb_type, AllocatorType>;
+        ::math::wide_integer::uniform_int_distribution<other_local_uint_type::my_width2, typename other_local_uint_type::limb_type, AllocatorType>;
       #endif
 
       distribution_type distribution;

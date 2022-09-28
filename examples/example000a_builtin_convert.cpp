@@ -20,12 +20,16 @@ namespace local
 #if defined(WIDE_INTEGER_NAMESPACE)
 auto WIDE_INTEGER_NAMESPACE::math::wide_integer::example000a_builtin_convert() -> bool
 #else
-auto math::wide_integer::example000a_builtin_convert() -> bool
+auto ::math::wide_integer::example000a_builtin_convert() -> bool
 #endif
 {
   auto result_is_ok = true;
 
-  using math::wide_integer::int256_t;
+  #if defined(WIDE_INTEGER_NAMESPACE)
+  using WIDE_INTEGER_NAMESPACE::math::wide_integer::int256_t;
+  #else
+  using ::math::wide_integer::int256_t;
+  #endif
 
   {
     WIDE_INTEGER_CONSTEXPR int256_t n = -1234567.89; // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)

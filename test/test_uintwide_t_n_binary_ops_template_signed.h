@@ -21,7 +21,7 @@
            typename MyLimbType = std::uint32_t,
            typename AllocatorType = void>
   #else
-  template<const math::wide_integer::size_t MyDigits2,
+  template<const ::math::wide_integer::size_t MyDigits2,
            typename MyLimbType = std::uint32_t,
            typename AllocatorType = void>
   #endif
@@ -74,7 +74,7 @@
     #if defined(WIDE_INTEGER_NAMESPACE)
     WIDE_INTEGER_NODISCARD auto get_digits2() const -> WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t override { return digits2; }
     #else
-    WIDE_INTEGER_NODISCARD auto get_digits2() const -> math::wide_integer::size_t override { return digits2; }
+    WIDE_INTEGER_NODISCARD auto get_digits2() const -> ::math::wide_integer::size_t override { return digits2; }
     #endif
 
     auto initialize() -> void override
@@ -322,7 +322,7 @@
     #if defined(WIDE_INTEGER_NAMESPACE)
     WIDE_INTEGER_NODISCARD auto get_digits2() const -> WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t override { return digits2; }
     #else
-    WIDE_INTEGER_NODISCARD auto get_digits2() const -> math::wide_integer::size_t override { return digits2; }
+    WIDE_INTEGER_NODISCARD auto get_digits2() const -> ::math::wide_integer::size_t override { return digits2; }
     #endif
 
     auto initialize() -> void override

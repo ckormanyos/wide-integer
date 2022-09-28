@@ -11,7 +11,7 @@
 #if defined(WIDE_INTEGER_NAMESPACE)
 auto WIDE_INTEGER_NAMESPACE::math::wide_integer::example005a_pow_factors_of_p99() -> bool
 #else
-auto math::wide_integer::example005a_pow_factors_of_p99() -> bool
+auto ::math::wide_integer::example005a_pow_factors_of_p99() -> bool
 #endif
 {
   #if defined(WIDE_INTEGER_NAMESPACE)

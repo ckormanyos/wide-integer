@@ -32,7 +32,7 @@ namespace local_timed_mul_4_by_4
       WIDE_INTEGER_NAMESPACE::math::wide_integer::uniform_int_distribution<std::numeric_limits<local_uint_type>::digits, typename local_uint_type::limb_type>;
     #else
     using distribution_type =
-      math::wide_integer::uniform_int_distribution<std::numeric_limits<local_uint_type>::digits, typename local_uint_type::limb_type>;
+      ::math::wide_integer::uniform_int_distribution<std::numeric_limits<local_uint_type>::digits, typename local_uint_type::limb_type>;
     #endif
 
     distribution_type distribution;
@@ -68,7 +68,7 @@ namespace local_timed_mul_4_by_4
 #if defined(WIDE_INTEGER_NAMESPACE)
 auto WIDE_INTEGER_NAMESPACE::math::wide_integer::example009a_timed_mul_4_by_4() -> bool
 #else
-auto math::wide_integer::example009a_timed_mul_4_by_4() -> bool
+auto ::math::wide_integer::example009a_timed_mul_4_by_4() -> bool
 #endif
 {
   using random_engine_type =

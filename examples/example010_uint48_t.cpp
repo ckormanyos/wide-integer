@@ -13,7 +13,7 @@
 #if defined(WIDE_INTEGER_NAMESPACE)
 auto WIDE_INTEGER_NAMESPACE::math::wide_integer::example010_uint48_t() -> bool
 #else
-auto math::wide_integer::example010_uint48_t() -> bool
+auto ::math::wide_integer::example010_uint48_t() -> bool
 #endif
 {
   #if defined(WIDE_INTEGER_NAMESPACE)

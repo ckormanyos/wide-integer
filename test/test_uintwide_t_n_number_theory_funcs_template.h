@@ -14,7 +14,7 @@
   template<const WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t MyWidth2,
            typename MyLimbType = std::uint32_t>
   #else
-  template<const math::wide_integer::size_t MyWidth2,
+  template<const ::math::wide_integer::size_t MyWidth2,
            typename MyLimbType = std::uint32_t>
   #endif
   class test_uintwide_t_n_number_theory_funcs_template : public test_uintwide_t_n_base
@@ -34,7 +34,7 @@
     #if defined(WIDE_INTEGER_NAMESPACE)
     virtual auto get_digits2() const -> WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t { return digits2; }
     #else
-    virtual auto get_digits2() const -> math::wide_integer::size_t { return digits2; }
+    virtual auto get_digits2() const -> ::math::wide_integer::size_t { return digits2; }
     #endif
 
     virtual auto initialize() -> void { }

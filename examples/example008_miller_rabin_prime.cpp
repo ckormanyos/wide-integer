@@ -161,7 +161,7 @@ namespace local_example008_miller_rabin_prime
 #if defined(WIDE_INTEGER_NAMESPACE)
 auto WIDE_INTEGER_NAMESPACE::math::wide_integer::example008_miller_rabin_prime() -> bool
 #else
-auto math::wide_integer::example008_miller_rabin_prime() -> bool
+auto ::math::wide_integer::example008_miller_rabin_prime() -> bool
 #endif
 {
   auto result_is_ok = true;

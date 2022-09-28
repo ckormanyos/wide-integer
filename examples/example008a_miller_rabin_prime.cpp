@@ -74,7 +74,7 @@ auto lexical_cast(const UnsignedIntegralType& u) -> std::string
 #if defined(WIDE_INTEGER_NAMESPACE)
 auto WIDE_INTEGER_NAMESPACE::math::wide_integer::example008a_miller_rabin_prime() -> bool
 #else
-auto math::wide_integer::example008a_miller_rabin_prime() -> bool
+auto ::math::wide_integer::example008a_miller_rabin_prime() -> bool
 #endif
 {
   #if defined(WIDE_INTEGER_NAMESPACE)
