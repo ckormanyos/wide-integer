@@ -159,7 +159,7 @@ namespace local_int_convert
 #if defined(WIDE_INTEGER_NAMESPACE)
 auto WIDE_INTEGER_NAMESPACE::math::wide_integer::test_uintwide_t_int_convert() -> bool
 #else
-auto math::wide_integer::test_uintwide_t_int_convert() -> bool
+auto ::math::wide_integer::test_uintwide_t_int_convert() -> bool
 #endif
 {
   constexpr auto digits2 = unsigned(256U);
@@ -177,7 +177,11 @@ auto math::wide_integer::test_uintwide_t_int_convert() -> bool
   using local_limb_type = std::uint32_t;
   #endif
 
-  using local_sint_type = math::wide_integer::uintwide_t<digits2, local_limb_type, void, true>;
+  #if defined(WIDE_INTEGER_NAMESPACE)
+  using local_sint_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<digits2, local_limb_type, void, true>;
+  #else
+  using local_sint_type = ::math::wide_integer::uintwide_t<digits2, local_limb_type, void, true>;
+  #endif
 
   local_int_convert::engine_val().seed(static_cast<typename std::mt19937::result_type>                                                        (std::clock()));
   local_int_convert::engine_sgn().seed(static_cast<typename std::ranlux24_base::result_type>                                                  (std::clock()));

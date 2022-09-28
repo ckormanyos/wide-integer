@@ -121,7 +121,7 @@ auto test_uintwide_t_small_bits() -> bool
     #if defined(WIDE_INTEGER_NAMESPACE)
     using local_uint16_t = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<static_cast<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t>(UINT32_C(16)), std::uint8_t>;
     #else
-    using local_uint16_t = math::wide_integer::uintwide_t<static_cast<math::wide_integer::size_t>(UINT32_C(16)), std::uint8_t>;
+    using local_uint16_t = ::math::wide_integer::uintwide_t<static_cast<math::wide_integer::size_t>(UINT32_C(16)), std::uint8_t>;
     #endif
 
     local_uint16_t a = UINT16_C(0x5522); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
@@ -136,7 +136,7 @@ auto test_uintwide_t_small_bits() -> bool
     #if defined(WIDE_INTEGER_NAMESPACE)
     using local_uint24_t = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<static_cast<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t>(UINT32_C(24)), std::uint8_t>;
     #else
-    using local_uint24_t = math::wide_integer::uintwide_t<static_cast<math::wide_integer::size_t>(UINT32_C(24)), std::uint8_t>;
+    using local_uint24_t = ::math::wide_integer::uintwide_t<static_cast<math::wide_integer::size_t>(UINT32_C(24)), std::uint8_t>;
     #endif
 
     local_uint24_t a = UINT32_C(0x11FF5522); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
@@ -151,7 +151,7 @@ auto test_uintwide_t_small_bits() -> bool
     #if defined(WIDE_INTEGER_NAMESPACE)
     using local_uint32_t = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<static_cast<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t>(UINT32_C(32)), std::uint16_t>;
     #else
-    using local_uint32_t = math::wide_integer::uintwide_t<static_cast<math::wide_integer::size_t>(UINT32_C(32)), std::uint16_t>;
+    using local_uint32_t = ::math::wide_integer::uintwide_t<static_cast<math::wide_integer::size_t>(UINT32_C(32)), std::uint16_t>;
     #endif
 
     local_uint32_t a = UINT32_C(0x11FF5522); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
@@ -171,7 +171,7 @@ auto test_uintwide_t_boost_backend() -> bool
   #if defined(WIDE_INTEGER_NAMESPACE)
   const bool result_test_uintwide_t_boost_backend_is_ok = WIDE_INTEGER_NAMESPACE::math::wide_integer::test_uintwide_t_boost_backend();
   #else
-  const bool result_test_uintwide_t_boost_backend_is_ok = math::wide_integer::test_uintwide_t_boost_backend();
+  const bool result_test_uintwide_t_boost_backend_is_ok = ::math::wide_integer::test_uintwide_t_boost_backend();
   #endif
   return result_test_uintwide_t_boost_backend_is_ok;
 }
@@ -182,7 +182,7 @@ auto test_uintwide_t_examples() -> bool
   #if defined(WIDE_INTEGER_NAMESPACE)
   const bool result_test_uintwide_t_examples_is_ok = WIDE_INTEGER_NAMESPACE::math::wide_integer::test_uintwide_t_examples();
   #else
-  const bool result_test_uintwide_t_examples_is_ok = math::wide_integer::test_uintwide_t_examples();
+  const bool result_test_uintwide_t_examples_is_ok = ::math::wide_integer::test_uintwide_t_examples();
   #endif
   return result_test_uintwide_t_examples_is_ok;
 }
@@ -193,7 +193,7 @@ auto test_uintwide_t_edge_cases() -> bool
   #if defined(WIDE_INTEGER_NAMESPACE)
   const bool result_test_uintwide_t_edge_cases_is_ok = WIDE_INTEGER_NAMESPACE::math::wide_integer::test_uintwide_t_edge_cases();
   #else
-  const bool result_test_uintwide_t_edge_cases_is_ok = math::wide_integer::test_uintwide_t_edge_cases();
+  const bool result_test_uintwide_t_edge_cases_is_ok = ::math::wide_integer::test_uintwide_t_edge_cases();
   #endif
   return result_test_uintwide_t_edge_cases_is_ok;
 }
@@ -204,7 +204,7 @@ auto test_uintwide_t_float_convert() -> bool
   #if defined(WIDE_INTEGER_NAMESPACE)
   const bool result_test_uintwide_t_float_convert_is_ok = WIDE_INTEGER_NAMESPACE::math::wide_integer::test_uintwide_t_float_convert();
   #else
-  const bool result_test_uintwide_t_float_convert_is_ok = math::wide_integer::test_uintwide_t_float_convert();
+  const bool result_test_uintwide_t_float_convert_is_ok = ::math::wide_integer::test_uintwide_t_float_convert();
   #endif
   return result_test_uintwide_t_float_convert_is_ok;
 }
@@ -215,7 +215,7 @@ auto test_uintwide_t_int_convert() -> bool
   #if defined(WIDE_INTEGER_NAMESPACE)
   const bool result_test_uintwide_t_int_convert_is_ok = WIDE_INTEGER_NAMESPACE::math::wide_integer::test_uintwide_t_int_convert();
   #else
-  const bool result_test_uintwide_t_int_convert_is_ok = math::wide_integer::test_uintwide_t_int_convert();
+  const bool result_test_uintwide_t_int_convert_is_ok = ::math::wide_integer::test_uintwide_t_int_convert();
   #endif
   return result_test_uintwide_t_int_convert_is_ok;
 }
@@ -226,7 +226,7 @@ auto test_uintwide_t_spot_values() -> bool
   #if defined(WIDE_INTEGER_NAMESPACE)
   const bool result_test_uintwide_t_spot_values_is_ok = WIDE_INTEGER_NAMESPACE::math::wide_integer::test_uintwide_t_spot_values();
   #else
-  const bool result_test_uintwide_t_spot_values_is_ok = math::wide_integer::test_uintwide_t_spot_values();
+  const bool result_test_uintwide_t_spot_values_is_ok = ::math::wide_integer::test_uintwide_t_spot_values();
   #endif
   return result_test_uintwide_t_spot_values_is_ok;
 }

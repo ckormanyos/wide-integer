@@ -11,13 +11,17 @@
 #if defined(WIDE_INTEGER_NAMESPACE)
 auto WIDE_INTEGER_NAMESPACE::math::wide_integer::example004_rootk_pow() -> bool
 #else
-auto math::wide_integer::example004_rootk_pow() -> bool
+auto ::math::wide_integer::example004_rootk_pow() -> bool
 #endif
 {
   bool result_is_ok = true;
 
   {
-    using math::wide_integer::uint256_t;
+    #if defined(WIDE_INTEGER_NAMESPACE)
+    using WIDE_INTEGER_NAMESPACE::math::wide_integer::uint256_t;
+    #else
+    using ::math::wide_integer::uint256_t;
+    #endif
 
     WIDE_INTEGER_CONSTEXPR uint256_t x("0x95E0E51079E1D11737D3FD01429AA745582FEB4381D61FA56948C1A949E43C32");
     WIDE_INTEGER_CONSTEXPR uint256_t r = rootk(x, 7U); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
@@ -32,7 +36,11 @@ auto math::wide_integer::example004_rootk_pow() -> bool
   }
 
   {
-    using math::wide_integer::uint256_t;
+    #if defined(WIDE_INTEGER_NAMESPACE)
+    using WIDE_INTEGER_NAMESPACE::math::wide_integer::uint256_t;
+    #else
+    using ::math::wide_integer::uint256_t;
+    #endif
 
     WIDE_INTEGER_CONSTEXPR uint256_t r(UINT64_C(0x16067D1894));
     WIDE_INTEGER_CONSTEXPR uint256_t p = pow(r, 7U); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
@@ -47,7 +55,11 @@ auto math::wide_integer::example004_rootk_pow() -> bool
   }
 
   {
-    using math::wide_integer::int256_t;
+    #if defined(WIDE_INTEGER_NAMESPACE)
+    using WIDE_INTEGER_NAMESPACE::math::wide_integer::int256_t;
+    #else
+    using ::math::wide_integer::int256_t;
+    #endif
 
     WIDE_INTEGER_CONSTEXPR int256_t x("-17791969125525294590007745776736486317864490689865550963808715359713140948018");
     WIDE_INTEGER_CONSTEXPR int256_t r = cbrt(x);
@@ -62,7 +74,11 @@ auto math::wide_integer::example004_rootk_pow() -> bool
   }
 
   {
-    using math::wide_integer::int256_t;
+    #if defined(WIDE_INTEGER_NAMESPACE)
+    using WIDE_INTEGER_NAMESPACE::math::wide_integer::int256_t;
+    #else
+    using ::math::wide_integer::int256_t;
+    #endif
 
     WIDE_INTEGER_CONSTEXPR int256_t x("-17791969125525294590007745776736486317864490689865550963808715359713140948018");
     WIDE_INTEGER_CONSTEXPR int256_t r = rootk(x, 3);
@@ -90,7 +106,7 @@ auto main() -> int
   #if defined(WIDE_INTEGER_NAMESPACE)
   const auto result_is_ok = WIDE_INTEGER_NAMESPACE::math::wide_integer::example004_rootk_pow();
   #else
-  const auto result_is_ok = math::wide_integer::example004_rootk_pow();
+  const auto result_is_ok = ::math::wide_integer::example004_rootk_pow();
   #endif
 
   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;

@@ -20,7 +20,7 @@
            typename EnableType = void>
   class test_uintwide_t_n_binary_ops_mul_div_4_by_4_template;
   #else
-  template<const math::wide_integer::size_t MyWidth2,
+  template<const ::math::wide_integer::size_t MyWidth2,
            typename MyLimbType,
            typename EnableType = void>
   class test_uintwide_t_n_binary_ops_mul_div_4_by_4_template;
@@ -30,7 +30,7 @@
   template<const WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t MyWidth2,
            typename MyLimbType>
   #else
-  template<const math::wide_integer::size_t MyWidth2,
+  template<const ::math::wide_integer::size_t MyWidth2,
            typename MyLimbType>
   #endif
   class test_uintwide_t_n_binary_ops_mul_div_4_by_4_template // NOLINT(cppcoreguidelines-special-member-functions,hicpp-special-member-functions)
@@ -52,7 +52,7 @@
     #if defined(WIDE_INTEGER_NAMESPACE)
     WIDE_INTEGER_NODISCARD auto get_digits2 () const -> WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t override { return digits2; }
     #else
-    WIDE_INTEGER_NODISCARD auto get_digits2 () const -> math::wide_integer::size_t override { return digits2; }
+    WIDE_INTEGER_NODISCARD auto get_digits2 () const -> ::math::wide_integer::size_t override { return digits2; }
     #endif
 
     #if defined(WIDE_INTEGER_NAMESPACE)
@@ -60,7 +60,7 @@
       typename WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::uint_type_helper<digits2>::exact_unsigned_type;
     #else
     using native_uint_cntrl_type =
-      typename math::wide_integer::detail::uint_type_helper<digits2>::exact_unsigned_type;
+      typename ::math::wide_integer::detail::uint_type_helper<digits2>::exact_unsigned_type;
     #endif
 
     using local_limb_type = MyLimbType;
@@ -68,7 +68,7 @@
     #if defined(WIDE_INTEGER_NAMESPACE)
     using local_uint_ab_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<digits2, local_limb_type>;
     #else
-    using local_uint_ab_type = math::wide_integer::uintwide_t<digits2, local_limb_type>;
+    using local_uint_ab_type = ::math::wide_integer::uintwide_t<digits2, local_limb_type>;
     #endif
 
   public:
@@ -204,7 +204,7 @@
         WIDE_INTEGER_NAMESPACE::math::wide_integer::uniform_int_distribution<other_local_uint_type::my_width2, typename other_local_uint_type::limb_type>;
       #else
       using distribution_type =
-        math::wide_integer::uniform_int_distribution<other_local_uint_type::my_width2, typename other_local_uint_type::limb_type>;
+        ::math::wide_integer::uniform_int_distribution<other_local_uint_type::my_width2, typename other_local_uint_type::limb_type>;
       #endif
 
       distribution_type distribution;

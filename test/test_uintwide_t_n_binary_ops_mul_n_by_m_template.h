@@ -18,8 +18,8 @@
            const WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t MyDigits2B,
            typename MyLimbType = std::uint32_t>
   #else
-  template<const math::wide_integer::size_t MyDigits2A,
-           const math::wide_integer::size_t MyDigits2B,
+  template<const ::math::wide_integer::size_t MyDigits2A,
+           const ::math::wide_integer::size_t MyDigits2B,
            typename MyLimbType = std::uint32_t>
   #endif
   class test_uintwide_t_n_binary_ops_mul_n_by_m_template : public test_uintwide_t_n_binary_ops_base // NOLINT(cppcoreguidelines-special-member-functions,hicpp-special-member-functions)
@@ -38,9 +38,9 @@
     WIDE_INTEGER_NODISCARD auto get_digits2b() const -> WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t          { return digits2b; }
     WIDE_INTEGER_NODISCARD auto get_digits2 () const -> WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t override { return digits2a + digits2b; }
     #else
-    WIDE_INTEGER_NODISCARD auto get_digits2a() const -> math::wide_integer::size_t          { return digits2a; }
-    WIDE_INTEGER_NODISCARD auto get_digits2b() const -> math::wide_integer::size_t          { return digits2b; }
-    WIDE_INTEGER_NODISCARD auto get_digits2 () const -> math::wide_integer::size_t override { return digits2a + digits2b; }
+    WIDE_INTEGER_NODISCARD auto get_digits2a() const -> ::math::wide_integer::size_t          { return digits2a; }
+    WIDE_INTEGER_NODISCARD auto get_digits2b() const -> ::math::wide_integer::size_t          { return digits2b; }
+    WIDE_INTEGER_NODISCARD auto get_digits2 () const -> ::math::wide_integer::size_t override { return digits2a + digits2b; }
     #endif
 
     using boost_uint_backend_a_allocator_type = void;
@@ -81,9 +81,9 @@
     using local_uint_b_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<digits2b, local_limb_type>;
     using local_uint_c_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<digits2a + digits2b, local_limb_type>;
     #else
-    using local_uint_a_type = math::wide_integer::uintwide_t<digits2a, local_limb_type>;
-    using local_uint_b_type = math::wide_integer::uintwide_t<digits2b, local_limb_type>;
-    using local_uint_c_type = math::wide_integer::uintwide_t<digits2a + digits2b, local_limb_type>;
+    using local_uint_a_type = ::math::wide_integer::uintwide_t<digits2a, local_limb_type>;
+    using local_uint_b_type = ::math::wide_integer::uintwide_t<digits2b, local_limb_type>;
+    using local_uint_c_type = ::math::wide_integer::uintwide_t<digits2a + digits2b, local_limb_type>;
     #endif
 
   public:

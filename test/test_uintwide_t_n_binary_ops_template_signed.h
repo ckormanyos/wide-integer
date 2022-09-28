@@ -21,7 +21,7 @@
            typename MyLimbType = std::uint32_t,
            typename AllocatorType = void>
   #else
-  template<const math::wide_integer::size_t MyDigits2,
+  template<const ::math::wide_integer::size_t MyDigits2,
            typename MyLimbType = std::uint32_t,
            typename AllocatorType = void>
   #endif
@@ -61,8 +61,8 @@
     using local_uint_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<digits2, local_limb_type, AllocatorType>;
     using local_sint_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<digits2, local_limb_type, AllocatorType, true>;
     #else
-    using local_uint_type = math::wide_integer::uintwide_t<digits2, local_limb_type, AllocatorType>;
-    using local_sint_type = math::wide_integer::uintwide_t<digits2, local_limb_type, AllocatorType, true>;
+    using local_uint_type = ::math::wide_integer::uintwide_t<digits2, local_limb_type, AllocatorType>;
+    using local_sint_type = ::math::wide_integer::uintwide_t<digits2, local_limb_type, AllocatorType, true>;
     #endif
 
   public:
@@ -74,7 +74,7 @@
     #if defined(WIDE_INTEGER_NAMESPACE)
     WIDE_INTEGER_NODISCARD auto get_digits2() const -> WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t override { return digits2; }
     #else
-    WIDE_INTEGER_NODISCARD auto get_digits2() const -> math::wide_integer::size_t override { return digits2; }
+    WIDE_INTEGER_NODISCARD auto get_digits2() const -> ::math::wide_integer::size_t override { return digits2; }
     #endif
 
     auto initialize() -> void override
@@ -309,8 +309,8 @@
     using local_uint_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<digits2, local_limb_type, AllocatorType>;
     using local_sint_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<digits2, local_limb_type, AllocatorType, true>;
     #else
-    using local_uint_type = math::wide_integer::uintwide_t<digits2, local_limb_type, AllocatorType>;
-    using local_sint_type = math::wide_integer::uintwide_t<digits2, local_limb_type, AllocatorType, true>;
+    using local_uint_type = ::math::wide_integer::uintwide_t<digits2, local_limb_type, AllocatorType>;
+    using local_sint_type = ::math::wide_integer::uintwide_t<digits2, local_limb_type, AllocatorType, true>;
     #endif
 
   public:
@@ -322,7 +322,7 @@
     #if defined(WIDE_INTEGER_NAMESPACE)
     WIDE_INTEGER_NODISCARD auto get_digits2() const -> WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t override { return digits2; }
     #else
-    WIDE_INTEGER_NODISCARD auto get_digits2() const -> math::wide_integer::size_t override { return digits2; }
+    WIDE_INTEGER_NODISCARD auto get_digits2() const -> ::math::wide_integer::size_t override { return digits2; }
     #endif
 
     auto initialize() -> void override

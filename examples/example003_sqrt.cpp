@@ -11,10 +11,14 @@
 #if defined(WIDE_INTEGER_NAMESPACE)
 auto WIDE_INTEGER_NAMESPACE::math::wide_integer::example003_sqrt() -> bool
 #else
-auto math::wide_integer::example003_sqrt() -> bool
+auto ::math::wide_integer::example003_sqrt() -> bool
 #endif
 {
-  using math::wide_integer::uint256_t;
+  #if defined(WIDE_INTEGER_NAMESPACE)
+  using WIDE_INTEGER_NAMESPACE::math::wide_integer::uint256_t;
+  #else
+  using ::math::wide_integer::uint256_t;
+  #endif
 
   WIDE_INTEGER_CONSTEXPR uint256_t a("0xF4DF741DE58BCB2F37F18372026EF9CBCFC456CB80AF54D53BDEED78410065DE");
 

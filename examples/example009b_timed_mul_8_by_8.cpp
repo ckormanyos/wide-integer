@@ -32,7 +32,7 @@ namespace local_timed_mul_8_by_8
       WIDE_INTEGER_NAMESPACE::math::wide_integer::uniform_int_distribution<std::numeric_limits<local_uint_type>::digits, typename local_uint_type::limb_type>;
     #else
     using distribution_type =
-      math::wide_integer::uniform_int_distribution<std::numeric_limits<local_uint_type>::digits, typename local_uint_type::limb_type>;
+      ::math::wide_integer::uniform_int_distribution<std::numeric_limits<local_uint_type>::digits, typename local_uint_type::limb_type>;
     #endif
 
     distribution_type distribution;
@@ -43,7 +43,7 @@ namespace local_timed_mul_8_by_8
   #if defined(WIDE_INTEGER_NAMESPACE)
   using big_uint_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<static_cast<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t>(UINT32_C(256))>;
   #else
-  using big_uint_type = math::wide_integer::uintwide_t<static_cast<math::wide_integer::size_t>(UINT32_C(256))>;
+  using big_uint_type = ::math::wide_integer::uintwide_t<static_cast<math::wide_integer::size_t>(UINT32_C(256))>;
   #endif
 
   auto local_a() -> std::vector<big_uint_type>&
@@ -68,7 +68,7 @@ namespace local_timed_mul_8_by_8
 #if defined(WIDE_INTEGER_NAMESPACE)
 auto WIDE_INTEGER_NAMESPACE::math::wide_integer::example009b_timed_mul_8_by_8() -> bool
 #else
-auto math::wide_integer::example009b_timed_mul_8_by_8() -> bool
+auto ::math::wide_integer::example009b_timed_mul_8_by_8() -> bool
 #endif
 {
   using random_engine_type =
@@ -147,7 +147,7 @@ auto main() -> int
   #if defined(WIDE_INTEGER_NAMESPACE)
   const auto result_is_ok = WIDE_INTEGER_NAMESPACE::math::wide_integer::example009b_timed_mul_8_by_8();
   #else
-  const auto result_is_ok = math::wide_integer::example009b_timed_mul_8_by_8();
+  const auto result_is_ok = ::math::wide_integer::example009b_timed_mul_8_by_8();
   #endif
 
   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;

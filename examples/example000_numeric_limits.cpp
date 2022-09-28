@@ -14,29 +14,33 @@ namespace local
   using WIDE_INTEGER_NAMESPACE::math::wide_integer::uint64_t;
   using WIDE_INTEGER_NAMESPACE::math::wide_integer::int64_t;
   #else
-  using math::wide_integer::uint64_t;
-  using math::wide_integer::int64_t;
+  using ::math::wide_integer::uint64_t;
+  using ::math::wide_integer::int64_t;
   #endif
 
   #if defined(WIDE_INTEGER_NAMESPACE)
   using uint32_t = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t(UINT32_C(32)), std::uint8_t, void, false>;
   using  int32_t = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t(UINT32_C(32)), std::uint8_t, void, true>;
   #else
-  using uint32_t = math::wide_integer::uintwide_t<math::wide_integer::size_t(UINT32_C(32)), std::uint8_t, void, false>;
-  using  int32_t = math::wide_integer::uintwide_t<math::wide_integer::size_t(UINT32_C(32)), std::uint8_t, void, true>;
+  using uint32_t = ::math::wide_integer::uintwide_t<math::wide_integer::size_t(UINT32_C(32)), std::uint8_t, void, false>;
+  using  int32_t = ::math::wide_integer::uintwide_t<math::wide_integer::size_t(UINT32_C(32)), std::uint8_t, void, true>;
   #endif
 } // namespace local
 
 #if defined(WIDE_INTEGER_NAMESPACE)
 auto WIDE_INTEGER_NAMESPACE::math::wide_integer::example000_numeric_limits() -> bool
 #else
-auto math::wide_integer::example000_numeric_limits() -> bool
+auto ::math::wide_integer::example000_numeric_limits() -> bool
 #endif
 {
   bool result_is_ok = true;
 
   {
-    using math::wide_integer::uint256_t;
+    #if defined(WIDE_INTEGER_NAMESPACE)
+    using WIDE_INTEGER_NAMESPACE::math::wide_integer::uint256_t;
+    #else
+    using ::math::wide_integer::uint256_t;
+    #endif
 
     WIDE_INTEGER_CONSTEXPR uint256_t my_max("0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF");
     WIDE_INTEGER_CONSTEXPR uint256_t my_min(0U);
@@ -57,7 +61,11 @@ auto math::wide_integer::example000_numeric_limits() -> bool
   }
 
   {
-    using math::wide_integer::int256_t;
+    #if defined(WIDE_INTEGER_NAMESPACE)
+    using WIDE_INTEGER_NAMESPACE::math::wide_integer::int256_t;
+    #else
+    using ::math::wide_integer::int256_t;
+    #endif
 
     WIDE_INTEGER_CONSTEXPR int256_t my_max   ("0x7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF");
     WIDE_INTEGER_CONSTEXPR int256_t my_min   ("-57896044618658097711785492504343953926634992332820282019728792003956564819968");
@@ -160,7 +168,7 @@ auto main() -> int
   #if defined(WIDE_INTEGER_NAMESPACE)
   const auto result_is_ok = WIDE_INTEGER_NAMESPACE::math::wide_integer::example000_numeric_limits();
   #else
-  const auto result_is_ok = math::wide_integer::example000_numeric_limits();
+  const auto result_is_ok = ::math::wide_integer::example000_numeric_limits();
   #endif
 
   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;

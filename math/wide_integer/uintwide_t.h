@@ -62,7 +62,7 @@
       #define WIDE_INTEGER_CONSTEXPR constexpr               // NOLINT(cppcoreguidelines-macro-usage)
       #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 1 // NOLINT(cppcoreguidelines-macro-usage)
       #define WIDE_INTEGER_NODISCARD [[nodiscard]]           // NOLINT(cppcoreguidelines-macro-usage)
-      #elif (defined(__cpp_lib_constexpr_algorithms) && (__cpp_lib_constexpr_algorithms>=201806))
+      #elif (defined(__cpp_lib_constexpr_algorithms) && (__cpp_lib_constexpr_algorithms >= 201806))
         #if defined(__clang__)
           #if (__clang_major__ > 9)
           #define WIDE_INTEGER_CONSTEXPR constexpr               // NOLINT(cppcoreguidelines-macro-usage)
@@ -2235,12 +2235,12 @@
 
     // Write string function.
     WIDE_INTEGER_CONSTEXPR auto wr_string(      char*              str_result, // NOLINT(readability-function-cognitive-complexity)
-                                          const std::uint_fast8_t  base_rep     = 0x10U,
-                                          const bool               show_base    = true,
-                                          const bool               show_pos     = false,
-                                          const bool               is_uppercase = true,
-                                                unsigned_fast_type field_width  = 0U,
-                                          const char               fill_char    = '0') const -> bool
+                                          const std::uint_fast8_t  base_rep      = 0x10U,
+                                          const bool               show_base     = true,
+                                          const bool               show_pos      = false,
+                                          const bool               is_uppercase  = true,
+                                                unsigned_fast_type field_width   = 0U,
+                                          const char               fill_char_str = '0') const -> bool
     {
       bool wr_string_is_ok = true;
 
@@ -2281,7 +2281,7 @@
 
               str_temp[static_cast<typename string_storage_oct_type::size_type>(--pos)] = c;
 
-              t >>= 3;
+              t >>= 3U;
             }
           }
           else
@@ -2296,7 +2296,7 @@
 
               str_temp[static_cast<typename string_storage_oct_type::size_type>(--pos)] = c;
 
-              tu >>= 3; // LCOV_EXCL_LINE
+              tu >>= 3U; // LCOV_EXCL_LINE
             }
           }
         }
@@ -2317,7 +2317,7 @@
 
           while(static_cast<signed_fast_type>(pos) > static_cast<signed_fast_type>((str_temp.size() - 1U) - field_width)) // NOLINT(altera-id-dependent-backward-branch)
           {
-            str_temp[static_cast<typename string_storage_oct_type::size_type>(--pos)] = fill_char;
+            str_temp[static_cast<typename string_storage_oct_type::size_type>(--pos)] = fill_char_str;
           }
         }
 
@@ -2390,7 +2390,7 @@
 
           while(static_cast<signed_fast_type>(pos) > static_cast<signed_fast_type>((str_temp.size() - 1U) - field_width)) // NOLINT(altera-id-dependent-backward-branch)
           {
-            str_temp[static_cast<typename string_storage_dec_type::size_type>(--pos)] = fill_char;
+            str_temp[static_cast<typename string_storage_dec_type::size_type>(--pos)] = fill_char_str;
           }
         }
 
@@ -2452,7 +2452,7 @@
 
           while(static_cast<signed_fast_type>(pos) > static_cast<signed_fast_type>((str_temp.size() - 1U) - field_width)) // NOLINT(altera-id-dependent-backward-branch)
           {
-            str_temp[static_cast<typename string_storage_hex_type::size_type>(--pos)] = fill_char;
+            str_temp[static_cast<typename string_storage_hex_type::size_type>(--pos)] = fill_char_str;
           }
         }
 
@@ -2593,6 +2593,10 @@
       // Create a factory-like object from the internal data representation.
       return uintwide_t(static_cast<representation_type&&>(other_rep));
     }
+
+    static constexpr auto my_fill_char() -> char { return '.'; }
+
+    static constexpr auto is_not_fill_char(char c) -> bool { return (c != my_fill_char()); }
 
   private:
     representation_type values { };  // NOLINT(readability-identifier-naming)
@@ -4616,8 +4620,8 @@
     else if((my_flags & std::ios::hex) == std::ios::hex) { base_rep = UINT8_C(16); }
     else                                                 { base_rep = UINT8_C(10); }
 
-    const auto field_width = static_cast<unsigned_fast_type>(out.width());
-    const auto fill_char   = static_cast<char>(out.fill());
+    const auto field_width   = static_cast<unsigned_fast_type>(out.width());
+    const auto fill_char_out = static_cast<char>(out.fill());
 
     using local_wide_integer_type = uintwide_t<Width2, LimbType, AllocatorType, IsSigned>;
 
@@ -4640,7 +4644,7 @@
 
       str_result.fill('\0');
 
-      x.wr_string(str_result.data(), base_rep, show_base, show_pos, is_uppercase, field_width, fill_char);
+      x.wr_string(str_result.data(), base_rep, show_base, show_pos, is_uppercase, field_width, fill_char_out);
 
       static_cast<void>(ostr << str_result.data());
     }
@@ -4663,7 +4667,7 @@
 
       str_result.fill('\0');
 
-      x.wr_string(str_result.data(), base_rep, show_base, show_pos, is_uppercase, field_width, fill_char);
+      x.wr_string(str_result.data(), base_rep, show_base, show_pos, is_uppercase, field_width, fill_char_out);
 
       static_cast<void>(ostr << str_result.data());
     }
@@ -4686,7 +4690,7 @@
 
       str_result.fill('\0');
 
-      x.wr_string(str_result.data(), base_rep, show_base, show_pos, is_uppercase, field_width, fill_char);
+      x.wr_string(str_result.data(), base_rep, show_base, show_pos, is_uppercase, field_width, fill_char_out);
 
       static_cast<void>(ostr << str_result.data());
     }
@@ -6069,8 +6073,6 @@
 
     constexpr auto local_my_width2 = local_wide_integer_type::my_width2;
 
-    constexpr auto char_fill = '.';
-
     const auto base_rep     = static_cast<std::uint_fast8_t>(base);
     const auto show_base    = false;
     const auto show_pos     = false;
@@ -6093,22 +6095,18 @@
 
       string_storage_oct_type str_temp { };
 
-      str_temp.fill(char_fill);
+      str_temp.fill(local_wide_integer_type::my_fill_char());
 
       const auto wr_string_is_ok = x.wr_string(str_temp.data(), base_rep, show_base, show_pos, is_uppercase);
 
       auto rit_trim = std::find_if(str_temp.crbegin(),
                                    str_temp.crend(),
-                                   [](const char& c)
-                                   {
-                                     return (c != char_fill);
-                                   });
+                                   local_wide_integer_type::is_not_fill_char);
 
       const auto wr_string_and_trim_is_ok =
-        (
-             (rit_trim != str_temp.crend())
-          &&  wr_string_is_ok
-        );
+      (
+        (rit_trim != str_temp.crend()) && wr_string_is_ok
+      );
 
       if(wr_string_and_trim_is_ok)
       {
@@ -6142,16 +6140,13 @@
 
       string_storage_hex_type str_temp { };
 
-      str_temp.fill(char_fill);
+      str_temp.fill(local_wide_integer_type::my_fill_char());
 
       const auto wr_string_is_ok = x.wr_string(str_temp.data(), base_rep, show_base, show_pos, is_uppercase);
 
       auto rit_trim = std::find_if(str_temp.crbegin(),
                                    str_temp.crend(),
-                                   [](const char& c)
-                                   {
-                                     return (c != char_fill);
-                                   });
+                                   local_wide_integer_type::is_not_fill_char);
 
       const auto wr_string_and_trim_is_ok =
         (
@@ -6191,16 +6186,13 @@
 
       string_storage_dec_type str_temp { };
 
-      str_temp.fill(char_fill);
+      str_temp.fill(local_wide_integer_type::my_fill_char());
 
       const auto wr_string_is_ok = x.wr_string(str_temp.data(), base_rep, show_base, show_pos, is_uppercase);
 
       auto rit_trim = std::find_if(str_temp.crbegin(),
                                    str_temp.crend(),
-                                   [](const char& c)
-                                   {
-                                     return (c != char_fill);
-                                   });
+                                   local_wide_integer_type::is_not_fill_char);
 
       const auto wr_string_and_trim_is_ok =
         (
@@ -6255,9 +6247,7 @@
 
     string_storage_dec_type str_temp; // LCOV_EXCL_LINE
 
-    constexpr auto char_fill = '.';
-
-    str_temp.fill(char_fill);
+    str_temp.fill(local_wide_integer_type::my_fill_char());
 
     const auto base_rep     = static_cast<std::uint_fast8_t>(UINT8_C(10));
     const auto show_base    = false;
@@ -6268,10 +6258,7 @@
 
     auto rit_trim = std::find_if(str_temp.crbegin(),
                                  str_temp.crend(),
-                                 [](const char& c)
-                                 {
-                                   return (c != char_fill);
-                                 });
+                                 local_wide_integer_type::is_not_fill_char);
 
     const auto wr_string_and_trim_is_ok =
       (
