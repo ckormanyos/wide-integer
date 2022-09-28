@@ -15,7 +15,7 @@ auto math::wide_integer::example005a_pow_factors_of_p99() -> bool
 #endif
 {
   #if defined(WIDE_INTEGER_NAMESPACE)
-  using uint384_t = ::math::wide_integer::uintwide_t<static_cast<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t>(UINT32_C(384))>;
+  using uint384_t = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<static_cast<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t>(UINT32_C(384))>;
   #else
   using uint384_t = ::math::wide_integer::uintwide_t<static_cast<math::wide_integer::size_t>(UINT32_C(384))>;
   #endif

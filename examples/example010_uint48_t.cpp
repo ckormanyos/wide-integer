@@ -23,7 +23,7 @@ auto math::wide_integer::example010_uint48_t() -> bool
   #endif
 
   #if defined(WIDE_INTEGER_NAMESPACE)
-  using distribution_type  = ::math::wide_integer::uniform_int_distribution<static_cast<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t>(UINT32_C(48)), typename uint48_t::limb_type>;
+  using distribution_type  = WIDE_INTEGER_NAMESPACE::math::wide_integer::uniform_int_distribution<static_cast<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t>(UINT32_C(48)), typename uint48_t::limb_type>;
   #else
   using distribution_type  = ::math::wide_integer::uniform_int_distribution<static_cast<math::wide_integer::size_t>(UINT32_C(48)), typename uint48_t::limb_type>;
   #endif
