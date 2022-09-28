@@ -2258,11 +2258,11 @@
 
     // Write string function.
     WIDE_INTEGER_CONSTEXPR auto wr_string(      char*              str_result, // NOLINT(readability-function-cognitive-complexity)
-                                          const std::uint_fast8_t  base_rep      = 0x10U,
+                                          const std::uint_fast8_t  base_rep      = static_cast<std::uint_fast8_t>(UINT8_C(0x10)),
                                           const bool               show_base     = true,
                                           const bool               show_pos      = false,
                                           const bool               is_uppercase  = true,
-                                                unsigned_fast_type field_width   = 0U,
+                                                unsigned_fast_type field_width   = static_cast<unsigned_fast_type>(UINT8_C(0)),
                                           const char               fill_char_str = '0') const -> bool
     {
       bool wr_string_is_ok = true;
@@ -2334,7 +2334,7 @@
           str_temp[static_cast<typename string_storage_oct_type::size_type>(--pos)] = '+';
         }
 
-        if(field_width != 0U)
+        if(field_width != static_cast<unsigned_fast_type>(UINT8_C(0)))
         {
           field_width = (std::min)(field_width, static_cast<unsigned_fast_type>(str_temp.size() - 1U));
 
@@ -2407,7 +2407,7 @@
           str_temp[static_cast<typename string_storage_dec_type::size_type>(--pos)] = '-';
         }
 
-        if(field_width != 0U)
+        if(field_width != static_cast<unsigned_fast_type>(UINT8_C(0)))
         {
           field_width = (std::min)(field_width, static_cast<unsigned_fast_type>(str_temp.size() - 1U));
 
@@ -2469,7 +2469,7 @@
           str_temp[static_cast<typename string_storage_hex_type::size_type>(--pos)] = '+';
         }
 
-        if(field_width != 0U)
+        if(field_width != static_cast<unsigned_fast_type>(UINT8_C(0)))
         {
           field_width = (std::min)(field_width, static_cast<unsigned_fast_type>(str_temp.size() - 1U));
 
@@ -2957,7 +2957,7 @@
         *(r + static_cast<result_difference_type>(i)) = static_cast<local_limb_type>(uv_as_ularge);
       }
 
-      return (has_borrow_out != 0U);
+      return (has_borrow_out != static_cast<std::uint_fast8_t>(UINT8_C(0)));
     }
 
     template<typename ResultIterator,
@@ -3436,7 +3436,7 @@
       {
         if(*(a + static_cast<left_difference_type>(i)) != static_cast<local_limb_type>(UINT8_C(0)))
         {
-          local_double_limb_type carry = 0U;
+          auto carry = static_cast<local_double_limb_type>(UINT8_C(0));
 
           for(auto j = static_cast<unsigned_fast_type>(UINT8_C(0)); j < static_cast<unsigned_fast_type>(count - i); ++j)
           {
@@ -3487,7 +3487,7 @@
       {
         if(*(a + static_cast<left_difference_type>(i)) != static_cast<local_limb_type>(UINT8_C(0)))
         {
-          unsigned_fast_type j = 0U;
+          auto j = static_cast<unsigned_fast_type>(UINT8_C(0));
 
           auto carry = static_cast<local_double_limb_type>(UINT8_C(0));
 
@@ -3540,7 +3540,7 @@
       using result_difference_type = typename std::iterator_traits<ResultIterator>::difference_type;
       using left_difference_type   = typename std::iterator_traits<InputIteratorLeft>::difference_type;
 
-      local_double_limb_type carry = 0U;
+      auto carry = static_cast<local_double_limb_type>(UINT8_C(0));
 
       if(b == 0U)
       {
@@ -3573,7 +3573,7 @@
 
       using left_difference_type   = typename std::iterator_traits<InputIteratorLeft>::difference_type;
 
-      unsigned_fast_type i = 0U;
+      auto i = static_cast<unsigned_fast_type>(UINT8_C(0));
 
       local_limb_type carry_out = carry;
 
@@ -3602,7 +3602,7 @@
 
       using left_difference_type   = typename std::iterator_traits<InputIteratorLeft>::difference_type;
 
-      unsigned_fast_type i = 0U;
+      auto i = static_cast<unsigned_fast_type>(UINT8_C(0));
 
       bool has_borrow_out = has_borrow;
 
@@ -5150,7 +5150,9 @@
 
         local_wide_integer_type m_over_s_pow_3_minus_one = m;
 
-        for(unsigned_fast_type j = 0U; j < 3U - 1U; ++j)
+        for(auto   j = static_cast<unsigned_fast_type>(UINT8_C(0));
+                   j < static_cast<unsigned_fast_type>(static_cast<unsigned>(3U - 1U));
+                 ++j)
         {
           // Use a loop here to divide by s^(3 - 1) because
           // without a loop, s^(3 - 1) is likely to overflow.
@@ -5207,7 +5209,7 @@
         const unsigned_fast_type msb_pos_mod_k = msb_pos % k;
 
         const unsigned_fast_type left_shift_amount =
-          ((msb_pos_mod_k == 0U)
+          ((msb_pos_mod_k == static_cast<unsigned_fast_type>(UINT8_C(0)))
             ? 1U + static_cast<unsigned_fast_type>((msb_pos +                 0U ) / k)
             : 1U + static_cast<unsigned_fast_type>((msb_pos + (k - msb_pos_mod_k)) / k));
 
@@ -5220,13 +5222,17 @@
 
         const unsigned_fast_type k_minus_one(k - 1U);
 
-        for(auto i = static_cast<unsigned_fast_type>(UINT8_C(0)); i < static_cast<unsigned_fast_type>(UINT8_C(64)); ++i)
+        for(auto   i = static_cast<unsigned_fast_type>(UINT8_C(0));
+                   i < static_cast<unsigned_fast_type>(UINT8_C(64));
+                 ++i)
         {
           s = u;
 
           local_wide_integer_type m_over_s_pow_k_minus_one = m;
 
-          for(unsigned_fast_type j = 0U; j < k - 1U; ++j)
+          for(auto   j = static_cast<unsigned_fast_type>(UINT8_C(0));
+                     j < static_cast<unsigned_fast_type>(k - static_cast<std::uint_fast8_t>(UINT8_C(1)));
+                   ++j)
           {
             // Use a loop here to divide by s^(k - 1) because
             // without a loop, s^(k - 1) is likely to overflow.
@@ -5256,24 +5262,24 @@
     using local_limb_type         = typename local_wide_integer_type::limb_type;
 
     local_wide_integer_type result;
-    auto p0(static_cast<local_limb_type>(p));
+    auto p0 = static_cast<local_limb_type>(p);
 
-    if((p0 == 0U) && (p == OtherIntegralTypeP(0)))
+    if((p0 == static_cast<local_limb_type>(UINT8_C(0))) && (p == OtherIntegralTypeP(0)))
     {
       result = local_wide_integer_type(static_cast<std::uint8_t>(1U));
     }
-    else if((p0 == 1U) && (p == OtherIntegralTypeP(1)))
+    else if((p0 == static_cast<local_limb_type>(UINT8_C(1))) && (p == OtherIntegralTypeP(1)))
     {
       result = b;
     }
-    else if((p0 == 2U) && (p == OtherIntegralTypeP(2)))
+    else if((p0 == static_cast<local_limb_type>(UINT8_C(2))) && (p == OtherIntegralTypeP(2)))
     {
       result  = b;
       result *= b;
     }
     else
     {
-      result = local_wide_integer_type(static_cast<std::uint8_t>(1U));
+      result = local_wide_integer_type(static_cast<std::uint8_t>(UINT8_C(1)));
 
       local_wide_integer_type y      (b);
       local_wide_integer_type p_local(p);
@@ -5287,7 +5293,7 @@
 
         y *= y;
 
-        p_local >>= 1;
+        p_local >>= 1U;
       }
     }
 
@@ -5313,17 +5319,18 @@
           local_normal_width_type result;
           local_double_width_type y      (b);
     const local_double_width_type m_local(m);
-          auto                    p0     (static_cast<local_limb_type>(p));
 
-    if((p0 == 0U) && (p == OtherIntegralTypeP(0)))
+    auto p0 = static_cast<local_limb_type>(p);
+
+    if((p0 == static_cast<local_limb_type>(UINT8_C(0))) && (p == OtherIntegralTypeP(0)))
     {
       result = local_normal_width_type((m != 1U) ? static_cast<std::uint8_t>(1U) : static_cast<std::uint8_t>(UINT8_C(0)));
     }
-    else if((p0 == 1U) && (p == OtherIntegralTypeP(1)))
+    else if((p0 == static_cast<local_limb_type>(UINT8_C(1))) && (p == OtherIntegralTypeP(1)))
     {
       result = b % m;
     }
-    else if((p0 == 2U) && (p == OtherIntegralTypeP(2)))
+    else if((p0 == static_cast<local_limb_type>(UINT8_C(2))) && (p == OtherIntegralTypeP(2)))
     {
       y *= y;
       y %= m_local;
@@ -5332,7 +5339,7 @@
     }
     else
     {
-      local_double_width_type x      (static_cast<std::uint8_t>(1U));
+      local_double_width_type x      (static_cast<std::uint8_t>(UINT8_C(1)));
       OtherIntegralTypeP      p_local(p);
 
       while(((p0 = static_cast<local_limb_type>(p_local)) != 0U) || (p_local != static_cast<OtherIntegralTypeP>(0))) // NOLINT(altera-id-dependent-backward-branch)
@@ -5783,7 +5790,7 @@
 
       auto it = result.representation().begin(); // NOLINT(llvm-qualified-auto,readability-qualified-auto)
 
-      unsigned_fast_type j = 0U;
+      auto j = static_cast<unsigned_fast_type>(UINT8_C(0));
 
       while(it != result.representation().end()) // NOLINT(altera-id-dependent-backward-branch)
       {
@@ -6048,7 +6055,7 @@
 
         if((y0 == 1U) && (y == 1U))
         {
-          if(j != 0U)
+          if(j != static_cast<unsigned_fast_type>(UINT8_C(0)))
           {
             is_probably_prime = false;
           }
