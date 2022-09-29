@@ -300,20 +300,20 @@
     // Size and capacity.
     constexpr auto size    () const -> size_type { return  elem_count; }
     constexpr auto max_size() const -> size_type { return  elem_count; }
-    constexpr auto empty   () const -> bool      { return (elem_count == 0U); }
+    constexpr auto empty   () const -> bool      { return (elem_count == static_cast<size_type>(UINT8_C(0))); }
 
     // Element access members.
     WIDE_INTEGER_CONSTEXPR auto operator[](const size_type i)       -> reference       { return elems[i]; }
     WIDE_INTEGER_CONSTEXPR auto operator[](const size_type i) const -> const_reference { return elems[i]; }
 
-    WIDE_INTEGER_CONSTEXPR auto front()       -> reference       { return elems[0U]; }
-    WIDE_INTEGER_CONSTEXPR auto front() const -> const_reference { return elems[0U]; }
+    WIDE_INTEGER_CONSTEXPR auto front()       -> reference       { return elems[static_cast<size_type>(UINT8_C(0))]; }
+    WIDE_INTEGER_CONSTEXPR auto front() const -> const_reference { return elems[static_cast<size_type>(UINT8_C(0))]; }
 
-    WIDE_INTEGER_CONSTEXPR auto back()       -> reference       { return ((elem_count > static_cast<size_type>(UINT8_C(0))) ? elems[elem_count - 1U] : elems[0U]); }
-    WIDE_INTEGER_CONSTEXPR auto back() const -> const_reference { return ((elem_count > static_cast<size_type>(UINT8_C(0))) ? elems[elem_count - 1U] : elems[0U]); }
+    WIDE_INTEGER_CONSTEXPR auto back()       -> reference       { return ((elem_count > static_cast<size_type>(UINT8_C(0))) ? elems[static_cast<size_type>(elem_count - static_cast<size_type>(UINT8_C(1)))] : elems[static_cast<size_type>(UINT8_C(0))]); }
+    WIDE_INTEGER_CONSTEXPR auto back() const -> const_reference { return ((elem_count > static_cast<size_type>(UINT8_C(0))) ? elems[static_cast<size_type>(elem_count - static_cast<size_type>(UINT8_C(1)))] : elems[static_cast<size_type>(UINT8_C(0))]); }
 
-    WIDE_INTEGER_CONSTEXPR auto at(const size_type i)       -> reference       { return ((i < elem_count) ? elems[i] : elems[0U]); }
-    WIDE_INTEGER_CONSTEXPR auto at(const size_type i) const -> const_reference { return ((i < elem_count) ? elems[i] : elems[0U]); }
+    WIDE_INTEGER_CONSTEXPR auto at(const size_type i)       -> reference       { return ((i < elem_count) ? elems[i] : elems[static_cast<size_type>(UINT8_C(0))]); }
+    WIDE_INTEGER_CONSTEXPR auto at(const size_type i) const -> const_reference { return ((i < elem_count) ? elems[i] : elems[static_cast<size_type>(UINT8_C(0))]); }
 
     // Element manipulation members.
     WIDE_INTEGER_CONSTEXPR auto fill(const value_type& v) -> void
@@ -1274,7 +1274,11 @@
   {
     using local_unsigned_integral_type = UnsignedIntegralType;
 
-    return static_cast<local_unsigned_integral_type>((static_cast<local_unsigned_integral_type>(~u)) + 1U);
+    return static_cast<local_unsigned_integral_type>
+    (
+        static_cast<local_unsigned_integral_type>(~u)
+      + static_cast<local_unsigned_integral_type>(UINT8_C(1))
+    );
   }
 
   template<typename SignedIntegralType>
@@ -1304,7 +1308,11 @@
       static_assert(std::numeric_limits<native_float_type>::digits <= std::numeric_limits<unsigned long long>::digits, // NOLINT(google-runtime-int)
                     "Error: The width of the mantissa does not fit in unsigned long long");
 
-      const native_float_type ff = ((f < static_cast<native_float_type>(0)) ? -f : f);
+      const auto ff =
+        static_cast<native_float_type>
+        (
+          (f < static_cast<native_float_type>(0)) ? -f : f
+        );
 
       if(ff < (std::numeric_limits<native_float_type>::min)())
       {
