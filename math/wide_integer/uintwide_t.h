@@ -5238,9 +5238,7 @@
 
           local_wide_integer_type m_over_s_pow_k_minus_one = m;
 
-          for(auto   j = static_cast<unsigned_fast_type>(UINT8_C(0));
-                     j < static_cast<unsigned_fast_type>(k - static_cast<std::uint_fast8_t>(UINT8_C(1)));
-                   ++j)
+          for(auto j = static_cast<unsigned_fast_type>(UINT8_C(0)); j < k_minus_one; ++j)
           {
             // Use a loop here to divide by s^(k - 1) because
             // without a loop, s^(k - 1) is likely to overflow.
