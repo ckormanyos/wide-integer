@@ -1099,13 +1099,13 @@ auto test_to_chars_and_to_string() -> bool // NOLINT(readability-function-cognit
     // Use all three bases octal, decimal, and hexadecimal.
 
     using to_chars_storage_array_oct_type =
-      std::array<char, static_cast<typename std::size_t>(local_uintwide_t_small_unsigned_type::wr_string_max_buffer_size_oct)>;
+      std::array<char, static_cast<typename std::size_t>(local_uintwide_t_small_unsigned_type::wr_string_max_buffer_size_oct())>;
 
     using to_chars_storage_array_dec_type =
-      std::array<char, static_cast<typename std::size_t>(local_uintwide_t_small_unsigned_type::wr_string_max_buffer_size_dec)>;
+      std::array<char, static_cast<typename std::size_t>(local_uintwide_t_small_unsigned_type::wr_string_max_buffer_size_dec())>;
 
     using to_chars_storage_array_hex_type =
-      std::array<char, static_cast<typename std::size_t>(local_uintwide_t_small_unsigned_type::wr_string_max_buffer_size_hex)>;
+      std::array<char, static_cast<typename std::size_t>(local_uintwide_t_small_unsigned_type::wr_string_max_buffer_size_hex())>;
 
     constexpr auto char_fill = '\0';
 
@@ -1146,7 +1146,7 @@ auto test_to_chars_and_to_string() -> bool // NOLINT(readability-function-cognit
     // Use only base decimal.
 
     using to_chars_storage_array_dec_type =
-      std::array<char, static_cast<typename std::size_t>(local_uintwide_t_small_signed_type::wr_string_max_buffer_size_dec)>;
+      std::array<char, static_cast<typename std::size_t>(local_uintwide_t_small_signed_type::wr_string_max_buffer_size_dec())>;
 
     constexpr auto char_fill = '\0';
 
