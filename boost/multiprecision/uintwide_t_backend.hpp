@@ -232,7 +232,7 @@
       std::vector<char>
         pstr
         (
-          static_cast<typename std::vector<char>::size_type>(representation_type::wr_string_max_buffer_size_dec)
+          static_cast<typename std::vector<char>::size_type>(representation_type::wr_string_max_buffer_size_dec())
         );
 
       const auto base_rep     = static_cast<std::uint_fast8_t>(((format_flags & std::ios::hex) != 0) ? 16U : 10U);

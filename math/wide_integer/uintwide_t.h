@@ -1450,7 +1450,7 @@
         my_width2 / static_cast<size_t>(std::numeric_limits<limb_type>::digits)
       );
 
-    static constexpr auto number_of_limbs_karatsuba_threshold = static_cast<size_t>(128U + 1U);
+    static constexpr auto number_of_limbs_karatsuba_threshold = static_cast<size_t>(static_cast<unsigned>(128U + 1U));
 
     // Verify that the Width2 template parameter (mirrored with my_width2):
     //   * Is equal to 2^n times 1...63.
@@ -1492,7 +1492,7 @@
                          std::enable_if_t<(    std::is_integral   <UnsignedIntegralType>::value
                                            &&  std::is_unsigned   <UnsignedIntegralType>::value
                                            && (std::numeric_limits<UnsignedIntegralType>::digits <= std::numeric_limits<limb_type>::digits))>* = nullptr) // NOLINT(hicpp-named-parameter,readability-named-parameter)
-      : values(1U, v) { }
+      : values(static_cast<limb_type>(UINT8_C(1)), v) { }
 
     // Constructors from built-in unsigned integral types that
     // are wider than limb_type, and do not have exactly the
@@ -1888,7 +1888,7 @@
     {
       if(this == &other)
       {
-        values.front() = 1U;
+        values.front() = static_cast<limb_type>(UINT8_C(1));
 
         std::fill(values.begin() + 1U, values.end(), static_cast<limb_type>(UINT8_C(0)));
       }
@@ -2233,37 +2233,6 @@
         ;
     }
 
-    // Define the maximum buffer sizes for extracting
-    // octal, decimal and hexadecimal string representations.
-    static constexpr auto wr_string_max_buffer_size_oct =
-      static_cast<size_t>
-      (
-        (
-            8U
-          + (((my_width2 % 3U) != 0U) ? 1U : 0U)
-          +   (my_width2 / 3U)
-        )
-      );
-
-    static constexpr auto wr_string_max_buffer_size_hex =
-      static_cast<size_t>
-      (
-          8U
-        + (((my_width2 % 4U) != 0U) ? 1U : 0U)
-        +   (my_width2 / 4U)
-      );
-
-    static constexpr auto wr_string_max_buffer_size_dec =
-      static_cast<size_t>
-      (
-          static_cast<size_t>(UINT8_C(10))
-        + static_cast<size_t>
-          (
-              static_cast<std::uintmax_t>(static_cast<std::uintmax_t>(my_width2) * static_cast<std::uintmax_t>(UINTMAX_C(301)))
-            / static_cast<std::uintmax_t>(UINTMAX_C(1000))
-          )
-      );
-
     // Write string function.
     WIDE_INTEGER_CONSTEXPR auto wr_string(      char*              str_result, // NOLINT(readability-function-cognitive-complexity)
                                           const std::uint_fast8_t  base_rep      = static_cast<std::uint_fast8_t>(UINT8_C(0x10)),
@@ -2275,7 +2244,7 @@
     {
       bool wr_string_is_ok = true;
 
-      if(base_rep == UINT8_C(8))
+      if(base_rep == static_cast<std::uint_fast8_t>(UINT8_C(8)))
       {
         uintwide_t t(*this);
 
@@ -2285,16 +2254,16 @@
           std::conditional_t
             <my_width2 <= static_cast<size_t>(UINT32_C(2048)),
              detail::fixed_static_array <char,
-                                         wr_string_max_buffer_size_oct>,
+                                         wr_string_max_buffer_size_oct()>,
              detail::fixed_dynamic_array<char,
-                                         wr_string_max_buffer_size_oct,
+                                         wr_string_max_buffer_size_oct(),
                                          typename std::allocator_traits<std::conditional_t<std::is_same<AllocatorType, void>::value,
                                                                                            std::allocator<void>,
                                                                                            AllocatorType>>::template rebind_alloc<limb_type>>>;
 
         string_storage_oct_type str_temp; // LCOV_EXCL_LINE
 
-        auto pos = static_cast<unsigned_fast_type>(str_temp.size() - 1U); // LCOV_EXCL_LINE
+        auto pos = static_cast<unsigned_fast_type>(str_temp.size() - static_cast<size_t>(UINT8_C(1))); // LCOV_EXCL_LINE
 
         if(t.is_zero())
         {
@@ -2344,19 +2313,19 @@
 
         if(field_width != static_cast<unsigned_fast_type>(UINT8_C(0)))
         {
-          field_width = (std::min)(field_width, static_cast<unsigned_fast_type>(str_temp.size() - 1U));
+          field_width = (std::min)(field_width, static_cast<unsigned_fast_type>(str_temp.size() - static_cast<size_t>(UINT8_C(1))));
 
-          while(static_cast<signed_fast_type>(pos) > static_cast<signed_fast_type>((str_temp.size() - 1U) - field_width)) // NOLINT(altera-id-dependent-backward-branch)
+          while(static_cast<signed_fast_type>(pos) > static_cast<signed_fast_type>((str_temp.size() - static_cast<size_t>(UINT8_C(1))) - field_width)) // NOLINT(altera-id-dependent-backward-branch)
           {
             str_temp[static_cast<typename string_storage_oct_type::size_type>(--pos)] = fill_char_str;
           }
         }
 
-        str_temp[static_cast<typename string_storage_oct_type::size_type>(str_temp.size() - 1U)] = '\0';
+        str_temp[static_cast<typename string_storage_oct_type::size_type>(str_temp.size() - static_cast<size_t>(UINT8_C(1)))] = '\0';
 
         detail::strcpy_unsafe(str_result, str_temp.data() + pos);
       }
-      else if(base_rep == UINT8_C(10))
+      else if(base_rep == static_cast<std::uint_fast8_t>(UINT8_C(10)))
       {
         uintwide_t t(*this);
 
@@ -2371,16 +2340,16 @@
           std::conditional_t
             <my_width2 <= static_cast<size_t>(UINT32_C(2048)),
              detail::fixed_static_array <char,
-                                         wr_string_max_buffer_size_dec>,
+                                         wr_string_max_buffer_size_dec()>,
              detail::fixed_dynamic_array<char,
-                                         wr_string_max_buffer_size_dec,
+                                         wr_string_max_buffer_size_dec(),
                                          typename std::allocator_traits<std::conditional_t<std::is_same<AllocatorType, void>::value,
                                                                                            std::allocator<void>,
                                                                                            AllocatorType>>::template rebind_alloc<limb_type>>>;
 
         string_storage_dec_type str_temp;
 
-        auto pos = static_cast<unsigned_fast_type>(str_temp.size() - 1U);
+        auto pos = static_cast<unsigned_fast_type>(str_temp.size() - static_cast<size_t>(UINT8_C(1)));
 
         if(t.is_zero())
         {
@@ -2417,19 +2386,19 @@
 
         if(field_width != static_cast<unsigned_fast_type>(UINT8_C(0)))
         {
-          field_width = (std::min)(field_width, static_cast<unsigned_fast_type>(str_temp.size() - 1U));
+          field_width = (std::min)(field_width, static_cast<unsigned_fast_type>(str_temp.size() - static_cast<size_t>(UINT8_C(1))));
 
-          while(static_cast<signed_fast_type>(pos) > static_cast<signed_fast_type>((str_temp.size() - 1U) - field_width)) // NOLINT(altera-id-dependent-backward-branch)
+          while(static_cast<signed_fast_type>(pos) > static_cast<signed_fast_type>((str_temp.size() - static_cast<size_t>(UINT8_C(1))) - field_width)) // NOLINT(altera-id-dependent-backward-branch)
           {
             str_temp[static_cast<typename string_storage_dec_type::size_type>(--pos)] = fill_char_str;
           }
         }
 
-        str_temp[static_cast<typename string_storage_dec_type::size_type>(str_temp.size() - 1U)] = '\0';
+        str_temp[static_cast<typename string_storage_dec_type::size_type>(str_temp.size() - static_cast<size_t>(UINT8_C(1)))] = '\0';
 
         detail::strcpy_unsafe(str_result, str_temp.data() + pos);
       }
-      else if(base_rep == UINT8_C(16))
+      else if(base_rep == static_cast<std::uint_fast8_t>(UINT8_C(16)))
       {
         uintwide_t<my_width2, limb_type, AllocatorType, false> t(*this);
 
@@ -2437,16 +2406,16 @@
           std::conditional_t
             <my_width2 <= static_cast<size_t>(UINT32_C(2048)),
              detail::fixed_static_array <char,
-                                         wr_string_max_buffer_size_hex>,
+                                         wr_string_max_buffer_size_hex()>,
              detail::fixed_dynamic_array<char,
-                                         wr_string_max_buffer_size_hex,
+                                         wr_string_max_buffer_size_hex(),
                                          typename std::allocator_traits<std::conditional_t<std::is_same<AllocatorType, void>::value,
                                                                                            std::allocator<void>,
                                                                                            AllocatorType>>::template rebind_alloc<limb_type>>>;
 
         string_storage_hex_type str_temp;
 
-        auto pos = static_cast<unsigned_fast_type>(str_temp.size() - 1U);
+        auto pos = static_cast<unsigned_fast_type>(str_temp.size() - static_cast<size_t>(UINT8_C(1)));
 
         if(t.is_zero())
         {
@@ -2479,15 +2448,15 @@
 
         if(field_width != static_cast<unsigned_fast_type>(UINT8_C(0)))
         {
-          field_width = (std::min)(field_width, static_cast<unsigned_fast_type>(str_temp.size() - 1U));
+          field_width = (std::min)(field_width, static_cast<unsigned_fast_type>(str_temp.size() - static_cast<size_t>(UINT8_C(1))));
 
-          while(static_cast<signed_fast_type>(pos) > static_cast<signed_fast_type>((str_temp.size() - 1U) - field_width)) // NOLINT(altera-id-dependent-backward-branch)
+          while(static_cast<signed_fast_type>(pos) > static_cast<signed_fast_type>((str_temp.size() - static_cast<size_t>(UINT8_C(1))) - field_width)) // NOLINT(altera-id-dependent-backward-branch)
           {
             str_temp[static_cast<typename string_storage_hex_type::size_type>(--pos)] = fill_char_str;
           }
         }
 
-        str_temp[static_cast<typename string_storage_hex_type::size_type>(str_temp.size() - 1U)] = '\0';
+        str_temp[static_cast<typename string_storage_hex_type::size_type>(str_temp.size() - static_cast<size_t>(UINT8_C(1)))] = '\0';
 
         detail::strcpy_unsafe(str_result, str_temp.data() + pos);
       }
@@ -2559,7 +2528,7 @@
 
       auto hi_part = static_cast<limb_type>(UINT8_C(0));
 
-      for(auto i = static_cast<signed_fast_type>(static_cast<unsigned_fast_type>(number_of_limbs - 1U) - u_offset); static_cast<signed_fast_type>(i) >= 0; --i) // NOLINT(altera-id-dependent-backward-branch)
+      for(auto i = static_cast<signed_fast_type>(static_cast<unsigned_fast_type>(number_of_limbs - static_cast<size_t>(UINT8_C(1))) - u_offset); static_cast<signed_fast_type>(i) >= static_cast<signed_fast_type>(INT8_C(0)); --i) // NOLINT(altera-id-dependent-backward-branch)
       {
         long_numerator =
           static_cast<double_limb_type>
@@ -2629,6 +2598,54 @@
 
     static constexpr auto is_not_fill_char(char c) -> bool { return (c != my_fill_char()); }
 
+    // Define the maximum buffer sizes for extracting
+    // octal, decimal and hexadecimal string representations.
+    static constexpr auto wr_string_max_buffer_size_oct() -> size_t
+    {
+      return
+        static_cast<size_t>
+        (
+            static_cast<size_t>(UINT8_C(8))
+          + static_cast<size_t>
+            (
+              (static_cast<size_t>(my_width2 % static_cast<size_t>(UINT8_C(3))) != static_cast<size_t>(UINT8_C(0)))
+                ? static_cast<size_t>(UINT8_C(1))
+                : static_cast<size_t>(UINT8_C(0))
+            )
+          + static_cast<size_t>(my_width2 / static_cast<size_t>(UINT8_C(3)))
+        );
+    }
+
+    static constexpr auto wr_string_max_buffer_size_hex() -> size_t
+    {
+      return
+        static_cast<size_t>
+        (
+            static_cast<size_t>(UINT8_C(8))
+          + static_cast<size_t>
+            (
+              (static_cast<size_t>(my_width2 % static_cast<size_t>(UINT8_C(4))) != static_cast<size_t>(UINT8_C(0)))
+                ? static_cast<size_t>(UINT8_C(1))
+                : static_cast<size_t>(UINT8_C(0))
+            )
+          + static_cast<size_t>(my_width2 / static_cast<size_t>(UINT8_C(4)))
+        );
+    }
+
+    static constexpr auto wr_string_max_buffer_size_dec() -> size_t
+    {
+      return
+        static_cast<size_t>
+        (
+            static_cast<size_t>(UINT8_C(10))
+          + static_cast<size_t>
+            (
+                static_cast<std::uintmax_t>(static_cast<std::uintmax_t>(my_width2) * static_cast<std::uintmax_t>(UINTMAX_C(301)))
+              / static_cast<std::uintmax_t>(UINTMAX_C(1000))
+            )
+        );
+    }
+
   private:
     representation_type values { };  // NOLINT(readability-identifier-naming)
 
@@ -2673,7 +2690,7 @@
                                                             InputIteratorRightType b,
                                                       const unsigned_fast_type     count) -> std::int_fast8_t
     {
-      std::int_fast8_t n_return = 0;
+      auto n_return = static_cast<std::int_fast8_t>(INT8_C(0));
 
       std::reverse_iterator<InputIteratorLeftType>  pa(a + count);
       std::reverse_iterator<InputIteratorRightType> pb(b + count);
@@ -2688,7 +2705,13 @@
 
         if(value_a != value_b)
         {
-          n_return = static_cast<std::int_fast8_t>((value_a > value_b) ? INT8_C(1) : INT8_C(-1));
+          n_return =
+            static_cast<std::int_fast8_t>
+            (
+              (value_a > value_b)
+                ? static_cast<std::int_fast8_t>(INT8_C(1))
+                : static_cast<std::int_fast8_t>(INT8_C(-1))
+            );
 
           break;
         }
@@ -2758,7 +2781,7 @@
 
       // Handle cases for which the input parameter is less wide
       // or equally as wide as the limb width or wider than the limb width.
-      return ((digits_ratio_type::value < 2U)
+      return ((digits_ratio_type::value < static_cast<unsigned_fast_type>(UINT8_C(2)))
                ? static_cast<local_unknown_integral_type>(*values.cbegin())
                : digits_ratio_type::extract(values.data(), ilim));
     }
@@ -2792,7 +2815,7 @@
       for(auto i = static_cast<size_t>(UINT8_C(0)); i < ilim; ++i) // NOLINT(altera-id-dependent-backward-branch)
       {
         auto ld      = static_cast<long double>(0.0L);
-        auto lm_mask = static_cast<limb_type>(1ULL);
+        auto lm_mask = static_cast<limb_type>(UINT8_C(1));
 
         for(auto   j = static_cast<size_t>(UINT8_C(0));
                    j < static_cast<size_t>(std::numeric_limits<limb_type>::digits);
@@ -2900,14 +2923,14 @@
     {
       auto carry_out = static_cast<std::uint_fast8_t>(carry_in);
 
+      using local_limb_type = typename std::iterator_traits<ResultIterator>::value_type;
+
       static_assert
       (
-           (std::numeric_limits<typename std::iterator_traits<ResultIterator>::value_type>::digits == std::numeric_limits<typename std::iterator_traits<InputIteratorLeft>::value_type>::digits)
-        && (std::numeric_limits<typename std::iterator_traits<ResultIterator>::value_type>::digits == std::numeric_limits<typename std::iterator_traits<InputIteratorRight>::value_type>::digits),
+           (std::numeric_limits<local_limb_type>::digits == std::numeric_limits<typename std::iterator_traits<InputIteratorLeft>::value_type>::digits)
+        && (std::numeric_limits<local_limb_type>::digits == std::numeric_limits<typename std::iterator_traits<InputIteratorRight>::value_type>::digits),
         "Error: Internals require same widths for left-right-result limb_types at the moment"
       );
-
-      using local_limb_type = typename std::iterator_traits<ResultIterator>::value_type;
 
       using local_double_limb_type =
         typename detail::uint_type_helper<static_cast<size_t>(std::numeric_limits<local_limb_type>::digits * 2)>::exact_unsigned_type;
@@ -2938,16 +2961,21 @@
                                                        const unsigned_fast_type count,
                                                        const bool               has_borrow_in = false) -> bool
     {
-      auto has_borrow_out = static_cast<std::uint_fast8_t>(has_borrow_in ? 1U : 0U);
+      auto has_borrow_out =
+        static_cast<std::uint_fast8_t>
+        (
+          has_borrow_in ? static_cast<std::uint_fast8_t>(UINT8_C(1))
+                        : static_cast<std::uint_fast8_t>(UINT8_C(0))
+        );
+
+      using local_limb_type = typename std::iterator_traits<ResultIterator>::value_type;
 
       static_assert
       (
-           (std::numeric_limits<typename std::iterator_traits<ResultIterator>::value_type>::digits == std::numeric_limits<typename std::iterator_traits<InputIteratorLeft>::value_type>::digits)
-        && (std::numeric_limits<typename std::iterator_traits<ResultIterator>::value_type>::digits == std::numeric_limits<typename std::iterator_traits<InputIteratorRight>::value_type>::digits),
+           (std::numeric_limits<local_limb_type>::digits == std::numeric_limits<typename std::iterator_traits<InputIteratorLeft>::value_type>::digits)
+        && (std::numeric_limits<local_limb_type>::digits == std::numeric_limits<typename std::iterator_traits<InputIteratorRight>::value_type>::digits),
         "Error: Internals require same widths for left-right-result limb_types at the moment"
       );
-
-      using local_limb_type = typename std::iterator_traits<ResultIterator>::value_type;
 
       using local_double_limb_type =
         typename detail::uint_type_helper<static_cast<size_t>(std::numeric_limits<local_limb_type>::digits * 2)>::exact_unsigned_type;
@@ -2980,14 +3008,14 @@
     {
       static_cast<void>(count);
 
+      using local_limb_type = typename std::iterator_traits<ResultIterator>::value_type;
+
       static_assert
       (
-           (std::numeric_limits<typename std::iterator_traits<ResultIterator>::value_type>::digits == std::numeric_limits<typename std::iterator_traits<InputIteratorLeft>::value_type>::digits)
-        && (std::numeric_limits<typename std::iterator_traits<ResultIterator>::value_type>::digits == std::numeric_limits<typename std::iterator_traits<InputIteratorRight>::value_type>::digits),
+           (std::numeric_limits<local_limb_type>::digits == std::numeric_limits<typename std::iterator_traits<InputIteratorLeft>::value_type>::digits)
+        && (std::numeric_limits<local_limb_type>::digits == std::numeric_limits<typename std::iterator_traits<InputIteratorRight>::value_type>::digits),
         "Error: Internals require same widths for left-right-result limb_types at the moment"
       );
-
-      using local_limb_type = typename std::iterator_traits<ResultIterator>::value_type;
 
       using local_double_limb_type =
         typename detail::uint_type_helper<static_cast<size_t>(std::numeric_limits<local_limb_type>::digits * 2)>::exact_unsigned_type;
@@ -3534,13 +3562,14 @@
                                                         const typename std::iterator_traits<InputIteratorLeft>::value_type b,
                                                         const unsigned_fast_type                                           count) -> limb_type
     {
+      using local_limb_type = typename std::iterator_traits<ResultIterator>::value_type;
+      using left_value_type = typename std::iterator_traits<InputIteratorLeft>::value_type;
+
       static_assert
       (
-        (std::numeric_limits<typename std::iterator_traits<ResultIterator>::value_type>::digits == std::numeric_limits<typename std::iterator_traits<InputIteratorLeft>::value_type>::digits),
+        (std::numeric_limits<local_limb_type>::digits == std::numeric_limits<left_value_type>::digits),
         "Error: Internals require same widths for left-right-result limb_types at the moment"
       );
-
-      using local_limb_type = typename std::iterator_traits<ResultIterator>::value_type;
 
       using local_double_limb_type =
         typename detail::uint_type_helper<static_cast<size_t>(std::numeric_limits<local_limb_type>::digits * 2)>::exact_unsigned_type;
@@ -3550,7 +3579,7 @@
 
       auto carry = static_cast<local_double_limb_type>(UINT8_C(0));
 
-      if(b == 0U)
+      if(b == static_cast<left_value_type>(UINT8_C(0)))
       {
         std::fill(r, r + count, static_cast<limb_type>(UINT8_C(0)));
       }
@@ -3847,7 +3876,7 @@
         {
           // If the denominator is equal to the numerator,
           // then the result of the division is one.
-          operator=(static_cast<std::uint8_t>(1U));
+          operator=(static_cast<std::uint8_t>(UINT8_C(1)));
 
           if(remainder != nullptr)
           {
@@ -3905,7 +3934,7 @@
         uu_array_type       uu;
         representation_type vv;
 
-        if(d > static_cast<limb_type>(1U))
+        if(d > static_cast<limb_type>(UINT8_C(1)))
         {
           const auto num_limbs_minus_u_ofs =
             static_cast<size_t>
@@ -4027,7 +4056,7 @@
           const auto m_plus_one =
             static_cast<local_uint_index_type>
             (
-              static_cast<local_uint_index_type>(m) + 1U
+              static_cast<local_uint_index_type>(m) + static_cast<local_uint_index_type>(UINT8_C(1))
             );
 
           std::fill(values.begin() + m_plus_one, values.end(), static_cast<limb_type>(UINT8_C(0)));
@@ -4035,7 +4064,7 @@
 
         if(remainder != nullptr)
         {
-          if(d == 1U)
+          if(d == static_cast<limb_type>(UINT8_C(1)))
           {
             std::copy(uu.cbegin(),
                       uu.cbegin() + static_cast<size_t>(static_cast<local_uint_index_type>(number_of_limbs - v_offset)),
@@ -4182,16 +4211,16 @@
 
       // Detect: Is there a plus sign?
       // And if there is a plus sign, skip over the plus sign.
-      if((str_length > 0U) && (str_input[0U] == '+')) // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+      if((str_length > static_cast<unsigned_fast_type>(UINT8_C(0))) && (str_input[static_cast<std::size_t>(UINT8_C(0))] == '+')) // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
       {
         ++pos;
       }
 
-      bool str_has_neg_sign = false;
+      auto str_has_neg_sign = false;
 
       // Detect: Is there a minus sign?
       // And if there is a minus sign, skip over the minus sign.
-      if((str_length > 0U) && (str_input[0U] == '-')) // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+      if((str_length > static_cast<unsigned_fast_type>(UINT8_C(0))) && (str_input[static_cast<std::size_t>(UINT8_C(0))] == '-')) // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
       {
         str_has_neg_sign = true;
 
@@ -4199,28 +4228,28 @@
       }
 
       // Perform a dynamic detection of the base.
-      if(str_length > (pos + 0U))
+      if(str_length > static_cast<unsigned_fast_type>(pos + static_cast<unsigned_fast_type>(UINT8_C(0))))
       {
-        const bool might_be_oct_or_hex = ((str_input[pos + 0U] == '0') && (str_length > (pos + 1U))); // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+        const bool might_be_oct_or_hex = ((str_input[static_cast<std::size_t>(pos + static_cast<unsigned_fast_type>(UINT8_C(0)))] == '0') && (str_length > static_cast<unsigned_fast_type>(pos + static_cast<unsigned_fast_type>(UINT8_C(0))))); // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
 
         if(might_be_oct_or_hex)
         {
-          if((str_input[pos + 1U] >= '0') && (str_input[pos + 1U] <= '8')) // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+          if((str_input[static_cast<std::size_t>(pos + static_cast<unsigned_fast_type>(UINT8_C(1)))] >= '0') && (str_input[static_cast<std::size_t>(pos + static_cast<unsigned_fast_type>(UINT8_C(1)))] <= '8')) // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
           {
             // The input format is octal.
-            base = UINT8_C(8);
+            base = static_cast<std::uint_fast8_t>(UINT8_C(8));
 
-            pos += 1U;
+            pos = static_cast<unsigned_fast_type>(pos + static_cast<unsigned_fast_type>(UINT8_C(1)));
           }
-          else if((str_input[pos + 1U] == 'x') || (str_input[pos + 1U] == 'X')) // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+          else if((str_input[static_cast<std::size_t>(pos + static_cast<unsigned_fast_type>(UINT8_C(1)))] == 'x') || (str_input[static_cast<std::size_t>(pos + static_cast<unsigned_fast_type>(UINT8_C(1)))] == 'X')) // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
           {
             // The input format is hexadecimal.
-            base = UINT8_C(16);
+            base = static_cast<std::uint_fast8_t>(UINT8_C(16));
 
-            pos += 2U;
+            pos = static_cast<unsigned_fast_type>(pos + static_cast<unsigned_fast_type>(UINT8_C(2)));
           }
         }
-        else if((str_input[pos + 0U] >= '0') && (str_input[pos + 0U] <= '9')) // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+        else if((str_input[static_cast<std::size_t>(pos + static_cast<unsigned_fast_type>(UINT8_C(0)))] >= '0') && (str_input[static_cast<std::size_t>(pos + static_cast<unsigned_fast_type>(UINT8_C(0)))] <= '9')) // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
         {
           // The input format is decimal.
           ;
@@ -4237,7 +4266,7 @@
 
         if(!char_is_apostrophe)
         {
-          if(base == UINT8_C(8))
+          if(base == static_cast<std::uint_fast8_t>(UINT8_C(8)))
           {
             char_is_valid = ((c >= '0') && (c <= '8'));
 
@@ -4250,7 +4279,7 @@
               *values.begin() = static_cast<limb_type>(*values.begin() | uc_oct);
             }
           }
-          else if(base == UINT8_C(10))
+          else if(base == static_cast<std::uint_fast8_t>(UINT8_C(10)))
           {
             char_is_valid = ((c >= '0') && (c <= '9'));
 
@@ -4263,7 +4292,7 @@
               operator+=(uc_dec);
             }
           }
-          else if(base == UINT8_C(16))
+          else if(base == static_cast<std::uint_fast8_t>(UINT8_C(16)))
           {
             const auto char_is_a_to_f_lo((c >= 'a') && (c <= 'f'));
             const auto char_is_a_to_f_hi((c >= 'A') && (c <= 'F'));
@@ -4427,7 +4456,7 @@
   public:
     static constexpr int digits          = (!IsSigned)
                                              ? static_cast<int>(local_wide_integer_type::my_width2)
-                                             : static_cast<int>(local_wide_integer_type::my_width2 - 1U);
+                                             : static_cast<int>(local_wide_integer_type::my_width2 - static_cast<size_t>(UINT8_C(1)));
 
     static constexpr int digits10        = static_cast<int>((static_cast<std::uintmax_t>(digits)       * UINTMAX_C(75257499)) / UINTMAX_C(250000000));
     static constexpr int max_digits10    = digits10;
@@ -4645,11 +4674,11 @@
     const bool show_base    = ((my_flags & std::ios::showbase)  == std::ios::showbase);
     const bool is_uppercase = ((my_flags & std::ios::uppercase) == std::ios::uppercase);
 
-    std::uint_fast8_t base_rep { };
+    auto base_rep = std::uint_fast8_t { };
 
-    if     ((my_flags & std::ios::oct) == std::ios::oct) { base_rep = UINT8_C( 8); }
-    else if((my_flags & std::ios::hex) == std::ios::hex) { base_rep = UINT8_C(16); }
-    else                                                 { base_rep = UINT8_C(10); }
+    if     ((my_flags & std::ios::oct) == std::ios::oct) { base_rep = static_cast<std::uint_fast8_t>(UINT8_C( 8)); }
+    else if((my_flags & std::ios::hex) == std::ios::hex) { base_rep = static_cast<std::uint_fast8_t>(UINT8_C(16)); }
+    else                                                 { base_rep = static_cast<std::uint_fast8_t>(UINT8_C(10)); }
 
     const auto field_width   = static_cast<unsigned_fast_type>(out.width());
     const auto fill_char_out = static_cast<char>(out.fill());
@@ -4662,9 +4691,9 @@
         std::conditional_t
           <local_wide_integer_type::my_width2 <= static_cast<size_t>(UINT32_C(2048)),
             detail::fixed_static_array <char,
-                                        local_wide_integer_type::wr_string_max_buffer_size_oct>,
+                                        local_wide_integer_type::wr_string_max_buffer_size_oct()>,
             detail::fixed_dynamic_array<char,
-                                        local_wide_integer_type::wr_string_max_buffer_size_oct,
+                                        local_wide_integer_type::wr_string_max_buffer_size_oct(),
                                         typename std::allocator_traits<std::conditional_t<std::is_same<AllocatorType, void>::value,
                                                                                          std::allocator<void>,
                                                                                          AllocatorType>>::template rebind_alloc<typename local_wide_integer_type::limb_type>>>;
@@ -4685,9 +4714,9 @@
         std::conditional_t
           <local_wide_integer_type::my_width2 <= static_cast<size_t>(UINT32_C(2048)),
             detail::fixed_static_array <char,
-                                        local_wide_integer_type::wr_string_max_buffer_size_dec>,
+                                        local_wide_integer_type::wr_string_max_buffer_size_dec()>,
             detail::fixed_dynamic_array<char,
-                                        local_wide_integer_type::wr_string_max_buffer_size_dec,
+                                        local_wide_integer_type::wr_string_max_buffer_size_dec(),
                                         typename std::allocator_traits<std::conditional_t<std::is_same<AllocatorType, void>::value,
                                                                                           std::allocator<void>,
                                                                                           AllocatorType>>::template rebind_alloc<typename local_wide_integer_type::limb_type>>>;
@@ -4708,9 +4737,9 @@
         std::conditional_t
           <local_wide_integer_type::my_width2 <= static_cast<size_t>(UINT32_C(2048)),
             detail::fixed_static_array <char,
-                                        local_wide_integer_type::wr_string_max_buffer_size_hex>,
+                                        local_wide_integer_type::wr_string_max_buffer_size_hex()>,
             detail::fixed_dynamic_array<char,
-                                        local_wide_integer_type::wr_string_max_buffer_size_hex,
+                                        local_wide_integer_type::wr_string_max_buffer_size_hex(),
                                         typename std::allocator_traits<std::conditional_t<std::is_same<AllocatorType, void>::value,
                                                                                          std::allocator<void>,
                                                                                          AllocatorType>>::template rebind_alloc<typename local_wide_integer_type::limb_type>>>;
@@ -4781,8 +4810,11 @@
 
     auto e2 = static_cast<int>(INT8_C(0));
 
-    constexpr long double two_pow32 =
-      static_cast<long double>(0x10000) * static_cast<long double>(0x10000);
+    constexpr auto two_pow32 =
+      static_cast<long double>
+      (
+        static_cast<long double>(0x10000) * static_cast<long double>(0x10000)
+      );
 
     while(f >= static_cast<local_floating_point_type>(two_pow32)) // NOLINT(altera-id-dependent-backward-branch)
     {
@@ -4874,7 +4906,7 @@
     // Naive and basic LSB search.
     // TBD: This could be improved with a binary search
     // on the lowest bit position of the fundamental type.
-    while(static_cast<std::uint_fast8_t>(static_cast<std::uint_fast8_t>(mask) & UINT8_C(1)) == UINT8_C(0)) // NOLINT(hicpp-signed-bitwise,altera-id-dependent-backward-branch)
+    while(static_cast<std::uint_fast8_t>(static_cast<std::uint_fast8_t>(mask) & static_cast<std::uint_fast8_t>(UINT8_C(1))) == static_cast<std::uint_fast8_t>(UINT8_C(0))) // NOLINT(hicpp-signed-bitwise,altera-id-dependent-backward-branch)
     {
       mask = static_cast<local_unsigned_integral_type>(mask >> 1U);
 
@@ -4894,20 +4926,29 @@
 
     using local_unsigned_integral_type = UnsignedIntegralType;
 
-    signed_fast_type i { };
+    auto i = signed_fast_type { };
 
     // TBD: This could potentially be improved with a binary
     // search for the highest bit position in the type.
 
-    for(i = static_cast<signed_fast_type>(std::numeric_limits<local_unsigned_integral_type>::digits - 1); i >= 0; --i)
+    for(i = static_cast<signed_fast_type>(std::numeric_limits<local_unsigned_integral_type>::digits - 1); i >= static_cast<signed_fast_type>(INT8_C(0)); --i)
     {
-      if((u & static_cast<local_unsigned_integral_type>(static_cast<local_unsigned_integral_type>(1U) << i)) != 0U)
+      const auto bit_is_set =
+      (
+        static_cast<local_unsigned_integral_type>
+        (
+          u & static_cast<local_unsigned_integral_type>(static_cast<local_unsigned_integral_type>(1U) << static_cast<unsigned_fast_type>(i))
+        )
+        != static_cast<local_unsigned_integral_type>(UINT8_C(0))
+      );
+
+      if(bit_is_set)
       {
         break;
       }
     }
 
-    return static_cast<unsigned_fast_type>((std::max)(static_cast<signed_fast_type>(0), i));
+    return static_cast<unsigned_fast_type>((std::max)(static_cast<signed_fast_type>(INT8_C(0)), i));
   }
 
   template<>
@@ -4995,7 +5036,10 @@
           static_cast<unsigned_fast_type>
           (
               detail::lsb_helper(*it)
-            + static_cast<unsigned_fast_type>(static_cast<unsigned_fast_type>(std::numeric_limits<local_value_type>::digits) * offset)
+            + static_cast<unsigned_fast_type>
+              (
+                static_cast<unsigned_fast_type>(std::numeric_limits<local_value_type>::digits) * offset
+              )
           );
 
         break;
@@ -5030,7 +5074,10 @@
           static_cast<unsigned_fast_type>
           (
               detail::msb_helper(*ri)
-            + static_cast<unsigned_fast_type>(static_cast<unsigned_fast_type>(std::numeric_limits<local_value_type>::digits) * offset)
+            + static_cast<unsigned_fast_type>
+              (
+                static_cast<unsigned_fast_type>(std::numeric_limits<local_value_type>::digits) * offset
+              )
           );
 
         break;
@@ -5077,9 +5124,9 @@
       const auto left_shift_amount =
         static_cast<unsigned_fast_type>
         (
-          ((static_cast<unsigned_fast_type>(msb_pos % 2U) == 0U)
-            ? static_cast<unsigned_fast_type>(1U + static_cast<unsigned_fast_type>((msb_pos + 0U) / 2U))
-            : static_cast<unsigned_fast_type>(1U + static_cast<unsigned_fast_type>((msb_pos + 1U) / 2U)))
+          ((static_cast<unsigned_fast_type>(msb_pos % static_cast<unsigned_fast_type>(UINT8_C(2))) == static_cast<unsigned_fast_type>(UINT8_C(0)))
+            ? static_cast<unsigned_fast_type>(1U + static_cast<unsigned_fast_type>((msb_pos + static_cast<unsigned_fast_type>(UINT8_C(0))) / 2U))
+            : static_cast<unsigned_fast_type>(1U + static_cast<unsigned_fast_type>((msb_pos + static_cast<unsigned_fast_type>(UINT8_C(1))) / 2U)))
         );
 
       local_wide_integer_type
@@ -5133,14 +5180,14 @@
       const auto msb_pos = msb(m);
 
       // Obtain the initial value.
-      const auto msb_pos_mod_3 = static_cast<unsigned_fast_type>(msb_pos % UINT8_C(3));
+      const auto msb_pos_mod_3 = static_cast<unsigned_fast_type>(msb_pos % static_cast<unsigned_fast_type>(UINT8_C(3)));
 
       const auto left_shift_amount =
         static_cast<unsigned_fast_type>
         (
-          ((msb_pos_mod_3 == 0U)
-            ? static_cast<unsigned_fast_type>(1U + static_cast<unsigned_fast_type>((msb_pos +                  0U ) / 3U))
-            : static_cast<unsigned_fast_type>(1U + static_cast<unsigned_fast_type>((msb_pos + (3U - msb_pos_mod_3)) / 3U)))
+          (msb_pos_mod_3 == static_cast<unsigned_fast_type>(UINT8_C(0)))
+            ? static_cast<unsigned_fast_type>(1U + static_cast<unsigned_fast_type>((msb_pos + 0U ) / 3U))
+            : static_cast<unsigned_fast_type>(1U + static_cast<unsigned_fast_type>((msb_pos + static_cast<unsigned_fast_type>(static_cast<unsigned_fast_type>(UINT8_C(3)) - msb_pos_mod_3)) / 3U))
         );
 
       local_wide_integer_type u(local_wide_integer_type(static_cast<std::uint_fast8_t>(1U)) << left_shift_amount);
@@ -5150,7 +5197,7 @@
       // in R.P. Brent and Paul Zimmermann, "Modern Computer Arithmetic",
       // Cambridge University Press, 2011.
 
-      const auto three_minus_one = static_cast<unsigned_fast_type>(3U - 1U);
+      const auto three_minus_one = static_cast<unsigned_fast_type>(static_cast<unsigned>(3U - 1U));
 
       for(auto i = static_cast<unsigned_fast_type>(UINT8_C(0)); i < static_cast<unsigned_fast_type>(UINT8_C(64)); ++i)
       {
@@ -5189,15 +5236,15 @@
 
     local_wide_integer_type s;
 
-    if(k < 2U)
+    if(k < static_cast<std::uint_fast8_t>(UINT8_C(2)))
     {
       s = m;
     }
-    else if(k == 2U)
+    else if(k == static_cast<std::uint_fast8_t>(UINT8_C(2)))
     {
       s = sqrt(m);
     }
-    else if(k == 3U)
+    else if(k == static_cast<std::uint_fast8_t>(UINT8_C(3)))
     {
       s = cbrt(m);
     }
@@ -5218,8 +5265,8 @@
 
         const unsigned_fast_type left_shift_amount =
           ((msb_pos_mod_k == static_cast<unsigned_fast_type>(UINT8_C(0)))
-            ? 1U + static_cast<unsigned_fast_type>((msb_pos +                 0U ) / k)
-            : 1U + static_cast<unsigned_fast_type>((msb_pos + (k - msb_pos_mod_k)) / k));
+            ? 1U + static_cast<unsigned_fast_type>((msb_pos + 0U ) / k)
+            : 1U + static_cast<unsigned_fast_type>((msb_pos + static_cast<unsigned_fast_type>(k - msb_pos_mod_k)) / k));
 
         local_wide_integer_type u(local_wide_integer_type(static_cast<std::uint_fast8_t>(1U)) << left_shift_amount);
 
@@ -5292,7 +5339,7 @@
 
       while(((p0 = static_cast<local_limb_type>(p_local)) != 0U) || (p_local != 0U)) // NOLINT(altera-id-dependent-backward-branch)
       {
-        if((p0 & 1U) != 0U)
+        if(static_cast<unsigned_fast_type>(p0 & static_cast<local_limb_type>(UINT8_C(1))) != static_cast<unsigned_fast_type>(UINT8_C(0)))
         {
           result *= y;
         }
@@ -5350,7 +5397,7 @@
 
       while(((p0 = static_cast<local_limb_type>(p_local)) != 0U) || (p_local != static_cast<OtherIntegralTypeP>(0))) // NOLINT(altera-id-dependent-backward-branch)
       {
-        if((p0 & 1U) != 0U)
+        if(static_cast<unsigned_fast_type>(p0 & static_cast<local_limb_type>(UINT8_C(1))) != static_cast<unsigned_fast_type>(UINT8_C(0)))
         {
           x *= y;
           x %= m_local;
@@ -5759,11 +5806,12 @@
     WIDE_INTEGER_CONSTEXPR auto operator()(      GeneratorType& input_generator,
                                            const param_type&    input_params) -> result_type
     {
-      return generate<GeneratorType, GeneratorResultBits>
-             (
-               input_generator,
-               input_params
-             );
+      return
+        generate<GeneratorType, GeneratorResultBits>
+        (
+          input_generator,
+          input_params
+        );
     }
 
   private:
@@ -5800,7 +5848,7 @@
 
       while(it != result.representation().end()) // NOLINT(altera-id-dependent-backward-branch)
       {
-        if((j % digits_gtor_ratio) == 0U)
+        if(static_cast<unsigned_fast_type>(j % static_cast<unsigned_fast_type>(digits_gtor_ratio)) == static_cast<unsigned_fast_type>(UINT8_C(0)))
         {
           value = input_generator();
         }
@@ -6122,9 +6170,9 @@
         std::conditional_t
           <local_my_width2 <= static_cast<size_t>(UINT32_C(2048)),
             detail::fixed_static_array <char,
-                                        local_wide_integer_type::wr_string_max_buffer_size_oct>,
+                                        local_wide_integer_type::wr_string_max_buffer_size_oct()>,
             detail::fixed_dynamic_array<char,
-                                        local_wide_integer_type::wr_string_max_buffer_size_oct,
+                                        local_wide_integer_type::wr_string_max_buffer_size_oct(),
                                         typename std::allocator_traits<std::conditional_t<std::is_same<AllocatorType, void>::value,
                                                                                          std::allocator<void>,
                                                                                          AllocatorType>>::template rebind_alloc<local_limb_type>>>;
@@ -6167,9 +6215,9 @@
         std::conditional_t
           <local_my_width2 <= static_cast<size_t>(UINT32_C(2048)),
             detail::fixed_static_array <char,
-                                        local_wide_integer_type::wr_string_max_buffer_size_hex>,
+                                        local_wide_integer_type::wr_string_max_buffer_size_hex()>,
             detail::fixed_dynamic_array<char,
-                                        local_wide_integer_type::wr_string_max_buffer_size_hex,
+                                        local_wide_integer_type::wr_string_max_buffer_size_hex(),
                                         typename std::allocator_traits<std::conditional_t<std::is_same<AllocatorType, void>::value,
                                                                                          std::allocator<void>,
                                                                                          AllocatorType>>::template rebind_alloc<local_limb_type>>>;
@@ -6213,9 +6261,9 @@
         std::conditional_t
           <local_my_width2 <= static_cast<size_t>(UINT32_C(2048)),
             detail::fixed_static_array <char,
-                                        local_wide_integer_type::wr_string_max_buffer_size_dec>,
+                                        local_wide_integer_type::wr_string_max_buffer_size_dec()>,
             detail::fixed_dynamic_array<char,
-                                        local_wide_integer_type::wr_string_max_buffer_size_dec,
+                                        local_wide_integer_type::wr_string_max_buffer_size_dec(),
                                         typename std::allocator_traits<std::conditional_t<std::is_same<AllocatorType, void>::value,
                                                                                          std::allocator<void>,
                                                                                          AllocatorType>>::template rebind_alloc<local_limb_type>>>;
@@ -6274,9 +6322,9 @@
       std::conditional_t
         <local_my_width2 <= static_cast<size_t>(UINT32_C(2048)),
           detail::fixed_static_array <char,
-                                      local_wide_integer_type::wr_string_max_buffer_size_dec>,
+                                      local_wide_integer_type::wr_string_max_buffer_size_dec()>,
           detail::fixed_dynamic_array<char,
-                                      local_wide_integer_type::wr_string_max_buffer_size_dec,
+                                      local_wide_integer_type::wr_string_max_buffer_size_dec(),
                                       typename std::allocator_traits<std::conditional_t<std::is_same<AllocatorType, void>::value,
                                                                                        std::allocator<void>,
                                                                                        AllocatorType>>::template rebind_alloc<local_limb_type>>>;
