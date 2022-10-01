@@ -5266,7 +5266,7 @@
         // Obtain the initial value.
         const unsigned_fast_type msb_pos_mod_k = msb_pos % k;
 
-        const unsigned_fast_type left_shift_amount =
+        const auto left_shift_amount =
           static_cast<unsigned_fast_type>
           (
             ((msb_pos_mod_k == static_cast<unsigned_fast_type>(UINT8_C(0)))
