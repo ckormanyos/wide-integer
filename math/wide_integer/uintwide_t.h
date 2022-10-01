@@ -1170,7 +1170,9 @@
   inline WIDE_INTEGER_CONSTEXPR auto msb_helper<std::uint8_t>(const std::uint8_t& u) -> unsigned_fast_type;
 
   // Use a local implementation of string copy.
-  inline WIDE_INTEGER_CONSTEXPR auto strcpy_unsafe(char* dst, const char* src) -> char*
+  template<typename DestinationIterator,
+           typename SourceIterator>
+  inline WIDE_INTEGER_CONSTEXPR auto strcpy_unsafe(DestinationIterator dst, SourceIterator src) -> DestinationIterator
   {
     while((*dst++ = *src++) != '\0') { ; } // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
 
@@ -2234,7 +2236,8 @@
     }
 
     // Write string function.
-    WIDE_INTEGER_CONSTEXPR auto wr_string(      char*              str_result, // NOLINT(readability-function-cognitive-complexity)
+    template<typename OutputStrIterator>
+    WIDE_INTEGER_CONSTEXPR auto wr_string(      OutputStrIterator  str_result, // NOLINT(readability-function-cognitive-complexity)
                                           const std::uint_fast8_t  base_rep      = static_cast<std::uint_fast8_t>(UINT8_C(0x10)),
                                           const bool               show_base     = true,
                                           const bool               show_pos      = false,
@@ -4704,7 +4707,7 @@
 
       str_result.fill('\0');
 
-      x.wr_string(str_result.data(), base_rep, show_base, show_pos, is_uppercase, field_width, fill_char_out);
+      x.wr_string(str_result.begin(), base_rep, show_base, show_pos, is_uppercase, field_width, fill_char_out);
 
       static_cast<void>(ostr << str_result.data());
     }
@@ -4727,7 +4730,7 @@
 
       str_result.fill('\0');
 
-      x.wr_string(str_result.data(), base_rep, show_base, show_pos, is_uppercase, field_width, fill_char_out);
+      x.wr_string(str_result.begin(), base_rep, show_base, show_pos, is_uppercase, field_width, fill_char_out);
 
       static_cast<void>(ostr << str_result.data());
     }
@@ -4750,7 +4753,7 @@
 
       str_result.fill('\0');
 
-      x.wr_string(str_result.data(), base_rep, show_base, show_pos, is_uppercase, field_width, fill_char_out);
+      x.wr_string(str_result.begin(), base_rep, show_base, show_pos, is_uppercase, field_width, fill_char_out);
 
       static_cast<void>(ostr << str_result.data());
     }
@@ -5186,8 +5189,8 @@
         static_cast<unsigned_fast_type>
         (
           (msb_pos_mod_3 == static_cast<unsigned_fast_type>(UINT8_C(0)))
-            ? static_cast<unsigned_fast_type>(1U + static_cast<unsigned_fast_type>((msb_pos + 0U ) / 3U))
-            : static_cast<unsigned_fast_type>(1U + static_cast<unsigned_fast_type>((msb_pos + static_cast<unsigned_fast_type>(static_cast<unsigned_fast_type>(UINT8_C(3)) - msb_pos_mod_3)) / 3U))
+            ? static_cast<unsigned_fast_type>(static_cast<unsigned_fast_type>(UINT8_C(1)) + static_cast<unsigned_fast_type>(static_cast<unsigned_fast_type>(msb_pos + static_cast<unsigned_fast_type>(UINT8_C(0))) / 3U))
+            : static_cast<unsigned_fast_type>(static_cast<unsigned_fast_type>(UINT8_C(1)) + static_cast<unsigned_fast_type>(static_cast<unsigned_fast_type>(msb_pos + static_cast<unsigned_fast_type>(static_cast<unsigned_fast_type>(UINT8_C(3)) - msb_pos_mod_3)) / 3U))
         );
 
       local_wide_integer_type u(local_wide_integer_type(static_cast<std::uint_fast8_t>(1U)) << left_shift_amount);
@@ -5264,9 +5267,12 @@
         const unsigned_fast_type msb_pos_mod_k = msb_pos % k;
 
         const unsigned_fast_type left_shift_amount =
-          ((msb_pos_mod_k == static_cast<unsigned_fast_type>(UINT8_C(0)))
-            ? 1U + static_cast<unsigned_fast_type>((msb_pos + 0U ) / k)
-            : 1U + static_cast<unsigned_fast_type>((msb_pos + static_cast<unsigned_fast_type>(k - msb_pos_mod_k)) / k));
+          static_cast<unsigned_fast_type>
+          (
+            ((msb_pos_mod_k == static_cast<unsigned_fast_type>(UINT8_C(0)))
+              ? static_cast<unsigned_fast_type>(UINT8_C(1)) + static_cast<unsigned_fast_type>(static_cast<unsigned_fast_type>(msb_pos + static_cast<unsigned_fast_type>(UINT8_C(0))) / k)
+              : static_cast<unsigned_fast_type>(UINT8_C(1)) + static_cast<unsigned_fast_type>(static_cast<unsigned_fast_type>(msb_pos + static_cast<unsigned_fast_type>(k - msb_pos_mod_k)) / k))
+          );
 
         local_wide_integer_type u(local_wide_integer_type(static_cast<std::uint_fast8_t>(1U)) << left_shift_amount);
 
@@ -5275,7 +5281,7 @@
         // in R.P. Brent and Paul Zimmermann, "Modern Computer Arithmetic",
         // Cambridge University Press, 2011.
 
-        const unsigned_fast_type k_minus_one(k - 1U);
+        const auto k_minus_one = static_cast<unsigned_fast_type>(k - 1U);
 
         for(auto   i = static_cast<unsigned_fast_type>(UINT8_C(0));
                    i < static_cast<unsigned_fast_type>(UINT8_C(64));
@@ -5506,19 +5512,21 @@
 
     local_wide_integer_type result;
 
+    using local_size_type = typename local_wide_integer_type::representation_type::size_type;
+
     if(u == v)
     {
       // This handles cases having (u = v) and also (u = v = 0).
       result = u;
     }
 
-    if((static_cast<local_ushort_type>(v) == 0U) && (v == 0U))
+    if((static_cast<local_ushort_type>(v) == static_cast<local_ushort_type>(UINT8_C(0))) && (v == 0U))
     {
       // This handles cases having (v = 0) with (u != 0).
       result = u;
     }
 
-    if((static_cast<local_ushort_type>(u) == 0U) && (u == 0U))
+    if((static_cast<local_ushort_type>(u) == static_cast<local_ushort_type>(UINT8_C(0))) && (u == 0U))
     {
       // This handles cases having (u = 0) with (v != 0).
       result = v;
@@ -5557,8 +5565,8 @@
         {
           if(v <= (std::numeric_limits<local_ushort_type>::max)())
           {
-            const auto vs = *(v.crepresentation().cbegin() + 0U);
-            const auto us = *(u.crepresentation().cbegin() + 0U);
+            const auto vs = *(v.crepresentation().cbegin() + static_cast<local_size_type>(UINT8_C(0)));
+            const auto us = *(u.crepresentation().cbegin() + static_cast<local_size_type>(UINT8_C(0)));
 
             u = detail::integer_gcd_reduce_short(vs, us);
           }
@@ -5568,7 +5576,7 @@
               static_cast<local_ushort_type>
               (
                 (v.crepresentation().size() >= static_cast<typename local_wide_integer_type::representation_type::size_type>(2U))
-                  ? static_cast<local_ushort_type>(*(v.crepresentation().cbegin() + 1U))
+                  ? static_cast<local_ushort_type>(*(v.crepresentation().cbegin() + static_cast<local_size_type>(UINT8_C(1))))
                   : static_cast<local_ushort_type>(UINT8_C(0))
               );
 
@@ -5576,12 +5584,12 @@
               static_cast<local_ushort_type>
               (
                 (u.crepresentation().size() >= static_cast<typename local_wide_integer_type::representation_type::size_type>(2U))
-                  ? static_cast<local_ushort_type>(*(u.crepresentation().cbegin() + 1U))
+                  ? static_cast<local_ushort_type>(*(u.crepresentation().cbegin() + static_cast<local_size_type>(UINT8_C(1))))
                   : static_cast<local_ushort_type>(UINT8_C(0))
               );
 
-            const local_ularge_type v_large = detail::make_large(*(v.crepresentation().cbegin() + 0U), my_v_hi);
-            const local_ularge_type u_large = detail::make_large(*(u.crepresentation().cbegin() + 0U), my_u_hi);
+            const local_ularge_type v_large = detail::make_large(*(v.crepresentation().cbegin() + static_cast<local_size_type>(UINT8_C(0))), my_v_hi);
+            const local_ularge_type u_large = detail::make_large(*(u.crepresentation().cbegin() + static_cast<local_size_type>(UINT8_C(0))), my_u_hi);
 
             u = detail::integer_gcd_reduce_large(v_large, u_large);
           }
@@ -5603,7 +5611,9 @@
   WIDE_INTEGER_CONSTEXPR auto gcd(const UnsignedShortType& u, const UnsignedShortType& v) -> std::enable_if_t<(   (std::is_integral<UnsignedShortType>::value)
                                                                                                                && (std::is_unsigned<UnsignedShortType>::value)), UnsignedShortType>
   {
-    UnsignedShortType result;
+    using local_unsigned_short_type = UnsignedShortType;
+
+    auto result = local_unsigned_short_type { };
 
     if(u > v)
     {
@@ -5616,13 +5626,13 @@
       result = u;
     }
 
-    if(v == 0U)
+    if(v == static_cast<local_unsigned_short_type>(UINT8_C(0)))
     {
       // This handles cases having (v = 0) with (u != 0).
       result = u;
     }
 
-    if(u == 0U)
+    if(u == static_cast<local_unsigned_short_type>(UINT8_C(0)))
     {
       // This handles cases having (u = 0) with (v != 0).
       result = v;
@@ -5794,11 +5804,12 @@
              const int GeneratorResultBits = std::numeric_limits<typename GeneratorType::result_type>::digits>
     WIDE_INTEGER_CONSTEXPR auto operator()(GeneratorType& generator) -> result_type
     {
-      return generate<GeneratorType, GeneratorResultBits>
-             (
-               generator,
-               my_params
-             );
+      return
+        generate<GeneratorType, GeneratorResultBits>
+        (
+          generator,
+          my_params
+        );
     }
 
     template<typename GeneratorType,
@@ -5854,7 +5865,15 @@
         }
 
         const auto next_byte =
-          static_cast<std::uint8_t>(value >> static_cast<unsigned>(static_cast<unsigned_fast_type>(j % digits_gtor_ratio) * static_cast<unsigned_fast_type>(UINT8_C(8))));
+          static_cast<std::uint8_t>
+          (
+               value
+            >> static_cast<unsigned>
+               (
+                   static_cast<unsigned_fast_type>(j % digits_gtor_ratio)
+                 * static_cast<unsigned_fast_type>(UINT8_C(8))
+               )
+          );
 
         *it =
           static_cast<typename result_type::limb_type>
@@ -5999,7 +6018,7 @@
 
       const auto m0 = static_cast<std::uint64_t>(np % pp0);
 
-      if(detail::integer_gcd_reduce_large(m0, pp0) != 1U)
+      if(detail::integer_gcd_reduce_large(m0, pp0) != static_cast<std::uint64_t>(UINT8_C(1)))
       {
         return false;
       }
@@ -6013,7 +6032,7 @@
 
       const auto m1 = static_cast<std::uint64_t>(np % pp1);
 
-      if(detail::integer_gcd_reduce_large(m1, pp1) != 1U)
+      if(detail::integer_gcd_reduce_large(m1, pp1) != static_cast<std::uint64_t>(UINT8_C(1)))
       {
         return false;
       }
@@ -6027,7 +6046,7 @@
 
       const auto m2 = static_cast<std::uint64_t>(np % pp2);
 
-      if(detail::integer_gcd_reduce_large(m2, pp2) != 1U)
+      if(detail::integer_gcd_reduce_large(m2, pp2) != static_cast<std::uint64_t>(UINT8_C(1)))
       {
         return false;
       }
@@ -6041,7 +6060,7 @@
 
       const auto m3 = static_cast<std::uint64_t>(np % pp3);
 
-      if(detail::integer_gcd_reduce_large(m3, pp3) != 1U)
+      if(detail::integer_gcd_reduce_large(m3, pp3) != static_cast<std::uint64_t>(UINT8_C(1)))
       {
         return false;
       }
@@ -6055,7 +6074,7 @@
 
       const auto m4 = static_cast<std::uint64_t>(np % pp4);
 
-      if(detail::integer_gcd_reduce_large(m4, pp4) != 1U)
+      if(detail::integer_gcd_reduce_large(m4, pp4) != static_cast<std::uint64_t>(UINT8_C(1)))
       {
         return false;
       }
@@ -6153,9 +6172,6 @@
                 int base) -> std::to_chars_result
   {
     using local_wide_integer_type = uintwide_t<Width2, LimbType, AllocatorType, IsSigned>;
-    using local_limb_type         = typename local_wide_integer_type::limb_type;
-
-    constexpr auto local_my_width2 = local_wide_integer_type::my_width2;
 
     const auto base_rep     = static_cast<std::uint_fast8_t>(base);
     const auto show_base    = false;
@@ -6168,20 +6184,22 @@
     {
       using string_storage_oct_type =
         std::conditional_t
-          <local_my_width2 <= static_cast<size_t>(UINT32_C(2048)),
+          <local_wide_integer_type::my_width2 <= static_cast<size_t>(UINT32_C(2048)),
             detail::fixed_static_array <char,
                                         local_wide_integer_type::wr_string_max_buffer_size_oct()>,
             detail::fixed_dynamic_array<char,
                                         local_wide_integer_type::wr_string_max_buffer_size_oct(),
                                         typename std::allocator_traits<std::conditional_t<std::is_same<AllocatorType, void>::value,
                                                                                          std::allocator<void>,
-                                                                                         AllocatorType>>::template rebind_alloc<local_limb_type>>>;
+                                                                                         AllocatorType>>::template rebind_alloc<typename local_wide_integer_type::limb_type>>>;
+
+      using local_size_type = typename string_storage_oct_type::size_type;
 
       string_storage_oct_type str_temp { };
 
       str_temp.fill(local_wide_integer_type::my_fill_char());
 
-      const auto wr_string_is_ok = x.wr_string(str_temp.data(), base_rep, show_base, show_pos, is_uppercase);
+      const auto wr_string_is_ok = x.wr_string(str_temp.begin(), base_rep, show_base, show_pos, is_uppercase);
 
       auto rit_trim = std::find_if(str_temp.crbegin(),
                                    str_temp.crend(),
@@ -6195,15 +6213,15 @@
       if(wr_string_and_trim_is_ok)
       {
         const auto chars_retrieved =
-          static_cast<std::size_t>
+          static_cast<local_size_type>
           (
-            str_temp.size() - static_cast<std::size_t>(std::distance(str_temp.crbegin(), rit_trim))
+            str_temp.size() - static_cast<local_size_type>(std::distance(str_temp.crbegin(), rit_trim))
           );
 
-        const auto chars_to_get = static_cast<std::size_t>(std::distance(first, last));
+        const auto chars_to_get = static_cast<local_size_type>(std::distance(first, last));
 
-        result.ptr = std::copy(str_temp.data(),
-                               str_temp.data() + (std::min)(chars_retrieved, chars_to_get),
+        result.ptr = std::copy(str_temp.cbegin(),
+                               str_temp.cbegin() + (std::min)(chars_retrieved, chars_to_get),
                                first);
 
         result.ec = std::errc();
@@ -6213,43 +6231,44 @@
     {
       using string_storage_hex_type =
         std::conditional_t
-          <local_my_width2 <= static_cast<size_t>(UINT32_C(2048)),
+          <local_wide_integer_type::my_width2 <= static_cast<size_t>(UINT32_C(2048)),
             detail::fixed_static_array <char,
                                         local_wide_integer_type::wr_string_max_buffer_size_hex()>,
             detail::fixed_dynamic_array<char,
                                         local_wide_integer_type::wr_string_max_buffer_size_hex(),
                                         typename std::allocator_traits<std::conditional_t<std::is_same<AllocatorType, void>::value,
                                                                                          std::allocator<void>,
-                                                                                         AllocatorType>>::template rebind_alloc<local_limb_type>>>;
+                                                                                         AllocatorType>>::template rebind_alloc<typename local_wide_integer_type::limb_type>>>;
+
+      using local_size_type = typename string_storage_hex_type::size_type;
 
       string_storage_hex_type str_temp { };
 
       str_temp.fill(local_wide_integer_type::my_fill_char());
 
-      const auto wr_string_is_ok = x.wr_string(str_temp.data(), base_rep, show_base, show_pos, is_uppercase);
+      const auto wr_string_is_ok = x.wr_string(str_temp.begin(), base_rep, show_base, show_pos, is_uppercase);
 
       auto rit_trim = std::find_if(str_temp.crbegin(),
                                    str_temp.crend(),
                                    local_wide_integer_type::is_not_fill_char);
 
       const auto wr_string_and_trim_is_ok =
-        (
-             (rit_trim != str_temp.crend())
-          &&  wr_string_is_ok
-        );
+      (
+        (rit_trim != str_temp.crend()) && wr_string_is_ok
+      );
 
       if(wr_string_and_trim_is_ok)
       {
         const auto chars_retrieved =
-          static_cast<std::size_t>
+          static_cast<local_size_type>
           (
-            str_temp.size() - static_cast<std::size_t>(std::distance(str_temp.crbegin(), rit_trim))
+            str_temp.size() - static_cast<local_size_type>(std::distance(str_temp.crbegin(), rit_trim))
           );
 
-        const auto chars_to_get = static_cast<std::size_t>(std::distance(first, last));
+        const auto chars_to_get = static_cast<local_size_type>(std::distance(first, last));
 
-        result.ptr = std::copy(str_temp.data(),
-                               str_temp.data() + (std::min)(chars_retrieved, chars_to_get),
+        result.ptr = std::copy(str_temp.cbegin(),
+                               str_temp.cbegin() + (std::min)(chars_retrieved, chars_to_get),
                                first);
 
         result.ec = std::errc();
@@ -6259,43 +6278,44 @@
     {
       using string_storage_dec_type =
         std::conditional_t
-          <local_my_width2 <= static_cast<size_t>(UINT32_C(2048)),
+          <local_wide_integer_type::my_width2 <= static_cast<size_t>(UINT32_C(2048)),
             detail::fixed_static_array <char,
                                         local_wide_integer_type::wr_string_max_buffer_size_dec()>,
             detail::fixed_dynamic_array<char,
                                         local_wide_integer_type::wr_string_max_buffer_size_dec(),
                                         typename std::allocator_traits<std::conditional_t<std::is_same<AllocatorType, void>::value,
                                                                                          std::allocator<void>,
-                                                                                         AllocatorType>>::template rebind_alloc<local_limb_type>>>;
+                                                                                         AllocatorType>>::template rebind_alloc<typename local_wide_integer_type::limb_type>>>;
+
+      using local_size_type = typename string_storage_dec_type::size_type;
 
       string_storage_dec_type str_temp { };
 
       str_temp.fill(local_wide_integer_type::my_fill_char());
 
-      const auto wr_string_is_ok = x.wr_string(str_temp.data(), base_rep, show_base, show_pos, is_uppercase);
+      const auto wr_string_is_ok = x.wr_string(str_temp.begin(), base_rep, show_base, show_pos, is_uppercase);
 
       auto rit_trim = std::find_if(str_temp.crbegin(),
                                    str_temp.crend(),
                                    local_wide_integer_type::is_not_fill_char);
 
       const auto wr_string_and_trim_is_ok =
-        (
-             (rit_trim != str_temp.crend())
-          &&  wr_string_is_ok
-        );
+      (
+        (rit_trim != str_temp.crend()) &&  wr_string_is_ok
+      );
 
       if(wr_string_and_trim_is_ok)
       {
         const auto chars_retrieved =
-          static_cast<std::size_t>
+          static_cast<local_size_type>
           (
-            str_temp.size() - static_cast<std::size_t>(std::distance(str_temp.crbegin(), rit_trim))
+            str_temp.size() - static_cast<local_size_type>(std::distance(str_temp.crbegin(), rit_trim))
           );
 
-        const auto chars_to_get = static_cast<std::size_t>(std::distance(first, last));
+        const auto chars_to_get = static_cast<local_size_type>(std::distance(first, last));
 
-        result.ptr = std::copy(str_temp.data(),
-                               str_temp.data() + (std::min)(chars_retrieved, chars_to_get),
+        result.ptr = std::copy(str_temp.cbegin(),
+                               str_temp.cbegin() + (std::min)(chars_retrieved, chars_to_get),
                                first);
 
         result.ec = std::errc();
@@ -6314,20 +6334,19 @@
   auto to_string(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& x) -> std::string
   {
     using local_wide_integer_type = uintwide_t<Width2, LimbType, AllocatorType, IsSigned>;
-    using local_limb_type         = typename local_wide_integer_type::limb_type;
-
-    constexpr auto local_my_width2 = local_wide_integer_type::my_width2;
 
     using string_storage_dec_type =
       std::conditional_t
-        <local_my_width2 <= static_cast<size_t>(UINT32_C(2048)),
+        <local_wide_integer_type::my_width2 <= static_cast<size_t>(UINT32_C(2048)),
           detail::fixed_static_array <char,
                                       local_wide_integer_type::wr_string_max_buffer_size_dec()>,
           detail::fixed_dynamic_array<char,
                                       local_wide_integer_type::wr_string_max_buffer_size_dec(),
                                       typename std::allocator_traits<std::conditional_t<std::is_same<AllocatorType, void>::value,
                                                                                        std::allocator<void>,
-                                                                                       AllocatorType>>::template rebind_alloc<local_limb_type>>>;
+                                                                                       AllocatorType>>::template rebind_alloc<typename local_wide_integer_type::limb_type>>>;
+
+    using local_size_type = typename string_storage_dec_type::size_type;
 
     string_storage_dec_type str_temp; // LCOV_EXCL_LINE
 
@@ -6338,27 +6357,26 @@
     const auto show_pos     = false;
     const auto is_uppercase = false;
 
-    const auto wr_string_is_ok = x.wr_string(str_temp.data(), base_rep, show_base, show_pos, is_uppercase);
+    const auto wr_string_is_ok = x.wr_string(str_temp.begin(), base_rep, show_base, show_pos, is_uppercase);
 
     auto rit_trim = std::find_if(str_temp.crbegin(),
                                  str_temp.crend(),
                                  local_wide_integer_type::is_not_fill_char);
 
     const auto wr_string_and_trim_is_ok =
-      (
-           (rit_trim != str_temp.crend())
-        &&  wr_string_is_ok
-      );
+    (
+      (rit_trim != str_temp.crend()) && wr_string_is_ok
+    );
 
     std::string str_result { };
 
     if(wr_string_and_trim_is_ok)
     {
       const auto str_result_size =
-        static_cast<std::size_t>
+        static_cast<local_size_type>
         (
             str_temp.size()
-          - static_cast<std::size_t>(std::distance(str_temp.crbegin(), rit_trim))
+          - static_cast<local_size_type>(std::distance(str_temp.crbegin(), rit_trim))
         );
 
       std::fill(str_temp.begin() + str_result_size, str_temp.end(), '\0');
