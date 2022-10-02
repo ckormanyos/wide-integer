@@ -2044,14 +2044,11 @@
       if(this != &other)
       {
         // Perform bitwise OR.
-        for(auto i = static_cast<unsigned_fast_type>(UINT8_C(0)); i < number_of_limbs; ++i)
+        auto bi = other.values.cbegin();
+
+        for(auto ai = values.begin(); ai != values.end(); ++ai)
         {
-          *detail::advance_and_point(values.begin(), static_cast<size_t>(i)) =
-            static_cast<limb_type>
-            (
-                *detail::advance_and_point(values.cbegin(),       static_cast<size_t>(i))
-              | *detail::advance_and_point(other.values.cbegin(), static_cast<size_t>(i))
-            );
+          *ai = static_cast<limb_type>(*ai | *bi++);
         }
       }
 
@@ -3016,23 +3013,14 @@
         typename detail::uint_type_helper<static_cast<size_t>(std::numeric_limits<local_limb_type>::digits * 2)>::exact_unsigned_type;
 
       using result_difference_type = typename std::iterator_traits<ResultIterator>::difference_type;
-      using left_difference_type   = typename std::iterator_traits<InputIteratorLeft>::difference_type;
-      using right_difference_type  = typename std::iterator_traits<InputIteratorRight>::difference_type;
 
       for(auto i = static_cast<unsigned_fast_type>(UINT8_C(0)); i < count; ++i)
       {
         const auto uv_as_ularge =
           static_cast<local_double_limb_type>
           (
-              static_cast<local_double_limb_type>
-              (
-                static_cast<local_double_limb_type>
-                (
-                    *detail::advance_and_point(u, static_cast<left_difference_type>(i)))
-                  + *detail::advance_and_point(v, static_cast<right_difference_type>(i))
-                )
-            +
-              carry_out
+              static_cast<local_double_limb_type>(static_cast<local_double_limb_type>(*u++) + *v++)
+            + carry_out
           );
 
         carry_out = static_cast<std::uint_fast8_t>(detail::make_hi<local_limb_type>(uv_as_ularge));
@@ -3072,24 +3060,23 @@
         typename detail::uint_type_helper<static_cast<size_t>(std::numeric_limits<local_limb_type>::digits * 2)>::exact_unsigned_type;
 
       using result_difference_type = typename std::iterator_traits<ResultIterator>::difference_type;
-      using left_difference_type   = typename std::iterator_traits<InputIteratorLeft>::difference_type;
-      using right_difference_type  = typename std::iterator_traits<InputIteratorRight>::difference_type;
 
       for(auto i = static_cast<unsigned_fast_type>(UINT8_C(0)); i < count; ++i)
       {
         const auto uv_as_ularge =
           static_cast<local_double_limb_type>
           (
-            static_cast<local_double_limb_type>
-            (
-                 static_cast<local_double_limb_type>(*detail::advance_and_point(u, static_cast<left_difference_type>(i)))
-              -                                      *detail::advance_and_point(v, static_cast<right_difference_type>(i))
-            )
-          -
-            has_borrow_out
+              static_cast<local_double_limb_type>(static_cast<local_double_limb_type>(*u++) - *v++)
+            - has_borrow_out
           );
 
-        has_borrow_out = (detail::make_hi<local_limb_type>(uv_as_ularge) != static_cast<local_limb_type>(UINT8_C(0))) ? 1U : 0U;
+        has_borrow_out =
+          static_cast<std::uint_fast8_t>
+          (
+            (detail::make_hi<local_limb_type>(uv_as_ularge) != static_cast<local_limb_type>(UINT8_C(0)))
+              ? static_cast<std::uint_fast8_t>(UINT8_C(1))
+              : static_cast<std::uint_fast8_t>(UINT8_C(0))
+          );
 
         *detail::advance_and_point(r, static_cast<result_difference_type>(i)) = static_cast<local_limb_type>(uv_as_ularge);
       }
@@ -3563,34 +3550,30 @@
       using local_double_limb_type =
         typename detail::uint_type_helper<static_cast<size_t>(std::numeric_limits<local_limb_type>::digits * 2)>::exact_unsigned_type;
 
-      using result_difference_type = typename std::iterator_traits<ResultIterator>::difference_type;
-      using left_difference_type   = typename std::iterator_traits<InputIteratorLeft>::difference_type;
-      using right_difference_type  = typename std::iterator_traits<InputIteratorRight>::difference_type;
-
       std::fill_n(r, count, static_cast<local_limb_type>(UINT8_C(0)));
 
       for(auto i = static_cast<unsigned_fast_type>(UINT8_C(0)); i < count; ++i)
       {
-        if(*detail::advance_and_point(a, static_cast<left_difference_type>(i)) != static_cast<local_limb_type>(UINT8_C(0)))
+        if(*a != static_cast<local_limb_type>(UINT8_C(0)))
         {
           auto carry = static_cast<local_double_limb_type>(UINT8_C(0));
 
-          for(auto j = static_cast<unsigned_fast_type>(UINT8_C(0)); j < static_cast<unsigned_fast_type>(count - i); ++j)
+          auto r_i_plus_j = detail::advance_and_point(r, i);
+          auto bj         = b;
+
+          for(auto   j = static_cast<unsigned_fast_type>(UINT8_C(0));
+                     j < static_cast<unsigned_fast_type>(count - i);
+                   ++j)
           {
-            const auto i_plus_j =
-              static_cast<result_difference_type>
-              (
-                  static_cast<result_difference_type>(i)
-                + static_cast<result_difference_type>(j)
-              );
+            carry = static_cast<local_double_limb_type>(carry + static_cast<local_double_limb_type>(static_cast<local_double_limb_type>(*a) * *bj++));
+            carry = static_cast<local_double_limb_type>(carry + *r_i_plus_j);
 
-            carry = static_cast<local_double_limb_type>(carry + static_cast<local_double_limb_type>(static_cast<local_double_limb_type>(*detail::advance_and_point(a, static_cast<left_difference_type>(i))) * *detail::advance_and_point(b, static_cast<right_difference_type>(j))));
-            carry = static_cast<local_double_limb_type>(carry + *detail::advance_and_point(r, i_plus_j));
-
-            *detail::advance_and_point(r, i_plus_j) = static_cast<local_limb_type>(carry);
-            carry                                   = detail::make_hi<local_limb_type>(carry);
+            *r_i_plus_j++ = static_cast<local_limb_type>(carry);
+            carry         = detail::make_hi<local_limb_type>(carry);
           }
         }
+
+        ++a;
       }
     }
 
@@ -3614,45 +3597,38 @@
       using local_double_limb_type =
         typename detail::uint_type_helper<static_cast<size_t>(std::numeric_limits<local_limb_type>::digits * 2)>::exact_unsigned_type;
 
-      using result_difference_type = typename std::iterator_traits<ResultIterator>::difference_type;
-      using left_difference_type   = typename std::iterator_traits<InputIteratorLeft>::difference_type;
-      using right_difference_type  = typename std::iterator_traits<InputIteratorRight>::difference_type;
-
       std::fill_n(r, static_cast<size_t>(count * 2U), static_cast<local_limb_type>(UINT8_C(0)));
 
       for(auto i = static_cast<unsigned_fast_type>(UINT8_C(0)); i < count; ++i)
       {
-        if(*detail::advance_and_point(a, static_cast<left_difference_type>(i)) != static_cast<local_limb_type>(UINT8_C(0)))
+        if(*a != static_cast<local_limb_type>(UINT8_C(0)))
         {
-          auto j = static_cast<unsigned_fast_type>(UINT8_C(0));
-
           auto carry = static_cast<local_double_limb_type>(UINT8_C(0));
 
-          for( ; j < count; ++j)
+          auto r_i_plus_j = detail::advance_and_point(r, i);
+          auto bj         = b;
+
+          for(auto j = static_cast<unsigned_fast_type>(UINT8_C(0)); j < count; ++j)
           {
-            const auto i_plus_j =
-              static_cast<result_difference_type>
+            carry =
+              static_cast<local_double_limb_type>
               (
-                static_cast<result_difference_type>(i) + static_cast<result_difference_type>(j)
+                  static_cast<local_double_limb_type>
+                  (
+                      carry
+                    + static_cast<local_double_limb_type>(static_cast<local_double_limb_type>(*a) * *bj++)
+                  )
+                + *r_i_plus_j
               );
 
-            carry = static_cast<local_double_limb_type>(carry + static_cast<local_double_limb_type>(static_cast<local_double_limb_type>(*detail::advance_and_point(a, static_cast<left_difference_type>(i))) * *detail::advance_and_point(b, static_cast<right_difference_type>(j))));
-            carry = static_cast<local_double_limb_type>(carry + *detail::advance_and_point(r, i_plus_j));
-
-            *detail::advance_and_point(r, i_plus_j) = static_cast<local_limb_type>(carry);
-            carry                                   = detail::make_hi<local_limb_type>(carry);
+            *r_i_plus_j++ = static_cast<local_limb_type>(carry);
+            carry         = detail::make_hi<local_limb_type>(carry);
           }
 
-          {
-            const auto i_plus_count =
-              static_cast<result_difference_type>
-              (
-                static_cast<result_difference_type>(i) + static_cast<result_difference_type>(count)
-              );
-
-            *(r + i_plus_count) = static_cast<local_limb_type>(carry);
-          }
+          *r_i_plus_j = static_cast<local_limb_type>(carry);
         }
+
+        ++a;
       }
     }
 
@@ -3675,9 +3651,6 @@
       using local_double_limb_type =
         typename detail::uint_type_helper<static_cast<size_t>(std::numeric_limits<local_limb_type>::digits * 2)>::exact_unsigned_type;
 
-      using result_difference_type = typename std::iterator_traits<ResultIterator>::difference_type;
-      using left_difference_type   = typename std::iterator_traits<InputIteratorLeft>::difference_type;
-
       auto carry = static_cast<local_double_limb_type>(UINT8_C(0));
 
       if(b == static_cast<left_value_type>(UINT8_C(0)))
@@ -3688,10 +3661,15 @@
       {
         for(auto i = static_cast<unsigned_fast_type>(UINT8_C(0)) ; i < count; ++i)
         {
-          carry = static_cast<local_double_limb_type>(carry + static_cast<local_double_limb_type>(static_cast<local_double_limb_type>(*detail::advance_and_point(a, static_cast<left_difference_type>(i))) * b));
+          carry =
+            static_cast<local_double_limb_type>
+            (
+                carry
+              + static_cast<local_double_limb_type>(static_cast<local_double_limb_type>(*a++) * b)
+            );
 
-          *detail::advance_and_point(r, static_cast<result_difference_type>(i)) = static_cast<local_limb_type>(carry);
-          carry                                                                 = detail::make_hi<local_limb_type>(carry);
+          *r++  = static_cast<local_limb_type>(carry);
+          carry = detail::make_hi<local_limb_type>(carry);
         }
       }
 
@@ -3932,6 +3910,15 @@
       auto v_offset = static_cast<local_uint_index_type>(UINT8_C(0));
 
       // Compute the offsets for u and v.
+      #if 0
+      {
+        auto u_ri = values.crbegin();
+        auto v_ri = other.values.crbegin();
+
+        while((u_ri != values.crend()) && (*u_ri++ == static_cast<limb_type>(UINT8_C(0)))) { ++u_offset; } // NOLINT(altera-id-dependent-backward-branch)
+        while((v_ri != values.crend()) && (*v_ri++ == static_cast<limb_type>(UINT8_C(0)))) { ++v_offset; } // NOLINT(altera-id-dependent-backward-branch)
+      }
+      #endif
       for(auto i = static_cast<local_uint_index_type>(UINT8_C(0)); (i < static_cast<local_uint_index_type>(number_of_limbs)) && (*detail::advance_and_point(      values.cbegin(), static_cast<size_t>(static_cast<local_uint_index_type>(number_of_limbs - 1U) - i)) == static_cast<limb_type>(UINT8_C(0))); ++i) { ++u_offset; } // NOLINT(altera-id-dependent-backward-branch)
       for(auto i = static_cast<local_uint_index_type>(UINT8_C(0)); (i < static_cast<local_uint_index_type>(number_of_limbs)) && (*detail::advance_and_point(other.values.cbegin(), static_cast<size_t>(static_cast<local_uint_index_type>(number_of_limbs - 1U) - i)) == static_cast<limb_type>(UINT8_C(0))); ++i) { ++v_offset; } // NOLINT(altera-id-dependent-backward-branch)
 

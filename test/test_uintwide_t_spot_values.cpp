@@ -304,11 +304,19 @@ namespace from_issue_234
       uint80::from_rep
       (
         {
-          make_lo<local_value_type>(*math::wide_integer::detail::advance_and_point(value.crepresentation().cbegin(), 0U)),
-          make_hi<local_value_type>(*math::wide_integer::detail::advance_and_point(value.crepresentation().cbegin(), 0U)),
-          make_lo<local_value_type>(*math::wide_integer::detail::advance_and_point(value.crepresentation().cbegin(), 1U)),
-          make_hi<local_value_type>(*math::wide_integer::detail::advance_and_point(value.crepresentation().cbegin(), 1U)),
-          make_lo<local_value_type>(*math::wide_integer::detail::advance_and_point(value.crepresentation().cbegin(), 2U))
+          #if defined(WIDE_INTEGER_NAMESPACE)
+          make_lo<local_value_type>(*WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::advance_and_point(value.crepresentation().cbegin(), 0U)),
+          make_hi<local_value_type>(*WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::advance_and_point(value.crepresentation().cbegin(), 0U)),
+          make_lo<local_value_type>(*WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::advance_and_point(value.crepresentation().cbegin(), 1U)),
+          make_hi<local_value_type>(*WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::advance_and_point(value.crepresentation().cbegin(), 1U)),
+          make_lo<local_value_type>(*WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::advance_and_point(value.crepresentation().cbegin(), 2U))
+          #else
+          make_lo<local_value_type>(*::math::wide_integer::detail::advance_and_point(value.crepresentation().cbegin(), 0U)),
+          make_hi<local_value_type>(*::math::wide_integer::detail::advance_and_point(value.crepresentation().cbegin(), 0U)),
+          make_lo<local_value_type>(*::math::wide_integer::detail::advance_and_point(value.crepresentation().cbegin(), 1U)),
+          make_hi<local_value_type>(*::math::wide_integer::detail::advance_and_point(value.crepresentation().cbegin(), 1U)),
+          make_lo<local_value_type>(*::math::wide_integer::detail::advance_and_point(value.crepresentation().cbegin(), 2U))
+          #endif
         }
       );
   }
@@ -330,11 +338,19 @@ namespace from_issue_234
       uint512::from_rep
       (
         {
-          make_large(*math::wide_integer::detail::advance_and_point(value.crepresentation().cbegin(), 0U),
-                     *math::wide_integer::detail::advance_and_point(value.crepresentation().cbegin(), 1U)),
-          make_large(*math::wide_integer::detail::advance_and_point(value.crepresentation().cbegin(), 2U),
-                     *math::wide_integer::detail::advance_and_point(value.crepresentation().cbegin(), 3U)),
-          make_large(*math::wide_integer::detail::advance_and_point(value.crepresentation().cbegin(), 4U),
+          #if defined(WIDE_INTEGER_NAMESPACE)
+          make_large(*WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::advance_and_point(value.crepresentation().cbegin(), 0U),
+                     *WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::advance_and_point(value.crepresentation().cbegin(), 1U)),
+          make_large(*WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::advance_and_point(value.crepresentation().cbegin(), 2U),
+                     *WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::advance_and_point(value.crepresentation().cbegin(), 3U)),
+          make_large(*WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::advance_and_point(value.crepresentation().cbegin(), 4U),
+          #else
+          make_large(*::math::wide_integer::detail::advance_and_point(value.crepresentation().cbegin(), 0U),
+                     *::math::wide_integer::detail::advance_and_point(value.crepresentation().cbegin(), 1U)),
+          make_large(*::math::wide_integer::detail::advance_and_point(value.crepresentation().cbegin(), 2U),
+                     *::math::wide_integer::detail::advance_and_point(value.crepresentation().cbegin(), 3U)),
+          make_large(*::math::wide_integer::detail::advance_and_point(value.crepresentation().cbegin(), 4U),
+          #endif
                      static_cast<local_value_type>(0U))
         }
       );

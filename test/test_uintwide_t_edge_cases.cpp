@@ -1459,8 +1459,13 @@ auto test_import_bits() -> bool // NOLINT(readability-function-cognitive-complex
               index + static_cast<local_size_type>(UINT8_C(1))
             );
 
-          elem = make_large(*math::wide_integer::detail::advance_and_point(bits.cbegin(), index),
-                            *math::wide_integer::detail::advance_and_point(bits.cbegin(), index_plus_one));
+          #if defined(WIDE_INTEGER_NAMESPACE)
+          elem = make_large(*WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::advance_and_point(bits.cbegin(), index),
+                            *WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::advance_and_point(bits.cbegin(), index_plus_one));
+          #else
+          elem = make_large(*::math::wide_integer::detail::advance_and_point(bits.cbegin(), index),
+                            *::math::wide_integer::detail::advance_and_point(bits.cbegin(), index_plus_one));
+          #endif
 
           index = static_cast<local_size_type>(index + static_cast<local_size_type>(UINT8_C(2)));
         }
@@ -1506,7 +1511,11 @@ auto test_import_bits() -> bool // NOLINT(readability-function-cognitive-complex
       local_representation_less_wide_type bits { };
 
       std::copy(u_gen.crepresentation().cbegin(),
-                math::wide_integer::detail::advance_and_point(u_gen.crepresentation().cbegin(), std::tuple_size<local_representation_less_wide_type>::value),
+                #if defined(WIDE_INTEGER_NAMESPACE)
+                WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::advance_and_point(u_gen.crepresentation().cbegin(), std::tuple_size<local_representation_less_wide_type>::value),
+                #else
+                ::math::wide_integer::detail::advance_and_point(u_gen.crepresentation().cbegin(), std::tuple_size<local_representation_less_wide_type>::value),
+                #endif
                 bits.begin());
 
       #if defined(WIDE_INTEGER_NAMESPACE)
