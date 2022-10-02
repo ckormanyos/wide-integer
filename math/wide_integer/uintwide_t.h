@@ -3691,13 +3691,19 @@
 
       auto carry_out = carry;
 
-      for( ; (i < n) && (carry_out != static_cast<local_limb_type>(UINT8_C(0))); ++i) // NOLINT(altera-id-dependent-backward-branch)
+      while((i < n) && (carry_out != static_cast<local_limb_type>(UINT8_C(0)))) // NOLINT(altera-id-dependent-backward-branch)
       {
-        const local_double_limb_type uv_as_ularge = static_cast<local_double_limb_type>(*t) + carry_out;
+        const local_double_limb_type uv_as_ularge =
+          static_cast<local_double_limb_type>
+          (
+            static_cast<local_double_limb_type>(*t) + carry_out
+          );
 
         carry_out = detail::make_hi<local_limb_type>(uv_as_ularge);
 
         *t++ = static_cast<local_limb_type>(uv_as_ularge);
+
+        ++i;
       }
     }
 
@@ -3712,24 +3718,27 @@
       using local_double_limb_type =
         typename detail::uint_type_helper<static_cast<size_t>(std::numeric_limits<local_limb_type>::digits * 2)>::exact_unsigned_type;
 
-      using left_difference_type   = typename std::iterator_traits<InputIteratorLeft>::difference_type;
-
       auto i = static_cast<unsigned_fast_type>(UINT8_C(0));
 
-      bool has_borrow_out = has_borrow;
+      auto has_borrow_out = has_borrow;
 
-      for( ; (i < n) && has_borrow_out; ++i) // NOLINT(altera-id-dependent-backward-branch)
+      while((i < n) && has_borrow_out) // NOLINT(altera-id-dependent-backward-branch)
       {
-        auto uv_as_ularge = static_cast<local_double_limb_type>(*(t + static_cast<left_difference_type>(i)));
+        auto uv_as_ularge = static_cast<local_double_limb_type>(*t);
 
         if(has_borrow_out)
         {
           --uv_as_ularge;
         }
 
-        has_borrow_out = (detail::make_hi<local_limb_type>(uv_as_ularge) != static_cast<local_limb_type>(UINT8_C(0)));
+        has_borrow_out =
+        (
+          detail::make_hi<local_limb_type>(uv_as_ularge) != static_cast<local_limb_type>(UINT8_C(0))
+        );
 
         *t++ = static_cast<local_limb_type>(uv_as_ularge);
+
+        ++i;
       }
     }
 

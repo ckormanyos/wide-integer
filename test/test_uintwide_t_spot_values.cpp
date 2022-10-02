@@ -285,7 +285,7 @@ namespace from_issue_234
   using uint512 = ::math::wide_integer::uintwide_t<static_cast<math::wide_integer::size_t>(UINT32_C(512)), std::uint32_t>;
   #endif
 
-  inline WIDE_INTEGER_CONSTEXPR auto convert_to_uint80(uint512 value) -> uint80
+  WIDE_INTEGER_CONSTEXPR auto convert_to_uint80(const uint512& value) -> uint80
   {
     #if defined(WIDE_INTEGER_NAMESPACE)
     using WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::make_lo;
@@ -321,7 +321,7 @@ namespace from_issue_234
       );
   }
 
-  inline WIDE_INTEGER_CONSTEXPR auto convert_to_uint512(uint80 value) -> uint512
+  WIDE_INTEGER_CONSTEXPR auto convert_to_uint512(const uint80& value) -> uint512
   {
     #if defined(WIDE_INTEGER_NAMESPACE)
     using WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::make_large;
@@ -360,7 +360,7 @@ namespace from_issue_234
 namespace from_issue_145
 {
   template<typename UnknownIntegerType>
-  auto test_uintwide_t_spot_values_from_issue_145(const UnknownIntegerType x) -> bool
+  auto test_uintwide_t_spot_values_from_issue_145(const UnknownIntegerType& x) -> bool
   {
     // See also https://github.com/ckormanyos/wide-integer/issues/145#issuecomment-1006374713
 
@@ -368,27 +368,25 @@ namespace from_issue_145
 
     bool local_result_is_ok = true;
 
-    const auto a0(x);
-
     #if (defined(__clang__) && (defined(__clang_major__) && (__clang_major__ > 6)))
     #pragma GCC diagnostic push
     #pragma GCC diagnostic ignored "-Wself-assign-overloaded"
     #endif
 
     {
-      local_unknown_integer_type a = a0; a += a; // NOLINT(clang-diagnostic-self-assign-overloaded)
+      local_unknown_integer_type a = x; a += a; // NOLINT(clang-diagnostic-self-assign-overloaded)
 
-      local_result_is_ok = ((a == (2U * a0)) && local_result_is_ok);
+      local_result_is_ok = ((a == (2U * x)) && local_result_is_ok);
     }
 
     {
-      local_unknown_integer_type a = a0; a -= a; // NOLINT(clang-diagnostic-self-assign-overloaded)
+      local_unknown_integer_type a = x; a -= a; // NOLINT(clang-diagnostic-self-assign-overloaded)
 
       local_result_is_ok = ((a == 0U) && local_result_is_ok);
     }
 
     {
-      local_unknown_integer_type a = a0; a /= a; // NOLINT(clang-diagnostic-self-assign-overloaded)
+      local_unknown_integer_type a = x; a /= a; // NOLINT(clang-diagnostic-self-assign-overloaded)
 
       local_result_is_ok = ((a == 1U) && local_result_is_ok);
     }
