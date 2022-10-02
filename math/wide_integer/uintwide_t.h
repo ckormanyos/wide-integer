@@ -2044,9 +2044,9 @@
       if(this != &other)
       {
         // Perform bitwise OR.
-        auto bi = other.values.cbegin();
+        auto bi = other.values.cbegin(); // NOLINT(llvm-qualified-auto,readability-qualified-auto)
 
-        for(auto ai = values.begin(); ai != values.end(); ++ai) // NOLINT(altera-id-dependent-backward-branch)
+        for(auto ai = values.begin(); ai != values.end(); ++ai) // NOLINT(altera-id-dependent-backward-branch,llvm-qualified-auto,readability-qualified-auto)
         {
           *ai = static_cast<limb_type>(*ai | *bi++);
         }
@@ -3686,8 +3686,6 @@
 
       using local_double_limb_type =
         typename detail::uint_type_helper<static_cast<size_t>(std::numeric_limits<local_limb_type>::digits * 2)>::exact_unsigned_type;
-
-      using left_difference_type   = typename std::iterator_traits<InputIteratorLeft>::difference_type;
 
       auto i = static_cast<unsigned_fast_type>(UINT8_C(0));
 
