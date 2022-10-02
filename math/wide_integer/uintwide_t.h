@@ -2046,7 +2046,7 @@
         // Perform bitwise OR.
         auto bi = other.values.cbegin();
 
-        for(auto ai = values.begin(); ai != values.end(); ++ai)
+        for(auto ai = values.begin(); ai != values.end(); ++ai) // NOLINT(altera-id-dependent-backward-branch)
         {
           *ai = static_cast<limb_type>(*ai | *bi++);
         }
@@ -3558,8 +3558,8 @@
         {
           auto carry = static_cast<local_double_limb_type>(UINT8_C(0));
 
-          auto r_i_plus_j = detail::advance_and_point(r, i);
-          auto bj         = b;
+          auto r_i_plus_j = detail::advance_and_point(r, i); // NOLINT(llvm-qualified-auto,readability-qualified-auto)
+          auto bj         = b;                               // NOLINT(llvm-qualified-auto,readability-qualified-auto)
 
           for(auto   j = static_cast<unsigned_fast_type>(UINT8_C(0));
                      j < static_cast<unsigned_fast_type>(count - i);
@@ -3605,8 +3605,8 @@
         {
           auto carry = static_cast<local_double_limb_type>(UINT8_C(0));
 
-          auto r_i_plus_j = detail::advance_and_point(r, i);
-          auto bj         = b;
+          auto r_i_plus_j = detail::advance_and_point(r, i); // NOLINT(llvm-qualified-auto,readability-qualified-auto)
+          auto bj         = b;                               // NOLINT(llvm-qualified-auto,readability-qualified-auto)
 
           for(auto j = static_cast<unsigned_fast_type>(UINT8_C(0)); j < count; ++j)
           {
@@ -3691,17 +3691,15 @@
 
       auto i = static_cast<unsigned_fast_type>(UINT8_C(0));
 
-      local_limb_type carry_out = carry;
+      auto carry_out = carry;
 
-      while((i < n) && (carry_out != static_cast<local_limb_type>(UINT8_C(0)))) // NOLINT(altera-id-dependent-backward-branch)
+      for( ; (i < n) && (carry_out != static_cast<local_limb_type>(UINT8_C(0))); ++i) // NOLINT(altera-id-dependent-backward-branch)
       {
-        const local_double_limb_type uv_as_ularge = static_cast<local_double_limb_type>(*(t + static_cast<left_difference_type>(i))) + carry_out;
+        const local_double_limb_type uv_as_ularge = static_cast<local_double_limb_type>(*t) + carry_out;
 
         carry_out = detail::make_hi<local_limb_type>(uv_as_ularge);
 
-        *(t + static_cast<left_difference_type>(i)) = static_cast<local_limb_type>(uv_as_ularge);
-
-        ++i;
+        *t++ = static_cast<local_limb_type>(uv_as_ularge);
       }
     }
 
@@ -3722,7 +3720,7 @@
 
       bool has_borrow_out = has_borrow;
 
-      while((i < n) && has_borrow_out) // NOLINT(altera-id-dependent-backward-branch)
+      for( ; (i < n) && has_borrow_out; ++i) // NOLINT(altera-id-dependent-backward-branch)
       {
         auto uv_as_ularge = static_cast<local_double_limb_type>(*(t + static_cast<left_difference_type>(i)));
 
@@ -3733,9 +3731,7 @@
 
         has_borrow_out = (detail::make_hi<local_limb_type>(uv_as_ularge) != static_cast<local_limb_type>(UINT8_C(0)));
 
-        *(t + static_cast<left_difference_type>(i)) = static_cast<local_limb_type>(uv_as_ularge);
-
-        ++i;
+        *t++ = static_cast<local_limb_type>(uv_as_ularge);
       }
     }
 

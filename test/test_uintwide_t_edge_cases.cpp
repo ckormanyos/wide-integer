@@ -633,8 +633,7 @@ auto test_various_roots_and_pow_etc() -> bool
   const auto ten_pow_forty = local_uintwide_t_small_unsigned_type("10000000000000000000000000000000000000000");
 
   {
-    const auto u      = ten_pow_forty;
-    const auto u_root = rootk(u, static_cast<std::uint_fast8_t>(UINT8_C(1)));
+    const auto u_root = rootk(ten_pow_forty, static_cast<std::uint_fast8_t>(UINT8_C(1)));
 
     const auto result_u_root_is_ok = (u_root == ten_pow_forty);
 
@@ -642,13 +641,12 @@ auto test_various_roots_and_pow_etc() -> bool
   }
 
   {
-    const auto u      = ten_pow_forty;
-    const auto u_root = rootk(u, static_cast<std::uint_fast8_t>(UINT8_C(2)));
+    const auto u_root = rootk(ten_pow_forty, static_cast<std::uint_fast8_t>(UINT8_C(2)));
 
     const auto ten_pow_twenty = local_uintwide_t_small_unsigned_type("100000000000000000000");
 
     const auto result_u_root_is_ok = (   (u_root == ten_pow_twenty)
-                                      && (u_root == sqrt(u)));
+                                      && (u_root == sqrt(ten_pow_forty)));
 
     result_is_ok = (result_u_root_is_ok && result_is_ok);
   }
