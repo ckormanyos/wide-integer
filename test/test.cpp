@@ -91,6 +91,10 @@
   #if defined(__SANITIZE_THREAD__) || defined(WIDE_INTEGER_HAS_COVERAGE)
   #define UINTWIDE_T_REDUCE_TEST_DEPTH
   #endif
+#elif defined(_MSC_VER)
+  #if defined(_DEBUG)
+  #define UINTWIDE_T_REDUCE_TEST_DEPTH
+  #endif
 #endif
 
 namespace local {
@@ -144,7 +148,7 @@ auto test_uintwide_t_small_bits() -> bool
 
     local_uint24_t c = a * b;
 
-    result_is_ok = ((c == UINT32_C(0xF368039C)) && result_is_ok); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
+    result_is_ok = ((c == UINT32_C(0x0068039C)) && result_is_ok); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
   }
 
   {
