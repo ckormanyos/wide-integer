@@ -1082,8 +1082,10 @@
 
     explicit WIDE_INTEGER_CONSTEXPR fixed_static_array(const size_type   s,
                                                        const value_type& v = value_type(),
-                                                       allocator_type = allocator_type())
+                                                       allocator_type a = allocator_type())
     {
+      static_cast<void>(a);
+
       if(s < static_size())
       {
         std::fill(base_class_type::begin(),     base_class_type::begin() + s, v);
@@ -1194,11 +1196,12 @@
   namespace advance_helper {
 
   template<typename InputIterator>
-  WIDE_INTEGER_CONSTEXPR
-  auto do_advance(InputIterator it,
-                  typename std::iterator_traits<InputIterator>::difference_type n,
-                  std::random_access_iterator_tag) -> InputIterator
+  constexpr auto do_advance(InputIterator it,
+                            typename std::iterator_traits<InputIterator>::difference_type n,
+                            std::random_access_iterator_tag tag) -> InputIterator
   {
+    static_cast<void>(tag);
+
     return it + n;
   }
 
@@ -1206,12 +1209,23 @@
 
   template<typename InputIterator,
            typename IntegralType>
-  WIDE_INTEGER_CONSTEXPR
-  auto advance_and_point(InputIterator it, IntegralType n) -> InputIterator
+  constexpr auto advance_and_point(InputIterator it, IntegralType n) -> InputIterator
   {
-    return advance_helper::do_advance(it,
-                                      typename std::iterator_traits<InputIterator>::difference_type(n),
-                                      std::random_access_iterator_tag());
+    using local_signed_integral_type =
+      std::conditional_t<std::is_unsigned<IntegralType>::value,
+                         typename std::make_signed<IntegralType>::type,
+                         IntegralType>;
+
+    return
+      advance_helper::do_advance
+      (
+        it,
+        static_cast<typename std::iterator_traits<InputIterator>::difference_type>
+        (
+          static_cast<local_signed_integral_type>(n)
+        ),
+        std::random_access_iterator_tag()
+      );
   }
 
   template<typename UnsignedShortType,
@@ -2701,7 +2715,7 @@
 
   private:
     representation_type
-      values
+      values // NOLINT(readability-identifier-naming)
       {
         static_cast<typename representation_type::size_type>(number_of_limbs),
         static_cast<typename representation_type::value_type>(UINT8_C(0)),
@@ -4426,7 +4440,7 @@
 
     WIDE_INTEGER_CONSTEXPR auto bitwise_not() -> void
     {
-      for(auto it = values.begin(); it != values.end(); ++it)
+      for(auto it = values.begin(); it != values.end(); ++it) // NOLINT(llvm-qualified-auto,readability-qualified-auto,altera-id-dependent-backward-branch)
       {
         *it = static_cast<limb_type>(~(*it));
       }
