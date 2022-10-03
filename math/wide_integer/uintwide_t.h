@@ -1193,16 +1193,10 @@
     return static_cast<unsigned_fast_type>(p_str_copy - p_str);
   }
 
-  namespace advance_helper {
-
   template<typename InputIterator,
            typename IntegralType>
-  WIDE_INTEGER_CONSTEXPR auto do_advance(InputIterator& it,
-                                         IntegralType n,
-                                         std::random_access_iterator_tag tag) -> InputIterator
+  constexpr auto advance_and_point(InputIterator it, IntegralType n) -> InputIterator
   {
-    static_cast<void>(tag);
-
     using local_signed_integral_type =
       std::conditional_t<std::is_signed<IntegralType>::value,
                          IntegralType,
@@ -1211,29 +1205,6 @@
     using local_difference_type = typename std::iterator_traits<InputIterator>::difference_type;
 
     return it + static_cast<local_difference_type>(static_cast<local_signed_integral_type>(n));
-  }
-
-  } // namespace advance_helper
-
-  template<typename InputIterator,
-           typename IntegralType>
-  constexpr auto advance_and_point(InputIterator it, IntegralType n) -> InputIterator
-  {
-    using local_signed_integral_type =
-      std::conditional_t<std::is_unsigned<IntegralType>::value,
-                         typename std::make_signed<IntegralType>::type,
-                         IntegralType>;
-
-    return
-      advance_helper::do_advance
-      (
-        it,
-        static_cast<typename std::iterator_traits<InputIterator>::difference_type>
-        (
-          static_cast<local_signed_integral_type>(n)
-        ),
-        std::random_access_iterator_tag()
-      );
   }
 
   template<typename UnsignedShortType,
@@ -1558,7 +1529,7 @@
       static_cast<void>(p_nullparam == nullptr);
 
       auto right_shift_amount_v = static_cast<unsigned_fast_type>(UINT8_C(0));
-      auto u_it                 = values.begin();
+      auto u_it                 = values.begin(); // NOLINT(llvm-qualified-auto,readability-qualified-auto)
 
       for( ; (   (u_it != values.end()) // NOLINT(altera-id-dependent-backward-branch)
               && (right_shift_amount_v < static_cast<unsigned_fast_type>(std::numeric_limits<UnsignedIntegralType>::digits)));
@@ -3701,7 +3672,7 @@
 
       while((i < n) && (carry_out != static_cast<local_limb_type>(UINT8_C(0)))) // NOLINT(altera-id-dependent-backward-branch)
       {
-        const local_double_limb_type uv_as_ularge =
+        const auto uv_as_ularge =
           static_cast<local_double_limb_type>
           (
             static_cast<local_double_limb_type>(*t) + carry_out
@@ -4080,7 +4051,7 @@
         const auto m   = static_cast<local_uint_index_type>(static_cast<local_uint_index_type>(number_of_limbs - u_offset) - n);
         const auto vj0 = static_cast<local_uint_index_type>(static_cast<local_uint_index_type>(number_of_limbs - 1U) - v_offset);
 
-        auto vv_at_vj0_it = detail::advance_and_point(vv.cbegin(), static_cast<size_t>(vj0));
+        auto vv_at_vj0_it = detail::advance_and_point(vv.cbegin(), static_cast<size_t>(vj0)); // NOLINT(llvm-qualified-auto,readability-qualified-auto)
 
         const auto vv_at_vj0           = *vv_at_vj0_it--;
         const auto vv_at_vj0_minus_one = *vv_at_vj0_it;
