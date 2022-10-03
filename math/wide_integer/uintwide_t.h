@@ -2043,14 +2043,11 @@
       else
       {
         // Perform bitwise XOR.
-        for(auto i = static_cast<unsigned_fast_type>(UINT8_C(0)); i < number_of_limbs; ++i)
+        auto bi = other.values.cbegin(); // NOLINT(llvm-qualified-auto,readability-qualified-auto)
+
+        for(auto ai = values.begin(); ai != values.end(); ++ai) // NOLINT(altera-id-dependent-backward-branch,llvm-qualified-auto,readability-qualified-auto)
         {
-          *detail::advance_and_point(values.begin(), static_cast<size_t>(i)) =
-            static_cast<limb_type>
-            (
-                *detail::advance_and_point(values.cbegin(),       static_cast<size_t>(i))
-              ^ *detail::advance_and_point(other.values.cbegin(), static_cast<size_t>(i))
-            );
+          *ai = static_cast<limb_type>(*ai ^ *bi++);
         }
       }
 
@@ -2062,14 +2059,11 @@
       if(this != &other) // LCOV_EXCL_LINE
       {
         // Perform bitwise AND.
-        for(auto i = static_cast<unsigned_fast_type>(UINT8_C(0)); i < number_of_limbs; ++i)
+        auto bi = other.values.cbegin(); // NOLINT(llvm-qualified-auto,readability-qualified-auto)
+
+        for(auto ai = values.begin(); ai != values.end(); ++ai) // NOLINT(altera-id-dependent-backward-branch,llvm-qualified-auto,readability-qualified-auto)
         {
-          *detail::advance_and_point(values.begin(), static_cast<size_t>(i)) =
-            static_cast<limb_type>
-            (
-                *detail::advance_and_point(values.cbegin(),       static_cast<size_t>(i))
-              & *detail::advance_and_point(other.values.cbegin(), static_cast<size_t>(i))
-            );
+          *ai = static_cast<limb_type>(*ai & *bi++);
         }
       }
 
@@ -4220,7 +4214,7 @@
       const auto offset            = static_cast<unsigned_fast_type>(static_cast<unsigned_fast_type>(n) / static_cast<unsigned_fast_type>(std::numeric_limits<limb_type>::digits));
       const auto left_shift_amount = static_cast<std::uint_fast16_t>(static_cast<unsigned_fast_type>(n) % static_cast<unsigned_fast_type>(std::numeric_limits<limb_type>::digits));
 
-      if(offset > 0U)
+      if(offset > static_cast<unsigned_fast_type>(UINT8_C(0)))
       {
         std::copy_backward(values.cbegin(),
                            detail::advance_and_point(values.cbegin(), static_cast<size_t>(number_of_limbs - offset)),
@@ -4235,15 +4229,24 @@
       {
         auto part_from_previous_value = static_cast<limb_type>(UINT8_C(0));
 
-        for(unsigned_fast_type i = offset; i < static_cast<unsigned_fast_type>(number_of_limbs); ++i) // NOLINT(altera-id-dependent-backward-branch)
-        {
-          const limb_type t = *detail::advance_and_point(values.cbegin(), static_cast<size_t>(i));
+        auto ai = detail::advance_and_point(values.begin(), offset);
 
-          *detail::advance_and_point(values.begin(), static_cast<size_t>(i)) =
-            static_cast<limb_type>(static_cast<limb_type>(t << static_cast<local_integral_type>(left_shift_amount)) | part_from_previous_value);
+        while(ai != values.end()) // NOLINT(altera-id-dependent-backward-branch)
+        {
+          const limb_type t = *ai;
+
+          *ai++ =
+            static_cast<limb_type>
+            (
+                static_cast<limb_type>(t << static_cast<local_integral_type>(left_shift_amount))
+              | part_from_previous_value
+            );
 
           part_from_previous_value =
-            static_cast<limb_type>(t >> static_cast<local_integral_type>(static_cast<unsigned_fast_type>(std::numeric_limits<limb_type>::digits - left_shift_amount)));
+            static_cast<limb_type>
+            (
+              t >> static_cast<local_integral_type>(static_cast<unsigned_fast_type>(std::numeric_limits<limb_type>::digits - left_shift_amount))
+            );
         }
       }
     }
@@ -4254,7 +4257,7 @@
       const auto offset             = static_cast<unsigned_fast_type>(static_cast<unsigned_fast_type>(n) / static_cast<unsigned_fast_type>(std::numeric_limits<limb_type>::digits));
       const auto right_shift_amount = static_cast<std::uint_fast16_t>(static_cast<unsigned_fast_type>(n) % static_cast<unsigned_fast_type>(std::numeric_limits<limb_type>::digits));
 
-      if(offset > 0U)
+      if(offset > static_cast<unsigned_fast_type>(UINT8_C(0)))
       {
         std::copy(detail::advance_and_point(values.cbegin(), static_cast<size_t>(offset)),
                   detail::advance_and_point(values.cbegin(), static_cast<size_t>(number_of_limbs)),
@@ -4277,11 +4280,24 @@
               : static_cast<limb_type>((std::numeric_limits<limb_type>::max)() << static_cast<std::uint_fast16_t>(static_cast<std::uint_fast16_t>(std::numeric_limits<limb_type>::digits) - right_shift_amount))
           );
 
-        for(auto i = static_cast<signed_fast_type>((number_of_limbs - 1U) - offset); i >= static_cast<signed_fast_type>(0); --i) // NOLINT(altera-id-dependent-backward-branch)
-        {
-          const limb_type t = *detail::advance_and_point(values.cbegin(), static_cast<size_t>(i));
+        auto r_ai =
+          static_cast<typename representation_type::reverse_iterator>
+          (
+            detail::advance_and_point
+            (
+              values.begin(),
+              static_cast<signed_fast_type>
+              (
+                static_cast<unsigned_fast_type>(number_of_limbs) - offset
+              )
+            )
+          );
 
-          *detail::advance_and_point(values.begin(), static_cast<size_t>(i)) = static_cast<limb_type>(static_cast<limb_type>(t >> static_cast<local_integral_type>(right_shift_amount)) | part_from_previous_value);
+        while(r_ai != values.rend()) // NOLINT(altera-id-dependent-backward-branch)
+        {
+          const limb_type t = *r_ai;
+
+          *r_ai++ = static_cast<limb_type>(static_cast<limb_type>(t >> static_cast<local_integral_type>(right_shift_amount)) | part_from_previous_value);
 
           part_from_previous_value = static_cast<limb_type>(t << static_cast<local_integral_type>(static_cast<unsigned_fast_type>(std::numeric_limits<limb_type>::digits - right_shift_amount)));
         }
