@@ -38,7 +38,9 @@ auto ::math::wide_integer::test_uintwide_t_examples() -> bool
   result_is_ok = (math::wide_integer::example009b_timed_mul_8_by_8  () && result_is_ok); std::cout << "result_is_ok after example009b_timed_mul_8_by_8  : " << std::boolalpha << result_is_ok << std::endl;
   result_is_ok = (math::wide_integer::example010_uint48_t           () && result_is_ok); std::cout << "result_is_ok after example010_uint48_t           : " << std::boolalpha << result_is_ok << std::endl;
   result_is_ok = (math::wide_integer::example011_uint24_t           () && result_is_ok); std::cout << "result_is_ok after example011_uint24_t           : " << std::boolalpha << result_is_ok << std::endl;
+  #if !(defined(_MSC_VER) && defined(_DEBUG))
   result_is_ok = (math::wide_integer::example012_rsa_crypto         () && result_is_ok); std::cout << "result_is_ok after example012_rsa_crypto         : " << std::boolalpha << result_is_ok << std::endl;
+  #endif
 
   return result_is_ok;
 }

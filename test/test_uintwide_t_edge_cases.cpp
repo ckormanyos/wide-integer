@@ -73,10 +73,20 @@ namespace test_uintwide_t_edge {
 
 namespace local_edge_cases {
 
+  #if !(defined(_MSC_VER) && defined(_DEBUG))
   constexpr auto local_digits2       = static_cast<std::size_t>(UINT32_C(16384));
+  #endif
   constexpr auto local_digits2_small = static_cast<std::size_t>(UINT32_C(  256));
 
 } // namespace local_edge_cases
+
+#if (defined(_MSC_VER) && defined(_DEBUG))
+constexpr auto loop_count_lo = static_cast<std::uint32_t>(UINT32_C(4));
+constexpr auto loop_count_hi = static_cast<std::uint32_t>(UINT32_C(8));
+#else
+constexpr auto loop_count_lo = static_cast<std::uint32_t>(UINT32_C(64));
+constexpr auto loop_count_hi = static_cast<std::uint32_t>(UINT32_C(256));
+#endif
 
 // Forward declaration
 template<typename IntegralTimePointType,
@@ -99,6 +109,7 @@ using local_uintwide_t_small_signed_type =
   ::math::wide_integer::uintwide_t<local_edge_cases::local_digits2_small, std::uint16_t, void, true>;
 #endif
 
+#if !(defined(_MSC_VER) && defined(_DEBUG))
 using local_uint_backend_type =
   boost::multiprecision::uintwide_t_backend<local_edge_cases::local_digits2,
                                             std::uint32_t,
@@ -120,6 +131,7 @@ using local_uint_type =
 using boost_uint_type =
   boost::multiprecision::number<boost_uint_backend_type,
                                 boost::multiprecision::et_off>;
+#endif
 
 enum class local_base
 {
@@ -234,6 +246,7 @@ auto generate_wide_integer_value(bool       is_positive           = true,
   return local_integral_type(str_x.c_str());
 }
 
+#if !(defined(_MSC_VER) && defined(_DEBUG))
 auto test_various_edge_operations() -> bool
 {
   const auto u_max_local = (std::numeric_limits<local_uint_type>::max)();
@@ -335,13 +348,13 @@ auto test_various_edge_operations() -> bool
 
     local_derived_uint_type dt(static_cast<local_limb_type>(INT8_C(-3)));
 
-    dt.representation().fill(static_cast<local_limb_type>(UINT8_C(0)));
+    std::fill(dt.representation().begin(), dt.representation().end(), static_cast<local_limb_type>(UINT8_C(0)));
 
     const auto result_fill_with_zero_is_ok = (dt == 0U);
 
     result_is_ok = (result_fill_with_zero_is_ok && result_is_ok);
 
-    dt.representation().fill((std::numeric_limits<local_limb_type>::max)());
+    std::fill(dt.representation().begin(), dt.representation().end(), (std::numeric_limits<local_limb_type>::max)());
 
     const auto result_fill_with_effs_is_ok = (dt == (std::numeric_limits<local_derived_uint_type>::max)());
 
@@ -350,6 +363,7 @@ auto test_various_edge_operations() -> bool
 
   return result_is_ok;
 }
+#endif
 
 auto test_various_ostream_ops() -> bool
 {
@@ -619,8 +633,7 @@ auto test_various_roots_and_pow_etc() -> bool
   const auto ten_pow_forty = local_uintwide_t_small_unsigned_type("10000000000000000000000000000000000000000");
 
   {
-    const auto u      = ten_pow_forty;
-    const auto u_root = rootk(u, static_cast<std::uint_fast8_t>(UINT8_C(1)));
+    const auto u_root = rootk(ten_pow_forty, static_cast<std::uint_fast8_t>(UINT8_C(1)));
 
     const auto result_u_root_is_ok = (u_root == ten_pow_forty);
 
@@ -628,13 +641,12 @@ auto test_various_roots_and_pow_etc() -> bool
   }
 
   {
-    const auto u      = ten_pow_forty;
-    const auto u_root = rootk(u, static_cast<std::uint_fast8_t>(UINT8_C(2)));
+    const auto u_root = rootk(ten_pow_forty, static_cast<std::uint_fast8_t>(UINT8_C(2)));
 
     const auto ten_pow_twenty = local_uintwide_t_small_unsigned_type("100000000000000000000");
 
     const auto result_u_root_is_ok = (   (u_root == ten_pow_twenty)
-                                      && (u_root == sqrt(u)));
+                                      && (u_root == sqrt(ten_pow_forty)));
 
     result_is_ok = (result_u_root_is_ok && result_is_ok);
   }
@@ -667,7 +679,7 @@ auto test_various_roots_and_pow_etc() -> bool
   }
 
   for(auto   i = static_cast<unsigned>(UINT32_C(0));
-             i < static_cast<unsigned>(UINT32_C(256));
+             i < static_cast<unsigned>(loop_count_hi);
            ++i)
   {
     auto b_gen = generate_wide_integer_value<local_uintwide_t_small_unsigned_type>(); // NOLINT
@@ -719,7 +731,7 @@ auto test_various_roots_and_pow_etc() -> bool
   }
 
   for(auto   i = static_cast<unsigned>(UINT32_C(0));
-             i < static_cast<unsigned>(UINT32_C(256));
+             i < static_cast<unsigned>(loop_count_hi);
            ++i)
   {
     const auto high_bit =
@@ -749,7 +761,7 @@ auto test_various_roots_and_pow_etc() -> bool
   }
 
   for(auto   i = static_cast<unsigned>(UINT32_C(0));
-             i < static_cast<unsigned>(UINT32_C(256));
+             i < static_cast<unsigned>(loop_count_hi);
            ++i)
   {
     const auto b_gen = generate_wide_integer_value<local_uintwide_t_small_unsigned_type>();
@@ -762,7 +774,7 @@ auto test_various_roots_and_pow_etc() -> bool
   }
 
   for(auto   i = static_cast<unsigned>(UINT32_C(0));
-             i < static_cast<unsigned>(UINT32_C(256));
+             i < static_cast<unsigned>(loop_count_hi);
            ++i)
   {
     constexpr auto digits10_to_get_b =
@@ -853,21 +865,26 @@ auto test_various_isolated_edge_cases() -> bool // NOLINT(readability-function-c
     using local_rep_type   = typename local_uintwide_t_small_unsigned_type::representation_type;
     using local_value_type = typename local_rep_type::value_type;
 
-    local_rep_type rep(local_rep_type::static_size(), (std::numeric_limits<local_value_type>::max)());
+    local_rep_type
+      rep
+      (
+        local_uintwide_t_small_unsigned_type::number_of_limbs,
+        (std::numeric_limits<local_value_type>::max)(),
+        typename local_rep_type::allocator_type()
+      );
 
     const auto rep_as_max_is_ok =
       (local_uintwide_t_small_unsigned_type(rep) == (std::numeric_limits<local_uintwide_t_small_unsigned_type>::max)());
 
     result_is_ok = (rep_as_max_is_ok && result_is_ok);
 
-    rep.fill(static_cast<local_value_type>(0U));
+    std::fill(rep.begin(), rep.end(), static_cast<local_value_type>(0U));
 
-    const auto rep_as_zero_is_ok =
-      (local_uintwide_t_small_unsigned_type(rep) == 0);
+    const auto rep_as_zero_is_ok = (local_uintwide_t_small_unsigned_type(rep) == 0);
 
     result_is_ok = (rep_as_zero_is_ok && result_is_ok);
 
-    rep.fill((std::numeric_limits<local_value_type>::max)());
+    std::fill(rep.begin(), rep.end(), (std::numeric_limits<local_value_type>::max)());
 
     const auto rep_as_max2_is_ok =
       (local_uintwide_t_small_unsigned_type(rep) == (std::numeric_limits<local_uintwide_t_small_unsigned_type>::max)());
@@ -878,11 +895,14 @@ auto test_various_isolated_edge_cases() -> bool // NOLINT(readability-function-c
       local_rep_type
       (
         static_cast<typename local_rep_type::size_type>(rep.size()),
-        (std::numeric_limits<local_value_type>::max)()
+        (std::numeric_limits<local_value_type>::max)(),
+        typename local_rep_type::allocator_type()
       );
 
     const auto rep_as_max3_is_ok =
-      (local_uintwide_t_small_unsigned_type(rep) == (std::numeric_limits<local_uintwide_t_small_unsigned_type>::max)());
+    (
+      local_uintwide_t_small_unsigned_type(rep) == (std::numeric_limits<local_uintwide_t_small_unsigned_type>::max)()
+    );
 
     result_is_ok = (rep_as_max3_is_ok && result_is_ok);
   }
@@ -924,7 +944,7 @@ auto test_various_isolated_edge_cases() -> bool // NOLINT(readability-function-c
   }
 
   for(auto   i = static_cast<unsigned>(UINT32_C(0));
-             i < static_cast<unsigned>(UINT32_C(256));
+             i < static_cast<unsigned>(loop_count_hi);
            ++i)
   {
     // Verify division of finite, unsigned numerator by zero which returns the maximum of the type.
@@ -939,7 +959,7 @@ auto test_various_isolated_edge_cases() -> bool // NOLINT(readability-function-c
   }
 
   for(auto   i = static_cast<unsigned>(UINT32_C(0));
-             i < static_cast<unsigned>(UINT32_C(256));
+             i < static_cast<unsigned>(loop_count_hi);
            ++i)
   {
     // Verify division of finite, signed numerator by zero which returns the maximum of the type.
@@ -967,7 +987,7 @@ auto test_various_isolated_edge_cases() -> bool // NOLINT(readability-function-c
   }
 
   for(auto   i = static_cast<unsigned>(UINT32_C(0));
-             i < static_cast<unsigned>(UINT32_C(256));
+             i < static_cast<unsigned>(loop_count_hi);
            ++i)
   {
     // Verify modulus of zero with a finite denominator which returns zero modulus.
@@ -1007,7 +1027,7 @@ auto test_various_isolated_edge_cases() -> bool // NOLINT(readability-function-c
 
 
   for(auto   i = static_cast<unsigned>(UINT32_C(0));
-             i < static_cast<unsigned>(UINT32_C(256));
+             i < static_cast<unsigned>(loop_count_hi);
            ++i)
   {
     auto shift_amount =
@@ -1043,7 +1063,7 @@ auto test_various_isolated_edge_cases() -> bool // NOLINT(readability-function-c
   }
 
   for(auto   i = static_cast<unsigned>(UINT32_C(0));
-             i < static_cast<unsigned>(UINT32_C(256));
+             i < static_cast<unsigned>(loop_count_hi);
            ++i)
   {
     auto shift_amount =
@@ -1092,7 +1112,7 @@ auto test_to_chars_and_to_string() -> bool // NOLINT(readability-function-cognit
 
   #if defined(__cpp_lib_to_chars)
   for(auto   i = static_cast<unsigned>(UINT32_C(0));
-             i < static_cast<unsigned>(UINT32_C(256));
+             i < static_cast<unsigned>(loop_count_hi);
            ++i)
   {
     // Verify write to_chars() and read back from string of unsigned uintwide_t.
@@ -1139,7 +1159,7 @@ auto test_to_chars_and_to_string() -> bool // NOLINT(readability-function-cognit
   }
 
   for(auto   i = static_cast<unsigned>(UINT32_C(0));
-             i < static_cast<unsigned>(UINT32_C(256));
+             i < static_cast<unsigned>(loop_count_hi);
            ++i)
   {
     // Verify write to_chars() and read back from string of signed uintwide_t.
@@ -1172,7 +1192,7 @@ auto test_to_chars_and_to_string() -> bool // NOLINT(readability-function-cognit
 
   #if !defined(WIDE_INTEGER_DISABLE_TO_STRING)
   for(auto   i = static_cast<unsigned>(UINT32_C(0));
-             i < static_cast<unsigned>(UINT32_C(256));
+             i < static_cast<unsigned>(loop_count_hi);
            ++i)
   {
     // Verify write to_string() and read back from string of unsigned uintwide_t.
@@ -1191,7 +1211,7 @@ auto test_to_chars_and_to_string() -> bool // NOLINT(readability-function-cognit
   }
 
   for(auto   i = static_cast<unsigned>(UINT32_C(0));
-             i < static_cast<unsigned>(UINT32_C(256));
+             i < static_cast<unsigned>(loop_count_hi);
            ++i)
   {
     // Verify write to_string() and read back from string of signed uintwide_t.
@@ -1242,6 +1262,7 @@ auto test_to_chars_and_to_string() -> bool // NOLINT(readability-function-cognit
     result_is_ok = (result_to_strings_are_ok && result_is_ok);
   }
 
+  #if !(defined(_MSC_VER) && defined(_DEBUG))
   for(auto   i = static_cast<unsigned>(UINT32_C(0));
              i < static_cast<unsigned>(UINT32_C(32));
            ++i)
@@ -1266,6 +1287,7 @@ auto test_to_chars_and_to_string() -> bool // NOLINT(readability-function-cognit
 
     result_is_ok = (result_u_to_from_string_is_ok && result_is_ok);
   }
+  #endif
   #endif // !WIDE_INTEGER_DISABLE_TO_STRING
 
   return result_is_ok;
@@ -1294,7 +1316,7 @@ auto test_import_bits() -> bool // NOLINT(readability-function-cognitive-complex
   for(const auto& msv_first : msv_options) // NOLINT
   {
     for(auto   i = static_cast<unsigned>(UINT32_C(0));
-               i < static_cast<unsigned>(UINT32_C(64));
+               i < static_cast<unsigned>(loop_count_lo);
              ++i)
     {
       // Verify import_bits() and compare with Boost control value(s).
@@ -1345,7 +1367,7 @@ auto test_import_bits() -> bool // NOLINT(readability-function-cognitive-complex
     for(const auto& chunk_size : bits_for_chunks)
     {
       for(auto   i = static_cast<unsigned>(UINT32_C(0));
-                 i < static_cast<unsigned>(UINT32_C(64));
+                 i < static_cast<unsigned>(loop_count_lo);
                ++i)
       {
         // Verify import_bits() and compare with Boost control value(s).
@@ -1386,7 +1408,7 @@ auto test_import_bits() -> bool // NOLINT(readability-function-cognitive-complex
   for(const auto& msv_first : msv_options) // NOLINT
   {
     for(auto   i = static_cast<unsigned>(UINT32_C(0));
-               i < static_cast<unsigned>(UINT32_C(64));
+               i < static_cast<unsigned>(loop_count_lo);
              ++i)
     {
       // Verify import_bits() and compare with Boost control value(s).
@@ -1412,7 +1434,7 @@ auto test_import_bits() -> bool // NOLINT(readability-function-cognitive-complex
       #endif
 
       using local_double_width_input_array_type =
-        std::array<local_input_double_width_value_type, local_representation_type::static_size() / 2U>;
+        std::array<local_input_double_width_value_type, local_uintwide_t_small_unsigned_type::number_of_limbs / 2U>;
 
       local_double_width_input_array_type bits_double_width;
 
@@ -1435,7 +1457,13 @@ auto test_import_bits() -> bool // NOLINT(readability-function-cognitive-complex
               index + static_cast<local_size_type>(UINT8_C(1))
             );
 
-          elem = make_large(bits[index], bits[index_plus_one]);
+          #if defined(WIDE_INTEGER_NAMESPACE)
+          elem = make_large(*WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::advance_and_point(bits.cbegin(), index),
+                            *WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::advance_and_point(bits.cbegin(), index_plus_one));
+          #else
+          elem = make_large(*::math::wide_integer::detail::advance_and_point(bits.cbegin(), index),
+                            *::math::wide_integer::detail::advance_and_point(bits.cbegin(), index_plus_one));
+          #endif
 
           index = static_cast<local_size_type>(index + static_cast<local_size_type>(UINT8_C(2)));
         }
@@ -1461,7 +1489,7 @@ auto test_import_bits() -> bool // NOLINT(readability-function-cognitive-complex
   for(const auto& msv_first : msv_options) // NOLINT
   {
     for(auto   i = static_cast<unsigned>(UINT32_C(0));
-               i < static_cast<unsigned>(UINT32_C(64));
+               i < static_cast<unsigned>(loop_count_lo);
              ++i)
     {
       // Verify import_bits() and compare with Boost control value(s).
@@ -1476,12 +1504,16 @@ auto test_import_bits() -> bool // NOLINT(readability-function-cognitive-complex
       auto u_gen = generate_wide_integer_value<local_uintwide_t_small_unsigned_type>();
 
       using local_representation_less_wide_type =
-        std::array<local_input_value_type, static_cast<std::size_t>(static_cast<std::size_t>(local_representation_type::static_size()) - 2U)>;
+        std::array<local_input_value_type, static_cast<std::size_t>(static_cast<std::size_t>(local_uintwide_t_small_unsigned_type::number_of_limbs) - 2U)>;
 
       local_representation_less_wide_type bits { };
 
       std::copy(u_gen.crepresentation().cbegin(),
-                u_gen.crepresentation().cbegin() + std::tuple_size<local_representation_less_wide_type>::value,
+                #if defined(WIDE_INTEGER_NAMESPACE)
+                WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::advance_and_point(u_gen.crepresentation().cbegin(), std::tuple_size<local_representation_less_wide_type>::value),
+                #else
+                ::math::wide_integer::detail::advance_and_point(u_gen.crepresentation().cbegin(), std::tuple_size<local_representation_less_wide_type>::value),
+                #endif
                 bits.begin());
 
       #if defined(WIDE_INTEGER_NAMESPACE)
@@ -1495,7 +1527,7 @@ auto test_import_bits() -> bool // NOLINT(readability-function-cognitive-complex
       using local_double_width_less_wide_input_array_type =
         std::array<local_input_double_width_value_type, std::tuple_size<local_representation_less_wide_type>::value / 2U>;
 
-      static_assert(std::tuple_size<local_double_width_less_wide_input_array_type>::value == static_cast<std::size_t>(static_cast<std::size_t>(static_cast<std::size_t>(local_representation_type::static_size()) / 2U) - 1U),
+      static_assert(std::tuple_size<local_double_width_less_wide_input_array_type>::value == static_cast<std::size_t>(static_cast<std::size_t>(static_cast<std::size_t>(local_uintwide_t_small_unsigned_type::number_of_limbs) / 2U) - 1U),
                     "Error: Type definition widths are not OK");
 
       local_double_width_less_wide_input_array_type bits_double_width;
@@ -1603,7 +1635,7 @@ auto test_export_bits() -> bool // NOLINT(readability-function-cognitive-complex
   for(const auto& msv_first : msv_options) // NOLINT
   {
     for(auto   i = static_cast<unsigned>(UINT32_C(0));
-               i < static_cast<unsigned>(UINT32_C(64));
+               i < static_cast<unsigned>(loop_count_lo);
              ++i)
     {
       // Verify export_bits() and compare with Boost control value(s).
@@ -1620,7 +1652,7 @@ auto test_export_bits() -> bool // NOLINT(readability-function-cognitive-complex
       const auto val_boost      = local_boost_small_uint_type(to_string(val_uintwide_t));
 
       using local_output_array_type =
-        std::array<local_input_value_type, local_representation_type::static_size()>;
+        std::array<local_input_value_type, local_uintwide_t_small_unsigned_type::number_of_limbs>;
 
       using local_result_value_type = typename local_output_array_type::value_type;
 
@@ -1645,7 +1677,7 @@ auto test_export_bits() -> bool // NOLINT(readability-function-cognitive-complex
     for(const auto& chunk_size : bits_for_chunks)
     {
       for(auto   i = static_cast<unsigned>(UINT32_C(0));
-                 i < static_cast<unsigned>(UINT32_C(64));
+                 i < static_cast<unsigned>(loop_count_lo);
                ++i)
       {
         // Verify export_bits() and compare with Boost control value(s).
@@ -1704,7 +1736,7 @@ auto test_export_bits() -> bool // NOLINT(readability-function-cognitive-complex
   for(const auto& msv_first : msv_options) // NOLINT
   {
     for(auto   i = static_cast<unsigned>(UINT32_C(0));
-               i < static_cast<unsigned>(UINT32_C(64));
+               i < static_cast<unsigned>(loop_count_lo);
              ++i)
     {
       // Verify export_bits() and compare with Boost control value(s).
@@ -1731,7 +1763,7 @@ auto test_export_bits() -> bool // NOLINT(readability-function-cognitive-complex
       #endif
 
       using local_double_width_output_array_type =
-        std::array<local_result_double_width_value_type, local_representation_type::static_size() / 2U>;
+        std::array<local_result_double_width_value_type, local_uintwide_t_small_unsigned_type::number_of_limbs / 2U>;
 
       local_double_width_output_array_type bits_result_double_width_from_uintwide_t { };
       local_double_width_output_array_type bits_result_double_width_from_boost      { };
@@ -1783,7 +1815,9 @@ auto ::math::wide_integer::test_uintwide_t_edge_cases() -> bool
 
   auto result_is_ok = true;
 
+  #if !(defined(_MSC_VER) && defined(_DEBUG))
   result_is_ok = (test_uintwide_t_edge::test_various_edge_operations    () && result_is_ok);
+  #endif
   result_is_ok = (test_uintwide_t_edge::test_various_ostream_ops        () && result_is_ok);
   result_is_ok = (test_uintwide_t_edge::test_various_roots_and_pow_etc  () && result_is_ok);
   result_is_ok = (test_uintwide_t_edge::test_various_isolated_edge_cases() && result_is_ok);

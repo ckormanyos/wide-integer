@@ -109,18 +109,18 @@ namespace from_issue_316
     88,   53, 153, 106,  94, 112, 136,  40,
     229,   3, 176, 116,  42, 179,  23, 109,
     103,  70,  57, 154, 157, 110, 148,  87,
-      86,  78, 175,  99,   6, 111,  16, 103,
+     86,  78, 175,  99,   6, 111,  16, 103,
     142,  61, 253, 224,  39,  52, 137, 252,
-      56, 116, 147,  71, 168,  16, 155, 245,
+     56, 116, 147,  71, 168,  16, 155, 245,
     197,  97,  57,  69, 226,  13, 239, 164,
-      40, 228, 250, 130, 128, 186, 150,   3,
-      64,  81, 241, 165,  43, 136,  99,  79,
+     40, 228, 250, 130, 128, 186, 150,   3,
+     64,  81, 241, 165,  43, 136,  99,  79,
     124, 188,  50,  46, 152, 197, 205, 204,
     103, 254,  61, 143, 94,  31,    6,  98,
     165,  16, 223, 175,  30,  87, 156, 176,
     232,  56, 179,  56, 184, 220, 100, 141,
     212, 201,  55, 246, 199, 117,  28, 154,
-      51, 140,   5,  95, 102, 187, 133, 248
+     51, 140,   5,  95, 102, 187, 133, 248
   };
 
   auto test_uintwide_t_spot_values_from_issue_316_import_export_original() -> bool
@@ -285,7 +285,7 @@ namespace from_issue_234
   using uint512 = ::math::wide_integer::uintwide_t<static_cast<math::wide_integer::size_t>(UINT32_C(512)), std::uint32_t>;
   #endif
 
-  inline WIDE_INTEGER_CONSTEXPR auto convert_to_uint80(uint512 value) -> uint80
+  WIDE_INTEGER_CONSTEXPR auto convert_to_uint80(const uint512& value) -> uint80
   {
     #if defined(WIDE_INTEGER_NAMESPACE)
     using WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::make_lo;
@@ -304,16 +304,24 @@ namespace from_issue_234
       uint80::from_rep
       (
         {
-          make_lo<local_value_type>(*(value.crepresentation().data() + 0U)),
-          make_hi<local_value_type>(*(value.crepresentation().data() + 0U)),
-          make_lo<local_value_type>(*(value.crepresentation().data() + 1U)),
-          make_hi<local_value_type>(*(value.crepresentation().data() + 1U)),
-          make_lo<local_value_type>(*(value.crepresentation().data() + 2U))
+          #if defined(WIDE_INTEGER_NAMESPACE)
+          make_lo<local_value_type>(*WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::advance_and_point(value.crepresentation().cbegin(), 0U)),
+          make_hi<local_value_type>(*WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::advance_and_point(value.crepresentation().cbegin(), 0U)),
+          make_lo<local_value_type>(*WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::advance_and_point(value.crepresentation().cbegin(), 1U)),
+          make_hi<local_value_type>(*WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::advance_and_point(value.crepresentation().cbegin(), 1U)),
+          make_lo<local_value_type>(*WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::advance_and_point(value.crepresentation().cbegin(), 2U))
+          #else
+          make_lo<local_value_type>(*::math::wide_integer::detail::advance_and_point(value.crepresentation().cbegin(), 0U)),
+          make_hi<local_value_type>(*::math::wide_integer::detail::advance_and_point(value.crepresentation().cbegin(), 0U)),
+          make_lo<local_value_type>(*::math::wide_integer::detail::advance_and_point(value.crepresentation().cbegin(), 1U)),
+          make_hi<local_value_type>(*::math::wide_integer::detail::advance_and_point(value.crepresentation().cbegin(), 1U)),
+          make_lo<local_value_type>(*::math::wide_integer::detail::advance_and_point(value.crepresentation().cbegin(), 2U))
+          #endif
         }
       );
   }
 
-  inline WIDE_INTEGER_CONSTEXPR auto convert_to_uint512(uint80 value) -> uint512
+  WIDE_INTEGER_CONSTEXPR auto convert_to_uint512(const uint80& value) -> uint512
   {
     #if defined(WIDE_INTEGER_NAMESPACE)
     using WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::make_large;
@@ -330,11 +338,19 @@ namespace from_issue_234
       uint512::from_rep
       (
         {
-          make_large(*(value.crepresentation().data() + 0U),
-                     *(value.crepresentation().data() + 1U)),
-          make_large(*(value.crepresentation().data() + 2U),
-                     *(value.crepresentation().data() + 3U)),
-          make_large(*(value.crepresentation().data() + 4U),
+          #if defined(WIDE_INTEGER_NAMESPACE)
+          make_large(*WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::advance_and_point(value.crepresentation().cbegin(), 0U),
+                     *WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::advance_and_point(value.crepresentation().cbegin(), 1U)),
+          make_large(*WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::advance_and_point(value.crepresentation().cbegin(), 2U),
+                     *WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::advance_and_point(value.crepresentation().cbegin(), 3U)),
+          make_large(*WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::advance_and_point(value.crepresentation().cbegin(), 4U),
+          #else
+          make_large(*::math::wide_integer::detail::advance_and_point(value.crepresentation().cbegin(), 0U),
+                     *::math::wide_integer::detail::advance_and_point(value.crepresentation().cbegin(), 1U)),
+          make_large(*::math::wide_integer::detail::advance_and_point(value.crepresentation().cbegin(), 2U),
+                     *::math::wide_integer::detail::advance_and_point(value.crepresentation().cbegin(), 3U)),
+          make_large(*::math::wide_integer::detail::advance_and_point(value.crepresentation().cbegin(), 4U),
+          #endif
                      static_cast<local_value_type>(0U))
         }
       );
@@ -344,7 +360,7 @@ namespace from_issue_234
 namespace from_issue_145
 {
   template<typename UnknownIntegerType>
-  auto test_uintwide_t_spot_values_from_issue_145(const UnknownIntegerType x) -> bool
+  auto test_uintwide_t_spot_values_from_issue_145(const UnknownIntegerType& x) -> bool
   {
     // See also https://github.com/ckormanyos/wide-integer/issues/145#issuecomment-1006374713
 
@@ -352,27 +368,25 @@ namespace from_issue_145
 
     bool local_result_is_ok = true;
 
-    const auto a0(x);
-
     #if (defined(__clang__) && (defined(__clang_major__) && (__clang_major__ > 6)))
     #pragma GCC diagnostic push
     #pragma GCC diagnostic ignored "-Wself-assign-overloaded"
     #endif
 
     {
-      local_unknown_integer_type a = a0; a += a; // NOLINT(clang-diagnostic-self-assign-overloaded)
+      local_unknown_integer_type a = x; a += a; // NOLINT(clang-diagnostic-self-assign-overloaded)
 
-      local_result_is_ok = ((a == (2U * a0)) && local_result_is_ok);
+      local_result_is_ok = ((a == (2U * x)) && local_result_is_ok);
     }
 
     {
-      local_unknown_integer_type a = a0; a -= a; // NOLINT(clang-diagnostic-self-assign-overloaded)
+      local_unknown_integer_type a = x; a -= a; // NOLINT(clang-diagnostic-self-assign-overloaded)
 
       local_result_is_ok = ((a == 0U) && local_result_is_ok);
     }
 
     {
-      local_unknown_integer_type a = a0; a /= a; // NOLINT(clang-diagnostic-self-assign-overloaded)
+      local_unknown_integer_type a = x; a /= a; // NOLINT(clang-diagnostic-self-assign-overloaded)
 
       local_result_is_ok = ((a == 1U) && local_result_is_ok);
     }
@@ -889,7 +903,7 @@ auto local_test_spot_values::test() -> bool // NOLINT(readability-function-cogni
       assert((std::numeric_limits<local_uint8192_type >::max)() != 0U); // NOLINT
       assert((std::numeric_limits<local_uint16384_type>::max)() != 0U); // NOLINT
       assert((std::numeric_limits<local_uint32768_type>::max)() != 0U); // NOLINT
-      assert((std::numeric_limits<local_uint65536_type>::max)() != 0U); // NOLINT
+      assert((std::numeric_limits<local_uint65536_type>::max)() != 0U); // NOLINT // LCOV_EXCL_LINE
 
       assert((std::numeric_limits<local_uint64_type   >::min)() == 0U); // NOLINT
       assert((std::numeric_limits<local_uint128_type  >::min)() == 0U); // NOLINT
