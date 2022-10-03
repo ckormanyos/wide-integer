@@ -1864,7 +1864,7 @@
     {
       if(this == &other)
       {
-        std::fill(values.begin(), values.end(), static_cast<typename representation_type::value_type>(UINT8_C(0)));
+        std::fill(values.begin(), values.end(), static_cast<typename representation_type::value_type>(UINT8_C(0))); // LCOV_EXCL_LINE
       }
       else
       {
@@ -1920,7 +1920,7 @@
       {
         values.front() = static_cast<limb_type>(UINT8_C(1));
 
-        std::fill(detail::advance_and_point(values.begin(), 1U), values.end(), static_cast<limb_type>(UINT8_C(0)));
+        std::fill(detail::advance_and_point(values.begin(), 1U), values.end(), static_cast<limb_type>(UINT8_C(0))); // LCOV_EXCL_LINE
       }
       else if(other.is_zero())
       {
@@ -2023,7 +2023,7 @@
       if(this != &other)
       {
         // Perform bitwise OR.
-        auto bi = other.values.cbegin(); // NOLINT(llvm-qualified-auto,readability-qualified-auto)
+        auto bi = other.values.cbegin(); // NOLINT(llvm-qualified-auto,readability-qualified-auto) // LCOV_EXCL_LINE
 
         for(auto ai = values.begin(); ai != values.end(); ++ai) // NOLINT(altera-id-dependent-backward-branch,llvm-qualified-auto,readability-qualified-auto)
         {
@@ -2038,12 +2038,12 @@
     {
       if(this == &other)
       {
-        std::fill(values.begin(), values.end(), static_cast<typename representation_type::value_type>(UINT8_C(0)));
+        std::fill(values.begin(), values.end(), static_cast<typename representation_type::value_type>(UINT8_C(0))); // LCOV_EXCL_LINE
       }
       else
       {
         // Perform bitwise XOR.
-        auto bi = other.values.cbegin(); // NOLINT(llvm-qualified-auto,readability-qualified-auto)
+        auto bi = other.values.cbegin(); // NOLINT(llvm-qualified-auto,readability-qualified-auto) // LCOV_EXCL_LINE
 
         for(auto ai = values.begin(); ai != values.end(); ++ai) // NOLINT(altera-id-dependent-backward-branch,llvm-qualified-auto,readability-qualified-auto)
         {
@@ -3924,7 +3924,7 @@
 
         if(remainder != nullptr) // LCOV_EXCL_LINE
         {
-          std::fill(remainder->values.begin(), remainder->values.end(), static_cast<limb_type>(UINT8_C(0)));
+          std::fill(remainder->values.begin(), remainder->values.end(), static_cast<limb_type>(UINT8_C(0))); // LCOV_EXCL_LINE
         }
       }
       else if(u_offset == static_cast<local_uint_index_type>(number_of_limbs))
@@ -5655,13 +5655,13 @@
     if(u == v)
     {
       // This handles cases having (u = v) and also (u = v = 0).
-      result = u;
+      result = u; // LCOV_EXCL_LINE
     }
 
     if((static_cast<local_ushort_type>(v) == static_cast<local_ushort_type>(UINT8_C(0))) && (v == 0U))
     {
       // This handles cases having (v = 0) with (u != 0).
-      result = u;
+      result = u; // LCOV_EXCL_LINE
     }
 
     if((static_cast<local_ushort_type>(u) == static_cast<local_ushort_type>(UINT8_C(0))) && (u == 0U))

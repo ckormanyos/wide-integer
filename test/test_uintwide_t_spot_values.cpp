@@ -658,7 +658,7 @@ auto local_test_spot_values::test() -> bool // NOLINT(readability-function-cogni
     static_assert(std::is_constructible          <local_int160_type,        local_uint128_type >::value, "Error: Types are not constructible");
     static_assert(std::is_constructible          <local_int160_type,        local_int128_type  >::value, "Error: Types are not constructible");
     static_assert(std::is_constructible          <local_int160_type,        local_uint160_type >::value, "Error: Types are not constructible");
-    //static_assert(std::is_trivially_constructible<local_int160_type,  const local_int160_type& >::value, "Error: Types are not trivially constructible");
+    static_assert(std::is_trivially_constructible<local_int160_type,  const local_int160_type& >::value, "Error: Types are not trivially constructible");
 
     // Static test of conversion rules.
     //                               <local_uint128_type, local_uint128_type>
@@ -903,7 +903,7 @@ auto local_test_spot_values::test() -> bool // NOLINT(readability-function-cogni
       assert((std::numeric_limits<local_uint8192_type >::max)() != 0U); // NOLINT
       assert((std::numeric_limits<local_uint16384_type>::max)() != 0U); // NOLINT
       assert((std::numeric_limits<local_uint32768_type>::max)() != 0U); // NOLINT
-      assert((std::numeric_limits<local_uint65536_type>::max)() != 0U); // NOLINT
+      assert((std::numeric_limits<local_uint65536_type>::max)() != 0U); // NOLINT // LCOV_EXCL_LINE
 
       assert((std::numeric_limits<local_uint64_type   >::min)() == 0U); // NOLINT
       assert((std::numeric_limits<local_uint128_type  >::min)() == 0U); // NOLINT
