@@ -535,12 +535,12 @@
     using exact_unsigned_type = std::uintmax_t;
   };
 
-  template<const size_t BitCount> struct uint_type_helper<BitCount, std::enable_if_t<                     (BitCount <=   8U)>> { using exact_unsigned_type = std::uint8_t;      using fast_unsigned_type = std::uint_fast8_t;  using fast_signed_type = std::int_fast8_t;  }; // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
-  template<const size_t BitCount> struct uint_type_helper<BitCount, std::enable_if_t<(BitCount >=  9U) && (BitCount <=  16U)>> { using exact_unsigned_type = std::uint16_t;     using fast_unsigned_type = std::uint_fast16_t; using fast_signed_type = std::int_fast16_t; }; // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
-  template<const size_t BitCount> struct uint_type_helper<BitCount, std::enable_if_t<(BitCount >= 17U) && (BitCount <=  32U)>> { using exact_unsigned_type = std::uint32_t;     using fast_unsigned_type = std::uint_fast32_t; using fast_signed_type = std::int_fast32_t; }; // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
-  template<const size_t BitCount> struct uint_type_helper<BitCount, std::enable_if_t<(BitCount >= 33U) && (BitCount <=  64U)>> { using exact_unsigned_type = std::uint64_t;     using fast_unsigned_type = std::uint_fast64_t; using fast_signed_type = std::int_fast64_t; }; // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
+  template<const size_t BitCount> struct uint_type_helper<BitCount, std::enable_if_t<                     (BitCount <=   8U)>> { using exact_unsigned_type = std::uint8_t;  using exact_signed_type = std::int8_t;  using fast_unsigned_type = std::uint_fast8_t;  using fast_signed_type = std::int_fast8_t;  }; // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
+  template<const size_t BitCount> struct uint_type_helper<BitCount, std::enable_if_t<(BitCount >=  9U) && (BitCount <=  16U)>> { using exact_unsigned_type = std::uint16_t; using exact_signed_type = std::int16_t; using fast_unsigned_type = std::uint_fast16_t; using fast_signed_type = std::int_fast16_t; }; // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
+  template<const size_t BitCount> struct uint_type_helper<BitCount, std::enable_if_t<(BitCount >= 17U) && (BitCount <=  32U)>> { using exact_unsigned_type = std::uint32_t; using exact_signed_type = std::int32_t; using fast_unsigned_type = std::uint_fast32_t; using fast_signed_type = std::int_fast32_t; }; // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
+  template<const size_t BitCount> struct uint_type_helper<BitCount, std::enable_if_t<(BitCount >= 33U) && (BitCount <=  64U)>> { using exact_unsigned_type = std::uint64_t; using exact_signed_type = std::int64_t; using fast_unsigned_type = std::uint_fast64_t; using fast_signed_type = std::int_fast64_t; }; // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
   #if defined(WIDE_INTEGER_HAS_LIMB_TYPE_UINT64)
-  template<const size_t BitCount> struct uint_type_helper<BitCount, typename std::enable_if_t<(BitCount >= 65U) && (BitCount <= 128U)>> { using exact_unsigned_type = unsigned __int128; using fast_unsigned_type = unsigned __int128;  using fast_signed_type = signed __int128;   }; // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
+  template<const size_t BitCount> struct uint_type_helper<BitCount, typename std::enable_if_t<(BitCount >= 65U) && (BitCount <= 128U)>> { using exact_unsigned_type = unsigned __int128; using exact_signed_type = signed __int128; using fast_unsigned_type = unsigned __int128;  using fast_signed_type = signed __int128;   }; // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
   #endif
 
   using unsigned_fast_type = typename uint_type_helper<static_cast<size_t>(std::numeric_limits<size_t   >::digits + 0)>::fast_unsigned_type;
@@ -1195,14 +1195,22 @@
 
   namespace advance_helper {
 
-  template<typename InputIterator>
-  constexpr auto do_advance(InputIterator it,
-                            typename std::iterator_traits<InputIterator>::difference_type n,
-                            std::random_access_iterator_tag tag) -> InputIterator
+  template<typename InputIterator,
+           typename IntegralType>
+  WIDE_INTEGER_CONSTEXPR auto do_advance(InputIterator& it,
+                                         IntegralType n,
+                                         std::random_access_iterator_tag tag) -> InputIterator
   {
     static_cast<void>(tag);
 
-    return it + n;
+    using local_signed_integral_type =
+      std::conditional_t<std::is_signed<IntegralType>::value,
+                         IntegralType,
+                         typename detail::uint_type_helper<static_cast<size_t>(std::numeric_limits<IntegralType>::digits)>::exact_signed_type>;
+
+    using local_difference_type = typename std::iterator_traits<InputIterator>::difference_type;
+
+    return it + static_cast<local_difference_type>(static_cast<local_signed_integral_type>(n));
   }
 
   } // namespace advance_helper
@@ -1550,18 +1558,18 @@
       static_cast<void>(p_nullparam == nullptr);
 
       auto right_shift_amount_v = static_cast<unsigned_fast_type>(UINT8_C(0));
-      auto index_u              = static_cast<std::uint_fast8_t>(UINT8_C(0));
+      auto u_it                 = values.begin();
 
-      for( ; (   (static_cast<size_t>(index_u) < values.size()) // NOLINT(altera-id-dependent-backward-branch)
+      for( ; (   (u_it != values.end()) // NOLINT(altera-id-dependent-backward-branch)
               && (right_shift_amount_v < static_cast<unsigned_fast_type>(std::numeric_limits<UnsignedIntegralType>::digits)));
-             ++index_u)
+          ++u_it)
       {
-        *detail::advance_and_point(values.begin(), static_cast<size_t>(index_u)) = static_cast<limb_type>(v >> static_cast<unsigned>(right_shift_amount_v));
+        *u_it = static_cast<limb_type>(v >> static_cast<unsigned>(right_shift_amount_v));
 
         right_shift_amount_v += static_cast<unsigned_fast_type>(std::numeric_limits<limb_type>::digits);
       }
 
-      std::fill(detail::advance_and_point(values.begin(), static_cast<size_t>(index_u)), values.end(), static_cast<limb_type>(UINT8_C(0)));
+      std::fill(u_it, values.end(), static_cast<limb_type>(UINT8_C(0)));
     }
 
     // Constructors from built-in signed integral types.
@@ -3909,21 +3917,17 @@
 
       using local_uint_index_type = unsigned_fast_type;
 
-      auto u_offset = static_cast<local_uint_index_type>(UINT8_C(0));
-      auto v_offset = static_cast<local_uint_index_type>(UINT8_C(0));
+      const auto u_offset =
+        static_cast<local_uint_index_type>
+        (
+          std::distance(values.crbegin(), std::find_if(values.crbegin(), values.crend(), [](const limb_type& elem) { return (elem != static_cast<limb_type>(UINT8_C(0))); }))
+        );
 
-      // Compute the offsets for u and v.
-      #if 0
-      {
-        auto u_ri = values.crbegin();
-        auto v_ri = other.values.crbegin();
-
-        while((u_ri != values.crend()) && (*u_ri++ == static_cast<limb_type>(UINT8_C(0)))) { ++u_offset; } // NOLINT(altera-id-dependent-backward-branch)
-        while((v_ri != values.crend()) && (*v_ri++ == static_cast<limb_type>(UINT8_C(0)))) { ++v_offset; } // NOLINT(altera-id-dependent-backward-branch)
-      }
-      #endif
-      for(auto i = static_cast<local_uint_index_type>(UINT8_C(0)); (i < static_cast<local_uint_index_type>(number_of_limbs)) && (*detail::advance_and_point(      values.cbegin(), static_cast<size_t>(static_cast<local_uint_index_type>(number_of_limbs - 1U) - i)) == static_cast<limb_type>(UINT8_C(0))); ++i) { ++u_offset; } // NOLINT(altera-id-dependent-backward-branch)
-      for(auto i = static_cast<local_uint_index_type>(UINT8_C(0)); (i < static_cast<local_uint_index_type>(number_of_limbs)) && (*detail::advance_and_point(other.values.cbegin(), static_cast<size_t>(static_cast<local_uint_index_type>(number_of_limbs - 1U) - i)) == static_cast<limb_type>(UINT8_C(0))); ++i) { ++v_offset; } // NOLINT(altera-id-dependent-backward-branch)
+      const auto v_offset =
+        static_cast<local_uint_index_type>
+        (
+          std::distance(other.values.crbegin(), std::find_if(other.values.crbegin(), other.values.crend(), [](const limb_type& elem) { return (elem != static_cast<limb_type>(UINT8_C(0))); }))
+        );
 
       if(v_offset == static_cast<local_uint_index_type>(number_of_limbs))
       {
@@ -4076,6 +4080,13 @@
         const auto m   = static_cast<local_uint_index_type>(static_cast<local_uint_index_type>(number_of_limbs - u_offset) - n);
         const auto vj0 = static_cast<local_uint_index_type>(static_cast<local_uint_index_type>(number_of_limbs - 1U) - v_offset);
 
+        auto vv_at_vj0_it = detail::advance_and_point(vv.cbegin(), static_cast<size_t>(vj0));
+
+        const auto vv_at_vj0           = *vv_at_vj0_it--;
+        const auto vv_at_vj0_minus_one = *vv_at_vj0_it;
+
+        auto values_at_m_minus_j_it = detail::advance_and_point(values.begin(), static_cast<size_t>(m));
+
         for(auto j = static_cast<local_uint_index_type>(UINT8_C(0)); j <= m; ++j) // NOLINT(altera-id-dependent-backward-branch)
         {
           // Step D3 [Calculate q_hat].
@@ -4090,9 +4101,9 @@
           auto q_hat =
             static_cast<limb_type>
             (
-              (*(uu.cbegin() + static_cast<size_t>(uj)) == *detail::advance_and_point(vv.cbegin(), static_cast<size_t>(vj0)))
+              (*(uu.cbegin() + static_cast<size_t>(uj)) == vv_at_vj0)
                 ? (std::numeric_limits<limb_type>::max)()
-                : static_cast<limb_type>(u_j_j1 / *detail::advance_and_point(vv.cbegin(), static_cast<size_t>(vj0)))
+                : static_cast<limb_type>(u_j_j1 / vv_at_vj0)
             );
 
           // Decrease q_hat if necessary.
@@ -4100,10 +4111,12 @@
           // expression [(u[uj] * b + u[uj - 1] - q_hat * v[vj0 - 1]) * b]
           // exceeds the range of uintwide_t.
 
-          for(auto t = static_cast<double_limb_type>(u_j_j1 - static_cast<double_limb_type>(q_hat * static_cast<double_limb_type>(*detail::advance_and_point(vv.cbegin(), static_cast<size_t>(vj0))))); ; --q_hat, t = static_cast<double_limb_type>(t + *detail::advance_and_point(vv.cbegin(), static_cast<size_t>(vj0))))
+          for(auto t = static_cast<double_limb_type>(u_j_j1 - static_cast<double_limb_type>(q_hat * static_cast<double_limb_type>(vv_at_vj0)));
+                     ;
+                       --q_hat, t = static_cast<double_limb_type>(t + vv_at_vj0))
           {
             if(   (detail::make_hi<limb_type>(t) != static_cast<limb_type>(UINT8_C(0)))
-               || (   static_cast<double_limb_type>(static_cast<double_limb_type>(*detail::advance_and_point(vv.cbegin(), static_cast<size_t>(vj0 - 1U))) * q_hat)
+               || (   static_cast<double_limb_type>(static_cast<double_limb_type>(vv_at_vj0_minus_one) * q_hat)
                    <= static_cast<double_limb_type>(static_cast<double_limb_type>(t << static_cast<unsigned>(std::numeric_limits<limb_type>::digits)) + *detail::advance_and_point(uu.cbegin(), static_cast<size_t>(uj - 2U)))))
             {
               break;
@@ -4148,7 +4161,12 @@
           }
 
           // Get the result data.
-          *detail::advance_and_point(values.begin(), static_cast<size_t>(m - j)) = static_cast<limb_type>(q_hat);
+          *values_at_m_minus_j_it = static_cast<limb_type>(q_hat);
+
+          if(j < m)
+          {
+            --values_at_m_minus_j_it;
+          }
         }
 
         // Clear the data elements that have not
