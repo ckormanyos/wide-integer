@@ -4056,7 +4056,7 @@
         const auto vv_at_vj0           = *vv_at_vj0_it--;
         const auto vv_at_vj0_minus_one = *vv_at_vj0_it;
 
-        auto values_at_m_minus_j_it = detail::advance_and_point(values.begin(), static_cast<size_t>(m));
+        auto values_at_m_minus_j_it = detail::advance_and_point(values.begin(), static_cast<size_t>(m)); // NOLINT(llvm-qualified-auto,readability-qualified-auto)
 
         for(auto j = static_cast<local_uint_index_type>(UINT8_C(0)); j <= m; ++j) // NOLINT(altera-id-dependent-backward-branch)
         {
