@@ -109,18 +109,18 @@ namespace from_issue_316
     88,   53, 153, 106,  94, 112, 136,  40,
     229,   3, 176, 116,  42, 179,  23, 109,
     103,  70,  57, 154, 157, 110, 148,  87,
-      86,  78, 175,  99,   6, 111,  16, 103,
+     86,  78, 175,  99,   6, 111,  16, 103,
     142,  61, 253, 224,  39,  52, 137, 252,
-      56, 116, 147,  71, 168,  16, 155, 245,
+     56, 116, 147,  71, 168,  16, 155, 245,
     197,  97,  57,  69, 226,  13, 239, 164,
-      40, 228, 250, 130, 128, 186, 150,   3,
-      64,  81, 241, 165,  43, 136,  99,  79,
+     40, 228, 250, 130, 128, 186, 150,   3,
+     64,  81, 241, 165,  43, 136,  99,  79,
     124, 188,  50,  46, 152, 197, 205, 204,
     103, 254,  61, 143, 94,  31,    6,  98,
     165,  16, 223, 175,  30,  87, 156, 176,
     232,  56, 179,  56, 184, 220, 100, 141,
     212, 201,  55, 246, 199, 117,  28, 154,
-      51, 140,   5,  95, 102, 187, 133, 248
+     51, 140,   5,  95, 102, 187, 133, 248
   };
 
   auto test_uintwide_t_spot_values_from_issue_316_import_export_original() -> bool
@@ -632,27 +632,27 @@ auto local_test_spot_values::test() -> bool // NOLINT(readability-function-cogni
     static_assert(std::is_default_constructible            <local_int128_type >::value, "Error: Type is not default-constructible");
     static_assert(std::is_copy_constructible               <local_uint128_type>::value, "Error: Type is not copy-constructible");
     static_assert(std::is_copy_constructible               <local_int128_type >::value, "Error: Type is not copy-constructible");
-    //static_assert(std::is_trivially_copy_constructible     <local_uint128_type>::value, "Error: Type is not trivially copy-constructible");
-    //static_assert(std::is_trivially_copy_constructible     <local_int128_type >::value, "Error: Type is not trivially copy-constructible");
+    static_assert(std::is_trivially_copy_constructible     <local_uint128_type>::value, "Error: Type is not trivially copy-constructible");
+    static_assert(std::is_trivially_copy_constructible     <local_int128_type >::value, "Error: Type is not trivially copy-constructible");
     static_assert(std::is_move_constructible               <local_uint128_type>::value, "Error: Type is not move-constructible");
     static_assert(std::is_move_constructible               <local_int128_type >::value, "Error: Type is not move-constructible");
-    //static_assert(std::is_trivially_move_constructible     <local_uint128_type>::value, "Error: Type is not trivially move-constructible");
-    //static_assert(std::is_trivially_move_constructible     <local_int128_type >::value, "Error: Type is not trivially move-constructible");
+    static_assert(std::is_trivially_move_constructible     <local_uint128_type>::value, "Error: Type is not trivially move-constructible");
+    static_assert(std::is_trivially_move_constructible     <local_int128_type >::value, "Error: Type is not trivially move-constructible");
 
     // Constructible
-    //static_assert(std::is_trivially_constructible<local_uint128_type, const local_uint128_type&>::value, "Error: Types are not trivially constructible");
+    static_assert(std::is_trivially_constructible<local_uint128_type, const local_uint128_type&>::value, "Error: Types are not trivially constructible");
     static_assert(std::is_constructible          <local_uint128_type,       local_int128_type  >::value, "Error: Types are not constructible");
     static_assert(std::is_constructible          <local_uint128_type,       local_uint160_type >::value, "Error: Types are not constructible");
     static_assert(std::is_constructible          <local_uint128_type,       local_int160_type  >::value, "Error: Types are not constructible");
 
     static_assert(std::is_constructible          <local_int128_type,        local_uint128_type >::value, "Error: Types are not constructible");
-    //static_assert(std::is_trivially_constructible<local_int128_type,  const local_int128_type& >::value, "Error: Types are not trivially constructible");
+    static_assert(std::is_trivially_constructible<local_int128_type,  const local_int128_type& >::value, "Error: Types are not trivially constructible");
     static_assert(std::is_constructible          <local_int128_type,        local_uint160_type >::value, "Error: Types are not constructible");
     static_assert(std::is_constructible          <local_int128_type,        local_int160_type  >::value, "Error: Types are not constructible");
 
     static_assert(std::is_constructible          <local_uint160_type,       local_uint128_type >::value, "Error: Types are not constructible");
     static_assert(std::is_constructible          <local_uint160_type,       local_int128_type  >::value, "Error: Types are not constructible");
-    //static_assert(std::is_trivially_constructible<local_uint160_type, const local_uint160_type&>::value, "Error: Types are not trivially constructible");
+    static_assert(std::is_trivially_constructible<local_uint160_type, const local_uint160_type&>::value, "Error: Types are not trivially constructible");
     static_assert(std::is_constructible          <local_uint160_type,       local_int160_type  >::value, "Error: Types are not constructible");
 
     static_assert(std::is_constructible          <local_int160_type,        local_uint128_type >::value, "Error: Types are not constructible");

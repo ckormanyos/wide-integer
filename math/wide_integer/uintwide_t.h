@@ -1619,7 +1619,7 @@
 
     // Copy constructor.
     #if !defined(WIDE_INTEGER_DISABLE_TRIVIAL_COPY_AND_STD_LAYOUT_CHECKS)
-    constexpr uintwide_t(const uintwide_t& other) : values(other.values) { }
+    constexpr uintwide_t(const uintwide_t& other) = default;
     #else
     constexpr uintwide_t(const uintwide_t& other) : values(other.values) { }
     #endif
@@ -4229,7 +4229,7 @@
       {
         auto part_from_previous_value = static_cast<limb_type>(UINT8_C(0));
 
-        auto ai = detail::advance_and_point(values.begin(), offset);
+        auto ai = detail::advance_and_point(values.begin(), offset); // NOLINT(llvm-qualified-auto,readability-qualified-auto)
 
         while(ai != values.end()) // NOLINT(altera-id-dependent-backward-branch)
         {
@@ -4481,7 +4481,7 @@
   using uint32768_t = uintwide_t<static_cast<size_t>(UINT32_C(32768)), std::uint32_t>;
   using uint65536_t = uintwide_t<static_cast<size_t>(UINT32_C(65536)), std::uint32_t>;
 
-  #if 0//!defined(WIDE_INTEGER_DISABLE_TRIVIAL_COPY_AND_STD_LAYOUT_CHECKS)
+  #if !defined(WIDE_INTEGER_DISABLE_TRIVIAL_COPY_AND_STD_LAYOUT_CHECKS)
   static_assert(std::is_trivially_copyable<uint64_t   >::value, "uintwide_t must be trivially copyable.");
   static_assert(std::is_trivially_copyable<uint128_t  >::value, "uintwide_t must be trivially copyable.");
   static_assert(std::is_trivially_copyable<uint256_t  >::value, "uintwide_t must be trivially copyable.");
@@ -4519,7 +4519,7 @@
   using  int32768_t = uintwide_t<static_cast<size_t>(UINT32_C(32768)), std::uint32_t, void, true>;
   using  int65536_t = uintwide_t<static_cast<size_t>(UINT32_C(65536)), std::uint32_t, void, true>;
 
-  #if 0//!defined(WIDE_INTEGER_DISABLE_TRIVIAL_COPY_AND_STD_LAYOUT_CHECKS)
+  #if !defined(WIDE_INTEGER_DISABLE_TRIVIAL_COPY_AND_STD_LAYOUT_CHECKS)
   static_assert(std::is_trivially_copyable<int64_t   >::value, "uintwide_t must be trivially copyable.");
   static_assert(std::is_trivially_copyable<int128_t  >::value, "uintwide_t must be trivially copyable.");
   static_assert(std::is_trivially_copyable<int256_t  >::value, "uintwide_t must be trivially copyable.");
