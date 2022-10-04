@@ -257,6 +257,9 @@
     <None Include="examples\build\test_examples.sh">
       <Filter>Source Files\examples\build</Filter>
     </None>
+    <None Include=".github\workflows\wide_integer_codeql.yml">
+      <Filter>.github\workflows</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Text Include="examples\CMakeLists.txt">

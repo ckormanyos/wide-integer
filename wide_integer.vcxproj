@@ -247,6 +247,7 @@
     <None Include=".gcov\make\make_gcov_03_flags.gmk" />
     <None Include=".github\workflows\wide_integer.yml" />
     <None Include=".github\workflows\wide_integer_codecov.yml" />
+    <None Include=".github\workflows\wide_integer_codeql.yml" />
     <None Include=".github\workflows\wide_integer_sonar.yml" />
     <None Include=".props\Directory.Build.props" />
     <None Include=".tidy\make\make_tidy_01_generic.gmk" />
