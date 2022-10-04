@@ -6,8 +6,8 @@
         <img src="https://github.com/ckormanyos/wide-integer/actions/workflows/wide_integer.yml/badge.svg" alt="Build Status"></a>
     <a href="https://github.com/ckormanyos/wide-integer/issues?q=is%3Aissue+is%3Aopen+sort%3Aupdated-desc">
         <img src="https://custom-icon-badges.herokuapp.com/github/issues-raw/ckormanyos/wide-integer?logo=github" alt="Issues" /></a>
-    <a href="https://github.com/ckormanyos/wide-integer/actions?query=workflow%3Awide_integer_codeql">
-        <img src="https://github.com/ckormanyos/wide-integer/workflows/wide_integer_codeql/badge.svg" alt="CodeQL"></a>
+    <a href="https://github.com/ckormanyos/wide-integer/actions?query=workflow%3ACodeQL">
+        <img src="https://github.com/ckormanyos/wide-integer/workflows/CodeQL/badge.svg" alt="CodeQL"></a>
     <a href="https://scan.coverity.com/projects/ckormanyos-wide-integer">
         <img src="https://scan.coverity.com/projects/24742/badge.svg" alt="Coverity Scan"></a>
     <a href="https://sonarcloud.io/summary/new_code?id=ckormanyos_wide-integer">
