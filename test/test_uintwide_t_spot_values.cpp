@@ -632,33 +632,45 @@ auto local_test_spot_values::test() -> bool // NOLINT(readability-function-cogni
     static_assert(std::is_default_constructible            <local_int128_type >::value, "Error: Type is not default-constructible");
     static_assert(std::is_copy_constructible               <local_uint128_type>::value, "Error: Type is not copy-constructible");
     static_assert(std::is_copy_constructible               <local_int128_type >::value, "Error: Type is not copy-constructible");
+    #if !defined(WIDE_INTEGER_DISABLE_WIDE_INTEGER_CONSTEXPR)
     static_assert(std::is_trivially_copy_constructible     <local_uint128_type>::value, "Error: Type is not trivially copy-constructible");
     static_assert(std::is_trivially_copy_constructible     <local_int128_type >::value, "Error: Type is not trivially copy-constructible");
+    #endif
     static_assert(std::is_move_constructible               <local_uint128_type>::value, "Error: Type is not move-constructible");
     static_assert(std::is_move_constructible               <local_int128_type >::value, "Error: Type is not move-constructible");
+    #if !defined(WIDE_INTEGER_DISABLE_WIDE_INTEGER_CONSTEXPR)
     static_assert(std::is_trivially_move_constructible     <local_uint128_type>::value, "Error: Type is not trivially move-constructible");
     static_assert(std::is_trivially_move_constructible     <local_int128_type >::value, "Error: Type is not trivially move-constructible");
+    #endif
 
     // Constructible
+    #if !defined(WIDE_INTEGER_DISABLE_WIDE_INTEGER_CONSTEXPR)
     static_assert(std::is_trivially_constructible<local_uint128_type, const local_uint128_type&>::value, "Error: Types are not trivially constructible");
+    #endif
     static_assert(std::is_constructible          <local_uint128_type,       local_int128_type  >::value, "Error: Types are not constructible");
     static_assert(std::is_constructible          <local_uint128_type,       local_uint160_type >::value, "Error: Types are not constructible");
     static_assert(std::is_constructible          <local_uint128_type,       local_int160_type  >::value, "Error: Types are not constructible");
 
     static_assert(std::is_constructible          <local_int128_type,        local_uint128_type >::value, "Error: Types are not constructible");
+    #if !defined(WIDE_INTEGER_DISABLE_WIDE_INTEGER_CONSTEXPR)
     static_assert(std::is_trivially_constructible<local_int128_type,  const local_int128_type& >::value, "Error: Types are not trivially constructible");
+    #endif
     static_assert(std::is_constructible          <local_int128_type,        local_uint160_type >::value, "Error: Types are not constructible");
     static_assert(std::is_constructible          <local_int128_type,        local_int160_type  >::value, "Error: Types are not constructible");
 
     static_assert(std::is_constructible          <local_uint160_type,       local_uint128_type >::value, "Error: Types are not constructible");
     static_assert(std::is_constructible          <local_uint160_type,       local_int128_type  >::value, "Error: Types are not constructible");
+    #if !defined(WIDE_INTEGER_DISABLE_WIDE_INTEGER_CONSTEXPR)
     static_assert(std::is_trivially_constructible<local_uint160_type, const local_uint160_type&>::value, "Error: Types are not trivially constructible");
+    #endif
     static_assert(std::is_constructible          <local_uint160_type,       local_int160_type  >::value, "Error: Types are not constructible");
 
     static_assert(std::is_constructible          <local_int160_type,        local_uint128_type >::value, "Error: Types are not constructible");
     static_assert(std::is_constructible          <local_int160_type,        local_int128_type  >::value, "Error: Types are not constructible");
     static_assert(std::is_constructible          <local_int160_type,        local_uint160_type >::value, "Error: Types are not constructible");
+    #if !defined(WIDE_INTEGER_DISABLE_WIDE_INTEGER_CONSTEXPR)
     static_assert(std::is_trivially_constructible<local_int160_type,  const local_int160_type& >::value, "Error: Types are not trivially constructible");
+    #endif
 
     // Static test of conversion rules.
     //                               <local_uint128_type, local_uint128_type>

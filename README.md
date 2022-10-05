@@ -352,6 +352,7 @@ enabled or disabled at compile time with the compiler switches:
 #define WIDE_INTEGER_HAS_MUL_8_BY_8_UNROLL
 #define WIDE_INTEGER_DISABLE_TRIVIAL_COPY_AND_STD_LAYOUT_CHECKS
 #define WIDE_INTEGER_NAMESPACE
+#define WIDE_INTEGER_DISABLE_WIDE_INTEGER_CONSTEXPR
 ```
 
 When working with even the most tiny microcontroller systems,
@@ -501,6 +502,27 @@ By default the macro `WIDE_INTEGER_NAMESPACE` is not defined.
 In this default state, `namespace` `::math::wide_integer` is used
 and the `uintwide_t` class and its associated implementation
 details reside therein.
+
+Domain-specific, non-supported prototyping can be (partially)
+enabled by defining the macro
+
+```
+#define WIDE_INTEGER_DISABLE_WIDE_INTEGER_CONSTEXPR
+```
+
+This advanced macro disables most C++20 `constexpr` features.
+It also disables standard layout and trivially constructable
+attributes. Advanced prototyping or other investigations
+might need non-standard storage container(s)
+instead of wide-integer's default-supplied containers.
+
+Non-standard storage containers or customized memory containers
+might not support full `constexpr`-ness. Use this macro
+if needed to disable these features when manually substituting
+non-standard containers instead of wide-integer's
+default-supplied containers. Note: During verification-steps
+of wide-integer, this macro has been used to perform
+algorithmic proof-of-concept via use of `std::list` for storage.
 
 ## Detailed examples
 
