@@ -100,6 +100,16 @@
     #endif
   #endif
 
+  #if defined(WIDE_INTEGER_DISABLE_WIDE_INTEGER_CONSTEXPR)
+  #undef WIDE_INTEGER_CONSTEXPR
+  #define WIDE_INTEGER_CONSTEXPR
+  #undef WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST
+  #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 0
+  #if !defined(WIDE_INTEGER_DISABLE_TRIVIAL_COPY_AND_STD_LAYOUT_CHECKS)
+  #define WIDE_INTEGER_DISABLE_TRIVIAL_COPY_AND_STD_LAYOUT_CHECKS
+  #endif
+  #endif
+
   #if defined(WIDE_INTEGER_NAMESPACE_BEGIN) || defined(WIDE_INTEGER_NAMESPACE_END)
     #error internal pre-processor macro already defined
   #endif
@@ -1195,7 +1205,11 @@
 
   template<typename InputIterator,
            typename IntegralType>
+  #if !defined(WIDE_INTEGER_DISABLE_WIDE_INTEGER_CONSTEXPR)
   constexpr auto advance_and_point(InputIterator it, IntegralType n) -> InputIterator
+  #else
+  WIDE_INTEGER_CONSTEXPR auto advance_and_point(InputIterator it, IntegralType n) -> InputIterator
+  #endif
   {
     using local_signed_integral_type =
       std::conditional_t<std::is_signed<IntegralType>::value,
@@ -1204,7 +1218,15 @@
 
     using local_difference_type = typename std::iterator_traits<InputIterator>::difference_type;
 
+    #if !defined(WIDE_INTEGER_DISABLE_WIDE_INTEGER_CONSTEXPR)
     return it + static_cast<local_difference_type>(static_cast<local_signed_integral_type>(n));
+    #else
+    auto my_it = it;
+
+    std::advance(my_it, static_cast<local_difference_type>(static_cast<local_signed_integral_type>(n)));
+
+    return my_it;
+    #endif
   }
 
   template<typename UnsignedShortType,
@@ -3375,7 +3397,7 @@
                 + detail::make_hi<local_limb_type>(a2b3)
                 ;
 
-        *(r + static_cast<result_difference_type>(INT32_C(7)))
+        *detail::advance_and_point(r, static_cast<result_difference_type>(INT32_C(7)))
               = static_cast<local_limb_type>
                 (
                     detail::make_hi<local_limb_type>(rd6)
@@ -3486,7 +3508,7 @@
                 + detail::make_hi<local_limb_type>(a0b5)
                 ;
 
-        *(r + static_cast<result_difference_type>(INT32_C(7)))
+        *detail::advance_and_point(r, static_cast<result_difference_type>(INT32_C(7)))
               = static_cast<local_limb_type>
                 (
                     detail::make_hi<local_limb_type>(rd6)
@@ -3509,13 +3531,13 @@
                 ;
       }
 
-      *(r + static_cast<result_difference_type>(INT32_C(0))) = static_cast<local_limb_type>(a0b0);
-      *(r + static_cast<result_difference_type>(INT32_C(1))) = static_cast<local_limb_type>(rd1);
-      *(r + static_cast<result_difference_type>(INT32_C(2))) = static_cast<local_limb_type>(rd2);
-      *(r + static_cast<result_difference_type>(INT32_C(3))) = static_cast<local_limb_type>(rd3);
-      *(r + static_cast<result_difference_type>(INT32_C(4))) = static_cast<local_limb_type>(rd4);
-      *(r + static_cast<result_difference_type>(INT32_C(5))) = static_cast<local_limb_type>(rd5);
-      *(r + static_cast<result_difference_type>(INT32_C(6))) = static_cast<local_limb_type>(rd6);
+      *detail::advance_and_point(r, static_cast<result_difference_type>(INT32_C(0))) = static_cast<local_limb_type>(a0b0);
+      *detail::advance_and_point(r, static_cast<result_difference_type>(INT32_C(1))) = static_cast<local_limb_type>(rd1);
+      *detail::advance_and_point(r, static_cast<result_difference_type>(INT32_C(2))) = static_cast<local_limb_type>(rd2);
+      *detail::advance_and_point(r, static_cast<result_difference_type>(INT32_C(3))) = static_cast<local_limb_type>(rd3);
+      *detail::advance_and_point(r, static_cast<result_difference_type>(INT32_C(4))) = static_cast<local_limb_type>(rd4);
+      *detail::advance_and_point(r, static_cast<result_difference_type>(INT32_C(5))) = static_cast<local_limb_type>(rd5);
+      *detail::advance_and_point(r, static_cast<result_difference_type>(INT32_C(6))) = static_cast<local_limb_type>(rd6);
     }
     #endif
 
