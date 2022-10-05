@@ -549,11 +549,7 @@ auto run() -> bool // NOLINT(readability-function-cognitive-complexity)
     std::cout.flags(flg);
   }
 
-  const auto result_of_main = (result_is_ok ? 0 : -1);
-
-  std::cout << "result_of_main: " << result_of_main << std::endl;
-
-  return result_of_main;
+  return result_is_ok;
 }
 
 } // namespace local
@@ -562,7 +558,11 @@ auto main() -> int // NOLINT(bugprone-exception-escape)
 {
   const auto result_is_ok = local::run();
 
-  return (result_is_ok ? 0 : -1);
+  const auto result_of_main = (result_is_ok ? 0 : -1);
+
+  std::cout << "result_of_main: " << result_of_main << std::endl;
+
+  return result_of_main;
 }
 
 #if (defined(__GNUC__) && !defined(__clang__) && (__GNUC__ >= 12))
