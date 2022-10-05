@@ -549,7 +549,11 @@ auto run() -> bool // NOLINT(readability-function-cognitive-complexity)
     std::cout.flags(flg);
   }
 
-  return result_is_ok;
+  const auto result_of_main = (result_is_ok ? 0 : -1);
+
+  std::cout << "result_of_main: " << result_of_main << std::endl;
+
+  return result_of_main;
 }
 
 } // namespace local
