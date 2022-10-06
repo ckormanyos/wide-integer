@@ -506,23 +506,25 @@ details reside therein.
 Domain-specific, non-supported prototyping can be (partially)
 enabled by defining the macro
 
-```
+```cpp
 #define WIDE_INTEGER_DISABLE_WIDE_INTEGER_CONSTEXPR
 ```
 
 This advanced macro disables most C++20 `constexpr` features.
 It also disables standard layout and trivially constructable
-attributes. Advanced prototyping or other investigations
-might need non-standard storage container(s)
-instead of wide-integer's default-supplied containers.
+attributes.This macro can be used (if needed)
+when progressive prototyping or other non-standard investigations
+require disabling most of wide-integer's default-supplied
+C++20 `constexpr`-handling.
 
-Non-standard storage containers or customized memory containers
-might not support full `constexpr`-ness. Use this macro
-if needed to disable these features when manually substituting
-non-standard containers instead of wide-integer's
-default-supplied containers. Note: During verification-steps
-of wide-integer, this macro has been used to perform
-algorithmic proof-of-concept via use of `std::list` for storage.
+This might be useful when _manually_ substituting
+non-standard, alternate containers instead of using
+wide-integer's default-supplied containers.
+Note: During verification steps of wide-integer,
+for instance, this macro has been used when performing
+algorithmic proof-of-concept via use of `std::list`
+for storage containters (instead of the default-supplied
+dynamic/static array-like containers).
 
 ## Detailed examples
 
