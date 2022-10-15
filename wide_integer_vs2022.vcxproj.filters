@@ -245,6 +245,9 @@
     <None Include="target\micros\stm32f429\make\stm32f429.ld">
       <Filter>target\micros\stm32f429\make</Filter>
     </None>
+    <None Include=".github\workflows\CodeQL.yml">
+      <Filter>.github\workflows</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Text Include="examples\CMakeLists.txt">
