@@ -6,8 +6,8 @@
         <img src="https://github.com/ckormanyos/wide-integer/actions/workflows/wide_integer.yml/badge.svg" alt="Build Status"></a>
     <a href="https://github.com/ckormanyos/wide-integer/issues?q=is%3Aissue+is%3Aopen+sort%3Aupdated-desc">
         <img src="https://custom-icon-badges.herokuapp.com/github/issues-raw/ckormanyos/wide-integer?logo=github" alt="Issues" /></a>
-    <a href="https://github.com/ckormanyos/wide-integer/actions?query=workflow%3ACodeQL">
-        <img src="https://github.com/ckormanyos/wide-integer/workflows/CodeQL/badge.svg" alt="CodeQL"></a>
+    <a href="https://github.com/ckormanyos/wide-integer/actions/workflows/CodeQL.yml/badge.svg">
+        <img src="https://github.com/ckormanyos/wide-integer/actions/workflows/CodeQL.yml/badge.svg" alt="CodeQL"></a>
     <a href="https://scan.coverity.com/projects/ckormanyos-wide-integer">
         <img src="https://scan.coverity.com/projects/24742/badge.svg" alt="Coverity Scan"></a>
     <a href="https://sonarcloud.io/summary/new_code?id=ckormanyos_wide-integer">
@@ -40,7 +40,7 @@ as shown in greater detail below.
 Wide-integer supports both unsigned as well as
 signed integral types having width of
 $1 {\phantom{.}} {\ldots} {\phantom{.}} 63 {\phantom{.}} {\times} {\phantom{.}} 2^N$
-while being 16, 24, 32 or larger.
+while being $16$, $24$, $32$ or larger.
 In addition, small integer types such as software-synthesized versions of
 `uint24_t`, `uint48_t`, `uint64_t`, `uint96_t`, `uint128_t`, etc.
 (or signed counterparts of these) can also be created with wide-integer.
@@ -54,7 +54,8 @@ other similar types can be readily synthesized with wide-integer.
 Wide-integer also features basic realizations of several
 elementary and number theoretical functions such as root finding,
 random distribution, Miller-Rabin primality testing,
-greatest common denominator (GCD) and more.
+greatest common denominator (GCD), least common multiplier (LCM)
+and more.
 
 Inclusion of a single C++14 header file
 is all that is needed for using wide-integer,
@@ -63,10 +64,10 @@ as shown in the [examples](./examples).
 ## Implementation goals
 
   - Signed and unsigned versions of `uintwide_t` should behave as closely as possible to the behaviors of signed and unsigned versions of built-in `int`.
-  - Relatively wide precision range from 24, 32, 64 bits up to tens of thousands of bits.
+  - Relatively wide precision range from $24$, $32$, $64$ bits up to tens of thousands of bits.
   - Moderately good efficiency over the entire wide precision range.
   - Clean header-only C++14 design.
-  - Seamless portability to any modern C++14, 17, 20, 23 compiler.
+  - Seamless portability to any modern C++14, 17, 20, 23 compiler and beyond.
   - Scalability with small memory footprint and efficiency suitable for both PC/workstation systems as well as _bare-metal_ embedded systems.
   - C++20 `constexpr`-_ness_ for construction, cast to built-in types, binary arithmetic, comparison operations, some elementary functions and more.
 
@@ -288,7 +289,7 @@ of the issue resolution process.
 
 ### CI and Quality checks
 
-CI runs on push-to-branch and pull request using GitHub Actions.
+CI runs on both push-to-branch as well as pull request using GitHub Actions.
 Various compilers, operating systems, and C++ standards
 ranging from C++14, 17, 20, 23 are included in CI.
 
@@ -302,7 +303,7 @@ as well as in offline checks to improve static code quality.
 Additional quality checks are performed on pull-request
 and merge to master using modern third party open-source services.
 These include
-[LGTM](https://lgtm.com/projects/g/ckormanyos/wide-integer/alerts/?mode=list),
+[CodeQL](https://github.com/ckormanyos/wide-integer/actions?query=workflow%3ACodeQL),
 [Synopsis Coverity](https://scan.coverity.com/projects/ckormanyos-wide-integer),
 and [CodeSonar](https://sonarcloud.io/summary/new_code?id=ckormanyos_wide-integer).
 At the moment, the Coverity check is run with manual report submission.
@@ -321,9 +322,9 @@ Wide-Integer has been tested with numerous compilers, for target systems ranging
 The library is specifically designed for efficiency with small to medium bit counts.
 Supported bit counts include integers
 $1 {\phantom{.}} {\ldots} {\phantom{.}} 63 {\phantom{.}} {\times} {\phantom{.}} 2^N$
-while being 16, 24, 32 or larger such as
-256, 384, 512, 768, 1024,
-or other less common bit counts such as 11,264, etc.
+while being $16$, $24$, $32$ or larger such as
+$256$, $384$, $512$, $768$, $1024$,
+or other less common bit counts such as $11,264$, etc.
 
 Small, medium and large bit counts are supported.
 Common applications might use the range of `uint128_t`, `uint256_t` or `uint512_t`.
@@ -467,7 +468,7 @@ This macro is disabled by default and both the trivially-copyable
 as well as the standard-layout compile-time checks are active.
 
 ```cpp
-#define WIDE_INTEGER_NAMESPACE
+#define WIDE_INTEGER_NAMESPACE something_unique
 ```
 
 This is an advanced macro intended to be used in strict, exacting applications for which
@@ -640,7 +641,7 @@ auto main() -> int
 The next example computes the real-valued cube root of $10^{3,333}$.
 The real-valued cube root of this very large unsigned integer is $10^{1,111}$.
 We will use the (somewhat uncommon) integral data type `uint11264_t`.
-Since `uint11264_t` has approximately 3,390 decimal digits of precision,
+Since `uint11264_t` has approximately $3,390$ decimal digits of precision,
 it is large enough to hold the value of $10^{3,333}$
 prior to (and following) the cube root operation.
 
@@ -712,8 +713,8 @@ static_assert(result_is_ok, "Error: example is not OK!");
 (with `-std=c++20`) and VC 14.2 (with `/std:c++latest`),
 also for various embedded compilers such as `avr-gcc` 10 and up,
 `arm-non-eabi-gcc` 10 and up, and more. In addition,
-less modern compiler versions in addition to some other compilers
-having standards such as C++14, 17, 2a have also been checked
+some compilations using compilers having less modern standards
+such as C++14, 17, 2a have also been checked
 for `constexpr` usage of `uintwide_t`. If you have an older
 compiler, you might have to check the compiler's
 ability to obtain the entire benefit of `constexpr` with `uintwide_t`.
@@ -773,7 +774,7 @@ negative arguments in number theoretical functions.
   - `sqrt` of `x` negative returns zero.
   - `cbrt` of `x` nexative integer returns `-cbrt(-x)`.
   - $k^{th}$ root of `x` negative returns zero unless the cube root is being computed, in which case `-cbrt(-x)` is returned.
-  - GCD of `a`, `b` signed converts both arguments to positive and negates the result for `a`, `b` having opposite signs.
+  - GCD and LCM of `a`, `b` signed convert both arguments to positive and negate the result for `a`, `b` having opposite signs.
   - Miller-Rabin primality testing treats negative inetegers as positive when testing for prime, thus extending the set of primes to negative integers.
   - MSB/LSB (most/least significant bit) do not differentiate between positive or negative argument such that MSB of a negative integer will be the highest bit of the corresponding unsigned type.
   - Printing both positive-valued and negative-valued signed integers in hexadecimal format is supported. When printing negative-valued, signed  `uintwide_t` in hexadecimal format, the sign bit and all other bits are treated as if the integer were unsigned. The negative sign is not explicitly shown when using hexadecimal format, even if the underlying integer is signed and negative-valued. A potential positive sign, however, will be shown for positive-valued signed integers in hexadecimal form in the presence of `std::showpos`.
