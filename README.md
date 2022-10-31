@@ -101,7 +101,7 @@ an alias. The first template parameter `512U` sets the binary width
 sets the internal _limb_ _type_. The limb type must be unsigned and one of
 `std::uint8_t`, `std::uint16_t`, `std::uint32_t` or on some systems
 `std::uint64_t`. If the second template parameter `LimbType` is left blank,
-the default limb type is 32 bits in width and unsigned.
+the default limb type is thirty-two bits in width and unsigned.
 
 The complete template signature of the `uintwide_t` class is shown below.
 
@@ -169,8 +169,8 @@ on how to use wide-integer.
   - ![`example008_miller_rabin_prime.cpp`](./examples/example008_miller_rabin_prime.cpp) implements primality testing via Miller-Rabin.
   - ![`example008a_miller_rabin_prime.cpp`](./examples/example008a_miller_rabin_prime.cpp) verifies Boost's interpretation of Miller-Rabin primality testing using `uintwide_t`-based types.
   - ![`example009_timed_mul.cpp`](./examples/example009_timed_mul.cpp) measures multiplication timings.
-  - ![`example009a_timed_mul_4_by_4.cpp`](./examples/example009a_timed_mul_4_by_4.cpp) also measures multiplication timings for the special case of wide integers having 4 limbs.
-  - ![`example009b_timed_mul_8_by_8.cpp`](./examples/example009b_timed_mul_8_by_8.cpp) measures, yet again, multiplication timings for the special case of wide integers having 8 limbs.
+  - ![`example009a_timed_mul_4_by_4.cpp`](./examples/example009a_timed_mul_4_by_4.cpp) also measures multiplication timings for the special case of wide integers having four limbs.
+  - ![`example009b_timed_mul_8_by_8.cpp`](./examples/example009b_timed_mul_8_by_8.cpp) measures, yet again, multiplication timings for the special case of wide integers having eight limbs.
   - ![`example010_uint48_t.cpp`](./examples/example010_uint48_t.cpp) verifies 48-bit integer caluclations.
   - ![`example011_uint24_t.cpp`](./examples/example011_uint24_t.cpp) performs calculations with 24-bits, which is definitely on the small side of the range of wide-integer.
   - ![`example012_rsa_crypto.cpp`](./examples/example012_rsa_crypto.cpp) performs cryptographic calculations with 2048-bits, exploring a standardized test case.
@@ -318,7 +318,7 @@ readme page.
 
 ## Additional details
 
-Wide-Integer has been tested with numerous compilers, for target systems ranging from 8 to 64 bits.
+Wide-Integer has been tested with numerous compilers, for target systems ranging from eight to sixty-four bits.
 The library is specifically designed for efficiency with small to medium bit counts.
 Supported bit counts include integers
 $1 {\phantom{.}} {\ldots} {\phantom{.}} 63 {\phantom{.}} {\times} {\phantom{.}} 2^N$
@@ -449,7 +449,7 @@ Another potential optimization macro can be activated with:
 
 This macro might improve performance on some target/compiler systems
 by manually unrolling the multiplication loop(s) for
-`uintwide_t` instances having 8 limbs. This macro is disabled
+`uintwide_t` instances having eight limbs. This macro is disabled
 by default.
 
 ```cpp
@@ -496,8 +496,9 @@ namespace something_unique::math::wide_integer
 ```
 
 When utilizing the `WIDE_INTEGER_NAMESPACE` option,
-vary the actual name or nesting depth of the desired prepended
-outer namespace if/as needed for your particular project.
+the actual name or nesting depth of the desired prepended
+outer namespace can be varied if (or as) needed
+for the particular project.
 
 By default the macro `WIDE_INTEGER_NAMESPACE` is not defined.
 In this default state, `namespace` `::math::wide_integer` is used
@@ -734,7 +735,7 @@ a synonym for `constexpr` or expands to nothing depending on
 whether the availability of `constexpr` support has been automatically
 detected or not.
 The preprocessor symbol `WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST`
-has the value of 0 or 1, where 1 indicates that `uintwide_t`
+has the value of `0` or `1`, where `1` indicates that `uintwide_t`
 values qualified with `WIDE_INTEGER_CONSTEXPR` are actually
 compile-time constant (i.e., `constexpr`).
 
