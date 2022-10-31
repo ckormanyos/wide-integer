@@ -6,7 +6,7 @@
         <img src="https://github.com/ckormanyos/wide-integer/actions/workflows/wide_integer.yml/badge.svg" alt="Build Status"></a>
     <a href="https://github.com/ckormanyos/wide-integer/issues?q=is%3Aissue+is%3Aopen+sort%3Aupdated-desc">
         <img src="https://custom-icon-badges.herokuapp.com/github/issues-raw/ckormanyos/wide-integer?logo=github" alt="Issues" /></a>
-    <a href="https://github.com/ckormanyos/wide-integer/actions/workflows/CodeQL.yml/badge.svg">
+    <a href="https://github.com/ckormanyos/wide-integer/actions?query=workflow%3ACodeQL">
         <img src="https://github.com/ckormanyos/wide-integer/actions/workflows/CodeQL.yml/badge.svg" alt="CodeQL"></a>
     <a href="https://scan.coverity.com/projects/ckormanyos-wide-integer">
         <img src="https://scan.coverity.com/projects/24742/badge.svg" alt="Coverity Scan"></a>
