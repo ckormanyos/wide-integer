@@ -30,7 +30,7 @@ auto ::math::wide_integer::example010_uint48_t() -> bool
 
   using random_engine_type = std::linear_congruential_engine<std::uint32_t, UINT32_C(48271), UINT32_C(0), UINT32_C(2147483647)>;
 
-  random_engine_type generator(0xF00DCAFEULL); // NOLINT(cert-msc32-c,cert-msc51-cpp,cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
+  random_engine_type generator(static_cast<std::uint32_t>(UINT32_C(0xF00DCAFE))); // NOLINT(cert-msc32-c,cert-msc51-cpp,cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
 
   distribution_type distribution;
 
@@ -45,15 +45,15 @@ auto ::math::wide_integer::example010_uint48_t() -> bool
   const uint48_t c_mul = (a * b);
   const uint48_t c_div = (a / b);
 
-  const auto result_is_ok = (   (   (c_add == ((a64 + b64) & 0x0000FFFFFFFFFFFFULL))
-                                 && (c_sub == ((a64 - b64) & 0x0000FFFFFFFFFFFFULL))
-                                 && (c_mul == ((a64 * b64) & 0x0000FFFFFFFFFFFFULL))
-                                 && (c_div == ((a64 / b64) & 0x0000FFFFFFFFFFFFULL)))
+  const auto result_is_ok = (   (   (c_add == static_cast<std::uint64_t>((a64 + b64) & static_cast<std::uint64_t>(UINT64_C(0x0000FFFFFFFFFFFF))))
+                                 && (c_sub == static_cast<std::uint64_t>((a64 - b64) & static_cast<std::uint64_t>(UINT64_C(0x0000FFFFFFFFFFFF))))
+                                 && (c_mul == static_cast<std::uint64_t>((a64 * b64) & static_cast<std::uint64_t>(UINT64_C(0x0000FFFFFFFFFFFF))))
+                                 && (c_div == static_cast<std::uint64_t>((a64 / b64) & static_cast<std::uint64_t>(UINT64_C(0x0000FFFFFFFFFFFF)))))
                              &&
-                                (   (static_cast<std::uint64_t>(c_add) == ((a64 + b64) & 0x0000FFFFFFFFFFFFULL))
-                                 && (static_cast<std::uint64_t>(c_sub) == ((a64 - b64) & 0x0000FFFFFFFFFFFFULL))
-                                 && (static_cast<std::uint64_t>(c_mul) == ((a64 * b64) & 0x0000FFFFFFFFFFFFULL))
-                                 && (static_cast<std::uint64_t>(c_div) == ((a64 / b64) & 0x0000FFFFFFFFFFFFULL))));
+                                (   (static_cast<std::uint64_t>(c_add) == static_cast<std::uint64_t>((a64 + b64) & static_cast<std::uint64_t>(UINT64_C(0x0000FFFFFFFFFFFF))))
+                                 && (static_cast<std::uint64_t>(c_sub) == static_cast<std::uint64_t>((a64 - b64) & static_cast<std::uint64_t>(UINT64_C(0x0000FFFFFFFFFFFF))))
+                                 && (static_cast<std::uint64_t>(c_mul) == static_cast<std::uint64_t>((a64 * b64) & static_cast<std::uint64_t>(UINT64_C(0x0000FFFFFFFFFFFF))))
+                                 && (static_cast<std::uint64_t>(c_div) == static_cast<std::uint64_t>((a64 / b64) & static_cast<std::uint64_t>(UINT64_C(0x0000FFFFFFFFFFFF))))));
 
   return result_is_ok;
 }

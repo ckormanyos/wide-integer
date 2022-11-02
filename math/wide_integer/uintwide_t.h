@@ -8,6 +8,10 @@
 #ifndef UINTWIDE_T_2018_10_02_H // NOLINT(llvm-header-guard)
   #define UINTWIDE_T_2018_10_02_H
 
+  #if defined(WIDE_INTEGER_TEST_REPRESENTATION_AS_STD_LIST)
+  #define WIDE_INTEGER_DISABLE_WIDE_INTEGER_CONSTEXPR
+  #endif
+
   #include <algorithm>
   #include <array>
   #if defined(__cpp_lib_to_chars)
@@ -28,6 +32,9 @@
   #endif
   #include <iterator>
   #include <limits>
+  #if defined(WIDE_INTEGER_TEST_REPRESENTATION_AS_STD_LIST)
+  #include <list>
+  #endif
   #if !defined(WIDE_INTEGER_DISABLE_IMPLEMENT_UTIL_DYNAMIC_ARRAY)
   #include <memory>
   #endif
@@ -160,18 +167,16 @@
     using const_pointer          = const value_type*;
     using size_type              =       SizeType;
     using difference_type        =       DiffType;
-    using reverse_iterator       =       std::reverse_iterator<iterator>;
-    using const_reverse_iterator =       std::reverse_iterator<const_iterator>;
+    using reverse_iterator       =       std::reverse_iterator<      value_type*>;
+    using const_reverse_iterator =       std::reverse_iterator<const value_type*>;
 
     // Constructors.
-    constexpr dynamic_array() : elem_count(static_cast<size_type>(UINT8_C(0))),
-                                elems     (nullptr) { }
+    constexpr dynamic_array() : elem_count(static_cast<size_type>(UINT8_C(0))) { }
 
     explicit WIDE_INTEGER_CONSTEXPR dynamic_array(      size_type count,
                                                         const_reference v = value_type(),
                                                   const allocator_type& a = allocator_type())
-      : elem_count(count),
-        elems     (nullptr)
+      : elem_count(count)
     {
       if(elem_count > static_cast<size_type>(UINT8_C(0)))
       {
@@ -191,8 +196,7 @@
     }
 
     WIDE_INTEGER_CONSTEXPR dynamic_array(const dynamic_array& other)
-      : elem_count(other.size()),
-        elems     (nullptr)
+      : elem_count(other.size())
     {
       allocator_type my_a;
 
@@ -208,8 +212,7 @@
     WIDE_INTEGER_CONSTEXPR dynamic_array(input_iterator first,
                                          input_iterator last,
                                          const allocator_type& a = allocator_type())
-      : elem_count(static_cast<size_type>(std::distance(first, last))),
-        elems     (nullptr)
+      : elem_count(static_cast<size_type>(std::distance(first, last)))
     {
       allocator_type my_a(a);
 
@@ -223,8 +226,7 @@
 
     WIDE_INTEGER_CONSTEXPR dynamic_array(std::initializer_list<value_type> lst,
                                          const allocator_type& a = allocator_type())
-      : elem_count(lst.size()),
-        elems     (nullptr)
+      : elem_count(lst.size())
     {
       allocator_type my_a(a);
 
@@ -349,8 +351,8 @@
     }
 
   private:
-    mutable size_type elem_count; // NOLINT(readability-identifier-naming)
-    pointer           elems;      // NOLINT(readability-identifier-naming,altera-id-dependent-backward-branch)
+    mutable size_type elem_count;        // NOLINT(readability-identifier-naming)
+    pointer           elems { nullptr }; // NOLINT(readability-identifier-naming,altera-id-dependent-backward-branch)
   };
 
   template<typename ValueType, typename AllocatorType>
@@ -1043,8 +1045,9 @@
                 v);
     }
 
-    constexpr fixed_dynamic_array(const fixed_dynamic_array& other_array)
-      : base_class_type(static_cast<const base_class_type&>(other_array)) { }
+    constexpr fixed_dynamic_array(const fixed_dynamic_array& other_array) = default;
+
+    constexpr fixed_dynamic_array(fixed_dynamic_array&& other_array) noexcept = default;
 
     WIDE_INTEGER_CONSTEXPR fixed_dynamic_array(std::initializer_list<typename base_class_type::value_type> lst)
       : base_class_type(MySize)
@@ -1054,22 +1057,9 @@
                 base_class_type::begin());
     }
 
-    constexpr fixed_dynamic_array(fixed_dynamic_array&& other_array) noexcept
-      : base_class_type(static_cast<base_class_type&&>(other_array)) { }
+    WIDE_INTEGER_CONSTEXPR auto operator=(const fixed_dynamic_array& other_array) -> fixed_dynamic_array& = default;
 
-    WIDE_INTEGER_CONSTEXPR auto operator=(const fixed_dynamic_array& other_array) -> fixed_dynamic_array& // NOLINT(cert-oop54-cpp)
-    {
-      base_class_type::operator=(static_cast<const base_class_type&>(other_array));
-
-      return *this;
-    }
-
-    WIDE_INTEGER_CONSTEXPR auto operator=(fixed_dynamic_array&& other_array) noexcept -> fixed_dynamic_array&
-    {
-      base_class_type::operator=(static_cast<base_class_type&&>(other_array));
-
-      return *this;
-    }
+    WIDE_INTEGER_CONSTEXPR auto operator=(fixed_dynamic_array&& other_array) noexcept -> fixed_dynamic_array& = default;
 
     WIDE_INTEGER_CONSTEXPR ~fixed_dynamic_array() override = default;
   };
@@ -1200,7 +1190,11 @@
 
     for(p_str_copy = p_str; (*p_str_copy != '\0'); ++p_str_copy) { ; } // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic,altera-id-dependent-backward-branch)
 
-    return static_cast<unsigned_fast_type>(p_str_copy - p_str);
+    return
+      static_cast<unsigned_fast_type>
+      (
+        p_str_copy - p_str
+      );
   }
 
   template<typename InputIterator,
@@ -1307,7 +1301,15 @@
                    "Error: Please check the characteristics of the template parameters UnsignedShortType and UnsignedLargeType");
     #endif
 
-    return static_cast<local_ularge_type>(static_cast<local_ularge_type>(static_cast<local_ularge_type>(hi) << static_cast<unsigned>(std::numeric_limits<UnsignedShortType>::digits)) | lo);
+    return
+      static_cast<local_ularge_type>
+      (
+          static_cast<local_ularge_type>
+          (
+            static_cast<local_ularge_type>(hi) << static_cast<unsigned>(std::numeric_limits<UnsignedShortType>::digits)
+          )
+        | lo
+      );
   }
 
   template<typename UnsignedIntegralType>
@@ -1316,11 +1318,12 @@
   {
     using local_unsigned_integral_type = UnsignedIntegralType;
 
-    return static_cast<local_unsigned_integral_type>
-    (
-        static_cast<local_unsigned_integral_type>(~u)
-      + static_cast<local_unsigned_integral_type>(UINT8_C(1))
-    );
+    return
+      static_cast<local_unsigned_integral_type>
+      (
+          static_cast<local_unsigned_integral_type>(~u)
+        + static_cast<local_unsigned_integral_type>(UINT8_C(1))
+      );
   }
 
   template<typename SignedIntegralType>
@@ -1332,7 +1335,11 @@
     using local_unsigned_integral_type =
       typename detail::uint_type_helper<static_cast<size_t>(std::numeric_limits<local_signed_integral_type>::digits + 1)>::exact_unsigned_type;
 
-    return static_cast<local_signed_integral_type>(negate(static_cast<local_unsigned_integral_type>(n)));
+    return
+      static_cast<local_signed_integral_type>
+      (
+        negate(static_cast<local_unsigned_integral_type>(n))
+      );
   }
 
   #if !defined(WIDE_INTEGER_DISABLE_FLOAT_INTEROP)
@@ -1368,7 +1375,9 @@
 
       unsigned n2 = 0U;
 
-      for(auto i = static_cast<std::uint_fast16_t>(UINT8_C(0)); i < static_cast<std::uint_fast16_t>(std::numeric_limits<native_float_type>::digits); ++i)
+      for(auto   i = static_cast<std::uint_fast16_t>(UINT8_C(0));
+                 i < static_cast<std::uint_fast16_t>(std::numeric_limits<native_float_type>::digits);
+               ++i)
       {
         // Extract the mantissa of the floating-point type in base-2
         // (one bit at a time) and store it in an unsigned long long.
@@ -1492,7 +1501,15 @@
         my_width2 / static_cast<size_t>(std::numeric_limits<limb_type>::digits)
       );
 
-    static constexpr auto number_of_limbs_karatsuba_threshold = static_cast<size_t>(static_cast<unsigned>(128U + 1U));
+    static constexpr auto number_of_limbs_karatsuba_threshold =
+      static_cast<size_t>
+      (
+        static_cast<unsigned>
+        (
+            static_cast<unsigned>(UINT8_C(128))
+          + static_cast<unsigned>(UINT8_C(1))
+        )
+      );
 
     // Verify that the Width2 template parameter (mirrored with my_width2):
     //   * Is equal to 2^n times 1...63.
@@ -1504,6 +1521,7 @@
                   "Error: Width2 must be 2^n times 1...63 (with n >= 3), while being 16, 24, 32 or larger, and exactly divisible by limb count");
 
     // The type of the internal data representation.
+    #if !defined(WIDE_INTEGER_TEST_REPRESENTATION_AS_STD_LIST)
     using representation_type =
       std::conditional_t
         <std::is_same<AllocatorType, void>::value,
@@ -1514,6 +1532,9 @@
                                      typename std::allocator_traits<std::conditional_t<std::is_same<AllocatorType, void>::value,
                                                                                        std::allocator<void>,
                                                                                        AllocatorType>>::template rebind_alloc<limb_type>>>;
+    #else
+    using representation_type = std::list<limb_type>;
+    #endif
 
     // The iterator types of the internal data representation.
     using iterator               = typename representation_type::iterator;
@@ -1692,11 +1713,9 @@
     {
       using other_wide_integer_type = uintwide_t<OtherWidth2, LimbType, AllocatorType, OtherIsSigned>;
 
-      const bool v_is_neg = (other_wide_integer_type::is_neg(v));
-
       constexpr auto sz = static_cast<size_t>(other_wide_integer_type::number_of_limbs);
 
-      if(!v_is_neg)
+      if(!other_wide_integer_type::is_neg(v))
       {
         std::copy(v.crepresentation().cbegin(),
                   detail::advance_and_point(v.crepresentation().cbegin(), sz),
@@ -1734,7 +1753,7 @@
     }
 
     // Move constructor.
-    constexpr uintwide_t(uintwide_t&& other) noexcept = default;
+    constexpr uintwide_t(uintwide_t&&) noexcept = default;
 
     // Move-like constructor from the other signed-ness type.
     // This constructor is non-explicit because it is a trivial conversion.
@@ -1747,7 +1766,7 @@
     WIDE_INTEGER_CONSTEXPR ~uintwide_t() = default;
 
     // Assignment operator.
-    WIDE_INTEGER_CONSTEXPR auto operator=(const uintwide_t& other) -> uintwide_t& = default;
+    WIDE_INTEGER_CONSTEXPR auto operator=(const uintwide_t&) -> uintwide_t& = default;
 
     // Assignment operator from the other signed-ness type.
     template<const bool OtherIsSigned,
