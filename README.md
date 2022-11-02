@@ -354,6 +354,7 @@ enabled or disabled at compile time with the compiler switches:
 #define WIDE_INTEGER_DISABLE_TRIVIAL_COPY_AND_STD_LAYOUT_CHECKS
 #define WIDE_INTEGER_NAMESPACE
 #define WIDE_INTEGER_DISABLE_WIDE_INTEGER_CONSTEXPR
+#define WIDE_INTEGER_TEST_REPRESENTATION_AS_STD_LIST
 ```
 
 When working with even the most tiny microcontroller systems,
@@ -528,6 +529,22 @@ algorithmic proof-of-concept via use of `std::list`
 for storage containters (instead of the default-supplied
 dynamic/static array-like containers).
 
+```cpp
+#define WIDE_INTEGER_TEST_REPRESENTATION_AS_STD_LIST
+```
+
+This macro is used only for testing the correct functionality
+of wide-integer when the internal storage representation is
+`std::list<limb_type>`. This feature is useful for verifying
+that the internal algorithms used in wide-integer remain entirely
+iterator-based and do not require any use of random-access
+iteration whatsoever.
+
+When defining the macro `WIDE_INTEGER_TEST_REPRESENTATION_AS_STD_LIST`,
+the macro `WIDE_INTEGER_DISABLE_WIDE_INTEGER_CONSTEXPR` will also
+be defined automatically because `std::list` is incompatible
+with some or most of wide-integer's `constexpr`-ness.
+
 ## Detailed examples
 
 We will now present various straightforward detailed examples.
@@ -615,7 +632,7 @@ auto main() -> int
   using distribution_type  = ::math::wide_integer::uniform_int_distribution<48U, std::uint8_t>;
   using random_engine_type = ::math::wide_integer::default_random_engine   <48U, std::uint8_t>;
 
-  random_engine_type generator(0xF00DCAFEULL);
+  random_engine_type generator(static_cast<std::uint32_t>(UINT32_C(0xF00DCAFE)));
 
   distribution_type distribution;
 

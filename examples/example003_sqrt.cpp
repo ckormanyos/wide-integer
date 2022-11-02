@@ -66,7 +66,7 @@ extern "C"
     example_standalone_result =
       static_cast<std::uint32_t>
       (
-        result_is_ok ? example_standalone_foodcafe : UINT32_C(0xFFFFFFFF)
+        result_is_ok ? example_standalone_foodcafe : static_cast<std::uint32_t>(UINT32_C(0xFFFFFFFF))
       );
 
     #if !defined(WIDE_INTEGER_DISABLE_IOSTREAM)
@@ -79,7 +79,7 @@ extern "C"
   auto example_get_standalone_result(void) -> bool
   {
     volatile auto result_is_ok =
-      (example_standalone_result == UINT32_C(0xF00DCAFE));
+      (example_standalone_result == static_cast<std::uint32_t>(UINT32_C(0xF00DCAFE)));
 
     return result_is_ok;
   }
