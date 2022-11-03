@@ -54,7 +54,7 @@ jobs:
           echo "return to wide-integer root directory"
           cd ../..
       - name: upload-codecov
-        uses: codecov/codecov-action@v2
+        uses: codecov/codecov-action@v3
         with:
           files: .gcov/make/coverage.info
           token: ${{ secrets.CODECOV_TOKEN }}
