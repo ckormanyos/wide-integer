@@ -19,11 +19,11 @@ namespace local
   #endif
 
   #if defined(WIDE_INTEGER_NAMESPACE)
-  using uint32_t = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t(UINT32_C(32)), std::uint8_t, void, false>;
-  using  int32_t = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t(UINT32_C(32)), std::uint8_t, void, true>;
+  using uint32_t = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<static_cast<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t>(UINT32_C(32)), std::uint8_t, void, false>;
+  using  int32_t = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<static_cast<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t>(UINT32_C(32)), std::uint8_t, void, true>;
   #else
-  using uint32_t = ::math::wide_integer::uintwide_t<math::wide_integer::size_t(UINT32_C(32)), std::uint8_t, void, false>;
-  using  int32_t = ::math::wide_integer::uintwide_t<math::wide_integer::size_t(UINT32_C(32)), std::uint8_t, void, true>;
+  using uint32_t = ::math::wide_integer::uintwide_t<static_cast<math::wide_integer::size_t>(UINT32_C(32)), std::uint8_t, void, false>;
+  using  int32_t = ::math::wide_integer::uintwide_t<static_cast<math::wide_integer::size_t>(UINT32_C(32)), std::uint8_t, void, true>;
   #endif
 } // namespace local
 
@@ -49,8 +49,8 @@ auto ::math::wide_integer::example000_numeric_limits() -> bool
          ((std::numeric_limits<uint256_t>::max)  () == my_max)
       && ((std::numeric_limits<uint256_t>::min)  () == my_min)
       && ( std::numeric_limits<uint256_t>::lowest() == uint256_t(std::numeric_limits<unsigned>::lowest()))
-      && ( std::numeric_limits<uint256_t>::digits   == int(INT32_C(256)))
-      && ( std::numeric_limits<uint256_t>::digits10 == int(INT32_C(77)))
+      && ( std::numeric_limits<uint256_t>::digits   == static_cast<int>(INT32_C(256)))
+      && ( std::numeric_limits<uint256_t>::digits10 == static_cast<int>(INT32_C(77)))
       ;
 
     #if defined(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST) && (WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST != 0)
@@ -75,8 +75,8 @@ auto ::math::wide_integer::example000_numeric_limits() -> bool
          ((std::numeric_limits<int256_t>::max)  () == my_max)
       && ((std::numeric_limits<int256_t>::min)  () == my_min)
       && ( std::numeric_limits<int256_t>::lowest() == my_lowest)
-      && ( std::numeric_limits<int256_t>::digits   == int(INT32_C(255)))
-      && ( std::numeric_limits<int256_t>::digits10 == int(INT32_C(76)))
+      && ( std::numeric_limits<int256_t>::digits   == static_cast<int>(INT32_C(255)))
+      && ( std::numeric_limits<int256_t>::digits10 == static_cast<int>(INT32_C(76)))
       ;
 
     #if defined(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST) && (WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST != 0)

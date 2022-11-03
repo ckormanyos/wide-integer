@@ -266,7 +266,7 @@ auto test_various_edge_operations() -> bool
   const auto result02_is_ok = ((result_local == local_uint_type(2U)) && (result_boost == boost_uint_type(2U)));
 
   const std::string str_seven_and_effs =
-    "0x7" + std::string(std::string::size_type((local_edge_cases::local_digits2 / 4) - 1U), 'F');
+    "0x7" + std::string(static_cast<std::string::size_type>((local_edge_cases::local_digits2 / 4) - 1U), 'F');
 
   const local_uint_type u_seven_and_effs_local(str_seven_and_effs.c_str());
   const boost_uint_type u_seven_and_effs_boost(str_seven_and_effs.c_str());
@@ -278,8 +278,8 @@ auto test_various_edge_operations() -> bool
 
   const std::string str_three_quarter_effs_and_zeros =
       "0x"
-    + std::string(std::string::size_type((local_edge_cases::local_digits2 / 4) * 3U), 'F')
-    + std::string(std::string::size_type((local_edge_cases::local_digits2 / 4) * 1U), '0')
+    + std::string(static_cast<std::string::size_type>((local_edge_cases::local_digits2 / 4) * 3U), 'F')
+    + std::string(static_cast<std::string::size_type>((local_edge_cases::local_digits2 / 4) * 1U), '0')
     ;
 
   const local_uint_type u_three_quarter_effs_and_zeros_local(str_three_quarter_effs_and_zeros.c_str());
@@ -292,8 +292,8 @@ auto test_various_edge_operations() -> bool
 
   const std::string str_one_quarter_effs_and_zeros =
       "0x"
-    + std::string(std::string::size_type((local_edge_cases::local_digits2 / 4) * 1U), 'F')
-    + std::string(std::string::size_type((local_edge_cases::local_digits2 / 4) * 3U), '0')
+    + std::string(static_cast<std::string::size_type>((local_edge_cases::local_digits2 / 4) * 1U), 'F')
+    + std::string(static_cast<std::string::size_type>((local_edge_cases::local_digits2 / 4) * 3U), '0')
     ;
 
   const local_uint_type u_one_quarter_effs_and_zeros_local(str_one_quarter_effs_and_zeros.c_str());
@@ -312,8 +312,8 @@ auto test_various_edge_operations() -> bool
 
   const auto result06_is_ok = (result_local.convert_to<std::string>() == result_boost.convert_to<std::string>());
 
-  const local_uint_type u_mid_local = u_three_quarter_effs_and_zeros_local / typename local_uint_type::backend_type::representation_type::limb_type(2U);
-  const boost_uint_type u_mid_boost = u_three_quarter_effs_and_zeros_boost / typename std::iterator_traits<boost_uint_type::backend_type::limb_pointer>::value_type(2U);
+  const local_uint_type u_mid_local = u_three_quarter_effs_and_zeros_local / static_cast<typename local_uint_type::backend_type::representation_type::limb_type>(UINT8_C(2));
+  const boost_uint_type u_mid_boost = u_three_quarter_effs_and_zeros_boost / static_cast<typename std::iterator_traits<boost_uint_type::backend_type::limb_pointer>::value_type>(UINT8_C(2));
 
   constexpr auto signed_shift_amount =
     static_cast<int>
@@ -795,7 +795,7 @@ auto test_various_roots_and_pow_etc() -> bool
     const auto m_gen = generate_wide_integer_value<local_uintwide_t_small_unsigned_type>(true, local_base::dec, digits10_to_get_m);
 
     const auto powm_two_result  = powm(b_gen, 2U, m_gen);
-    const auto powm_two_control = local_uintwide_t_small_unsigned_type((b_gen * b_gen) % m_gen);
+    const auto powm_two_control = static_cast<local_uintwide_t_small_unsigned_type>((b_gen * b_gen) % m_gen);
 
     const auto result_powm_two_is_ok = (powm_two_result == powm_two_control);
 

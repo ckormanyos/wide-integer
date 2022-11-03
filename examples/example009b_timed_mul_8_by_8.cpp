@@ -116,7 +116,7 @@ auto ::math::wide_integer::example009b_timed_mul_8_by_8() -> bool
     }
   }
 
-  const float kops_per_sec = float(count) / float(static_cast<std::uint32_t>(total_time));
+  const float kops_per_sec = static_cast<float>(count) / static_cast<float>(static_cast<std::uint32_t>(total_time));
 
   {
     const auto flg = std::cout.flags();

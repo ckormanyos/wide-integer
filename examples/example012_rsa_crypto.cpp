@@ -100,7 +100,7 @@ namespace local_rsa
                typename OutputIterator>
       auto encrypt(InputIterator in_first, const std::size_t count, OutputIterator out) -> void
       {
-        for(auto it = in_first; it != in_first + typename std::iterator_traits<InputIterator>::difference_type(count); ++it) // NOLINT(altera-id-dependent-backward-branch)
+        for(auto it = in_first; it != in_first + static_cast<typename std::iterator_traits<InputIterator>::difference_type>(count); ++it) // NOLINT(altera-id-dependent-backward-branch)
         {
           *out++ = powm(my_uintwide_t(*it), public_key.r, public_key.m);
         }
@@ -119,7 +119,7 @@ namespace local_rsa
                typename OutputIterator>
       auto decrypt(InputIterator cry_in, const std::size_t count, OutputIterator cypher_out) -> void
       {
-        InputIterator cry_end(cry_in + typename std::iterator_traits<InputIterator>::difference_type(count));
+        InputIterator cry_end(cry_in + static_cast<typename std::iterator_traits<InputIterator>::difference_type>(count));
 
         for(auto it = cry_in; it !=  cry_end; ++it) // NOLINT(altera-id-dependent-backward-branch)
         {
@@ -213,7 +213,7 @@ namespace local_rsa
         WIDE_INTEGER_NAMESPACE::math::wide_integer::uniform_int_distribution<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t(bit_count), limb_type, allocator_type>;
       #else
       using local_distribution_type =
-        ::math::wide_integer::uniform_int_distribution<math::wide_integer::size_t(bit_count), limb_type, allocator_type>;
+        ::math::wide_integer::uniform_int_distribution<static_cast<math::wide_integer::size_t>(bit_count), limb_type, allocator_type>;
       #endif
 
       local_distribution_type distribution;

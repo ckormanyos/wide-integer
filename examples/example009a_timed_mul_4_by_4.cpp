@@ -116,7 +116,7 @@ auto ::math::wide_integer::example009a_timed_mul_4_by_4() -> bool
     }
   }
 
-  const float kops_per_sec = float(count) / float(static_cast<std::uint32_t>(total_time));
+  const float kops_per_sec = static_cast<float>(count) / static_cast<float>(static_cast<std::uint32_t>(total_time));
 
   {
     const auto flg = std::cout.flags();

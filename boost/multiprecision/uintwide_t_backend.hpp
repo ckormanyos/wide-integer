@@ -158,12 +158,12 @@
     template<typename UnsignedIntegralType,
              std::enable_if_t<(   (std::is_integral<UnsignedIntegralType>::value)
                                && (std::is_unsigned<UnsignedIntegralType>::value))> const* = nullptr>
-    constexpr uintwide_t_backend(UnsignedIntegralType u) : m_value(representation_type(std::uint64_t(u))) { } // NOLINT(google-explicit-constructor,hicpp-explicit-conversions)
+    constexpr uintwide_t_backend(UnsignedIntegralType u) : m_value(representation_type(static_cast<std::uint64_t>(u))) { } // NOLINT(google-explicit-constructor,hicpp-explicit-conversions)
 
     template<typename SignedIntegralType,
              std::enable_if_t<(   (std::is_integral<SignedIntegralType>::value)
                                && (std::is_signed  <SignedIntegralType>::value))> const* = nullptr>
-    constexpr uintwide_t_backend(SignedIntegralType n) : m_value(representation_type(std::int64_t(n))) { } // NOLINT(google-explicit-constructor,hicpp-explicit-conversions)
+    constexpr uintwide_t_backend(SignedIntegralType n) : m_value(representation_type(static_cast<std::int64_t>(n))) { } // NOLINT(google-explicit-constructor,hicpp-explicit-conversions)
 
     template<typename FloatingPointType,
              std::enable_if_t<std::is_floating_point<FloatingPointType>::value> const* = nullptr>

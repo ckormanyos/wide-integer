@@ -162,7 +162,7 @@ auto WIDE_INTEGER_NAMESPACE::math::wide_integer::test_uintwide_t_int_convert() -
 auto ::math::wide_integer::test_uintwide_t_int_convert() -> bool
 #endif
 {
-  constexpr auto digits2 = unsigned(256U);
+  constexpr auto digits2 = static_cast<unsigned>(UINT32_C(256));
 
   using boost_sint_backend_type =
     boost::multiprecision::cpp_int_backend<digits2,

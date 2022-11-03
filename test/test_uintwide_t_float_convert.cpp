@@ -87,8 +87,8 @@ namespace local_float_convert
     static std::uniform_real_distribution<local_builtin_float_type>
     dist_man
     (
-      local_builtin_float_type(0.0F),
-      local_builtin_float_type(1.0F)
+      static_cast<local_builtin_float_type>(0.0F),
+      static_cast<local_builtin_float_type>(1.0F)
     );
 
     static auto dist_sgn = unsigned_dist_maker(static_cast<unsigned>(UINT8_C(0)),
@@ -100,8 +100,8 @@ namespace local_float_convert
 
     const auto p10 = dist_e10(engine_e10());
 
-    const local_builtin_float_type e10 = pow(local_builtin_float_type(10.0F),
-                                             local_builtin_float_type(p10));
+    const local_builtin_float_type e10 = pow(static_cast<local_builtin_float_type>(10.0F),
+                                             static_cast<local_builtin_float_type>(p10));
 
     const local_builtin_float_type a = dist_man(engine_man()) * e10;
 
@@ -265,7 +265,7 @@ auto ::math::wide_integer::test_uintwide_t_float_convert() -> bool
 
     using std::fabs;
 
-    constexpr auto cast_tol_float = float(std::numeric_limits<float>::epsilon() * 2.0F);
+    constexpr auto cast_tol_float = static_cast<float>(std::numeric_limits<float>::epsilon() * 2.0F);
 
     const float closeness      = fabs(1.0F - fabs(f_boost / f_local));
     const bool  result_f_is_ok = (closeness < cast_tol_float);
