@@ -594,7 +594,7 @@ jobs:
           dir %cd%\x64\Release\wide_integer_vs2022.exe
           %cd%\x64\Release\wide_integer_vs2022.exe
   mingw-winhost-x64:
-    runs-on: windows-latest
+    runs-on: windows-2019
     strategy:
       fail-fast: false
       matrix:
