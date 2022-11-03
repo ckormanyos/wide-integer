@@ -27,7 +27,7 @@ auto ::math::wide_integer::example001_mul_div() -> bool
   WIDE_INTEGER_CONSTEXPR uint256_t d = (a / b);
 
   WIDE_INTEGER_CONSTEXPR bool result_is_ok = (   (c == "0xE491A360C57EB4306C61F9A04F7F7D99BE3676AAD2D71C5592D5AE70F84AF076")
-                                              && (std::uint_fast8_t(d) == 10U)); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
+                                              && (static_cast<std::uint_fast8_t>(d) == static_cast<std::uint_fast8_t>(UINT8_C(10)))); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
 
   #if defined(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST) && (WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST != 0)
   static_assert(result_is_ok, "Error: example001_mul_div not OK!");

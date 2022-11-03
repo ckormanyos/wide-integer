@@ -26,7 +26,7 @@ jobs:
           - compiler: clang++
             clang_tidy: "clang-tidy"
             container: johnmcfarlane/cnl_ci:clang-13-libcpp
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     container: ${{matrix.container}}
     steps:
       - uses: actions/checkout@v3
@@ -51,7 +51,7 @@ jobs:
         working-directory: build
         run: ctest --verbose --output-on-failure
   cmake-windows:
-    runs-on: windows-2019
+    runs-on: windows-latest
     steps:
       - uses: actions/checkout@v3
       - name: clone-boost-develop
@@ -82,7 +82,7 @@ jobs:
         working-directory: ${{runner.workspace}}/build
         run: ctest --verbose --output-on-failure
   gnumake-clang-tidy-12-native:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     defaults:
       run:
         shell: bash
@@ -184,7 +184,7 @@ jobs:
           ls -la ./wide_integer.exe
           ./wide_integer.exe
   gcc-clang-native-limb_type_uint64_t:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     defaults:
       run:
         shell: bash
@@ -216,7 +216,7 @@ jobs:
           ls -la ./wide_integer.exe
           ./wide_integer.exe
   gcc-11-clang-12_wide_integer_namespace:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     defaults:
       run:
         shell: bash
@@ -352,7 +352,7 @@ jobs:
           ls -la ./wide_integer.exe
           ./wide_integer.exe
   gcc-clang-native-asan:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     defaults:
       run:
         shell: bash
@@ -384,7 +384,7 @@ jobs:
           ls -la ./wide_integer.exe
           ./wide_integer.exe
   gcc-clang-native-ubsan:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     defaults:
       run:
         shell: bash
@@ -416,7 +416,7 @@ jobs:
           ls -la ./wide_integer.exe
           ./wide_integer.exe
   gcc-clang-native-ubsan-limb_type_uint64_t:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     defaults:
       run:
         shell: bash
@@ -448,7 +448,7 @@ jobs:
           ls -la ./wide_integer.exe
           ./wide_integer.exe
   gcc-clang-native-tsan:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     defaults:
       run:
         shell: bash
@@ -512,7 +512,7 @@ jobs:
           ls -la ./wide_integer.exe
           ./wide_integer.exe
   msvc-release-x64:
-    runs-on: windows-2019
+    runs-on: windows-latest
     steps:
       - uses: actions/checkout@v3
         with:
@@ -528,6 +528,8 @@ jobs:
           ./b2 headers
       - uses: actions/checkout@v1
       - uses: ilammy/msvc-dev-cmd@v1
+        with:
+          toolset: 14.2
       - name: msvc-release-x64
         shell: cmd
         working-directory: ./
@@ -537,7 +539,7 @@ jobs:
           dir %cd%\x64\Release\wide_integer.exe
           %cd%\x64\Release\wide_integer.exe
   msvc-release-x64-vs2022:
-    runs-on: windows-2022
+    runs-on: windows-latest
     steps:
       - uses: actions/checkout@v3
         with:
@@ -553,6 +555,8 @@ jobs:
           ./b2 headers
       - uses: actions/checkout@v1
       - uses: ilammy/msvc-dev-cmd@v1
+        with:
+          toolset: 14.3
       - name: msvc-release-x64-vs2022
         shell: cmd
         working-directory: ./
@@ -562,7 +566,7 @@ jobs:
           dir %cd%\x64\Release\wide_integer_vs2022.exe
           %cd%\x64\Release\wide_integer_vs2022.exe
   msvc-release-x64-vs2022-asan:
-    runs-on: windows-2022
+    runs-on: windows-latest
     steps:
       - uses: actions/checkout@v3
         with:
@@ -578,6 +582,8 @@ jobs:
           ./b2 headers
       - uses: actions/checkout@v1
       - uses: ilammy/msvc-dev-cmd@v1
+        with:
+          toolset: 14.3
       - name: msvc-release-x64-vs2022-asan
         shell: cmd
         working-directory: ./
@@ -662,7 +668,7 @@ jobs:
           echo "qemu_result" "$qemu_result" | grep 'qemu_result 0'
         working-directory: ./
   gcc-avr:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     defaults:
       run:
         shell: bash
@@ -701,7 +707,7 @@ jobs:
           ls -la bin/${{ matrix.example }}.elf bin/${{ matrix.example }}.map bin/${{ matrix.example }}.hex
         working-directory: ./
   gcc-clang-boost_backend:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     defaults:
       run:
         shell: bash

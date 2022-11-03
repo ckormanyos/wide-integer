@@ -25,7 +25,7 @@ auto ::math::wide_integer::example006_gcd() -> bool
 
   WIDE_INTEGER_CONSTEXPR uint256_t c = gcd(a, b);
 
-  WIDE_INTEGER_CONSTEXPR bool result_is_ok = (std::uint32_t(c) == UINT32_C(12170749));
+  WIDE_INTEGER_CONSTEXPR auto result_is_ok = (static_cast<std::uint32_t>(c) == static_cast<std::uint32_t>(UINT32_C(12170749)));
 
   #if defined(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST) && (WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST != 0)
   static_assert(result_is_ok, "Error: example006_gcd not OK!");
