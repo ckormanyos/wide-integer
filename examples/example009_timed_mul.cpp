@@ -21,7 +21,7 @@
 
 namespace local_timed_mul
 {
-  constexpr std::uint32_t wide_integer_test9_digits2 = std::uint32_t(1ULL << 15U);
+  constexpr std::uint32_t wide_integer_test9_digits2 = static_cast<std::uint32_t>(1ULL << 15U);
 
   template<typename UnsignedIntegralIteratorType,
            typename RandomEngineType>
@@ -115,7 +115,7 @@ auto ::math::wide_integer::example009_timed_mul() -> bool
     }
   }
 
-  const float kops_per_sec = float(count) / float(static_cast<std::uint32_t>(total_time));
+  const float kops_per_sec = static_cast<float>(count) / static_cast<float>(static_cast<std::uint32_t>(total_time));
 
   {
     const auto flg = std::cout.flags();

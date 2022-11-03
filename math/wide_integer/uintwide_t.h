@@ -5080,7 +5080,7 @@
 
     using local_unsigned_integral_type = UnsignedIntegralType;
 
-    auto mask = static_cast<local_unsigned_integral_type>(u);
+    auto mask = static_cast<local_unsigned_integral_type>(u); // NOLINT(altera-id-dependent-backward-branch)
 
     // This assumes that at least one bit is set.
     // Otherwise saturation of the index will occur.
@@ -6790,8 +6790,8 @@
     const auto val_unsigned =
     (
       (!uintwide_t<Width2, LimbType, AllocatorType, IsSigned>::is_neg(val))
-        ? local_unsigned_wide_integer_type(val)
-        : local_unsigned_wide_integer_type(-val)
+        ? static_cast<local_unsigned_wide_integer_type>(val)
+        : static_cast<local_unsigned_wide_integer_type>(-val)
     );
 
     static_assert(std::numeric_limits<local_result_value_type>::digits == std::numeric_limits<local_input_value_type>::digits,
@@ -6906,8 +6906,8 @@
     const auto val_unsigned =
     (
       (!uintwide_t<Width2, LimbType, AllocatorType, IsSigned>::is_neg(val))
-        ? local_unsigned_wide_integer_type(val)
-        : local_unsigned_wide_integer_type(-val)
+        ? static_cast<local_unsigned_wide_integer_type>(val)
+        : static_cast<local_unsigned_wide_integer_type>(-val)
     );
 
     static_assert(std::numeric_limits<local_result_value_type>::digits != std::numeric_limits<local_input_value_type>::digits,
