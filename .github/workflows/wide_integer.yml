@@ -284,7 +284,7 @@ jobs:
           ls -la ./wide_integer.exe
           ./wide_integer.exe
   gcc-clang-10_up:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-20.04
     defaults:
       run:
         shell: bash
