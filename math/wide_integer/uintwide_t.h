@@ -2742,7 +2742,9 @@
         );
     }
 
+  #if !defined(WIDE_INTEGER_DISABLE_PRIVATE_CLASS_DATA_MEMBERS)
   private:
+  #endif
     representation_type
       values // NOLINT(readability-identifier-naming)
       {
@@ -2751,6 +2753,9 @@
         typename representation_type::allocator_type()
       };
 
+  #if defined(WIDE_INTEGER_DISABLE_PRIVATE_CLASS_DATA_MEMBERS)
+  private:
+  #endif
     friend auto ::test_uintwide_t_edge::test_various_isolated_edge_cases() -> bool;
 
     explicit constexpr uintwide_t(const representation_type& other_rep)

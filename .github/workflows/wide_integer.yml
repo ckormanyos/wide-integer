@@ -526,7 +526,7 @@ jobs:
           git submodule update --init libs/multiprecision
           ./bootstrap.bat
           ./b2 headers
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v3
       - uses: ilammy/msvc-dev-cmd@v1
         with:
           toolset: 14.2
@@ -553,7 +553,7 @@ jobs:
           git submodule update --init libs/multiprecision
           ./bootstrap.bat
           ./b2 headers
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v3
       - uses: ilammy/msvc-dev-cmd@v1
         with:
           toolset: 14.3
@@ -580,7 +580,7 @@ jobs:
           git submodule update --init libs/multiprecision
           ./bootstrap.bat
           ./b2 headers
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v3
       - uses: ilammy/msvc-dev-cmd@v1
         with:
           toolset: 14.3
@@ -743,3 +743,27 @@ jobs:
           echo "ls -la ./test_uintwide_t_boost_backend_via_test_arithmetic.exe"
           ls -la ./test_uintwide_t_boost_backend_via_test_arithmetic.exe
           ./test_uintwide_t_boost_backend_via_test_arithmetic.exe
+  gcc-clang-xtra:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    strategy:
+      fail-fast: false
+      matrix:
+        standard: [ c++20, c++2b ]
+        compiler: [ g++-12, clang++-14 ]
+        suite: [ test_uintwide_t_xtra_from_issue_335 ]
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: '0'
+      - name: update-tools
+        run: sudo apt install g++-12 clang-14
+      - name: gcc-clang-xtra
+        run: |
+          echo "compile ./${{ matrix.suite }}.exe"
+          ${{ matrix.compiler }} -v
+          ${{ matrix.compiler }} -finline-functions -m64 -O3 -Werror -Wall -Wextra -Wconversion -Wsign-conversion -Wshadow -Wundef -Wunused-parameter -Wuninitialized -Wunreachable-code -Winit-self -Wzero-as-null-pointer-constant -std=${{ matrix.standard }} -DWIDE_INTEGER_DISABLE_PRIVATE_CLASS_DATA_MEMBERS -I. test/${{ matrix.suite }}.cpp -o ${{ matrix.suite }}.exe
+          ls -la ./${{ matrix.suite }}.exe
+          ./${{ matrix.suite }}.exe

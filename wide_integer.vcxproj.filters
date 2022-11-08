@@ -210,6 +210,9 @@
     <ClCompile Include="target\micros\stm32f429\make\single\crt.cpp">
       <Filter>target\micros\stm32f429\make\single</Filter>
     </ClCompile>
+    <ClCompile Include="test\test_uintwide_t_xtra_from_issue_335.cpp">
+      <Filter>Source Files\test</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include=".github\workflows\wide_integer.yml">

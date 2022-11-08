@@ -21,33 +21,33 @@ ifneq ($(MY_STD),)
 STD                 := $(MY_STD)
 endif
 
-CXX_FLAGS    = $(CC)                                      \
-               -march=native                              \
-               -mtune=native                              \
-               -O3                                        \
-               -Wall                                      \
-               -Wextra                                    \
-               -Wconversion                               \
-               -Wsign-conversion                          \
+CXX_FLAGS    = $(CC)                                                           \
+               -march=native                                                   \
+               -mtune=native                                                   \
+               -O3                                                             \
+               -Wall                                                           \
+               -Wextra                                                         \
+               -Wconversion                                                    \
+               -Wsign-conversion                                               \
                -std=$(STD)
 
 C_DEFINES    = WIDE_INTEGER_HAS_MUL_8_BY_8_UNROLL
 
-C_INCLUDES   = $(PATH_SRC)                                          \
+C_INCLUDES   = $(PATH_SRC)                                                     \
                $(BOOST_ROOT_FOR_TIDY)
 
 C_DEFINES   :=$(addprefix -D,$(C_DEFINES))
 C_INCLUDES  :=$(addprefix -I,$(C_INCLUDES))
 
 
-TIDY_CHECKS  = "*,                                                                \
-                -readability-identifier-length,                                   \
-                -altera-struct-pack-align,                                        \
-                -altera-unroll-loops,                                             \
-                -fuchsia-*,                                                       \
+TIDY_CHECKS  = "*,                                                             \
+                -readability-identifier-length,                                \
+                -altera-struct-pack-align,                                     \
+                -altera-unroll-loops,                                          \
+                -fuchsia-*,                                                    \
                 -llvmlibc-*"
 
-TIDY_FLAGS   = --extra-arg-before=--driver-mode=g++                 \
-               --header-filter=uintwide_t                           \
-               -warnings-as-errors=*                                \
+TIDY_FLAGS   = --extra-arg-before=--driver-mode=g++                            \
+               --header-filter=uintwide_t                                      \
+               -warnings-as-errors=*                                           \
                -checks=$(TIDY_CHECKS)

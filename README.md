@@ -355,6 +355,7 @@ enabled or disabled at compile time with the compiler switches:
 #define WIDE_INTEGER_NAMESPACE
 #define WIDE_INTEGER_DISABLE_WIDE_INTEGER_CONSTEXPR
 #define WIDE_INTEGER_TEST_REPRESENTATION_AS_STD_LIST
+#define WIDE_INTEGER_DISABLE_PRIVATE_CLASS_DATA_MEMBERS
 ```
 
 When working with even the most tiny microcontroller systems,
@@ -544,6 +545,20 @@ When defining the macro `WIDE_INTEGER_TEST_REPRESENTATION_AS_STD_LIST`,
 the macro `WIDE_INTEGER_DISABLE_WIDE_INTEGER_CONSTEXPR` will also
 be defined automatically because `std::list` is incompatible
 with some or most of wide-integer's `constexpr`-ness.
+
+```cpp
+#define WIDE_INTEGER_DISABLE_PRIVATE_CLASS_DATA_MEMBERS
+```
+
+This macro can be used only to disable `uintwide_t`'s private
+data members and make them public. This allows the
+`uintwide_t` class to be used as a _structured_ class object,
+such as is needed for constant-valued template parameters
+in the sense of C++20's `constexpr`-ness.
+
+Making private data members public is unusual for some designs
+so the default value is `WIDE_INTEGER_DISABLE_PRIVATE_CLASS_DATA_MEMBERS`
+disabled and `uintwide_t`'s data members remain private.
 
 ## Detailed examples
 
