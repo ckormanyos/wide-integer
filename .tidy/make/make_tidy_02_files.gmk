@@ -33,5 +33,3 @@ FILES_PRJ  =   $(PATH_SRC)/test/test_uintwide_t_boost_backend              \
                $(PATH_SRC)/examples/example010_uint48_t                    \
                $(PATH_SRC)/examples/example011_uint24_t                    \
                $(PATH_SRC)/examples/example012_rsa_crypto
-
-#$(PATH_SRC)/test/test                                       \

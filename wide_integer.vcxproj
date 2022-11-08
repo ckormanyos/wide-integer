@@ -239,6 +239,12 @@
     <ClCompile Include="test\test_uintwide_t_n_base.cpp" />
     <ClCompile Include="test\test_uintwide_t_spot_values.cpp" />
     <ClCompile Include="test\test_uintwide_t_n_binary_ops_base.cpp" />
+    <ClCompile Include="test\test_uintwide_t_xtra_from_issue_335.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include=".clang-tidy" />
