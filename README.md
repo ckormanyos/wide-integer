@@ -555,6 +555,8 @@ data member access from _private_ to _public_. This allows the
 `uintwide_t` class to be used as a so-called _structured_ class,
 such as is needed for constant-valued template parameters
 in the sense of C++20's `constexpr`-ness.
+This preprocessor switch was invented based on the discussion in
+[issue 335](https://github.com/ckormanyos/wide-integer/issues/335)
 
 Making private data members public is unusual for some designs.
 So the preprocessor switch `WIDE_INTEGER_DISABLE_PRIVATE_CLASS_DATA_MEMBERS`
