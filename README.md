@@ -487,7 +487,7 @@ for instance,
 ```
 
 places all parts of the wide-integer implementation and its details
-within the prepended outer namespace `something_unique` ---
+within the prepended outer namespace `something_unique` -
 as in
 
 ```cpp
@@ -550,15 +550,16 @@ with some or most of wide-integer's `constexpr`-ness.
 #define WIDE_INTEGER_DISABLE_PRIVATE_CLASS_DATA_MEMBERS
 ```
 
-This macro can be used only to disable `uintwide_t`'s private
-data members and make them public. This allows the
-`uintwide_t` class to be used as a _structured_ class object,
+This optional macro can be used to switch `uintwide_t`'s
+data member access from _private_ to _public_. This allows the
+`uintwide_t` class to be used as a so-called _structured_ class,
 such as is needed for constant-valued template parameters
 in the sense of C++20's `constexpr`-ness.
 
-Making private data members public is unusual for some designs
-so the default value is `WIDE_INTEGER_DISABLE_PRIVATE_CLASS_DATA_MEMBERS`
-disabled and `uintwide_t`'s data members remain private.
+Making private data members public is unusual for some designs.
+So the preprocessor switch `WIDE_INTEGER_DISABLE_PRIVATE_CLASS_DATA_MEMBERS`
+is not defined (i.e., not set) by default. This ensures that
+`uintwide_t`'s data members remain private by default.
 
 ## Detailed examples
 
