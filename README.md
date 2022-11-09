@@ -543,7 +543,7 @@ iteration whatsoever.
 
 When defining the macro `WIDE_INTEGER_TEST_REPRESENTATION_AS_STD_LIST`,
 the macro `WIDE_INTEGER_DISABLE_WIDE_INTEGER_CONSTEXPR` will also
-be defined automatically because `std::list` is incompatible
+be _undefined_ automatically because `std::list` is incompatible
 with some or most of wide-integer's `constexpr`-ness.
 
 ```cpp
