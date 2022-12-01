@@ -27,11 +27,11 @@ namespace from_issue_339
   using sint2048 = ::math::wide_integer::uintwide_t<uint2048::my_width2, typename uint2048::limb_type, void, true>;
   #endif
 
-  uint2048 modInverse(uint2048 A, uint2048 M) // NOLINT(readability-identifier-naming)
+  auto modInverse(uint2048 A, uint2048 M) -> uint2048 // NOLINT(readability-identifier-naming)
   {
     uint4096 m0 = M;
-    uint4096 y = 0;
-    uint4096 x = 1;
+    uint4096 y  = 0;
+    uint4096 x  = 1;
 
     if(M == 1)
     {
