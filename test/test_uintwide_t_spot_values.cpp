@@ -5,15 +5,97 @@
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
 
+#include <iostream>
+
 #include <cassert>
 #include <sstream>
 
 #include <math/wide_integer/uintwide_t.h>
 #include <test/test_uintwide_t.h>
 
+namespace from_issue_339
+{
+  // See also: https://github.com/ckormanyos/wide-integer/issues/339
+
+  #if defined(WIDE_INTEGER_NAMESPACE)
+  using uint2048 = WIDE_INTEGER_NAMESPACE::math::wide_integer::uint2048_t;
+  using uint4096 = WIDE_INTEGER_NAMESPACE::math::wide_integer::uint4096_t;
+  using sint2048 = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<uint2048::my_width2, uint2048::limb_type, void, true>;
+  #else
+  using uint2048 = ::math::wide_integer::uint2048_t;
+  using uint4096 = ::math::wide_integer::uint4096_t;
+  using sint2048 = ::math::wide_integer::uintwide_t<uint2048::my_width2, typename uint2048::limb_type, void, true>;
+  #endif
+
+  uint2048 modInverse(uint2048 A, uint2048 M)
+  {
+    uint4096 m0 = M;
+    uint4096 y = 0;
+    uint4096 x = 1;
+
+    if(M == 1)
+    {
+      return 0;
+    }
+
+    while (A > 1)
+    {
+      uint4096 q = A / M;
+      uint4096 t = M;
+
+      M = A % M;
+      A = t;
+      t = y;
+
+      y = x - q * y;
+      x = t;
+    }
+
+    if (x < 0)
+    {
+      x += m0;
+    }
+
+    return x;
+  }
+
+  auto test_uintwide_t_spot_values_from_issue_339_underflow_2048_4096() -> bool
+  {
+    const auto mod_inv_unsigned = modInverse(uint2048(59), uint2048(164));
+
+    const auto result_unsigned_is_ok =
+      (
+        mod_inv_unsigned == uint2048
+                            (
+                              "1044388881413152506691752710716624382579964249047383780384233483283953907971557456848826811934997558"
+                              "3408901067144392628379875734381857936072632360878513652779459569765437099983403615901343837183144280"
+                              "7001185594622637631883939771274567233468434458661749680790870580370407128404874011860911446797778359"
+                              "8029006686938976881787785946905630190260940599579453432823469303026696443059025015972399867714215541"
+                              "6938355598852914863182379144344967340878118726394964751001890413490084170616750936683338505510329720"
+                              "8826955076998361636941193301521379682583718809183365675122131849284636812555022599830041234478486259"
+                              "5674492194617023806505913245610825731835380087608622102834270197698202313169017678006675195485079921"
+                              "6364193702853751247840149071591354599827905133996115517942711068311340905842728842797915548497829543"
+                              "2353451706522326906139490598769300212296339568778287894844061600741294567491982305057164237715481632"
+                              "1380631045902916136926708342856440730447899971901781465763473223850267253059899795996090799469201774"
+                              "6248177184498674556592501783290704731194331655508075682218465717463732968849128195203174570024409266"
+                              "1691087414838507841192980452298185733897764810312608590300130241346718972667321649151113160292078173"
+                              "8033436090243804708340403154190311"
+                            )
+       );
+
+    const auto mod_inv_signed = static_cast<sint2048>(mod_inv_unsigned);
+
+    const auto result_signed_is_ok = (mod_inv_signed == -25);
+
+    const auto result_is_ok = (result_unsigned_is_ok && result_signed_is_ok);
+
+    return result_is_ok;
+  }
+} // namespace from_issue_339
+
 namespace from_issue_316
 {
-  // See also: https://github.com/ckormanyos/wide-integer/issues/266
+  // See also: https://github.com/ckormanyos/wide-integer/issues/316
 
   using import_export_array_type = std::array<std::uint8_t, static_cast<std::size_t>(128U)>; // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
 
@@ -39,9 +121,9 @@ namespace from_issue_316
 
   auto test_uintwide_t_spot_values_from_issue_316_import_export_original() -> bool
   {
-    // See also: https://github.com/ckormanyos/wide-integer/issues/266
+    // See also: https://github.com/ckormanyos/wide-integer/issues/316
 
-    #if defined WIDE_INTEGER_NAMESPACE
+    #if defined(WIDE_INTEGER_NAMESPACE)
     using local_uint1024_t = WIDE_INTEGER_NAMESPACE::math::wide_integer::uint1024_t;
     #else
     using local_uint1024_t = ::math::wide_integer::uint1024_t;
@@ -97,11 +179,11 @@ namespace from_issue_316
 
   auto test_uintwide_t_spot_values_from_issue_316_import_export_extended() -> bool
   {
-    // See also: https://github.com/ckormanyos/wide-integer/issues/266
+    // See also: https://github.com/ckormanyos/wide-integer/issues/316
 
     import_export_array_type bin_128_made_from_bits_exported;
 
-    #if defined WIDE_INTEGER_NAMESPACE
+    #if defined(WIDE_INTEGER_NAMESPACE)
     using local_uint1024_t = WIDE_INTEGER_NAMESPACE::math::wide_integer::uint1024_t;
     #else
     using local_uint1024_t = ::math::wide_integer::uint1024_t;
@@ -146,7 +228,7 @@ namespace from_issue_266
   {
     // See also: https://github.com/ckormanyos/wide-integer/issues/266
 
-    #if defined WIDE_INTEGER_NAMESPACE
+    #if defined(WIDE_INTEGER_NAMESPACE)
     using local_uint128_t = WIDE_INTEGER_NAMESPACE::math::wide_integer::uint128_t;
     #else
     using local_uint128_t = ::math::wide_integer::uint128_t;
@@ -168,7 +250,7 @@ namespace from_issue_266
   {
     // See also: https://github.com/ckormanyos/wide-integer/issues/266
 
-    #if defined WIDE_INTEGER_NAMESPACE
+    #if defined(WIDE_INTEGER_NAMESPACE)
     using local_uint128_t = WIDE_INTEGER_NAMESPACE::math::wide_integer::uint128_t;
     #else
     using local_uint128_t = ::math::wide_integer::uint128_t;
@@ -344,7 +426,7 @@ namespace exercise_bad_string_input
 {
   auto test_uintwide_t_spot_values_exercise_bad_string_input() -> bool
   {
-    #if defined WIDE_INTEGER_NAMESPACE
+    #if defined(WIDE_INTEGER_NAMESPACE)
     using local_uint128_t = WIDE_INTEGER_NAMESPACE::math::wide_integer::uint128_t;
     #else
     using local_uint128_t = ::math::wide_integer::uint128_t;
@@ -366,7 +448,7 @@ namespace exercise_pow_zero_one_two
 {
   auto test_uintwide_t_spot_values_exercise_pow_zero_one_two() -> bool
   {
-    #if defined WIDE_INTEGER_NAMESPACE
+    #if defined(WIDE_INTEGER_NAMESPACE)
     using local_uint128_t = WIDE_INTEGER_NAMESPACE::math::wide_integer::uint128_t;
     #else
     using local_uint128_t = ::math::wide_integer::uint128_t;
@@ -401,7 +483,7 @@ namespace exercise_octal
 {
   auto test_uintwide_t_spot_values_exercise_octal() -> bool
   {
-    #if defined WIDE_INTEGER_NAMESPACE
+    #if defined(WIDE_INTEGER_NAMESPACE)
     using local_uint128_t = WIDE_INTEGER_NAMESPACE::math::wide_integer::uint128_t;
     #else
     using local_uint128_t = ::math::wide_integer::uint128_t;
@@ -433,7 +515,14 @@ namespace local_test_spot_values
 
 auto local_test_spot_values::test() -> bool // NOLINT(readability-function-cognitive-complexity)
 {
-  bool result_is_ok = true;
+  auto result_is_ok = true;
+
+  {
+    const auto result_from_issue_339_is_ok =
+      from_issue_339::test_uintwide_t_spot_values_from_issue_339_underflow_2048_4096();
+
+    result_is_ok = (result_from_issue_339_is_ok && result_is_ok);
+  }
 
   {
     result_is_ok = (exercise_bad_string_input::test_uintwide_t_spot_values_exercise_bad_string_input() && result_is_ok);
@@ -464,7 +553,7 @@ auto local_test_spot_values::test() -> bool // NOLINT(readability-function-cogni
   {
     // See also: https://github.com/ckormanyos/wide-integer/issues/234#issuecomment-1053733496
 
-    #if defined WIDE_INTEGER_NAMESPACE
+    #if defined(WIDE_INTEGER_NAMESPACE)
     using local_uint512_t = WIDE_INTEGER_NAMESPACE::math::wide_integer::uint512_t;
     using local_int512_t  = WIDE_INTEGER_NAMESPACE::math::wide_integer::int512_t;
     #else

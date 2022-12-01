@@ -1836,7 +1836,13 @@
                   crepresentation().cbegin() + sz,
                   other.values.begin());
 
+        // TBD: Can proper/better template specialization remove the need for if constexpr here?
+        #if (   (defined(_MSC_VER) && ((_MSC_VER >= 1900) && defined(_HAS_CXX17) && (_HAS_CXX17 != 0))) \
+             || (defined(__cplusplus) && (__cplusplus >= 201703L)))
+        if constexpr(Width2 < OtherWidth2)
+        #else
         if(Width2 < OtherWidth2)
+        #endif
         {
           std::fill(other.values.begin() + sz, other.values.end(), static_cast<limb_type>(UINT8_C(0)));
         }
@@ -1851,7 +1857,13 @@
                   uv.crepresentation().cbegin() + sz,
                   other.values.begin());
 
+        // TBD: Can proper/better template specialization remove the need for if constexpr here?
+        #if (   (defined(_MSC_VER) && ((_MSC_VER >= 1900) && defined(_HAS_CXX17) && (_HAS_CXX17 != 0))) \
+             || (defined(__cplusplus) && (__cplusplus >= 201703L)))
+        if constexpr(Width2 < OtherWidth2)
+        #else
         if(Width2 < OtherWidth2)
+        #endif
         {
           std::fill(other.values.begin() + sz, other.values.end(), static_cast<limb_type>(UINT8_C(0)));
         }
