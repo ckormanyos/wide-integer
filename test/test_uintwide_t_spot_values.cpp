@@ -35,7 +35,7 @@ namespace from_issue_339
 
     if(M == 1)
     {
-      return 0;
+      return 0; // LCOV_EXCL_LINE
     }
 
     while (A > 1)
@@ -53,7 +53,7 @@ namespace from_issue_339
 
     if (x < 0)
     {
-      x += m0;
+      x += m0; // LCOV_EXCL_LINE
     }
 
     return x;
