@@ -73,19 +73,19 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(ProjectDir);C:\boost\boost_1_80_0;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir);C:\boost\boost_1_81_0;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(ProjectDir);C:\boost\boost_1_80_0;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir);C:\boost\boost_1_81_0;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(ProjectDir);C:\boost\boost_1_80_0;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir);C:\boost\boost_1_81_0;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(ProjectDir);C:\boost\boost_1_80_0;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir);C:\boost\boost_1_81_0;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -240,6 +240,12 @@
     <ClCompile Include="test\test_uintwide_t_n_base.cpp" />
     <ClCompile Include="test\test_uintwide_t_spot_values.cpp" />
     <ClCompile Include="test\test_uintwide_t_n_binary_ops_base.cpp" />
+    <ClCompile Include="test\test_uintwide_t_xtra_from_issue_335.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include=".clang-tidy" />
