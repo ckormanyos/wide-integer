@@ -213,6 +213,9 @@
     <ClCompile Include="test\test_uintwide_t_xtra_from_issue_335.cpp">
       <Filter>Source Files\test</Filter>
     </ClCompile>
+    <ClCompile Include="examples\example013_ecdsa_sign_verify.cpp">
+      <Filter>Source Files\examples</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include=".github\workflows\wide_integer.yml">

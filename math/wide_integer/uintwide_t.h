@@ -545,14 +545,17 @@
 
   public:
     using exact_unsigned_type = std::uintmax_t;
+    using exact_signed_type   = std::intmax_t;
+    using fast_unsigned_type  = std::uintmax_t;
+    using fast_signed_type    = std::intmax_t;
   };
 
-  template<const size_t BitCount> struct uint_type_helper<BitCount, std::enable_if_t<                     (BitCount <=   8U)>> { using exact_unsigned_type = std::uint8_t;  using exact_signed_type = std::int8_t;  using fast_unsigned_type = std::uint_fast8_t;  using fast_signed_type = std::int_fast8_t;  }; // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
-  template<const size_t BitCount> struct uint_type_helper<BitCount, std::enable_if_t<(BitCount >=  9U) && (BitCount <=  16U)>> { using exact_unsigned_type = std::uint16_t; using exact_signed_type = std::int16_t; using fast_unsigned_type = std::uint_fast16_t; using fast_signed_type = std::int_fast16_t; }; // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
-  template<const size_t BitCount> struct uint_type_helper<BitCount, std::enable_if_t<(BitCount >= 17U) && (BitCount <=  32U)>> { using exact_unsigned_type = std::uint32_t; using exact_signed_type = std::int32_t; using fast_unsigned_type = std::uint_fast32_t; using fast_signed_type = std::int_fast32_t; }; // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
-  template<const size_t BitCount> struct uint_type_helper<BitCount, std::enable_if_t<(BitCount >= 33U) && (BitCount <=  64U)>> { using exact_unsigned_type = std::uint64_t; using exact_signed_type = std::int64_t; using fast_unsigned_type = std::uint_fast64_t; using fast_signed_type = std::int_fast64_t; }; // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
+  template<const size_t BitCount> struct uint_type_helper<BitCount, std::enable_if_t<                                                  (BitCount <= static_cast<size_t>(UINT8_C(  8)))>> { using exact_unsigned_type = std::uint8_t;      using exact_signed_type = std::int8_t;     using fast_unsigned_type = std::uint_fast8_t;  using fast_signed_type = std::int_fast8_t;  };
+  template<const size_t BitCount> struct uint_type_helper<BitCount, std::enable_if_t<(BitCount >= static_cast<size_t>(UINT8_C( 9))) && (BitCount <= static_cast<size_t>(UINT8_C( 16)))>> { using exact_unsigned_type = std::uint16_t;     using exact_signed_type = std::int16_t;    using fast_unsigned_type = std::uint_fast16_t; using fast_signed_type = std::int_fast16_t; };
+  template<const size_t BitCount> struct uint_type_helper<BitCount, std::enable_if_t<(BitCount >= static_cast<size_t>(UINT8_C(17))) && (BitCount <= static_cast<size_t>(UINT8_C( 32)))>> { using exact_unsigned_type = std::uint32_t;     using exact_signed_type = std::int32_t;    using fast_unsigned_type = std::uint_fast32_t; using fast_signed_type = std::int_fast32_t; };
+  template<const size_t BitCount> struct uint_type_helper<BitCount, std::enable_if_t<(BitCount >= static_cast<size_t>(UINT8_C(33))) && (BitCount <= static_cast<size_t>(UINT8_C( 64)))>> { using exact_unsigned_type = std::uint64_t;     using exact_signed_type = std::int64_t;    using fast_unsigned_type = std::uint_fast64_t; using fast_signed_type = std::int_fast64_t; };
   #if defined(WIDE_INTEGER_HAS_LIMB_TYPE_UINT64)
-  template<const size_t BitCount> struct uint_type_helper<BitCount, typename std::enable_if_t<(BitCount >= 65U) && (BitCount <= 128U)>> { using exact_unsigned_type = unsigned __int128; using exact_signed_type = signed __int128; using fast_unsigned_type = unsigned __int128;  using fast_signed_type = signed __int128;   }; // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
+  template<const size_t BitCount> struct uint_type_helper<BitCount, std::enable_if_t<(BitCount >= static_cast<size_t>(UINT8_C(65))) && (BitCount <= static_cast<size_t>(UINT8_C(128)))>> { using exact_unsigned_type = unsigned __int128; using exact_signed_type = signed __int128; using fast_unsigned_type = unsigned __int128;  using fast_signed_type = signed __int128;   };
   #endif
 
   using unsigned_fast_type = typename uint_type_helper<static_cast<size_t>(std::numeric_limits<size_t   >::digits + 0)>::fast_unsigned_type;
