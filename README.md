@@ -54,8 +54,8 @@ other similar types can be readily synthesized with wide-integer.
 Wide-integer also features basic realizations of several
 elementary and number theoretical functions such as root finding,
 random distribution, Miller-Rabin primality testing,
-greatest common denominator (GCD), least common multiplier (LCM)
-and more.
+greatest common denominator (GCD), least common multiplier (LCM),
+integer division (i.e., `divmod()`) and more.
 
 Inclusion of a single C++14 header file
 is all that is needed for using wide-integer,
@@ -816,6 +816,7 @@ negative arguments in number theoretical functions.
   - Miller-Rabin primality testing treats negative inetegers as positive when testing for prime, thus extending the set of primes to negative integers.
   - MSB/LSB (most/least significant bit) do not differentiate between positive or negative argument such that MSB of a negative integer will be the highest bit of the corresponding unsigned type.
   - Printing both positive-valued and negative-valued signed integers in hexadecimal format is supported. When printing negative-valued, signed  `uintwide_t` in hexadecimal format, the sign bit and all other bits are treated as if the integer were unsigned. The negative sign is not explicitly shown when using hexadecimal format, even if the underlying integer is signed and negative-valued. A potential positive sign, however, will be shown for positive-valued signed integers in hexadecimal form in the presence of `std::showpos`.
+  - Signed integer division and modulus results obtained from the `divmod()` function follow established number-theoretical rounding conventions, which are the same as those used by the `//`-operator in Python-3 (i.e., the same as Python-3's built-in `divmod()` function).
 
 ## Further details
 

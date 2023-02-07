@@ -1,5 +1,5 @@
 ﻿///////////////////////////////////////////////////////////////////
-//  Copyright Christopher Kormanyos 1999 - 2022.                 //
+//  Copyright Christopher Kormanyos 1999 - 2023.                 //
 //  Distributed under the Boost Software License,                //
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt          //
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)             //
@@ -887,6 +887,26 @@
   template<typename UnsignedShortType>
   WIDE_INTEGER_CONSTEXPR auto lcm(const UnsignedShortType& a, const UnsignedShortType& b) -> std::enable_if_t<(   (std::is_integral<UnsignedShortType>::value)
                                                                                                                && (std::is_unsigned<UnsignedShortType>::value)), UnsignedShortType>;
+
+  template<const size_t Width2,
+           typename LimbType,
+           typename AllocatorType,
+           const bool IsSignedLeft,
+           const bool IsSignedRight,
+           std::enable_if_t<((!IsSignedLeft) && (!IsSignedRight))> const* = nullptr>
+  WIDE_INTEGER_CONSTEXPR
+  auto divmod(const uintwide_t<Width2, LimbType, AllocatorType, IsSignedLeft >& a,
+              const uintwide_t<Width2, LimbType, AllocatorType, IsSignedRight>& b) -> std::pair<uintwide_t<Width2, LimbType, AllocatorType, IsSignedLeft>, uintwide_t<Width2, LimbType, AllocatorType, IsSignedRight>>;
+
+  template<const size_t Width2,
+           typename LimbType,
+           typename AllocatorType,
+           const bool IsSignedLeft,
+           const bool IsSignedRight,
+           std::enable_if_t<(IsSignedLeft || IsSignedRight)> const* = nullptr>
+  WIDE_INTEGER_CONSTEXPR
+  auto divmod(const uintwide_t<Width2, LimbType, AllocatorType, IsSignedLeft >& a,
+              const uintwide_t<Width2, LimbType, AllocatorType, IsSignedRight>& b) -> std::pair<uintwide_t<Width2, LimbType, AllocatorType, IsSignedLeft>, uintwide_t<Width2, LimbType, AllocatorType, IsSignedRight>>;
 
   template<const size_t Width2,
            typename LimbType = std::uint32_t,
@@ -1986,22 +2006,22 @@
       {
         // Unary division function.
 
-        const auto numererator_was_neg = is_neg(*this);
-        const auto denominator_was_neg = is_neg(other);
+        const auto numer_was_neg = is_neg(*this);
+        const auto denom_was_neg = is_neg(other);
 
-        if(numererator_was_neg || denominator_was_neg)
+        if(numer_was_neg || denom_was_neg)
         {
           using local_unsigned_wide_type = uintwide_t<Width2, limb_type, AllocatorType, false>;
 
           local_unsigned_wide_type a(*this);
           local_unsigned_wide_type b(other);
 
-          if(numererator_was_neg) { a.negate(); }
-          if(denominator_was_neg) { b.negate(); }
+          if(numer_was_neg) { a.negate(); }
+          if(denom_was_neg) { b.negate(); }
 
           a.eval_divide_knuth(b);
 
-          if(numererator_was_neg != denominator_was_neg) { a.negate(); }
+          if(numer_was_neg != denom_was_neg) { a.negate(); }
 
           values = a.values;
         }
@@ -2023,25 +2043,25 @@
       else
       {
         // Unary modulus function.
-        const auto numererator_was_neg = is_neg(*this);
-        const auto denominator_was_neg = is_neg(other);
+        const auto numer_was_neg = is_neg(*this);
+        const auto denom_was_neg = is_neg(other);
 
-        if(numererator_was_neg || denominator_was_neg)
+        if(numer_was_neg || denom_was_neg)
         {
           using local_unsigned_wide_type = uintwide_t<Width2, limb_type, AllocatorType, false>;
 
           local_unsigned_wide_type a(*this);
           local_unsigned_wide_type b(other);
 
-          if(numererator_was_neg) { a.negate(); }
-          if(denominator_was_neg) { b.negate(); }
+          if(numer_was_neg) { a.negate(); }
+          if(denom_was_neg) { b.negate(); }
 
           local_unsigned_wide_type remainder;
 
           a.eval_divide_knuth(b, &remainder);
 
           // The sign of the remainder follows the sign of the denominator.
-          if(numererator_was_neg) { remainder.negate(); }
+          if(numer_was_neg) { remainder.negate(); }
 
           values = remainder.values;
         }
@@ -2772,6 +2792,24 @@
   private:
   #endif
     friend auto ::test_uintwide_t_edge::test_various_isolated_edge_cases() -> bool;
+
+    template<const size_t OtherWidth2,
+             typename OtherLimbType,
+             typename OtherAllocatorType,
+             const bool OtherIsSignedLeft,
+             const bool OtherIsSignedRight,
+             std::enable_if_t<((!OtherIsSignedLeft) && (!OtherIsSignedRight))> const*>
+    friend WIDE_INTEGER_CONSTEXPR auto divmod(const uintwide_t<OtherWidth2, OtherLimbType, OtherAllocatorType, OtherIsSignedLeft >& a, // NOLINT(readability-redundant-declaration)
+                                              const uintwide_t<OtherWidth2, OtherLimbType, OtherAllocatorType, OtherIsSignedRight>& b) -> std::pair<uintwide_t<OtherWidth2, OtherLimbType, OtherAllocatorType, OtherIsSignedLeft>, uintwide_t<OtherWidth2, OtherLimbType, OtherAllocatorType, OtherIsSignedRight>>;
+
+    template<const size_t OtherWidth2,
+             typename OtherLimbType,
+             typename OtherAllocatorType,
+             const bool OtherIsSignedLeft,
+             const bool OtherIsSignedRight,
+             std::enable_if_t<(OtherIsSignedLeft || OtherIsSignedRight)> const*>
+    friend WIDE_INTEGER_CONSTEXPR auto divmod(const uintwide_t<OtherWidth2, OtherLimbType, OtherAllocatorType, OtherIsSignedLeft >& a, // NOLINT(readability-redundant-declaration)
+                                              const uintwide_t<OtherWidth2, OtherLimbType, OtherAllocatorType, OtherIsSignedRight>& b) -> std::pair<uintwide_t<OtherWidth2, OtherLimbType, OtherAllocatorType, OtherIsSignedLeft>, uintwide_t<OtherWidth2, OtherLimbType, OtherAllocatorType, OtherIsSignedRight>>;
 
     explicit constexpr uintwide_t(const representation_type& other_rep)
       : values(static_cast<const representation_type&>(other_rep)) { }
@@ -5881,6 +5919,74 @@
                                                                                                                && (std::is_unsigned<UnsignedShortType>::value)), UnsignedShortType>
   {
     return detail::lcm_impl(a, b);
+  }
+
+  template<const size_t Width2,
+           typename LimbType,
+           typename AllocatorType,
+           const bool IsSignedLeft,
+           const bool IsSignedRight,
+           std::enable_if_t<((!IsSignedLeft) && (!IsSignedRight))> const*>
+  WIDE_INTEGER_CONSTEXPR
+  auto divmod(const uintwide_t<Width2, LimbType, AllocatorType, IsSignedLeft >& a,
+              const uintwide_t<Width2, LimbType, AllocatorType, IsSignedRight>& b) -> std::pair<uintwide_t<Width2, LimbType, AllocatorType, IsSignedLeft>, uintwide_t<Width2, LimbType, AllocatorType, IsSignedRight>>
+  {
+    using local_unsigned_wide_type = uintwide_t<Width2, LimbType, AllocatorType, false>;
+
+          local_unsigned_wide_type ua(a);
+    const local_unsigned_wide_type ub(b);
+
+    local_unsigned_wide_type ur { };
+
+    ua.eval_divide_knuth(ub, &ur);
+
+    using divmod_result_pair_type = std::pair<local_unsigned_wide_type, local_unsigned_wide_type>;
+
+    return divmod_result_pair_type { ua, ur };
+  }
+
+  template<const size_t Width2,
+           typename LimbType,
+           typename AllocatorType,
+           const bool IsSignedLeft,
+           const bool IsSignedRight,
+           std::enable_if_t<(IsSignedLeft || IsSignedRight)> const*>
+  WIDE_INTEGER_CONSTEXPR
+  auto divmod(const uintwide_t<Width2, LimbType, AllocatorType, IsSignedLeft >& a,
+              const uintwide_t<Width2, LimbType, AllocatorType, IsSignedRight>& b) -> std::pair<uintwide_t<Width2, LimbType, AllocatorType, IsSignedLeft>, uintwide_t<Width2, LimbType, AllocatorType, IsSignedRight>>
+  {
+    using local_unsigned_wide_type = uintwide_t<Width2, LimbType, AllocatorType, false>;
+
+    using local_unknown_signedness_left_type  = uintwide_t<Width2, LimbType, AllocatorType, IsSignedLeft>;
+    using local_unknown_signedness_right_type = uintwide_t<Width2, LimbType, AllocatorType, IsSignedRight>;
+
+    const auto numer_was_neg = local_unknown_signedness_left_type::is_neg(a);
+    const auto denom_was_neg = local_unknown_signedness_right_type::is_neg(b);
+
+    local_unsigned_wide_type ua((!numer_was_neg) ? a : -a);
+    local_unsigned_wide_type ub((!denom_was_neg) ? b : -b);
+
+    local_unsigned_wide_type ur { };
+
+    ua.eval_divide_knuth(ub, &ur);
+
+    using divmod_result_pair_type = std::pair<local_unknown_signedness_left_type, local_unknown_signedness_right_type>;
+
+    auto result = divmod_result_pair_type { };
+
+    if(numer_was_neg == denom_was_neg)
+    {
+      result.first  = local_unknown_signedness_left_type(ua);
+      result.second = (!numer_was_neg) ? local_unknown_signedness_right_type(ur) : -local_unknown_signedness_right_type(ur);
+    }
+    else
+    {
+      const auto division_is_exact = (ur == 0);
+      result.first  = -local_unknown_signedness_left_type(ua + ((!division_is_exact) ? 1 : 0));
+      result.second = (!denom_was_neg) ? -local_unknown_signedness_right_type(ur - ((!division_is_exact) ? ub : 0)) : local_unknown_signedness_right_type(ur - ((!division_is_exact) ? ub : 0));
+    }
+
+    return result;
   }
 
   template<const size_t Width2,

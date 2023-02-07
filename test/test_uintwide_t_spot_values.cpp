@@ -13,6 +13,136 @@
 #include <math/wide_integer/uintwide_t.h>
 #include <test/test_uintwide_t.h>
 
+namespace from_issue_342
+{
+  auto test_uintwide_t_spot_values_from_issue_342_pos() -> bool
+  {
+    // See also: https://github.com/ckormanyos/wide-integer/issues/342
+
+    #if defined(WIDE_INTEGER_NAMESPACE)
+    using local_uint128_t = WIDE_INTEGER_NAMESPACE::math::wide_integer::uint128_t;
+    #else
+    using local_uint128_t = ::math::wide_integer::uint128_t;
+    #endif
+
+    auto result_is_ok = true;
+
+    {
+      const local_uint128_t a = 11;
+      const local_uint128_t b =  3;
+
+      const auto r_pp = divmod(+a, +b);
+
+      const auto result_pp_is_ok = ((r_pp.first == +3) && (r_pp.second == +2));
+
+      result_is_ok = (result_pp_is_ok && result_is_ok);
+    }
+
+    {
+      const local_uint128_t a = 12;
+      const local_uint128_t b =  3;
+
+      const auto r_pp = divmod(+a, +b);
+
+      const auto result_divmod_is_ok = ((r_pp.first == +4) && (r_pp.second == 0));
+
+      result_is_ok = (result_divmod_is_ok && result_is_ok);
+    }
+
+    return result_is_ok;
+  }
+
+  auto test_uintwide_t_spot_values_from_issue_342_mix() -> bool
+  {
+    // See also: https://github.com/ckormanyos/wide-integer/issues/342
+
+    #if defined(WIDE_INTEGER_NAMESPACE)
+    using local_int128_t = WIDE_INTEGER_NAMESPACE::math::wide_integer::int128_t;
+    #else
+    using local_int128_t = ::math::wide_integer::int128_t;
+    #endif
+
+    auto result_is_ok = true;
+
+    {
+      const local_int128_t a = 17;
+      const local_int128_t b =  4;
+
+      const auto r_pp = divmod(+a, +b);
+      const auto r_pm = divmod(+a, -b);
+      const auto r_mp = divmod(-a, +b);
+      const auto r_mm = divmod(-a, -b);
+
+      const auto result_pp_is_ok = ((r_pp.first == +4) && (r_pp.second == +1));
+      const auto result_pm_is_ok = ((r_pm.first == -5) && (r_pm.second == -3));
+      const auto result_mp_is_ok = ((r_mp.first == -5) && (r_mp.second == +3));
+      const auto result_mm_is_ok = ((r_mm.first == +4) && (r_mm.second == -1));
+
+      const auto result_divmod_is_ok =
+      (
+           result_pp_is_ok
+        && result_pm_is_ok
+        && result_mp_is_ok
+        && result_mm_is_ok
+      );
+
+      result_is_ok = (result_divmod_is_ok && result_is_ok);
+    }
+
+    {
+      const local_int128_t a = 12;
+      const local_int128_t b =  3;
+
+      const auto r_pp = divmod(+a, +b);
+      const auto r_pm = divmod(+a, -b);
+      const auto r_mp = divmod(-a, +b);
+      const auto r_mm = divmod(-a, -b);
+
+      const auto result_pp_is_ok = ((r_pp.first == +4) && (r_pp.second == 0));
+      const auto result_pm_is_ok = ((r_pm.first == -4) && (r_pm.second == 0));
+      const auto result_mp_is_ok = ((r_mp.first == -4) && (r_mp.second == 0));
+      const auto result_mm_is_ok = ((r_mm.first == +4) && (r_mm.second == 0));
+
+      const auto result_divmod_is_ok =
+      (
+           result_pp_is_ok
+        && result_pm_is_ok
+        && result_mp_is_ok
+        && result_mm_is_ok
+      );
+
+      result_is_ok = (result_divmod_is_ok && result_is_ok);
+    }
+
+    {
+      const local_int128_t a =  32;
+      const local_int128_t b = 115;
+
+      const auto r_pp = divmod(+a, +b);
+      const auto r_pm = divmod(+a, -b);
+      const auto r_mp = divmod(-a, +b);
+      const auto r_mm = divmod(-a, -b);
+
+      const auto result_pp_is_ok = ((r_pp.first == +0) && (r_pp.second == +32));
+      const auto result_pm_is_ok = ((r_pm.first == -1) && (r_pm.second == -83));
+      const auto result_mp_is_ok = ((r_mp.first == -1) && (r_mp.second == +83));
+      const auto result_mm_is_ok = ((r_mm.first == +0) && (r_mm.second == -32));
+
+      const auto result_divmod_is_ok =
+      (
+           result_pp_is_ok
+        && result_pm_is_ok
+        && result_mp_is_ok
+        && result_mm_is_ok
+      );
+
+      result_is_ok = (result_divmod_is_ok && result_is_ok);
+    }
+
+    return result_is_ok;
+  }
+} // namespace from_issue_342
+
 namespace from_issue_339
 {
   // See also: https://github.com/ckormanyos/wide-integer/issues/339
@@ -516,6 +646,14 @@ namespace local_test_spot_values
 auto local_test_spot_values::test() -> bool // NOLINT(readability-function-cognitive-complexity)
 {
   auto result_is_ok = true;
+
+  {
+    const auto result_from_issue_342_is_ok =
+      (   from_issue_342::test_uintwide_t_spot_values_from_issue_342_pos()
+       && from_issue_342::test_uintwide_t_spot_values_from_issue_342_mix());
+
+    result_is_ok = (result_from_issue_342_is_ok && result_is_ok);
+  }
 
   {
     const auto result_from_issue_339_is_ok =
