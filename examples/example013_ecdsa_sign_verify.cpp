@@ -309,9 +309,9 @@ namespace example013_ecdsa
     #endif
 
     #if defined(WIDE_INTEGER_NAMESPACE)
-    using sint_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<static_cast<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t>(CurveBits), LimbType, void, true>;
+    using double_sint_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<static_cast<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t>(std::numeric_limits<uint_type>::digits * 2), LimbType, void, true>;
     #else
-    using sint_type = ::math::wide_integer::uintwide_t<static_cast<::math::wide_integer::size_t>(CurveBits), LimbType, void, true>;
+    using double_sint_type = ::math::wide_integer::uintwide_t<static_cast<::math::wide_integer::size_t>(std::numeric_limits<uint_type>::digits * 2), LimbType, void, true>;
     #endif
 
     using limb_type = typename uint_type::limb_type;
@@ -319,24 +319,24 @@ namespace example013_ecdsa
     using point_type =
       struct point_type
       {
-        WIDE_INTEGER_CONSTEXPR point_type(uint_type x = static_cast<uint_type>(static_cast<unsigned>(UINT8_C(0))), // NOLINT(google-explicit-constructor,hicpp-explicit-conversions,bugprone-easily-swappable-parameters)
-                                          uint_type y = static_cast<uint_type>(static_cast<unsigned>(UINT8_C(0)))) noexcept
+        WIDE_INTEGER_CONSTEXPR point_type(double_sint_type x = static_cast<double_sint_type>(static_cast<unsigned>(UINT8_C(0))), // NOLINT(google-explicit-constructor,hicpp-explicit-conversions,bugprone-easily-swappable-parameters)
+                                          double_sint_type y = static_cast<double_sint_type>(static_cast<unsigned>(UINT8_C(0)))) noexcept
           : my_x(x),
             my_y(y) { }
 
-        uint_type my_x; // NOLINT(misc-non-private-member-variables-in-classes)
-        uint_type my_y; // NOLINT(misc-non-private-member-variables-in-classes)
+        double_sint_type my_x; // NOLINT(misc-non-private-member-variables-in-classes)
+        double_sint_type my_y; // NOLINT(misc-non-private-member-variables-in-classes)
       };
 
     #if (defined(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST) && (WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST == 1))
     static WIDE_INTEGER_CONSTEXPR auto value_g() noexcept -> point_type
     {
-      return point_type { uint_type(PointX), uint_type(PointY) }; // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay)
+      return point_type { double_sint_type(PointX), double_sint_type(PointY) }; // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay)
     }
     #else
     static auto value_g() noexcept -> const point_type&
     {
-      static const point_type pt { uint_type(PointX), uint_type(PointY) }; // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay)
+      static const point_type pt { double_sint_type(PointX), double_sint_type(PointY) }; // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay)
 
       return pt;
     }
@@ -359,57 +359,39 @@ namespace example013_ecdsa
 
     using point_type = typename base_class_type::point_type;
 
-    using uint_type = typename base_class_type::uint_type;
-    using sint_type = typename base_class_type::sint_type;
-    using limb_type = typename base_class_type::limb_type;
+    using uint_type        = typename base_class_type::uint_type;
+    using double_sint_type = typename base_class_type::double_sint_type;
+    using limb_type        = typename base_class_type::limb_type;
 
     using keypair_type = std::tuple<uint_type, point_type>;
 
     #if defined(WIDE_INTEGER_NAMESPACE)
-    using double_uint_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<static_cast<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t>(CurveBits * static_cast<unsigned>(UINT8_C(2))), limb_type, void, false>;
+    using sexatuple_sint_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<static_cast<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t>(std::numeric_limits<uint_type>::digits * 6), limb_type, void, true>;
     #else
-    using double_uint_type = ::math::wide_integer::uintwide_t<static_cast<::math::wide_integer::size_t>(CurveBits * static_cast<unsigned>(UINT8_C(2))), limb_type, void, false>;
+    using sexatuple_sint_type = ::math::wide_integer::uintwide_t<static_cast<::math::wide_integer::size_t>(std::numeric_limits<uint_type>::digits * 6), limb_type, void, true>;
     #endif
 
     #if defined(WIDE_INTEGER_NAMESPACE)
-    using double_sint_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<static_cast<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t>(CurveBits * static_cast<unsigned>(UINT8_C(2))), limb_type, void, true>;
+    using duodectuple_sint_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<static_cast<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t>(std::numeric_limits<uint_type>::digits * 12), limb_type, void, true>;
     #else
-    using double_sint_type = ::math::wide_integer::uintwide_t<static_cast<::math::wide_integer::size_t>(CurveBits * static_cast<unsigned>(UINT8_C(2))), limb_type, void, true>;
-    #endif
-
-    #if defined(WIDE_INTEGER_NAMESPACE)
-    using triple_sint_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<static_cast<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t>(CurveBits * static_cast<unsigned>(UINT8_C(4))), limb_type, void, true>;
-    #else
-    using triple_sint_type = ::math::wide_integer::uintwide_t<static_cast<::math::wide_integer::size_t>(CurveBits * static_cast<unsigned>(UINT8_C(4))), limb_type, void, true>;
-    #endif
-
-    #if defined(WIDE_INTEGER_NAMESPACE)
-    using triple_uint_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<static_cast<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t>(CurveBits * static_cast<unsigned>(UINT8_C(4))), limb_type, void, false>;
-    #else
-    using triple_uint_type = ::math::wide_integer::uintwide_t<static_cast<::math::wide_integer::size_t>(CurveBits * static_cast<unsigned>(UINT8_C(4))), limb_type, void, false>;
-    #endif
-
-    #if defined(WIDE_INTEGER_NAMESPACE)
-    using sextuple_sint_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<static_cast<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t>(CurveBits * static_cast<unsigned>(UINT8_C(12))), limb_type, void, true>;
-    #else
-    using sextuple_sint_type = ::math::wide_integer::uintwide_t<static_cast<::math::wide_integer::size_t>(CurveBits * static_cast<unsigned>(UINT8_C(12))), limb_type, void, true>;
+    using duodectuple_sint_type = ::math::wide_integer::uintwide_t<static_cast<::math::wide_integer::size_t>(std::numeric_limits<uint_type>::digits * 12), limb_type, void, true>;
     #endif
 
     #if (defined(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST) && (WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST == 1))
-    static WIDE_INTEGER_CONSTEXPR auto value_p () noexcept -> uint_type { return uint_type(FieldCharacteristicP); } // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay)
-    static WIDE_INTEGER_CONSTEXPR auto value_n () noexcept -> uint_type { return uint_type(SubGroupOrder); }        // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay)
+    static WIDE_INTEGER_CONSTEXPR auto value_p () noexcept -> double_sint_type { return double_sint_type(FieldCharacteristicP); } // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay)
+    static WIDE_INTEGER_CONSTEXPR auto value_n () noexcept -> double_sint_type { return double_sint_type(SubGroupOrder); }        // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay)
 
-    static WIDE_INTEGER_CONSTEXPR auto value_gx() noexcept -> uint_type { return base_class_type::value_g().my_x; }
-    static WIDE_INTEGER_CONSTEXPR auto value_gy() noexcept -> uint_type { return base_class_type::value_g().my_y; }
+    static WIDE_INTEGER_CONSTEXPR auto value_gx() noexcept -> double_sint_type { return base_class_type::value_g().my_x; }
+    static WIDE_INTEGER_CONSTEXPR auto value_gy() noexcept -> double_sint_type { return base_class_type::value_g().my_y; }
     #else
-    static auto value_p () noexcept -> const uint_type& { static const uint_type vp(FieldCharacteristicP); return vp; } // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay)
-    static auto value_n () noexcept -> const uint_type& { static const uint_type vn(SubGroupOrder);        return vn; } // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay)
+    static auto value_p () noexcept -> const double_sint_type& { static const double_sint_type vp(FieldCharacteristicP); return vp; } // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay)
+    static auto value_n () noexcept -> const double_sint_type& { static const double_sint_type vn(SubGroupOrder);        return vn; } // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay)
 
-    static auto value_gx() noexcept -> const uint_type& { static const uint_type vgx(base_class_type::value_g().my_x); return vgx; }
-    static auto value_gy() noexcept -> const uint_type& { static const uint_type vgy(base_class_type::value_g().my_y); return vgy; }
+    static auto value_gx() noexcept -> const double_sint_type& { static const double_sint_type vgx(base_class_type::value_g().my_x); return vgx; }
+    static auto value_gy() noexcept -> const double_sint_type& { static const double_sint_type vgy(base_class_type::value_g().my_y); return vgy; }
     #endif
 
-    static auto inverse_mod(const uint_type& k, const uint_type& p) -> uint_type // NOLINT(misc-no-recursion)
+    static auto inverse_mod(const double_sint_type& k, const double_sint_type& p) -> double_sint_type // NOLINT(misc-no-recursion)
     {
       // Returns the inverse of k modulo p.
       // This function returns the only integer x such that (x * k) % p == 1.
@@ -441,7 +423,7 @@ namespace example013_ecdsa
         const auto tmp_old_t = old_t; const auto tmp_t = t; old_t = t; t = tmp_old_t - quotient * tmp_t;
       }
 
-      const auto mod_result = static_cast<uint_type>(divmod(old_s, double_sint_type(p)).second);
+      const auto mod_result = static_cast<uint_type>(divmod(old_s, p).second);
 
       return mod_result;
     }
@@ -458,15 +440,17 @@ namespace example013_ecdsa
       }
 
       const auto num =
-        triple_plus_uint_type
+        sexatuple_sint_type
         (
-            triple_plus_uint_type(point.my_y * triple_plus_uint_type(point.my_y))
-          - triple_plus_uint_type(point.my_x * triple_plus_uint_type(point.my_x * triple_plus_uint_type(point.my_x)))
-          - triple_plus_uint_type(triple_plus_uint_type(point.my_x) * CurveCoefficientA)
+            sexatuple_sint_type(point.my_y * sexatuple_sint_type(point.my_y))
+          - sexatuple_sint_type(point.my_x * sexatuple_sint_type(point.my_x * sexatuple_sint_type(point.my_x)))
+          - sexatuple_sint_type(sexatuple_sint_type(point.my_x) * CurveCoefficientA)
           - CurveCoefficientB
         );
 
-      const auto result_is_on_curve_is_ok = (uint_type(num % value_p) == 0);
+      const auto mod_result = uint_type(divmod(num, sexatuple_sint_type(value_p())).second);
+
+      const auto result_is_on_curve_is_ok = (mod_result == 0);
 
       return result_is_on_curve_is_ok;
     }
@@ -480,7 +464,7 @@ namespace example013_ecdsa
         return point_type(0);
       }
 
-      const point_type result(point.my_x, -point.my_y % value_p());
+      const point_type result(point.my_x, -divmod(point.my_y, value_p()).second);
 
       return result;
     }
@@ -510,44 +494,44 @@ namespace example013_ecdsa
         return point_type { };
       }
 
-      auto m = triple_sint_type { };
+      auto m = sexatuple_sint_type { };
 
       if(x1 == x2)
       {
         // This is the case point1 == point2.
-        m = (triple_sint_type(x1) * triple_sint_type(x1) * 3 + CurveCoefficientA);
-        m = m * triple_sint_type(inverse_mod(y1 * 2, value_p()));
+        m = (sexatuple_sint_type(x1) * sexatuple_sint_type(x1) * 3 + CurveCoefficientA);
+        m = m * sexatuple_sint_type(inverse_mod(y1 * 2, value_p()));
       }
       else
       {
         // This is the case point1 != point2.
-        m = triple_sint_type(triple_sint_type(y1) - triple_sint_type(y2));
-        m = m * triple_sint_type(inverse_mod(x1 - x2, value_p()));
+        m = sexatuple_sint_type(y1 - y2);
+        m = m * sexatuple_sint_type(inverse_mod(x1 - x2, value_p()));
       }
 
       const auto x3 =
-        sextuple_sint_type
+        duodectuple_sint_type
         (
-          sextuple_sint_type(m) * sextuple_sint_type(m) - sextuple_sint_type(x1) - sextuple_sint_type(x2)
+          duodectuple_sint_type(m) * duodectuple_sint_type(m) - duodectuple_sint_type(x1) - duodectuple_sint_type(x2)
         );
 
       const auto y3 =
-        sextuple_sint_type
+        duodectuple_sint_type
         (
-          sextuple_sint_type(y1) + sextuple_sint_type(m) * sextuple_sint_type(x3 - sextuple_sint_type(x1))
+          duodectuple_sint_type(y1) + duodectuple_sint_type(m) * duodectuple_sint_type(x3 - duodectuple_sint_type(x1))
         );
 
       const auto result =
         point_type
         (
-          uint_type(divmod( x3, sextuple_sint_type(value_p())).second),
-          uint_type(divmod(-y3, sextuple_sint_type(value_p())).second)
+          double_sint_type(divmod( x3, duodectuple_sint_type(value_p())).second),
+          double_sint_type(divmod(-y3, duodectuple_sint_type(value_p())).second)
         );
 
       return result;
     }
 
-    static auto scalar_mult(const uint_type& k, const point_type& point) -> point_type // NOLINT(misc-no-recursion)
+    static auto scalar_mult(const double_sint_type& k, const point_type& point) -> point_type // NOLINT(misc-no-recursion)
     {
       // Returns k * point computed using the double and point_add algorithm.
 
@@ -565,7 +549,7 @@ namespace example013_ecdsa
       point_type result { };
       point_type addend = point;
 
-      uint_type k_val(k);
+      double_sint_type k_val(k);
 
       while(k_val != 0) // NOLINT(altera-id-dependent-backward-branch)
       {
@@ -666,16 +650,16 @@ auto ::math::wide_integer::example013_ecdsa_sign_verify() -> bool
 
   #if (defined(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST) && (WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST == 1))
 
-  static_assert(elliptic_curve_type::value_p () == elliptic_curve_type::uint_type("0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F"),
+  static_assert(elliptic_curve_type::value_p () == elliptic_curve_type::double_sint_type("0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F"),
                 "Error: Elliptic curve Field Characteristic p is seemingly incorrect");
 
-  static_assert(elliptic_curve_type::value_n () == elliptic_curve_type::uint_type("0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141"),
+  static_assert(elliptic_curve_type::value_n () == elliptic_curve_type::double_sint_type("0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141"),
                 "Error: Elliptic curve Sub-Group Order is seemingly incorrect");
 
-  static_assert(elliptic_curve_type::value_gx() == elliptic_curve_type::uint_type("0x79BE667EF9DCBBAC55A06295CE870B07029BFCDB2DCE28D959F2815B16F81798"),
+  static_assert(elliptic_curve_type::value_gx() == elliptic_curve_type::double_sint_type("0x79BE667EF9DCBBAC55A06295CE870B07029BFCDB2DCE28D959F2815B16F81798"),
                 "Error: Elliptic curve base-point Gx is seemingly incorrect");
 
-  static_assert(elliptic_curve_type::value_gy() == elliptic_curve_type::uint_type("0x483ADA7726A3C4655DA4FBFC0E1108A8FD17B448A68554199C47D08FFB10D4B8"),
+  static_assert(elliptic_curve_type::value_gy() == elliptic_curve_type::double_sint_type("0x483ADA7726A3C4655DA4FBFC0E1108A8FD17B448A68554199C47D08FFB10D4B8"),
                 "Error: Elliptic curve base-point Gx is seemingly incorrect");
 
   #else
@@ -684,8 +668,18 @@ auto ::math::wide_integer::example013_ecdsa_sign_verify() -> bool
 
   const auto keypair = elliptic_curve_type::make_keypair();
 
-  static_cast<void>(std::get<1>(keypair).my_x);
-  static_cast<void>(std::get<1>(keypair).my_y);
+  const auto result_private_is_ok  = (std::get<0>(keypair)      == "0xc6455bf2f380f6b81f5fd1a1dbc2392b3783ed1e7d91b62942706e5584ba0b92");
+  const auto result_public_x_is_ok = (std::get<1>(keypair).my_x == "0xc6235629f157690e1df37248256c4fb7eff073d0250f5bd85df40b9e127a8461");
+  const auto result_public_y_is_ok = (std::get<1>(keypair).my_y == "0xcbaa679f07f9b98f915c1fb7d85a379d0559a9eee6735b1be0ce0e2e2b2e94de");
+
+  const auto result_keygen_is_ok =
+  (
+      result_private_is_ok
+   && result_public_x_is_ok
+   && result_public_y_is_ok
+  );
+
+  result_is_ok = (result_keygen_is_ok && result_is_ok);
 
   return result_is_ok;
 }
