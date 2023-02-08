@@ -396,8 +396,8 @@ namespace example013_ecdsa
     #endif
 
     #if (defined(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST) && (WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST == 1))
-    static WIDE_INTEGER_CONSTEXPR auto value_p () noexcept -> uint_type { return uint_type(FieldCharacteristicP); }
-    static WIDE_INTEGER_CONSTEXPR auto value_n () noexcept -> uint_type { return uint_type(SubGroupOrder); }
+    static WIDE_INTEGER_CONSTEXPR auto value_p () noexcept -> uint_type { return uint_type(FieldCharacteristicP); } // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay)
+    static WIDE_INTEGER_CONSTEXPR auto value_n () noexcept -> uint_type { return uint_type(SubGroupOrder); }        // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay)
 
     static WIDE_INTEGER_CONSTEXPR auto value_gx() noexcept -> uint_type { return base_class_type::value_g().my_x; }
     static WIDE_INTEGER_CONSTEXPR auto value_gy() noexcept -> uint_type { return base_class_type::value_g().my_y; }
@@ -409,7 +409,7 @@ namespace example013_ecdsa
     static auto value_gy() noexcept -> const uint_type& { static const uint_type vgy(base_class_type::value_g().my_y); return vgy; }
     #endif
 
-    static auto inverse_mod(const uint_type& k, const uint_type& p) -> uint_type
+    static auto inverse_mod(const uint_type& k, const uint_type& p) -> uint_type // NOLINT(misc-no-recursion)
     {
       // Returns the inverse of k modulo p.
       // This function returns the only integer x such that (x * k) % p == 1.
@@ -428,9 +428,9 @@ namespace example013_ecdsa
       }
 
       // Extended Euclidean algorithm.
-      double_sint_type s = double_sint_type(0U); double_sint_type old_s = double_sint_type(1U);
-      double_sint_type t = double_sint_type(1U); double_sint_type old_t = double_sint_type(0U);
-      double_sint_type r = double_sint_type(p) ; double_sint_type old_r = double_sint_type(k);
+      auto s = double_sint_type(0U); auto old_s = double_sint_type(1U);
+      auto t = double_sint_type(1U); auto old_t = double_sint_type(0U);
+      auto r = double_sint_type(p) ; auto old_r = double_sint_type(k);
 
       while(r != 0U)
       {
@@ -547,7 +547,7 @@ namespace example013_ecdsa
       return result;
     }
 
-    static auto scalar_mult(const uint_type& k, const point_type& point) -> point_type
+    static auto scalar_mult(const uint_type& k, const point_type& point) -> point_type // NOLINT(misc-no-recursion)
     {
       // Returns k * point computed using the double and point_add algorithm.
 
@@ -567,7 +567,7 @@ namespace example013_ecdsa
 
       uint_type k_val(k);
 
-      while(k_val != 0)
+      while(k_val != 0) // NOLINT(altera-id-dependent-backward-branch)
       {
         const auto lo_bit =
           static_cast<std::uint8_t>
@@ -655,13 +655,13 @@ auto ::math::wide_integer::example013_ecdsa_sign_verify() -> bool
   using elliptic_curve_type =
     example013_ecdsa::elliptic_curve<static_cast<unsigned>(UINT16_C(256)),
                                      std::uint32_t,
-                                     example013_ecdsa::CurveName,
-                                     example013_ecdsa::FieldCharacteristicP,
+                                     example013_ecdsa::CurveName,            // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay)
+                                     example013_ecdsa::FieldCharacteristicP, // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay)
                                      static_cast<int>(INT8_C(0)),
                                      static_cast<int>(INT8_C(7)),
-                                     example013_ecdsa::BasePointGx,
-                                     example013_ecdsa::BasePointGy,
-                                     example013_ecdsa::SubGroupOrder,
+                                     example013_ecdsa::BasePointGx,          // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay)
+                                     example013_ecdsa::BasePointGy,          // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay)
+                                     example013_ecdsa::SubGroupOrder,        // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay)
                                      static_cast<int>(INT8_C(1))>;
 
   #if (defined(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST) && (WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST == 1))

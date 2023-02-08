@@ -5046,7 +5046,7 @@
 
     const auto x_is_neg = (x < static_cast<local_floating_point_type>(0.0L));
 
-    local_floating_point_type f = (x_is_neg ? -x : x);
+    local_floating_point_type f = (x_is_neg ? -x : x); // NOLINT(altera-id-dependent-backward-branch)
 
     auto e2 = static_cast<int>(INT8_C(0));
 
