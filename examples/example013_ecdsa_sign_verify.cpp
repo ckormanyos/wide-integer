@@ -319,7 +319,7 @@ namespace example013_ecdsa
     using point_type =
       struct point_type
       {
-        WIDE_INTEGER_CONSTEXPR point_type(uint_type x = static_cast<uint_type>(static_cast<unsigned>(UINT8_C(0))), // NOLINT(google-explicit-constructor,hicpp-explicit-conversions)
+        WIDE_INTEGER_CONSTEXPR point_type(uint_type x = static_cast<uint_type>(static_cast<unsigned>(UINT8_C(0))), // NOLINT(google-explicit-constructor,hicpp-explicit-conversions,bugprone-easily-swappable-parameters)
                                           uint_type y = static_cast<uint_type>(static_cast<unsigned>(UINT8_C(0)))) noexcept
           : my_x(x),
             my_y(y) { }
@@ -366,33 +366,33 @@ namespace example013_ecdsa
     using keypair_type = std::tuple<uint_type, point_type>;
 
     #if defined(WIDE_INTEGER_NAMESPACE)
-    using double_uint_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<static_cast<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t>(CurveBits * 2U), limb_type, void, false>;
+    using double_uint_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<static_cast<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t>(CurveBits * static_cast<unsigned>(UINT8_C(2))), limb_type, void, false>;
     #else
-    using double_uint_type = ::math::wide_integer::uintwide_t<static_cast<::math::wide_integer::size_t>(CurveBits * 2U), limb_type, void, false>;
+    using double_uint_type = ::math::wide_integer::uintwide_t<static_cast<::math::wide_integer::size_t>(CurveBits * static_cast<unsigned>(UINT8_C(2))), limb_type, void, false>;
     #endif
 
     #if defined(WIDE_INTEGER_NAMESPACE)
-    using double_sint_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<static_cast<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t>(CurveBits * 2U), limb_type, void, true>;
+    using double_sint_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<static_cast<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t>(CurveBits * static_cast<unsigned>(UINT8_C(2))), limb_type, void, true>;
     #else
-    using double_sint_type = ::math::wide_integer::uintwide_t<static_cast<::math::wide_integer::size_t>(CurveBits * 2U), limb_type, void, true>;
+    using double_sint_type = ::math::wide_integer::uintwide_t<static_cast<::math::wide_integer::size_t>(CurveBits * static_cast<unsigned>(UINT8_C(2))), limb_type, void, true>;
     #endif
 
     #if defined(WIDE_INTEGER_NAMESPACE)
-    using triple_sint_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<static_cast<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t>(CurveBits * 3U), limb_type, void, true>;
+    using triple_sint_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<static_cast<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t>(CurveBits * static_cast<unsigned>(UINT8_C(4))), limb_type, void, true>;
     #else
-    using triple_sint_type = ::math::wide_integer::uintwide_t<static_cast<::math::wide_integer::size_t>(CurveBits * 3U), limb_type, void, true>;
+    using triple_sint_type = ::math::wide_integer::uintwide_t<static_cast<::math::wide_integer::size_t>(CurveBits * static_cast<unsigned>(UINT8_C(4))), limb_type, void, true>;
     #endif
 
     #if defined(WIDE_INTEGER_NAMESPACE)
-    using triple_uint_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<static_cast<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t>(CurveBits * 3U), limb_type, void, false>;
+    using triple_uint_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<static_cast<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t>(CurveBits * static_cast<unsigned>(UINT8_C(4))), limb_type, void, false>;
     #else
-    using triple_uint_type = ::math::wide_integer::uintwide_t<static_cast<::math::wide_integer::size_t>(CurveBits * 3U), limb_type, void, false>;
+    using triple_uint_type = ::math::wide_integer::uintwide_t<static_cast<::math::wide_integer::size_t>(CurveBits * static_cast<unsigned>(UINT8_C(4))), limb_type, void, false>;
     #endif
 
     #if defined(WIDE_INTEGER_NAMESPACE)
-    using sextuple_sint_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<static_cast<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t>(CurveBits * 9U), limb_type, void, true>;
+    using sextuple_sint_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<static_cast<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t>(CurveBits * static_cast<unsigned>(UINT8_C(12))), limb_type, void, true>;
     #else
-    using sextuple_sint_type = ::math::wide_integer::uintwide_t<static_cast<::math::wide_integer::size_t>(CurveBits * 9U), limb_type, void, true>;
+    using sextuple_sint_type = ::math::wide_integer::uintwide_t<static_cast<::math::wide_integer::size_t>(CurveBits * static_cast<unsigned>(UINT8_C(12))), limb_type, void, true>;
     #endif
 
     #if (defined(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST) && (WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST == 1))
@@ -521,7 +521,7 @@ namespace example013_ecdsa
       else
       {
         // This is the case point1 != point2.
-        m = triple_sint_type(y1 - y2);
+        m = triple_sint_type(triple_sint_type(y1) - triple_sint_type(y2));
         m = m * triple_sint_type(inverse_mod(x1 - x2, value_p()));
       }
 
