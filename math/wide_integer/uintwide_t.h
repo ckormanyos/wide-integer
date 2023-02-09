@@ -5982,8 +5982,8 @@
     else
     {
       const auto division_is_exact = (ur == 0);
-      result.first  = -local_unknown_signedness_left_type(ua + ((!division_is_exact) ? 1 : 0));
-      result.second = (!denom_was_neg) ? -local_unknown_signedness_right_type(ur - ((!division_is_exact) ? ub : 0)) : local_unknown_signedness_right_type(ur - ((!division_is_exact) ? ub : 0));
+      result.first  = -local_unknown_signedness_left_type(ua + local_unsigned_wide_type((!division_is_exact) ? 1 : local_unsigned_wide_type(0U)));
+      result.second = (!denom_was_neg) ? -local_unknown_signedness_right_type(ur - local_unsigned_wide_type((!division_is_exact) ? ub : local_unsigned_wide_type(0U))) : local_unknown_signedness_right_type(ur - local_unsigned_wide_type((!division_is_exact) ? ub : local_unsigned_wide_type(0U)));
     }
 
     return result;
