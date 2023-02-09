@@ -464,7 +464,7 @@ namespace example013_ecdsa
       // Returns the negation of the point on the curve (i.e., -point).
 
       return
-      (
+      {
         ((point.my_x == 0) && (point.my_y == 0))
           ? point_type(0)
           : point_type
@@ -472,7 +472,7 @@ namespace example013_ecdsa
                point.my_x,
               -divmod(point.my_y, value_p()).second
             }
-        );
+      };
     }
     // LCOV_EXCL_STOP
 
@@ -501,18 +501,15 @@ namespace example013_ecdsa
         return point_type { }; // LCOV_EXCL_LINE
       }
 
-      auto m = sexatuple_sint_type { };
+      // Differentiate the cases (point1 == point2) and (point1 != point2).
 
-      if(x1 == x2)
-      {
-        // This is the case point1 == point2.
-        m = (sexatuple_sint_type(x1) * sexatuple_sint_type(x1) * 3 + CurveCoefficientA) * sexatuple_sint_type(inverse_mod(y1 * 2, value_p()));
-      }
-      else
-      {
-        // This is the case point1 != point2.
-        m = sexatuple_sint_type(y1 - y2) * sexatuple_sint_type(inverse_mod(x1 - x2, value_p()));
-      }
+      const auto m =
+        sexatuple_sint_type
+        (
+          (x1 == x2)
+            ? (sexatuple_sint_type(x1) * sexatuple_sint_type(x1) * 3 + CurveCoefficientA) * sexatuple_sint_type(inverse_mod(y1 * 2, value_p()))
+            : sexatuple_sint_type(y1 - y2) * sexatuple_sint_type(inverse_mod(x1 - x2, value_p()))
+        );
 
       const auto x3 =
         duodectuple_sint_type
@@ -526,21 +523,30 @@ namespace example013_ecdsa
           duodectuple_sint_type(y1) + duodectuple_sint_type(m) * (x3 - duodectuple_sint_type(x1))
         );
 
-      const auto result =
-        point_type
+      const auto divmod_result_x3 =
+        duodectuple_sint_type
         (
-          double_sint_type(divmod( x3, duodectuple_sint_type(value_p())).second),
-          double_sint_type(divmod(-y3, duodectuple_sint_type(value_p())).second)
+          divmod(x3, duodectuple_sint_type(value_p())).second
         );
 
-      return result;
+      const auto divmod_result_y3 =
+        duodectuple_sint_type
+        (
+          divmod(duodectuple_sint_type(-y3), duodectuple_sint_type(value_p())).second
+        );
+
+      return
+      {
+        double_sint_type(divmod_result_x3),
+        double_sint_type(divmod_result_y3)
+      };
     }
 
     static auto scalar_mult(const double_sint_type& k, const point_type& point) -> point_type // NOLINT(misc-no-recursion)
     {
       // Returns k * point computed using the double and point_add algorithm.
 
-      if(k % value_n() == 0 || ((point.my_x == 0) && (point.my_y == 0)))
+      if(((k % value_n()) == 0) || ((point.my_x == 0) && (point.my_y == 0)))
       {
         return point_type { }; // LCOV_EXCL_LINE
       }
