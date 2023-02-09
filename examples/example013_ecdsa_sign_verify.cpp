@@ -61,11 +61,13 @@ namespace example013_ecdsa
 
         if(my_datalen == static_cast<std::uint32_t>(UINT8_C(64)))
         {
+          // LCOV_EXCL_START
           sha256_transform();
 
           my_datalen = static_cast<std::uint32_t>(UINT8_C(0));
 
           my_bitlen = static_cast<std::uint64_t>(my_bitlen + static_cast<std::uint_fast16_t>(UINT16_C(512)));
+          // LCOV_EXCL_STOP
         }
       }
     }
@@ -85,11 +87,13 @@ namespace example013_ecdsa
       }
       else
       {
+        // LCOV_EXCL_START
         std::fill((my_data.begin() + i), my_data.end(), static_cast<std::uint8_t>(UINT8_C(0)));
 
         sha256_transform();
 
         std::fill_n(my_data.begin(), static_cast<std::size_t>(UINT8_C(56)), static_cast<std::uint8_t>(UINT8_C(0)));
+        // LCOV_EXCL_STOP
       }
 
       // Append to the padding the total message length (in bits) and subsequently transform.
@@ -400,7 +404,7 @@ namespace example013_ecdsa
       if(k == 0)
       {
         // Error: Division by zero.
-        return 0;
+        return 0; // LCOV_EXCL_LINE
       }
 
       if(k < 0)
@@ -414,7 +418,7 @@ namespace example013_ecdsa
       auto t = double_sint_type(1U); auto old_t = double_sint_type(0U);
       auto r = double_sint_type(p) ; auto old_r = double_sint_type(k);
 
-      while(r != 0U)
+      while(r != 0U) // NOLINT(altera-id-dependent-backward-branch)
       {
         double_sint_type quotient = divmod(old_r, r).first;
 
@@ -442,19 +446,16 @@ namespace example013_ecdsa
       const auto num =
         sexatuple_sint_type
         (
-            sexatuple_sint_type(point.my_y * sexatuple_sint_type(point.my_y))
-          - sexatuple_sint_type(point.my_x * sexatuple_sint_type(point.my_x * sexatuple_sint_type(point.my_x)))
-          - sexatuple_sint_type(sexatuple_sint_type(point.my_x) * CurveCoefficientA)
+            (sexatuple_sint_type(point.my_y) * sexatuple_sint_type(point.my_y))
+          - (sexatuple_sint_type(point.my_x) * (sexatuple_sint_type(point.my_x) * sexatuple_sint_type(point.my_x)))
+          - (sexatuple_sint_type(point.my_x) * CurveCoefficientA)
           - CurveCoefficientB
         );
 
-      const auto mod_result = uint_type(divmod(num, sexatuple_sint_type(value_p())).second);
-
-      const auto result_is_on_curve_is_ok = (mod_result == 0);
-
-      return result_is_on_curve_is_ok;
+      return (uint_type(divmod(num, sexatuple_sint_type(value_p())).second) == 0);
     }
 
+    // LCOV_EXCL_START
     static auto point_neg(const point_type& point) -> point_type
     {
       // Returns the negation of the point on the curve (i.e., -point).
@@ -468,6 +469,7 @@ namespace example013_ecdsa
 
       return result;
     }
+    // LCOV_EXCL_STOP
 
     static auto point_add(const point_type& point1, const point_type& point2) -> point_type
     {
@@ -485,13 +487,13 @@ namespace example013_ecdsa
       if((x2 == 0) && (y2 == 0))
       {
         // point1 + 0 = point1
-        return point_type(point1);
+        return point_type(point1); // LCOV_EXCL_LINE
       }
 
       if(x1 == x2 and y1 != y2)
       {
         // point1 + (-point1) = 0
-        return point_type { };
+        return point_type { }; // LCOV_EXCL_LINE
       }
 
       auto m = sexatuple_sint_type { };
@@ -537,13 +539,13 @@ namespace example013_ecdsa
 
       if(k % value_n() == 0 || ((point.my_x == 0) && (point.my_y == 0)))
       {
-        return point_type { };
+        return point_type { }; // LCOV_EXCL_LINE
       }
 
       if(k < 0)
       {
         // k * point = -k * (-point)
-        return scalar_mult(-k, point_neg(point));
+        return scalar_mult(-k, point_neg(point)); // LCOV_EXCL_LINE
       }
 
       point_type result { };
@@ -668,6 +670,8 @@ auto ::math::wide_integer::example013_ecdsa_sign_verify() -> bool
 
   const auto keypair = elliptic_curve_type::make_keypair();
 
+  const auto result_is_on_curve_is_ok = elliptic_curve_type::is_on_curve(std::get<1>(keypair));
+
   const auto result_private_is_ok  = (std::get<0>(keypair)      == "0xc6455bf2f380f6b81f5fd1a1dbc2392b3783ed1e7d91b62942706e5584ba0b92");
   const auto result_public_x_is_ok = (std::get<1>(keypair).my_x == "0xc6235629f157690e1df37248256c4fb7eff073d0250f5bd85df40b9e127a8461");
   const auto result_public_y_is_ok = (std::get<1>(keypair).my_y == "0xcbaa679f07f9b98f915c1fb7d85a379d0559a9eee6735b1be0ce0e2e2b2e94de");
@@ -679,7 +683,7 @@ auto ::math::wide_integer::example013_ecdsa_sign_verify() -> bool
    && result_public_y_is_ok
   );
 
-  result_is_ok = (result_keygen_is_ok && result_is_ok);
+  result_is_ok = (result_is_on_curve_is_ok && result_keygen_is_ok && result_is_ok);
 
   return result_is_ok;
 }
