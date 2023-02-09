@@ -5996,16 +5996,18 @@
       result.first  =
         local_unknown_signedness_left_type
         (
-          -local_unknown_signedness_left_type(ua + local_unsigned_wide_type((!division_is_exact) ? 1 : 0))
+          ua + local_unsigned_wide_type((!division_is_exact) ? 1 : 0)
         );
+
+      result.first.negate();
 
       result.second =
         local_unknown_signedness_right_type
         (
-          (!denom_was_neg)
-            ? -local_unknown_signedness_right_type(ur - local_unsigned_wide_type((!division_is_exact) ? ub : 0))
-            :  local_unknown_signedness_right_type(ur - local_unsigned_wide_type((!division_is_exact) ? ub : 0))
+          ur - local_unsigned_wide_type((!division_is_exact) ? ub : 0)
         );
+
+      if(!denom_was_neg) { result.second.negate(); }
     }
 
     return result;
