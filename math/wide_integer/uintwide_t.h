@@ -1047,6 +1047,16 @@
   namespace math { namespace wide_integer { namespace detail { // NOLINT(modernize-concat-nested-namespaces)
   #endif
 
+  // Use a local, constexpr, unsafe implementation of the fill-function.
+  template<typename DestinationIterator,
+           typename ValueType>
+  inline WIDE_INTEGER_CONSTEXPR auto fill_unsafe(DestinationIterator first, DestinationIterator last, ValueType val)
+  {
+    using local_destination_value_type = typename std::iterator_traits<DestinationIterator>::value_type;
+
+    while (first != last) { *first++ = static_cast<local_destination_value_type>(val); }
+  }
+
   template<typename MyType,
            const size_t MySize,
            typename MyAlloc>
@@ -1063,9 +1073,9 @@
                                                         const typename base_class_type::allocator_type& a = typename base_class_type::allocator_type())
       : base_class_type(MySize, typename base_class_type::value_type(), a)
     {
-      std::fill(base_class_type::begin(),
-                base_class_type::begin() + (std::min)(MySize, static_cast<typename base_class_type::size_type>(s)),
-                v);
+      detail::fill_unsafe(base_class_type::begin(),
+                          base_class_type::begin() + (std::min)(MySize, static_cast<typename base_class_type::size_type>(s)),
+                          v);
     }
 
     constexpr fixed_dynamic_array(const fixed_dynamic_array& other_array) = default;
@@ -1111,8 +1121,8 @@
 
       if(s < static_size())
       {
-        std::fill(base_class_type::begin(),     base_class_type::begin() + s, v);
-        std::fill(base_class_type::begin() + s, base_class_type::end(),       value_type());
+        detail::fill_unsafe(base_class_type::begin(),     base_class_type::begin() + s, v);
+        detail::fill_unsafe(base_class_type::begin() + s, base_class_type::end(),       value_type());
       }
       else
       {
@@ -1138,9 +1148,9 @@
                   lst.begin() + size_to_copy,
                   base_class_type::begin());
 
-        std::fill(base_class_type::begin() + size_to_copy,
-                  base_class_type::end(),
-                  static_cast<typename base_class_type::value_type>(UINT8_C(0)));
+        detail::fill_unsafe(base_class_type::begin() + size_to_copy,
+                            base_class_type::end(),
+                            static_cast<typename base_class_type::value_type>(UINT8_C(0)));
       }
       else
       {
@@ -1606,7 +1616,7 @@
         right_shift_amount_v += static_cast<unsigned_fast_type>(std::numeric_limits<limb_type>::digits);
       }
 
-      std::fill(u_it, values.end(), static_cast<limb_type>(UINT8_C(0)));
+      detail::fill_unsafe(u_it, values.end(), static_cast<limb_type>(UINT8_C(0)));
     }
 
     // Constructors from built-in signed integral types.
@@ -1744,7 +1754,7 @@
                   detail::advance_and_point(v.crepresentation().cbegin(), sz),
                   values.begin());
 
-        std::fill(detail::advance_and_point(values.begin(), sz), values.end(), static_cast<limb_type>(UINT8_C(0)));
+        detail::fill_unsafe(detail::advance_and_point(values.begin(), sz), values.end(), static_cast<limb_type>(UINT8_C(0)));
       }
       else
       {
@@ -1754,7 +1764,7 @@
                   detail::advance_and_point(uv.crepresentation().cbegin(), sz),
                   values.begin());
 
-        std::fill(detail::advance_and_point(values.begin(), sz), values.end(), static_cast<limb_type>(UINT8_C(0)));
+        detail::fill_unsafe(detail::advance_and_point(values.begin(), sz), values.end(), static_cast<limb_type>(UINT8_C(0)));
 
         negate();
       }
@@ -1867,7 +1877,7 @@
         if(Width2 < OtherWidth2)
         #endif
         {
-          std::fill(detail::advance_and_point(other.values.begin(), sz), other.values.end(), static_cast<limb_type>(UINT8_C(0)));
+          detail::fill_unsafe(detail::advance_and_point(other.values.begin(), sz), other.values.end(), static_cast<limb_type>(UINT8_C(0)));
         }
       }
       else
@@ -1888,7 +1898,7 @@
         if(Width2 < OtherWidth2)
         #endif
         {
-          std::fill(detail::advance_and_point(other.values.begin(), sz), other.values.end(), static_cast<limb_type>(UINT8_C(0)));
+          detail::fill_unsafe(detail::advance_and_point(other.values.begin(), sz), other.values.end(), static_cast<limb_type>(UINT8_C(0)));
         }
 
         other.negate();
@@ -1940,7 +1950,7 @@
     {
       if(this == &other)
       {
-        std::fill(values.begin(), values.end(), static_cast<typename representation_type::value_type>(UINT8_C(0))); // LCOV_EXCL_LINE
+        detail::fill_unsafe(values.begin(), values.end(), static_cast<typename representation_type::value_type>(UINT8_C(0))); // LCOV_EXCL_LINE
       }
       else
       {
@@ -1977,7 +1987,7 @@
     {
       if(v == static_cast<limb_type>(UINT8_C(0)))
       {
-        std::fill(values.begin(), values.end(), static_cast<typename representation_type::value_type>(UINT8_C(0)));
+        detail::fill_unsafe(values.begin(), values.end(), static_cast<typename representation_type::value_type>(UINT8_C(0)));
       }
       else if(v > static_cast<limb_type>(UINT8_C(1)))
       {
@@ -1996,7 +2006,7 @@
       {
         values.front() = static_cast<limb_type>(UINT8_C(1));
 
-        std::fill(detail::advance_and_point(values.begin(), 1U), values.end(), static_cast<limb_type>(UINT8_C(0))); // LCOV_EXCL_LINE
+        detail::fill_unsafe(detail::advance_and_point(values.begin(), 1U), values.end(), static_cast<limb_type>(UINT8_C(0))); // LCOV_EXCL_LINE
       }
       else if(other.is_zero())
       {
@@ -2038,7 +2048,7 @@
     {
       if(this == &other)
       {
-        std::fill(values.begin(), values.end(), static_cast<limb_type>(UINT8_C(0))); // LCOV_EXCL_LINE
+        detail::fill_unsafe(values.begin(), values.end(), static_cast<limb_type>(UINT8_C(0))); // LCOV_EXCL_LINE
       }
       else
       {
@@ -2114,7 +2124,7 @@
     {
       if(this == &other)
       {
-        std::fill(values.begin(), values.end(), static_cast<typename representation_type::value_type>(UINT8_C(0))); // LCOV_EXCL_LINE
+        detail::fill_unsafe(values.begin(), values.end(), static_cast<typename representation_type::value_type>(UINT8_C(0))); // LCOV_EXCL_LINE
       }
       else
       {
@@ -2165,7 +2175,7 @@
           // Exclude this line from code coverage, even though explicit
           // test cases (search for "result_overshift_is_ok") are known
           // to cover this line.
-          std::fill(values.begin(), values.end(), static_cast<limb_type>(UINT8_C(0))); // LCOV_EXCL_LINE
+          detail::fill_unsafe(values.begin(), values.end(), static_cast<limb_type>(UINT8_C(0))); // LCOV_EXCL_LINE
         }
         else
         {
@@ -2188,7 +2198,7 @@
           // Exclude this line from code coverage, even though explicit
           // test cases (search for "result_overshift_is_ok") are known
           // to cover this line.
-          std::fill(values.begin(), values.end(), static_cast<limb_type>(UINT8_C(0))); // LCOV_EXCL_LINE
+          detail::fill_unsafe(values.begin(), values.end(), static_cast<limb_type>(UINT8_C(0))); // LCOV_EXCL_LINE
         }
         else
         {
@@ -2221,7 +2231,7 @@
           // Exclude this line from code coverage, even though explicit
           // test cases (search for "result_overshift_is_ok") are known
           // to cover this line.
-          std::fill(values.begin(), values.end(), right_shift_fill_value()); // LCOV_EXCL_LINE
+          detail::fill_unsafe(values.begin(), values.end(), right_shift_fill_value()); // LCOV_EXCL_LINE
         }
         else
         {
@@ -2247,7 +2257,7 @@
           // Exclude this line from code coverage, even though explicit
           // test cases (search for "result_overshift_is_ok") are known
           // to cover this line.
-          std::fill(values.begin(), values.end(), right_shift_fill_value()); // LCOV_EXCL_LINE
+          detail::fill_unsafe(values.begin(), values.end(), right_shift_fill_value()); // LCOV_EXCL_LINE
         }
         else
         {
@@ -3749,7 +3759,7 @@
 
       if(b == static_cast<left_value_type>(UINT8_C(0)))
       {
-        std::fill(r, detail::advance_and_point(r, count), static_cast<limb_type>(UINT8_C(0)));
+        detail::fill_unsafe(r, detail::advance_and_point(r, count), static_cast<limb_type>(UINT8_C(0)));
       }
       else
       {
@@ -4023,7 +4033,7 @@
 
         if(remainder != nullptr) // LCOV_EXCL_LINE
         {
-          std::fill(remainder->values.begin(), remainder->values.end(), static_cast<limb_type>(UINT8_C(0))); // LCOV_EXCL_LINE
+          detail::fill_unsafe(remainder->values.begin(), remainder->values.end(), static_cast<limb_type>(UINT8_C(0))); // LCOV_EXCL_LINE
         }
       }
       else if(u_offset == static_cast<local_uint_index_type>(number_of_limbs))
@@ -4264,7 +4274,7 @@
               static_cast<local_uint_index_type>(m) + static_cast<local_uint_index_type>(UINT8_C(1))
             );
 
-          std::fill(detail::advance_and_point(values.begin(), m_plus_one), values.end(), static_cast<limb_type>(UINT8_C(0)));
+          detail::fill_unsafe(detail::advance_and_point(values.begin(), m_plus_one), values.end(), static_cast<limb_type>(UINT8_C(0)));
         }
 
         if(remainder != nullptr)
@@ -4305,7 +4315,7 @@
             }
           }
 
-          std::fill(rl_it_fwd, remainder->values.end(), static_cast<limb_type>(UINT8_C(0)));
+          detail::fill_unsafe(rl_it_fwd, remainder->values.end(), static_cast<limb_type>(UINT8_C(0)));
         }
       }
     }
@@ -4354,7 +4364,7 @@
                            detail::advance_and_point(values.cbegin(), static_cast<size_t>(number_of_limbs - offset)),
                            detail::advance_and_point(values.begin(), static_cast<size_t>(number_of_limbs)));
 
-        std::fill(values.begin(), detail::advance_and_point(values.begin(), static_cast<size_t>(offset)), static_cast<limb_type>(UINT8_C(0)));
+        detail::fill_unsafe(values.begin(), detail::advance_and_point(values.begin(), static_cast<size_t>(offset)), static_cast<limb_type>(UINT8_C(0)));
       }
 
       using local_integral_type = unsigned_fast_type;
@@ -4397,9 +4407,9 @@
                   detail::advance_and_point(values.cbegin(), static_cast<size_t>(number_of_limbs)),
                   values.begin());
 
-        std::fill(detail::advance_and_point(values.begin(), static_cast<size_t>(static_cast<size_t>(number_of_limbs) - static_cast<size_t>(offset))),
-                  values.end(),
-                  right_shift_fill_value());
+        detail::fill_unsafe(detail::advance_and_point(values.begin(), static_cast<size_t>(static_cast<size_t>(number_of_limbs) - static_cast<size_t>(offset))),
+                            values.end(),
+                            right_shift_fill_value());
       }
 
       using local_integral_type = unsigned_fast_type;
@@ -4441,7 +4451,7 @@
     // Read string function.
     WIDE_INTEGER_CONSTEXPR auto rd_string(const char* str_input) -> bool // NOLINT(readability-function-cognitive-complexity)
     {
-      std::fill(values.begin(), values.end(), static_cast<limb_type>(UINT8_C(0)));
+      detail::fill_unsafe(values.begin(), values.end(), static_cast<limb_type>(UINT8_C(0)));
 
       const auto str_length = detail::strlen_unsafe(str_input);
 
@@ -5982,8 +5992,8 @@
     else
     {
       const auto division_is_exact = (ur == 0);
-      result.first  = -local_unknown_signedness_left_type(ua + local_unsigned_wide_type((!division_is_exact) ? 1 : local_unsigned_wide_type(0U)));
-      result.second = (!denom_was_neg) ? -local_unknown_signedness_right_type(ur - local_unsigned_wide_type((!division_is_exact) ? ub : local_unsigned_wide_type(0U))) : local_unknown_signedness_right_type(ur - local_unsigned_wide_type((!division_is_exact) ? ub : local_unsigned_wide_type(0U)));
+      result.first  = -local_unknown_signedness_left_type(ua + ((!division_is_exact) ? 1 : 0));
+      result.second = (!denom_was_neg) ? -local_unknown_signedness_right_type(ur - ((!division_is_exact) ? ub : 0)) : local_unknown_signedness_right_type(ur - ((!division_is_exact) ? ub : 0));
     }
 
     return result;
@@ -6684,7 +6694,7 @@
           - static_cast<local_size_type>(std::distance(str_temp.crbegin(), rit_trim))
         );
 
-      std::fill(str_temp.begin() + str_result_size, str_temp.end(), '\0');
+      detail::fill_unsafe(str_temp.begin() + str_result_size, str_temp.end(), '\0');
 
       str_result = std::string(str_temp.data());
     }
@@ -6755,9 +6765,9 @@
                   local_result_iterator_type       (detail::advance_and_point(val.representation().begin(), copy_len)));
       }
 
-      std::fill(detail::advance_and_point(val.representation().begin(), copy_len),
-                val.representation().end(),
-                static_cast<local_result_value_type>(UINT8_C(0)));
+      detail::fill_unsafe(detail::advance_and_point(val.representation().begin(), copy_len),
+                          val.representation().end(),
+                          static_cast<local_result_value_type>(UINT8_C(0)));
     }
     else
     {

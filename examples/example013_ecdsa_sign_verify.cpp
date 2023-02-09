@@ -361,13 +361,12 @@ namespace example013_ecdsa
   {
     using base_class_type = ecc_point<CurveBits, LimbType, BasePointGx, BasePointGy>; // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay)
 
-    using point_type = typename base_class_type::point_type;
-
+    using point_type       = typename base_class_type::point_type;
     using uint_type        = typename base_class_type::uint_type;
     using double_sint_type = typename base_class_type::double_sint_type;
     using limb_type        = typename base_class_type::limb_type;
 
-    using keypair_type = std::tuple<uint_type, point_type>;
+    using keypair_type = std::pair<uint_type, std::pair<uint_type, uint_type>>;
 
     #if defined(WIDE_INTEGER_NAMESPACE)
     using sexatuple_sint_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<static_cast<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t>(std::numeric_limits<uint_type>::digits * static_cast<int>(INT8_C(6))), limb_type, void, true>;
@@ -443,6 +442,8 @@ namespace example013_ecdsa
         return true;
       }
 
+      // Test the condition:
+      //   (y * y - x * x * x - curve.a * x -curve.b) % curve.p == 0
       const auto num =
         sexatuple_sint_type
         (
@@ -452,22 +453,26 @@ namespace example013_ecdsa
           - CurveCoefficientB
         );
 
-      return (uint_type(divmod(num, sexatuple_sint_type(value_p())).second) == 0);
+      const auto divmod_result = divmod(num, sexatuple_sint_type(value_p())).second;
+
+      return (divmod_result == 0);
     }
 
     // LCOV_EXCL_START
-    static auto point_neg(const point_type& point) -> point_type
+    static constexpr auto point_neg(const point_type& point) -> point_type
     {
       // Returns the negation of the point on the curve (i.e., -point).
 
-      if((point.my_x == 0) && (point.my_y == 0))
-      {
-        return point_type(0);
-      }
-
-      const point_type result(point.my_x, -divmod(point.my_y, value_p()).second);
-
-      return result;
+      return
+      (
+        ((point.my_x == 0) && (point.my_y == 0))
+          ? point_type(0)
+          : point_type
+            {
+               point.my_x,
+              -divmod(point.my_y, value_p()).second
+            }
+        );
     }
     // LCOV_EXCL_STOP
 
@@ -490,7 +495,7 @@ namespace example013_ecdsa
         return point_type(point1); // LCOV_EXCL_LINE
       }
 
-      if(x1 == x2 and y1 != y2)
+      if((x1 == x2) && (y1 != y2))
       {
         // point1 + (-point1) = 0
         return point_type { }; // LCOV_EXCL_LINE
@@ -501,26 +506,24 @@ namespace example013_ecdsa
       if(x1 == x2)
       {
         // This is the case point1 == point2.
-        m = (sexatuple_sint_type(x1) * sexatuple_sint_type(x1) * 3 + CurveCoefficientA);
-        m = m * sexatuple_sint_type(inverse_mod(y1 * 2, value_p()));
+        m = (sexatuple_sint_type(x1) * sexatuple_sint_type(x1) * 3 + CurveCoefficientA) * sexatuple_sint_type(inverse_mod(y1 * 2, value_p()));
       }
       else
       {
         // This is the case point1 != point2.
-        m = sexatuple_sint_type(y1 - y2);
-        m = m * sexatuple_sint_type(inverse_mod(x1 - x2, value_p()));
+        m = sexatuple_sint_type(y1 - y2) * sexatuple_sint_type(inverse_mod(x1 - x2, value_p()));
       }
 
       const auto x3 =
         duodectuple_sint_type
         (
-          duodectuple_sint_type(m) * duodectuple_sint_type(m) - duodectuple_sint_type(x1) - duodectuple_sint_type(x2)
+          duodectuple_sint_type(m) * duodectuple_sint_type(m) - duodectuple_sint_type(x1 + x2)
         );
 
       const auto y3 =
         duodectuple_sint_type
         (
-          duodectuple_sint_type(y1) + duodectuple_sint_type(m) * duodectuple_sint_type(x3 - duodectuple_sint_type(x1))
+          duodectuple_sint_type(y1) + duodectuple_sint_type(m) * (x3 - duodectuple_sint_type(x1))
         );
 
       const auto result =
@@ -584,15 +587,13 @@ namespace example013_ecdsa
       const auto public_key  = scalar_mult(private_key, point_type(value_gx(), value_gy()));
 
       return
-        keypair_type
-        (
-          private_key,
-          point_type
-          (
-            public_key.my_x,
-            public_key.my_y
-          )
-        );
+      {
+        private_key,
+        {
+          uint_type(public_key.my_x),
+          uint_type(public_key.my_y)
+        }
+      };
     }
   };
 
@@ -600,7 +601,7 @@ namespace example013_ecdsa
   constexpr char FieldCharacteristicP[] = "0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F"; // NOLINT(cppcoreguidelines-avoid-c-arrays,hicpp-avoid-c-arrays,cppcoreguidelines-pro-bounds-array-to-pointer-decay,modernize-avoid-c-arrays)
   constexpr char BasePointGx         [] = "0x79BE667EF9DCBBAC55A06295CE870B07029BFCDB2DCE28D959F2815B16F81798"; // NOLINT(cppcoreguidelines-avoid-c-arrays,hicpp-avoid-c-arrays,cppcoreguidelines-pro-bounds-array-to-pointer-decay,modernize-avoid-c-arrays)
   constexpr char BasePointGy         [] = "0x483ADA7726A3C4655DA4FBFC0E1108A8FD17B448A68554199C47D08FFB10D4B8"; // NOLINT(cppcoreguidelines-avoid-c-arrays,hicpp-avoid-c-arrays,cppcoreguidelines-pro-bounds-array-to-pointer-decay,modernize-avoid-c-arrays)
-  constexpr char SubGroupOrder       [] = "0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141"; // NOLINT(cppcoreguidelines-avoid-c-arrays,hicpp-avoid-c-arrays,cppcoreguidelines-pro-bounds-array-to-pointer-decay,modernize-avoid-c-arrays)
+  constexpr char SubGroupOrderN      [] = "0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141"; // NOLINT(cppcoreguidelines-avoid-c-arrays,hicpp-avoid-c-arrays,cppcoreguidelines-pro-bounds-array-to-pointer-decay,modernize-avoid-c-arrays)
 
 } // namespace example013_ecdsa
 
@@ -619,7 +620,7 @@ auto ::math::wide_integer::example013_ecdsa_sign_verify() -> bool
     static_cast<std::uint8_t>(UINT8_C(0x63))
   };
 
-  WIDE_INTEGER_CONSTEXPR auto hr = example013_ecdsa::hash( abc );
+  WIDE_INTEGER_CONSTEXPR auto hr = example013_ecdsa::hash(abc);
 
   WIDE_INTEGER_CONSTEXPR auto hash_ctrl =
     example013_ecdsa::hash_sha256::result_type
@@ -647,7 +648,7 @@ auto ::math::wide_integer::example013_ecdsa_sign_verify() -> bool
                                      static_cast<int>(INT8_C(7)),
                                      example013_ecdsa::BasePointGx,          // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay)
                                      example013_ecdsa::BasePointGy,          // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay)
-                                     example013_ecdsa::SubGroupOrder,        // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay)
+                                     example013_ecdsa::SubGroupOrderN,       // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay)
                                      static_cast<int>(INT8_C(1))>;
 
   #if (defined(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST) && (WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST == 1))
@@ -670,17 +671,24 @@ auto ::math::wide_integer::example013_ecdsa_sign_verify() -> bool
 
   const auto keypair = elliptic_curve_type::make_keypair();
 
-  const auto result_is_on_curve_is_ok = elliptic_curve_type::is_on_curve(std::get<1>(keypair));
+  const auto result_is_on_curve_is_ok =
+    elliptic_curve_type::is_on_curve
+    (
+      {
+        std::get<1>(keypair).first,
+        std::get<1>(keypair).second
+      }
+    );
 
-  const auto result_private_is_ok  = (std::get<0>(keypair)      == "0xc6455bf2f380f6b81f5fd1a1dbc2392b3783ed1e7d91b62942706e5584ba0b92");
-  const auto result_public_x_is_ok = (std::get<1>(keypair).my_x == "0xc6235629f157690e1df37248256c4fb7eff073d0250f5bd85df40b9e127a8461");
-  const auto result_public_y_is_ok = (std::get<1>(keypair).my_y == "0xcbaa679f07f9b98f915c1fb7d85a379d0559a9eee6735b1be0ce0e2e2b2e94de");
+  const auto result_private_is_ok  = (std::get<0>(keypair)        == "0xc6455bf2f380f6b81f5fd1a1dbc2392b3783ed1e7d91b62942706e5584ba0b92");
+  const auto result_public_x_is_ok = (std::get<1>(keypair).first  == "0xc6235629f157690e1df37248256c4fb7eff073d0250f5bd85df40b9e127a8461");
+  const auto result_public_y_is_ok = (std::get<1>(keypair).second == "0xcbaa679f07f9b98f915c1fb7d85a379d0559a9eee6735b1be0ce0e2e2b2e94de");
 
   const auto result_keygen_is_ok =
   (
-      result_private_is_ok
-   && result_public_x_is_ok
-   && result_public_y_is_ok
+       result_private_is_ok
+    && result_public_x_is_ok
+    && result_public_y_is_ok
   );
 
   result_is_ok = (result_is_on_curve_is_ok && result_keygen_is_ok && result_is_ok);
