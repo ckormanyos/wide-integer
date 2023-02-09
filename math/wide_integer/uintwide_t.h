@@ -5992,8 +5992,8 @@
     else
     {
       const auto division_is_exact = (ur == 0);
-      result.first  = -local_unknown_signedness_left_type(ua + ((!division_is_exact) ? 1 : 0));
-      result.second = (!denom_was_neg) ? -local_unknown_signedness_right_type(ur - ((!division_is_exact) ? ub : 0)) : local_unknown_signedness_right_type(ur - ((!division_is_exact) ? ub : 0));
+      result.first  = local_unknown_signedness_left_type(-local_unknown_signedness_left_type(ua + ((!division_is_exact) ? 1 : 0)));
+      result.second = (!denom_was_neg) ? local_unknown_signedness_right_type(-local_unknown_signedness_right_type(ur - ((!division_is_exact) ? ub : 0))) : local_unknown_signedness_right_type(ur - ((!division_is_exact) ? ub : 0));
     }
 
     return result;

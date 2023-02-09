@@ -523,22 +523,10 @@ namespace example013_ecdsa
           duodectuple_sint_type(y1) + duodectuple_sint_type(m) * (x3 - duodectuple_sint_type(x1))
         );
 
-      const auto divmod_result_x3 =
-        duodectuple_sint_type
-        (
-          divmod(x3, duodectuple_sint_type(value_p())).second
-        );
-
-      const auto divmod_result_y3 =
-        duodectuple_sint_type
-        (
-          divmod(duodectuple_sint_type(-y3), duodectuple_sint_type(value_p())).second
-        );
-
       return
       {
-        double_sint_type(divmod_result_x3),
-        double_sint_type(divmod_result_y3)
+        double_sint_type(divmod( x3, duodectuple_sint_type(value_p())).second),
+        double_sint_type(divmod(-y3, duodectuple_sint_type(value_p())).second)
       };
     }
 
