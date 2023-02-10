@@ -34,7 +34,7 @@ namespace example013_ecdsa
     {
       init();
       update(msg, length);
-      return final();
+      return finalize();
     }
 
     WIDE_INTEGER_CONSTEXPR void init()
@@ -72,23 +72,25 @@ namespace example013_ecdsa
       }
     }
 
-    WIDE_INTEGER_CONSTEXPR auto final() -> result_type
+    WIDE_INTEGER_CONSTEXPR auto finalize() -> result_type
     {
       result_type hash_result { };
 
-      auto i = static_cast<std::size_t>(my_datalen);
+      auto hash_index = static_cast<std::size_t>(my_datalen);
 
-      my_data[i++] = static_cast<std::uint8_t>(UINT8_C(0x80)); // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic,cppcoreguidelines-pro-bounds-constant-array-index)
+      my_data[hash_index] = static_cast<std::uint8_t>(UINT8_C(0x80)); // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic,cppcoreguidelines-pro-bounds-constant-array-index)
+
+      ++hash_index;
 
       // Pad whatever data is left in the buffer.
       if(my_datalen < static_cast<std::uint32_t>(UINT8_C(56U)))
       {
-        std::fill((my_data.begin() + i), (my_data.begin() + static_cast<std::size_t>(UINT8_C(56))), static_cast<std::uint8_t>(UINT8_C(0)));
+        std::fill((my_data.begin() + hash_index), (my_data.begin() + static_cast<std::size_t>(UINT8_C(56))), static_cast<std::uint8_t>(UINT8_C(0)));
       }
       else
       {
         // LCOV_EXCL_START
-        std::fill((my_data.begin() + i), my_data.end(), static_cast<std::uint8_t>(UINT8_C(0)));
+        std::fill((my_data.begin() + hash_index), my_data.end(), static_cast<std::uint8_t>(UINT8_C(0)));
 
         sha256_transform();
 
