@@ -5993,19 +5993,15 @@
     {
       const auto division_is_exact = (ur == 0);
 
-      result.first  =
-        local_unknown_signedness_left_type
-        (
-          ua + local_unsigned_wide_type((!division_is_exact) ? 1 : 0)
-        );
+      if(!division_is_exact) { ++ua; }
+
+      result.first = local_unknown_signedness_left_type(ua);
 
       result.first.negate();
 
-      result.second =
-        local_unknown_signedness_right_type
-        (
-          ur - local_unsigned_wide_type((!division_is_exact) ? ub : 0)
-        );
+      if(!division_is_exact) { ur -= ub; }
+
+      result.second = local_unknown_signedness_right_type(ur);
 
       if(!denom_was_neg) { result.second.negate(); }
     }
