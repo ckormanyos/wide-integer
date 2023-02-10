@@ -217,6 +217,7 @@
     <ClCompile Include="examples\example010_uint48_t.cpp" />
     <ClCompile Include="examples\example011_uint24_t.cpp" />
     <ClCompile Include="examples\example012_rsa_crypto.cpp" />
+    <ClCompile Include="examples\example013_ecdsa_sign_verify.cpp" />
     <ClCompile Include="target\micros\stm32f429\make\single\crt.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>

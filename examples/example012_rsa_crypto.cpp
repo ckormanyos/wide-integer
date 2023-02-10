@@ -73,8 +73,8 @@ namespace local_rsa
 
         if(a == 0)
         {
-          *x = local_integer_type(0U);
-          *y = local_integer_type(1U);
+          *x = local_integer_type { 0U };
+          *y = local_integer_type { 1U };
 
           return b;
         }
@@ -251,8 +251,8 @@ namespace local_rsa
       my_uintwide_t a = phi_of_m;
       my_uintwide_t b = my_r;
 
-      my_uintwide_t x(0U);
-      my_uintwide_t s(0U);
+      my_uintwide_t x { };
+      my_uintwide_t s { };
 
       euclidean::extended_euclidean(a, b, &x, &s);
 
