@@ -2120,9 +2120,9 @@
       return *this;
     }
 
-    WIDE_INTEGER_CONSTEXPR auto operator^=(const uintwide_t& other) -> uintwide_t&
+    WIDE_INTEGER_CONSTEXPR auto operator^=(const uintwide_t& other) -> uintwide_t& // LCOV_EXCL_LINE
     {
-      if(this == &other)
+      if(this == &other) // LCOV_EXCL_LINE
       {
         detail::fill_unsafe(values.begin(), values.end(), static_cast<typename representation_type::value_type>(UINT8_C(0))); // LCOV_EXCL_LINE
       }
@@ -2137,7 +2137,7 @@
         }
       }
 
-      return *this;
+      return *this; // LCOV_EXCL_LINE
     }
 
     WIDE_INTEGER_CONSTEXPR auto operator&=(const uintwide_t& other) -> uintwide_t&
