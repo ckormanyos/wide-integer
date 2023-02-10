@@ -1050,7 +1050,7 @@
   // Use a local, constexpr, unsafe implementation of the fill-function.
   template<typename DestinationIterator,
            typename ValueType>
-  inline WIDE_INTEGER_CONSTEXPR auto fill_unsafe(DestinationIterator first, DestinationIterator last, ValueType val)
+  inline WIDE_INTEGER_CONSTEXPR auto fill_unsafe(DestinationIterator first, DestinationIterator last, ValueType val) -> void
   {
     using local_destination_value_type = typename std::iterator_traits<DestinationIterator>::value_type;
 
@@ -1129,7 +1129,7 @@
         // Exclude this line from code coverage, even though explicit
         // test cases (search for "result_overshift_is_ok") are known
         // to cover this line.
-        base_class_type::fill(v); // LCOV_EXCL_LINE
+        detail::fill_unsafe(base_class_type::begin(), base_class_type::end(), v); // LCOV_EXCL_LINE
       }
     }
 

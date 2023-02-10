@@ -21,13 +21,13 @@ namespace example013_ecdsa
     using result_type = std::array<std::uint8_t, static_cast<std::size_t>(UINT8_C(32))>;
 
     // LCOV_EXCL_START
-    WIDE_INTEGER_CONSTEXPR hash_sha256()                       = default;
-    WIDE_INTEGER_CONSTEXPR hash_sha256(const hash_sha256&)     = default;
-    WIDE_INTEGER_CONSTEXPR hash_sha256(hash_sha256&&) noexcept = default;
+    constexpr hash_sha256()                       = default;
+    constexpr hash_sha256(const hash_sha256&)     = default;
+    constexpr hash_sha256(hash_sha256&&) noexcept = default;
     ~hash_sha256() = default;
 
-    WIDE_INTEGER_CONSTEXPR auto operator=(hash_sha256&&) noexcept -> hash_sha256& = default;
-    WIDE_INTEGER_CONSTEXPR auto operator=(const hash_sha256&) ->     hash_sha256& = default;
+    constexpr auto operator=(hash_sha256&&) noexcept -> hash_sha256& = default;
+    constexpr auto operator=(const hash_sha256&) ->     hash_sha256& = default;
     // LCOV_EXCL_STOP
 
     WIDE_INTEGER_CONSTEXPR auto hash(const std::uint8_t* msg, const size_t length) -> result_type
@@ -325,8 +325,8 @@ namespace example013_ecdsa
     using point_type =
       struct point_type
       {
-        WIDE_INTEGER_CONSTEXPR point_type(double_sint_type x = static_cast<double_sint_type>(static_cast<unsigned>(UINT8_C(0))), // NOLINT(google-explicit-constructor,hicpp-explicit-conversions,bugprone-easily-swappable-parameters)
-                                          double_sint_type y = static_cast<double_sint_type>(static_cast<unsigned>(UINT8_C(0)))) noexcept
+        constexpr point_type(double_sint_type x = static_cast<double_sint_type>(static_cast<unsigned>(UINT8_C(0))), // NOLINT(google-explicit-constructor,hicpp-explicit-conversions,bugprone-easily-swappable-parameters)
+                             double_sint_type y = static_cast<double_sint_type>(static_cast<unsigned>(UINT8_C(0)))) noexcept
           : my_x(x),
             my_y(y) { }
 
