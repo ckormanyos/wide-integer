@@ -18,6 +18,15 @@
 
 namespace example013_ecdsa
 {
+  // For algorithm description hash,
+  //   see also: https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.180-4.pdf
+
+  // For algorithm description ECDSA,
+  //   see also: https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.186-5.pdf
+
+  // The following HASH-256 implementation has been taken (with slight modification)
+  //   from: https://github.com/imahjoub/hash_sha256
+
   class hash_sha256
   {
   public:
@@ -443,6 +452,7 @@ namespace example013_ecdsa
 
       // Test the condition:
       //   (y * y - x * x * x - curve.a * x -curve.b) % curve.p == 0
+
       const auto num =
         sexatuple_sint_type
         (
@@ -477,7 +487,7 @@ namespace example013_ecdsa
 
     static auto point_add(const point_type& point1, const point_type& point2) -> point_type
     {
-      // Returns the result of point1 + point2 according to the group law.
+      // Returns the result of (point1 + point2) according to the group law.
 
       const auto& x1 = point1.my_x; const auto& y1 = point1.my_y;
       const auto& x2 = point2.my_x; const auto& y2 = point2.my_y;
@@ -631,11 +641,9 @@ namespace example013_ecdsa
       // This subroutine returns the hash of the message (msg), where
       // the type of the hash is 256-bit SHA2, as implenebted locally above.
 
-      // For those interested in the general case of ECC, please note that
-      // this hash has the exact same bit-length as the elliptic curve
-      // being used. So no left or right shifting of the has result is
-      // performed, which may otherwise be needed for different hash/curve
-      // bit-lengths.
+      // For those interested in the general case of ECC, a larger/smaller
+      // bit-length hash needs to be left/right shifted for cases when there
+      // are different hash/curve bit-lengths (as specified in FIPS 180).
 
       const auto message { std::vector<std::uint8_t>(msg.cbegin(), msg.cend()) };
 
@@ -661,7 +669,7 @@ namespace example013_ecdsa
     template<typename ContainerType>
     static auto sign_message(const uint_type&     private_key,
                              const ContainerType& msg,
-                             const uint_type*     p_uint_seed) -> std::pair<uint_type, uint_type>
+                             const uint_type*     p_uint_seed = nullptr) -> std::pair<uint_type, uint_type>
     {
       const auto z = sexatuple_sint_type(hash_message(msg));
 
@@ -699,6 +707,33 @@ namespace example013_ecdsa
         uint_type(r),
         uint_type(s)
       };
+    }
+
+    template<typename ContainerType>
+    static auto verify_signature(const std::pair<uint_type, uint_type>& pub,
+                                 const ContainerType&                   msg,
+                                 const std::pair<uint_type, uint_type>& sig) -> bool
+    {
+      const auto w = sexatuple_sint_type(inverse_mod(sig.second, value_n()));
+
+      const auto n = sexatuple_sint_type(value_n());
+
+      const auto z = hash_message(msg);
+
+      const auto u1 = double_sint_type(divmod(sexatuple_sint_type(z)         * w, n).second);
+      const auto u2 = double_sint_type(divmod(sexatuple_sint_type(sig.first) * w, n).second);
+
+      const auto pt =
+        point_add
+        (
+          scalar_mult(u1, { value_gx(), value_gy() } ),
+          scalar_mult(u2, { pub.first,  pub.second } )
+        );
+
+      return
+      (
+        divmod(double_sint_type(sig.first), value_n()).second == divmod(pt.my_x, value_n()).second
+      );
     }
   };
 
@@ -748,7 +783,15 @@ auto ::math::wide_integer::example013_ecdsa_sign_verify() -> bool
   static_cast<void>(elliptic_curve_type::value_p());
   #endif
 
+  // Declare the message "Hello!" as an array of chars.
   constexpr std::array<char, static_cast<std::size_t>(UINT8_C(6))> msg_as_array { 'H', 'e', 'l', 'l', 'o', '!' };
+
+  // Get the message to sign as a string and ensure that it is "Hello!".
+  const auto msg_as_string = std::string(msg_as_array.cbegin(), msg_as_array.cend());
+
+  const auto result_msg_as_string_is_ok = (msg_as_string == "Hello!");
+
+  result_is_ok = (result_msg_as_string_is_ok && result_is_ok);
 
   {
     // Test the hash SHA-2 SHA256 implementation.
@@ -764,7 +807,8 @@ auto ::math::wide_integer::example013_ecdsa_sign_verify() -> bool
   }
 
   {
-    // Test ECC key generation, sign and verify.
+    // Test ECC key generation, sign and verify. In this case we use random (but pre-defined seeds
+    // for both keygen as well as signing.
 
     const auto seed_keygen = elliptic_curve_type::uint_type("0xc6455bf2f380f6b81f5fd1a1dbc2392b3783ed1e7d91b62942706e5584ba0b92");
 
@@ -794,13 +838,6 @@ auto ::math::wide_integer::example013_ecdsa_sign_verify() -> bool
 
     const auto priv = elliptic_curve_type::uint_type("0x6f73d8e95d6ddbf0eb352a9f0b2ce91931511edaf9ac8f128d5a4f877c4f0450");
 
-    // Get the message to sign as a string and ensure that it is "Hello!".
-    const auto msg_as_string = std::string(msg_as_array.cbegin(), msg_as_array.cend());
-
-    const auto result_msg_as_string_is_ok = (msg_as_string == "Hello!");
-
-    result_is_ok = (result_msg_as_string_is_ok && result_is_ok);
-
     const auto sig =
       elliptic_curve_type::sign_message(std::get<0>(keypair), msg_as_string, &priv);
 
@@ -814,6 +851,48 @@ auto ::math::wide_integer::example013_ecdsa_sign_verify() -> bool
       );
 
     result_is_ok = (result_sig_is_ok && result_is_ok);
+
+    const auto result_verify_is_ok = elliptic_curve_type::verify_signature(std::get<1>(keypair), msg_as_string, sig);
+
+    result_is_ok = (result_verify_is_ok && result_is_ok);
+  }
+
+  {
+    // We will now test 3 more successful keygen, sign, verify sequences.
+
+    for(auto   count = static_cast<unsigned>(UINT8_C(0));
+               count < static_cast<unsigned>(UINT8_C(3));
+             ++count)
+    {
+      const auto keypair = elliptic_curve_type::make_keypair();
+
+      const auto msg_str_append_index = msg_as_string + std::to_string(count);
+
+      const auto sig =
+        elliptic_curve_type::sign_message(std::get<0>(keypair), msg_str_append_index);
+
+      const auto result_verify_is_ok = elliptic_curve_type::verify_signature(std::get<1>(keypair), msg_str_append_index, sig);
+
+      result_is_ok = (result_verify_is_ok && result_is_ok);
+    }
+  }
+
+  {
+    // We will now test keygen, sign, and a (failing!) verify sequence,
+    // where the message being verified has been artificially modified
+    // and signature verification is expected to fail.
+
+    const auto keypair = elliptic_curve_type::make_keypair();
+
+    const auto sig =
+      elliptic_curve_type::sign_message(std::get<0>(keypair), msg_as_string);
+
+    const auto msg_str_to_fail = msg_as_string + "x";
+
+    const auto result_verify_expected_fail_is_ok =
+      (!elliptic_curve_type::verify_signature(std::get<1>(keypair), msg_str_to_fail, sig));
+
+    result_is_ok = (result_verify_expected_fail_is_ok && result_is_ok);
   }
 
   return result_is_ok;
