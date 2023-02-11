@@ -8,26 +8,38 @@
 #include <algorithm>
 #include <array>
 #include <cstdint>
+#include <random>
+#include <string>
 #include <utility>
+#include <vector>
 
 #include <examples/example_uintwide_t.h>
 #include <math/wide_integer/uintwide_t.h>
 
 namespace example013_ecdsa
 {
+  // For algorithm description of hash,
+  //   see also: https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.180-4.pdf
+
+  // For algorithm description of ECDSA,
+  //   see also: https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.186-5.pdf
+
+  // The following HASH-256 implementation has been taken (with slight modification)
+  //   from: https://github.com/imahjoub/hash_sha256
+
   class hash_sha256
   {
   public:
     using result_type = std::array<std::uint8_t, static_cast<std::size_t>(UINT8_C(32))>;
 
     // LCOV_EXCL_START
-    WIDE_INTEGER_CONSTEXPR hash_sha256()                       = default;
-    WIDE_INTEGER_CONSTEXPR hash_sha256(const hash_sha256&)     = default;
-    WIDE_INTEGER_CONSTEXPR hash_sha256(hash_sha256&&) noexcept = default;
+    constexpr hash_sha256()                       = default;
+    constexpr hash_sha256(const hash_sha256&)     = default;
+    constexpr hash_sha256(hash_sha256&&) noexcept = default;
     ~hash_sha256() = default;
 
-    WIDE_INTEGER_CONSTEXPR auto operator=(hash_sha256&&) noexcept -> hash_sha256& = default;
-    WIDE_INTEGER_CONSTEXPR auto operator=(const hash_sha256&) ->     hash_sha256& = default;
+    constexpr auto operator=(hash_sha256&&) noexcept -> hash_sha256& = default;
+    constexpr auto operator=(const hash_sha256&) ->     hash_sha256& = default;
     // LCOV_EXCL_STOP
 
     WIDE_INTEGER_CONSTEXPR auto hash(const std::uint8_t* msg, const size_t length) -> result_type
@@ -296,12 +308,6 @@ namespace example013_ecdsa
     }
   };
 
-  template<const std::size_t N>
-  WIDE_INTEGER_CONSTEXPR auto hash(std::array<std::uint8_t, N> v) -> typename hash_sha256::result_type
-  {
-    return example013_ecdsa::hash_sha256().hash(v.data(), v.size());
-  }
-
   template<const unsigned CurveBits,
            typename LimbType,
            const char* PointX,
@@ -325,8 +331,8 @@ namespace example013_ecdsa
     using point_type =
       struct point_type
       {
-        WIDE_INTEGER_CONSTEXPR point_type(double_sint_type x = static_cast<double_sint_type>(static_cast<unsigned>(UINT8_C(0))), // NOLINT(google-explicit-constructor,hicpp-explicit-conversions,bugprone-easily-swappable-parameters)
-                                          double_sint_type y = static_cast<double_sint_type>(static_cast<unsigned>(UINT8_C(0)))) noexcept
+        constexpr point_type(double_sint_type x = static_cast<double_sint_type>(static_cast<unsigned>(UINT8_C(0))), // NOLINT(google-explicit-constructor,hicpp-explicit-conversions,bugprone-easily-swappable-parameters)
+                             double_sint_type y = static_cast<double_sint_type>(static_cast<unsigned>(UINT8_C(0)))) noexcept
           : my_x(x),
             my_y(y) { }
 
@@ -446,6 +452,7 @@ namespace example013_ecdsa
 
       // Test the condition:
       //   (y * y - x * x * x - curve.a * x -curve.b) % curve.p == 0
+
       const auto num =
         sexatuple_sint_type
         (
@@ -480,7 +487,7 @@ namespace example013_ecdsa
 
     static auto point_add(const point_type& point1, const point_type& point2) -> point_type
     {
-      // Returns the result of point1 + point2 according to the group law.
+      // Returns the result of (point1 + point2) according to the group law.
 
       const auto& x1 = point1.my_x; const auto& y1 = point1.my_y;
       const auto& x2 = point2.my_x; const auto& y2 = point2.my_y;
@@ -575,12 +582,48 @@ namespace example013_ecdsa
       return result;
     }
 
-    static auto make_keypair() -> keypair_type
+    template<typename UnknownWideUintType>
+    static auto get_random_uint() -> UnknownWideUintType
     {
-      // Generates a random private-public key pair.
-      //const auto private_key = random.randrange(1, curve.n)
-      const auto private_key = uint_type("0xc6455bf2f380f6b81f5fd1a1dbc2392b3783ed1e7d91b62942706e5584ba0b92");
-      const auto public_key  = scalar_mult(private_key, point_type(value_gx(), value_gy()));
+      using local_wide_unsigned_integer_type = UnknownWideUintType;
+
+      #if defined(WIDE_INTEGER_NAMESPACE)
+      using local_distribution_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::uniform_int_distribution<local_wide_unsigned_integer_type::my_width2, typename local_wide_unsigned_integer_type::limb_type>;
+      #else
+      using local_distribution_type = ::math::wide_integer::uniform_int_distribution<local_wide_unsigned_integer_type::my_width2, typename local_wide_unsigned_integer_type::limb_type>;
+      #endif
+
+      using local_random_engine_type = std::linear_congruential_engine<std::uint32_t, UINT32_C(48271), UINT32_C(0), UINT32_C(2147483647)>;
+      using local_random_device_type = std::random_device;
+
+      local_random_device_type dev;
+
+      const auto seed_value = static_cast<typename local_random_engine_type::result_type>(dev());
+
+      local_random_engine_type generator(seed_value);
+
+      local_distribution_type dist;
+
+      const auto unsigned_semi_random_value = dist(generator);
+
+      return unsigned_semi_random_value;
+    }
+
+    static auto make_keypair(const uint_type* p_uint_seed = nullptr) -> keypair_type
+    {
+      // This subroutine generate a random private-public key pair.
+      // The input parameter p_uint_seed can, however, be used to
+      // provide a fixed-input value for the private key.
+
+      // TBD: Be sure to limit to random.randrange(1, curve.n).
+
+      const auto private_key =
+        uint_type
+        (
+          (p_uint_seed == nullptr) ? get_random_uint<uint_type>() : *p_uint_seed
+        );
+
+      const auto public_key  = scalar_mult(private_key, { value_gx(), value_gy() } );
 
       return
       {
@@ -590,6 +633,107 @@ namespace example013_ecdsa
           uint_type(public_key.my_y)
         }
       };
+    }
+
+    template<typename ContainerType>
+    static auto hash_message(const ContainerType& msg) -> uint_type
+    {
+      // This subroutine returns the hash of the message (msg), where
+      // the type of the hash is 256-bit SHA2, as implenebted locally above.
+
+      // For those interested in the general case of ECC, a larger/smaller
+      // bit-length hash needs to be left/right shifted for cases when there
+      // are different hash/curve bit-lengths (as specified in FIPS 180).
+
+      const auto message { std::vector<std::uint8_t>(msg.cbegin(), msg.cend()) };
+
+      using hash_type = hash_sha256;
+
+      hash_type hash_object;
+
+      const auto hash_result = hash_object.hash(message.data(), message.size());
+
+      const auto z =
+        [&hash_result]()
+        {
+          auto u = uint_type { };
+
+          static_cast<void>(import_bits(u, hash_result.cbegin(), hash_result.cend()));
+
+          return u;
+        }();
+
+      return z;
+    }
+
+    template<typename ContainerType>
+    static auto sign_message(const uint_type&     private_key,
+                             const ContainerType& msg,
+                             const uint_type*     p_uint_seed = nullptr) -> std::pair<uint_type, uint_type>
+    {
+      const auto z = sexatuple_sint_type(hash_message(msg));
+
+      double_sint_type r { };
+      double_sint_type s { };
+
+      const auto n = sexatuple_sint_type(value_n());
+
+      const auto pk = sexatuple_sint_type(private_key);
+
+      while((r == 0) || (s == 0)) // NOLINT(altera-id-dependent-backward-branch)
+      {
+        // TBD: Be sure to limit to random.randrange(1, curve.n).
+        const auto k =
+          double_sint_type
+          (
+            (p_uint_seed == nullptr) ? static_cast<double_sint_type>(get_random_uint<uint_type>()) : static_cast<double_sint_type>(*p_uint_seed)
+          );
+
+        const auto pt = scalar_mult(k, { value_gx(), value_gy() } );
+
+        r = divmod(pt.my_x, value_n()).second;
+
+        const auto num =
+        (
+           (sexatuple_sint_type(z) + (sexatuple_sint_type(r) * pk))
+          * sexatuple_sint_type(inverse_mod(k, value_n()))
+        );
+
+        s = double_sint_type(divmod(num, n).second);
+      }
+
+      return
+      {
+        uint_type(r),
+        uint_type(s)
+      };
+    }
+
+    template<typename ContainerType>
+    static auto verify_signature(const std::pair<uint_type, uint_type>& pub,
+                                 const ContainerType&                   msg,
+                                 const std::pair<uint_type, uint_type>& sig) -> bool
+    {
+      const auto w = sexatuple_sint_type(inverse_mod(sig.second, value_n()));
+
+      const auto n = sexatuple_sint_type(value_n());
+
+      const auto z = hash_message(msg);
+
+      const auto u1 = double_sint_type(divmod(sexatuple_sint_type(z)         * w, n).second);
+      const auto u2 = double_sint_type(divmod(sexatuple_sint_type(sig.first) * w, n).second);
+
+      const auto pt =
+        point_add
+        (
+          scalar_mult(u1, { value_gx(), value_gy() } ),
+          scalar_mult(u2, { pub.first,  pub.second } )
+        );
+
+      return
+      (
+        divmod(double_sint_type(sig.first), value_n()).second == divmod(pt.my_x, value_n()).second
+      );
     }
   };
 
@@ -608,32 +752,6 @@ auto ::math::wide_integer::example013_ecdsa_sign_verify() -> bool
 #endif
 {
   auto result_is_ok = true;
-
-  WIDE_INTEGER_CONSTEXPR std::array<std::uint8_t, static_cast<std::size_t>(UINT8_C(3))> abc
-  {
-    static_cast<std::uint8_t>(UINT8_C(0x61)),
-    static_cast<std::uint8_t>(UINT8_C(0x62)),
-    static_cast<std::uint8_t>(UINT8_C(0x63))
-  };
-
-  WIDE_INTEGER_CONSTEXPR auto hr = example013_ecdsa::hash(abc);
-
-  WIDE_INTEGER_CONSTEXPR auto hash_ctrl =
-    example013_ecdsa::hash_sha256::result_type
-    {
-      static_cast<std::uint8_t>(UINT8_C(0xBA)), static_cast<std::uint8_t>(UINT8_C(0x78)), static_cast<std::uint8_t>(UINT8_C(0x16)), static_cast<std::uint8_t>(UINT8_C(0xBF)), static_cast<std::uint8_t>(UINT8_C(0x8F)), static_cast<std::uint8_t>(UINT8_C(0x01)), static_cast<std::uint8_t>(UINT8_C(0xCF)), static_cast<std::uint8_t>(UINT8_C(0xEA)),
-      static_cast<std::uint8_t>(UINT8_C(0x41)), static_cast<std::uint8_t>(UINT8_C(0x41)), static_cast<std::uint8_t>(UINT8_C(0x40)), static_cast<std::uint8_t>(UINT8_C(0xDE)), static_cast<std::uint8_t>(UINT8_C(0x5D)), static_cast<std::uint8_t>(UINT8_C(0xAE)), static_cast<std::uint8_t>(UINT8_C(0x22)), static_cast<std::uint8_t>(UINT8_C(0x23)),
-      static_cast<std::uint8_t>(UINT8_C(0xB0)), static_cast<std::uint8_t>(UINT8_C(0x03)), static_cast<std::uint8_t>(UINT8_C(0x61)), static_cast<std::uint8_t>(UINT8_C(0xA3)), static_cast<std::uint8_t>(UINT8_C(0x96)), static_cast<std::uint8_t>(UINT8_C(0x17)), static_cast<std::uint8_t>(UINT8_C(0x7A)), static_cast<std::uint8_t>(UINT8_C(0x9C)),
-      static_cast<std::uint8_t>(UINT8_C(0xB4)), static_cast<std::uint8_t>(UINT8_C(0x10)), static_cast<std::uint8_t>(UINT8_C(0xFF)), static_cast<std::uint8_t>(UINT8_C(0x61)), static_cast<std::uint8_t>(UINT8_C(0xF2)), static_cast<std::uint8_t>(UINT8_C(0x00)), static_cast<std::uint8_t>(UINT8_C(0x15)), static_cast<std::uint8_t>(UINT8_C(0xAD)),
-    };
-
-  WIDE_INTEGER_CONSTEXPR auto result_hash_is_ok = (hr == hash_ctrl);
-
-  #if (defined(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST) && (WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST == 1))
-  static_assert(result_hash_is_ok, "Error: Compile-time hash has failed");
-  #endif
-
-  result_is_ok = (result_hash_is_ok && result_is_ok);
 
   using elliptic_curve_type =
     example013_ecdsa::elliptic_curve<static_cast<unsigned>(UINT16_C(256)),
@@ -665,29 +783,117 @@ auto ::math::wide_integer::example013_ecdsa_sign_verify() -> bool
   static_cast<void>(elliptic_curve_type::value_p());
   #endif
 
-  const auto keypair = elliptic_curve_type::make_keypair();
+  // Declare the message "Hello!" as an array of chars.
+  constexpr std::array<char, static_cast<std::size_t>(UINT8_C(6))> msg_as_array { 'H', 'e', 'l', 'l', 'o', '!' };
 
-  const auto result_is_on_curve_is_ok =
-    elliptic_curve_type::is_on_curve
+  // Get the message to sign as a string and ensure that it is "Hello!".
+  const auto msg_as_string = std::string(msg_as_array.cbegin(), msg_as_array.cend());
+
+  const auto result_msg_as_string_is_ok = (msg_as_string == "Hello!");
+
+  result_is_ok = (result_msg_as_string_is_ok && result_is_ok);
+
+  {
+    // Test the hash SHA-2 SHA256 implementation.
+
+    const auto hash_result = elliptic_curve_type::hash_message(msg_as_array);
+
+    const auto result_hash_is_ok =
     (
-      {
-        std::get<1>(keypair).first,
-        std::get<1>(keypair).second
-      }
+      hash_result == elliptic_curve_type::uint_type("0x334d016f755cd6dc58c53a86e183882f8ec14f52fb05345887c8a5edd42c87b7")
     );
 
-  const auto result_private_is_ok  = (std::get<0>(keypair)        == "0xc6455bf2f380f6b81f5fd1a1dbc2392b3783ed1e7d91b62942706e5584ba0b92");
-  const auto result_public_x_is_ok = (std::get<1>(keypair).first  == "0xc6235629f157690e1df37248256c4fb7eff073d0250f5bd85df40b9e127a8461");
-  const auto result_public_y_is_ok = (std::get<1>(keypair).second == "0xcbaa679f07f9b98f915c1fb7d85a379d0559a9eee6735b1be0ce0e2e2b2e94de");
+    result_is_ok = (result_hash_is_ok && result_is_ok);
+  }
 
-  const auto result_keygen_is_ok =
-  (
-       result_private_is_ok
-    && result_public_x_is_ok
-    && result_public_y_is_ok
-  );
+  {
+    // Test ECC key generation, sign and verify. In this case we use random (but pre-defined seeds
+    // for both keygen as well as signing.
 
-  result_is_ok = (result_is_on_curve_is_ok && result_keygen_is_ok && result_is_ok);
+    const auto seed_keygen = elliptic_curve_type::uint_type("0xc6455bf2f380f6b81f5fd1a1dbc2392b3783ed1e7d91b62942706e5584ba0b92");
+
+    const auto keypair = elliptic_curve_type::make_keypair(&seed_keygen);
+
+    const auto result_is_on_curve_is_ok =
+      elliptic_curve_type::is_on_curve
+      (
+        {
+          std::get<1>(keypair).first,
+          std::get<1>(keypair).second
+        }
+      );
+
+    const auto result_private_is_ok  = (std::get<0>(keypair)        == "0xc6455bf2f380f6b81f5fd1a1dbc2392b3783ed1e7d91b62942706e5584ba0b92");
+    const auto result_public_x_is_ok = (std::get<1>(keypair).first  == "0xc6235629f157690e1df37248256c4fb7eff073d0250f5bd85df40b9e127a8461");
+    const auto result_public_y_is_ok = (std::get<1>(keypair).second == "0xcbaa679f07f9b98f915c1fb7d85a379d0559a9eee6735b1be0ce0e2e2b2e94de");
+
+    const auto result_keygen_is_ok =
+    (
+         result_private_is_ok
+      && result_public_x_is_ok
+      && result_public_y_is_ok
+    );
+
+    result_is_ok = (result_is_on_curve_is_ok && result_keygen_is_ok && result_is_ok);
+
+    const auto priv = elliptic_curve_type::uint_type("0x6f73d8e95d6ddbf0eb352a9f0b2ce91931511edaf9ac8f128d5a4f877c4f0450");
+
+    const auto sig =
+      elliptic_curve_type::sign_message(std::get<0>(keypair), msg_as_string, &priv);
+
+    const auto result_sig_is_ok =
+      (
+        sig == std::make_pair
+               (
+                 elliptic_curve_type::uint_type("0x65717a860f315a21e6e23cde411c8940de42a69d8ab26c2465902be8f3b75e7b"),
+                 elliptic_curve_type::uint_type("0xdb8b8e75a7b0c2f0d9eb8dbf1b5236edeb89b2116f5aebd40e770f8ccc3d6605")
+               )
+      );
+
+    result_is_ok = (result_sig_is_ok && result_is_ok);
+
+    const auto result_verify_is_ok = elliptic_curve_type::verify_signature(std::get<1>(keypair), msg_as_string, sig);
+
+    result_is_ok = (result_verify_is_ok && result_is_ok);
+  }
+
+  {
+    // We will now test 3 more successful keygen, sign, verify sequences.
+
+    for(auto   count = static_cast<unsigned>(UINT8_C(0));
+               count < static_cast<unsigned>(UINT8_C(3));
+             ++count)
+    {
+      const auto keypair = elliptic_curve_type::make_keypair();
+
+      const auto msg_str_append_index = msg_as_string + std::to_string(count);
+
+      const auto sig =
+        elliptic_curve_type::sign_message(std::get<0>(keypair), msg_str_append_index);
+
+      const auto result_verify_is_ok = elliptic_curve_type::verify_signature(std::get<1>(keypair), msg_str_append_index, sig);
+
+      result_is_ok = (result_verify_is_ok && result_is_ok);
+    }
+  }
+
+  {
+    // We will now test keygen, sign, and a (failing!) verify sequence,
+    // where the message being verified has been artificially modified
+    // and signature verification is expected to fail.
+
+    const auto keypair = elliptic_curve_type::make_keypair();
+
+    const auto sig =
+      elliptic_curve_type::sign_message(std::get<0>(keypair), msg_as_string);
+
+    const auto msg_str_to_fail = msg_as_string + "x";
+
+    const auto result_verify_expected_fail_is_ok =
+      (!elliptic_curve_type::verify_signature(std::get<1>(keypair), msg_str_to_fail, sig));
+
+    result_is_ok = (result_verify_expected_fail_is_ok && result_is_ok);
+  }
 
   return result_is_ok;
 }

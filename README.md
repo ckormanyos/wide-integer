@@ -174,7 +174,7 @@ on how to use wide-integer.
   - ![`example010_uint48_t.cpp`](./examples/example010_uint48_t.cpp) verifies 48-bit integer caluclations.
   - ![`example011_uint24_t.cpp`](./examples/example011_uint24_t.cpp) performs calculations with 24-bits, which is definitely on the small side of the range of wide-integer.
   - ![`example012_rsa_crypto.cpp`](./examples/example012_rsa_crypto.cpp) performs cryptographic calculations with 2048-bits, exploring a standardized test case.
-  - ![`example013_ecdsa_sign_verify.cpp`](./examples/example013_ecdsa_sign_verify.cpp) privides an intuitive view on elliptic-curve algebra, depicting a well-known cryptographic seed-and-key method.
+  - ![`example013_ecdsa_sign_verify.cpp`](./examples/example013_ecdsa_sign_verify.cpp) provides an intuitive view on elliptic-curve algebra, depicting a well-known cryptographic seed-and-key method.
 
 ## Building
 
@@ -267,6 +267,7 @@ examples/example009b_timed_mul_8_by_8.cpp   \
 examples/example010_uint48_t.cpp            \
 examples/example011_uint24_t.cpp            \
 examples/example012_rsa_crypto.cpp          \
+examples/example013_ecdsa_sign_verify.cpp   \
 -o wide_integer.exe
 ```
 
@@ -640,25 +641,31 @@ auto main() -> int
 
 The following sample performs add, subtract, multiply and divide of `uint48_t`.
 
+This exact example is provided in compiled form with successful output result
+is shown in its entirety in the following
+[short link](https://godbolt.org/z/vMqWav5P6) to [godbolt](https://godbolt.org).
+
 ```cpp
 #include <iomanip>
 #include <iostream>
+#include <random>
 
 #include <math/wide_integer/uintwide_t.h>
 
 auto main() -> int
 {
-  using uint48_t = ::math::wide_integer::uintwide_t<48U, std::uint8_t>;
+  using uint48_t = ::math::wide_integer::uintwide_t<static_cast<math::wide_integer::size_t>(UINT32_C(48)), std::uint8_t>;
 
-  using distribution_type  = ::math::wide_integer::uniform_int_distribution<48U, std::uint8_t>;
-  using random_engine_type = ::math::wide_integer::default_random_engine   <48U, std::uint8_t>;
+  using distribution_type  = ::math::wide_integer::uniform_int_distribution<static_cast<math::wide_integer::size_t>(UINT32_C(48)), typename uint48_t::limb_type>;
 
-  random_engine_type generator(static_cast<std::uint32_t>(UINT32_C(0xF00DCAFE)));
+  using random_engine_type = std::linear_congruential_engine<std::uint32_t, UINT32_C(48271), UINT32_C(0), UINT32_C(2147483647)>;
+
+  random_engine_type generator(static_cast<std::uint32_t>(UINT32_C(0xF00DCAFE))); // NOLINT(cert-msc32-c,cert-msc51-cpp,cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
 
   distribution_type distribution;
 
-  const std::uint64_t a64 = static_cast<std::uint64_t>(distribution(generator));
-  const std::uint64_t b64 = static_cast<std::uint64_t>(distribution(generator));
+  const auto a64 = static_cast<std::uint64_t>(distribution(generator));
+  const auto b64 = static_cast<std::uint64_t>(distribution(generator));
 
   const uint48_t a(a64);
   const uint48_t b(b64);
@@ -668,10 +675,15 @@ auto main() -> int
   const uint48_t c_mul = (a * b);
   const uint48_t c_div = (a / b);
 
-  const auto result_is_ok = (   (c_add == ((a64 + b64) & UINT64_C(0x0000FFFFFFFFFFFF)))
-                             && (c_sub == ((a64 - b64) & UINT64_C(0x0000FFFFFFFFFFFF)))
-                             && (c_mul == ((a64 * b64) & UINT64_C(0x0000FFFFFFFFFFFF)))
-                             && (c_div == ((a64 / b64) & UINT64_C(0x0000FFFFFFFFFFFF))));
+  const auto result_is_ok = (   (   (c_add == static_cast<std::uint64_t>((a64 + b64) & static_cast<std::uint64_t>(UINT64_C(0x0000FFFFFFFFFFFF))))
+                                 && (c_sub == static_cast<std::uint64_t>((a64 - b64) & static_cast<std::uint64_t>(UINT64_C(0x0000FFFFFFFFFFFF))))
+                                 && (c_mul == static_cast<std::uint64_t>((a64 * b64) & static_cast<std::uint64_t>(UINT64_C(0x0000FFFFFFFFFFFF))))
+                                 && (c_div == static_cast<std::uint64_t>((a64 / b64) & static_cast<std::uint64_t>(UINT64_C(0x0000FFFFFFFFFFFF)))))
+                             &&
+                                (   (static_cast<std::uint64_t>(c_add) == static_cast<std::uint64_t>((a64 + b64) & static_cast<std::uint64_t>(UINT64_C(0x0000FFFFFFFFFFFF))))
+                                 && (static_cast<std::uint64_t>(c_sub) == static_cast<std::uint64_t>((a64 - b64) & static_cast<std::uint64_t>(UINT64_C(0x0000FFFFFFFFFFFF))))
+                                 && (static_cast<std::uint64_t>(c_mul) == static_cast<std::uint64_t>((a64 * b64) & static_cast<std::uint64_t>(UINT64_C(0x0000FFFFFFFFFFFF))))
+                                 && (static_cast<std::uint64_t>(c_div) == static_cast<std::uint64_t>((a64 / b64) & static_cast<std::uint64_t>(UINT64_C(0x0000FFFFFFFFFFFF))))));
 
   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
 }
@@ -683,6 +695,9 @@ We will use the (somewhat uncommon) integral data type `uint11264_t`.
 Since `uint11264_t` has approximately $3,390$ decimal digits of precision,
 it is large enough to hold the value of $10^{3,333}$
 prior to (and following) the cube root operation.
+
+See this example fully worked out at the following
+[short link](https://godbolt.org/z/aKKesPK36) to [godbolt](https://godbolt.org)
 
 ```cpp
 #include <iomanip>
@@ -711,6 +726,8 @@ auto main() -> int
 
   const auto result_is_ok = (s == uint11264_t(str_control.data()));
 
+  std::cout << s << std::endl;
+
   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
 }
 ```
@@ -724,6 +741,10 @@ and various elementary functions.
 The following code, for instance, shows compile-time instantiations
 of `uintwide_t` from character strings with subsequent `constexpr` evaluations
 of binary operations multiply, divide, intergal cast and comparison.
+
+See this example fully worked out at the following
+[short link](https://godbolt.org/z/qPM31Wf7T) to [godbolt](https://godbolt.org)
+and note that the generated assembly includes nothing other than the call to `main()`.
 
 ```cpp
 #include <math/wide_integer/uintwide_t.h>
@@ -746,10 +767,14 @@ constexpr bool result_is_ok = (   (c == "0xE491A360C57EB4306C61F9A04F7F7D99BE367
 
 // constexpr verification.
 static_assert(result_is_ok, "Error: example is not OK!");
+
+auto main() -> int
+{
+}
 ```
 
-`constexpr`-_ness_ of `uintwide_t` has been checked on GCC 10 and up, clang 10 and up
-(with `-std=c++20`) and VC 14.2 (with `/std:c++latest`),
+The so-called `constexpr`-_ness_ of `uintwide_t` has been checked on GCC 10 and up,
+clang 10 and up (with `-std=c++20`) and VC 14.2 (with `/std:c++latest`),
 also for various embedded compilers such as `avr-gcc` 10 and up,
 `arm-non-eabi-gcc` 10 and up, and more. In addition,
 some compilations using compilers having less modern standards
