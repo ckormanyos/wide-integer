@@ -18,10 +18,10 @@
 
 namespace example013_ecdsa
 {
-  // For algorithm description hash,
+  // For algorithm description of hash,
   //   see also: https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.180-4.pdf
 
-  // For algorithm description ECDSA,
+  // For algorithm description of ECDSA,
   //   see also: https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.186-5.pdf
 
   // The following HASH-256 implementation has been taken (with slight modification)
@@ -680,7 +680,7 @@ namespace example013_ecdsa
 
       const auto pk = sexatuple_sint_type(private_key);
 
-      while((r == 0) || (s == 0))
+      while((r == 0) || (s == 0)) // NOLINT(altera-id-dependent-backward-branch)
       {
         // TBD: Be sure to limit to random.randrange(1, curve.n).
         const auto k =
