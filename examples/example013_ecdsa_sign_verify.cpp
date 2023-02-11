@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <array>
 #include <cstdint>
+#include <random>
 #include <utility>
 
 #include <examples/example_uintwide_t.h>
@@ -575,12 +576,48 @@ namespace example013_ecdsa
       return result;
     }
 
-    static auto make_keypair() -> keypair_type
+    template<typename UnknownWideUintType>
+    static auto get_random_uint() -> UnknownWideUintType
     {
-      // Generates a random private-public key pair.
-      //const auto private_key = random.randrange(1, curve.n)
-      const auto private_key = uint_type("0xc6455bf2f380f6b81f5fd1a1dbc2392b3783ed1e7d91b62942706e5584ba0b92");
-      const auto public_key  = scalar_mult(private_key, point_type(value_gx(), value_gy()));
+      using local_wide_unsigned_integer_type = UnknownWideUintType;
+
+      #if defined(WIDE_INTEGER_NAMESPACE)
+      using local_distribution_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::uniform_int_distribution<local_wide_unsigned_integer_type::my_width2, typename local_wide_unsigned_integer_type::limb_type>;
+      #else
+      using local_distribution_type = ::math::wide_integer::uniform_int_distribution<local_wide_unsigned_integer_type::my_width2, typename local_wide_unsigned_integer_type::limb_type>;
+      #endif
+
+      using local_random_engine_type = std::linear_congruential_engine<std::uint32_t, UINT32_C(48271), UINT32_C(0), UINT32_C(2147483647)>;
+      using local_random_device_type = std::random_device;
+
+      local_random_device_type dev;
+
+      const auto seed_value = static_cast<typename local_random_engine_type::result_type>(dev());
+
+      local_random_engine_type generator(seed_value);
+
+      local_distribution_type dist;
+
+      const auto unsigned_semi_random_value = dist(generator);
+
+      return unsigned_semi_random_value;
+    }
+
+    static auto make_keypair(const uint_type* p_uint_seed = nullptr) -> keypair_type
+    {
+      // This subroutine generate a random private-public key pair.
+      // The input parameter p_uint_seed can, however, be used to
+      // provide a fixed-input value for the private key.
+
+      // TBD: Be sure to limit to random.randrange(1, curve.n).
+
+      const auto private_key =
+        uint_type
+        (
+          (p_uint_seed == nullptr) ? get_random_uint<uint_type>() : *p_uint_seed
+        );
+
+      const auto public_key  = scalar_mult(private_key, { value_gx(), value_gy() } );
 
       return
       {
@@ -665,7 +702,9 @@ auto ::math::wide_integer::example013_ecdsa_sign_verify() -> bool
   static_cast<void>(elliptic_curve_type::value_p());
   #endif
 
-  const auto keypair = elliptic_curve_type::make_keypair();
+  const auto seed_keygen = elliptic_curve_type::uint_type("0xc6455bf2f380f6b81f5fd1a1dbc2392b3783ed1e7d91b62942706e5584ba0b92");
+
+  const auto keypair = elliptic_curve_type::make_keypair(&seed_keygen);
 
   const auto result_is_on_curve_is_ok =
     elliptic_curve_type::is_on_curve
