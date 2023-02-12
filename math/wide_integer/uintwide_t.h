@@ -1525,16 +1525,16 @@
     #endif
 
     // Helper constants for the digit characteristics.
-    static constexpr auto my_width2 = Width2;
+    static constexpr size_t my_width2 = Width2;
 
     // The number of limbs.
-    static constexpr auto number_of_limbs =
+    static constexpr size_t number_of_limbs =
       static_cast<size_t>
       (
         my_width2 / static_cast<size_t>(std::numeric_limits<limb_type>::digits)
       );
 
-    static constexpr auto number_of_limbs_karatsuba_threshold =
+    static constexpr size_t number_of_limbs_karatsuba_threshold =
       static_cast<size_t>
       (
         static_cast<unsigned>
@@ -4646,6 +4646,24 @@
       while((*it++ == (std::numeric_limits<limb_type>::max)()) && (it != values.end())); // NOLINT(altera-id-dependent-backward-branch)
     }
   };
+
+  template<const size_t Width2,
+           typename LimbType,
+           typename AllocatorType,
+           const bool IsSigned>
+  constexpr size_t uintwide_t<Width2, LimbType, AllocatorType, IsSigned>::my_width2;
+
+  template<const size_t Width2,
+           typename LimbType,
+           typename AllocatorType,
+           const bool IsSigned>
+  constexpr size_t uintwide_t<Width2, LimbType, AllocatorType, IsSigned>::number_of_limbs;
+
+  template<const size_t Width2,
+           typename LimbType,
+           typename AllocatorType,
+           const bool IsSigned>
+  constexpr size_t uintwide_t<Width2, LimbType, AllocatorType, IsSigned>::number_of_limbs_karatsuba_threshold;
 
   // Define some convenient unsigned wide integer types.
   using uint64_t    = uintwide_t<static_cast<size_t>(UINT32_C(   64)), std::uint16_t>;
