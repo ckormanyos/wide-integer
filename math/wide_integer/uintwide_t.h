@@ -1606,14 +1606,24 @@
 
       auto right_shift_amount_v = static_cast<unsigned_fast_type>(UINT8_C(0));
       auto u_it                 = values.begin(); // NOLINT(llvm-qualified-auto,readability-qualified-auto)
+      auto vr                   = v;
 
-      for( ; (   (u_it != values.end()) // NOLINT(altera-id-dependent-backward-branch)
-              && (right_shift_amount_v < static_cast<unsigned_fast_type>(std::numeric_limits<UnsignedIntegralType>::digits)));
-          ++u_it)
+      using local_unsigned_integral_type = UnsignedIntegralType;
+
+      while(vr != static_cast<local_unsigned_integral_type>(UINT8_C(0)))
       {
-        *u_it = static_cast<limb_type>(v >> static_cast<unsigned>(right_shift_amount_v));
+        if(u_it != values.end())
+        {
+          *u_it = static_cast<limb_type>(vr) >> static_cast<unsigned>(right_shift_amount_v);
 
-        right_shift_amount_v += static_cast<unsigned_fast_type>(std::numeric_limits<limb_type>::digits);
+          ++u_it;
+
+          vr >>= static_cast<unsigned>(std::numeric_limits<limb_type>::digits);
+        }
+        else
+        {
+          break;
+        }
       }
 
       detail::fill_unsafe(u_it, values.end(), static_cast<limb_type>(UINT8_C(0)));
@@ -2723,16 +2733,24 @@
       return (static_cast<std::uint_fast8_t>(static_cast<std::uint_fast8_t>(a.values.back() >> static_cast<size_t>(std::numeric_limits<typename uintwide_t<Width2, LimbType, AllocatorType, RePhraseIsSigned>::limb_type>::digits - 1)) & 1U) != 0U);
     }
 
-    static constexpr auto from_rep(const representation_type& other_rep) -> uintwide_t
+    static WIDE_INTEGER_CONSTEXPR auto from_rep(const representation_type& other_rep) -> uintwide_t
     {
       // Create a factory-like object from the internal data representation.
-      return uintwide_t(static_cast<const representation_type&>(other_rep));
-    }
 
-    static constexpr auto from_rep(representation_type&& other_rep) -> uintwide_t
-    {
-      // Create a factory-like object from the internal data representation.
-      return uintwide_t(static_cast<representation_type&&>(other_rep));
+      if(number_of_limbs == other_rep.size())
+      {
+        return uintwide_t(other_rep);
+      }
+      else
+      {
+        representation_type my_rep(number_of_limbs, static_cast<limb_type>(UINT8_C(0)));
+
+        std::copy(other_rep.cbegin(),
+                  detail::advance_and_point(other_rep.cbegin(), (std::min)(my_rep.size(), other_rep.size())),
+                  my_rep.begin());
+
+        return uintwide_t(static_cast<representation_type&&>(my_rep));
+      }
     }
 
     static constexpr auto my_fill_char() -> char { return '.'; }

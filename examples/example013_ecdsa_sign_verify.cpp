@@ -641,7 +641,7 @@ namespace example013_ecdsa
     }
 
     template<typename ContainerType>
-    static WIDE_INTEGER_CONSTEXPR auto hash_message(const ContainerType& msg) -> uint_type
+    static auto hash_message(const ContainerType& msg) -> uint_type
     {
       // This subroutine returns the hash of the message (msg), where
       // the type of the hash is 256-bit SHA2, as implenebted locally above.
@@ -807,13 +807,6 @@ auto ::math::wide_integer::example013_ecdsa_sign_verify() -> bool
     (
       hash_result == elliptic_curve_type::uint_type("0x334d016f755cd6dc58c53a86e183882f8ec14f52fb05345887c8a5edd42c87b7")
     );
-
-    #if defined(__cpp_lib_constexpr_vector)
-    #if (defined(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST) && (WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST == 1))
-    static_assert(elliptic_curve_type::hash_message(msg_as_array) == elliptic_curve_type::uint_type("0x334d016f755cd6dc58c53a86e183882f8ec14f52fb05345887c8a5edd42c87b7"),
-                  "Error computing SHA-2 HASH-256 at compile-time");
-    #endif
-    #endif
 
     result_is_ok = (result_hash_is_ok && result_is_ok);
   }
