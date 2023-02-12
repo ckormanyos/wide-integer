@@ -1604,9 +1604,8 @@
     {
       static_cast<void>(p_nullparam == nullptr);
 
-      auto right_shift_amount_v = static_cast<unsigned_fast_type>(UINT8_C(0));
-      auto u_it                 = values.begin(); // NOLINT(llvm-qualified-auto,readability-qualified-auto)
-      auto vr                   = v;
+      auto u_it = values.begin(); // NOLINT(llvm-qualified-auto,readability-qualified-auto)
+      auto vr   = v;
 
       using local_unsigned_integral_type = UnsignedIntegralType;
 
@@ -1614,11 +1613,11 @@
       {
         if(u_it != values.end())
         {
-          *u_it = static_cast<limb_type>(vr) >> static_cast<unsigned>(right_shift_amount_v);
+          *u_it = static_cast<limb_type>(vr);
 
           ++u_it;
 
-          vr >>= static_cast<unsigned>(std::numeric_limits<limb_type>::digits);
+          vr = static_cast<local_unsigned_integral_type>(vr >> static_cast<unsigned>(std::numeric_limits<limb_type>::digits));
         }
         else
         {
