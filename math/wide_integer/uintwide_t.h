@@ -1609,7 +1609,7 @@
 
       using local_unsigned_integral_type = UnsignedIntegralType;
 
-      while(vr != static_cast<local_unsigned_integral_type>(UINT8_C(0)))
+      while(vr != static_cast<local_unsigned_integral_type>(UINT8_C(0))) // NOLINT(altera-id-dependent-backward-branch)
       {
         if(u_it != values.end())
         {
@@ -2732,24 +2732,42 @@
       return (static_cast<std::uint_fast8_t>(static_cast<std::uint_fast8_t>(a.values.back() >> static_cast<size_t>(std::numeric_limits<typename uintwide_t<Width2, LimbType, AllocatorType, RePhraseIsSigned>::limb_type>::digits - 1)) & 1U) != 0U);
     }
 
-    static WIDE_INTEGER_CONSTEXPR auto from_rep(const representation_type& other_rep) -> uintwide_t
+    static constexpr auto from_rep(const representation_type& other_rep) -> uintwide_t
     {
-      // Create a factory-like object from the internal data representation.
+      // Create a factory-like object from another (possibly different)
+      // internal data representation.
+      return
+        (number_of_limbs == other_rep.size())
+          ? uintwide_t(other_rep)
+          : [&other_rep]()
+            {
+              representation_type my_rep(number_of_limbs, static_cast<limb_type>(UINT8_C(0)));
 
-      if(number_of_limbs == other_rep.size())
-      {
-        return uintwide_t(other_rep);
-      }
-      else
-      {
-        representation_type my_rep(number_of_limbs, static_cast<limb_type>(UINT8_C(0)));
+              std::copy(other_rep.cbegin(),
+                        detail::advance_and_point(other_rep.cbegin(), (std::min)(number_of_limbs, static_cast<size_t>(other_rep.size()))),
+                        my_rep.begin());
 
-        std::copy(other_rep.cbegin(),
-                  detail::advance_and_point(other_rep.cbegin(), (std::min)(my_rep.size(), other_rep.size())),
-                  my_rep.begin());
+              return uintwide_t(static_cast<representation_type&&>(my_rep));
+            }();
+    }
 
-        return uintwide_t(static_cast<representation_type&&>(my_rep));
-      }
+    static constexpr auto from_rep(representation_type&& other_rep) noexcept -> uintwide_t
+    {
+      // Create a factory-like object from another (possibly different)
+      // internal data representation (via move semantics).
+      return
+        (number_of_limbs == other_rep.size())
+          ? uintwide_t(std::move(static_cast<representation_type&&>(other_rep)))
+          : [&other_rep]()
+            {
+              representation_type my_rep(number_of_limbs, static_cast<limb_type>(UINT8_C(0)));
+
+              std::copy(other_rep.cbegin(),
+                        detail::advance_and_point(other_rep.cbegin(), (std::min)(number_of_limbs, static_cast<size_t>(other_rep.size()))),
+                        my_rep.begin());
+
+              return uintwide_t(static_cast<representation_type&&>(my_rep));
+            }();
     }
 
     static constexpr auto my_fill_char() -> char { return '.'; }
