@@ -5,6 +5,53 @@
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)             //
 ///////////////////////////////////////////////////////////////////
 
+// This work uses (significantly) translated and modified parts
+// of andreacorbellini/ecc
+//   see also: https://github.com/andreacorbellini/ecc
+//   and also: https://github.com/andreacorbellini/ecc/blob/master/scripts/ecdsa.py
+
+// Full original andreacorbellini/ecc copyright information follows.
+/*----------------------------------------------------------------------------
+
+The MIT License (MIT)
+
+Copyright (c) 2015 Andrea Corbellini
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+
+-----------------------------------------------------------------------------*/
+
+// For algorithm description of ECDSA, see
+// D. Hankerson, A. Menezes, S. Vanstone, "Guide to Elliptic
+// Curve Cryptography", Springer 2004, Chapter 4, in particular
+// Algorithm 4.24 (keygen on page 180), and Algorithms 4.29 and 4.30
+// (sign/verify on page 184).
+
+// For another algorithm description of ECDSA,
+//   see also: https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.186-5.pdf
+
+// For algorithm description of SHA-2 HASH-256,
+//   see also: https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.180-4.pdf
+
+// The SHA-2 HASH-256 implementation has been taken (with slight modification)
+//   from: https://github.com/imahjoub/hash_sha256
+
 #include <algorithm>
 #include <array>
 #include <cstdint>
@@ -18,15 +65,6 @@
 
 namespace example013_ecdsa
 {
-  // For algorithm description of hash,
-  //   see also: https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.180-4.pdf
-
-  // For algorithm description of ECDSA,
-  //   see also: https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.186-5.pdf
-
-  // The following HASH-256 implementation has been taken (with slight modification)
-  //   from: https://github.com/imahjoub/hash_sha256
-
   class hash_sha256
   {
   public:
@@ -183,11 +221,9 @@ namespace example013_ecdsa
     {
       std::array<std::uint32_t, static_cast<std::size_t>(UINT8_C(64))> m { };
 
-      for(auto   i = static_cast<std::size_t>(UINT8_C(0)),
-                 j = static_cast<std::size_t>(UINT8_C(0));
+      for(auto   i = static_cast<std::size_t>(UINT8_C(0)), j = static_cast<std::size_t>(UINT8_C(0));
                  i < static_cast<std::size_t>(UINT8_C(16));
-               ++i,
-                 j += 4U)
+               ++i, j += 4U)
       {
         m[i] = // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic,cppcoreguidelines-pro-bounds-constant-array-index)
           static_cast<std::uint32_t>
@@ -203,8 +239,6 @@ namespace example013_ecdsa
       {
         m[i] = ssig1(m[i - static_cast<std::size_t>(UINT8_C(2))]) + m[i - static_cast<std::size_t>(UINT8_C(7))] + ssig0(m[i - static_cast<std::size_t>(UINT8_C(15))]) + m[i - static_cast<std::size_t>(UINT8_C(16))]; // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic,cppcoreguidelines-pro-bounds-constant-array-index)
       }
-
-      transform_context_type state = transform_context;
 
       constexpr std::array<std::uint32_t, 64U> transform_constants =
       {
@@ -225,6 +259,8 @@ namespace example013_ecdsa
         static_cast<std::uint32_t>(UINT32_C(0x748F82EE)), static_cast<std::uint32_t>(UINT32_C(0x78A5636F)), static_cast<std::uint32_t>(UINT32_C(0x84C87814)), static_cast<std::uint32_t>(UINT32_C(0x8CC70208)),
         static_cast<std::uint32_t>(UINT32_C(0x90BEFFFA)), static_cast<std::uint32_t>(UINT32_C(0xA4506CEB)), static_cast<std::uint32_t>(UINT32_C(0xBEF9A3F7)), static_cast<std::uint32_t>(UINT32_C(0xC67178F2))
       };
+
+      transform_context_type state = transform_context;
 
       for(auto i = static_cast<std::size_t>(UINT8_C(0)); i < static_cast<std::size_t>(UINT8_C(64)); ++i)
       {
@@ -252,7 +288,7 @@ namespace example013_ecdsa
         state[static_cast<std::size_t>(UINT8_C(3))] = state[static_cast<std::size_t>(UINT8_C(2))];
         state[static_cast<std::size_t>(UINT8_C(2))] = state[static_cast<std::size_t>(UINT8_C(1))];
         state[static_cast<std::size_t>(UINT8_C(1))] = state[static_cast<std::size_t>(UINT8_C(0))];
-        state[static_cast<std::size_t>(UINT8_C(0))] = tmp1 + tmp2;
+        state[static_cast<std::size_t>(UINT8_C(0))] = static_cast<std::uint32_t>(tmp1 + tmp2);
       }
 
       transform_context[static_cast<std::size_t>(UINT8_C(0))] += state[static_cast<std::size_t>(UINT8_C(0))];
@@ -265,53 +301,22 @@ namespace example013_ecdsa
       transform_context[static_cast<std::size_t>(UINT8_C(7))] += state[static_cast<std::size_t>(UINT8_C(7))];
     }
 
-    static constexpr auto rotl(std::uint32_t a, unsigned b) -> std::uint32_t
-    {
-      // Circular left shift ROTR^n(x).
-      return (static_cast<std::uint32_t>(a << b) | static_cast<std::uint32_t>(a >> (static_cast<unsigned>(UINT8_C(32)) - b)));
-    }
+    static constexpr auto rotl(std::uint32_t a, unsigned b) -> std::uint32_t { return (static_cast<std::uint32_t>(a << b) | static_cast<std::uint32_t>(a >> (static_cast<unsigned>(UINT8_C(32)) - b))); }
+    static constexpr auto rotr(std::uint32_t a, unsigned b) -> std::uint32_t { return (static_cast<std::uint32_t>(a >> b) | static_cast<std::uint32_t>(a << (static_cast<unsigned>(UINT8_C(32)) - b))); }
 
-    static constexpr auto rotr(std::uint32_t a, unsigned b) -> std::uint32_t
-    {
-      // Circular right shift ROTR^n(x).
-      return (static_cast<std::uint32_t>(a >> b) | static_cast<std::uint32_t>(a << (static_cast<unsigned>(UINT8_C(32)) - b)));
-    }
+    static constexpr auto ch (std::uint32_t x, std::uint32_t y, std::uint32_t z) -> std::uint32_t { return (static_cast<std::uint32_t>(x & y) ^ static_cast<std::uint32_t>(~x & z)); }
+    static constexpr auto maj(std::uint32_t x, std::uint32_t y, std::uint32_t z) -> std::uint32_t { return (static_cast<std::uint32_t>(x & y) ^ static_cast<std::uint32_t>(x & z) ^ static_cast<std::uint32_t>(y & z)); }
 
-    static constexpr auto ch(std::uint32_t x, std::uint32_t y, std::uint32_t z) -> std::uint32_t
-    {
-      return (static_cast<std::uint32_t>(x & y) ^ static_cast<std::uint32_t>(~x & z));
-    }
-
-    static constexpr auto maj(std::uint32_t x, std::uint32_t y, std::uint32_t z) -> std::uint32_t
-    {
-      return (static_cast<std::uint32_t>(x & y) ^ static_cast<std::uint32_t>(x & z) ^ static_cast<std::uint32_t>(y & z));
-    }
-
-    static constexpr auto bsig0(std::uint32_t x) -> std::uint32_t
-    {
-      return (rotr(x, static_cast<unsigned>(UINT8_C(2))) ^ rotr(x, static_cast<unsigned>(UINT8_C(13))) ^ rotr(x, static_cast<unsigned>(UINT8_C(22))));
-    }
-
-    static constexpr auto bsig1(std::uint32_t x) -> std::uint32_t
-    {
-      return (rotr(x, static_cast<unsigned>(UINT8_C(6))) ^ rotr(x, static_cast<unsigned>(UINT8_C(11))) ^ rotr(x, static_cast<unsigned>(UINT8_C(25))));
-    }
-
-    static constexpr auto ssig0(std::uint32_t x) -> std::uint32_t
-    {
-      return (rotr(x, static_cast<unsigned>(UINT8_C(7))) ^ rotr(x, static_cast<unsigned>(UINT8_C(18))) ^ (x >> static_cast<unsigned>(UINT8_C(3))));
-    }
-
-    static constexpr auto ssig1(std::uint32_t x) -> std::uint32_t
-    {
-      return (rotr(x, static_cast<unsigned>(UINT8_C(17))) ^ rotr(x, static_cast<unsigned>(UINT8_C(19))) ^ (x >> static_cast<unsigned>(UINT8_C(10))));
-    }
+    static constexpr auto bsig0(std::uint32_t x) -> std::uint32_t { return (rotr(x, static_cast<unsigned>(UINT8_C( 2))) ^ rotr(x, static_cast<unsigned>(UINT8_C(13))) ^ rotr(x,   static_cast<unsigned>(UINT8_C(22)))); }
+    static constexpr auto bsig1(std::uint32_t x) -> std::uint32_t { return (rotr(x, static_cast<unsigned>(UINT8_C( 6))) ^ rotr(x, static_cast<unsigned>(UINT8_C(11))) ^ rotr(x,   static_cast<unsigned>(UINT8_C(25)))); }
+    static constexpr auto ssig0(std::uint32_t x) -> std::uint32_t { return (rotr(x, static_cast<unsigned>(UINT8_C( 7))) ^ rotr(x, static_cast<unsigned>(UINT8_C(18))) ^     (x >> static_cast<unsigned>(UINT8_C( 3)))); }
+    static constexpr auto ssig1(std::uint32_t x) -> std::uint32_t { return (rotr(x, static_cast<unsigned>(UINT8_C(17))) ^ rotr(x, static_cast<unsigned>(UINT8_C(19))) ^     (x >> static_cast<unsigned>(UINT8_C(10)))); }
   };
 
   template<const unsigned CurveBits,
            typename LimbType,
-           const char* PointX,
-           const char* PointY>
+           const char* CoordX,
+           const char* CoordY>
   struct ecc_point
   {
     #if defined(WIDE_INTEGER_NAMESPACE)
@@ -341,14 +346,14 @@ namespace example013_ecdsa
       };
 
     #if (defined(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST) && (WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST == 1))
-    static WIDE_INTEGER_CONSTEXPR auto value_g() noexcept -> point_type
+    static WIDE_INTEGER_CONSTEXPR auto point_g() noexcept -> point_type
     {
-      return point_type { double_sint_type(PointX), double_sint_type(PointY) }; // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay)
+      return point_type { double_sint_type(CoordX), double_sint_type(CoordY) }; // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay)
     }
     #else
-    static auto value_g() noexcept -> const point_type&
+    static auto point_g() noexcept -> const point_type&
     {
-      static const point_type pt { double_sint_type(PointX), double_sint_type(PointY) }; // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay)
+      static const point_type pt { double_sint_type(CoordX), double_sint_type(CoordY) }; // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay)
 
       return pt;
     }
@@ -361,13 +366,13 @@ namespace example013_ecdsa
            const char* FieldCharacteristicP,
            const int   CurveCoefficientA,
            const int   CurveCoefficientB,
-           const char* BasePointGx,
-           const char* BasePointGy,
+           const char* CoordGx,
+           const char* CoordGy,
            const char* SubGroupOrder,
            const int   SubGroupCoFactor>
-  struct elliptic_curve : public ecc_point<CurveBits, LimbType, BasePointGx, BasePointGy>
+  struct elliptic_curve : public ecc_point<CurveBits, LimbType, CoordGx, CoordGy>
   {
-    using base_class_type = ecc_point<CurveBits, LimbType, BasePointGx, BasePointGy>; // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay)
+    using base_class_type = ecc_point<CurveBits, LimbType, CoordGx, CoordGy>; // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay)
 
     using point_type       = typename base_class_type::point_type;
     using uint_type        = typename base_class_type::uint_type;
@@ -389,17 +394,17 @@ namespace example013_ecdsa
     #endif
 
     #if (defined(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST) && (WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST == 1))
-    static WIDE_INTEGER_CONSTEXPR auto value_p () noexcept -> double_sint_type { return double_sint_type(FieldCharacteristicP); } // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay)
-    static WIDE_INTEGER_CONSTEXPR auto value_n () noexcept -> double_sint_type { return double_sint_type(SubGroupOrder); }        // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay)
+    static WIDE_INTEGER_CONSTEXPR auto curve_p () noexcept -> double_sint_type { return double_sint_type(FieldCharacteristicP); } // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay)
+    static WIDE_INTEGER_CONSTEXPR auto curve_n () noexcept -> double_sint_type { return double_sint_type(SubGroupOrder); }        // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay)
 
-    static WIDE_INTEGER_CONSTEXPR auto value_gx() noexcept -> double_sint_type { return base_class_type::value_g().my_x; }
-    static WIDE_INTEGER_CONSTEXPR auto value_gy() noexcept -> double_sint_type { return base_class_type::value_g().my_y; }
+    static WIDE_INTEGER_CONSTEXPR auto curve_gx() noexcept -> double_sint_type { return base_class_type::point_g().my_x; }
+    static WIDE_INTEGER_CONSTEXPR auto curve_gy() noexcept -> double_sint_type { return base_class_type::point_g().my_y; }
     #else
-    static auto value_p () noexcept -> const double_sint_type& { static const double_sint_type vp(FieldCharacteristicP); return vp; } // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay)
-    static auto value_n () noexcept -> const double_sint_type& { static const double_sint_type vn(SubGroupOrder);        return vn; } // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay)
+    static auto curve_p () noexcept -> const double_sint_type& { static const double_sint_type vp(FieldCharacteristicP); return vp; } // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay)
+    static auto curve_n () noexcept -> const double_sint_type& { static const double_sint_type vn(SubGroupOrder);        return vn; } // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay)
 
-    static auto value_gx() noexcept -> const double_sint_type& { static const double_sint_type vgx(base_class_type::value_g().my_x); return vgx; }
-    static auto value_gy() noexcept -> const double_sint_type& { static const double_sint_type vgy(base_class_type::value_g().my_y); return vgy; }
+    static auto curve_gx() noexcept -> const double_sint_type& { static const double_sint_type vgx(base_class_type::point_g().my_x); return vgx; }
+    static auto curve_gy() noexcept -> const double_sint_type& { static const double_sint_type vgy(base_class_type::point_g().my_y); return vgy; }
     #endif
 
     static auto inverse_mod(const double_sint_type& k, const double_sint_type& p) -> double_sint_type // NOLINT(misc-no-recursion)
@@ -462,7 +467,7 @@ namespace example013_ecdsa
           - CurveCoefficientB
         );
 
-      const auto divmod_result = divmod(num, sexatuple_sint_type(value_p())).second;
+      const auto divmod_result = divmod(num, sexatuple_sint_type(curve_p())).second;
 
       return (divmod_result == 0);
     }
@@ -479,7 +484,7 @@ namespace example013_ecdsa
           : point_type
             {
                point.my_x,
-              -divmod(point.my_y, value_p()).second
+              -divmod(point.my_y, curve_p()).second
             }
       };
     }
@@ -516,8 +521,8 @@ namespace example013_ecdsa
         sexatuple_sint_type
         (
           (x1 == x2)
-            ? (sexatuple_sint_type(x1) * sexatuple_sint_type(x1) * 3 + CurveCoefficientA) * sexatuple_sint_type(inverse_mod(y1 * 2, value_p()))
-            : sexatuple_sint_type(y1 - y2) * sexatuple_sint_type(inverse_mod(x1 - x2, value_p()))
+            ? (sexatuple_sint_type(x1) * sexatuple_sint_type(x1) * 3 + CurveCoefficientA) * sexatuple_sint_type(inverse_mod(y1 * 2, curve_p()))
+            : sexatuple_sint_type(y1 - y2) * sexatuple_sint_type(inverse_mod(x1 - x2, curve_p()))
         );
 
       const auto x3 =
@@ -534,8 +539,8 @@ namespace example013_ecdsa
 
       return
       {
-        double_sint_type(divmod( x3, duodectuple_sint_type(value_p())).second),
-        double_sint_type(divmod(-y3, duodectuple_sint_type(value_p())).second)
+        double_sint_type(divmod( x3, duodectuple_sint_type(curve_p())).second),
+        double_sint_type(divmod(-y3, duodectuple_sint_type(curve_p())).second)
       };
     }
 
@@ -543,7 +548,7 @@ namespace example013_ecdsa
     {
       // Returns k * point computed using the double and point_add algorithm.
 
-      if(((k % value_n()) == 0) || ((point.my_x == 0) && (point.my_y == 0)))
+      if(((k % curve_n()) == 0) || ((point.my_x == 0) && (point.my_y == 0)))
       {
         return point_type { }; // LCOV_EXCL_LINE
       }
@@ -583,7 +588,7 @@ namespace example013_ecdsa
     }
 
     template<typename UnknownWideUintType>
-    static auto get_random_uint() -> UnknownWideUintType
+    static auto get_pseudo_random_uint() -> UnknownWideUintType
     {
       using local_wide_unsigned_integer_type = UnknownWideUintType;
 
@@ -604,9 +609,9 @@ namespace example013_ecdsa
 
       local_distribution_type dist;
 
-      const auto unsigned_semi_random_value = dist(generator);
+      const auto unsigned_pseudo_random_value = dist(generator);
 
-      return unsigned_semi_random_value;
+      return unsigned_pseudo_random_value;
     }
 
     static auto make_keypair(const uint_type* p_uint_seed = nullptr) -> keypair_type
@@ -620,10 +625,10 @@ namespace example013_ecdsa
       const auto private_key =
         uint_type
         (
-          (p_uint_seed == nullptr) ? get_random_uint<uint_type>() : *p_uint_seed
+          (p_uint_seed == nullptr) ? get_pseudo_random_uint<uint_type>() : *p_uint_seed
         );
 
-      const auto public_key  = scalar_mult(private_key, { value_gx(), value_gy() } );
+      const auto public_key  = scalar_mult(private_key, { curve_gx(), curve_gy() } );
 
       return
       {
@@ -636,7 +641,7 @@ namespace example013_ecdsa
     }
 
     template<typename ContainerType>
-    static auto hash_message(const ContainerType& msg) -> uint_type
+    static WIDE_INTEGER_CONSTEXPR auto hash_message(const ContainerType& msg) -> uint_type
     {
       // This subroutine returns the hash of the message (msg), where
       // the type of the hash is 256-bit SHA2, as implenebted locally above.
@@ -676,7 +681,7 @@ namespace example013_ecdsa
       double_sint_type r { };
       double_sint_type s { };
 
-      const auto n = sexatuple_sint_type(value_n());
+      const auto n = sexatuple_sint_type(curve_n());
 
       const auto pk = sexatuple_sint_type(private_key);
 
@@ -686,17 +691,17 @@ namespace example013_ecdsa
         const auto k =
           double_sint_type
           (
-            (p_uint_seed == nullptr) ? static_cast<double_sint_type>(get_random_uint<uint_type>()) : static_cast<double_sint_type>(*p_uint_seed)
+            (p_uint_seed == nullptr) ? static_cast<double_sint_type>(get_pseudo_random_uint<uint_type>()) : static_cast<double_sint_type>(*p_uint_seed)
           );
 
-        const auto pt = scalar_mult(k, { value_gx(), value_gy() } );
+        const auto pt = scalar_mult(k, { curve_gx(), curve_gy() } );
 
-        r = divmod(pt.my_x, value_n()).second;
+        r = divmod(pt.my_x, curve_n()).second;
 
         const auto num =
         (
            (sexatuple_sint_type(z) + (sexatuple_sint_type(r) * pk))
-          * sexatuple_sint_type(inverse_mod(k, value_n()))
+          * sexatuple_sint_type(inverse_mod(k, curve_n()))
         );
 
         s = double_sint_type(divmod(num, n).second);
@@ -714,9 +719,9 @@ namespace example013_ecdsa
                                  const ContainerType&                   msg,
                                  const std::pair<uint_type, uint_type>& sig) -> bool
     {
-      const auto w = sexatuple_sint_type(inverse_mod(sig.second, value_n()));
+      const auto w = sexatuple_sint_type(inverse_mod(sig.second, curve_n()));
 
-      const auto n = sexatuple_sint_type(value_n());
+      const auto n = sexatuple_sint_type(curve_n());
 
       const auto z = hash_message(msg);
 
@@ -726,13 +731,13 @@ namespace example013_ecdsa
       const auto pt =
         point_add
         (
-          scalar_mult(u1, { value_gx(), value_gy() } ),
+          scalar_mult(u1, { curve_gx(), curve_gy() } ),
           scalar_mult(u2, { pub.first,  pub.second } )
         );
 
       return
       (
-        divmod(double_sint_type(sig.first), value_n()).second == divmod(pt.my_x, value_n()).second
+        divmod(double_sint_type(sig.first), curve_n()).second == divmod(pt.my_x, curve_n()).second
       );
     }
   };
@@ -767,20 +772,20 @@ auto ::math::wide_integer::example013_ecdsa_sign_verify() -> bool
 
   #if (defined(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST) && (WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST == 1))
 
-  static_assert(elliptic_curve_type::value_p () == elliptic_curve_type::double_sint_type("0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F"),
-                "Error: Elliptic curve Field Characteristic p is seemingly incorrect");
+  static_assert(elliptic_curve_type::curve_p() == elliptic_curve_type::double_sint_type("0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F"),
+                "Error: Elliptic curve Field Characteristic p seems to be incorrect");
 
-  static_assert(elliptic_curve_type::value_n () == elliptic_curve_type::double_sint_type("0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141"),
-                "Error: Elliptic curve Sub-Group Order is seemingly incorrect");
+  static_assert(elliptic_curve_type::curve_n() == elliptic_curve_type::double_sint_type("0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141"),
+                "Error: Elliptic curve Sub-Group Order seems to be incorrect");
 
-  static_assert(elliptic_curve_type::value_gx() == elliptic_curve_type::double_sint_type("0x79BE667EF9DCBBAC55A06295CE870B07029BFCDB2DCE28D959F2815B16F81798"),
-                "Error: Elliptic curve base-point Gx is seemingly incorrect");
+  static_assert(elliptic_curve_type::curve_gx() == elliptic_curve_type::double_sint_type("0x79BE667EF9DCBBAC55A06295CE870B07029BFCDB2DCE28D959F2815B16F81798"),
+                "Error: Elliptic curve base-point Gx seems to be incorrect");
 
-  static_assert(elliptic_curve_type::value_gy() == elliptic_curve_type::double_sint_type("0x483ADA7726A3C4655DA4FBFC0E1108A8FD17B448A68554199C47D08FFB10D4B8"),
-                "Error: Elliptic curve base-point Gx is seemingly incorrect");
+  static_assert(elliptic_curve_type::curve_gy() == elliptic_curve_type::double_sint_type("0x483ADA7726A3C4655DA4FBFC0E1108A8FD17B448A68554199C47D08FFB10D4B8"),
+                "Error: Elliptic curve base-point Gx seems to be incorrect");
 
   #else
-  static_cast<void>(elliptic_curve_type::value_p());
+  static_cast<void>(elliptic_curve_type::curve_p());
   #endif
 
   // Declare the message "Hello!" as an array of chars.
@@ -794,7 +799,7 @@ auto ::math::wide_integer::example013_ecdsa_sign_verify() -> bool
   result_is_ok = (result_msg_as_string_is_ok && result_is_ok);
 
   {
-    // Test the hash SHA-2 SHA256 implementation.
+    // Test the hash SHA-2 HASH-256 implementation.
 
     const auto hash_result = elliptic_curve_type::hash_message(msg_as_array);
 
@@ -802,6 +807,13 @@ auto ::math::wide_integer::example013_ecdsa_sign_verify() -> bool
     (
       hash_result == elliptic_curve_type::uint_type("0x334d016f755cd6dc58c53a86e183882f8ec14f52fb05345887c8a5edd42c87b7")
     );
+
+    #if defined(__cpp_lib_constexpr_vector)
+    #if (defined(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST) && (WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST == 1))
+    static_assert(elliptic_curve_type::hash_message(msg_as_array) == elliptic_curve_type::uint_type("0x334d016f755cd6dc58c53a86e183882f8ec14f52fb05345887c8a5edd42c87b7"),
+                  "Error computing SHA-2 HASH-256 at compile-time");
+    #endif
+    #endif
 
     result_is_ok = (result_hash_is_ok && result_is_ok);
   }
