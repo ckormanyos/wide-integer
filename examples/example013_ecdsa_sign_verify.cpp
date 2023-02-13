@@ -432,16 +432,14 @@ namespace example013_ecdsa
 
       while(r != 0U) // NOLINT(altera-id-dependent-backward-branch)
       {
-        double_sint_type quotient = divmod(old_r, r).first;
+        const auto quotient = divmod(old_r, r).first;
 
-        const auto tmp_old_r = old_r; const auto tmp_r = r; old_r = r; r = tmp_old_r - quotient * tmp_r;
-        const auto tmp_old_s = old_s; const auto tmp_s = s; old_s = s; s = tmp_old_s - quotient * tmp_s;
-        const auto tmp_old_t = old_t; const auto tmp_t = t; old_t = t; t = tmp_old_t - quotient * tmp_t;
+        const auto tmp_r = r; r = old_r - (quotient * r); old_r = tmp_r;
+        const auto tmp_s = s; s = old_s - (quotient * s); old_s = tmp_s;
+        const auto tmp_t = t; t = old_t - (quotient * t); old_t = tmp_t;
       }
 
-      const auto mod_result = static_cast<uint_type>(divmod(old_s, p).second);
-
-      return mod_result;
+      return divmod(old_s, p).second;
     }
 
     // Functions that work on curve points
