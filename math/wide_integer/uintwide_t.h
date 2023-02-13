@@ -1528,11 +1528,14 @@
     static constexpr size_t my_width2 = Width2;
 
     // The number of limbs.
-    static constexpr size_t number_of_limbs =
-      static_cast<size_t>
-      (
-        my_width2 / static_cast<size_t>(std::numeric_limits<limb_type>::digits)
-      );
+    static constexpr auto number_of_limbs() -> size_t
+    {
+      return
+        static_cast<size_t>
+        (
+          Width2 / static_cast<size_t>(std::numeric_limits<limb_type>::digits)
+        );
+    }
 
     static constexpr size_t number_of_limbs_karatsuba_threshold =
       static_cast<size_t>
@@ -1550,7 +1553,7 @@
     //   * And that the number of binary digits is an exact multiple of the number of limbs.
     static_assert(    detail::verify_power_of_two_times_granularity_one_sixty_fourth<my_width2>::conditional_value
                   && (my_width2 >= 16U) // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
-                  && (my_width2 == (number_of_limbs * static_cast<size_t>(std::numeric_limits<limb_type>::digits))),
+                  && (my_width2 == (number_of_limbs() * static_cast<size_t>(std::numeric_limits<limb_type>::digits))),
                   "Error: Width2 must be 2^n times 1...63 (with n >= 3), while being 16, 24, 32 or larger, and exactly divisible by limb count");
 
     // The type of the internal data representation.
@@ -1559,9 +1562,9 @@
       std::conditional_t
         <std::is_same<AllocatorType, void>::value,
          detail::fixed_static_array <limb_type,
-                                     number_of_limbs>,
+                                     number_of_limbs()>,
          detail::fixed_dynamic_array<limb_type,
-                                     number_of_limbs,
+                                     number_of_limbs(),
                                      typename std::allocator_traits<std::conditional_t<std::is_same<AllocatorType, void>::value,
                                                                                        std::allocator<void>,
                                                                                        AllocatorType>>::template rebind_alloc<limb_type>>>;
@@ -1633,7 +1636,7 @@
     WIDE_INTEGER_CONSTEXPR uintwide_t(const SignedIntegralType v, // NOLINT(google-explicit-constructor,hicpp-explicit-conversions)
                                       std::enable_if_t<(   std::is_integral<SignedIntegralType>::value
                                                         && std::is_signed  <SignedIntegralType>::value)>* p_nullparam = nullptr)
-      : values(number_of_limbs)
+      : values(number_of_limbs())
     {
       static_cast<void>(p_nullparam == nullptr);
 
@@ -1726,7 +1729,7 @@
 
       const auto v_is_neg = (other_wide_integer_type::is_neg(v));
 
-      constexpr auto sz = static_cast<size_t>(number_of_limbs);
+      constexpr auto sz = static_cast<size_t>(number_of_limbs());
 
       if(!v_is_neg)
       {
@@ -1755,7 +1758,7 @@
     {
       using other_wide_integer_type = uintwide_t<OtherWidth2, LimbType, AllocatorType, OtherIsSigned>;
 
-      constexpr auto sz = static_cast<size_t>(other_wide_integer_type::number_of_limbs);
+      constexpr auto sz = static_cast<size_t>(other_wide_integer_type::number_of_limbs());
 
       if(!other_wide_integer_type::is_neg(v))
       {
@@ -1783,7 +1786,7 @@
     WIDE_INTEGER_CONSTEXPR uintwide_t(const char* str_input) // NOLINT(google-explicit-constructor,hicpp-explicit-conversions)
       : values
         {
-          static_cast<typename representation_type::size_type>(number_of_limbs),
+          static_cast<typename representation_type::size_type>(number_of_limbs()),
           static_cast<typename representation_type::value_type>(UINT8_C(0)),
           typename representation_type::allocator_type()
         }
@@ -1866,8 +1869,8 @@
       constexpr auto sz =
         static_cast<size_t>
         (
-          (Width2 < OtherWidth2) ? static_cast<size_t>(number_of_limbs)
-                                 : static_cast<size_t>(other_wide_integer_type::number_of_limbs)
+          (Width2 < OtherWidth2) ? static_cast<size_t>(number_of_limbs())
+                                 : static_cast<size_t>(other_wide_integer_type::number_of_limbs())
         );
 
       other_wide_integer_type other;
@@ -1935,7 +1938,7 @@
         const limb_type carry = eval_add_n(values.begin(), // LCOV_EXCL_LINE
                                            values.cbegin(),
                                            self.values.cbegin(),
-                                           static_cast<unsigned_fast_type>(number_of_limbs),
+                                           static_cast<unsigned_fast_type>(number_of_limbs()),
                                            static_cast<limb_type>(UINT8_C(0)));
 
         static_cast<void>(carry);
@@ -1946,7 +1949,7 @@
         const limb_type carry = eval_add_n(values.begin(),
                                            values.cbegin(),
                                            other.values.cbegin(),
-                                           static_cast<unsigned_fast_type>(number_of_limbs),
+                                           static_cast<unsigned_fast_type>(number_of_limbs()),
                                            static_cast<limb_type>(UINT8_C(0)));
 
         static_cast<void>(carry);
@@ -1967,7 +1970,7 @@
         const limb_type has_borrow = eval_subtract_n(values.begin(),
                                                      values.cbegin(),
                                                      other.values.cbegin(),
-                                                     number_of_limbs,
+                                                     number_of_limbs(),
                                                      false);
 
         static_cast<void>(has_borrow);
@@ -2003,7 +2006,7 @@
         static_cast<void>(eval_multiply_1d(values.begin(),
                                            values.cbegin(),
                                            v,
-                                           number_of_limbs));
+                                           number_of_limbs()));
       }
 
       return *this;
@@ -2294,14 +2297,14 @@
           (
             representation_type
             (
-              number_of_limbs, (std::numeric_limits<limb_type>::max)()
+              number_of_limbs(), (std::numeric_limits<limb_type>::max)()
             )
           )
         :   from_rep
             (
               representation_type
               (
-                number_of_limbs, (std::numeric_limits<limb_type>::max)()
+                number_of_limbs(), (std::numeric_limits<limb_type>::max)()
               )
             )
           ^
@@ -2320,14 +2323,14 @@
           (
             representation_type
             (
-              number_of_limbs, static_cast<limb_type>(UINT8_C(0))
+              number_of_limbs(), static_cast<limb_type>(UINT8_C(0))
             )
           )
         :   from_rep
             (
               representation_type
               (
-                number_of_limbs, static_cast<limb_type>(UINT8_C(0))
+                number_of_limbs(), static_cast<limb_type>(UINT8_C(0))
               )
             )
           |
@@ -2346,14 +2349,14 @@
           (
             representation_type
             (
-              number_of_limbs, static_cast<limb_type>(UINT8_C(0))
+              number_of_limbs(), static_cast<limb_type>(UINT8_C(0))
             )
           )
         :   from_rep
             (
               representation_type
               (
-                number_of_limbs, static_cast<limb_type>(UINT8_C(0))
+                number_of_limbs(), static_cast<limb_type>(UINT8_C(0))
               )
             )
           |
@@ -2606,7 +2609,7 @@
     {
       return compare_ranges(values.cbegin(),
                             other.values.cbegin(),
-                            uintwide_t<Width2, LimbType, AllocatorType, RePhraseIsSigned>::number_of_limbs);
+                            uintwide_t<Width2, LimbType, AllocatorType, RePhraseIsSigned>::number_of_limbs());
     }
 
     template<const bool RePhraseIsSigned = IsSigned,
@@ -2630,7 +2633,7 @@
       {
         n_result = compare_ranges(values.cbegin(),
                                   other.values.cbegin(),
-                                  uintwide_t<Width2, LimbType, AllocatorType, RePhraseIsSigned>::number_of_limbs);
+                                  uintwide_t<Width2, LimbType, AllocatorType, RePhraseIsSigned>::number_of_limbs());
       }
 
       return n_result;
@@ -2666,7 +2669,7 @@
             detail::advance_and_point
             (
               values.begin(),
-              static_cast<size_t>(number_of_limbs - static_cast<size_t>(u_offset))
+              static_cast<size_t>(number_of_limbs() - static_cast<size_t>(u_offset))
             )
           );
 
@@ -2737,14 +2740,14 @@
       // Create a factory-like object from another (possibly different)
       // internal data representation.
       return
-        (number_of_limbs == other_rep.size())
+        (number_of_limbs() == other_rep.size())
           ? uintwide_t(other_rep)
           : [&other_rep]()
             {
-              representation_type my_rep(number_of_limbs, static_cast<limb_type>(UINT8_C(0)));
+              representation_type my_rep(number_of_limbs(), static_cast<limb_type>(UINT8_C(0)));
 
               std::copy(other_rep.cbegin(),
-                        detail::advance_and_point(other_rep.cbegin(), (std::min)(number_of_limbs, static_cast<size_t>(other_rep.size()))),
+                        detail::advance_and_point(other_rep.cbegin(), (std::min)(number_of_limbs(), static_cast<size_t>(other_rep.size()))),
                         my_rep.begin());
 
               return uintwide_t(static_cast<representation_type&&>(my_rep));
@@ -2756,14 +2759,14 @@
       // Create a factory-like object from another (possibly different)
       // internal data representation (via move semantics).
       return
-        (number_of_limbs == other_rep.size())
+        (number_of_limbs() == other_rep.size())
           ? uintwide_t(std::move(static_cast<representation_type&&>(other_rep)))
           : [&other_rep]()
             {
-              representation_type my_rep(number_of_limbs, static_cast<limb_type>(UINT8_C(0)));
+              representation_type my_rep(number_of_limbs(), static_cast<limb_type>(UINT8_C(0)));
 
               std::copy(other_rep.cbegin(),
-                        detail::advance_and_point(other_rep.cbegin(), (std::min)(number_of_limbs, static_cast<size_t>(other_rep.size()))),
+                        detail::advance_and_point(other_rep.cbegin(), (std::min)(number_of_limbs(), static_cast<size_t>(other_rep.size()))),
                         my_rep.begin());
 
               return uintwide_t(static_cast<representation_type&&>(my_rep));
@@ -2828,7 +2831,7 @@
     representation_type
       values // NOLINT(readability-identifier-naming)
       {
-        static_cast<typename representation_type::size_type>(number_of_limbs),
+        static_cast<typename representation_type::size_type>(number_of_limbs()),
         static_cast<typename representation_type::value_type>(UINT8_C(0)),
         typename representation_type::allocator_type()
       };
@@ -3060,7 +3063,7 @@
       // In other words, this is an n*n->n bit multiplication.
       using local_other_wide_integer_type = uintwide_t<OtherWidth2, LimbType, AllocatorType, IsSigned>;
 
-      const auto local_other_number_of_limbs = local_other_wide_integer_type::number_of_limbs;
+      const auto local_other_number_of_limbs = local_other_wide_integer_type::number_of_limbs();
 
       using local_other_representation_type = typename local_other_wide_integer_type::representation_type;
 
@@ -3091,25 +3094,25 @@
       // Unary multiplication function using Karatsuba multiplication.
 
       constexpr size_t local_number_of_limbs =
-        uintwide_t<OtherWidth2, LimbType, AllocatorType, IsSigned>::number_of_limbs;
+        uintwide_t<OtherWidth2, LimbType, AllocatorType, IsSigned>::number_of_limbs();
 
       // TBD: Can use specialized allocator or memory pool for these arrays.
       // Good examples for this (both threaded as well as non-threaded)
       // can be found in the wide_decimal project.
       using result_array_type =
         std::conditional_t<std::is_same<AllocatorType, void>::value,
-                           detail::fixed_static_array <limb_type, number_of_limbs * 2U>,
+                           detail::fixed_static_array <limb_type, number_of_limbs() * 2U>,
                            detail::fixed_dynamic_array<limb_type,
-                                                       number_of_limbs * 2U,
+                                                       number_of_limbs() * 2U,
                                                        typename std::allocator_traits<std::conditional_t<std::is_same<AllocatorType, void>::value,
                                                                                                          std::allocator<void>,
                                                                                                          AllocatorType>>::template rebind_alloc<limb_type>>>;
 
       using storage_array_type =
         std::conditional_t<std::is_same<AllocatorType, void>::value,
-                           detail::fixed_static_array <limb_type, number_of_limbs * 4U>,
+                           detail::fixed_static_array <limb_type, number_of_limbs() * 4U>,
                            detail::fixed_dynamic_array<limb_type,
-                                                       number_of_limbs * 4U,
+                                                       number_of_limbs() * 4U,
                                                        typename std::allocator_traits<std::conditional_t<std::is_same<AllocatorType, void>::value,
                                                                                                          std::allocator<void>,
                                                                                                          AllocatorType>>::template rebind_alloc<limb_type>>>;
@@ -3227,7 +3230,7 @@
              typename InputIteratorLeft,
              typename InputIteratorRight,
              const size_t RePhraseWidth2 = Width2,
-             std::enable_if_t<(uintwide_t<RePhraseWidth2, LimbType, AllocatorType, IsSigned>::number_of_limbs == 4U)> const* = nullptr>
+             std::enable_if_t<(uintwide_t<RePhraseWidth2, LimbType, AllocatorType, IsSigned>::number_of_limbs() == 4U)> const* = nullptr>
     static WIDE_INTEGER_CONSTEXPR auto eval_multiply_n_by_n_to_lo_part(      ResultIterator     r,
                                                                              InputIteratorLeft  a,
                                                                              InputIteratorRight b,
@@ -3370,7 +3373,7 @@
              typename InputIteratorLeft,
              typename InputIteratorRight,
              const size_t RePhraseWidth2 = Width2,
-             std::enable_if_t<(uintwide_t<RePhraseWidth2, LimbType, AllocatorType, IsSigned>::number_of_limbs == static_cast<size_t>(UINT32_C(8)))> const* = nullptr>
+             std::enable_if_t<(uintwide_t<RePhraseWidth2, LimbType, AllocatorType, IsSigned>::number_of_limbs() == static_cast<size_t>(UINT32_C(8)))> const* = nullptr>
     static WIDE_INTEGER_CONSTEXPR auto eval_multiply_n_by_n_to_lo_part(      ResultIterator     r,
                                                                              InputIteratorLeft  a,
                                                                              InputIteratorRight b,
@@ -3667,9 +3670,9 @@
              typename InputIteratorLeft,
              typename InputIteratorRight,
              const size_t RePhraseWidth2 = Width2,
-             std::enable_if_t<(   (uintwide_t<RePhraseWidth2, LimbType, AllocatorType>::number_of_limbs != static_cast<size_t>(UINT32_C(4)))
+             std::enable_if_t<(   (uintwide_t<RePhraseWidth2, LimbType, AllocatorType>::number_of_limbs() != static_cast<size_t>(UINT32_C(4)))
     #if defined(WIDE_INTEGER_HAS_MUL_8_BY_8_UNROLL)
-                               && (uintwide_t<RePhraseWidth2, LimbType, AllocatorType>::number_of_limbs != static_cast<size_t>(UINT32_C(8)))
+                               && (uintwide_t<RePhraseWidth2, LimbType, AllocatorType>::number_of_limbs() != static_cast<size_t>(UINT32_C(8)))
     #endif
                               )> const* = nullptr>
     static WIDE_INTEGER_CONSTEXPR auto eval_multiply_n_by_n_to_lo_part(      ResultIterator     r,
@@ -4060,7 +4063,7 @@
           std::distance(other.values.crbegin(), std::find_if(other.values.crbegin(), other.values.crend(), [](const limb_type& elem) { return (elem != static_cast<limb_type>(UINT8_C(0))); }))
         );
 
-      if(v_offset == static_cast<local_uint_index_type>(number_of_limbs))
+      if(v_offset == static_cast<local_uint_index_type>(number_of_limbs()))
       {
         // The denominator is zero. Set the maximum value and return.
         // This also catches (0 / 0) and sets the maximum value for it.
@@ -4071,7 +4074,7 @@
           detail::fill_unsafe(remainder->values.begin(), remainder->values.end(), static_cast<limb_type>(UINT8_C(0))); // LCOV_EXCL_LINE
         }
       }
-      else if(u_offset == static_cast<local_uint_index_type>(number_of_limbs))
+      else if(u_offset == static_cast<local_uint_index_type>(number_of_limbs()))
       {
         // The numerator is zero. Do nothing and return.
 
@@ -4125,7 +4128,7 @@
     {
       using local_uint_index_type = unsigned_fast_type;
 
-      if(static_cast<local_uint_index_type>(v_offset + static_cast<local_uint_index_type>(1U)) == static_cast<local_uint_index_type>(number_of_limbs))
+      if(static_cast<local_uint_index_type>(v_offset + static_cast<local_uint_index_type>(1U)) == static_cast<local_uint_index_type>(number_of_limbs()))
       {
         // The denominator has one single limb.
         // Use a one-dimensional division algorithm.
@@ -4142,7 +4145,7 @@
           static_cast<limb_type>
           (
               static_cast<double_limb_type>(static_cast<double_limb_type>(1U) << static_cast<unsigned>(std::numeric_limits<limb_type>::digits))
-            / static_cast<double_limb_type>(static_cast<double_limb_type>(*detail::advance_and_point(other.values.cbegin(), static_cast<size_t>(static_cast<local_uint_index_type>(number_of_limbs - 1U) - v_offset))) + static_cast<limb_type>(1U))
+            / static_cast<double_limb_type>(static_cast<double_limb_type>(*detail::advance_and_point(other.values.cbegin(), static_cast<size_t>(static_cast<local_uint_index_type>(number_of_limbs() - 1U) - v_offset))) + static_cast<limb_type>(1U))
           );
 
         // Step D1(b), normalize u -> u * d = uu.
@@ -4150,9 +4153,9 @@
 
         using uu_array_type =
           std::conditional_t<std::is_same<AllocatorType, void>::value,
-                             detail::fixed_static_array <limb_type, number_of_limbs + 1U>,
+                             detail::fixed_static_array <limb_type, number_of_limbs() + 1U>,
                              detail::fixed_dynamic_array<limb_type,
-                                                         number_of_limbs + 1U,
+                                                         number_of_limbs() + 1U,
                                                          typename std::allocator_traits<std::conditional_t<std::is_same<AllocatorType, void>::value,
                                                                                                            std::allocator<void>,
                                                                                                            AllocatorType>>::template rebind_alloc<limb_type>>>;
@@ -4162,7 +4165,7 @@
         representation_type
         vv
         {
-          static_cast<typename representation_type::size_type>(number_of_limbs),
+          static_cast<typename representation_type::size_type>(number_of_limbs()),
           static_cast<typename representation_type::value_type>(UINT8_C(0)),
           typename representation_type::allocator_type()
         };
@@ -4172,7 +4175,7 @@
           const auto num_limbs_minus_u_ofs =
             static_cast<size_t>
             (
-              static_cast<local_uint_index_type>(number_of_limbs) - u_offset
+              static_cast<local_uint_index_type>(number_of_limbs()) - u_offset
             );
 
           *(uu.begin() + num_limbs_minus_u_ofs) =
@@ -4191,7 +4194,7 @@
               vv.begin(),
               other.values.cbegin(),
               d,
-              static_cast<unsigned_fast_type>(number_of_limbs - v_offset)
+              static_cast<unsigned_fast_type>(number_of_limbs() - v_offset)
             )
           );
         }
@@ -4199,7 +4202,7 @@
         {
           std::copy(values.cbegin(), values.cend(), uu.begin());
 
-          *(uu.begin() + static_cast<size_t>(static_cast<local_uint_index_type>(number_of_limbs) - u_offset)) = static_cast<limb_type>(UINT8_C(0));
+          *(uu.begin() + static_cast<size_t>(static_cast<local_uint_index_type>(number_of_limbs()) - u_offset)) = static_cast<limb_type>(UINT8_C(0));
 
           vv = other.values;
         }
@@ -4207,9 +4210,9 @@
         // Step D2: Initialize j.
         // Step D7: Loop on j from m to 0.
 
-        const auto n   = static_cast<local_uint_index_type>                                   (number_of_limbs - v_offset);
-        const auto m   = static_cast<local_uint_index_type>(static_cast<local_uint_index_type>(number_of_limbs - u_offset) - n);
-        const auto vj0 = static_cast<local_uint_index_type>(static_cast<local_uint_index_type>(number_of_limbs - 1U) - v_offset);
+        const auto n   = static_cast<local_uint_index_type>                                   (number_of_limbs() - v_offset);
+        const auto m   = static_cast<local_uint_index_type>(static_cast<local_uint_index_type>(number_of_limbs() - u_offset) - n);
+        const auto vj0 = static_cast<local_uint_index_type>(static_cast<local_uint_index_type>(number_of_limbs() - 1U) - v_offset);
 
         auto vv_at_vj0_it = detail::advance_and_point(vv.cbegin(), static_cast<size_t>(vj0)); // NOLINT(llvm-qualified-auto,readability-qualified-auto)
 
@@ -4226,7 +4229,7 @@
           //   else
           //     set q_hat = (u[j] * b + u[j + 1]) / v[1]
 
-          const auto uj     = static_cast<local_uint_index_type>(static_cast<local_uint_index_type>(static_cast<local_uint_index_type>(static_cast<local_uint_index_type>(number_of_limbs + 1U) - 1U) - u_offset) - j);
+          const auto uj     = static_cast<local_uint_index_type>(static_cast<local_uint_index_type>(static_cast<local_uint_index_type>(static_cast<local_uint_index_type>(number_of_limbs() + 1U) - 1U) - u_offset) - j);
           const auto u_j_j1 = static_cast<double_limb_type>(static_cast<double_limb_type>(static_cast<double_limb_type>(*(uu.cbegin() + static_cast<size_t>(uj))) << static_cast<unsigned>(std::numeric_limits<limb_type>::digits)) + *(uu.cbegin() + static_cast<size_t>(uj - 1U)));
 
           auto q_hat =
@@ -4320,7 +4323,7 @@
           if(d == static_cast<limb_type>(UINT8_C(1)))
           {
             std::copy(uu.cbegin(),
-                      detail::advance_and_point(uu.cbegin(), static_cast<size_t>(static_cast<local_uint_index_type>(number_of_limbs - v_offset))),
+                      detail::advance_and_point(uu.cbegin(), static_cast<size_t>(static_cast<local_uint_index_type>(number_of_limbs() - v_offset))),
                       remainder->values.begin());
           }
           else
@@ -4334,7 +4337,7 @@
               (
                 static_cast<size_t>
                 (
-                    number_of_limbs
+                    number_of_limbs()
                   - static_cast<size_t>(v_offset + static_cast<size_t>(UINT8_C(1)))
                 )
               );
@@ -4396,8 +4399,8 @@
       if(offset > static_cast<unsigned_fast_type>(UINT8_C(0)))
       {
         std::copy_backward(values.cbegin(),
-                           detail::advance_and_point(values.cbegin(), static_cast<size_t>(number_of_limbs - offset)),
-                           detail::advance_and_point(values.begin(), static_cast<size_t>(number_of_limbs)));
+                           detail::advance_and_point(values.cbegin(), static_cast<size_t>(number_of_limbs() - offset)),
+                           detail::advance_and_point(values.begin(), static_cast<size_t>(number_of_limbs())));
 
         detail::fill_unsafe(values.begin(), detail::advance_and_point(values.begin(), static_cast<size_t>(offset)), static_cast<limb_type>(UINT8_C(0)));
       }
@@ -4439,10 +4442,10 @@
       if(offset > static_cast<unsigned_fast_type>(UINT8_C(0)))
       {
         std::copy(detail::advance_and_point(values.cbegin(), static_cast<size_t>(offset)),
-                  detail::advance_and_point(values.cbegin(), static_cast<size_t>(number_of_limbs)),
+                  detail::advance_and_point(values.cbegin(), static_cast<size_t>(number_of_limbs())),
                   values.begin());
 
-        detail::fill_unsafe(detail::advance_and_point(values.begin(), static_cast<size_t>(static_cast<size_t>(number_of_limbs) - static_cast<size_t>(offset))),
+        detail::fill_unsafe(detail::advance_and_point(values.begin(), static_cast<size_t>(static_cast<size_t>(number_of_limbs()) - static_cast<size_t>(offset))),
                             values.end(),
                             right_shift_fill_value());
       }
@@ -4467,7 +4470,7 @@
               values.begin(),
               static_cast<signed_fast_type>
               (
-                static_cast<unsigned_fast_type>(number_of_limbs) - offset
+                static_cast<unsigned_fast_type>(number_of_limbs()) - offset
               )
             )
           );
@@ -4646,24 +4649,6 @@
       while((*it++ == (std::numeric_limits<limb_type>::max)()) && (it != values.end())); // NOLINT(altera-id-dependent-backward-branch)
     }
   };
-
-  template<const size_t Width2,
-           typename LimbType,
-           typename AllocatorType,
-           const bool IsSigned>
-  constexpr size_t uintwide_t<Width2, LimbType, AllocatorType, IsSigned>::my_width2;
-
-  template<const size_t Width2,
-           typename LimbType,
-           typename AllocatorType,
-           const bool IsSigned>
-  constexpr size_t uintwide_t<Width2, LimbType, AllocatorType, IsSigned>::number_of_limbs;
-
-  template<const size_t Width2,
-           typename LimbType,
-           typename AllocatorType,
-           const bool IsSigned>
-  constexpr size_t uintwide_t<Width2, LimbType, AllocatorType, IsSigned>::number_of_limbs_karatsuba_threshold;
 
   // Define some convenient unsigned wide integer types.
   using uint64_t    = uintwide_t<static_cast<size_t>(UINT32_C(   64)), std::uint16_t>;

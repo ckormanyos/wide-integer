@@ -868,7 +868,7 @@ auto test_various_isolated_edge_cases() -> bool // NOLINT(readability-function-c
     local_rep_type
       rep
       (
-        local_uintwide_t_small_unsigned_type::number_of_limbs,
+        local_uintwide_t_small_unsigned_type::number_of_limbs(),
         (std::numeric_limits<local_value_type>::max)(),
         typename local_rep_type::allocator_type()
       );
@@ -1434,7 +1434,7 @@ auto test_import_bits() -> bool // NOLINT(readability-function-cognitive-complex
       #endif
 
       using local_double_width_input_array_type =
-        std::array<local_input_double_width_value_type, local_uintwide_t_small_unsigned_type::number_of_limbs / 2U>;
+        std::array<local_input_double_width_value_type, local_uintwide_t_small_unsigned_type::number_of_limbs() / 2U>;
 
       local_double_width_input_array_type bits_double_width;
 
@@ -1504,7 +1504,7 @@ auto test_import_bits() -> bool // NOLINT(readability-function-cognitive-complex
       auto u_gen = generate_wide_integer_value<local_uintwide_t_small_unsigned_type>();
 
       using local_representation_less_wide_type =
-        std::array<local_input_value_type, static_cast<std::size_t>(static_cast<std::size_t>(local_uintwide_t_small_unsigned_type::number_of_limbs) - 2U)>;
+        std::array<local_input_value_type, static_cast<std::size_t>(static_cast<std::size_t>(local_uintwide_t_small_unsigned_type::number_of_limbs()) - 2U)>;
 
       local_representation_less_wide_type bits { };
 
@@ -1527,7 +1527,7 @@ auto test_import_bits() -> bool // NOLINT(readability-function-cognitive-complex
       using local_double_width_less_wide_input_array_type =
         std::array<local_input_double_width_value_type, std::tuple_size<local_representation_less_wide_type>::value / 2U>;
 
-      static_assert(std::tuple_size<local_double_width_less_wide_input_array_type>::value == static_cast<std::size_t>(static_cast<std::size_t>(static_cast<std::size_t>(local_uintwide_t_small_unsigned_type::number_of_limbs) / 2U) - 1U),
+      static_assert(std::tuple_size<local_double_width_less_wide_input_array_type>::value == static_cast<std::size_t>(static_cast<std::size_t>(static_cast<std::size_t>(local_uintwide_t_small_unsigned_type::number_of_limbs()) / 2U) - 1U),
                     "Error: Type definition widths are not OK");
 
       local_double_width_less_wide_input_array_type bits_double_width;
@@ -1652,7 +1652,7 @@ auto test_export_bits() -> bool // NOLINT(readability-function-cognitive-complex
       const auto val_boost      = local_boost_small_uint_type(to_string(val_uintwide_t));
 
       using local_output_array_type =
-        std::array<local_input_value_type, local_uintwide_t_small_unsigned_type::number_of_limbs>;
+        std::array<local_input_value_type, local_uintwide_t_small_unsigned_type::number_of_limbs()>;
 
       using local_result_value_type = typename local_output_array_type::value_type;
 
@@ -1763,7 +1763,7 @@ auto test_export_bits() -> bool // NOLINT(readability-function-cognitive-complex
       #endif
 
       using local_double_width_output_array_type =
-        std::array<local_result_double_width_value_type, local_uintwide_t_small_unsigned_type::number_of_limbs / 2U>;
+        std::array<local_result_double_width_value_type, local_uintwide_t_small_unsigned_type::number_of_limbs() / 2U>;
 
       local_double_width_output_array_type bits_result_double_width_from_uintwide_t { };
       local_double_width_output_array_type bits_result_double_width_from_boost      { };
