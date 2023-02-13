@@ -2761,7 +2761,7 @@
           ? uintwide_t(std::move(static_cast<representation_type&&>(other_rep)))
           : [&other_rep]()
             {
-              constexpr size_t local_number_of_limbs =
+              constexpr auto local_number_of_limbs =
                 static_cast<size_t>
                 (
                   Width2 / static_cast<size_t>(std::numeric_limits<limb_type>::digits)
