@@ -1525,16 +1525,16 @@
     #endif
 
     // Helper constants for the digit characteristics.
-    static constexpr auto my_width2 = Width2;
+    static constexpr size_t my_width2 = Width2;
 
     // The number of limbs.
-    static constexpr auto number_of_limbs =
+    static constexpr size_t number_of_limbs =
       static_cast<size_t>
       (
-        my_width2 / static_cast<size_t>(std::numeric_limits<limb_type>::digits)
+        Width2 / static_cast<size_t>(std::numeric_limits<limb_type>::digits)
       );
 
-    static constexpr auto number_of_limbs_karatsuba_threshold =
+    static constexpr size_t number_of_limbs_karatsuba_threshold =
       static_cast<size_t>
       (
         static_cast<unsigned>
@@ -1604,16 +1604,25 @@
     {
       static_cast<void>(p_nullparam == nullptr);
 
-      auto right_shift_amount_v = static_cast<unsigned_fast_type>(UINT8_C(0));
-      auto u_it                 = values.begin(); // NOLINT(llvm-qualified-auto,readability-qualified-auto)
+      auto u_it = values.begin(); // NOLINT(llvm-qualified-auto,readability-qualified-auto)
+      auto vr   = v;
 
-      for( ; (   (u_it != values.end()) // NOLINT(altera-id-dependent-backward-branch)
-              && (right_shift_amount_v < static_cast<unsigned_fast_type>(std::numeric_limits<UnsignedIntegralType>::digits)));
-          ++u_it)
+      using local_unsigned_integral_type = UnsignedIntegralType;
+
+      while(vr != static_cast<local_unsigned_integral_type>(UINT8_C(0))) // NOLINT(altera-id-dependent-backward-branch)
       {
-        *u_it = static_cast<limb_type>(v >> static_cast<unsigned>(right_shift_amount_v));
+        if(u_it != values.end())
+        {
+          *u_it = static_cast<limb_type>(vr);
 
-        right_shift_amount_v += static_cast<unsigned_fast_type>(std::numeric_limits<limb_type>::digits);
+          ++u_it;
+
+          vr = static_cast<local_unsigned_integral_type>(vr >> static_cast<unsigned>(std::numeric_limits<limb_type>::digits));
+        }
+        else
+        {
+          break;
+        }
       }
 
       detail::fill_unsafe(u_it, values.end(), static_cast<limb_type>(UINT8_C(0)));
@@ -2725,14 +2734,55 @@
 
     static constexpr auto from_rep(const representation_type& other_rep) -> uintwide_t
     {
-      // Create a factory-like object from the internal data representation.
-      return uintwide_t(static_cast<const representation_type&>(other_rep));
+      // Create a factory-like object from another (possibly different)
+      // internal data representation.
+      return
+        (number_of_limbs == other_rep.size())
+          ? uintwide_t(other_rep)
+          : [&other_rep]()
+            {
+              constexpr auto local_number_of_limbs =
+                static_cast<size_t>
+                (
+                  Width2 / static_cast<size_t>(std::numeric_limits<limb_type>::digits)
+                );
+
+              representation_type my_rep(local_number_of_limbs, static_cast<limb_type>(UINT8_C(0)));
+
+              std::copy(other_rep.cbegin(),
+                        detail::advance_and_point(other_rep.cbegin(), (std::min)(local_number_of_limbs, static_cast<size_t>(other_rep.size()))),
+                        my_rep.begin());
+
+              return uintwide_t(static_cast<representation_type&&>(my_rep));
+            }();
     }
 
-    static constexpr auto from_rep(representation_type&& other_rep) -> uintwide_t
+    static constexpr auto from_rep(representation_type&& other_rep) noexcept -> uintwide_t
     {
-      // Create a factory-like object from the internal data representation.
-      return uintwide_t(static_cast<representation_type&&>(other_rep));
+      // Create a factory-like object from another (possibly different)
+      // internal data representation (via move semantics).
+
+      return
+        (number_of_limbs == other_rep.size())
+          ? uintwide_t(static_cast<representation_type&&>(other_rep))
+          // LCOV_EXCL_START
+          : [&other_rep]()
+            {
+              constexpr auto local_number_of_limbs =
+                static_cast<size_t>
+                (
+                  Width2 / static_cast<size_t>(std::numeric_limits<limb_type>::digits)
+                );
+
+              representation_type my_rep(local_number_of_limbs, static_cast<limb_type>(UINT8_C(0)));
+
+              std::copy(other_rep.cbegin(),
+                        detail::advance_and_point(other_rep.cbegin(), (std::min)(local_number_of_limbs, static_cast<size_t>(other_rep.size()))),
+                        my_rep.begin());
+
+              return uintwide_t(static_cast<representation_type&&>(my_rep));
+            }();
+          // LCOV_EXCL_STOP
     }
 
     static constexpr auto my_fill_char() -> char { return '.'; }

@@ -174,7 +174,7 @@ on how to use wide-integer.
   - ![`example010_uint48_t.cpp`](./examples/example010_uint48_t.cpp) verifies 48-bit integer caluclations.
   - ![`example011_uint24_t.cpp`](./examples/example011_uint24_t.cpp) performs calculations with 24-bits, which is definitely on the small side of the range of wide-integer.
   - ![`example012_rsa_crypto.cpp`](./examples/example012_rsa_crypto.cpp) performs cryptographic calculations with 2048-bits, exploring a standardized test case.
-  - ![`example013_ecdsa_sign_verify.cpp`](./examples/example013_ecdsa_sign_verify.cpp) provides an intuitive view on elliptic-curve algebra, depicting a well-known cryptographic seed-and-key method.
+  - ![`example013_ecdsa_sign_verify.cpp`](./examples/example013_ecdsa_sign_verify.cpp) provides an intuitive view on elliptic-curve algebra, depicting a well-known cryptographic key-gen/sign/verify method.
 
 ## Building
 
@@ -271,7 +271,7 @@ examples/example013_ecdsa_sign_verify.cpp   \
 -o wide_integer.exe
 ```
 
-## Testing, CI and quality checks
+## Quality: Testing, CI and other quality checks
 
 ### Testing
 
@@ -317,6 +317,173 @@ quality-gate with comparison/baseline-check provided by
 
 Quality badges are displayed at the top of this repository's
 readme page.
+
+## Detailed examples
+
+We will now present various straightforward detailed examples.
+
+The code below performs some elementary algebraic calculations
+with a 256-bit unsigned integral type.
+
+This exact example is provided in compiled form with successful output result
+is shown in its entirety in the following
+[short link](https://godbolt.org/z/foMcx7Enx) to [godbolt](https://godbolt.org).
+
+```cpp
+#include <iomanip>
+#include <iostream>
+
+#include <math/wide_integer/uintwide_t.h>
+
+auto main() -> int
+{
+  using uint256_t = ::math::wide_integer::uint256_t;
+
+  // Construction from string. Additional constructors
+  // are available from other built-in types.
+
+  const uint256_t a("0xF4DF741DE58BCB2F37F18372026EF9CBCFC456CB80AF54D53BDEED78410065DE");
+  const uint256_t b("0x166D63E0202B3D90ECCEAA046341AB504658F55B974A7FD63733ECF89DD0DF75");
+
+  // Elementary arithmetic operations.
+  const uint256_t c = (a * b);
+  const uint256_t d = (a / b);
+
+  // Logical comparison.
+  const auto result_is_ok = (   (c == "0xE491A360C57EB4306C61F9A04F7F7D99BE3676AAD2D71C5592D5AE70F84AF076")
+                             && (d == "0xA"));
+
+  // Print the hexadecimal representation string output.
+
+  std::cout << "0x" << std::hex << std::uppercase << c << std::endl;
+  std::cout << "0x" << std::hex << std::uppercase << d << std::endl;
+
+  // Visualize if the result is OK.
+
+  std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
+}
+```
+
+Wide-integer also supports a small selection of number-theoretical
+functions such as least and most significant bit,
+square root, $k^{th}$ root,
+power, power-modulus, greatest common denominator
+and random number generation.
+These functions are found via ADL.
+
+The example below calculates an integer square root.
+
+```cpp
+#include <iomanip>
+#include <iostream>
+
+#include <math/wide_integer/uintwide_t.h>
+
+auto main() -> int
+{
+  using uint256_t = ::math::wide_integer::uint256_t;
+
+  const uint256_t a("0xF4DF741DE58BCB2F37F18372026EF9CBCFC456CB80AF54D53BDEED78410065DE");
+
+  const uint256_t s = sqrt(a);
+
+  const auto result_is_ok =
+    (s == "0xFA5FE7853F1D4AD92BDF244179CA178B");
+
+  std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
+}
+```
+
+The following sample performs add, subtract, multiply and divide of `uint48_t`.
+See this example also in the following
+[short link](https://godbolt.org/z/vMqWav5P6) to [godbolt](https://godbolt.org).
+
+```cpp
+#include <iomanip>
+#include <iostream>
+#include <random>
+
+#include <math/wide_integer/uintwide_t.h>
+
+auto main() -> int
+{
+  using uint48_t = ::math::wide_integer::uintwide_t<static_cast<math::wide_integer::size_t>(UINT32_C(48)), std::uint8_t>;
+
+  using distribution_type  = ::math::wide_integer::uniform_int_distribution<static_cast<math::wide_integer::size_t>(UINT32_C(48)), typename uint48_t::limb_type>;
+
+  using random_engine_type = std::linear_congruential_engine<std::uint32_t, UINT32_C(48271), UINT32_C(0), UINT32_C(2147483647)>;
+
+  random_engine_type generator(static_cast<std::uint32_t>(UINT32_C(0xF00DCAFE))); // NOLINT(cert-msc32-c,cert-msc51-cpp,cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
+
+  distribution_type distribution;
+
+  const auto a64 = static_cast<std::uint64_t>(distribution(generator));
+  const auto b64 = static_cast<std::uint64_t>(distribution(generator));
+
+  const uint48_t a(a64);
+  const uint48_t b(b64);
+
+  const uint48_t c_add = (a + b);
+  const uint48_t c_sub = (a - b);
+  const uint48_t c_mul = (a * b);
+  const uint48_t c_div = (a / b);
+
+  const auto result_is_ok = (   (   (c_add == static_cast<std::uint64_t>((a64 + b64) & static_cast<std::uint64_t>(UINT64_C(0x0000FFFFFFFFFFFF))))
+                                 && (c_sub == static_cast<std::uint64_t>((a64 - b64) & static_cast<std::uint64_t>(UINT64_C(0x0000FFFFFFFFFFFF))))
+                                 && (c_mul == static_cast<std::uint64_t>((a64 * b64) & static_cast<std::uint64_t>(UINT64_C(0x0000FFFFFFFFFFFF))))
+                                 && (c_div == static_cast<std::uint64_t>((a64 / b64) & static_cast<std::uint64_t>(UINT64_C(0x0000FFFFFFFFFFFF)))))
+                             &&
+                                (   (static_cast<std::uint64_t>(c_add) == static_cast<std::uint64_t>((a64 + b64) & static_cast<std::uint64_t>(UINT64_C(0x0000FFFFFFFFFFFF))))
+                                 && (static_cast<std::uint64_t>(c_sub) == static_cast<std::uint64_t>((a64 - b64) & static_cast<std::uint64_t>(UINT64_C(0x0000FFFFFFFFFFFF))))
+                                 && (static_cast<std::uint64_t>(c_mul) == static_cast<std::uint64_t>((a64 * b64) & static_cast<std::uint64_t>(UINT64_C(0x0000FFFFFFFFFFFF))))
+                                 && (static_cast<std::uint64_t>(c_div) == static_cast<std::uint64_t>((a64 / b64) & static_cast<std::uint64_t>(UINT64_C(0x0000FFFFFFFFFFFF))))));
+
+  std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
+}
+```
+
+The next example computes the real-valued cube root of $10^{3,333}$.
+The real-valued cube root of this very large unsigned integer is $10^{1,111}$.
+We will use the (somewhat uncommon) integral data type `uint11264_t`.
+Since `uint11264_t` has approximately $3,390$ decimal digits of precision,
+it is large enough to hold the value of $10^{3,333}$
+prior to (and following) the cube root operation.
+
+See this example fully worked out at the following
+[short link](https://godbolt.org/z/aKKesPK36) to [godbolt](https://godbolt.org)
+
+```cpp
+#include <iomanip>
+#include <iostream>
+
+#include <math/wide_integer/uintwide_t.h>
+
+auto main() -> int
+{
+  using uint11264_t = ::math::wide_integer::uintwide_t<11264U, std::uint32_t>;
+
+  // Create the string '1' + 3,333 times '0', which is
+  // equivalent to the decimal integral value 10^3333.
+
+  const std::string str_a = "1" + std::string(3333U, '0');
+
+  const uint11264_t a = str_a.data();
+
+  const uint11264_t s = cbrt(a);
+
+  // Create the string '1' + 1,111 times '0', which is
+  // equivalent to the decimal integral value 10^1111.
+  // (This is the cube root of 10^3333.)
+
+  const std::string str_control = "1" + std::string(1111U, '0');
+
+  const auto result_is_ok = (s == uint11264_t(str_control.data()));
+
+  std::cout << s << std::endl;
+
+  std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
+}
+```
 
 ## Additional details
 
@@ -567,172 +734,7 @@ So the preprocessor switch `WIDE_INTEGER_DISABLE_PRIVATE_CLASS_DATA_MEMBERS`
 is not defined (i.e., not set) by default. This ensures that
 `uintwide_t`'s data members remain private by default.
 
-## Detailed examples
-
-We will now present various straightforward detailed examples.
-
-The code below performs some elementary algebraic calculations
-with a 256-bit unsigned integral type.
-
-```cpp
-#include <iomanip>
-#include <iostream>
-
-#include <math/wide_integer/uintwide_t.h>
-
-auto main() -> int
-{
-  using uint256_t = ::math::wide_integer::uint256_t;
-
-  // Construction from string. Additional constructors
-  // are available from other built-in types.
-
-  const uint256_t a("0xF4DF741DE58BCB2F37F18372026EF9CBCFC456CB80AF54D53BDEED78410065DE");
-  const uint256_t b("0x166D63E0202B3D90ECCEAA046341AB504658F55B974A7FD63733ECF89DD0DF75");
-
-  // Elementary arithmetic operations.
-  const uint256_t c = (a * b);
-  const uint256_t d = (a / b);
-
-  // Logical comparison.
-  const auto result_is_ok = (   (c == "0xE491A360C57EB4306C61F9A04F7F7D99BE3676AAD2D71C5592D5AE70F84AF076")
-                             && (d == "0xA"));
-
-  // Print the hexadecimal representation string output.
-
-  std::cout << "0x" << std::hex << std::uppercase << c << std::endl;
-  std::cout << "0x" << std::hex << std::uppercase << d << std::endl;
-
-  // Visualize if the result is OK.
-
-  std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
-}
-```
-
-Wide-integer also supports a small selection of number-theoretical
-functions such as least and most significant bit,
-square root, $k^{th}$ root,
-power, power-modulus, greatest common denominator
-and random number generation.
-These functions are found via ADL.
-
-The example below calculates an integer square root.
-
-```cpp
-#include <iomanip>
-#include <iostream>
-
-#include <math/wide_integer/uintwide_t.h>
-
-auto main() -> int
-{
-  using uint256_t = ::math::wide_integer::uint256_t;
-
-  const uint256_t a("0xF4DF741DE58BCB2F37F18372026EF9CBCFC456CB80AF54D53BDEED78410065DE");
-
-  const uint256_t s = sqrt(a);
-
-  const auto result_is_ok =
-    (s == "0xFA5FE7853F1D4AD92BDF244179CA178B");
-
-  std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
-}
-```
-
-The following sample performs add, subtract, multiply and divide of `uint48_t`.
-
-This exact example is provided in compiled form with successful output result
-is shown in its entirety in the following
-[short link](https://godbolt.org/z/vMqWav5P6) to [godbolt](https://godbolt.org).
-
-```cpp
-#include <iomanip>
-#include <iostream>
-#include <random>
-
-#include <math/wide_integer/uintwide_t.h>
-
-auto main() -> int
-{
-  using uint48_t = ::math::wide_integer::uintwide_t<static_cast<math::wide_integer::size_t>(UINT32_C(48)), std::uint8_t>;
-
-  using distribution_type  = ::math::wide_integer::uniform_int_distribution<static_cast<math::wide_integer::size_t>(UINT32_C(48)), typename uint48_t::limb_type>;
-
-  using random_engine_type = std::linear_congruential_engine<std::uint32_t, UINT32_C(48271), UINT32_C(0), UINT32_C(2147483647)>;
-
-  random_engine_type generator(static_cast<std::uint32_t>(UINT32_C(0xF00DCAFE))); // NOLINT(cert-msc32-c,cert-msc51-cpp,cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
-
-  distribution_type distribution;
-
-  const auto a64 = static_cast<std::uint64_t>(distribution(generator));
-  const auto b64 = static_cast<std::uint64_t>(distribution(generator));
-
-  const uint48_t a(a64);
-  const uint48_t b(b64);
-
-  const uint48_t c_add = (a + b);
-  const uint48_t c_sub = (a - b);
-  const uint48_t c_mul = (a * b);
-  const uint48_t c_div = (a / b);
-
-  const auto result_is_ok = (   (   (c_add == static_cast<std::uint64_t>((a64 + b64) & static_cast<std::uint64_t>(UINT64_C(0x0000FFFFFFFFFFFF))))
-                                 && (c_sub == static_cast<std::uint64_t>((a64 - b64) & static_cast<std::uint64_t>(UINT64_C(0x0000FFFFFFFFFFFF))))
-                                 && (c_mul == static_cast<std::uint64_t>((a64 * b64) & static_cast<std::uint64_t>(UINT64_C(0x0000FFFFFFFFFFFF))))
-                                 && (c_div == static_cast<std::uint64_t>((a64 / b64) & static_cast<std::uint64_t>(UINT64_C(0x0000FFFFFFFFFFFF)))))
-                             &&
-                                (   (static_cast<std::uint64_t>(c_add) == static_cast<std::uint64_t>((a64 + b64) & static_cast<std::uint64_t>(UINT64_C(0x0000FFFFFFFFFFFF))))
-                                 && (static_cast<std::uint64_t>(c_sub) == static_cast<std::uint64_t>((a64 - b64) & static_cast<std::uint64_t>(UINT64_C(0x0000FFFFFFFFFFFF))))
-                                 && (static_cast<std::uint64_t>(c_mul) == static_cast<std::uint64_t>((a64 * b64) & static_cast<std::uint64_t>(UINT64_C(0x0000FFFFFFFFFFFF))))
-                                 && (static_cast<std::uint64_t>(c_div) == static_cast<std::uint64_t>((a64 / b64) & static_cast<std::uint64_t>(UINT64_C(0x0000FFFFFFFFFFFF))))));
-
-  std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
-}
-```
-
-The next example computes the real-valued cube root of $10^{3,333}$.
-The real-valued cube root of this very large unsigned integer is $10^{1,111}$.
-We will use the (somewhat uncommon) integral data type `uint11264_t`.
-Since `uint11264_t` has approximately $3,390$ decimal digits of precision,
-it is large enough to hold the value of $10^{3,333}$
-prior to (and following) the cube root operation.
-
-See this example fully worked out at the following
-[short link](https://godbolt.org/z/aKKesPK36) to [godbolt](https://godbolt.org)
-
-```cpp
-#include <iomanip>
-#include <iostream>
-
-#include <math/wide_integer/uintwide_t.h>
-
-auto main() -> int
-{
-  using uint11264_t = ::math::wide_integer::uintwide_t<11264U, std::uint32_t>;
-
-  // Create the string '1' + 3,333 times '0', which is
-  // equivalent to the decimal integral value 10^3333.
-
-  const std::string str_a = "1" + std::string(3333U, '0');
-
-  const uint11264_t a = str_a.data();
-
-  const uint11264_t s = cbrt(a);
-
-  // Create the string '1' + 1,111 times '0', which is
-  // equivalent to the decimal integral value 10^1111.
-  // (This is the cube root of 10^3333.)
-
-  const std::string str_control = "1" + std::string(1111U, '0');
-
-  const auto result_is_ok = (s == uint11264_t(str_control.data()));
-
-  std::cout << s << std::endl;
-
-  std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
-}
-```
-
-## C++14, 17, 20 `constexpr` support
+### C++14, 17, 20 `constexpr` support
 
 When using C++20 `uintwide_t` supports compile-time
 `constexpr` construction and evaluation of results
@@ -809,7 +811,7 @@ detecting all world-wide compiler/target systems). If you have
 a specific compiler/target system needing `constexpr` detection,
 please feel free to contact me directly so that this can be implemented.
 
-## Signed integer support
+### Signed integer support
 
 Signed big integers are also supported in the wide_integer library.
 Use the fourth template partameter `IsSigned` to indicate the
