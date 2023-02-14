@@ -413,7 +413,7 @@ namespace example013_ecdsa
     #else
     static auto curve_p () noexcept -> const double_sint_type& { static const double_sint_type vp(FieldCharacteristicP); return vp; } // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay)
     static auto curve_a () noexcept -> const double_sint_type& { static const double_sint_type va(CurveCoefficientA);    return va; } // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay)
-    static auto curve_a () noexcept -> const double_sint_type& { static const double_sint_type vb(CurveCoefficientB);    return vb; } // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay)
+    static auto curve_b () noexcept -> const double_sint_type& { static const double_sint_type vb(CurveCoefficientB);    return vb; } // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay)
 
     static auto curve_gx() noexcept -> const double_sint_type& { static const double_sint_type vgx(base_class_type::point_g().my_x); return vgx; }
     static auto curve_gy() noexcept -> const double_sint_type& { static const double_sint_type vgy(base_class_type::point_g().my_y); return vgy; }
