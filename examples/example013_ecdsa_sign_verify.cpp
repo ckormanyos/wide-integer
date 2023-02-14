@@ -787,22 +787,22 @@ auto ::math::wide_integer::example013_ecdsa_sign_verify() -> bool
 
   #if (defined(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST) && (WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST == 1))
 
-  static_assert(elliptic_curve_type::curve_p() == elliptic_curve_type::double_sint_type(example013_ecdsa::FieldCharacteristicP),
+  static_assert(elliptic_curve_type::curve_p() == elliptic_curve_type::double_sint_type(example013_ecdsa::FieldCharacteristicP), // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay)
                 "Error: Elliptic curve Field Characteristic p seems to be incorrect");
 
-  static_assert(elliptic_curve_type::curve_a() == elliptic_curve_type::double_sint_type(example013_ecdsa::CurveCoefficientA),
+  static_assert(elliptic_curve_type::curve_a() == elliptic_curve_type::double_sint_type(example013_ecdsa::CurveCoefficientA), // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay)
                 "Error: Elliptic curve curve coefficient a seems to be incorrect");
 
-  static_assert(elliptic_curve_type::curve_b() == elliptic_curve_type::double_sint_type(example013_ecdsa::CurveCoefficientB),
+  static_assert(elliptic_curve_type::curve_b() == elliptic_curve_type::double_sint_type(example013_ecdsa::CurveCoefficientB), // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay)
                 "Error: Elliptic curve curve coefficient b seems to be incorrect");
 
-  static_assert(elliptic_curve_type::curve_gx() == elliptic_curve_type::double_sint_type(example013_ecdsa::BasePointGx),
+  static_assert(elliptic_curve_type::curve_gx() == elliptic_curve_type::double_sint_type(example013_ecdsa::BasePointGx), // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay)
                 "Error: Elliptic curve base-point Gx seems to be incorrect");
 
-  static_assert(elliptic_curve_type::curve_gy() == elliptic_curve_type::double_sint_type(example013_ecdsa::BasePointGy),
+  static_assert(elliptic_curve_type::curve_gy() == elliptic_curve_type::double_sint_type(example013_ecdsa::BasePointGy), // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay)
                 "Error: Elliptic curve base-point Gx seems to be incorrect");
 
-  static_assert(elliptic_curve_type::curve_n() == elliptic_curve_type::double_sint_type(example013_ecdsa::SubGroupOrderN),
+  static_assert(elliptic_curve_type::curve_n() == elliptic_curve_type::double_sint_type(example013_ecdsa::SubGroupOrderN), // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay)
                 "Error: Elliptic curve Sub-Group Order seems to be incorrect");
 
   #else
