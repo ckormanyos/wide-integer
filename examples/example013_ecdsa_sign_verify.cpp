@@ -331,6 +331,9 @@ namespace example013_ecdsa
     using double_sint_type = ::math::wide_integer::uintwide_t<static_cast<::math::wide_integer::size_t>(std::numeric_limits<uint_type>::digits * static_cast<int>(INT8_C(2))), LimbType, void, true>;
     #endif
 
+    static_assert(static_cast<unsigned>(std::numeric_limits<uint_type>::digits) == CurveBits,
+                  "Error: Wrong number of bits in the smallest unsigned type of the point");
+
     using limb_type = typename uint_type::limb_type;
 
     using point_type =
@@ -353,7 +356,12 @@ namespace example013_ecdsa
     #else
     static auto point_g() noexcept -> const point_type&
     {
-      static const point_type pt { double_sint_type(CoordX), double_sint_type(CoordY) }; // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay)
+      static const point_type
+        pt
+        {
+          double_sint_type(CoordX), // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay)
+          double_sint_type(CoordY)  // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay)
+        };
 
       return pt;
     }
@@ -364,12 +372,12 @@ namespace example013_ecdsa
            typename LimbType,
            const char* CurveName,
            const char* FieldCharacteristicP,
-           const int   CurveCoefficientA,
-           const int   CurveCoefficientB,
+           const char* CurveCoefficientA,
+           const char* CurveCoefficientB,
            const char* CoordGx,
            const char* CoordGy,
-           const char* SubGroupOrder,
-           const int   SubGroupCoFactor>
+           const char* SubGroupOrderN,
+           const int   SubGroupCoFactorH>
   struct elliptic_curve : public ecc_point<CurveBits, LimbType, CoordGx, CoordGy>
   {
     using base_class_type = ecc_point<CurveBits, LimbType, CoordGx, CoordGy>; // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay)
@@ -395,16 +403,22 @@ namespace example013_ecdsa
 
     #if (defined(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST) && (WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST == 1))
     static WIDE_INTEGER_CONSTEXPR auto curve_p () noexcept -> double_sint_type { return double_sint_type(FieldCharacteristicP); } // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay)
-    static WIDE_INTEGER_CONSTEXPR auto curve_n () noexcept -> double_sint_type { return double_sint_type(SubGroupOrder); }        // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay)
+    static WIDE_INTEGER_CONSTEXPR auto curve_a () noexcept -> double_sint_type { return double_sint_type(CurveCoefficientA); }    // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay)
+    static WIDE_INTEGER_CONSTEXPR auto curve_b () noexcept -> double_sint_type { return double_sint_type(CurveCoefficientB); }    // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay)
 
     static WIDE_INTEGER_CONSTEXPR auto curve_gx() noexcept -> double_sint_type { return base_class_type::point_g().my_x; }
     static WIDE_INTEGER_CONSTEXPR auto curve_gy() noexcept -> double_sint_type { return base_class_type::point_g().my_y; }
+
+    static WIDE_INTEGER_CONSTEXPR auto curve_n () noexcept -> double_sint_type { return double_sint_type(SubGroupOrderN); }        // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay)
     #else
     static auto curve_p () noexcept -> const double_sint_type& { static const double_sint_type vp(FieldCharacteristicP); return vp; } // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay)
-    static auto curve_n () noexcept -> const double_sint_type& { static const double_sint_type vn(SubGroupOrder);        return vn; } // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay)
+    static auto curve_a () noexcept -> const double_sint_type& { static const double_sint_type va(CurveCoefficientA);    return va; } // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay)
+    static auto curve_b () noexcept -> const double_sint_type& { static const double_sint_type vb(CurveCoefficientB);    return vb; } // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay)
 
     static auto curve_gx() noexcept -> const double_sint_type& { static const double_sint_type vgx(base_class_type::point_g().my_x); return vgx; }
     static auto curve_gy() noexcept -> const double_sint_type& { static const double_sint_type vgy(base_class_type::point_g().my_y); return vgy; }
+
+    static auto curve_n () noexcept -> const double_sint_type& { static const double_sint_type vn(SubGroupOrderN);        return vn; } // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay)
     #endif
 
     static auto inverse_mod(const double_sint_type& k, const double_sint_type& p) -> double_sint_type // NOLINT(misc-no-recursion)
@@ -459,10 +473,10 @@ namespace example013_ecdsa
       const auto num =
         sexatuple_sint_type
         (
-            (sexatuple_sint_type(point.my_y) * sexatuple_sint_type(point.my_y))
+            (sexatuple_sint_type(point.my_y) *  sexatuple_sint_type(point.my_y))
           - (sexatuple_sint_type(point.my_x) * (sexatuple_sint_type(point.my_x) * sexatuple_sint_type(point.my_x)))
-          - (sexatuple_sint_type(point.my_x) * CurveCoefficientA)
-          - CurveCoefficientB
+          - (sexatuple_sint_type(point.my_x) *  sexatuple_sint_type(curve_a()))
+          -  sexatuple_sint_type(curve_b())
         );
 
       const auto divmod_result = divmod(num, sexatuple_sint_type(curve_p())).second;
@@ -519,7 +533,7 @@ namespace example013_ecdsa
         sexatuple_sint_type
         (
           (x1 == x2)
-            ? (sexatuple_sint_type(x1) * sexatuple_sint_type(x1) * 3 + CurveCoefficientA) * sexatuple_sint_type(inverse_mod(y1 * 2, curve_p()))
+            ? (sexatuple_sint_type(x1) * sexatuple_sint_type(x1) * 3 + sexatuple_sint_type(curve_a())) * sexatuple_sint_type(inverse_mod(y1 * 2, curve_p()))
             : sexatuple_sint_type(y1 - y2) * sexatuple_sint_type(inverse_mod(x1 - x2, curve_p()))
         );
 
@@ -565,12 +579,12 @@ namespace example013_ecdsa
       while(k_val != 0) // NOLINT(altera-id-dependent-backward-branch)
       {
         const auto lo_bit =
-          static_cast<std::uint8_t>
+          static_cast<unsigned>
           (
-            static_cast<std::uint8_t>(k_val) & static_cast<std::uint8_t>(UINT8_C(1))
+            static_cast<unsigned>(k_val) & static_cast<unsigned>(UINT8_C(1))
           );
 
-        if(lo_bit != static_cast<std::uint8_t>(UINT8_C(0)))
+        if(lo_bit != static_cast<unsigned>(UINT8_C(0)))
         {
           // Add.
           result = point_add(result, addend);
@@ -579,7 +593,7 @@ namespace example013_ecdsa
         // Double.
         addend = point_add(addend, addend);
 
-        k_val >>= 1;
+        k_val >>= static_cast<unsigned>(UINT8_C(1));
       }
 
       return result;
@@ -742,9 +756,12 @@ namespace example013_ecdsa
 
   constexpr char CurveName           [] = "secp256k1";                                                          // NOLINT(cppcoreguidelines-avoid-c-arrays,hicpp-avoid-c-arrays,cppcoreguidelines-pro-bounds-array-to-pointer-decay,modernize-avoid-c-arrays)
   constexpr char FieldCharacteristicP[] = "0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F"; // NOLINT(cppcoreguidelines-avoid-c-arrays,hicpp-avoid-c-arrays,cppcoreguidelines-pro-bounds-array-to-pointer-decay,modernize-avoid-c-arrays)
+  constexpr char CurveCoefficientA   [] = "0x0";                                                                // NOLINT(cppcoreguidelines-avoid-c-arrays,hicpp-avoid-c-arrays,cppcoreguidelines-pro-bounds-array-to-pointer-decay,modernize-avoid-c-arrays)
+  constexpr char CurveCoefficientB   [] = "0x7";                                                                // NOLINT(cppcoreguidelines-avoid-c-arrays,hicpp-avoid-c-arrays,cppcoreguidelines-pro-bounds-array-to-pointer-decay,modernize-avoid-c-arrays)
   constexpr char BasePointGx         [] = "0x79BE667EF9DCBBAC55A06295CE870B07029BFCDB2DCE28D959F2815B16F81798"; // NOLINT(cppcoreguidelines-avoid-c-arrays,hicpp-avoid-c-arrays,cppcoreguidelines-pro-bounds-array-to-pointer-decay,modernize-avoid-c-arrays)
   constexpr char BasePointGy         [] = "0x483ADA7726A3C4655DA4FBFC0E1108A8FD17B448A68554199C47D08FFB10D4B8"; // NOLINT(cppcoreguidelines-avoid-c-arrays,hicpp-avoid-c-arrays,cppcoreguidelines-pro-bounds-array-to-pointer-decay,modernize-avoid-c-arrays)
   constexpr char SubGroupOrderN      [] = "0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141"; // NOLINT(cppcoreguidelines-avoid-c-arrays,hicpp-avoid-c-arrays,cppcoreguidelines-pro-bounds-array-to-pointer-decay,modernize-avoid-c-arrays)
+  constexpr auto SubGroupCoFactorH      = static_cast<int>(INT8_C(1));
 
 } // namespace example013_ecdsa
 
@@ -761,29 +778,40 @@ auto ::math::wide_integer::example013_ecdsa_sign_verify() -> bool
                                      std::uint32_t,
                                      example013_ecdsa::CurveName,            // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay)
                                      example013_ecdsa::FieldCharacteristicP, // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay)
-                                     static_cast<int>(INT8_C(0)),
-                                     static_cast<int>(INT8_C(7)),
+                                     example013_ecdsa::CurveCoefficientA,    // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay)
+                                     example013_ecdsa::CurveCoefficientB,    // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay)
                                      example013_ecdsa::BasePointGx,          // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay)
                                      example013_ecdsa::BasePointGy,          // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay)
                                      example013_ecdsa::SubGroupOrderN,       // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay)
-                                     static_cast<int>(INT8_C(1))>;
+                                     example013_ecdsa::SubGroupCoFactorH>;
 
   #if (defined(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST) && (WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST == 1))
 
-  static_assert(elliptic_curve_type::curve_p() == elliptic_curve_type::double_sint_type("0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F"),
+  static_assert(elliptic_curve_type::curve_p() == elliptic_curve_type::double_sint_type(example013_ecdsa::FieldCharacteristicP), // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay)
                 "Error: Elliptic curve Field Characteristic p seems to be incorrect");
 
-  static_assert(elliptic_curve_type::curve_n() == elliptic_curve_type::double_sint_type("0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141"),
+  static_assert(elliptic_curve_type::curve_a() == elliptic_curve_type::double_sint_type(example013_ecdsa::CurveCoefficientA), // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay)
+                "Error: Elliptic curve curve coefficient a seems to be incorrect");
+
+  static_assert(elliptic_curve_type::curve_b() == elliptic_curve_type::double_sint_type(example013_ecdsa::CurveCoefficientB), // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay)
+                "Error: Elliptic curve curve coefficient b seems to be incorrect");
+
+  static_assert(elliptic_curve_type::curve_gx() == elliptic_curve_type::double_sint_type(example013_ecdsa::BasePointGx), // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay)
+                "Error: Elliptic curve base-point Gx seems to be incorrect");
+
+  static_assert(elliptic_curve_type::curve_gy() == elliptic_curve_type::double_sint_type(example013_ecdsa::BasePointGy), // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay)
+                "Error: Elliptic curve base-point Gx seems to be incorrect");
+
+  static_assert(elliptic_curve_type::curve_n() == elliptic_curve_type::double_sint_type(example013_ecdsa::SubGroupOrderN), // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay)
                 "Error: Elliptic curve Sub-Group Order seems to be incorrect");
 
-  static_assert(elliptic_curve_type::curve_gx() == elliptic_curve_type::double_sint_type("0x79BE667EF9DCBBAC55A06295CE870B07029BFCDB2DCE28D959F2815B16F81798"),
-                "Error: Elliptic curve base-point Gx seems to be incorrect");
-
-  static_assert(elliptic_curve_type::curve_gy() == elliptic_curve_type::double_sint_type("0x483ADA7726A3C4655DA4FBFC0E1108A8FD17B448A68554199C47D08FFB10D4B8"),
-                "Error: Elliptic curve base-point Gx seems to be incorrect");
-
   #else
-  static_cast<void>(elliptic_curve_type::curve_p());
+  static_cast<void>(elliptic_curve_type::curve_p ());
+  static_cast<void>(elliptic_curve_type::curve_a ());
+  static_cast<void>(elliptic_curve_type::curve_b ());
+  static_cast<void>(elliptic_curve_type::curve_gx());
+  static_cast<void>(elliptic_curve_type::curve_gy());
+  static_cast<void>(elliptic_curve_type::curve_n ());
   #endif
 
   // Declare the message "Hello!" as an array of chars.

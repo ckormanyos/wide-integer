@@ -1219,15 +1219,11 @@
   // Use a local implementation of string length.
   inline WIDE_INTEGER_CONSTEXPR auto strlen_unsafe(const char* p_str) -> unsigned_fast_type
   {
-    const char* p_str_copy { };
+    auto count = static_cast<unsigned_fast_type>(UINT8_C(0));
 
-    for(p_str_copy = p_str; (*p_str_copy != '\0'); ++p_str_copy) { ; } // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic,altera-id-dependent-backward-branch)
+    while(*p_str != '\0') { ++p_str; ++count; } // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic,altera-id-dependent-backward-branch)
 
-    return
-      static_cast<unsigned_fast_type>
-      (
-        p_str_copy - p_str
-      );
+    return count;
   }
 
   template<typename InputIterator,
