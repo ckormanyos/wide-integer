@@ -22,6 +22,8 @@
         <img src="https://img.shields.io/github/commit-activity/y/ckormanyos/wide-integer" alt="GitHub commit activity" /></a>
     <a href="https://github.com/ckormanyos/wide-integer">
         <img src="https://img.shields.io/github/languages/code-size/ckormanyos/wide-integer" alt="GitHub code size in bytes" /></a>
+    <a href="https://godbolt.org/z/foMcx7Enx" alt="godbolt">
+        <img src="https://img.shields.io/badge/try%20it%20on-godbolt-green" /></a>
 </p>
 
 Wide-integer implements a generic C++ template for extended width
