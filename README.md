@@ -22,7 +22,7 @@
         <img src="https://img.shields.io/github/commit-activity/y/ckormanyos/wide-integer" alt="GitHub commit activity" /></a>
     <a href="https://github.com/ckormanyos/wide-integer">
         <img src="https://img.shields.io/github/languages/code-size/ckormanyos/wide-integer" alt="GitHub code size in bytes" /></a>
-    <a href="https://godbolt.org/z/foMcx7Enx" alt="godbolt">
+    <a href="https://godbolt.org/z/os879rPP7" alt="godbolt">
         <img src="https://img.shields.io/badge/try%20it%20on-godbolt-green" /></a>
 </p>
 
@@ -329,7 +329,7 @@ with a 256-bit unsigned integral type.
 
 This exact example is provided in compiled form with successful output result
 is shown in its entirety in the following
-[short link](https://godbolt.org/z/foMcx7Enx) to [godbolt](https://godbolt.org).
+[short link](https://godbolt.org/z/os879rPP7) to [godbolt](https://godbolt.org).
 
 ```cpp
 #include <iomanip>
@@ -356,6 +356,7 @@ auto main() -> int
                              && (d == "0xA"));
 
   // Print the hexadecimal representation string output.
+  const auto flg = std::cout.flags();
 
   std::cout << "0x" << std::hex << std::uppercase << c << std::endl;
   std::cout << "0x" << std::hex << std::uppercase << d << std::endl;
@@ -363,6 +364,8 @@ auto main() -> int
   // Visualize if the result is OK.
 
   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
+
+  std::cout.flags(flg);
 }
 ```
 

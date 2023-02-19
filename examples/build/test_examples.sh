@@ -61,6 +61,8 @@ $GCC -std=$STD -Wall -Werror -O3 -march=native -I../.. -DWIDE_INTEGER_STANDALONE
 ls -la ./bin/example011_uint24_t.exe
 $GCC -std=$STD -Wall -Werror -O3 -march=native -I../.. -DWIDE_INTEGER_STANDALONE_EXAMPLE012_RSA_CRYPTO            ../../examples/example012_rsa_crypto.cpp                              -o ./bin/example012_rsa_crypto.exe
 ls -la ./bin/example012_rsa_crypto.exe
+$GCC -std=$STD -Wall -Werror -O3 -march=native -I../.. -DWIDE_INTEGER_STANDALONE_EXAMPLE013_ECDSA_SIGN_VERIFY     ../../examples/example013_ecdsa_sign_verify.cpp                       -o ./bin/example013_ecdsa_sign_verify.exe
+ls -la ./bin/example013_ecdsa_sign_verify.exe
 
 ./bin/example000a_builtin_convert.exe
 result_var_000a_builtin_convert=$?
@@ -119,6 +121,9 @@ result_var_011_uint24_t=$?
 ./bin/example012_rsa_crypto.exe
 result_var_012_rsa_crypto=$?
 
+./bin/example013_ecdsa_sign_verify.exe
+result_var_013_ecdsa_sign_verify=$?
+
 echo "result_var_000a_builtin_convert     : "  "$result_var_000a_builtin_convert"
 echo "result_var_000_numeric_limits       : "  "$result_var_000_numeric_limits"
 echo "result_var_001a_div_mod             : "  "$result_var_001a_div_mod"
@@ -138,8 +143,9 @@ echo "result_var_009_timed_mul            : "  "$result_var_009_timed_mul"
 echo "result_var_010_uint48_t             : "  "$result_var_010_uint48_t"
 echo "result_var_011_uint24_t             : "  "$result_var_011_uint24_t"
 echo "result_var_012_rsa_crypto           : "  "$result_var_012_rsa_crypto"
+echo "result_var_013_ecdsa_sign_verify    : "  "$result_var_013_ecdsa_sign_verify"
 
-result_total=$((result_var_000a_builtin_convert+result_var_000_numeric_limits+result_var_001a_div_mod+result_var_001_mul_div+result_var_002_shl_shr+result_var_003a_cbrt+result_var_003_sqrt+result_var_004_rootk_pow+result_var_005a_pow_factors_of_p99+result_var_005_powm+result_var_006_gcd+result_var_007_random_generator+result_var_008_miller_rabin_prime+result_var_009a_timed_mul_4_by_4+result_var_009b_timed_mul_8_by_8+result_var_009_timed_mul+result_var_010_uint48_t+result_var_011_uint24_t+result_var_012_rsa_crypto))
+result_total=$((result_var_000a_builtin_convert+result_var_000_numeric_limits+result_var_001a_div_mod+result_var_001_mul_div+result_var_002_shl_shr+result_var_003a_cbrt+result_var_003_sqrt+result_var_004_rootk_pow+result_var_005a_pow_factors_of_p99+result_var_005_powm+result_var_006_gcd+result_var_007_random_generator+result_var_008_miller_rabin_prime+result_var_009a_timed_mul_4_by_4+result_var_009b_timed_mul_8_by_8+result_var_009_timed_mul+result_var_010_uint48_t+result_var_011_uint24_t+result_var_012_rsa_crypto+result_var_013_ecdsa_sign_verify))
 
 echo "result_total                        : "  "$result_total"
 
