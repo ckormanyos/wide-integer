@@ -327,7 +327,7 @@ We will now present various straightforward detailed examples.
 The code below performs some elementary algebraic calculations
 with a 256-bit unsigned integral type.
 
-This exact example is provided in compiled form with successful output result
+This example, compiled with successful output result,
 is shown in its entirety in the following
 [short link](https://godbolt.org/z/os879rPP7) to [godbolt](https://godbolt.org).
 

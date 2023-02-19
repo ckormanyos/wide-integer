@@ -2071,18 +2071,18 @@
           if(numer_was_neg) { a.negate(); }
           if(denom_was_neg) { b.negate(); }
 
-          local_unsigned_wide_type remainder;
+          local_unsigned_wide_type remainder_unsigned { };
 
-          a.eval_divide_knuth(b, &remainder);
+          a.eval_divide_knuth(b, &remainder_unsigned);
 
           // The sign of the remainder follows the sign of the denominator.
-          if(numer_was_neg) { remainder.negate(); }
+          if(numer_was_neg) { remainder_unsigned.negate(); }
 
-          values = remainder.values;
+          values = remainder_unsigned.values;
         }
         else
         {
-          uintwide_t remainder;
+          uintwide_t remainder { };
 
           eval_divide_knuth(other, &remainder);
 
@@ -6019,16 +6019,22 @@
     const auto numer_was_neg = local_unknown_signedness_left_type::is_neg(a);
     const auto denom_was_neg = local_unknown_signedness_right_type::is_neg(b);
 
-    local_unsigned_wide_type ua((!numer_was_neg) ? a : -a);
-    local_unsigned_wide_type ub((!denom_was_neg) ? b : -b);
+          local_unsigned_wide_type ua((!numer_was_neg) ? a : -a);
+    const local_unsigned_wide_type ub((!denom_was_neg) ? b : -b);
 
     local_unsigned_wide_type ur { };
 
     ua.eval_divide_knuth(ub, &ur);
 
-    using divmod_result_pair_type = std::pair<local_unknown_signedness_left_type, local_unknown_signedness_right_type>;
+    using divmod_result_pair_type =
+      std::pair<local_unknown_signedness_left_type, local_unknown_signedness_right_type>;
 
-    auto result = divmod_result_pair_type { };
+    auto result =
+      divmod_result_pair_type
+      {
+        local_unknown_signedness_left_type  { },
+        local_unknown_signedness_right_type { }
+      };
 
     if(numer_was_neg == denom_was_neg)
     {
