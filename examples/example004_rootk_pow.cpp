@@ -42,8 +42,8 @@ auto ::math::wide_integer::example004_rootk_pow() -> bool
     using ::math::wide_integer::uint256_t;
     #endif
 
-    WIDE_INTEGER_CONSTEXPR uint256_t r(UINT64_C(0x16067D1894));
-    WIDE_INTEGER_CONSTEXPR uint256_t p = pow(r, 7U); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
+    WIDE_INTEGER_CONSTEXPR uint256_t r { static_cast<std::uint64_t>(UINT64_C(0x16067D1894)) };
+    WIDE_INTEGER_CONSTEXPR uint256_t p = pow(r, static_cast<unsigned>(UINT8_C(7)));
 
     WIDE_INTEGER_CONSTEXPR bool result_is_ok_pow = (p == "0x95E0E5104B2F636571834936C982E40EFA25682E7370CD1C248051E1CDC34000");
 
