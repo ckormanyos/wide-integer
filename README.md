@@ -22,7 +22,7 @@
         <img src="https://img.shields.io/github/commit-activity/y/ckormanyos/wide-integer" alt="GitHub commit activity" /></a>
     <a href="https://github.com/ckormanyos/wide-integer">
         <img src="https://img.shields.io/github/languages/code-size/ckormanyos/wide-integer" alt="GitHub code size in bytes" /></a>
-    <a href="https://godbolt.org/z/os879rPP7" alt="godbolt">
+    <a href="https://godbolt.org/z/fq9E5aW9v" alt="godbolt">
         <img src="https://img.shields.io/badge/try%20it%20on-godbolt-green" /></a>
 </p>
 
@@ -325,11 +325,11 @@ readme page.
 We will now present various straightforward detailed examples.
 
 The code below performs some elementary algebraic calculations
-with a 256-bit unsigned integral type.
+with a simple mixture of 256-bit and 512-bit unsigned integral types.
 
 This example, compiled with successful output result,
 is shown in its entirety in the following
-[short link](https://godbolt.org/z/os879rPP7) to [godbolt](https://godbolt.org).
+[short link](https://godbolt.org/z/fq9E5aW9v) to [godbolt](https://godbolt.org).
 
 ```cpp
 #include <iomanip>
@@ -339,7 +339,8 @@ is shown in its entirety in the following
 
 auto main() -> int
 {
-  using uint256_t = ::math::wide_integer::uint256_t;
+  using ::math::wide_integer::uint256_t;
+  using ::math::wide_integer::uint512_t;
 
   // Construction from string. Additional constructors
   // are available from other built-in types.
@@ -348,11 +349,11 @@ auto main() -> int
   const uint256_t b("0x166D63E0202B3D90ECCEAA046341AB504658F55B974A7FD63733ECF89DD0DF75");
 
   // Elementary arithmetic operations.
-  const uint256_t c = (a * b);
-  const uint256_t d = (a / b);
+  const auto c = uint512_t(a) * uint512_t(b);
+  const auto d = (a / b);
 
   // Logical comparison.
-  const auto result_is_ok = (   (c == "0xE491A360C57EB4306C61F9A04F7F7D99BE3676AAD2D71C5592D5AE70F84AF076")
+  const auto result_is_ok = (   (c == "0x1573D6A7CEA734D99865C4F428184983CDB018B80E9CC44B83C773FBE11993E7E491A360C57EB4306C61F9A04F7F7D99BE3676AAD2D71C5592D5AE70F84AF076")
                              && (d == "0xA"));
 
   // Print the hexadecimal representation string output.
@@ -750,8 +751,9 @@ of `uintwide_t` from character strings with subsequent `constexpr` evaluations
 of binary operations multiply, divide, intergal cast and comparison.
 
 See this example fully worked out at the following
-[short link](https://godbolt.org/z/qPM31Wf7T) to [godbolt](https://godbolt.org)
-and note that the generated assembly includes nothing other than the call to `main()`.
+[short link](https://godbolt.org/z/4EefbcYqY) to [godbolt](https://godbolt.org).
+The generated assembly includes nothing other than the call to `main()`
+and its subsequent `return` of the standard return-value zero.
 
 ```cpp
 #include <math/wide_integer/uintwide_t.h>
@@ -759,24 +761,26 @@ and note that the generated assembly includes nothing other than the call to `ma
 // Use a C++20 compiler for this example.
 
 using uint256_t = ::math::wide_integer::uintwide_t<256U>;
+using uint512_t = ::math::wide_integer::uintwide_t<512U>;
 
 // Compile-time construction from string.
 constexpr uint256_t a("0xF4DF741DE58BCB2F37F18372026EF9CBCFC456CB80AF54D53BDEED78410065DE");
 constexpr uint256_t b("0x166D63E0202B3D90ECCEAA046341AB504658F55B974A7FD63733ECF89DD0DF75");
 
 // Compile time binary arithmetic operations.
-constexpr uint256_t c = (a * b);
+constexpr uint512_t c = uint512_t(a) * uint512_t(b);
 constexpr uint256_t d = (a / b);
 
 // Compile-time comparison.
-constexpr bool result_is_ok = (   (c == "0xE491A360C57EB4306C61F9A04F7F7D99BE3676AAD2D71C5592D5AE70F84AF076")
-                               && (std::uint_fast8_t(d) == 10U));
+constexpr bool result_is_ok = (   (c == "0x1573D6A7CEA734D99865C4F428184983CDB018B80E9CC44B83C773FBE11993E7E491A360C57EB4306C61F9A04F7F7D99BE3676AAD2D71C5592D5AE70F84AF076")
+                               && (static_cast<std::uint_fast8_t>(d) == static_cast<std::uint_fast8_t>(UINT8_C(10))));
 
 // constexpr verification.
 static_assert(result_is_ok, "Error: example is not OK!");
 
 auto main() -> int
 {
+  return (result_is_ok ? 0 : -1);
 }
 ```
 
@@ -849,7 +853,7 @@ negative arguments in number theoretical functions.
   - Miller-Rabin primality testing treats negative inetegers as positive when testing for prime, thus extending the set of primes to negative integers.
   - MSB/LSB (most/least significant bit) do not differentiate between positive or negative argument such that MSB of a negative integer will be the highest bit of the corresponding unsigned type.
   - Printing both positive-valued and negative-valued signed integers in hexadecimal format is supported. When printing negative-valued, signed  `uintwide_t` in hexadecimal format, the sign bit and all other bits are treated as if the integer were unsigned. The negative sign is not explicitly shown when using hexadecimal format, even if the underlying integer is signed and negative-valued. A potential positive sign, however, will be shown for positive-valued signed integers in hexadecimal form in the presence of `std::showpos`.
-  - Signed integer division and modulus results obtained from the `divmod()` function follow established number-theoretical rounding conventions, which are the same as those used by the `//`-operator in Python-3 (i.e., the same as Python-3's built-in `divmod()` function).
+  - Signed integer division and modulus results obtained from the `divmod()` function follow established number-theoretical rounding conventions, which are the same as those used by the `//`-operator in Python-3 (i.e., the same as Python-3's built-in `divmod()` function). These conventions also match those used by Mathematica(R)'s `QuotientRemainder[]` function.
 
 ## Further details
 
