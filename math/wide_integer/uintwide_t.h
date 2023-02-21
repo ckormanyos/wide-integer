@@ -150,9 +150,12 @@
            typename ValueType>
   inline WIDE_INTEGER_CONSTEXPR auto fill_unsafe(DestinationIterator first, DestinationIterator last, ValueType val) -> void
   {
-    using local_destination_value_type = typename std::iterator_traits<DestinationIterator>::value_type;
+    while(first != last)
+    {
+      using local_destination_value_type = typename std::iterator_traits<DestinationIterator>::value_type;
 
-    while (first != last) { *first++ = static_cast<local_destination_value_type>(val); }
+      *first++ = static_cast<local_destination_value_type>(val);
+    }
   }
 
   // Use a local, constexpr, unsafe implementation of the copy-function.
@@ -160,11 +163,11 @@
            typename DestinationIterator>
   inline WIDE_INTEGER_CONSTEXPR auto copy_unsafe(InputIterator first, InputIterator last, DestinationIterator dest) -> DestinationIterator
   {
-    using local_destination_value_type = typename std::iterator_traits<DestinationIterator>::value_type;
-
-    for( ; first != last; static_cast<void>(++first), static_cast<void>(++dest))
+    while(first != last)
     {
-      *dest = static_cast<local_destination_value_type>(*first);
+      using local_destination_value_type = typename std::iterator_traits<DestinationIterator>::value_type;
+
+      *dest++ = static_cast<local_destination_value_type>(*first++);
     }
 
     return dest;
@@ -2771,6 +2774,12 @@
       }
       else
       {
+        // In the from_rep() function it is actually possible to have
+        // a source representation that differs in size from the destination
+        // representation. This can happen when using non-standard container
+        // representations for the uintwide_t storage (such as std::vector).
+        // In this case, scale to the size of the destination.
+
         constexpr auto local_number_of_limbs =
           static_cast<size_t>
           (
@@ -2797,6 +2806,13 @@
       }
       else
       {
+        // In the from_rep() function it is actually possible to have
+        // a source representation that differs in size from the destination
+        // representation. This can happen when using non-standard container
+        // representations for the uintwide_t storage (such as std::vector).
+        // In this case, scale to the size of the destination.
+
+        // LCOV_EXCL_START
         constexpr auto local_number_of_limbs =
           static_cast<size_t>
           (
@@ -2810,6 +2826,7 @@
                             my_rep.begin());
 
         return uintwide_t(static_cast<representation_type&&>(my_rep));
+        // LCOV_EXCL_STOP
       }
     }
 
@@ -4433,8 +4450,11 @@
     template<typename IntegralType>
     WIDE_INTEGER_CONSTEXPR auto shl(IntegralType n) -> void
     {
-      const auto offset            = static_cast<unsigned_fast_type>(static_cast<unsigned_fast_type>(n) / static_cast<unsigned_fast_type>(std::numeric_limits<limb_type>::digits));
-      const auto left_shift_amount = static_cast<std::uint_fast16_t>(static_cast<unsigned_fast_type>(n) % static_cast<unsigned_fast_type>(std::numeric_limits<limb_type>::digits));
+      const auto offset =
+        (std::min)(static_cast<unsigned_fast_type>(static_cast<unsigned_fast_type>(n) / static_cast<unsigned_fast_type>(std::numeric_limits<limb_type>::digits)),
+                   static_cast<unsigned_fast_type>(number_of_limbs));
+
+      const auto left_shift_amount = static_cast<unsigned_fast_type>(static_cast<unsigned_fast_type>(n) % static_cast<unsigned_fast_type>(std::numeric_limits<limb_type>::digits));
 
       if(offset > static_cast<unsigned_fast_type>(UINT8_C(0)))
       {
@@ -4476,10 +4496,13 @@
     template<typename IntegralType>
     WIDE_INTEGER_CONSTEXPR auto shr(IntegralType n) -> void
     {
-      const auto offset             = static_cast<unsigned_fast_type>(static_cast<unsigned_fast_type>(n) / static_cast<unsigned_fast_type>(std::numeric_limits<limb_type>::digits));
+      const auto offset =
+        (std::min)(static_cast<unsigned_fast_type>(static_cast<unsigned_fast_type>(n) / static_cast<unsigned_fast_type>(std::numeric_limits<limb_type>::digits)),
+                   static_cast<unsigned_fast_type>(number_of_limbs));
+
       const auto right_shift_amount = static_cast<std::uint_fast16_t>(static_cast<unsigned_fast_type>(n) % static_cast<unsigned_fast_type>(std::numeric_limits<limb_type>::digits));
 
-      if(offset > static_cast<unsigned_fast_type>(UINT8_C(0)))
+      if(static_cast<size_t>(offset) > static_cast<size_t>(UINT8_C(0)))
       {
         detail::copy_unsafe(detail::advance_and_point(values.cbegin(), static_cast<size_t>(offset)),
                             detail::advance_and_point(values.cbegin(), static_cast<size_t>(number_of_limbs)),
