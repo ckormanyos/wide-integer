@@ -167,7 +167,13 @@
     {
       using local_destination_value_type = typename std::iterator_traits<DestinationIterator>::value_type;
 
+      #if (defined(__GNUC__) && (__GNUC__ > 9))
+      #pragma GCC diagnostic ignored "-Wstringop-overflow"
+      #endif
       *dest++ = static_cast<local_destination_value_type>(*first++);
+      #if (defined(__GNUC__) && (__GNUC__ > 9))
+      #pragma GCC diagnostic pop
+      #endif
     }
 
     return dest;
