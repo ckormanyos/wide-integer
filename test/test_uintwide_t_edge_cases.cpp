@@ -1141,9 +1141,9 @@ auto test_to_chars_and_to_string() -> bool // NOLINT(readability-function-cognit
     const auto result_dec_as_chars = to_chars(arr_dec.data(), arr_dec.data() + arr_dec.size(), u_gen, 10);
     const auto result_hex_as_chars = to_chars(arr_hex.data(), arr_hex.data() + arr_hex.size(), u_gen, 16);
 
-    const auto result_oct_as_str = "0"  + std::string(arr_oct.data());
-    const auto result_dec_as_str =        std::string(arr_dec.data());
-    const auto result_hex_as_str = "0x" + std::string(arr_hex.data());
+          auto result_oct_as_str = std::string(arr_oct.data()); result_oct_as_str.insert(result_oct_as_str.cbegin(), '0');
+    const auto result_dec_as_str = std::string(arr_dec.data());
+          auto result_hex_as_str = std::string(arr_hex.data()); result_hex_as_str.insert(result_hex_as_str.cbegin(), 'x'); result_hex_as_str.insert(result_hex_as_str.cbegin(), '0');
 
     const local_uintwide_t_small_unsigned_type u_from_string_oct(result_oct_as_str.c_str());
     const local_uintwide_t_small_unsigned_type u_from_string_dec(result_dec_as_str.c_str());
