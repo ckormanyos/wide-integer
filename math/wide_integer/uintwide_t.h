@@ -2772,11 +2772,13 @@
 
     static WIDE_INTEGER_CONSTEXPR auto from_rep(const representation_type& other_rep) -> uintwide_t
     {
+      uintwide_t result { };
+
       // Create a factory-like object from another (possibly different)
       // internal data representation.
       if(number_of_limbs == other_rep.size())
       {
-        return uintwide_t(other_rep);
+        result = uintwide_t(other_rep);
       }
       else
       {
@@ -2798,17 +2800,21 @@
                             detail::advance_and_point(other_rep.cbegin(), (std::min)(local_number_of_limbs, static_cast<size_t>(other_rep.size()))),
                             my_rep.begin());
 
-        return uintwide_t(static_cast<representation_type&&>(my_rep));
+        result = uintwide_t(static_cast<representation_type&&>(my_rep));
       }
+
+      return result;
     }
 
     static WIDE_INTEGER_CONSTEXPR auto from_rep(representation_type&& other_rep) noexcept -> uintwide_t
     {
+      uintwide_t result { };
+
       // Create a factory-like object from another (possibly different)
       // internal data representation (via move semantics).
       if(number_of_limbs == other_rep.size())
       {
-        return uintwide_t(static_cast<representation_type&&>(other_rep));
+        result = uintwide_t(static_cast<representation_type&&>(other_rep));
       }
       else
       {
@@ -2831,9 +2837,11 @@
                             detail::advance_and_point(other_rep.cbegin(), (std::min)(local_number_of_limbs, static_cast<size_t>(other_rep.size()))),
                             my_rep.begin());
 
-        return uintwide_t(static_cast<representation_type&&>(my_rep));
+        result = uintwide_t(static_cast<representation_type&&>(my_rep));
         // LCOV_EXCL_STOP
       }
+
+      return result;
     }
 
     static constexpr auto my_fill_char() -> char { return '.'; }
