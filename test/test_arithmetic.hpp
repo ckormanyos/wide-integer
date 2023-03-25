@@ -3077,11 +3077,18 @@ void test()
    test_mixed<Real, unsigned long long>(tag);
 #endif
 #if defined(BOOST_HAS_INT128) && !defined(BOOST_NO_CXX17_IF_CONSTEXPR)
+#if (defined(__GNUC__) && !defined(__clang__))
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpedantic"
+#endif
    if constexpr (std::is_constructible<Real, __int128>::value)
    {
       test_mixed<Real, __int128>(tag);
       test_mixed<Real, unsigned __int128>(tag);
    }
+#if (defined(__GNUC__) && !defined(__clang__))
+#pragma GCC diagnostic pop
+#endif
 #endif
    test_mixed<Real, float>(tag);
    test_mixed<Real, double>(tag);
