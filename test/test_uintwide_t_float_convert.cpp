@@ -75,7 +75,7 @@ namespace local_float_convert
                            const UnsignedIntegralType hi) -> std::uniform_int_distribution<UnsignedIntegralType>
   {
     return std::uniform_int_distribution<UnsignedIntegralType>(lo, hi);
-  };
+  }
 
   template<typename FloatingPointType,
            const std::int32_t LoExp10,
