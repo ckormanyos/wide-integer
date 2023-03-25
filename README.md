@@ -22,7 +22,7 @@
         <img src="https://img.shields.io/github/commit-activity/y/ckormanyos/wide-integer" alt="GitHub commit activity" /></a>
     <a href="https://github.com/ckormanyos/wide-integer">
         <img src="https://img.shields.io/github/languages/code-size/ckormanyos/wide-integer" alt="GitHub code size in bytes" /></a>
-    <a href="https://godbolt.org/z/fq9E5aW9v" alt="godbolt">
+    <a href="https://godbolt.org/z/6o8MbvM7j" alt="godbolt">
         <img src="https://img.shields.io/badge/try%20it%20on-godbolt-green" /></a>
 </p>
 
@@ -232,6 +232,9 @@ g++                                         \
 -O3                                         \
 -Wall                                       \
 -Wextra                                     \
+-Wpedantic                                  \
+-Wconversion                                \
+-Wsign-conversion                           \
 -Wno-maybe-uninitialized                    \
 -Wno-cast-function-type                     \
 -std=c++14                                  \
