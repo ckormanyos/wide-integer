@@ -151,7 +151,10 @@ void report_unexpected_exception(const E& e, int severity, const char* file, int
 }
 
 #ifdef BOOST_HAS_INT128
-
+#if (defined(__GNUC__) && !defined(__clang__))
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpedantic"
+#endif
 std::ostream& operator<<(std::ostream& os, __int128 val)
 {
    std::stringstream ss;
@@ -165,7 +168,9 @@ std::ostream& operator<<(std::ostream& os, unsigned __int128 val)
    ss << std::hex << "0x" << static_cast<std::uint64_t>(val >> 64) << static_cast<std::uint64_t>(val);
    return os << ss.str();
 }
-
+#if (defined(__GNUC__) && !defined(__clang__))
+#pragma GCC diagnostic pop
+#endif
 #endif
 #ifdef BOOST_HAS_FLOAT128
 std::ostream& operator<<(std::ostream& os, __float128 f)
