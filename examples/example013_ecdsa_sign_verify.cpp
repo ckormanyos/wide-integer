@@ -190,7 +190,7 @@ namespace example013_ecdsa
             (
                 static_cast<std::size_t>
                 (
-                    static_cast<std::size_t>(conversion_scale - 1U)
+                    static_cast<std::size_t>(conversion_scale - static_cast<std::size_t>(UINT8_C(1)))
                   - static_cast<std::size_t>(output_index % conversion_scale)
                 )
               * static_cast<std::size_t>(UINT8_C(8))
@@ -223,7 +223,7 @@ namespace example013_ecdsa
 
       for(auto   i = static_cast<std::size_t>(UINT8_C(0)), j = static_cast<std::size_t>(UINT8_C(0));
                  i < static_cast<std::size_t>(UINT8_C(16));
-               ++i, j += 4U)
+               ++i, j = static_cast<std::size_t>(j + static_cast<std::size_t>(UINT8_C(4))))
       {
         m[i] = // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic,cppcoreguidelines-pro-bounds-constant-array-index)
           static_cast<std::uint32_t>
@@ -427,8 +427,11 @@ namespace example013_ecdsa
       }
 
       // Extended Euclidean algorithm.
-      auto s = double_sint_type(0U); auto old_s = double_sint_type(1U);
-      auto r = double_sint_type(p) ; auto old_r = double_sint_type(k);
+      auto s     = double_sint_type(static_cast<unsigned>(UINT8_C(0)));
+      auto old_s = double_sint_type(static_cast<unsigned>(UINT8_C(1)));
+
+      auto r     = p;
+      auto old_r = k;
 
       while(r != 0U) // NOLINT(altera-id-dependent-backward-branch)
       {
@@ -640,8 +643,8 @@ namespace example013_ecdsa
       };
     }
 
-    template<typename ContainerType>
-    static auto hash_message(const ContainerType& msg) -> uint_type
+    template<typename MsgIteratorType>
+    static auto hash_message(MsgIteratorType msg_first, MsgIteratorType msg_last) -> uint_type
     {
       // This subroutine returns the hash of the message (msg), where
       // the type of the hash is 256-bit SHA2, as implenebted locally above.
@@ -650,7 +653,7 @@ namespace example013_ecdsa
       // bit-length hash needs to be left/right shifted for cases when there
       // are different hash/curve bit-lengths (as specified in FIPS 180).
 
-      const auto message { std::vector<std::uint8_t>(msg.cbegin(), msg.cend()) };
+      const auto message { std::vector<std::uint8_t>(msg_first, msg_last) };
 
       using hash_type = hash_sha256;
 
@@ -671,12 +674,13 @@ namespace example013_ecdsa
       return z;
     }
 
-    template<typename ContainerType>
-    static auto sign_message(const uint_type&     private_key,
-                             const ContainerType& msg,
-                             const uint_type*     p_uint_seed = nullptr) -> std::pair<uint_type, uint_type>
+    template<typename MsgIteratorType>
+    static auto sign_message(const uint_type&      private_key,
+                                   MsgIteratorType msg_first,
+                                   MsgIteratorType msg_last,
+                             const uint_type*      p_uint_seed = nullptr) -> std::pair<uint_type, uint_type>
     {
-      const auto z = sexatuple_sint_type(hash_message(msg));
+      const auto z = sexatuple_sint_type(hash_message(msg_first, msg_last));
 
       double_sint_type r { };
       double_sint_type s { };
@@ -714,16 +718,17 @@ namespace example013_ecdsa
       };
     }
 
-    template<typename ContainerType>
+    template<typename MsgIteratorType>
     static auto verify_signature(const std::pair<uint_type, uint_type>& pub,
-                                 const ContainerType&                   msg,
+                                       MsgIteratorType                  msg_first,
+                                       MsgIteratorType                  msg_last,
                                  const std::pair<uint_type, uint_type>& sig) -> bool
     {
       const auto w = sexatuple_sint_type(inverse_mod(sig.second, curve_n()));
 
       const auto n = sexatuple_sint_type(curve_n());
 
-      const auto z = hash_message(msg);
+      const auto z = hash_message(msg_first, msg_last);
 
       const auto u1 = double_sint_type(divmod(sexatuple_sint_type(z)         * w, n).second);
       const auto u2 = double_sint_type(divmod(sexatuple_sint_type(sig.first) * w, n).second);
@@ -815,7 +820,7 @@ auto ::math::wide_integer::example013_ecdsa_sign_verify() -> bool
   {
     // Test the hash SHA-2 HASH-256 implementation.
 
-    const auto hash_result = elliptic_curve_type::hash_message(msg_as_array);
+    const auto hash_result = elliptic_curve_type::hash_message(msg_as_array.cbegin(), msg_as_array.cend());
 
     const auto result_hash_is_ok =
     (
@@ -858,7 +863,7 @@ auto ::math::wide_integer::example013_ecdsa_sign_verify() -> bool
     const auto priv = elliptic_curve_type::uint_type("0x6f73d8e95d6ddbf0eb352a9f0b2ce91931511edaf9ac8f128d5a4f877c4f0450");
 
     const auto sig =
-      elliptic_curve_type::sign_message(std::get<0>(keypair), msg_as_string, &priv);
+      elliptic_curve_type::sign_message(std::get<0>(keypair), msg_as_string.cbegin(), msg_as_string.cend(), &priv);
 
     const auto result_sig_is_ok =
       (
@@ -871,7 +876,14 @@ auto ::math::wide_integer::example013_ecdsa_sign_verify() -> bool
 
     result_is_ok = (result_sig_is_ok && result_is_ok);
 
-    const auto result_verify_is_ok = elliptic_curve_type::verify_signature(std::get<1>(keypair), msg_as_string, sig);
+    const auto result_verify_is_ok =
+      elliptic_curve_type::verify_signature
+      (
+        std::get<1>(keypair),
+        msg_as_string.cbegin(),
+        msg_as_string.cend(),
+        sig
+      );
 
     result_is_ok = (result_verify_is_ok && result_is_ok);
   }
@@ -888,9 +900,21 @@ auto ::math::wide_integer::example013_ecdsa_sign_verify() -> bool
       const auto msg_str_append_index = msg_as_string + std::to_string(count);
 
       const auto sig =
-        elliptic_curve_type::sign_message(std::get<0>(keypair), msg_str_append_index);
+        elliptic_curve_type::sign_message
+        (
+          std::get<0>(keypair),
+          msg_str_append_index.cbegin(),
+          msg_str_append_index.cend()
+        );
 
-      const auto result_verify_is_ok = elliptic_curve_type::verify_signature(std::get<1>(keypair), msg_str_append_index, sig);
+      const auto result_verify_is_ok =
+        elliptic_curve_type::verify_signature
+        (
+          std::get<1>(keypair),
+          msg_str_append_index.cbegin(),
+          msg_str_append_index.cend(),
+          sig
+        );
 
       result_is_ok = (result_verify_is_ok && result_is_ok);
     }
@@ -904,12 +928,12 @@ auto ::math::wide_integer::example013_ecdsa_sign_verify() -> bool
     const auto keypair = elliptic_curve_type::make_keypair();
 
     const auto sig =
-      elliptic_curve_type::sign_message(std::get<0>(keypair), msg_as_string);
+      elliptic_curve_type::sign_message(std::get<0>(keypair), msg_as_string.cbegin(), msg_as_string.cend());
 
     const auto msg_str_to_fail = msg_as_string + "x";
 
     const auto result_verify_expected_fail_is_ok =
-      (!elliptic_curve_type::verify_signature(std::get<1>(keypair), msg_str_to_fail, sig));
+      (!elliptic_curve_type::verify_signature(std::get<1>(keypair), msg_str_to_fail.cbegin(), msg_str_to_fail.cend(), sig));
 
     result_is_ok = (result_verify_expected_fail_is_ok && result_is_ok);
   }
