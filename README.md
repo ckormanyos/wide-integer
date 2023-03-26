@@ -754,14 +754,15 @@ of `uintwide_t` from character strings with subsequent `constexpr` evaluations
 of binary operations multiply, divide, intergal cast and comparison.
 
 See this example fully worked out at the following
-[short link](https://godbolt.org/z/4EefbcYqY) to [godbolt](https://godbolt.org).
+[short link](https://godbolt.org/z/6zxTv54q5) to [godbolt](https://godbolt.org).
 The generated assembly includes nothing other than the call to `main()`
-and its subsequent `return` of the standard return-value zero.
+and its subsequent `return` of the value zero
+(i.e., `main()`'s successful return-value in this example).
 
 ```cpp
 #include <math/wide_integer/uintwide_t.h>
 
-// Use a C++20 compiler for this example.
+// Use (at least) a C++20 compiler for this example.
 
 using uint256_t = ::math::wide_integer::uintwide_t<256U>;
 using uint512_t = ::math::wide_integer::uintwide_t<512U>;
