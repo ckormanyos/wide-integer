@@ -177,6 +177,7 @@ on how to use wide-integer.
   - ![`example011_uint24_t.cpp`](./examples/example011_uint24_t.cpp) performs calculations with 24-bits, which is definitely on the small side of the range of wide-integer.
   - ![`example012_rsa_crypto.cpp`](./examples/example012_rsa_crypto.cpp) performs cryptographic calculations with 2048-bits, exploring a standardized test case.
   - ![`example013_ecdsa_sign_verify.cpp`](./examples/example013_ecdsa_sign_verify.cpp) provides an intuitive view on elliptic-curve algebra, depicting a well-known cryptographic key-gen/sign/verify method.
+  - ![`example014_pi_spigot_wide.cpp`](./examples/example014_pi_spigot_wide.cpp) calculates $10,001$ decimal digits of the mathematical constant $\pi$ using a `uintwide_t`-based template spigot algorithm.
 
 ## Building
 
@@ -273,6 +274,7 @@ examples/example010_uint48_t.cpp            \
 examples/example011_uint24_t.cpp            \
 examples/example012_rsa_crypto.cpp          \
 examples/example013_ecdsa_sign_verify.cpp   \
+examples/example014_pi_spigot_wide.cpp      \
 -o wide_integer.exe
 ```
 

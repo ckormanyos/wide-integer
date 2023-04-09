@@ -41,6 +41,7 @@
   auto example011_uint24_t           () -> bool;
   auto example012_rsa_crypto         () -> bool;
   auto example013_ecdsa_sign_verify  () -> bool;
+  auto example014_pi_spigot_wide     () -> bool;
 
   #if(__cplusplus >= 201703L)
   } // namespace math::wide_integer
