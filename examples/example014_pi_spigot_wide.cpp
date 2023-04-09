@@ -22,8 +22,8 @@ namespace example014_pi_spigot
     using unsigned_small_type = UnsignedSmallType;
     using unsigned_large_type = UnsignedLargeType;
 
-    static constexpr auto result_digit = ResultDigit;
-    static constexpr auto loop_digit   = LoopDigit;
+    static constexpr std::uint32_t result_digit = ResultDigit;
+    static constexpr std::uint32_t loop_digit   = LoopDigit;
 
     static_assert(result_digit <= static_cast<std::uint32_t>(UINT16_C(10011)),
                   "Error: result_digit exceeds its limit of 10,011");
@@ -102,7 +102,7 @@ namespace example014_pi_spigot
       // Sum[Floor[((d - j) (Floor[((10 9)/3)] + 1))/9], {j, 0, Floor[d/9] 9, 9}]
 
       for(auto j = static_cast<std::uint32_t>(UINT8_C(0));
-               j < result_digit;
+               j < result_digit; // NOLINT(altera-id-dependent-backward-branch)
                j = static_cast<std::uint32_t>(j + loop_digit))
       {
         auto val_d = static_cast<unsigned_large_type>(UINT8_C(0));
@@ -110,7 +110,7 @@ namespace example014_pi_spigot
         const auto ilim = input_scale(result_digit - j);
 
         for(auto   i = static_cast<std::uint32_t>(INT8_C(0));
-                   i < ilim;
+                   i < ilim; // NOLINT(altera-id-dependent-backward-branch)
                  ++i)
         {
           const auto my_index =
@@ -172,7 +172,7 @@ namespace example014_pi_spigot
 
         auto scale10 = pow10(loop_digit - UINT32_C(1));
 
-        for(auto i = static_cast<std::size_t>(UINT8_C(0)); i < static_cast<std::size_t>(n); ++i)
+        for(auto i = static_cast<std::size_t>(UINT8_C(0)); i < static_cast<std::size_t>(n); ++i) // NOLINT(altera-id-dependent-backward-branch)
         {
           using local_diff_type = typename std::iterator_traits<OutputIteratorType>::difference_type;
 
@@ -196,12 +196,12 @@ namespace example014_pi_spigot
     }
 
   private:
-    static input_container_type my_pi_in;
+    static input_container_type my_pi_in; // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
 
     std::uintmax_t my_operation_count { }; // NOLINT(readability-identifier-naming)
     std::uint32_t  my_output_count    { }; // NOLINT(readability-identifier-naming)
 
-    static WIDE_INTEGER_CONSTEXPR auto pow10(std::uint32_t n) -> unsigned_small_type
+    static WIDE_INTEGER_CONSTEXPR auto pow10(std::uint32_t n) -> unsigned_small_type // NOLINT(misc-no-recursion)
     {
       return
       (
@@ -225,7 +225,19 @@ namespace example014_pi_spigot
            const std::uint32_t LoopDigit,
            typename UnsignedSmallType,
            typename UnsignedLargeType>
-  typename pi_spigot<ResultDigit, LoopDigit, UnsignedSmallType, UnsignedLargeType>::input_container_type pi_spigot<ResultDigit, LoopDigit, UnsignedSmallType, UnsignedLargeType>::my_pi_in;
+  typename pi_spigot<ResultDigit, LoopDigit, UnsignedSmallType, UnsignedLargeType>::input_container_type pi_spigot<ResultDigit, LoopDigit, UnsignedSmallType, UnsignedLargeType>::my_pi_in; // NOLINT(cppcoreguidelines-avoid-non-const-global-variables,hicpp-uppercase-literal-suffix,readability-uppercase-literal-suffix)
+
+  template<const std::uint32_t ResultDigit,
+           const std::uint32_t LoopDigit,
+           typename UnsignedSmallType,
+           typename UnsignedLargeType>
+  constexpr std::uint32_t pi_spigot<ResultDigit, LoopDigit, UnsignedSmallType, UnsignedLargeType>::loop_digit;
+
+  template<const std::uint32_t ResultDigit,
+           const std::uint32_t LoopDigit,
+           typename UnsignedSmallType,
+           typename UnsignedLargeType>
+  constexpr std::uint32_t pi_spigot<ResultDigit, LoopDigit, UnsignedSmallType, UnsignedLargeType>::result_digit;
 
   const std::array<const char*, static_cast<std::size_t>(UINT8_C(12))> pi_control_data =
   {
