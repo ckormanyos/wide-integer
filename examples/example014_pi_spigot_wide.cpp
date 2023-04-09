@@ -22,10 +22,10 @@ namespace example014_pi_spigot
     using unsigned_small_type = UnsignedSmallType;
     using unsigned_large_type = UnsignedLargeType;
 
-    static constexpr std::uint32_t result_digit = ResultDigit;
-    static constexpr std::uint32_t loop_digit   = LoopDigit;
+    static constexpr auto result_digit() noexcept -> std::uint32_t { return ResultDigit; }
+    static constexpr auto loop_digit  () noexcept -> std::uint32_t { return LoopDigit; }
 
-    static_assert(result_digit <= static_cast<std::uint32_t>(UINT16_C(10011)),
+    static_assert(result_digit() <= static_cast<std::uint32_t>(UINT16_C(10011)),
                   "Error: result_digit exceeds its limit of 10,011");
 
     static_assert(std::numeric_limits<unsigned_small_type>::digits * 2 == std::numeric_limits<unsigned_large_type>::digits,
@@ -37,25 +37,28 @@ namespace example014_pi_spigot
     static_assert((!std::numeric_limits<unsigned_large_type>::is_signed),
                   "Error: unsigned_large_type must be unsigned");
 
-    static constexpr auto input_scale(std::uint32_t x) -> std::uint32_t
+    static constexpr auto input_scale(std::uint32_t x) noexcept -> std::uint32_t
     {
       return
         static_cast<std::uint32_t>
         (
-          static_cast<std::uint32_t>(x * static_cast<std::uint32_t>((static_cast<std::uint32_t>(UINT32_C(10) * loop_digit) / UINT32_C(3)) + UINT32_C(1))) / loop_digit
+            static_cast<std::uint32_t>
+            (
+                x
+              * static_cast<std::uint32_t>
+                (
+                    static_cast<std::uint32_t>(static_cast<std::uint32_t>(UINT8_C(10) * loop_digit()) / static_cast<std::uint32_t>(UINT8_C(3)))
+                  + static_cast<std::uint32_t>(UINT8_C(1))
+                )
+            )
+          / loop_digit()
         );
     }
 
   public:
-    static constexpr auto get_output_static_size() -> std::uint32_t
-    {
-      return result_digit;
-    }
+    static constexpr auto get_output_static_size() noexcept -> std::uint32_t { return result_digit(); }
 
-    static constexpr auto get_input_static_size() -> std::uint32_t
-    {
-      return input_scale(get_output_static_size());
-    }
+    static constexpr auto get_input_static_size() noexcept -> std::uint32_t { return input_scale(get_output_static_size()); }
 
     using input_container_type = std::array<std::uint32_t, static_cast<std::size_t>(get_input_static_size())>;
 
@@ -73,10 +76,7 @@ namespace example014_pi_spigot
 
     WIDE_INTEGER_CONSTEXPR auto operator=(pi_spigot&&) -> pi_spigot& = delete;
 
-    WIDE_INTEGER_NODISCARD WIDE_INTEGER_CONSTEXPR auto get_operation_count() const -> std::uintmax_t
-    {
-      return my_operation_count;
-    }
+    WIDE_INTEGER_NODISCARD WIDE_INTEGER_CONSTEXPR auto get_operation_count() const noexcept -> std::uintmax_t { return my_operation_count; }
 
     template<typename OutputIteratorType>
     auto calculate(OutputIteratorType output_first) -> void
@@ -96,18 +96,18 @@ namespace example014_pi_spigot
       my_output_count    = static_cast<std::uint32_t>(UINT8_C(0));
       my_operation_count = static_cast<std::uintmax_t>(UINT8_C(0));
 
-      const auto local_pow10 = static_cast<unsigned_large_type>(pow10(loop_digit));
+      WIDE_INTEGER_CONSTEXPR auto local_pow10 = static_cast<unsigned_large_type>(pow10(loop_digit()));
 
       // Operation count Mathematica(R), example for loop_digit=9.
       // Sum[Floor[((d - j) (Floor[((10 9)/3)] + 1))/9], {j, 0, Floor[d/9] 9, 9}]
 
       for(auto j = static_cast<std::uint32_t>(UINT8_C(0));
-               j < result_digit; // NOLINT(altera-id-dependent-backward-branch)
-               j = static_cast<std::uint32_t>(j + loop_digit))
+               j < result_digit(); // NOLINT(altera-id-dependent-backward-branch)
+               j = static_cast<std::uint32_t>(j + loop_digit()))
       {
         auto val_d = static_cast<unsigned_large_type>(UINT8_C(0));
 
-        const auto ilim = input_scale(result_digit - j);
+        const auto ilim = input_scale(result_digit() - j);
 
         for(auto   i = static_cast<std::uint32_t>(INT8_C(0));
                    i < ilim; // NOLINT(altera-id-dependent-backward-branch)
@@ -153,24 +153,22 @@ namespace example014_pi_spigot
         // If loop_digit is 4, for instance, then successive groups
         // of digits have a form such as: 3141, 5926, ..., etc.
 
-        const auto p10 = static_cast<unsigned_large_type>(pow10(loop_digit));
-
         const auto next_digits =
           static_cast<unsigned_small_type>
           (
-            val_c + static_cast<unsigned_small_type>(val_d / p10)
+            val_c + static_cast<unsigned_small_type>(val_d / local_pow10)
           );
 
-        val_c = static_cast<unsigned_small_type>(val_d % p10);
+        val_c = static_cast<unsigned_small_type>(val_d % local_pow10);
 
         const auto n =
           (std::min)
           (
-            loop_digit,
-            static_cast<std::uint32_t>(result_digit - j)
+            loop_digit(),
+            static_cast<std::uint32_t>(result_digit() - j)
           );
 
-        auto scale10 = pow10(loop_digit - UINT32_C(1));
+        auto scale10 = pow10(loop_digit() - UINT32_C(1));
 
         for(auto i = static_cast<std::size_t>(UINT8_C(0)); i < static_cast<std::size_t>(n); ++i) // NOLINT(altera-id-dependent-backward-branch)
         {
@@ -216,7 +214,7 @@ namespace example014_pi_spigot
       return
         static_cast<unsigned_small_type>
         (
-          pow10(loop_digit) / static_cast<unsigned>(UINT8_C(5))
+          pow10(loop_digit()) / static_cast<unsigned>(UINT8_C(5))
         );
     }
   };
@@ -226,18 +224,6 @@ namespace example014_pi_spigot
            typename UnsignedSmallType,
            typename UnsignedLargeType>
   typename pi_spigot<ResultDigit, LoopDigit, UnsignedSmallType, UnsignedLargeType>::input_container_type pi_spigot<ResultDigit, LoopDigit, UnsignedSmallType, UnsignedLargeType>::my_pi_in; // NOLINT(cppcoreguidelines-avoid-non-const-global-variables,hicpp-uppercase-literal-suffix,readability-uppercase-literal-suffix)
-
-  template<const std::uint32_t ResultDigit,
-           const std::uint32_t LoopDigit,
-           typename UnsignedSmallType,
-           typename UnsignedLargeType>
-  constexpr std::uint32_t pi_spigot<ResultDigit, LoopDigit, UnsignedSmallType, UnsignedLargeType>::loop_digit;
-
-  template<const std::uint32_t ResultDigit,
-           const std::uint32_t LoopDigit,
-           typename UnsignedSmallType,
-           typename UnsignedLargeType>
-  constexpr std::uint32_t pi_spigot<ResultDigit, LoopDigit, UnsignedSmallType, UnsignedLargeType>::result_digit;
 
   const std::array<const char*, static_cast<std::size_t>(UINT8_C(12))> pi_control_data =
   {
