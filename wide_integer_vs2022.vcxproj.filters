@@ -210,6 +210,9 @@
     <ClCompile Include="examples\example013_ecdsa_sign_verify.cpp">
       <Filter>Source Files\examples</Filter>
     </ClCompile>
+    <ClCompile Include="examples\example014_pi_spigot_wide.cpp">
+      <Filter>Source Files\examples</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include=".github\workflows\wide_integer.yml">

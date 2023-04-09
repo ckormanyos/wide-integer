@@ -42,6 +42,7 @@ auto ::math::wide_integer::test_uintwide_t_examples() -> bool
   result_is_ok = (math::wide_integer::example012_rsa_crypto         () && result_is_ok); std::cout << "result_is_ok after example012_rsa_crypto         : " << std::boolalpha << result_is_ok << std::endl;
   #endif
   result_is_ok = (math::wide_integer::example013_ecdsa_sign_verify  () && result_is_ok); std::cout << "result_is_ok after example013_ecdsa_sign_verify  : " << std::boolalpha << result_is_ok << std::endl;
+  result_is_ok = (math::wide_integer::example014_pi_spigot_wide     () && result_is_ok); std::cout << "result_is_ok after example014_pi_spigot_wide     : " << std::boolalpha << result_is_ok << std::endl;
 
   return result_is_ok;
 }
