@@ -69,7 +69,16 @@ namespace example014_pi_spigot
 
     using output_value_type = std::uint8_t;
 
-    WIDE_INTEGER_CONSTEXPR pi_spigot() = default; // LCOV_EXCL_LINE
+    WIDE_INTEGER_CONSTEXPR pi_spigot()
+    {
+      if(my_pi_in.empty())
+      {
+        constexpr auto input_size =
+          static_cast<typename input_container_type::size_type>(get_input_static_size());
+
+        my_pi_in.resize(input_size);
+      }
+    }
 
     WIDE_INTEGER_CONSTEXPR pi_spigot(const pi_spigot&) = delete;
 
@@ -95,12 +104,9 @@ namespace example014_pi_spigot
       // The input memory used for internal calculation details
       // is managed by the pi_spigot class itself.
 
-      if(my_pi_in.empty())
-      {
-        constexpr auto input_size = static_cast<typename input_container_type::size_type>(get_input_static_size());
-
-        my_pi_in.resize(input_size, static_cast<typename input_container_type::value_type>(UINT8_C(0)));
-      }
+      std::fill(my_pi_in.begin(),
+                my_pi_in.end(),
+                static_cast<typename input_container_type::value_type>(UINT8_C(0)));
 
       auto val_c = static_cast<unsigned_small_type>(static_cast<unsigned>(UINT8_C(0)));
 
