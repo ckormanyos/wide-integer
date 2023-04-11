@@ -193,7 +193,7 @@ namespace local_rsa
       encryptor(public_key).encrypt(str.cbegin(), str.length(), str_out.begin());
 
       return str_out;
-    }
+    } // LCOV_EXCL_LINE
 
     auto decrypt(const crypto_string& str) const -> std::string
     {

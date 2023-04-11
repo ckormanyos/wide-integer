@@ -5,7 +5,12 @@
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)             //
 ///////////////////////////////////////////////////////////////////
 
-#include <random>
+#include <algorithm>
+#include <array>
+#include <cstddef>
+#include <cstdint>
+#include <string>
+#include <vector>
 
 #include <examples/example_uintwide_t.h>
 #include <math/wide_integer/uintwide_t.h>
@@ -60,11 +65,20 @@ namespace example014_pi_spigot
 
     static constexpr auto get_input_static_size() noexcept -> std::uint32_t { return input_scale(get_output_static_size()); }
 
-    using input_container_type = std::array<std::uint32_t, static_cast<std::size_t>(get_input_static_size())>;
+    using input_container_type = std::vector<std::uint32_t>;
 
     using output_value_type = std::uint8_t;
 
-    WIDE_INTEGER_CONSTEXPR pi_spigot() = default; // LCOV_EXCL_LINE
+    WIDE_INTEGER_CONSTEXPR pi_spigot()
+    {
+      if(my_pi_in.empty())
+      {
+        constexpr auto input_size =
+          static_cast<typename input_container_type::size_type>(get_input_static_size());
+
+        my_pi_in.resize(input_size);
+      }
+    }
 
     WIDE_INTEGER_CONSTEXPR pi_spigot(const pi_spigot&) = delete;
 
@@ -85,11 +99,14 @@ namespace example014_pi_spigot
       // decimal digits of pi.
 
       // The caller is responsible for providing the output memory
-      // for the result of pi. The input memory used for internal
-      // calculation details while performing the calculation is
-      // provided by the pi_spigot class itself.
+      // for the result of pi.
 
-      my_pi_in.fill(static_cast<typename input_container_type::value_type>(UINT8_C(0)));
+      // The input memory used for internal calculation details
+      // is managed by the pi_spigot class itself.
+
+      std::fill(my_pi_in.begin(),
+                my_pi_in.end(),
+                static_cast<typename input_container_type::value_type>(UINT8_C(0)));
 
       auto val_c = static_cast<unsigned_small_type>(static_cast<unsigned>(UINT8_C(0)));
 
@@ -223,7 +240,7 @@ namespace example014_pi_spigot
            const std::uint32_t LoopDigit,
            typename UnsignedSmallType,
            typename UnsignedLargeType>
-  typename pi_spigot<ResultDigit, LoopDigit, UnsignedSmallType, UnsignedLargeType>::input_container_type pi_spigot<ResultDigit, LoopDigit, UnsignedSmallType, UnsignedLargeType>::my_pi_in; // NOLINT(cppcoreguidelines-avoid-non-const-global-variables,hicpp-uppercase-literal-suffix,readability-uppercase-literal-suffix)
+  typename pi_spigot<ResultDigit, LoopDigit, UnsignedSmallType, UnsignedLargeType>::input_container_type pi_spigot<ResultDigit, LoopDigit, UnsignedSmallType, UnsignedLargeType>::my_pi_in { }; // NOLINT(cppcoreguidelines-avoid-non-const-global-variables,hicpp-uppercase-literal-suffix,readability-uppercase-literal-suffix)
 
   const std::array<const char*, static_cast<std::size_t>(UINT8_C(12))> pi_control_data =
   {
