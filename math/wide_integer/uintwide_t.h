@@ -2346,7 +2346,7 @@
             (
               representation_type
               (
-                number_of_limbs, (std::numeric_limits<limb_type>::max)()
+                number_of_limbs, (std::numeric_limits<limb_type>::max)() // LCOV_EXCL_LINE
               )
             )
           ^
@@ -4245,7 +4245,7 @@
         {
           static_cast<typename representation_type::size_type>(number_of_limbs),
           static_cast<typename representation_type::value_type>(UINT8_C(0)),
-          typename representation_type::allocator_type()
+          typename representation_type::allocator_type() // LCOV_EXCL_LINE
         };
 
         if(d > static_cast<limb_type>(UINT8_C(1)))
@@ -4698,13 +4698,13 @@
       return char_is_valid;
     }
 
-    WIDE_INTEGER_CONSTEXPR auto bitwise_not() -> void
+    WIDE_INTEGER_CONSTEXPR auto bitwise_not() -> void // LCOV_EXCL_LINE
     {
       for(auto it = values.begin(); it != values.end(); ++it) // NOLINT(llvm-qualified-auto,readability-qualified-auto,altera-id-dependent-backward-branch)
       {
         *it = static_cast<limb_type>(~(*it));
       }
-    }
+    } // LCOV_EXCL_LINE
 
     WIDE_INTEGER_CONSTEXPR auto preincrement() -> void
     {

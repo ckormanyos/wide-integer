@@ -342,7 +342,7 @@ namespace example013_ecdsa
         constexpr point_type(double_sint_type x = static_cast<double_sint_type>(static_cast<unsigned>(UINT8_C(0))), // NOLINT(google-explicit-constructor,hicpp-explicit-conversions,bugprone-easily-swappable-parameters)
                              double_sint_type y = static_cast<double_sint_type>(static_cast<unsigned>(UINT8_C(0)))) noexcept
           : my_x(x),
-            my_y(y) { }
+            my_y(y) { } // LCOV_EXCL_LINE
 
         double_sint_type my_x; // NOLINT(misc-non-private-member-variables-in-classes)
         double_sint_type my_y; // NOLINT(misc-non-private-member-variables-in-classes)
@@ -452,7 +452,7 @@ namespace example013_ecdsa
       if((point.my_x == 0) && (point.my_y == 0))
       {
         // None represents the point at infinity.
-        return true;
+        return true; // LCOV_EXCL_LINE
       }
 
       // Test the condition:
