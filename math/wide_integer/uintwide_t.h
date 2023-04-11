@@ -2372,7 +2372,7 @@
             (
               representation_type
               (
-                number_of_limbs, static_cast<limb_type>(UINT8_C(0))
+                number_of_limbs, static_cast<limb_type>(UINT8_C(0)) // LCOV_EXCL_LINE
               )
             )
           |
