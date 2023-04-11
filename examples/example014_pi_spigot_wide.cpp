@@ -90,13 +90,17 @@ namespace example014_pi_spigot
       // decimal digits of pi.
 
       // The caller is responsible for providing the output memory
-      // for the result of pi. The input memory used for internal
-      // calculation details while performing the calculation is
-      // provided by the pi_spigot class itself.
+      // for the result of pi.
 
-      std::fill(my_pi_in.begin(),
-                my_pi_in.end(),
-                static_cast<typename input_container_type::value_type>(UINT8_C(0)));
+      // The input memory used for internal calculation details
+      // is managed by the pi_spigot class itself.
+
+      if(my_pi_in.empty())
+      {
+        constexpr auto input_size = static_cast<typename input_container_type::size_type>(get_input_static_size());
+
+        my_pi_in.resize(input_size, static_cast<typename input_container_type::value_type>(UINT8_C(0)));
+      }
 
       auto val_c = static_cast<unsigned_small_type>(static_cast<unsigned>(UINT8_C(0)));
 
@@ -230,7 +234,7 @@ namespace example014_pi_spigot
            const std::uint32_t LoopDigit,
            typename UnsignedSmallType,
            typename UnsignedLargeType>
-  typename pi_spigot<ResultDigit, LoopDigit, UnsignedSmallType, UnsignedLargeType>::input_container_type pi_spigot<ResultDigit, LoopDigit, UnsignedSmallType, UnsignedLargeType>::my_pi_in(static_cast<std::size_t>(static_cast<typename input_container_type::size_type>(get_input_static_size()))); // NOLINT(cppcoreguidelines-avoid-non-const-global-variables,hicpp-uppercase-literal-suffix,readability-uppercase-literal-suffix)
+  typename pi_spigot<ResultDigit, LoopDigit, UnsignedSmallType, UnsignedLargeType>::input_container_type pi_spigot<ResultDigit, LoopDigit, UnsignedSmallType, UnsignedLargeType>::my_pi_in { }; // NOLINT(cppcoreguidelines-avoid-non-const-global-variables,hicpp-uppercase-literal-suffix,readability-uppercase-literal-suffix)
 
   const std::array<const char*, static_cast<std::size_t>(UINT8_C(12))> pi_control_data =
   {
