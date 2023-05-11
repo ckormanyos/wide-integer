@@ -41,7 +41,7 @@ as shown in greater detail below.
 
 Wide-integer supports both unsigned as well as
 signed integral types having width of
-$1 {\phantom{.}} {\ldots} {\phantom{.}} 63 {\phantom{.}} {\times} {\phantom{.}} 2^N$
+$1 {\ldots} 63 {\times} 2^N$
 while being $16$, $24$, $32$ or larger.
 In addition, small integer types such as software-synthesized versions of
 `uint24_t`, `uint48_t`, `uint64_t`, `uint96_t`, `uint128_t`, etc.
@@ -501,7 +501,7 @@ auto main() -> int
 Wide-Integer has been tested with numerous compilers, for target systems ranging from eight to sixty-four bits.
 The library is specifically designed for efficiency with small to medium bit counts.
 Supported bit counts include integers
-$1 {\phantom{.}} {\ldots} {\phantom{.}} 63 {\phantom{.}} {\times} {\phantom{.}} 2^N$
+$1 {\ldots} 63 {\times} 2^N$
 while being $16$, $24$, $32$ or larger such as
 $256$, $384$, $512$, $768$, $1024$,
 or other less common bit counts such as $11,264$, etc.
