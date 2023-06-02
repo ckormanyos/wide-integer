@@ -583,7 +583,7 @@ jobs:
       - uses: actions/checkout@v3
       - uses: ilammy/msvc-dev-cmd@v1
         with:
-          toolset: 14.3
+          vsversion: 17.3
       - name: msvc-release-x64-vs2022-asan
         shell: cmd
         working-directory: ./
