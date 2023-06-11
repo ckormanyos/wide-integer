@@ -3793,11 +3793,7 @@
         }
       }
 
-      auto count_b =
-        static_cast<unsigned_fast_type>
-        (
-          static_cast<signed_fast_type>(count) - clz_b
-        );
+      auto count_b = static_cast<unsigned_fast_type>(count - clz_b);
 
       #endif
 
@@ -3819,7 +3815,7 @@
           #endif
 
           for(auto   j = static_cast<unsigned_fast_type>(UINT8_C(0));
-                     j < jmax;
+                     j < jmax; // NOLINT(altera-id-dependent-backward-branch)
                    ++j)
           {
             carry = static_cast<local_double_limb_type>(carry + static_cast<local_double_limb_type>(static_cast<local_double_limb_type>(*a) * *bj++));
