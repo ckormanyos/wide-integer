@@ -3959,7 +3959,7 @@
 
         auto i = static_cast<unsigned_fast_type>(UINT8_C(0));
 
-        for( ; i < imax; ++i)
+        for( ; i < imax; ++i) // NOLINT(altera-id-dependent-backward-branch)
         {
           carry =
             static_cast<local_double_limb_type>
