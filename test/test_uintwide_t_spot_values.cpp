@@ -1,5 +1,5 @@
 ﻿///////////////////////////////////////////////////////////////////////////////
-//  Copyright Christopher Kormanyos 2019 - 2022.
+//  Copyright Christopher Kormanyos 2019 - 2023.
 //  Distributed under the Boost Software License,
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -12,6 +12,26 @@
 
 #include <math/wide_integer/uintwide_t.h>
 #include <test/test_uintwide_t.h>
+
+namespace from_issue_362
+{
+  auto test_uintwide_t_spot_values_from_issue_362() -> bool
+  {
+    #if defined(WIDE_INTEGER_NAMESPACE)
+    using local_uint512_t = WIDE_INTEGER_NAMESPACE::math::wide_integer::uint512_t;
+    #else
+    using local_uint512_t = ::math::wide_integer::uint512_t;
+    #endif
+
+    const auto a = local_uint512_t(static_cast<std::uint32_t>(UINT32_C(11111)));
+    const auto b = local_uint512_t(static_cast<std::uint32_t>(UINT32_C(22222)));
+    const auto c = a * b;
+
+    auto result_is_ok = (c == local_uint512_t(static_cast<std::uint32_t>(UINT32_C(246908642))));
+
+    return result_is_ok;
+  }
+} // namespace from_issue_362
 
 namespace from_issue_342
 {
@@ -648,6 +668,14 @@ auto local_test_spot_values::test() -> bool // NOLINT(readability-function-cogni
   auto result_is_ok = true;
 
   {
+    // See also: https://github.com/ckormanyos/wide-integer/issues/362
+
+    result_is_ok = (from_issue_362::test_uintwide_t_spot_values_from_issue_362() && result_is_ok);
+  }
+
+  {
+    // See also: https://github.com/ckormanyos/wide-integer/issues/342
+
     const auto result_from_issue_342_is_ok =
       (   from_issue_342::test_uintwide_t_spot_values_from_issue_342_pos()
        && from_issue_342::test_uintwide_t_spot_values_from_issue_342_mix());
