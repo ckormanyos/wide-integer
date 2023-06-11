@@ -536,6 +536,7 @@ enabled or disabled at compile time with the compiler switches:
 #define WIDE_INTEGER_DISABLE_WIDE_INTEGER_CONSTEXPR
 #define WIDE_INTEGER_TEST_REPRESENTATION_AS_STD_LIST
 #define WIDE_INTEGER_DISABLE_PRIVATE_CLASS_DATA_MEMBERS
+#define WIDE_INTEGER_HAS_CLZ_LIMB_OPTIMIZATIONS
 ```
 
 When working with even the most tiny microcontroller systems,
@@ -752,13 +753,14 @@ is not defined (i.e., not set) by default. This ensures that
 This optional macro activates certain optimizations
 that count leading zero-limbs for multiplication operations
 and subsequently avoids (some) potentially costly
-multiplication opratins by zero-valued limbs.
+multiplication oprations by zero-valued limbs.
+This may offer performance advantages on some systems.
 
 This preprocessor switch was invented based on the discussion in
 [issue 362](https://github.com/ckormanyos/wide-integer/issues/362)
 
-The preprocessor switch `WIDE_INTEGER_HAS_CLZ_LIMB_OPTIMIZATIONS`
-is not defined (CLZ-limb optimizations are _disabeld_) by default.
+By default, the preprocessor switch `WIDE_INTEGER_HAS_CLZ_LIMB_OPTIMIZATIONS`
+is not defined and CLZ-limb optimizations are default-_disabeld_.
 
 ### C++14, 17, 20 `constexpr` support
 
