@@ -751,16 +751,15 @@ is not defined (i.e., not set) by default. This ensures that
 ```
 
 This optional macro activates certain optimizations
-that count leading zero-limbs for multiplication operations
-and subsequently avoids (some) potentially costly
-multiplication oprations by zero-valued limbs.
-This may offer performance advantages on some systems.
+that count leading zero-limbs prior to classical quadratic
+multiplication. This may offer performance advantages on some systems
+by avoiding some potentially costly zero-valued limb-multiplication steps.
 
-This preprocessor switch was invented based on the discussion in
+This preprocessor switch was motivated by the discussion in
 [issue 362](https://github.com/ckormanyos/wide-integer/issues/362)
 
 By default, the preprocessor switch `WIDE_INTEGER_HAS_CLZ_LIMB_OPTIMIZATIONS`
-is not defined and CLZ-limb optimizations are default-_disabeld_.
+is not defined and CLZ-limb optimizations are default-_disabled_.
 
 ### C++14, 17, 20 `constexpr` support
 
