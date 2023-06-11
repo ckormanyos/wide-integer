@@ -8,6 +8,8 @@
 #ifndef UINTWIDE_T_2018_10_02_H // NOLINT(llvm-header-guard)
   #define UINTWIDE_T_2018_10_02_H
 
+  #define WIDE_INTEGER_HAS_CLZ_LIMB_OPTIMIZATIONS
+
   #if defined(WIDE_INTEGER_TEST_REPRESENTATION_AS_STD_LIST)
   #define WIDE_INTEGER_DISABLE_WIDE_INTEGER_CONSTEXPR
   #endif
@@ -3772,6 +3774,33 @@
 
       detail::fill_unsafe(r, detail::advance_and_point(r, count), static_cast<local_limb_type>(UINT8_C(0)));
 
+      #if defined(WIDE_INTEGER_HAS_CLZ_LIMB_OPTIMIZATIONS)
+
+      auto clz_b = static_cast<unsigned_fast_type>(UINT8_C(0));
+
+      if(count > static_cast<unsigned_fast_type>(UINT8_C(0)))
+      {
+        using input_right_value_type = typename std::iterator_traits<InputIteratorRight>::value_type;
+
+        auto it_leading_zeros = detail::advance_and_point(b, count - static_cast<unsigned_fast_type>(UINT8_C(1)));
+
+        while(   (it_leading_zeros != b)
+              && (*it_leading_zeros == static_cast<input_right_value_type>(UINT8_C(0))))
+        {
+          --it_leading_zeros;
+
+          ++clz_b;
+        }
+      }
+
+      auto count_b =
+        static_cast<unsigned_fast_type>
+        (
+          static_cast<signed_fast_type>(count) - clz_b
+        );
+
+      #endif
+
       for(auto i = static_cast<unsigned_fast_type>(UINT8_C(0)); i < count; ++i)
       {
         if(*a != static_cast<local_limb_type>(UINT8_C(0)))
@@ -3781,8 +3810,16 @@
           auto r_i_plus_j = detail::advance_and_point(r, i); // NOLINT(llvm-qualified-auto,readability-qualified-auto)
           auto bj         = b;                               // NOLINT(llvm-qualified-auto,readability-qualified-auto)
 
+          #if defined(WIDE_INTEGER_HAS_CLZ_LIMB_OPTIMIZATIONS)
+          const auto jmax =
+            (std::min)(static_cast<unsigned_fast_type>(count - i),
+                       static_cast<unsigned_fast_type>(count_b + static_cast<unsigned_fast_type>(UINT8_C(1))));
+          #else
+          const auto jmax = static_cast<unsigned_fast_type>(count - i),
+          #endif
+
           for(auto   j = static_cast<unsigned_fast_type>(UINT8_C(0));
-                     j < static_cast<unsigned_fast_type>(count - i);
+                     j < jmax;
                    ++j)
           {
             carry = static_cast<local_double_limb_type>(carry + static_cast<local_double_limb_type>(static_cast<local_double_limb_type>(*a) * *bj++));
