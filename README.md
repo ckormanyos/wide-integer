@@ -745,6 +745,21 @@ So the preprocessor switch `WIDE_INTEGER_DISABLE_PRIVATE_CLASS_DATA_MEMBERS`
 is not defined (i.e., not set) by default. This ensures that
 `uintwide_t`'s data members remain private by default.
 
+```cpp
+#define WIDE_INTEGER_HAS_CLZ_LIMB_OPTIMIZATIONS
+```
+
+This optional macro activates certain optimizations
+that count leading zero-limbs for multiplication operations
+and subsequently avoids (some) potentially costly
+multiplication opratins by zero-valued limbs.
+
+This preprocessor switch was invented based on the discussion in
+[issue 362](https://github.com/ckormanyos/wide-integer/issues/362)
+
+The preprocessor switch `WIDE_INTEGER_HAS_CLZ_LIMB_OPTIMIZATIONS`
+is not defined (CLZ-limb optimizations are _disabeld_) by default.
+
 ### C++14, 17, 20 `constexpr` support
 
 When using C++20 `uintwide_t` supports compile-time

@@ -3772,7 +3772,53 @@
 
       detail::fill_unsafe(r, detail::advance_and_point(r, count), static_cast<local_limb_type>(UINT8_C(0)));
 
-      for(auto i = static_cast<unsigned_fast_type>(UINT8_C(0)); i < count; ++i)
+      #if defined(WIDE_INTEGER_HAS_CLZ_LIMB_OPTIMIZATIONS)
+
+      auto clz_a = static_cast<unsigned_fast_type>(UINT8_C(0));
+      auto clz_b = static_cast<unsigned_fast_type>(UINT8_C(0));
+
+      if(count > static_cast<unsigned_fast_type>(UINT8_C(0)))
+      {
+        {
+          using input_left_value_type  = typename std::iterator_traits<InputIteratorLeft>::value_type;
+
+          auto it_leading_zeros_a = detail::advance_and_point(a, static_cast<unsigned_fast_type>(count - static_cast<unsigned_fast_type>(UINT8_C(1)))); // NOLINT(llvm-qualified-auto,readability-qualified-auto)
+
+          while(   (it_leading_zeros_a != a) // NOLINT(altera-id-dependent-backward-branch)
+                && (*it_leading_zeros_a == static_cast<input_left_value_type>(UINT8_C(0))))
+          {
+            --it_leading_zeros_a;
+
+            ++clz_a;
+          }
+        }
+
+        {
+          using input_right_value_type = typename std::iterator_traits<InputIteratorRight>::value_type;
+
+          auto it_leading_zeros_b = detail::advance_and_point(b, static_cast<unsigned_fast_type>(count - static_cast<unsigned_fast_type>(UINT8_C(1)))); // NOLINT(llvm-qualified-auto,readability-qualified-auto)
+
+          while(   (it_leading_zeros_b != b) // NOLINT(altera-id-dependent-backward-branch)
+                && (*it_leading_zeros_b == static_cast<input_right_value_type>(UINT8_C(0))))
+          {
+            --it_leading_zeros_b;
+
+            ++clz_b;
+          }
+        }
+      }
+
+      const auto count_b = static_cast<unsigned_fast_type>(count - clz_b);
+
+      const auto imax = static_cast<unsigned_fast_type>(count - clz_a);
+
+      #else
+
+      const auto imax = count;
+
+      #endif
+
+      for(auto i = static_cast<unsigned_fast_type>(UINT8_C(0)); i < imax; ++i) // NOLINT(altera-id-dependent-backward-branch)
       {
         if(*a != static_cast<local_limb_type>(UINT8_C(0)))
         {
@@ -3781,9 +3827,15 @@
           auto r_i_plus_j = detail::advance_and_point(r, i); // NOLINT(llvm-qualified-auto,readability-qualified-auto)
           auto bj         = b;                               // NOLINT(llvm-qualified-auto,readability-qualified-auto)
 
-          for(auto   j = static_cast<unsigned_fast_type>(UINT8_C(0));
-                     j < static_cast<unsigned_fast_type>(count - i);
-                   ++j)
+          #if defined(WIDE_INTEGER_HAS_CLZ_LIMB_OPTIMIZATIONS)
+          const auto jmax =
+            (std::min)(static_cast<unsigned_fast_type>(count - i),
+                       static_cast<unsigned_fast_type>(count_b + static_cast<unsigned_fast_type>(UINT8_C(1))));
+          #else
+          const auto jmax = static_cast<unsigned_fast_type>(count - i);
+          #endif
+
+          for(auto j = static_cast<unsigned_fast_type>(UINT8_C(0)); j < jmax; ++j) // NOLINT(altera-id-dependent-backward-branch)
           {
             carry = static_cast<local_double_limb_type>(carry + static_cast<local_double_limb_type>(static_cast<local_double_limb_type>(*a) * *bj++));
             carry = static_cast<local_double_limb_type>(carry + *r_i_plus_j);
@@ -3879,7 +3931,35 @@
       }
       else
       {
-        for(auto i = static_cast<unsigned_fast_type>(UINT8_C(0)) ; i < count; ++i)
+        #if defined(WIDE_INTEGER_HAS_CLZ_LIMB_OPTIMIZATIONS)
+        auto clz_a = static_cast<unsigned_fast_type>(UINT8_C(0));
+
+        if(count > static_cast<unsigned_fast_type>(UINT8_C(0)))
+        {
+          using input_left_value_type  = typename std::iterator_traits<InputIteratorLeft>::value_type;
+
+          auto it_leading_zeros_a = detail::advance_and_point(a, static_cast<unsigned_fast_type>(count - static_cast<unsigned_fast_type>(UINT8_C(1)))); // NOLINT(llvm-qualified-auto,readability-qualified-auto)
+
+          while(   (it_leading_zeros_a != a) // NOLINT(altera-id-dependent-backward-branch)
+                && (*it_leading_zeros_a == static_cast<input_left_value_type>(UINT8_C(0))))
+          {
+            --it_leading_zeros_a;
+
+            ++clz_a;
+          }
+        }
+
+        const auto imax = static_cast<unsigned_fast_type>(count - clz_a);
+
+        #else
+
+        const auto imax = count;
+
+        #endif
+
+        auto i = static_cast<unsigned_fast_type>(UINT8_C(0));
+
+        for( ; i < imax; ++i) // NOLINT(altera-id-dependent-backward-branch)
         {
           carry =
             static_cast<local_double_limb_type>
@@ -3891,6 +3971,14 @@
           *r++  = static_cast<local_limb_type>(carry);
           carry = detail::make_hi<local_limb_type>(carry);
         }
+
+        #if defined(WIDE_INTEGER_HAS_CLZ_LIMB_OPTIMIZATIONS)
+        for( ; i < count; ++i)
+        {
+          *r++  = static_cast<local_limb_type>(carry);
+          carry = detail::make_hi<local_limb_type>(static_cast<local_double_limb_type>(UINT8_C(0)));
+        }
+        #endif
       }
 
       return static_cast<local_limb_type>(carry);
