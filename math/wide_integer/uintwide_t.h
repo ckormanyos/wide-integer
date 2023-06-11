@@ -3782,9 +3782,9 @@
       {
         using input_right_value_type = typename std::iterator_traits<InputIteratorRight>::value_type;
 
-        auto it_leading_zeros = detail::advance_and_point(b, count - static_cast<unsigned_fast_type>(UINT8_C(1)));
+        auto it_leading_zeros = detail::advance_and_point(b, count - static_cast<unsigned_fast_type>(UINT8_C(1))); // NOLINT(llvm-qualified-auto,readability-qualified-auto)
 
-        while(   (it_leading_zeros != b)
+        while(   (it_leading_zeros != b) // NOLINT(altera-id-dependent-backward-branch)
               && (*it_leading_zeros == static_cast<input_right_value_type>(UINT8_C(0))))
         {
           --it_leading_zeros;
@@ -3814,9 +3814,7 @@
           const auto jmax = static_cast<unsigned_fast_type>(count - i),
           #endif
 
-          for(auto   j = static_cast<unsigned_fast_type>(UINT8_C(0));
-                     j < jmax; // NOLINT(altera-id-dependent-backward-branch)
-                   ++j)
+          for(auto j = static_cast<unsigned_fast_type>(UINT8_C(0)); j < jmax; ++j) // NOLINT(altera-id-dependent-backward-branch)
           {
             carry = static_cast<local_double_limb_type>(carry + static_cast<local_double_limb_type>(static_cast<local_double_limb_type>(*a) * *bj++));
             carry = static_cast<local_double_limb_type>(carry + *r_i_plus_j);
