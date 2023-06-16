@@ -9,7 +9,9 @@
   #define UINTWIDE_T_2018_10_02_H
 
   #if defined(WIDE_INTEGER_TEST_REPRESENTATION_AS_STD_LIST)
+  #if !defined(WIDE_INTEGER_DISABLE_WIDE_INTEGER_CONSTEXPR)
   #define WIDE_INTEGER_DISABLE_WIDE_INTEGER_CONSTEXPR
+  #endif
   #endif
 
   #include <algorithm>
