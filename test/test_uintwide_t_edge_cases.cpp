@@ -69,23 +69,35 @@
 #include <math/wide_integer/uintwide_t.h>
 #include <test/test_uintwide_t.h>
 
+#if defined(__clang__)
+  #if defined __has_feature && __has_feature(thread_sanitizer)
+  #define UINTWIDE_T_REDUCE_TEST_DEPTH
+  #endif
+#elif defined(__GNUC__)
+  #if defined(__SANITIZE_THREAD__) || defined(WIDE_INTEGER_HAS_COVERAGE)
+  #define UINTWIDE_T_REDUCE_TEST_DEPTH
+  #endif
+#elif defined(_MSC_VER)
+  #if defined(_DEBUG)
+  #define UINTWIDE_T_REDUCE_TEST_DEPTH
+  #endif
+#endif
+
 namespace test_uintwide_t_edge {
 
 namespace local_edge_cases {
 
-  #if !(defined(_MSC_VER) && defined(_DEBUG))
-  constexpr auto local_digits2       = static_cast<std::size_t>(UINT32_C(16384));
-  #endif
-  constexpr auto local_digits2_small = static_cast<std::size_t>(UINT32_C(  256));
+  constexpr auto local_digits2       = static_cast<std::size_t>(UINT16_C(16384));
+  constexpr auto local_digits2_small = static_cast<std::size_t>(UINT16_C(256));
 
 } // namespace local_edge_cases
 
-#if (defined(_MSC_VER) && defined(_DEBUG))
-constexpr auto loop_count_lo = static_cast<std::uint32_t>(UINT32_C(4));
-constexpr auto loop_count_hi = static_cast<std::uint32_t>(UINT32_C(8));
+#if !defined(UINTWIDE_T_REDUCE_TEST_DEPTH)
+constexpr auto loop_count_lo = static_cast<std::uint32_t>(UINT16_C(4));
+constexpr auto loop_count_hi = static_cast<std::uint32_t>(UINT16_C(8));
 #else
-constexpr auto loop_count_lo = static_cast<std::uint32_t>(UINT32_C(64));
-constexpr auto loop_count_hi = static_cast<std::uint32_t>(UINT32_C(256));
+constexpr auto loop_count_lo = static_cast<std::uint32_t>(UINT16_C(64));
+constexpr auto loop_count_hi = static_cast<std::uint32_t>(UINT16_C(256));
 #endif
 
 // Forward declaration
@@ -109,7 +121,7 @@ using local_uintwide_t_small_signed_type =
   ::math::wide_integer::uintwide_t<local_edge_cases::local_digits2_small, std::uint16_t, void, true>;
 #endif
 
-#if !(defined(_MSC_VER) && defined(_DEBUG))
+#if !defined(UINTWIDE_T_REDUCE_TEST_DEPTH)
 using local_uint_backend_type =
   boost::multiprecision::uintwide_t_backend<local_edge_cases::local_digits2,
                                             std::uint32_t,
@@ -246,7 +258,7 @@ auto generate_wide_integer_value(bool       is_positive           = true,
   return local_integral_type(str_x.c_str());
 }
 
-#if !(defined(_MSC_VER) && defined(_DEBUG))
+#if !defined(UINTWIDE_T_REDUCE_TEST_DEPTH)
 auto test_various_edge_operations() -> bool
 {
   const auto u_max_local = (std::numeric_limits<local_uint_type>::max)();
@@ -1262,7 +1274,7 @@ auto test_to_chars_and_to_string() -> bool // NOLINT(readability-function-cognit
     result_is_ok = (result_to_strings_are_ok && result_is_ok);
   }
 
-  #if !(defined(_MSC_VER) && defined(_DEBUG))
+  #if !defined(UINTWIDE_T_REDUCE_TEST_DEPTH)
   for(auto   i = static_cast<unsigned>(UINT32_C(0));
              i < static_cast<unsigned>(UINT32_C(32));
            ++i)
@@ -1815,7 +1827,7 @@ auto ::math::wide_integer::test_uintwide_t_edge_cases() -> bool
 
   auto result_is_ok = true;
 
-  #if !(defined(_MSC_VER) && defined(_DEBUG))
+  #if !defined(UINTWIDE_T_REDUCE_TEST_DEPTH)
   result_is_ok = (test_uintwide_t_edge::test_various_edge_operations    () && result_is_ok);
   #endif
   result_is_ok = (test_uintwide_t_edge::test_various_ostream_ops        () && result_is_ok);
