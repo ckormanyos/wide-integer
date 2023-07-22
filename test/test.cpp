@@ -553,7 +553,9 @@ auto run() -> bool // NOLINT(readability-function-cognitive-complexity)
   #endif
 
   result_is_ok = (test_uintwide_t_small_bits()                 && result_is_ok);   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
+  #if !defined(UINTWIDE_T_REDUCE_TEST_DEPTH)
   result_is_ok = (test_uintwide_t_boost_backend()              && result_is_ok);   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
+  #endif
   result_is_ok = (test_uintwide_t_examples()                   && result_is_ok);   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
   result_is_ok = (test_uintwide_t_edge_cases()                 && result_is_ok);   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
   result_is_ok = (test_uintwide_t_float_convert()              && result_is_ok);   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
