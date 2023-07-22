@@ -23,7 +23,7 @@ jobs:
       fail-fast: false
       matrix:
         standard: [ c++20 ]
-        compiler: [ g++ ]
+        compiler: [ g++-12 ]
     steps:
       - uses: actions/checkout@v3
         with:
@@ -38,7 +38,7 @@ jobs:
           ./bootstrap.sh
           ./b2 headers
       - name: update-tools
-        run: sudo apt-get install valgrind
+        run: sudo apt-get install g++-12 valgrind
       - name: gcc-valgrind
         run: |
           echo "compile"
