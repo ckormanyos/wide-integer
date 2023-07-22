@@ -435,8 +435,14 @@ auto test_uintwide_t_0008192() -> bool
 #if defined(WIDE_INTEGER_HAS_LIMB_TYPE_UINT64)
 auto test_uintwide_t_0008192_limb_type_uint64_t() -> bool
 {
+  #if !defined(UINTWIDE_T_REDUCE_TEST_DEPTH)
+  constexpr auto count = static_cast<std::size_t>(1UL << 8U);
+  #else
+  constexpr auto count = static_cast<std::size_t>(1UL << 5U);
+  #endif
+
   std::cout << "running: test_uintwide_t_0008192_limb_type_uint64_t" << std::endl;
-  test_uintwide_t_n_binary_ops_template<8192U, std::uint64_t> test_uintwide_t_n_binary_ops_template_instance(1UL << 8U); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
+  test_uintwide_t_n_binary_ops_template<8192U, std::uint64_t> test_uintwide_t_n_binary_ops_template_instance(count); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
   const auto result_is_ok =
     test_uintwide_t_n_binary_ops_template_instance.do_test(test_uintwide_t_n_binary_ops_rounds);
   return result_is_ok;
