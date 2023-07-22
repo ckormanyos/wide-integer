@@ -119,11 +119,12 @@ auto ::math::wide_integer::example008a_miller_rabin_prime() -> bool
       "00000000000000000000000000000000000000000000000000"
     );
 
-  WIDE_INTEGER_CONSTEXPR local_wide_integer_type
-    dist_max
-    (
-      (std::numeric_limits<local_wide_integer_type>::max)() - 1
-    );
+  WIDE_INTEGER_CONSTEXPR auto dist_max =
+    local_wide_integer_type
+    {
+        (std::numeric_limits<local_wide_integer_type>::max)()
+      - static_cast<int>(INT8_C(1))
+    };
 
   local_distribution_type
     dist

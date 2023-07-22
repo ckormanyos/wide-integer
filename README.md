@@ -304,7 +304,8 @@ ranging from C++14, 17, 20, 23 are included in CI.
 
 In CI, we use both elevated GCC/clang compiler warnings
 as well as MSVC level 4 warnings active on the correspondoing platforms.
-A wide variety of run-time sanitizers
+A wide variety of run-time sanitizers as well as traditional
+[`valgrind`](https://valgrind.org)
 are also used in CI in order to assure dynamic quality.
 For syntax checking, clang-tidy is used both in CI
 as well as in offline checks to improve static code quality.

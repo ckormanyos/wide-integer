@@ -69,23 +69,37 @@
 #include <math/wide_integer/uintwide_t.h>
 #include <test/test_uintwide_t.h>
 
+#if defined(__clang__)
+  #if defined __has_feature && __has_feature(thread_sanitizer)
+  #define UINTWIDE_T_REDUCE_TEST_DEPTH
+  #endif
+#elif defined(__GNUC__)
+  #if defined(__SANITIZE_THREAD__) || defined(WIDE_INTEGER_HAS_COVERAGE)
+  #define UINTWIDE_T_REDUCE_TEST_DEPTH
+  #endif
+#elif defined(_MSC_VER)
+  #if defined(_DEBUG)
+  #define UINTWIDE_T_REDUCE_TEST_DEPTH
+  #endif
+#endif
+
 namespace test_uintwide_t_edge {
 
 namespace local_edge_cases {
 
-  #if !(defined(_MSC_VER) && defined(_DEBUG))
-  constexpr auto local_digits2       = static_cast<std::size_t>(UINT32_C(16384));
+  #if !defined(UINTWIDE_T_REDUCE_TEST_DEPTH)
+  constexpr auto local_digits2       = static_cast<std::size_t>(UINT16_C(16384));
   #endif
-  constexpr auto local_digits2_small = static_cast<std::size_t>(UINT32_C(  256));
+  constexpr auto local_digits2_small = static_cast<std::size_t>(UINT16_C(256));
 
 } // namespace local_edge_cases
 
-#if (defined(_MSC_VER) && defined(_DEBUG))
-constexpr auto loop_count_lo = static_cast<std::uint32_t>(UINT32_C(4));
-constexpr auto loop_count_hi = static_cast<std::uint32_t>(UINT32_C(8));
+#if !defined(UINTWIDE_T_REDUCE_TEST_DEPTH)
+constexpr auto loop_count_lo = static_cast<std::uint32_t>(UINT16_C(64));
+constexpr auto loop_count_hi = static_cast<std::uint32_t>(UINT16_C(256));
 #else
-constexpr auto loop_count_lo = static_cast<std::uint32_t>(UINT32_C(64));
-constexpr auto loop_count_hi = static_cast<std::uint32_t>(UINT32_C(256));
+constexpr auto loop_count_lo = static_cast<std::uint32_t>(UINT16_C(4));
+constexpr auto loop_count_hi = static_cast<std::uint32_t>(UINT16_C(8));
 #endif
 
 // Forward declaration
@@ -109,7 +123,7 @@ using local_uintwide_t_small_signed_type =
   ::math::wide_integer::uintwide_t<local_edge_cases::local_digits2_small, std::uint16_t, void, true>;
 #endif
 
-#if !(defined(_MSC_VER) && defined(_DEBUG))
+#if !defined(UINTWIDE_T_REDUCE_TEST_DEPTH)
 using local_uint_backend_type =
   boost::multiprecision::uintwide_t_backend<local_edge_cases::local_digits2,
                                             std::uint32_t,
@@ -246,7 +260,7 @@ auto generate_wide_integer_value(bool       is_positive           = true,
   return local_integral_type(str_x.c_str());
 }
 
-#if !(defined(_MSC_VER) && defined(_DEBUG))
+#if !defined(UINTWIDE_T_REDUCE_TEST_DEPTH)
 auto test_various_edge_operations() -> bool
 {
   const auto u_max_local = (std::numeric_limits<local_uint_type>::max)();
@@ -923,6 +937,46 @@ auto test_various_isolated_edge_cases() -> bool // NOLINT(readability-function-c
     result_is_ok = (result_infinities_is_ok && result_is_ok);
   }
 
+  for(auto   i = static_cast<unsigned>(UINT32_C(0));
+             i < static_cast<unsigned>(loop_count_hi);
+           ++i)
+  {
+    // Verify shift of an unsigned wide-integer by a signed amount.
+
+    const auto u_gen = generate_wide_integer_value<local_uintwide_t_small_unsigned_type>();
+
+    const auto ur_neg  = u_gen << static_cast<int>(INT8_C(-4));
+    const auto ur_ctrl = u_gen >> static_cast<unsigned>(UINT8_C(4));
+
+    const auto ul_neg  = u_gen >> static_cast<int>(INT8_C(-4));
+    const auto ul_ctrl = u_gen << static_cast<unsigned>(UINT8_C(4));
+
+    const auto result_left_is_ok  = (ul_neg == ul_ctrl);
+    const auto result_right_is_ok = (ur_neg == ur_ctrl);
+
+    result_is_ok = (result_left_is_ok && result_right_is_ok && result_is_ok);
+  }
+
+  for(auto   i = static_cast<unsigned>(UINT32_C(0));
+             i < static_cast<unsigned>(loop_count_hi);
+           ++i)
+  {
+    // Verify shift of a signed wide-integer by a signed amount.
+
+    const auto s_gen = generate_wide_integer_value<local_uintwide_t_small_signed_type>(false);
+
+    const auto sr_neg  = s_gen << static_cast<int>(INT8_C(-4));
+    const auto sr_ctrl = s_gen >> static_cast<unsigned>(UINT8_C(4));
+
+    const auto sl_neg  = s_gen >> static_cast<int>(INT8_C(-4));
+    const auto sl_ctrl = s_gen << static_cast<unsigned>(UINT8_C(4));
+
+    const auto result_left_is_ok  = (sl_neg == sl_ctrl);
+    const auto result_right_is_ok = (sr_neg == sr_ctrl);
+
+    result_is_ok = (result_left_is_ok && result_right_is_ok && result_is_ok);
+  }
+
   {
     local_uintwide_t_small_unsigned_type u1(static_cast<unsigned>(UINT8_C(1)));
 
@@ -1262,7 +1316,7 @@ auto test_to_chars_and_to_string() -> bool // NOLINT(readability-function-cognit
     result_is_ok = (result_to_strings_are_ok && result_is_ok);
   }
 
-  #if !(defined(_MSC_VER) && defined(_DEBUG))
+  #if !defined(UINTWIDE_T_REDUCE_TEST_DEPTH)
   for(auto   i = static_cast<unsigned>(UINT32_C(0));
              i < static_cast<unsigned>(UINT32_C(32));
            ++i)
@@ -1804,6 +1858,7 @@ auto test_export_bits() -> bool // NOLINT(readability-function-cognitive-complex
 
 } // namespace test_uintwide_t_edge
 
+// LCOV_EXCL_START
 #if defined(WIDE_INTEGER_NAMESPACE)
 auto WIDE_INTEGER_NAMESPACE::math::wide_integer::test_uintwide_t_edge_cases() -> bool
 #else
@@ -1815,9 +1870,10 @@ auto ::math::wide_integer::test_uintwide_t_edge_cases() -> bool
 
   auto result_is_ok = true;
 
-  #if !(defined(_MSC_VER) && defined(_DEBUG))
+  #if !defined(UINTWIDE_T_REDUCE_TEST_DEPTH)
   result_is_ok = (test_uintwide_t_edge::test_various_edge_operations    () && result_is_ok);
   #endif
+  // LCOV_EXCL_STOP
   result_is_ok = (test_uintwide_t_edge::test_various_ostream_ops        () && result_is_ok);
   result_is_ok = (test_uintwide_t_edge::test_various_roots_and_pow_etc  () && result_is_ok);
   result_is_ok = (test_uintwide_t_edge::test_various_isolated_edge_cases() && result_is_ok);
