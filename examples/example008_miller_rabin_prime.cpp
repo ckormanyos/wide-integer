@@ -16,20 +16,6 @@
 #include <examples/example_uintwide_t.h>
 #include <math/wide_integer/uintwide_t.h>
 
-#if defined(__clang__)
-  #if defined __has_feature && __has_feature(thread_sanitizer)
-  #define UINTWIDE_T_REDUCE_TEST_DEPTH
-  #endif
-#elif defined(__GNUC__)
-  #if defined(__SANITIZE_THREAD__) || defined(WIDE_INTEGER_HAS_COVERAGE)
-  #define UINTWIDE_T_REDUCE_TEST_DEPTH
-  #endif
-#elif defined(_MSC_VER)
-  #if defined(_DEBUG)
-  #define UINTWIDE_T_REDUCE_TEST_DEPTH
-  #endif
-#endif
-
 namespace local_example008_miller_rabin_prime
 {
   #if defined(WIDE_INTEGER_NAMESPACE)
@@ -118,10 +104,10 @@ namespace local_example008_miller_rabin_prime
 
   auto example008_miller_rabin_prime_check_known_primes() -> bool
   {
-    #if !defined(UINTWIDE_T_REDUCE_TEST_DEPTH)
-    using known_primes_array_type = std::array<wide_integer_type, static_cast<std::size_t>(UINT8_C(28))>;
-    #else
+    #if (defined(_MSC_VER) && defined(_DEBUG))
     using known_primes_array_type = std::array<wide_integer_type, static_cast<std::size_t>(UINT8_C(4))>;
+    #else
+    using known_primes_array_type = std::array<wide_integer_type, static_cast<std::size_t>(UINT8_C(28))>;
     #endif
 
     const known_primes_array_type known_primes =
@@ -130,7 +116,7 @@ namespace local_example008_miller_rabin_prime
       wide_integer_type("6316533715112802448288092604478054524383926634811945757057640178392735989589363869889681632218704486270766492727631128625563552112105808239098327091824521"),
       wide_integer_type("4858586217250992689079636758246308353014067931891277522662097117263017348927716654355835947116278934662184099633799310227887262043463022049904058963602113"),
       wide_integer_type("6019419207947545798517327619748393618031791796951797411174747320842950599875485354843571998416270218797959087329922954007679373990444302239974053043273173"),
-      #if !defined(UINTWIDE_T_REDUCE_TEST_DEPTH)
+      #if !(defined(_MSC_VER) && defined(_DEBUG))
       wide_integer_type("2623115045263242825415413671896042727657332322988674224271913776550889477454553016178535650310812678634291673863620916079255756983038819930429300055323617"),
       wide_integer_type("3003848015480415325081996052076028272879191508991266945638241025854760400469061295504211346716924852976586414875652009123799821021749062743721323009536589"),
       wide_integer_type("5568337324913975213045841890066332347573591111951280366169746765603974031759890673193278087261510160253710813073898966574448941498158599660295718450413969"),
@@ -187,10 +173,10 @@ auto ::math::wide_integer::example008_miller_rabin_prime() -> bool
   auto result_is_ok = true;
 
   for(auto   i = static_cast<unsigned>(UINT8_C(0));
-  #if !defined(UINTWIDE_T_REDUCE_TEST_DEPTH)
-             i < static_cast<unsigned>(UINT8_C(8));
-  #else
+  #if (defined(_MSC_VER) && defined(_DEBUG))
              i < static_cast<unsigned>(UINT8_C(1));
+  #else
+             i < static_cast<unsigned>(UINT8_C(8));
   #endif
            ++i)
   {

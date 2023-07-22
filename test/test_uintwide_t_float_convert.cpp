@@ -64,20 +64,6 @@
 #include <math/wide_integer/uintwide_t.h>
 #include <test/test_uintwide_t.h>
 
-#if defined(__clang__)
-  #if defined __has_feature && __has_feature(thread_sanitizer)
-  #define UINTWIDE_T_REDUCE_TEST_DEPTH
-  #endif
-#elif defined(__GNUC__)
-  #if defined(__SANITIZE_THREAD__) || defined(WIDE_INTEGER_HAS_COVERAGE)
-  #define UINTWIDE_T_REDUCE_TEST_DEPTH
-  #endif
-#elif defined(_MSC_VER)
-  #if defined(_DEBUG)
-  #define UINTWIDE_T_REDUCE_TEST_DEPTH
-  #endif
-#endif
-
 namespace local_float_convert
 {
   auto engine_man() -> std::mt19937&                                                         { static std::mt19937                                                         my_engine_man; return my_engine_man; } // NOLINT(cert-msc32-c,cert-msc51-cpp)
@@ -235,11 +221,7 @@ auto ::math::wide_integer::test_uintwide_t_float_convert() -> bool
 
   bool result_is_ok = true;
 
-  #if !defined(UINTWIDE_T_REDUCE_TEST_DEPTH)
   for(auto i = static_cast<std::size_t>(0U); i < static_cast<std::size_t>(UINT32_C(0x80000)); ++i)
-  #else
-  for(auto i = static_cast<std::size_t>(0U); i < static_cast<std::size_t>(UINT32_C(0x10000)); ++i)
-  #endif
   {
     const auto f = local_float_convert::get_random_float<float, -1, 27>();
 
@@ -252,11 +234,7 @@ auto ::math::wide_integer::test_uintwide_t_float_convert() -> bool
     result_is_ok = ((str_boost_signed == str_local_signed) && result_is_ok);
   }
 
-  #if !defined(UINTWIDE_T_REDUCE_TEST_DEPTH)
   for(auto i = static_cast<std::size_t>(0U); i < static_cast<std::size_t>(UINT32_C(0x80000)); ++i)
-  #else
-  for(auto i = static_cast<std::size_t>(0U); i < static_cast<std::size_t>(UINT32_C(0x10000)); ++i)
-  #endif
   {
     const auto d = local_float_convert::get_random_float<double, -1, 75>();
 
@@ -273,11 +251,7 @@ auto ::math::wide_integer::test_uintwide_t_float_convert() -> bool
   local_float_convert::engine_sgn().seed(static_cast<typename std::ranlux24_base::result_type>                                                  (std::clock()));
   local_float_convert::engine_e10().seed(static_cast<typename std::linear_congruential_engine<std::uint32_t, 48271, 0, 2147483647>::result_type>(std::clock())); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
 
-  #if !defined(UINTWIDE_T_REDUCE_TEST_DEPTH)
   for(auto i = static_cast<std::size_t>(0U); i < static_cast<std::size_t>(UINT32_C(0x100000)); ++i)
-  #else
-  for(auto i = static_cast<std::size_t>(0U); i < static_cast<std::size_t>(UINT32_C(0x20000)); ++i)
-  #endif
   {
     std::string str_digits;
 
@@ -299,11 +273,7 @@ auto ::math::wide_integer::test_uintwide_t_float_convert() -> bool
     result_is_ok = (result_f_is_ok && result_is_ok);
   }
 
-  #if !defined(UINTWIDE_T_REDUCE_TEST_DEPTH)
   for(auto i = static_cast<std::size_t>(0U); i < static_cast<std::size_t>(UINT32_C(0x40000)); ++i)
-  #else
-  for(auto i = static_cast<std::size_t>(0U); i < static_cast<std::size_t>(UINT32_C(0x08000)); ++i)
-  #endif
   {
     std::string str_digits;
 
