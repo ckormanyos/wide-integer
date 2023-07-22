@@ -937,6 +937,46 @@ auto test_various_isolated_edge_cases() -> bool // NOLINT(readability-function-c
     result_is_ok = (result_infinities_is_ok && result_is_ok);
   }
 
+  for(auto   i = static_cast<unsigned>(UINT32_C(0));
+             i < static_cast<unsigned>(loop_count_hi);
+           ++i)
+  {
+    // Verify shift of an unsigned wide-integer by a signed amount.
+
+    const auto u_gen = generate_wide_integer_value<local_uintwide_t_small_unsigned_type>();
+
+    const auto ur_neg  = u_gen << static_cast<int>(INT8_C(-4));
+    const auto ur_ctrl = u_gen >> static_cast<unsigned>(UINT8_C(4));
+
+    const auto ul_neg  = u_gen >> static_cast<int>(INT8_C(-4));
+    const auto ul_ctrl = u_gen << static_cast<unsigned>(UINT8_C(4));
+
+    const auto result_left_is_ok  = (ul_neg == ul_ctrl);
+    const auto result_right_is_ok = (ur_neg == ur_ctrl);
+
+    result_is_ok = (result_left_is_ok && result_right_is_ok && result_is_ok);
+  }
+
+  for(auto   i = static_cast<unsigned>(UINT32_C(0));
+             i < static_cast<unsigned>(loop_count_hi);
+           ++i)
+  {
+    // Verify shift of a signed wide-integer by a signed amount.
+
+    const auto s_gen = generate_wide_integer_value<local_uintwide_t_small_signed_type>(false);
+
+    const auto sr_neg  = s_gen << static_cast<int>(INT8_C(-4));
+    const auto sr_ctrl = s_gen >> static_cast<unsigned>(UINT8_C(4));
+
+    const auto sl_neg  = s_gen >> static_cast<int>(INT8_C(-4));
+    const auto sl_ctrl = s_gen << static_cast<unsigned>(UINT8_C(4));
+
+    const auto result_left_is_ok  = (sl_neg == sl_ctrl);
+    const auto result_right_is_ok = (sr_neg == sr_ctrl);
+
+    result_is_ok = (result_left_is_ok && result_right_is_ok && result_is_ok);
+  }
+
   {
     local_uintwide_t_small_unsigned_type u1(static_cast<unsigned>(UINT8_C(1)));
 
@@ -1818,6 +1858,7 @@ auto test_export_bits() -> bool // NOLINT(readability-function-cognitive-complex
 
 } // namespace test_uintwide_t_edge
 
+// LCOV_EXCL_START
 #if defined(WIDE_INTEGER_NAMESPACE)
 auto WIDE_INTEGER_NAMESPACE::math::wide_integer::test_uintwide_t_edge_cases() -> bool
 #else
@@ -1832,6 +1873,7 @@ auto ::math::wide_integer::test_uintwide_t_edge_cases() -> bool
   #if !defined(UINTWIDE_T_REDUCE_TEST_DEPTH)
   result_is_ok = (test_uintwide_t_edge::test_various_edge_operations    () && result_is_ok);
   #endif
+  // LCOV_EXCL_STOP
   result_is_ok = (test_uintwide_t_edge::test_various_ostream_ops        () && result_is_ok);
   result_is_ok = (test_uintwide_t_edge::test_various_roots_and_pow_etc  () && result_is_ok);
   result_is_ok = (test_uintwide_t_edge::test_various_isolated_edge_cases() && result_is_ok);
