@@ -278,7 +278,7 @@ examples/example014_pi_spigot_wide.cpp      \
 -o wide_integer.exe
 ```
 
-## Quality: Testing, CI and other quality checks
+## Testing, CI and Quality Checks
 
 ### Testing
 
@@ -327,6 +327,9 @@ quality-gate with comparison/baseline-check provided by
 
 Quality badges are displayed at the top of this repository's
 readme page.
+
+### Build status
+[![Build Status](https://github.com/ckormanyos/wide-integer/actions/workflows/wide_integer.yml/badge.svg)](https://github.com/ckormanyos/wide-integer/actions)
 
 ## Detailed examples
 
@@ -925,7 +928,7 @@ This phenomenon was discussed in
 ## References
 
 A original publications on [_valgrind_](https://valgrind.org)
-and _valgrind_ in relation to memory errors can be found in [1] and [2].
+and its relation to memory errors can be found in [1] and [2].
 
 [1] Nicholas Nethercote and Julian Seward,
 _Valgrind:_ _A_ _Framework_ _for_ _Heavyweight_ _Dynamic_ _Binary_ _Instrumentation_,
