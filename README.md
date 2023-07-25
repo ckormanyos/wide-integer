@@ -309,7 +309,7 @@ as well as in offline checks to improve static code quality.
 
 Both GCC's run-time
 [sanitizers](https://gcc.gnu.org/onlinedocs/gcc/Instrumentation-Options.html)
-as well as _valgrind_ (see also [1] and [2] in the References below)
+as well as [_valgrind_](https://valgrind.org) (see also [1] and [2] in the References below)
 are used in CI in order to help assure dynamic quality.
 
 Additional quality checks are performed on pull-request
