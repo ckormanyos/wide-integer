@@ -802,7 +802,7 @@ jobs:
           ls -la ./${{ matrix.suite }}.exe
           ./${{ matrix.suite }}.exe
   gcc-valgrind:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     defaults:
       run:
         shell: bash
@@ -834,4 +834,3 @@ jobs:
           valgrind --leak-check=yes --log-file=wide_integer_valgrind.txt ./wide_integer.exe
           grep '0 bytes in 0 blocks' wide_integer_valgrind.txt
           grep '0 errors from 0 contexts' wide_integer_valgrind.txt
-

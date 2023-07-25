@@ -64,8 +64,7 @@ namespace local_example008_miller_rabin_prime
 
   auto example008_miller_rabin_prime_run() -> bool
   {
-    // Use a fixed seed in order to obtain deterministic
-    // and reproducible result for this test.
+    // Use a pseudo-random seed for this test.
 
     random_engine1_type generator1(time_point<typename random_engine1_type::result_type>());
     random_engine2_type generator2(time_point<typename random_engine2_type::result_type>());
