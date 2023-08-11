@@ -101,8 +101,8 @@ is shown in its entirety in the following
 
 See also the following informative links to Wolfram Alpha(R).
 
-  - Query the approximate value of $3^{301}$ with [`N[3^301]`]](https://www.wolframalpha.com/input?i=N%5B3%5E301%5D)
-  - Verify the exact value of $3^{301}$ with [`3^301`](See also https://www.wolframalpha.com/input?i=3%5E301)
+  - Query the approximate value of $3^{301}$ with [`N[3^301]`](https://www.wolframalpha.com/input?i=N%5B3%5E301%5D)
+  - Verify the exact value of $3^{301}$ with [`3^301`](https://www.wolframalpha.com/input?i=3%5E301)
 
 In particular,
 
