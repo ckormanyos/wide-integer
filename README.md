@@ -84,17 +84,45 @@ Then simply `#include <uintwide_t.h>` the normal C++ way.
 
 Easy application follows via traditional C-style typedef or alias
 such as `uint512_t`. An instance of the defined type can be used very much
-like a built-in integral type. In the following code, for example,
-the static `uint512_t` variable `x` is initialized with unsigned value `3U`.
+like a built-in integral type.
+
+In the following code, for example,
+the static `uint512_t` variable `x` is initialized with unsigned, integral value `3U`.
+The `main` subroutine subsequently computes $3^{301}$ with the specialized
+wide-integer, namespace-specific function `pow`, which is found via ADL.
+
+The approximate result is
+
+$$3^{301}~{\approx}~4.10674{\times}~10^{143}\text{.}$$
+
+This example, compiled with successful output result,
+is shown in its entirety in the following
+[short link](https://godbolt.org/z/eWKzqx77G) to [godbolt](https://godbolt.org).
+
+See also the following informative links to Wolfram Alpha(R).
+
+  - Query the approximate value of $3^{301}$ with [`N[3^301]`]](https://www.wolframalpha.com/input?i=N%5B3%5E301%5D)
+  - Verify the exact value of $3^{301}$ with [`3^301`](See also https://www.wolframalpha.com/input?i=3%5E301)
 
 In particular,
 
 ```cpp
+#include <iostream>
+
 #include <math/wide_integer/uintwide_t.h>
 
 using uint512_t = ::math::wide_integer::uintwide_t<512U, std::uint32_t>;
 
-static uint512_t x = 3U;
+static const uint512_t x = 3U;
+
+auto main() -> int
+{
+  // Compute x^301, i.e., 3^301.
+  const auto p3 = pow(x, 301);
+
+  // 410674437175765127973978082146264947899391086876012309414440570235106991532497229781400618467066824164751453321793982128440538198297087323698003
+  std::cout << p3 << std::endl;
+}
 ```
 
 The code sequence above defines the local data type `uint512_t` with
@@ -390,6 +418,10 @@ These functions are found via ADL.
 
 The example below calculates an integer square root.
 
+This example, compiled with successful output result,
+is shown in its entirety in the following
+[short link](https://godbolt.org/z/Gf4sfeP48) to [godbolt](https://godbolt.org).
+
 ```cpp
 #include <iomanip>
 #include <iostream>
@@ -404,8 +436,7 @@ auto main() -> int
 
   const uint256_t s = sqrt(a);
 
-  const auto result_is_ok =
-    (s == "0xFA5FE7853F1D4AD92BDF244179CA178B");
+  const auto result_is_ok = (s == "0xFA5FE7853F1D4AD92BDF244179CA178B");
 
   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
 }
@@ -555,7 +586,7 @@ I/O streaming can optionally be disabled with the compiler switch:
 The default setting is `WIDE_INTEGER_DISABLE_IOSTREAM` not set
 and I/O streaming operations are enabled.
 
-Conversion to `std::string` is supported with the namespace-specific function
+Conversion to `std::string` is supported with the specialized wide-integer, namespace-specific function
 `to_string`. This analagous to the standard library's `std::to_string` function,
 but implemented specifically for instances of `uintwide_t`.
 Wide-integer's local, namespace-specific `to_string`
@@ -778,7 +809,7 @@ of `uintwide_t` from character strings with subsequent `constexpr` evaluations
 of binary operations multiply, divide, intergal cast and comparison.
 
 See this example fully worked out at the following
-[short link](https://godbolt.org/z/6zxTv54q5) to [godbolt](https://godbolt.org).
+[short link](https://godbolt.org/z/vYsfWYhe4) to [godbolt](https://godbolt.org).
 The generated assembly includes nothing other than the call to `main()`
 and its subsequent `return` of the value zero
 (i.e., `main()`'s successful return-value in this example).
@@ -792,15 +823,15 @@ using uint256_t = ::math::wide_integer::uintwide_t<256U>;
 using uint512_t = ::math::wide_integer::uintwide_t<512U>;
 
 // Compile-time construction from string.
-constexpr uint256_t a("0xF4DF741DE58BCB2F37F18372026EF9CBCFC456CB80AF54D53BDEED78410065DE");
-constexpr uint256_t b("0x166D63E0202B3D90ECCEAA046341AB504658F55B974A7FD63733ECF89DD0DF75");
+constexpr auto a = uint256_t("0xF4DF741DE58BCB2F37F18372026EF9CBCFC456CB80AF54D53BDEED78410065DE");
+constexpr auto b = uint256_t("0x166D63E0202B3D90ECCEAA046341AB504658F55B974A7FD63733ECF89DD0DF75");
 
 // Compile time binary arithmetic operations.
-constexpr uint512_t c = uint512_t(a) * uint512_t(b);
-constexpr uint256_t d = (a / b);
+constexpr auto c = uint512_t(a) * uint512_t(b);
+constexpr auto d = uint256_t(a / b);
 
 // Compile-time comparison.
-constexpr bool result_is_ok = (   (c == "0x1573D6A7CEA734D99865C4F428184983CDB018B80E9CC44B83C773FBE11993E7E491A360C57EB4306C61F9A04F7F7D99BE3676AAD2D71C5592D5AE70F84AF076")
+constexpr auto result_is_ok = (   (c == "0x1573D6A7CEA734D99865C4F428184983CDB018B80E9CC44B83C773FBE11993E7E491A360C57EB4306C61F9A04F7F7D99BE3676AAD2D71C5592D5AE70F84AF076")
                                && (static_cast<std::uint_fast8_t>(d) == static_cast<std::uint_fast8_t>(UINT8_C(10))));
 
 // constexpr verification.
