@@ -6536,14 +6536,14 @@
         // See also:
         // https://www.wolframalpha.com/input/?i=Table%5BPrime%5Bi%5D%2C+%7Bi%2C+2%2C+49%7D%5D
 
-        constexpr std::array<local_limb_type, 48U> small_primes =
+        constexpr std::array<local_limb_type, static_cast<std::size_t>(UINT8_C(48))> small_primes =
         {{
-          UINT8_C(  3), UINT8_C(  5), UINT8_C(  7), UINT8_C( 11), UINT8_C( 13), UINT8_C( 17), UINT8_C( 19), UINT8_C( 23),
-          UINT8_C( 29), UINT8_C( 31), UINT8_C( 37), UINT8_C( 41), UINT8_C( 43), UINT8_C( 47), UINT8_C( 53), UINT8_C( 59),
-          UINT8_C( 61), UINT8_C( 67), UINT8_C( 71), UINT8_C( 73), UINT8_C( 79), UINT8_C( 83), UINT8_C( 89), UINT8_C( 97),
-          UINT8_C(101), UINT8_C(103), UINT8_C(107), UINT8_C(109), UINT8_C(113), UINT8_C(127), UINT8_C(131), UINT8_C(137),
-          UINT8_C(139), UINT8_C(149), UINT8_C(151), UINT8_C(157), UINT8_C(163), UINT8_C(167), UINT8_C(173), UINT8_C(179),
-          UINT8_C(181), UINT8_C(191), UINT8_C(193), UINT8_C(197), UINT8_C(199), UINT8_C(211), UINT8_C(223), UINT8_C(227)
+          static_cast<local_limb_type>(UINT8_C(  3)), static_cast<local_limb_type>(UINT8_C(  5)), static_cast<local_limb_type>(UINT8_C(  7)), static_cast<local_limb_type>(UINT8_C( 11)), static_cast<local_limb_type>(UINT8_C( 13)), static_cast<local_limb_type>(UINT8_C( 17)), static_cast<local_limb_type>(UINT8_C( 19)), static_cast<local_limb_type>(UINT8_C( 23)),
+          static_cast<local_limb_type>(UINT8_C( 29)), static_cast<local_limb_type>(UINT8_C( 31)), static_cast<local_limb_type>(UINT8_C( 37)), static_cast<local_limb_type>(UINT8_C( 41)), static_cast<local_limb_type>(UINT8_C( 43)), static_cast<local_limb_type>(UINT8_C( 47)), static_cast<local_limb_type>(UINT8_C( 53)), static_cast<local_limb_type>(UINT8_C( 59)),
+          static_cast<local_limb_type>(UINT8_C( 61)), static_cast<local_limb_type>(UINT8_C( 67)), static_cast<local_limb_type>(UINT8_C( 71)), static_cast<local_limb_type>(UINT8_C( 73)), static_cast<local_limb_type>(UINT8_C( 79)), static_cast<local_limb_type>(UINT8_C( 83)), static_cast<local_limb_type>(UINT8_C( 89)), static_cast<local_limb_type>(UINT8_C( 97)),
+          static_cast<local_limb_type>(UINT8_C(101)), static_cast<local_limb_type>(UINT8_C(103)), static_cast<local_limb_type>(UINT8_C(107)), static_cast<local_limb_type>(UINT8_C(109)), static_cast<local_limb_type>(UINT8_C(113)), static_cast<local_limb_type>(UINT8_C(127)), static_cast<local_limb_type>(UINT8_C(131)), static_cast<local_limb_type>(UINT8_C(137)),
+          static_cast<local_limb_type>(UINT8_C(139)), static_cast<local_limb_type>(UINT8_C(149)), static_cast<local_limb_type>(UINT8_C(151)), static_cast<local_limb_type>(UINT8_C(157)), static_cast<local_limb_type>(UINT8_C(163)), static_cast<local_limb_type>(UINT8_C(167)), static_cast<local_limb_type>(UINT8_C(173)), static_cast<local_limb_type>(UINT8_C(179)),
+          static_cast<local_limb_type>(UINT8_C(181)), static_cast<local_limb_type>(UINT8_C(191)), static_cast<local_limb_type>(UINT8_C(193)), static_cast<local_limb_type>(UINT8_C(197)), static_cast<local_limb_type>(UINT8_C(199)), static_cast<local_limb_type>(UINT8_C(211)), static_cast<local_limb_type>(UINT8_C(223)), static_cast<local_limb_type>(UINT8_C(227))
         }};
 
         return std::binary_search(small_primes.cbegin(),
@@ -6562,7 +6562,7 @@
 
       const auto m0 = static_cast<std::uint64_t>(np % pp0);
 
-      if(detail::integer_gcd_reduce_large(m0, pp0) != static_cast<std::uint64_t>(UINT8_C(1)))
+      if((m0 == static_cast<std::uint64_t>(UINT8_C(0))) || (detail::integer_gcd_reduce_large(m0, pp0) != static_cast<std::uint64_t>(UINT8_C(1))))
       {
         return false;
       }
@@ -6576,7 +6576,7 @@
 
       const auto m1 = static_cast<std::uint64_t>(np % pp1);
 
-      if(detail::integer_gcd_reduce_large(m1, pp1) != static_cast<std::uint64_t>(UINT8_C(1)))
+      if((m1 == static_cast<std::uint64_t>(UINT8_C(0))) || (detail::integer_gcd_reduce_large(m1, pp1) != static_cast<std::uint64_t>(UINT8_C(1))))
       {
         return false;
       }
@@ -6590,7 +6590,7 @@
 
       const auto m2 = static_cast<std::uint64_t>(np % pp2);
 
-      if(detail::integer_gcd_reduce_large(m2, pp2) != static_cast<std::uint64_t>(UINT8_C(1)))
+      if((m2 == static_cast<std::uint64_t>(UINT8_C(0))) || (detail::integer_gcd_reduce_large(m2, pp2) != static_cast<std::uint64_t>(UINT8_C(1))))
       {
         return false;
       }
@@ -6604,7 +6604,7 @@
 
       const auto m3 = static_cast<std::uint64_t>(np % pp3);
 
-      if(detail::integer_gcd_reduce_large(m3, pp3) != static_cast<std::uint64_t>(UINT8_C(1)))
+      if((m3 == static_cast<std::uint64_t>(UINT8_C(0))) || (detail::integer_gcd_reduce_large(m3, pp3) != static_cast<std::uint64_t>(UINT8_C(1))))
       {
         return false;
       }
@@ -6618,13 +6618,13 @@
 
       const auto m4 = static_cast<std::uint64_t>(np % pp4);
 
-      if(detail::integer_gcd_reduce_large(m4, pp4) != static_cast<std::uint64_t>(UINT8_C(1)))
+      if((m4 == static_cast<std::uint64_t>(UINT8_C(0))) || (detail::integer_gcd_reduce_large(m4, pp4) != static_cast<std::uint64_t>(UINT8_C(1))))
       {
         return false;
       }
     }
 
-    const local_wide_integer_type nm1(np - 1U);
+    const auto nm1 = static_cast<local_wide_integer_type>(np - static_cast<unsigned>(UINT8_C(1)));
 
     // Since we have already excluded all small factors
     // up to and including 227, n is greater than 227.
@@ -6655,8 +6655,8 @@
 
     auto i = static_cast<unsigned_fast_type>(UINT8_C(0));
 
-    local_wide_integer_type x;
-    local_wide_integer_type y;
+    auto x = local_wide_integer_type { };
+    auto y = local_wide_integer_type { };
 
     // Execute the random trials.
     do
