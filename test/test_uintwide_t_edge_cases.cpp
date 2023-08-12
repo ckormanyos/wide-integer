@@ -819,6 +819,24 @@ auto test_various_roots_and_pow_etc() -> bool
   return result_is_ok;
 }
 
+namespace local_edge_cases
+{
+  using small_integers_array_type = std::array<int, static_cast<std::size_t>(UINT8_C(50))>;
+
+  constexpr auto small_integers =
+    small_integers_array_type
+    {
+        1,
+        2,
+        3,   5,   7,  11,  13,  17,  19,  23,
+        29,  31,  37,  41,  43,  47,  53,  59,
+        61,  67,  71,  73,  79,  83,  89,  97,
+      101, 103, 107, 109, 113, 127, 131, 137,
+      139, 149, 151, 157, 163, 167, 173, 179,
+      181, 191, 193, 197, 199, 211, 223, 227
+    };
+} // namespace local_edge_cases
+
 auto test_small_prime_and_non_prime() -> bool
 {
   constexpr auto local_my_width2 = local_uintwide_t_small_unsigned_type::my_width2;
@@ -845,26 +863,14 @@ auto test_small_prime_and_non_prime() -> bool
 
   auto result_is_ok = true;
 
-  constexpr std::array<int, static_cast<std::size_t>(UINT8_C(50))> small_integers =
-  {
-      1,
-      2,
-      3,   5,   7,  11,  13,  17,  19,  23,
-      29,  31,  37,  41,  43,  47,  53,  59,
-      61,  67,  71,  73,  79,  83,  89,  97,
-    101, 103, 107, 109, 113, 127, 131, 137,
-    139, 149, 151, 157, 163, 167, 173, 179,
-    181, 191, 193, 197, 199, 211, 223, 227
-  };
-
   auto result_p_is_prime_is_ok = true;
 
-  for(auto ip = static_cast<std::size_t>(UINT8_C(1)); ip < small_integers.size(); ++ip)
+  for(auto ip = static_cast<std::size_t>(UINT8_C(1)); ip < local_edge_cases::small_integers.size(); ++ip)
   {
     const auto p_is_prime =
       miller_rabin
       (
-        static_cast<local_uintwide_t_small_unsigned_type>(small_integers[ip]), // NOLINT(cppcoreguidelines-pro-bounds-constant-array-index)
+        static_cast<local_uintwide_t_small_unsigned_type>(local_edge_cases::small_integers[ip]), // NOLINT(cppcoreguidelines-pro-bounds-constant-array-index)
         25U,
         distribution,
         local_generator
@@ -876,7 +882,7 @@ auto test_small_prime_and_non_prime() -> bool
   const auto result_one_is_prime =
     miller_rabin
     (
-      static_cast<local_uintwide_t_small_unsigned_type>(small_integers.front()),
+      static_cast<local_uintwide_t_small_unsigned_type>(local_edge_cases::small_integers.front()),
       25U,
       distribution,
       local_generator
@@ -887,15 +893,15 @@ auto test_small_prime_and_non_prime() -> bool
   result_is_ok = (result_one_is_not_prime_is_ok && result_is_ok);
 
   const auto not_prime_checker =
-    [&distribution, &local_generator, &small_integers](const std::size_t first, const std::size_t last_inclusive)
+    [&distribution, &local_generator](const std::size_t first, const std::size_t last_inclusive)
     {
       auto result_small_n_is_not_prime_is_ok = true;
 
-      local_uintwide_t_small_unsigned_type prime_candidate = small_integers[first]; // NOLINT(cppcoreguidelines-pro-bounds-constant-array-index)
+      local_uintwide_t_small_unsigned_type prime_candidate = local_edge_cases::small_integers[first]; // NOLINT(cppcoreguidelines-pro-bounds-constant-array-index)
 
       for(auto ip = static_cast<std::size_t>(first + static_cast<std::size_t>(UINT8_C(1))); ip <= last_inclusive; ++ip) // NOLINT(altera-id-dependent-backward-branch)
       {
-        prime_candidate *= small_integers[ip]; // NOLINT(cppcoreguidelines-pro-bounds-constant-array-index)
+        prime_candidate *= local_edge_cases::small_integers[ip]; // NOLINT(cppcoreguidelines-pro-bounds-constant-array-index)
 
         const auto result_small_n_is_prime = miller_rabin(prime_candidate, 25U, distribution, local_generator);
 
