@@ -819,7 +819,7 @@ auto test_various_roots_and_pow_etc() -> bool
   return result_is_ok;
 }
 
-auto test_small_non_prime() -> bool
+auto test_small_prime_and_non_prime() -> bool
 {
   constexpr auto local_my_width2 = local_uintwide_t_small_unsigned_type::my_width2;
 
@@ -864,7 +864,7 @@ auto test_small_non_prime() -> bool
     const auto p_is_prime =
       miller_rabin
       (
-        static_cast<local_uintwide_t_small_unsigned_type>(small_integers[ip]),
+        static_cast<local_uintwide_t_small_unsigned_type>(small_integers[ip]), // NOLINT(cppcoreguidelines-pro-bounds-constant-array-index)
         25U,
         distribution,
         local_generator
@@ -887,15 +887,15 @@ auto test_small_non_prime() -> bool
   result_is_ok = (result_one_is_not_prime_is_ok && result_is_ok);
 
   const auto not_prime_checker =
-    [&distribution, &local_generator, &small_integers, &result_is_ok](const std::size_t first, const std::size_t last_inclusive)
+    [&distribution, &local_generator, &small_integers](const std::size_t first, const std::size_t last_inclusive)
     {
       auto result_small_n_is_not_prime_is_ok = true;
 
-      local_uintwide_t_small_unsigned_type prime_candidate = small_integers[first];
+      local_uintwide_t_small_unsigned_type prime_candidate = small_integers[first]; // NOLINT(cppcoreguidelines-pro-bounds-constant-array-index)
 
-      for(auto ip = static_cast<std::size_t>(first + static_cast<std::size_t>(UINT8_C(1))); ip <= last_inclusive; ++ip)
+      for(auto ip = static_cast<std::size_t>(first + static_cast<std::size_t>(UINT8_C(1))); ip <= last_inclusive; ++ip) // NOLINT(altera-id-dependent-backward-branch)
       {
-        prime_candidate *= small_integers[ip];
+        prime_candidate *= small_integers[ip]; // NOLINT(cppcoreguidelines-pro-bounds-constant-array-index)
 
         const auto result_small_n_is_prime = miller_rabin(prime_candidate, 25U, distribution, local_generator);
 
@@ -1974,7 +1974,7 @@ auto ::math::wide_integer::test_uintwide_t_edge_cases() -> bool
   // LCOV_EXCL_STOP
   result_is_ok = (test_uintwide_t_edge::test_various_ostream_ops        () && result_is_ok);
   result_is_ok = (test_uintwide_t_edge::test_various_roots_and_pow_etc  () && result_is_ok);
-  result_is_ok = (test_uintwide_t_edge::test_small_non_prime            () && result_is_ok);
+  result_is_ok = (test_uintwide_t_edge::test_small_prime_and_non_prime  () && result_is_ok);
   result_is_ok = (test_uintwide_t_edge::test_various_isolated_edge_cases() && result_is_ok);
   result_is_ok = (test_uintwide_t_edge::test_to_chars_and_to_string     () && result_is_ok);
   result_is_ok = (test_uintwide_t_edge::test_import_bits                () && result_is_ok);
