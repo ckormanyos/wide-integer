@@ -816,56 +816,154 @@ auto test_various_roots_and_pow_etc() -> bool
     result_is_ok = (result_powm_two_is_ok && result_is_ok);
   }
 
+  return result_is_ok;
+}
+
+auto test_small_non_prime() -> bool
+{
+  constexpr auto local_my_width2 = local_uintwide_t_small_unsigned_type::my_width2;
+
+  using local_limb_type = typename local_uintwide_t_small_unsigned_type::limb_type;
+
+  #if defined(WIDE_INTEGER_NAMESPACE)
+  using local_distribution_type =
+    WIDE_INTEGER_NAMESPACE::math::wide_integer::uniform_int_distribution<local_my_width2, local_limb_type, void>;
+  #else
+  using local_distribution_type =
+    ::math::wide_integer::uniform_int_distribution<local_my_width2, local_limb_type, void>;
+  #endif
+
+  using random_engine_type = std::minstd_rand;
+
+  local_distribution_type distribution;
+
+  using local_random_engine_result_type = typename random_engine_type::result_type;
+
+  auto generator = random_engine_type(time_point<local_random_engine_result_type>());
+
+  random_engine_type local_generator(generator);
+
+  auto result_is_ok = true;
+
+  constexpr std::array<int, static_cast<std::size_t>(UINT8_C(50))> small_integers =
   {
-    constexpr auto local_my_width2 = local_uintwide_t_small_unsigned_type::my_width2;
+      1,
+      2,
+      3,   5,   7,  11,  13,  17,  19,  23,
+      29,  31,  37,  41,  43,  47,  53,  59,
+      61,  67,  71,  73,  79,  83,  89,  97,
+    101, 103, 107, 109, 113, 127, 131, 137,
+    139, 149, 151, 157, 163, 167, 173, 179,
+    181, 191, 193, 197, 199, 211, 223, 227
+  };
 
-    using local_limb_type = typename local_uintwide_t_small_unsigned_type::limb_type;
+  auto result_p_is_prime_is_ok = true;
 
-    #if defined(WIDE_INTEGER_NAMESPACE)
-    using local_distribution_type =
-      WIDE_INTEGER_NAMESPACE::math::wide_integer::uniform_int_distribution<local_my_width2, local_limb_type, void>;
-    #else
-    using local_distribution_type =
-      ::math::wide_integer::uniform_int_distribution<local_my_width2, local_limb_type, void>;
-    #endif
+  for(auto ip = static_cast<std::size_t>(UINT8_C(1)); ip < small_integers.size(); ++ip)
+  {
+    const auto p_is_prime =
+      miller_rabin
+      (
+        static_cast<local_uintwide_t_small_unsigned_type>(small_integers[ip]),
+        25U,
+        distribution,
+        local_generator
+      );
 
-    using random_engine_type = std::minstd_rand;
+    result_p_is_prime_is_ok = (p_is_prime && result_p_is_prime_is_ok);
+  }
 
-    local_distribution_type distribution;
+  const auto result_one_is_prime =
+    miller_rabin
+    (
+      static_cast<local_uintwide_t_small_unsigned_type>(small_integers.front()),
+      25U,
+      distribution,
+      local_generator
+    );
 
-    using local_random_engine_result_type = typename random_engine_type::result_type;
+  const auto result_one_is_not_prime_is_ok = (!result_one_is_prime);
 
-    auto generator = random_engine_type(time_point<local_random_engine_result_type>());
+  result_is_ok = (result_one_is_not_prime_is_ok && result_is_ok);
 
-    random_engine_type local_generator(generator);
-
-    static const std::array<int, static_cast<std::size_t>(UINT8_C(49))> small_primes =
+  const auto not_prime_checker =
+    [&distribution, &local_generator, &small_integers, &result_is_ok](const std::size_t first, const std::size_t last_inclusive)
     {
-        2,
-        3,   5,   7,  11,  13,  17,  19,  23,
-       29,  31,  37,  41,  43,  47,  53,  59,
-       61,  67,  71,  73,  79,  83,  89,  97,
-      101, 103, 107, 109, 113, 127, 131, 137,
-      139, 149, 151, 157, 163, 167, 173, 179,
-      181, 191, 193, 197, 199, 211, 223, 227
+      auto result_small_n_is_not_prime_is_ok = true;
+
+      local_uintwide_t_small_unsigned_type prime_candidate = small_integers[first];
+
+      for(auto ip = static_cast<std::size_t>(first + static_cast<std::size_t>(UINT8_C(1))); ip <= last_inclusive; ++ip)
+      {
+        prime_candidate *= small_integers[ip];
+
+        const auto result_small_n_is_prime = miller_rabin(prime_candidate, 25U, distribution, local_generator);
+
+        result_small_n_is_not_prime_is_ok = ((!result_small_n_is_prime) && result_small_n_is_not_prime_is_ok);
+      }
+
+      return result_small_n_is_not_prime_is_ok;
     };
 
-    auto result_p_is_prime_is_ok = true;
+  {
+    // Exclude small prime factors from { 3 ...  53 }.
+    // Product[Prime[i], {i, 2, 16}] = 16294579238595022365
+    const auto result_not_prime_checker_is_ok =
+      not_prime_checker
+      (
+        static_cast<std::size_t>(UINT8_C(2)),
+        static_cast<std::size_t>(UINT8_C(16))
+      );
 
-    for(const auto& p : small_primes)
-    {
-      const auto p_is_prime =
-        miller_rabin(local_uintwide_t_small_unsigned_type(p), 25U, distribution, local_generator);
+    result_is_ok = (result_not_prime_checker_is_ok && result_is_ok);
+  }
+  {
+    // Exclude small prime factors from { 59 ... 101 }.
+    // Product[Prime[i], {i, 17, 26}] = 7145393598349078859
+    const auto result_not_prime_checker_is_ok =
+      not_prime_checker
+      (
+        static_cast<std::size_t>(UINT8_C(17)),
+        static_cast<std::size_t>(UINT8_C(26))
+      );
 
-      result_p_is_prime_is_ok = (p_is_prime && result_p_is_prime_is_ok);
-    }
+    result_is_ok = (result_not_prime_checker_is_ok && result_is_ok);
+  }
+  {
+    // Exclude small prime factors from { 103 ... 149 }.
+    // Product[Prime[i], {i, 27, 35}] = 6408001374760705163
+    const auto result_not_prime_checker_is_ok =
+      not_prime_checker
+      (
+        static_cast<std::size_t>(UINT8_C(27)),
+        static_cast<std::size_t>(UINT8_C(35))
+      );
 
-    const auto one_is_prime =
-        miller_rabin(one_as_small_unsigned_type(), 25U, distribution, local_generator);
+    result_is_ok = (result_not_prime_checker_is_ok && result_is_ok);
+  }
+  {
+    // Exclude small prime factors from { 151 ... 191 }.
+    // Product[Prime[i], {i, 36, 43}] = 690862709424854779
+    const auto result_not_prime_checker_is_ok =
+      not_prime_checker
+      (
+        static_cast<std::size_t>(UINT8_C(36)),
+        static_cast<std::size_t>(UINT8_C(43))
+      );
 
-    const auto result_one_is_not_prime_is_ok = (!one_is_prime);
+    result_is_ok = (result_not_prime_checker_is_ok && result_is_ok);
+  }
+  {
+    // Exclude small prime factors from { 193 ... 227 }.
+    // Product[Prime[i], {i, 44, 49}] = 80814592450549
+    const auto result_not_prime_checker_is_ok =
+      not_prime_checker
+      (
+        static_cast<std::size_t>(UINT8_C(44)),
+        static_cast<std::size_t>(UINT8_C(49))
+      );
 
-    result_is_ok = (result_one_is_not_prime_is_ok && result_is_ok);
+    result_is_ok = (result_not_prime_checker_is_ok && result_is_ok);
   }
 
   return result_is_ok;
@@ -1876,6 +1974,7 @@ auto ::math::wide_integer::test_uintwide_t_edge_cases() -> bool
   // LCOV_EXCL_STOP
   result_is_ok = (test_uintwide_t_edge::test_various_ostream_ops        () && result_is_ok);
   result_is_ok = (test_uintwide_t_edge::test_various_roots_and_pow_etc  () && result_is_ok);
+  result_is_ok = (test_uintwide_t_edge::test_small_non_prime            () && result_is_ok);
   result_is_ok = (test_uintwide_t_edge::test_various_isolated_edge_cases() && result_is_ok);
   result_is_ok = (test_uintwide_t_edge::test_to_chars_and_to_string     () && result_is_ok);
   result_is_ok = (test_uintwide_t_edge::test_import_bits                () && result_is_ok);
