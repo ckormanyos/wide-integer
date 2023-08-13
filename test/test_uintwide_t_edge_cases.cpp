@@ -1015,7 +1015,7 @@ auto test_gcd_equal_left_right() -> bool
     [](const std::size_t first, const std::size_t last_inclusive, const std::uint64_t right) // NOLINT(bugprone-easily-swappable-parameters)
     {
       #if defined(WIDE_INTEGER_NAMESPACE)
-      using local_distribution_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::gcd;
+      using WIDE_INTEGER_NAMESPACE::math::wide_integer::gcd;
       #else
       using ::math::wide_integer::gcd;
       #endif
