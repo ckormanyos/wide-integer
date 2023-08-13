@@ -844,11 +844,9 @@ auto test_small_prime_and_non_prime() -> bool
   using local_limb_type = typename local_uintwide_t_small_unsigned_type::limb_type;
 
   #if defined(WIDE_INTEGER_NAMESPACE)
-  using local_distribution_type =
-    WIDE_INTEGER_NAMESPACE::math::wide_integer::uniform_int_distribution<local_my_width2, local_limb_type, void>;
+  using local_distribution_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::uniform_int_distribution<local_my_width2, local_limb_type, void>;
   #else
-  using local_distribution_type =
-    ::math::wide_integer::uniform_int_distribution<local_my_width2, local_limb_type, void>;
+  using local_distribution_type = ::math::wide_integer::uniform_int_distribution<local_my_width2, local_limb_type, void>;
   #endif
 
   using random_engine_type = std::minstd_rand;
@@ -970,6 +968,134 @@ auto test_small_prime_and_non_prime() -> bool
       );
 
     result_is_ok = (result_not_prime_checker_is_ok && result_is_ok);
+  }
+
+  return result_is_ok;
+}
+
+auto test_gcd_equal_left_right() -> bool
+{
+  auto result_is_ok = true;
+
+  for(auto   i = static_cast<unsigned>(UINT32_C(0));
+             i < static_cast<unsigned>(UINT32_C(64));
+           ++i)
+  {
+    auto result_gcd_is_ok = true;
+
+    const auto left =
+      generate_wide_integer_value<local_uintwide_t_small_unsigned_type>
+      (
+        true,
+        local_base::dec,
+        static_cast<int>(std::numeric_limits<local_uintwide_t_small_unsigned_type>::digits10 - static_cast<int>(INT8_C(1)))
+      );
+
+    const auto right = left;
+
+    {
+      const auto result_gcd_left_equal_right_is_ok = ((left == right) && (gcd(left, right) == left));
+
+      result_gcd_is_ok = (result_gcd_left_equal_right_is_ok && result_gcd_is_ok);
+    }
+
+    {
+      const auto u_left  = left + static_cast<unsigned>(UINT8_C(1));
+      const auto v_right = right;
+
+      const auto result_gcd_left_unequal_right_is_ok = ((u_left != v_right) && (gcd(u_left, v_right) != u_left));
+
+      result_gcd_is_ok = (result_gcd_left_unequal_right_is_ok && result_gcd_is_ok);
+    }
+
+    result_is_ok = (result_gcd_is_ok && result_is_ok);
+  }
+
+  const auto gcd64_equal_checker =
+    [](const std::size_t first, const std::size_t last_inclusive, const std::uint64_t right)
+    {
+      #if defined(WIDE_INTEGER_NAMESPACE)
+      using local_distribution_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::gcd;
+      #else
+      using ::math::wide_integer::gcd;
+      #endif
+
+      auto left = static_cast<std::uint64_t>(local_edge_cases::small_integers[first]); // NOLINT(cppcoreguidelines-pro-bounds-constant-array-index)
+
+      for(auto ig = static_cast<std::size_t>(first + static_cast<std::size_t>(UINT8_C(1))); ig <= last_inclusive; ++ig) // NOLINT(altera-id-dependent-backward-branch)
+      {
+        left *= static_cast<std::uint64_t>(local_edge_cases::small_integers[ig]); // NOLINT(cppcoreguidelines-pro-bounds-constant-array-index)
+      }
+
+      const auto result_gcd_left_equal_right_is_ok = ((left == right) && (gcd(left, right) == left));
+
+      return result_gcd_left_equal_right_is_ok;
+    };
+
+  {
+    // Consider small prime factors from { 3 ...  53 }.
+    // Product[Prime[i], {i, 2, 16}] = 16294579238595022365
+    const auto result_gcd64_equal_checker_is_ok =
+      gcd64_equal_checker
+      (
+        static_cast<std::size_t>(UINT8_C(2)),
+        static_cast<std::size_t>(UINT8_C(16)),
+        static_cast<std::uint64_t>(UINT64_C(16294579238595022365))
+      );
+
+    result_is_ok = (result_gcd64_equal_checker_is_ok && result_is_ok);
+  }
+  {
+    // Consider small prime factors from { 59 ... 101 }.
+    // Product[Prime[i], {i, 17, 26}] = 7145393598349078859
+    const auto result_gcd64_equal_checker_is_ok =
+      gcd64_equal_checker
+      (
+        static_cast<std::size_t>(UINT8_C(17)),
+        static_cast<std::size_t>(UINT8_C(26)),
+        static_cast<std::uint64_t>(UINT64_C(7145393598349078859))
+      );
+
+    result_is_ok = (result_gcd64_equal_checker_is_ok && result_is_ok);
+  }
+  {
+    // Consider small prime factors from { 103 ... 149 }.
+    // Product[Prime[i], {i, 27, 35}] = 6408001374760705163
+    const auto result_gcd64_equal_checker_is_ok =
+      gcd64_equal_checker
+      (
+        static_cast<std::size_t>(UINT8_C(27)),
+        static_cast<std::size_t>(UINT8_C(35)),
+        static_cast<std::uint64_t>(UINT64_C(6408001374760705163))
+      );
+
+    result_is_ok = (result_gcd64_equal_checker_is_ok && result_is_ok);
+  }
+  {
+    // Consider small prime factors from { 151 ... 191 }.
+    // Product[Prime[i], {i, 36, 43}] = 690862709424854779
+    const auto result_gcd64_equal_checker_is_ok =
+      gcd64_equal_checker
+      (
+        static_cast<std::size_t>(UINT8_C(36)),
+        static_cast<std::size_t>(UINT8_C(43)),
+        static_cast<std::uint64_t>(UINT64_C(690862709424854779))
+      );
+
+    result_is_ok = (result_gcd64_equal_checker_is_ok && result_is_ok);
+  }
+  {
+    // Consider small prime factors from { 193 ... 227 }.
+    // Product[Prime[i], {i, 44, 49}] = 80814592450549
+    const auto result_gcd64_equal_checker_is_ok =
+      gcd64_equal_checker
+      (
+        static_cast<std::size_t>(UINT8_C(44)),
+        static_cast<std::size_t>(UINT8_C(49)),
+        static_cast<std::uint64_t>(UINT64_C(80814592450549))
+      );
+
+    result_is_ok = (result_gcd64_equal_checker_is_ok && result_is_ok);
   }
 
   return result_is_ok;
@@ -1981,6 +2107,7 @@ auto ::math::wide_integer::test_uintwide_t_edge_cases() -> bool
   result_is_ok = (test_uintwide_t_edge::test_various_ostream_ops        () && result_is_ok);
   result_is_ok = (test_uintwide_t_edge::test_various_roots_and_pow_etc  () && result_is_ok);
   result_is_ok = (test_uintwide_t_edge::test_small_prime_and_non_prime  () && result_is_ok);
+  result_is_ok = (test_uintwide_t_edge::test_gcd_equal_left_right       () && result_is_ok);
   result_is_ok = (test_uintwide_t_edge::test_various_isolated_edge_cases() && result_is_ok);
   result_is_ok = (test_uintwide_t_edge::test_to_chars_and_to_string     () && result_is_ok);
   result_is_ok = (test_uintwide_t_edge::test_import_bits                () && result_is_ok);

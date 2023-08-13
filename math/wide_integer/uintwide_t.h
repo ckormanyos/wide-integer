@@ -5979,14 +5979,12 @@
       // This handles cases having (u = v) and also (u = v = 0).
       result = u; // LCOV_EXCL_LINE
     }
-
-    if((static_cast<local_ushort_type>(v) == static_cast<local_ushort_type>(UINT8_C(0))) && (v == 0U))
+    else if((static_cast<local_ushort_type>(v) == static_cast<local_ushort_type>(UINT8_C(0))) && (v == 0U))
     {
       // This handles cases having (v = 0) with (u != 0).
       result = u; // LCOV_EXCL_LINE
     }
-
-    if((static_cast<local_ushort_type>(u) == static_cast<local_ushort_type>(UINT8_C(0))) && (u == 0U))
+    else if((static_cast<local_ushort_type>(u) == static_cast<local_ushort_type>(UINT8_C(0))) && (u == 0U))
     {
       // This handles cases having (u = 0) with (v != 0).
       result = v;
@@ -6079,27 +6077,27 @@
     {
       result = gcd(v, u);
     }
-
-    if(u == v)
+    else if(u == v)
     {
       // This handles cases having (u = v) and also (u = v = 0).
       result = u;
     }
-
-    if(v == static_cast<local_unsigned_short_type>(UINT8_C(0)))
+    else if(v == static_cast<local_unsigned_short_type>(UINT8_C(0)))
     {
       // This handles cases having (v = 0) with (u != 0).
       result = u;
     }
-
-    if(u == static_cast<local_unsigned_short_type>(UINT8_C(0)))
-    {
-      // This handles cases having (u = 0) with (v != 0).
-      result = v;
-    }
     else
     {
-      result = detail::integer_gcd_reduce_short(u, v);
+      if(u == static_cast<local_unsigned_short_type>(UINT8_C(0)))
+      {
+        // This handles cases having (u = 0) with (v != 0).
+        result = v;
+      }
+      else
+      {
+        result = detail::integer_gcd_reduce_short(u, v);
+      }
     }
 
     return result;
