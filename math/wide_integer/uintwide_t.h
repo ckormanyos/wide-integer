@@ -5975,7 +5975,7 @@
     using local_size_type = typename local_wide_integer_type::representation_type::size_type;
 
     if(u == v)
-    {
+    { // NOLINT(bugprone-branch-clone)
       // This handles cases having (u = v) and also (u = v = 0).
       result = u; // LCOV_EXCL_LINE
     }
@@ -6073,12 +6073,8 @@
 
     auto result = local_unsigned_short_type { };
 
-    if(u > v)
-    {
-      result = gcd(v, u);
-    }
-    else if(u == v)
-    {
+    if(u == v) // NOLINT(bugprone-branch-clone)
+    { // NOLINT(bugprone-branch-clone)
       // This handles cases having (u = v) and also (u = v = 0).
       result = u;
     }
@@ -6395,7 +6391,7 @@
 
       generator_result_type value = generator_result_type();
 
-      auto it = result.representation().begin(); // NOLINT(llvm-qualified-auto,readability-qualified-auto)
+      auto it = result.representation().begin(); // NOLINT(llvm-qualified-auto,readability-qualified-auto,altera-id-dependent-backward-branch)
 
       auto j = static_cast<unsigned_fast_type>(UINT8_C(0));
 
