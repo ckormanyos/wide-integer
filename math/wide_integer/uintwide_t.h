@@ -181,6 +181,99 @@
     return dest;
   }
 
+  template <class UnsignedIntegralType>
+  WIDE_INTEGER_CONSTEXPR auto clz_unsafe(UnsignedIntegralType v) noexcept -> std::enable_if_t<(   (std::is_integral<UnsignedIntegralType>::value)
+                                                                                               && (std::is_unsigned<UnsignedIntegralType>::value)), unsigned>
+  {
+    using local_unsigned_integral_type = UnsignedIntegralType;
+
+    auto yy = static_cast<local_unsigned_integral_type>(UINT8_C(0));
+
+    auto nn = static_cast<unsigned>(std::numeric_limits<local_unsigned_integral_type>::digits);
+
+    auto cc = // NOLINT(altera-id-dependent-backward-branch)
+      static_cast<unsigned>
+      (
+        std::numeric_limits<local_unsigned_integral_type>::digits / static_cast<int>(INT8_C(2))
+      );
+
+    do
+    {
+      yy = static_cast<local_unsigned_integral_type>(v >> cc);
+
+      if(yy != static_cast<local_unsigned_integral_type>(UINT8_C(0)))
+      {
+        nn -= cc;
+
+        v = yy;
+      }
+
+      cc >>= static_cast<unsigned>(UINT8_C(1));
+    }
+    while(cc != static_cast<unsigned>(UINT8_C(0))); // NOLINT(altera-id-dependent-backward-branch)
+
+    return
+      static_cast<unsigned>
+      (
+        static_cast<unsigned>(nn) - static_cast<unsigned>(v)
+      );
+  }
+
+  template<typename UnsignedIntegralType>
+  WIDE_INTEGER_CONSTEXPR auto ctz_unsafe(const UnsignedIntegralType v) noexcept -> std::enable_if_t<(   (std::is_integral<UnsignedIntegralType>::value)
+                                                                                                     && (std::is_unsigned<UnsignedIntegralType>::value)), unsigned>
+  {
+    using local_unsigned_integral_type = UnsignedIntegralType;
+
+    constexpr auto local_digits = static_cast<unsigned>(std::numeric_limits<local_unsigned_integral_type>::digits);
+
+    const auto clz_mask =
+      static_cast<local_unsigned_integral_type>
+      (
+          static_cast<local_unsigned_integral_type>(~v)
+        & static_cast<local_unsigned_integral_type>(v - static_cast<local_unsigned_integral_type>(UINT8_C(1)))
+      );
+
+    return static_cast<unsigned>(local_digits - clz_unsafe(clz_mask));
+  }
+
+  template<typename UnsignedIntegralType>
+  WIDE_INTEGER_CONSTEXPR auto gcd_unsafe(UnsignedIntegralType u, UnsignedIntegralType v) -> std::enable_if_t<(   (std::is_integral<UnsignedIntegralType>::value) // NOLINT(altera-id-dependent-backward-branch)
+                                                                                                              && (std::is_unsigned<UnsignedIntegralType>::value)), UnsignedIntegralType>
+  {
+    using local_unsigned_integral_type = UnsignedIntegralType;
+
+    // Handle cases having (u != 0) and (v != 0).
+    if(u == static_cast<local_unsigned_integral_type>(UINT8_C(0))) { return v; }
+
+    if(v == static_cast<local_unsigned_integral_type>(UINT8_C(0))) { return u; }
+
+    // Shift the greatest power of 2 dividing both u and v.
+    const auto trz = static_cast<unsigned>(ctz_unsafe(u));
+
+    const auto shift_amount = (std::min)(trz, ctz_unsafe(v));
+
+    v >>= shift_amount;
+    u >>= trz;
+
+    do
+    {
+      // Reduce the GCD.
+
+      v >>= ctz_unsafe(v);
+
+      if(u > v)
+      {
+        std::swap(u, v);
+      }
+
+      v -= u;
+    }
+    while(v != static_cast<local_unsigned_integral_type>(UINT8_C(0))); // NOLINT(altera-id-dependent-backward-branch)
+
+    return static_cast<local_unsigned_integral_type>(u << shift_amount);
+  }
+
   #if(__cplusplus >= 201703L)
   } // namespace math::wide_integer::detail
   #else
@@ -5884,68 +5977,9 @@
   namespace detail {
 
   template<typename UnsignedShortType>
-  WIDE_INTEGER_CONSTEXPR auto integer_gcd_reduce_short(UnsignedShortType u, UnsignedShortType v) -> UnsignedShortType
+  WIDE_INTEGER_CONSTEXPR auto integer_gcd_reduce(UnsignedShortType u, UnsignedShortType v) -> UnsignedShortType
   {
-    // This implementation of GCD reduction is based on an
-    // adaptation of existing code from Boost.Multiprecision.
-
-    for(;;)
-    {
-      if(u > v)
-      {
-        std::swap(u, v);
-      }
-
-      if(u == v)
-      {
-        break;
-      }
-
-      v  -= u;
-      v >>= detail::lsb_helper(v);
-    }
-
-    return u;
-  }
-
-  template<typename UnsignedLargeType>
-  WIDE_INTEGER_CONSTEXPR auto integer_gcd_reduce_large(UnsignedLargeType u, UnsignedLargeType v) -> UnsignedLargeType
-  {
-    // This implementation of GCD reduction is based on an
-    // adaptation of existing code from Boost.Multiprecision.
-
-    using local_ularge_type = UnsignedLargeType;
-    using local_ushort_type = typename detail::uint_type_helper<static_cast<size_t>(std::numeric_limits<local_ularge_type>::digits / 2)>::exact_unsigned_type;
-
-    for(;;)
-    {
-      if(u > v)
-      {
-        std::swap(u, v);
-      }
-
-      if(u == v)
-      {
-        break;
-      }
-
-      if(v <= static_cast<local_ularge_type>((std::numeric_limits<local_ushort_type>::max)()))
-      {
-        u = integer_gcd_reduce_short(static_cast<local_ushort_type>(v),
-                                     static_cast<local_ushort_type>(u));
-
-        break;
-      }
-
-      v -= u;
-
-      while(static_cast<std::uint_fast8_t>(static_cast<std::uint_fast8_t>(v) & static_cast<std::uint_fast8_t>(UINT8_C(1))) == static_cast<std::uint_fast8_t>(UINT8_C(0))) // NOLINT(hicpp-signed-bitwise,altera-id-dependent-backward-branch)
-      {
-        v >>= static_cast<unsigned>(UINT8_C(1));
-      }
-    }
-
-    return u;
+    return detail::gcd_unsafe(u, v);
   }
 
   } // namespace detail
@@ -5975,18 +6009,16 @@
     using local_size_type = typename local_wide_integer_type::representation_type::size_type;
 
     if(u == v)
-    {
+    { // NOLINT(bugprone-branch-clone)
       // This handles cases having (u = v) and also (u = v = 0).
       result = u; // LCOV_EXCL_LINE
     }
-
-    if((static_cast<local_ushort_type>(v) == static_cast<local_ushort_type>(UINT8_C(0))) && (v == 0U))
+    else if((static_cast<local_ushort_type>(v) == static_cast<local_ushort_type>(UINT8_C(0))) && (v == 0U))
     {
       // This handles cases having (v = 0) with (u != 0).
       result = u; // LCOV_EXCL_LINE
     }
-
-    if((static_cast<local_ushort_type>(u) == static_cast<local_ushort_type>(UINT8_C(0))) && (u == 0U))
+    else if((static_cast<local_ushort_type>(u) == static_cast<local_ushort_type>(UINT8_C(0))) && (u == 0U))
     {
       // This handles cases having (u = 0) with (v != 0).
       result = v;
@@ -6028,7 +6060,7 @@
             const auto vs = *v.crepresentation().cbegin();
             const auto us = *u.crepresentation().cbegin();
 
-            u = detail::integer_gcd_reduce_short(vs, us);
+            u = detail::integer_gcd_reduce(vs, us);
           }
           else
           {
@@ -6051,7 +6083,7 @@
             const local_ularge_type v_large = detail::make_large(*v.crepresentation().cbegin(), my_v_hi);
             const local_ularge_type u_large = detail::make_large(*u.crepresentation().cbegin(), my_u_hi);
 
-            u = detail::integer_gcd_reduce_large(v_large, u_large);
+            u = detail::integer_gcd_reduce(v_large, u_large);
           }
 
           break;
@@ -6071,38 +6103,7 @@
   WIDE_INTEGER_CONSTEXPR auto gcd(const UnsignedShortType& u, const UnsignedShortType& v) -> std::enable_if_t<(   (std::is_integral<UnsignedShortType>::value)
                                                                                                                && (std::is_unsigned<UnsignedShortType>::value)), UnsignedShortType>
   {
-    using local_unsigned_short_type = UnsignedShortType;
-
-    auto result = local_unsigned_short_type { };
-
-    if(u > v)
-    {
-      result = gcd(v, u);
-    }
-
-    if(u == v)
-    {
-      // This handles cases having (u = v) and also (u = v = 0).
-      result = u;
-    }
-
-    if(v == static_cast<local_unsigned_short_type>(UINT8_C(0)))
-    {
-      // This handles cases having (v = 0) with (u != 0).
-      result = u;
-    }
-
-    if(u == static_cast<local_unsigned_short_type>(UINT8_C(0)))
-    {
-      // This handles cases having (u = 0) with (v != 0).
-      result = v;
-    }
-    else
-    {
-      result = detail::integer_gcd_reduce_short(u, v);
-    }
-
-    return result;
+    return detail::gcd_unsafe(u, v);
   }
 
   namespace detail {
@@ -6397,7 +6398,7 @@
 
       generator_result_type value = generator_result_type();
 
-      auto it = result.representation().begin(); // NOLINT(llvm-qualified-auto,readability-qualified-auto)
+      auto it = result.representation().begin(); // NOLINT(llvm-qualified-auto,readability-qualified-auto,altera-id-dependent-backward-branch)
 
       auto j = static_cast<unsigned_fast_type>(UINT8_C(0));
 
@@ -6562,7 +6563,7 @@
 
       const auto m0 = static_cast<std::uint64_t>(np % pp0);
 
-      if((m0 == static_cast<std::uint64_t>(UINT8_C(0))) || (detail::integer_gcd_reduce_large(m0, pp0) != static_cast<std::uint64_t>(UINT8_C(1))))
+      if((m0 == static_cast<std::uint64_t>(UINT8_C(0))) || (detail::integer_gcd_reduce(m0, pp0) != static_cast<std::uint64_t>(UINT8_C(1))))
       {
         return false;
       }
@@ -6576,7 +6577,7 @@
 
       const auto m1 = static_cast<std::uint64_t>(np % pp1);
 
-      if((m1 == static_cast<std::uint64_t>(UINT8_C(0))) || (detail::integer_gcd_reduce_large(m1, pp1) != static_cast<std::uint64_t>(UINT8_C(1))))
+      if((m1 == static_cast<std::uint64_t>(UINT8_C(0))) || (detail::integer_gcd_reduce(m1, pp1) != static_cast<std::uint64_t>(UINT8_C(1))))
       {
         return false;
       }
@@ -6590,7 +6591,7 @@
 
       const auto m2 = static_cast<std::uint64_t>(np % pp2);
 
-      if((m2 == static_cast<std::uint64_t>(UINT8_C(0))) || (detail::integer_gcd_reduce_large(m2, pp2) != static_cast<std::uint64_t>(UINT8_C(1))))
+      if((m2 == static_cast<std::uint64_t>(UINT8_C(0))) || (detail::integer_gcd_reduce(m2, pp2) != static_cast<std::uint64_t>(UINT8_C(1))))
       {
         return false;
       }
@@ -6604,7 +6605,7 @@
 
       const auto m3 = static_cast<std::uint64_t>(np % pp3);
 
-      if((m3 == static_cast<std::uint64_t>(UINT8_C(0))) || (detail::integer_gcd_reduce_large(m3, pp3) != static_cast<std::uint64_t>(UINT8_C(1))))
+      if((m3 == static_cast<std::uint64_t>(UINT8_C(0))) || (detail::integer_gcd_reduce(m3, pp3) != static_cast<std::uint64_t>(UINT8_C(1))))
       {
         return false;
       }
@@ -6618,7 +6619,7 @@
 
       const auto m4 = static_cast<std::uint64_t>(np % pp4);
 
-      if((m4 == static_cast<std::uint64_t>(UINT8_C(0))) || (detail::integer_gcd_reduce_large(m4, pp4) != static_cast<std::uint64_t>(UINT8_C(1))))
+      if((m4 == static_cast<std::uint64_t>(UINT8_C(0))) || (detail::integer_gcd_reduce(m4, pp4) != static_cast<std::uint64_t>(UINT8_C(1))))
       {
         return false;
       }
