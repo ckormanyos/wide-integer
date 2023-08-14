@@ -973,7 +973,7 @@ auto test_small_prime_and_non_prime() -> bool
   return result_is_ok;
 }
 
-auto test_gcd_equal_left_right() -> bool
+auto test_some_gcd_and_equal_left_right() -> bool
 {
   auto result_is_ok = true;
 
@@ -1096,6 +1096,107 @@ auto test_gcd_equal_left_right() -> bool
       );
 
     result_is_ok = (result_gcd64_equal_checker_is_ok && result_is_ok);
+  }
+
+  {
+    #if defined(WIDE_INTEGER_NAMESPACE)
+    using WIDE_INTEGER_NAMESPACE::math::wide_integer::gcd;
+    #else
+    using ::math::wide_integer::gcd;
+    #endif
+
+    // GCD[6170895419598858564, 1073014744210933590]
+    // 594
+    const auto gcd64 = gcd(static_cast<std::uint64_t>(UINT64_C(6170895419598858564)),
+                           static_cast<std::uint64_t>(UINT64_C(1073014744210933590)));
+
+    const auto result_gcd64_is_ok = (gcd64 == static_cast<std::uint64_t>(UINT64_C(594)));
+
+    result_is_ok = (result_gcd64_is_ok && result_is_ok);
+  }
+
+  {
+    // GCD[20769612331917304, 11556552886528217295]
+    // 6673
+
+    #if defined(WIDE_INTEGER_NAMESPACE)
+    using WIDE_INTEGER_NAMESPACE::math::wide_integer::gcd;
+    #else
+    using ::math::wide_integer::gcd;
+    #endif
+
+    const auto gcd64 = gcd(static_cast<std::uint64_t>(UINT64_C(20769612331917304)),
+                           static_cast<std::uint64_t>(UINT64_C(11556552886528217295)));
+
+    const auto result_gcd64_is_ok = (gcd64 == static_cast<std::uint64_t>(UINT64_C(6673)));
+
+    result_is_ok = (result_gcd64_is_ok && result_is_ok);
+  }
+
+  {
+    // GCD[3263830144632800334, 9189394046487653520]
+    // 56598
+
+    #if defined(WIDE_INTEGER_NAMESPACE)
+    using WIDE_INTEGER_NAMESPACE::math::wide_integer::gcd;
+    #else
+    using ::math::wide_integer::gcd;
+    #endif
+
+    const auto gcd64 = gcd(static_cast<std::uint64_t>(UINT64_C(3263830144632800334)),
+                           static_cast<std::uint64_t>(UINT64_C(9189394046487653520)));
+
+    const auto result_gcd64_is_ok = (gcd64 == static_cast<std::uint64_t>(UINT64_C(56598)));
+
+    result_is_ok = (result_gcd64_is_ok && result_is_ok);
+  }
+
+  {
+    // GCD[7515843862511910988, 11558893357905095758]
+    // 420278
+
+    #if defined(WIDE_INTEGER_NAMESPACE)
+    using WIDE_INTEGER_NAMESPACE::math::wide_integer::gcd;
+    #else
+    using ::math::wide_integer::gcd;
+    #endif
+
+    const auto gcd64 = gcd(static_cast<std::uint64_t>(UINT64_C(7515843862511910988)),
+                           static_cast<std::uint64_t>(UINT64_C(11558893357905095758)));
+
+    const auto result_gcd64_is_ok = (gcd64 == static_cast<std::uint64_t>(UINT64_C(420278)));
+
+    result_is_ok = (result_gcd64_is_ok && result_is_ok);
+  }
+
+  {
+    #if defined(WIDE_INTEGER_NAMESPACE)
+    using WIDE_INTEGER_NAMESPACE::math::wide_integer::gcd;
+    #else
+    using ::math::wide_integer::gcd;
+    #endif
+
+    const auto result_gcd_left_zero = gcd(static_cast<std::uint64_t>(UINT64_C(7515843862511910988)),
+                                          static_cast<std::uint64_t>(UINT64_C(0)));
+
+    const auto result_gcd_left_zero_is_ok = (result_gcd_left_zero == static_cast<std::uint64_t>(UINT64_C(7515843862511910988)));
+
+    result_is_ok = (result_gcd_left_zero_is_ok && result_is_ok);
+  }
+
+  {
+    #if defined(WIDE_INTEGER_NAMESPACE)
+    using WIDE_INTEGER_NAMESPACE::math::wide_integer::gcd;
+    #else
+    using ::math::wide_integer::gcd;
+    #endif
+
+    const auto result_gcd_right_zero = gcd(static_cast<std::uint64_t>(UINT64_C(0)),
+                                           static_cast<std::uint64_t>(UINT64_C(7515843862511910988)));
+
+    const auto result_gcd_right_zero_is_ok = (result_gcd_right_zero == static_cast<std::uint64_t>(UINT64_C(7515843862511910988)));
+
+    result_is_ok = (result_gcd_right_zero_is_ok && result_is_ok);
   }
 
   return result_is_ok;
@@ -2104,14 +2205,14 @@ auto ::math::wide_integer::test_uintwide_t_edge_cases() -> bool
   result_is_ok = (test_uintwide_t_edge::test_various_edge_operations    () && result_is_ok);
   #endif
   // LCOV_EXCL_STOP
-  result_is_ok = (test_uintwide_t_edge::test_various_ostream_ops        () && result_is_ok);
-  result_is_ok = (test_uintwide_t_edge::test_various_roots_and_pow_etc  () && result_is_ok);
-  result_is_ok = (test_uintwide_t_edge::test_small_prime_and_non_prime  () && result_is_ok);
-  result_is_ok = (test_uintwide_t_edge::test_gcd_equal_left_right       () && result_is_ok);
-  result_is_ok = (test_uintwide_t_edge::test_various_isolated_edge_cases() && result_is_ok);
-  result_is_ok = (test_uintwide_t_edge::test_to_chars_and_to_string     () && result_is_ok);
-  result_is_ok = (test_uintwide_t_edge::test_import_bits                () && result_is_ok);
-  result_is_ok = (test_uintwide_t_edge::test_export_bits                () && result_is_ok);
+  result_is_ok = (test_uintwide_t_edge::test_various_ostream_ops            () && result_is_ok);
+  result_is_ok = (test_uintwide_t_edge::test_various_roots_and_pow_etc      () && result_is_ok);
+  result_is_ok = (test_uintwide_t_edge::test_small_prime_and_non_prime      () && result_is_ok);
+  result_is_ok = (test_uintwide_t_edge::test_some_gcd_and_equal_left_right  () && result_is_ok);
+  result_is_ok = (test_uintwide_t_edge::test_various_isolated_edge_cases    () && result_is_ok);
+  result_is_ok = (test_uintwide_t_edge::test_to_chars_and_to_string         () && result_is_ok);
+  result_is_ok = (test_uintwide_t_edge::test_import_bits                    () && result_is_ok);
+  result_is_ok = (test_uintwide_t_edge::test_export_bits                    () && result_is_ok);
 
   return result_is_ok;
 }
