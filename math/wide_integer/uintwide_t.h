@@ -14,9 +14,15 @@
   #endif
   #endif
 
+  #if ((__cplusplus < 202100L) || (defined(__GNUC__) && defined(__AVR__)))
+  #include <ciso646>
+  #else
+  #include <version>
+  #endif
+
   #include <algorithm>
   #include <array>
-  #if defined(__cpp_lib_to_chars)
+  #if (defined(__cpp_lib_to_chars) && (__cpp_lib_to_chars >= 201611L))
   #include <charconv>
   #endif
   #include <cinttypes>
@@ -39,6 +45,9 @@
   #endif
   #if !defined(WIDE_INTEGER_DISABLE_IMPLEMENT_UTIL_DYNAMIC_ARRAY)
   #include <memory>
+  #endif
+  #if (defined(__cpp_lib_gcd_lcm) && (__cpp_lib_gcd_lcm >= 201606L))
+  #include <numeric>
   #endif
   #if !defined(WIDE_INTEGER_DISABLE_IOSTREAM)
   #include <ostream>
@@ -1099,7 +1108,7 @@
                           DistributionType&                                      distribution,
                           GeneratorType&                                         generator) -> bool;
 
-  #if defined(__cpp_lib_to_chars)
+  #if (defined(__cpp_lib_to_chars) && (__cpp_lib_to_chars >= 201611L))
   template<const size_t Width2,
            typename LimbType,
            typename AllocatorType,
@@ -5979,7 +5988,11 @@
   template<typename UnsignedShortType>
   WIDE_INTEGER_CONSTEXPR auto integer_gcd_reduce(UnsignedShortType u, UnsignedShortType v) -> UnsignedShortType
   {
+    #if (defined(__cpp_lib_gcd_lcm) && (__cpp_lib_gcd_lcm >= 201606L))
+    return std::gcd(u, v);
+    #else
     return detail::gcd_unsafe(u, v);
+    #endif
   }
 
   } // namespace detail
@@ -6706,7 +6719,7 @@
     return is_probably_prime;
   }
 
-  #if defined(__cpp_lib_to_chars)
+  #if (defined(__cpp_lib_to_chars) && (__cpp_lib_to_chars >= 201611L))
   template<const size_t Width2,
            typename LimbType,
            typename AllocatorType,
