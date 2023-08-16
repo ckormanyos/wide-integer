@@ -95,14 +95,14 @@ The approximate result is
 
 $$3^{301}~{\approx}~4.10674{\times}~10^{143}\text{.}$$
 
-This example, compiled with successful output result,
-is shown in its entirety in the following
-[short link](https://godbolt.org/z/eWKzqx77G) to [godbolt](https://godbolt.org).
-
 See also the following informative links to Wolfram Alpha(R).
 
   - Query the approximate value of $3^{301}$ with [`N[3^301]`](https://www.wolframalpha.com/input?i=N%5B3%5E301%5D)
   - Verify the exact value of $3^{301}$ with [`3^301`](https://www.wolframalpha.com/input?i=3%5E301)
+
+This example, compiled with successful output result,
+is shown in its entirety in the following
+[short link](https://godbolt.org/z/eWKzqx77G) to [godbolt](https://godbolt.org).
 
 In particular,
 
@@ -210,6 +210,8 @@ on how to use wide-integer.
 ## Building
 
 ### Build Status
+
+[![Build Status](https://github.com/ckormanyos/wide-integer/actions/workflows/wide_integer.yml/badge.svg)](https://github.com/ckormanyos/wide-integer/actions)
 
 The recent status of building and executing the tests and examples
 in Continuous Integration (CI) is always shown in the Build Status banner.
@@ -355,9 +357,6 @@ quality-gate with comparison/baseline-check provided by
 
 Quality badges are displayed at the top of this repository's
 readme page.
-
-### Build status
-[![Build Status](https://github.com/ckormanyos/wide-integer/actions/workflows/wide_integer.yml/badge.svg)](https://github.com/ckormanyos/wide-integer/actions)
 
 ## Detailed examples
 
