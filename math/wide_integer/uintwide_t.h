@@ -1537,7 +1537,7 @@
       const auto ff =
         static_cast<native_float_type>
         (
-          (f < static_cast<native_float_type>(0)) ? -f : f
+          (f < static_cast<native_float_type>(0.0F)) ? static_cast<native_float_type>(-f) : f
         );
 
       if(ff < (std::numeric_limits<native_float_type>::min)())
@@ -1550,7 +1550,7 @@
       // Get the fraction and base-2 exponent.
       auto man = static_cast<native_float_type>(frexp(f, &my_exponent_part));
 
-      unsigned n2 = 0U;
+      auto n2 = static_cast<unsigned>(UINT8_C(0));
 
       for(auto   i = static_cast<std::uint_fast16_t>(UINT8_C(0));
                  i < static_cast<std::uint_fast16_t>(std::numeric_limits<native_float_type>::digits);
@@ -1558,25 +1558,25 @@
       {
         // Extract the mantissa of the floating-point type in base-2
         // (one bit at a time) and store it in an unsigned long long.
-        man *= 2;
+        man *= static_cast<int>(INT8_C(2));
 
         n2   = static_cast<unsigned>(man);
         man -= static_cast<native_float_type>(n2);
 
         if(n2 != static_cast<unsigned>(UINT8_C(0)))
         {
-          my_mantissa_part |= 1U;
+          my_mantissa_part |= static_cast<unsigned>(UINT8_C(1));
         }
 
-        if(i < static_cast<unsigned>(std::numeric_limits<native_float_type>::digits - 1))
+        if(i < static_cast<unsigned>(static_cast<int>(std::numeric_limits<native_float_type>::digits - static_cast<int>(INT8_C(1)))))
         {
-          my_mantissa_part <<= 1U;
+          my_mantissa_part <<= static_cast<unsigned>(UINT8_C(1));
         }
       }
 
       // Ensure that the value is normalized and adjust the exponent.
       my_mantissa_part |= static_cast<unsigned long long>(1ULL << static_cast<unsigned>(std::numeric_limits<native_float_type>::digits - 1)); // NOLINT(google-runtime-int)
-      my_exponent_part -= 1;
+      my_exponent_part -= static_cast<int>(INT8_C(1));
     }
 
     constexpr native_float_parts(const native_float_parts& other) : my_mantissa_part(other.my_mantissa_part),
@@ -1648,7 +1648,7 @@
     using limb_type = LimbType;
 
     using double_limb_type =
-      typename detail::uint_type_helper<static_cast<size_t>(std::numeric_limits<limb_type>::digits * 2)>::exact_unsigned_type;
+      typename detail::uint_type_helper<static_cast<size_t>(static_cast<int>(std::numeric_limits<limb_type>::digits * static_cast<int>(INT8_C(2))))>::exact_unsigned_type;
 
     // Legacy ularge and ushort types. These are no longer used
     // in the class, but provided for legacy compatibility.
@@ -1998,9 +1998,12 @@
     {
       using local_integral_type = IntegralType;
 
-      return ((!is_neg(*this))
-               ? extract_builtin_integral_type<local_integral_type>()
-               : detail::negate((-*this).template extract_builtin_integral_type<local_integral_type>()));
+      return
+        (
+          (!is_neg(*this))
+            ? extract_builtin_integral_type<local_integral_type>()
+            : detail::negate((-*this).template extract_builtin_integral_type<local_integral_type>())
+        );
     }
 
     // Cast operator to built-in Boolean type.
@@ -2554,10 +2557,10 @@
 
         string_storage_oct_type str_temp; // LCOV_EXCL_LINE
 
-        auto pos =
+        auto pos = // LCOV_EXCL_LINE
           static_cast<unsigned_fast_type>
           (
-            str_temp.size() - static_cast<size_t>(UINT8_C(1))
+            str_temp.size() - static_cast<size_t>(UINT8_C(1)) // LCOV_EXCL_LINE
           );
 
         if(t.is_zero())
