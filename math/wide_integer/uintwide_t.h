@@ -2568,7 +2568,7 @@
         {
           if(!is_neg(t))
           {
-            while(!t.is_zero())
+            while(!t.is_zero()) // NOLINT(altera-id-dependent-backward-branch)
             {
               auto c = static_cast<char>(*t.values.cbegin() & mask);
 
