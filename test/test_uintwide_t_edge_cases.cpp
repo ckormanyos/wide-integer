@@ -237,12 +237,12 @@ auto generate_wide_integer_value(bool       is_positive           = true,
 
   if(base_to_get == local_base::oct)
   {
-    str_x.insert(static_cast<std::size_t>(0U), static_cast<std::size_t>(1U), '0');
+    str_x.insert(str_x.begin(), static_cast<std::size_t>(UINT8_C(1)), '0');
   }
   else if(base_to_get == local_base::hex)
   {
-    str_x.insert(static_cast<std::size_t>(0U), static_cast<std::size_t>(1U), 'x');
-    str_x.insert(static_cast<std::size_t>(0U), static_cast<std::size_t>(1U), '0');
+    str_x.insert(str_x.begin(), static_cast<std::size_t>(UINT8_C(1)), 'x');
+    str_x.insert(str_x.begin(), static_cast<std::size_t>(UINT8_C(1)), '0');
   }
 
   // Insert either a positive sign or a negative sign
@@ -255,7 +255,7 @@ auto generate_wide_integer_value(bool       is_positive           = true,
         : static_cast<char>((dist_sgn(eng_sgn) != static_cast<std::uint32_t>(UINT32_C(0))) ? '+' : '-')
     );
 
-  str_x.insert(static_cast<std::size_t>(0U), static_cast<std::size_t>(1U), sign_char_to_insert);
+  str_x.insert(str_x.begin(), static_cast<std::size_t>(UINT8_C(1)), sign_char_to_insert);
 
   return local_integral_type(str_x.c_str());
 }
@@ -272,15 +272,15 @@ auto test_various_edge_operations() -> bool
   result_local = u_max_local * u_max_local;
   result_boost = u_max_boost * u_max_boost;
 
-  const auto result01_is_ok = ((result_local == local_uint_type(1U)) && (result_boost == boost_uint_type(1U)));
+  const auto result01_is_ok = ((result_local == local_uint_type(static_cast<unsigned>(UINT8_C(1)))) && (result_boost == boost_uint_type(static_cast<unsigned>(UINT8_C(1)))));
 
   result_local = (u_max_local - 1U) * u_max_local;
   result_boost = (u_max_boost - 1U) * u_max_boost;
 
-  const auto result02_is_ok = ((result_local == local_uint_type(2U)) && (result_boost == boost_uint_type(2U)));
+  const auto result02_is_ok = ((result_local == local_uint_type(static_cast<unsigned>(UINT8_C(2)))) && (result_boost == boost_uint_type(static_cast<unsigned>(UINT8_C(2)))));
 
   const std::string str_seven_and_effs =
-    "0x7" + std::string(static_cast<std::string::size_type>((local_edge_cases::local_digits2 / 4) - 1U), 'F');
+    "0x7" + std::string(static_cast<std::string::size_type>((local_edge_cases::local_digits2 / 4) - static_cast<unsigned>(UINT8_C(1))), 'F');
 
   const local_uint_type u_seven_and_effs_local(str_seven_and_effs.c_str());
   const boost_uint_type u_seven_and_effs_boost(str_seven_and_effs.c_str());
@@ -292,8 +292,8 @@ auto test_various_edge_operations() -> bool
 
   const std::string str_three_quarter_effs_and_zeros =
       "0x"
-    + std::string(static_cast<std::string::size_type>((local_edge_cases::local_digits2 / 4) * 3U), 'F')
-    + std::string(static_cast<std::string::size_type>((local_edge_cases::local_digits2 / 4) * 1U), '0')
+    + std::string(static_cast<std::string::size_type>((local_edge_cases::local_digits2 / 4) * static_cast<unsigned>(UINT8_C(3))), 'F')
+    + std::string(static_cast<std::string::size_type>((local_edge_cases::local_digits2 / 4) * static_cast<unsigned>(UINT8_C(1))), '0')
     ;
 
   const local_uint_type u_three_quarter_effs_and_zeros_local(str_three_quarter_effs_and_zeros.c_str());
@@ -306,8 +306,8 @@ auto test_various_edge_operations() -> bool
 
   const std::string str_one_quarter_effs_and_zeros =
       "0x"
-    + std::string(static_cast<std::string::size_type>((local_edge_cases::local_digits2 / 4) * 1U), 'F')
-    + std::string(static_cast<std::string::size_type>((local_edge_cases::local_digits2 / 4) * 3U), '0')
+    + std::string(static_cast<std::string::size_type>((local_edge_cases::local_digits2 / 4) * static_cast<unsigned>(UINT8_C(1))), 'F')
+    + std::string(static_cast<std::string::size_type>((local_edge_cases::local_digits2 / 4) * static_cast<unsigned>(UINT8_C(3))), '0')
     ;
 
   const local_uint_type u_one_quarter_effs_and_zeros_local(str_one_quarter_effs_and_zeros.c_str());
@@ -482,7 +482,7 @@ auto test_various_ostream_ops() -> bool
     }
   }
 
-  for(auto   i = static_cast<unsigned>(UINT32_C(0));
+  for(auto   i = static_cast<unsigned>(UINT8_C(0));
              i < static_cast<unsigned>(UINT32_C(1024));
            ++i)
   {
@@ -505,7 +505,7 @@ auto test_various_ostream_ops() -> bool
     result_is_ok = (result_u_is_ok && result_is_ok);
   }
 
-  for(auto   i = static_cast<unsigned>(UINT32_C(0));
+  for(auto   i = static_cast<unsigned>(UINT8_C(0));
              i < static_cast<unsigned>(UINT32_C(1024));
            ++i)
   {
@@ -528,7 +528,7 @@ auto test_various_ostream_ops() -> bool
     result_is_ok = (result_u_is_ok && result_is_ok);
   }
 
-  for(auto   i = static_cast<unsigned>(UINT32_C(0));
+  for(auto   i = static_cast<unsigned>(UINT8_C(0));
              i < static_cast<unsigned>(UINT32_C(1024));
            ++i)
   {
@@ -551,7 +551,7 @@ auto test_various_ostream_ops() -> bool
     result_is_ok = (result_u_is_ok && result_is_ok);
   }
 
-  for(auto   i = static_cast<unsigned>(UINT32_C(0));
+  for(auto   i = static_cast<unsigned>(UINT8_C(0));
              i < static_cast<unsigned>(UINT32_C(1024));
            ++i)
   {
@@ -574,7 +574,7 @@ auto test_various_ostream_ops() -> bool
     result_is_ok = (result_n_is_ok && result_is_ok);
   }
 
-  for(auto   i = static_cast<unsigned>(UINT32_C(0));
+  for(auto   i = static_cast<unsigned>(UINT8_C(0));
              i < static_cast<unsigned>(UINT32_C(1024));
            ++i)
   {
@@ -597,7 +597,7 @@ auto test_various_ostream_ops() -> bool
     result_is_ok = (result_n_is_ok && result_is_ok);
   }
 
-  for(auto   i = static_cast<unsigned>(UINT32_C(0));
+  for(auto   i = static_cast<unsigned>(UINT8_C(0));
              i < static_cast<unsigned>(UINT32_C(1024));
            ++i)
   {
@@ -692,7 +692,7 @@ auto test_various_roots_and_pow_etc() -> bool
     result_is_ok = (result_rootk_zero_is_ok && result_is_ok);
   }
 
-  for(auto   i = static_cast<unsigned>(UINT32_C(0));
+  for(auto   i = static_cast<unsigned>(UINT8_C(0));
              i < static_cast<unsigned>(loop_count_hi);
            ++i)
   {
@@ -744,7 +744,7 @@ auto test_various_roots_and_pow_etc() -> bool
     }
   }
 
-  for(auto   i = static_cast<unsigned>(UINT32_C(0));
+  for(auto   i = static_cast<unsigned>(UINT8_C(0));
              i < static_cast<unsigned>(loop_count_hi);
            ++i)
   {
@@ -774,7 +774,7 @@ auto test_various_roots_and_pow_etc() -> bool
     result_is_ok = (result_quartic_root_is_ok && result_is_ok);
   }
 
-  for(auto   i = static_cast<unsigned>(UINT32_C(0));
+  for(auto   i = static_cast<unsigned>(UINT8_C(0));
              i < static_cast<unsigned>(loop_count_hi);
            ++i)
   {
@@ -787,7 +787,7 @@ auto test_various_roots_and_pow_etc() -> bool
     result_is_ok = (result_powm_zero_one_is_ok && result_is_ok);
   }
 
-  for(auto   i = static_cast<unsigned>(UINT32_C(0));
+  for(auto   i = static_cast<unsigned>(UINT8_C(0));
              i < static_cast<unsigned>(loop_count_hi);
            ++i)
   {
@@ -977,7 +977,7 @@ auto test_some_gcd_and_equal_left_right() -> bool
 {
   auto result_is_ok = true;
 
-  for(auto   i = static_cast<unsigned>(UINT32_C(0));
+  for(auto   i = static_cast<unsigned>(UINT8_C(0));
              i < static_cast<unsigned>(UINT32_C(64));
            ++i)
   {
@@ -1223,7 +1223,7 @@ auto test_various_isolated_edge_cases() -> bool // NOLINT(readability-function-c
 
     result_is_ok = (rep_as_max_is_ok && result_is_ok);
 
-    std::fill(rep.begin(), rep.end(), static_cast<local_value_type>(0U));
+    std::fill(rep.begin(), rep.end(), static_cast<local_value_type>(UINT8_C(0)));
 
     const auto rep_as_zero_is_ok = (local_uintwide_t_small_unsigned_type(rep) == 0);
 
@@ -1268,7 +1268,7 @@ auto test_various_isolated_edge_cases() -> bool // NOLINT(readability-function-c
     result_is_ok = (result_infinities_is_ok && result_is_ok);
   }
 
-  for(auto   i = static_cast<unsigned>(UINT32_C(0));
+  for(auto   i = static_cast<unsigned>(UINT8_C(0));
              i < static_cast<unsigned>(loop_count_hi);
            ++i)
   {
@@ -1288,7 +1288,7 @@ auto test_various_isolated_edge_cases() -> bool // NOLINT(readability-function-c
     result_is_ok = (result_left_is_ok && result_right_is_ok && result_is_ok);
   }
 
-  for(auto   i = static_cast<unsigned>(UINT32_C(0));
+  for(auto   i = static_cast<unsigned>(UINT8_C(0));
              i < static_cast<unsigned>(loop_count_hi);
            ++i)
   {
@@ -1328,7 +1328,7 @@ auto test_various_isolated_edge_cases() -> bool // NOLINT(readability-function-c
     result_is_ok = (result_overflow_is_ok && result_is_ok);
   }
 
-  for(auto   i = static_cast<unsigned>(UINT32_C(0));
+  for(auto   i = static_cast<unsigned>(UINT8_C(0));
              i < static_cast<unsigned>(loop_count_hi);
            ++i)
   {
@@ -1343,7 +1343,7 @@ auto test_various_isolated_edge_cases() -> bool // NOLINT(readability-function-c
     result_is_ok = (result_unsigned_div_by_zero_is_ok && result_is_ok);
   }
 
-  for(auto   i = static_cast<unsigned>(UINT32_C(0));
+  for(auto   i = static_cast<unsigned>(UINT8_C(0));
              i < static_cast<unsigned>(loop_count_hi);
            ++i)
   {
@@ -1371,7 +1371,7 @@ auto test_various_isolated_edge_cases() -> bool // NOLINT(readability-function-c
     result_is_ok = (result_zero_div_by_zero_is_ok && result_is_ok);
   }
 
-  for(auto   i = static_cast<unsigned>(UINT32_C(0));
+  for(auto   i = static_cast<unsigned>(UINT8_C(0));
              i < static_cast<unsigned>(loop_count_hi);
            ++i)
   {
@@ -1411,7 +1411,7 @@ auto test_various_isolated_edge_cases() -> bool // NOLINT(readability-function-c
   }
 
 
-  for(auto   i = static_cast<unsigned>(UINT32_C(0));
+  for(auto   i = static_cast<unsigned>(UINT8_C(0));
              i < static_cast<unsigned>(loop_count_hi);
            ++i)
   {
@@ -1447,7 +1447,7 @@ auto test_various_isolated_edge_cases() -> bool // NOLINT(readability-function-c
     }
   }
 
-  for(auto   i = static_cast<unsigned>(UINT32_C(0));
+  for(auto   i = static_cast<unsigned>(UINT8_C(0));
              i < static_cast<unsigned>(loop_count_hi);
            ++i)
   {
@@ -1496,7 +1496,7 @@ auto test_to_chars_and_to_string() -> bool // NOLINT(readability-function-cognit
   auto result_is_ok = true;
 
   #if defined(__cpp_lib_to_chars)
-  for(auto   i = static_cast<unsigned>(UINT32_C(0));
+  for(auto   i = static_cast<unsigned>(UINT8_C(0));
              i < static_cast<unsigned>(loop_count_hi);
            ++i)
   {
@@ -1504,13 +1504,13 @@ auto test_to_chars_and_to_string() -> bool // NOLINT(readability-function-cognit
     // Use all three bases octal, decimal, and hexadecimal.
 
     using to_chars_storage_array_oct_type =
-      std::array<char, static_cast<typename std::size_t>(local_uintwide_t_small_unsigned_type::wr_string_max_buffer_size_oct())>;
+      std::array<char, static_cast<std::size_t>(local_uintwide_t_small_unsigned_type::wr_string_max_buffer_size_oct())>;
 
     using to_chars_storage_array_dec_type =
-      std::array<char, static_cast<typename std::size_t>(local_uintwide_t_small_unsigned_type::wr_string_max_buffer_size_dec())>;
+      std::array<char, static_cast<std::size_t>(local_uintwide_t_small_unsigned_type::wr_string_max_buffer_size_dec())>;
 
     using to_chars_storage_array_hex_type =
-      std::array<char, static_cast<typename std::size_t>(local_uintwide_t_small_unsigned_type::wr_string_max_buffer_size_hex())>;
+      std::array<char, static_cast<std::size_t>(local_uintwide_t_small_unsigned_type::wr_string_max_buffer_size_hex())>;
 
     constexpr auto char_fill = '\0';
 
@@ -1526,9 +1526,14 @@ auto test_to_chars_and_to_string() -> bool // NOLINT(readability-function-cognit
     const auto result_dec_as_chars = to_chars(arr_dec.data(), arr_dec.data() + arr_dec.size(), u_gen, 10);
     const auto result_hex_as_chars = to_chars(arr_hex.data(), arr_hex.data() + arr_hex.size(), u_gen, 16);
 
-          auto result_oct_as_str = std::string(arr_oct.data()); result_oct_as_str.insert(result_oct_as_str.cbegin(), '0');
+    auto result_oct_as_str = std::string(arr_oct.data());
+         result_oct_as_str.insert(result_oct_as_str.begin(), static_cast<std::string::size_type>(UINT8_C(1)), '0');
+
     const auto result_dec_as_str = std::string(arr_dec.data());
-          auto result_hex_as_str = std::string(arr_hex.data()); result_hex_as_str.insert(result_hex_as_str.cbegin(), 'x'); result_hex_as_str.insert(result_hex_as_str.cbegin(), '0');
+
+    auto result_hex_as_str = std::string(arr_hex.data());
+    result_hex_as_str.insert(result_hex_as_str.begin(), static_cast<std::string::size_type>(UINT8_C(1)), 'x');
+    result_hex_as_str.insert(result_hex_as_str.begin(), static_cast<std::string::size_type>(UINT8_C(1)), '0');
 
     const local_uintwide_t_small_unsigned_type u_from_string_oct(result_oct_as_str.c_str());
     const local_uintwide_t_small_unsigned_type u_from_string_dec(result_dec_as_str.c_str());
@@ -1543,7 +1548,7 @@ auto test_to_chars_and_to_string() -> bool // NOLINT(readability-function-cognit
     result_is_ok = (result_u_to_from_string_hex_is_ok && result_is_ok);
   }
 
-  for(auto   i = static_cast<unsigned>(UINT32_C(0));
+  for(auto   i = static_cast<unsigned>(UINT8_C(0));
              i < static_cast<unsigned>(loop_count_hi);
            ++i)
   {
@@ -1551,7 +1556,7 @@ auto test_to_chars_and_to_string() -> bool // NOLINT(readability-function-cognit
     // Use only base decimal.
 
     using to_chars_storage_array_dec_type =
-      std::array<char, static_cast<typename std::size_t>(local_uintwide_t_small_signed_type::wr_string_max_buffer_size_dec())>;
+      std::array<char, static_cast<std::size_t>(local_uintwide_t_small_signed_type::wr_string_max_buffer_size_dec())>;
 
     constexpr auto char_fill = '\0';
 
@@ -1576,7 +1581,7 @@ auto test_to_chars_and_to_string() -> bool // NOLINT(readability-function-cognit
   #endif // __cpp_lib_to_chars
 
   #if !defined(WIDE_INTEGER_DISABLE_TO_STRING)
-  for(auto   i = static_cast<unsigned>(UINT32_C(0));
+  for(auto   i = static_cast<unsigned>(UINT8_C(0));
              i < static_cast<unsigned>(loop_count_hi);
            ++i)
   {
@@ -1595,7 +1600,7 @@ auto test_to_chars_and_to_string() -> bool // NOLINT(readability-function-cognit
     result_is_ok = (result_u_to_from_string_is_ok && result_is_ok);
   }
 
-  for(auto   i = static_cast<unsigned>(UINT32_C(0));
+  for(auto   i = static_cast<unsigned>(UINT8_C(0));
              i < static_cast<unsigned>(loop_count_hi);
            ++i)
   {
@@ -1648,7 +1653,7 @@ auto test_to_chars_and_to_string() -> bool // NOLINT(readability-function-cognit
   }
 
   #if !defined(UINTWIDE_T_REDUCE_TEST_DEPTH)
-  for(auto   i = static_cast<unsigned>(UINT32_C(0));
+  for(auto   i = static_cast<unsigned>(UINT8_C(0));
              i < static_cast<unsigned>(UINT32_C(32));
            ++i)
   {
@@ -1700,7 +1705,7 @@ auto test_import_bits() -> bool // NOLINT(readability-function-cognitive-complex
 
   for(const auto& msv_first : msv_options) // NOLINT
   {
-    for(auto   i = static_cast<unsigned>(UINT32_C(0));
+    for(auto   i = static_cast<unsigned>(UINT8_C(0));
                i < static_cast<unsigned>(loop_count_lo);
              ++i)
     {
@@ -1751,7 +1756,7 @@ auto test_import_bits() -> bool // NOLINT(readability-function-cognitive-complex
 
     for(const auto& chunk_size : bits_for_chunks)
     {
-      for(auto   i = static_cast<unsigned>(UINT32_C(0));
+      for(auto   i = static_cast<unsigned>(UINT8_C(0));
                  i < static_cast<unsigned>(loop_count_lo);
                ++i)
       {
@@ -1792,7 +1797,7 @@ auto test_import_bits() -> bool // NOLINT(readability-function-cognitive-complex
 
   for(const auto& msv_first : msv_options) // NOLINT
   {
-    for(auto   i = static_cast<unsigned>(UINT32_C(0));
+    for(auto   i = static_cast<unsigned>(UINT8_C(0));
                i < static_cast<unsigned>(loop_count_lo);
              ++i)
     {
@@ -1873,7 +1878,7 @@ auto test_import_bits() -> bool // NOLINT(readability-function-cognitive-complex
 
   for(const auto& msv_first : msv_options) // NOLINT
   {
-    for(auto   i = static_cast<unsigned>(UINT32_C(0));
+    for(auto   i = static_cast<unsigned>(UINT8_C(0));
                i < static_cast<unsigned>(loop_count_lo);
              ++i)
     {
@@ -2019,7 +2024,7 @@ auto test_export_bits() -> bool // NOLINT(readability-function-cognitive-complex
 
   for(const auto& msv_first : msv_options) // NOLINT
   {
-    for(auto   i = static_cast<unsigned>(UINT32_C(0));
+    for(auto   i = static_cast<unsigned>(UINT8_C(0));
                i < static_cast<unsigned>(loop_count_lo);
              ++i)
     {
@@ -2061,7 +2066,7 @@ auto test_export_bits() -> bool // NOLINT(readability-function-cognitive-complex
 
     for(const auto& chunk_size : bits_for_chunks)
     {
-      for(auto   i = static_cast<unsigned>(UINT32_C(0));
+      for(auto   i = static_cast<unsigned>(UINT8_C(0));
                  i < static_cast<unsigned>(loop_count_lo);
                ++i)
       {
@@ -2120,7 +2125,7 @@ auto test_export_bits() -> bool // NOLINT(readability-function-cognitive-complex
 
   for(const auto& msv_first : msv_options) // NOLINT
   {
-    for(auto   i = static_cast<unsigned>(UINT32_C(0));
+    for(auto   i = static_cast<unsigned>(UINT8_C(0));
                i < static_cast<unsigned>(loop_count_lo);
              ++i)
     {
