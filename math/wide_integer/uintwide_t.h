@@ -5567,11 +5567,11 @@
     auto x = static_cast<std::uint_fast32_t>(u);
 
     // Use O(log2[N]) binary-halving in an unrolled loop to find the msb.
-    if((x & UINT32_C(0xFFFF0000)) != UINT32_C(0)) { x = static_cast<std::uint_fast32_t>(x >> static_cast<unsigned>(UINT8_C(16))); r = static_cast<unsigned_fast_type>(r | UINT32_C(16)); }
-    if((x & UINT32_C(0x0000FF00)) != UINT32_C(0)) { x = static_cast<std::uint_fast32_t>(x >> static_cast<unsigned>(UINT8_C( 8))); r = static_cast<unsigned_fast_type>(r | UINT32_C( 8)); }
-    if((x & UINT32_C(0x000000F0)) != UINT32_C(0)) { x = static_cast<std::uint_fast32_t>(x >> static_cast<unsigned>(UINT8_C( 4))); r = static_cast<unsigned_fast_type>(r | UINT32_C( 4)); }
-    if((x & UINT32_C(0x0000000C)) != UINT32_C(0)) { x = static_cast<std::uint_fast32_t>(x >> static_cast<unsigned>(UINT8_C( 2))); r = static_cast<unsigned_fast_type>(r | UINT32_C( 2)); }
-    if((x & UINT32_C(0x00000002)) != UINT32_C(0)) {                                                                               r = static_cast<unsigned_fast_type>(r | UINT32_C( 1)); }
+    if(static_cast<std::uint_fast32_t>(x & static_cast<std::uint_fast32_t>(UINT32_C(0xFFFF0000))) != static_cast<std::uint_fast32_t>(UINT8_C(0))) { x = static_cast<std::uint_fast32_t>(x >> static_cast<unsigned>(UINT8_C(16))); r = static_cast<unsigned_fast_type>(r | static_cast<unsigned_fast_type>(UINT8_C(16))); }
+    if(static_cast<std::uint_fast32_t>(x & static_cast<std::uint_fast32_t>(UINT32_C(0x0000FF00))) != static_cast<std::uint_fast32_t>(UINT8_C(0))) { x = static_cast<std::uint_fast32_t>(x >> static_cast<unsigned>(UINT8_C( 8))); r = static_cast<unsigned_fast_type>(r | static_cast<unsigned_fast_type>(UINT8_C( 8))); }
+    if(static_cast<std::uint_fast32_t>(x & static_cast<std::uint_fast32_t>(UINT32_C(0x000000F0))) != static_cast<std::uint_fast32_t>(UINT8_C(0))) { x = static_cast<std::uint_fast32_t>(x >> static_cast<unsigned>(UINT8_C( 4))); r = static_cast<unsigned_fast_type>(r | static_cast<unsigned_fast_type>(UINT8_C( 4))); }
+    if(static_cast<std::uint_fast32_t>(x & static_cast<std::uint_fast32_t>(UINT32_C(0x0000000C))) != static_cast<std::uint_fast32_t>(UINT8_C(0))) { x = static_cast<std::uint_fast32_t>(x >> static_cast<unsigned>(UINT8_C( 2))); r = static_cast<unsigned_fast_type>(r | static_cast<unsigned_fast_type>(UINT8_C( 2))); }
+    if(static_cast<std::uint_fast32_t>(x & static_cast<std::uint_fast32_t>(UINT32_C(0x00000002))) != static_cast<std::uint_fast32_t>(UINT8_C(0))) {                                                                               r = static_cast<unsigned_fast_type>(r | static_cast<unsigned_fast_type>(UINT8_C( 1))); }
 
     return r;
   }
@@ -6447,7 +6447,7 @@
 
       constexpr auto digits_generator_result_type = static_cast<std::uint32_t>(GeneratorResultBits);
 
-      static_assert(static_cast<std::uint32_t>(digits_generator_result_type % static_cast<std::uint32_t>(UINT8_C(8))) == static_cast<std::uint32_t>(UINT32_C(0)),
+      static_assert(static_cast<std::uint32_t>(digits_generator_result_type % static_cast<std::uint32_t>(UINT8_C(8))) == static_cast<std::uint32_t>(UINT8_C(0)),
                     "Error: Generator result type must have a multiple of 8 bits.");
 
       constexpr auto digits_limb_ratio =
