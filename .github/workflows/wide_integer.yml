@@ -835,7 +835,7 @@ jobs:
           ls -la ./${{ matrix.suite }}.exe
           ./${{ matrix.suite }}.exe
   gcc-valgrind:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     defaults:
       run:
         shell: bash
@@ -843,7 +843,7 @@ jobs:
       fail-fast: false
       matrix:
         standard: [ c++20 ]
-        compiler: [ g++-12 ]
+        compiler: [ g++ ]
     steps:
       - uses: actions/checkout@v3
         with:
@@ -858,7 +858,9 @@ jobs:
           ./bootstrap.sh
           ./b2 headers
       - name: update-tools
-        run: sudo apt-get install g++-12 valgrind
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y valgrind
       - name: gcc-valgrind
         run: |
           echo "compile"
