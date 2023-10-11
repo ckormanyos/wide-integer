@@ -37,11 +37,11 @@ THE SOFTWARE.
 
 -----------------------------------------------------------------------------*/
 
-// For algorithm description of ECDSA, see
-// D. Hankerson, A. Menezes, S. Vanstone, "Guide to Elliptic
-// Curve Cryptography", Springer 2004, Chapter 4, in particular
-// Algorithm 4.24 (keygen on page 180), and Algorithms 4.29 and 4.30
-// (sign/verify on page 184).
+// For algorithm description of ECDSA, please consult also:
+//   D. Hankerson, A. Menezes, S. Vanstone, "Guide to Elliptic
+//   Curve Cryptography", Springer 2004, Chapter 4, in particular
+//   Algorithm 4.24 (keygen on page 180), and Algorithms 4.29 and 4.30.
+//   Complete descriptions of sign/verify are featured on page 184.
 
 // For another algorithm description of ECDSA,
 //   see also: https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.186-5.pdf
@@ -824,7 +824,7 @@ auto ::math::wide_integer::example013_ecdsa_sign_verify() -> bool
 
     const auto result_hash_is_ok =
     (
-      hash_result == elliptic_curve_type::uint_type("0x334d016f755cd6dc58c53a86e183882f8ec14f52fb05345887c8a5edd42c87b7")
+      hash_result == elliptic_curve_type::uint_type("0x334D016F755CD6DC58C53A86E183882F8EC14F52FB05345887C8A5EDD42C87B7")
     );
 
     result_is_ok = (result_hash_is_ok && result_is_ok);
@@ -834,7 +834,7 @@ auto ::math::wide_integer::example013_ecdsa_sign_verify() -> bool
     // Test ECC key generation, sign and verify. In this case we use random (but pre-defined seeds
     // for both keygen as well as signing.
 
-    const auto seed_keygen = elliptic_curve_type::uint_type("0xc6455bf2f380f6b81f5fd1a1dbc2392b3783ed1e7d91b62942706e5584ba0b92");
+    const auto seed_keygen = elliptic_curve_type::uint_type("0xC6455BF2F380F6B81F5FD1A1DBC2392B3783ED1E7D91B62942706E5584BA0B92");
 
     const auto keypair = elliptic_curve_type::make_keypair(&seed_keygen);
 
@@ -847,9 +847,9 @@ auto ::math::wide_integer::example013_ecdsa_sign_verify() -> bool
         }
       );
 
-    const auto result_private_is_ok  = (std::get<0>(keypair)        == "0xc6455bf2f380f6b81f5fd1a1dbc2392b3783ed1e7d91b62942706e5584ba0b92");
-    const auto result_public_x_is_ok = (std::get<1>(keypair).first  == "0xc6235629f157690e1df37248256c4fb7eff073d0250f5bd85df40b9e127a8461");
-    const auto result_public_y_is_ok = (std::get<1>(keypair).second == "0xcbaa679f07f9b98f915c1fb7d85a379d0559a9eee6735b1be0ce0e2e2b2e94de");
+    const auto result_private_is_ok  = (std::get<0>(keypair)        == "0xC6455BF2F380F6B81F5FD1A1DBC2392B3783ED1E7D91B62942706E5584BA0B92");
+    const auto result_public_x_is_ok = (std::get<1>(keypair).first  == "0xC6235629F157690E1DF37248256C4FB7EFF073D0250F5BD85DF40B9E127A8461");
+    const auto result_public_y_is_ok = (std::get<1>(keypair).second == "0xCBAA679F07F9B98F915C1FB7D85A379D0559A9EEE6735B1BE0CE0E2E2B2E94DE");
 
     const auto result_keygen_is_ok =
     (
@@ -860,7 +860,7 @@ auto ::math::wide_integer::example013_ecdsa_sign_verify() -> bool
 
     result_is_ok = (result_is_on_curve_is_ok && result_keygen_is_ok && result_is_ok);
 
-    const auto priv = elliptic_curve_type::uint_type("0x6f73d8e95d6ddbf0eb352a9f0b2ce91931511edaf9ac8f128d5a4f877c4f0450");
+    const auto priv = elliptic_curve_type::uint_type("0x6F73D8E95D6DDBF0EB352A9F0B2CE91931511EDAF9AC8F128D5A4F877C4F0450");
 
     const auto sig =
       elliptic_curve_type::sign_message(std::get<0>(keypair), msg_as_string.cbegin(), msg_as_string.cend(), &priv);
@@ -869,8 +869,8 @@ auto ::math::wide_integer::example013_ecdsa_sign_verify() -> bool
       (
         sig == std::make_pair
                (
-                 elliptic_curve_type::uint_type("0x65717a860f315a21e6e23cde411c8940de42a69d8ab26c2465902be8f3b75e7b"),
-                 elliptic_curve_type::uint_type("0xdb8b8e75a7b0c2f0d9eb8dbf1b5236edeb89b2116f5aebd40e770f8ccc3d6605")
+                 elliptic_curve_type::uint_type("0x65717A860F315A21E6E23CDE411C8940DE42A69D8AB26C2465902BE8F3B75E7B"),
+                 elliptic_curve_type::uint_type("0xDB8B8E75A7B0C2F0D9EB8DBF1B5236EDEB89B2116F5AEBD40E770F8CCC3D6605")
                )
       );
 
