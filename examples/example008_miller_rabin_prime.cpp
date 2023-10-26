@@ -10,7 +10,7 @@
 // The Boost.Multiprecision code can be found here:
 // https://www.boost.org/doc/libs/1_73_0/libs/multiprecision/doc/html/boost_multiprecision/tut/primetest.html
 
-#include <chrono>
+#include <ctime>
 #include <random>
 
 #include <examples/example_uintwide_t.h>
@@ -43,23 +43,12 @@ namespace local_example008_miller_rabin_prime
   using random_engine1_type = std::linear_congruential_engine<std::uint32_t, UINT32_C(48271), UINT32_C(0), UINT32_C(2147483647)>;
   using random_engine2_type = std::mt19937;
 
-  template<typename IntegralTimePointType,
-           typename ClockType = std::chrono::high_resolution_clock>
+  template<typename IntegralTimePointType>
   auto time_point() -> IntegralTimePointType
   {
     using local_integral_time_point_type = IntegralTimePointType;
-    using local_clock_type               = ClockType;
 
-    const auto current_now =
-      static_cast<std::uintmax_t>
-      (
-        std::chrono::duration_cast<std::chrono::nanoseconds>
-        (
-          local_clock_type::now().time_since_epoch()
-        ).count()
-      );
-
-    return static_cast<local_integral_time_point_type>(current_now);
+    return static_cast<local_integral_time_point_type>(std::clock());
   }
 
   auto example008_miller_rabin_prime_run() -> bool

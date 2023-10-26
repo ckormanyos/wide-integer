@@ -6,9 +6,9 @@
 ///////////////////////////////////////////////////////////////////
 
 #include <algorithm>
-#include <chrono>
 #include <cstddef>
 #include <cstdint>
+#include <ctime>
 #include <iomanip>
 #include <iostream>
 #include <iterator>
@@ -89,17 +89,17 @@ auto ::math::wide_integer::example009_timed_mul() -> bool
   std::uint64_t count = 0U;
   std::size_t   index = 0U;
 
-  std::intmax_t total_time { };
+  float total_time { };
 
-  const std::chrono::high_resolution_clock::time_point begin = std::chrono::high_resolution_clock::now();
+  const auto begin = std::clock();
 
   for(;;)
   {
     local_timed_mul::local_a().at(index) * local_timed_mul::local_b().at(index);
 
-    const std::chrono::high_resolution_clock::time_point end = std::chrono::high_resolution_clock::now();
+    const auto end = std::clock();
 
-    total_time = static_cast<std::intmax_t>(std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count());
+    total_time = static_cast<float>(static_cast<float>(end - begin) / CLOCKS_PER_SEC);
 
     ++count;
     ++index;
@@ -109,13 +109,13 @@ auto ::math::wide_integer::example009_timed_mul() -> bool
       index = 0U;
     }
 
-    if(total_time > INTMAX_C(5999))
+    if(total_time > static_cast<float>(6.0L))
     {
       break;
     }
   }
 
-  const float kops_per_sec = static_cast<float>(count) / static_cast<float>(static_cast<std::uint32_t>(total_time));
+  const float kops_per_sec = static_cast<float>(count) / static_cast<float>(static_cast<float>(total_time * 1000.0F));
 
   {
     const auto flg = std::cout.flags();
