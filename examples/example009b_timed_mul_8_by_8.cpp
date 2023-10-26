@@ -110,7 +110,7 @@ auto ::math::wide_integer::example009b_timed_mul_8_by_8() -> bool
       index = 0U;
     }
 
-    if(total_time > static_cast<float>(6.0L))
+    if(total_time > static_cast<float>(6.0L)) // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
     {
       break;
     }
