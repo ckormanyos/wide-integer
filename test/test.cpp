@@ -606,8 +606,6 @@ auto run() -> bool // NOLINT(readability-function-cognitive-complexity)
   const auto stop = std::clock();
 
   {
-    constexpr auto one_thousand_milliseconds = 1000.0F;
-
     const auto flg = std::cout.flags();
 
     std::cout << "result_is_ok: "
