@@ -1,11 +1,11 @@
 ﻿///////////////////////////////////////////////////////////////////////////////
-//  Copyright Christopher Kormanyos 2019 - 2022.
+//  Copyright Christopher Kormanyos 2019 - 2023.
 //  Distributed under the Boost Software License,
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
 
-#include <chrono>
+#include <ctime>
 #include <random>
 #include <string>
 #include <vector>
@@ -103,8 +103,7 @@ constexpr auto loop_count_hi = static_cast<std::uint32_t>(UINT16_C(8));
 #endif
 
 // Forward declaration
-template<typename IntegralTimePointType,
-         typename ClockType = std::chrono::high_resolution_clock>
+template<typename IntegralTimePointType>
 auto time_point() -> IntegralTimePointType;
 
 #if defined(WIDE_INTEGER_NAMESPACE)
@@ -170,23 +169,12 @@ auto zero_as_small_unsigned_type() -> const local_uintwide_t_small_unsigned_type
 auto one_as_small_unsigned_type () -> const local_uintwide_t_small_unsigned_type&;
 auto m_one_as_small_signed_type () -> const local_uintwide_t_small_signed_type&;
 
-template<typename IntegralTimePointType,
-         typename ClockType>
+template<typename IntegralTimePointType>
 auto time_point() -> IntegralTimePointType
 {
   using local_integral_time_point_type = IntegralTimePointType;
-  using local_clock_type               = ClockType;
 
-  const auto current_now =
-    static_cast<std::uintmax_t>
-    (
-      std::chrono::duration_cast<std::chrono::nanoseconds>
-      (
-        local_clock_type::now().time_since_epoch()
-      ).count()
-    );
-
-  return static_cast<local_integral_time_point_type>(current_now);
+  return static_cast<local_integral_time_point_type>(std::clock());
 }
 
 template<typename IntegralTypeWithStringConstruction>
