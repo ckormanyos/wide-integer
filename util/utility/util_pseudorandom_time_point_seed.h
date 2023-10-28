@@ -45,7 +45,7 @@
         #pragma warning(disable : 4996)
         #endif
         // Format the time in a calendar-style.
-        strftime(buf.data(), buf.size(), "%c", std::localtime(&now));
+        strftime(buf.data(), buf.size(), "%c", std::localtime(&now)); // NOLINT(concurrency-mt-unsafe)
         #if defined(_MSC_VER)
         #pragma warning( pop )
         #endif
@@ -54,7 +54,7 @@
 
         // Append the clock()-time in arbitrary units.
         strm << buf.data();
-        strm << '+' << std::setfill('0') << std::setw(9) << std::clock();
+        strm << '+' << std::setfill('0') << std::setw(static_cast<std::streamsize>(INT8_C(9))) << std::clock();
 
         const auto str_tm = strm.str();
 
@@ -67,6 +67,8 @@
 
       return static_cast<local_integral_type>(crc_crc64(buf_u8.data(), str_tm_len));
     }
+
+    static constexpr auto test() noexcept -> bool;
 
   private:
     template<const std::size_t NumberOfBits,
@@ -148,6 +150,28 @@
       );
     }
   };
+
+  constexpr auto util_pseudorandom_time_point_seed::test() noexcept -> bool
+  {
+    constexpr std::uint8_t crc64_test_data[static_cast<std::size_t>(UINT8_C(9))] =
+    {
+      0x31U, 0x32U, 0x33U, 0x34U, 0x35U, 0x36U, 0x37U, 0x38U, 0x39U
+    };
+
+    constexpr auto crc64_test_result =  crc_bitwise_template<static_cast<std::size_t>(UINT8_C(64)), std::uint64_t>
+    (
+      crc64_test_data,
+      sizeof(crc64_test_data),
+      static_cast<std::uint64_t>(UINT64_C(0x42F0E1EBA9EA3693)),
+      static_cast<std::uint64_t>(UINT64_C(0x0000000000000000)),
+      static_cast<std::uint64_t>(UINT64_C(0x0000000000000000))
+    );
+
+    // check: 0x6C40DF5F0B497347
+    return (crc64_test_result == static_cast<std::uint64_t>(UINT64_C(0x6C40DF5F0B497347)));
+  }
+
+  static_assert(util::util_pseudorandom_time_point_seed::test(), "Error: crc64 implementation is not working properly");
 
   } // namespace util
 
