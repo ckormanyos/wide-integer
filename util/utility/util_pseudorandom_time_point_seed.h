@@ -153,14 +153,14 @@
 
   constexpr auto util_pseudorandom_time_point_seed::test() noexcept -> bool
   {
-    constexpr std::uint8_t crc64_test_data[static_cast<std::size_t>(UINT8_C(9))] =
+    constexpr std::uint8_t crc64_test_data[static_cast<std::size_t>(UINT8_C(9))] = // NOLINT(cppcoreguidelines-avoid-c-arrays,hicpp-avoid-c-arrays,modernize-avoid-c-arrays)
     {
       0x31U, 0x32U, 0x33U, 0x34U, 0x35U, 0x36U, 0x37U, 0x38U, 0x39U
     };
 
     constexpr auto crc64_test_result =  crc_bitwise_template<static_cast<std::size_t>(UINT8_C(64)), std::uint64_t>
     (
-      crc64_test_data,
+      crc64_test_data, // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay)
       sizeof(crc64_test_data),
       static_cast<std::uint64_t>(UINT64_C(0x42F0E1EBA9EA3693)),
       static_cast<std::uint64_t>(UINT64_C(0x0000000000000000)),
