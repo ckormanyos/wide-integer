@@ -38,11 +38,18 @@
 
         struct timespec ts; timespec_get(&ts, TIME_UTC);
 
-        using strftime_char_array_type = std::array<char, std::tuple_size_v<strftime_uint8_array_type>>;
+        using strftime_char_array_type = std::array<char, std::tuple_size<strftime_uint8_array_type>::value>;
 
         strftime_char_array_type buf { };
 
+        #if defined(_MSC_VER)
+        #pragma warning(push)
+        #pragma warning(disable : 4996)
+        #endif
         strftime(buf.data(), buf.size(), "%D %T", gmtime(&ts.tv_sec));
+        #if defined(_MSC_VER)
+        #pragma warning( pop )
+        #endif
 
         std::stringstream strm;
 
