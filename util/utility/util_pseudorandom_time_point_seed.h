@@ -33,10 +33,8 @@
       std::size_t str_tm_len { };
 
       {
-        // Get the UCT (time) expressed as a character string and also
-        // note its string-length.
-
-        struct timespec ts { }; timespec_get(&ts, TIME_UTC);
+        // Get the time.
+        const std::time_t now = std::time(nullptr);
 
         using strftime_char_array_type = std::array<char, std::tuple_size<strftime_uint8_array_type>::value>;
 
@@ -46,15 +44,17 @@
         #pragma warning(push)
         #pragma warning(disable : 4996)
         #endif
-        strftime(buf.data(), buf.size(), "%D %T", gmtime(&ts.tv_sec));
+        // Format the time in a calendar-style.
+        strftime(buf.data(), buf.size(), "%c", std::localtime(&now));
         #if defined(_MSC_VER)
         #pragma warning( pop )
         #endif
 
         std::stringstream strm;
 
+        // Append the clock()-time in arbitrary units.
         strm << buf.data();
-        strm << '.' << std::setfill('0') << std::setw(static_cast<std::streamsize>(INT8_C(9))) << ts.tv_nsec;
+        strm << '+' << std::setfill('0') << std::setw(9) << std::clock();
 
         const auto str_tm = strm.str();
 
@@ -71,11 +71,11 @@
   private:
     template<const std::size_t NumberOfBits,
              typename UnsignedIntegralType>
-    static constexpr auto crc_bitwise_template(const std::uint8_t*         message,
-                                               const std::size_t           count,
-                                               const UnsignedIntegralType& polynomial, // NOLINT(bugprone-easily-swappable-parameters)
-                                               const UnsignedIntegralType& initial_value,
-                                               const UnsignedIntegralType& final_xor_value) -> UnsignedIntegralType
+    static constexpr auto crc_bitwise_template(const std::uint8_t*        message,
+                                               const std::size_t          count,
+                                               const UnsignedIntegralType polynomial, // NOLINT(bugprone-easily-swappable-parameters)
+                                               const UnsignedIntegralType initial_value,
+                                               const UnsignedIntegralType final_xor_value) -> UnsignedIntegralType
     {
       using value_type = UnsignedIntegralType;
 
@@ -88,7 +88,7 @@
       for(auto data_index = static_cast<std::size_t>(UINT8_C(0)); data_index < count; ++data_index)
       {
         // Obtain the next data element (and reflect it if necessary).
-        const data_type next_data_element = message[data_index];
+        const data_type next_data_element = message[data_index]; // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
 
         {
           constexpr auto left_shift_amount =
