@@ -5,7 +5,6 @@
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
 
-#include <ctime>
 #include <random>
 #include <string>
 #include <vector>
@@ -69,6 +68,8 @@
 #include <math/wide_integer/uintwide_t.h>
 #include <test/test_uintwide_t.h>
 
+#include <util/utility/util_pseudorandom_time_point_seed.h>
+
 #if defined(__clang__)
   #if defined __has_feature && __has_feature(thread_sanitizer)
   #define UINTWIDE_T_REDUCE_TEST_DEPTH
@@ -101,10 +102,6 @@ constexpr auto loop_count_hi = static_cast<std::uint32_t>(UINT16_C(256));
 constexpr auto loop_count_lo = static_cast<std::uint32_t>(UINT16_C(4));
 constexpr auto loop_count_hi = static_cast<std::uint32_t>(UINT16_C(8));
 #endif
-
-// Forward declaration
-template<typename IntegralTimePointType>
-auto time_point() -> IntegralTimePointType;
 
 #if defined(WIDE_INTEGER_NAMESPACE)
 using local_uintwide_t_small_unsigned_type =
@@ -168,14 +165,6 @@ auto zero_as_limb               () -> const typename local_uintwide_t_small_unsi
 auto zero_as_small_unsigned_type() -> const local_uintwide_t_small_unsigned_type&;
 auto one_as_small_unsigned_type () -> const local_uintwide_t_small_unsigned_type&;
 auto m_one_as_small_signed_type () -> const local_uintwide_t_small_signed_type&;
-
-template<typename IntegralTimePointType>
-auto time_point() -> IntegralTimePointType
-{
-  using local_integral_time_point_type = IntegralTimePointType;
-
-  return static_cast<local_integral_time_point_type>(std::clock());
-}
 
 template<typename IntegralTypeWithStringConstruction>
 auto generate_wide_integer_value(bool       is_positive           = true,
@@ -371,8 +360,8 @@ auto test_various_ostream_ops() -> bool
 {
   auto result_is_ok = true;
 
-  eng_sgn.seed(time_point<typename eng_sgn_type::result_type>());
-  eng_dig.seed(time_point<typename eng_dig_type::result_type>());
+  eng_sgn.seed(util::util_pseudorandom_time_point_seed::value<typename eng_sgn_type::result_type>());
+  eng_dig.seed(util::util_pseudorandom_time_point_seed::value<typename eng_dig_type::result_type>());
 
   {
     const auto u = local_uintwide_t_small_unsigned_type(static_cast<std::uint32_t>(UINT32_C(29363)));
@@ -843,7 +832,7 @@ auto test_small_prime_and_non_prime() -> bool
 
   using local_random_engine_result_type = typename random_engine_type::result_type;
 
-  auto generator = random_engine_type(time_point<local_random_engine_result_type>());
+  auto generator = random_engine_type(util::util_pseudorandom_time_point_seed::value<local_random_engine_result_type>());
 
   random_engine_type local_generator(generator);
 
@@ -1478,8 +1467,8 @@ auto test_various_isolated_edge_cases() -> bool // NOLINT(readability-function-c
 
 auto test_to_chars_and_to_string() -> bool // NOLINT(readability-function-cognitive-complexity)
 {
-  eng_sgn.seed(time_point<typename eng_sgn_type::result_type>());
-  eng_dig.seed(time_point<typename eng_dig_type::result_type>());
+  eng_sgn.seed(util::util_pseudorandom_time_point_seed::value<typename eng_sgn_type::result_type>());
+  eng_dig.seed(util::util_pseudorandom_time_point_seed::value<typename eng_dig_type::result_type>());
 
   auto result_is_ok = true;
 
@@ -1673,8 +1662,8 @@ auto test_to_chars_and_to_string() -> bool // NOLINT(readability-function-cognit
 
 auto test_import_bits() -> bool // NOLINT(readability-function-cognitive-complexity)
 {
-  eng_sgn.seed(time_point<typename eng_sgn_type::result_type>());
-  eng_dig.seed(time_point<typename eng_dig_type::result_type>());
+  eng_sgn.seed(util::util_pseudorandom_time_point_seed::value<typename eng_sgn_type::result_type>());
+  eng_dig.seed(util::util_pseudorandom_time_point_seed::value<typename eng_dig_type::result_type>());
 
   using local_boost_small_uint_backend_type =
     boost::multiprecision::cpp_int_backend<local_edge_cases::local_digits2_small,
@@ -1992,8 +1981,8 @@ auto test_import_bits() -> bool // NOLINT(readability-function-cognitive-complex
 
 auto test_export_bits() -> bool // NOLINT(readability-function-cognitive-complexity)
 {
-  eng_sgn.seed(time_point<typename eng_sgn_type::result_type>());
-  eng_dig.seed(time_point<typename eng_dig_type::result_type>());
+  eng_sgn.seed(util::util_pseudorandom_time_point_seed::value<typename eng_sgn_type::result_type>());
+  eng_dig.seed(util::util_pseudorandom_time_point_seed::value<typename eng_dig_type::result_type>());
 
   using local_boost_small_uint_backend_type =
     boost::multiprecision::cpp_int_backend<local_edge_cases::local_digits2_small,
@@ -2189,8 +2178,8 @@ auto WIDE_INTEGER_NAMESPACE::math::wide_integer::test_uintwide_t_edge_cases() ->
 auto ::math::wide_integer::test_uintwide_t_edge_cases() -> bool
 #endif
 {
-  test_uintwide_t_edge::eng_sgn.seed(test_uintwide_t_edge::time_point<typename test_uintwide_t_edge::eng_sgn_type::result_type>());
-  test_uintwide_t_edge::eng_dig.seed(test_uintwide_t_edge::time_point<typename test_uintwide_t_edge::eng_dig_type::result_type>());
+  test_uintwide_t_edge::eng_sgn.seed(::util::util_pseudorandom_time_point_seed::value<typename test_uintwide_t_edge::eng_sgn_type::result_type>());
+  test_uintwide_t_edge::eng_dig.seed(::util::util_pseudorandom_time_point_seed::value<typename test_uintwide_t_edge::eng_dig_type::result_type>());
 
   auto result_is_ok = true;
 
