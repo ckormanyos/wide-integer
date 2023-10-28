@@ -2178,8 +2178,8 @@ auto WIDE_INTEGER_NAMESPACE::math::wide_integer::test_uintwide_t_edge_cases() ->
 auto ::math::wide_integer::test_uintwide_t_edge_cases() -> bool
 #endif
 {
-  test_uintwide_t_edge::eng_sgn.seed(util::util_pseudorandom_time_point_seed::value<typename test_uintwide_t_edge::eng_sgn_type::result_type>());
-  test_uintwide_t_edge::eng_dig.seed(util::util_pseudorandom_time_point_seed::value<typename test_uintwide_t_edge::eng_dig_type::result_type>());
+  test_uintwide_t_edge::eng_sgn.seed(::util::util_pseudorandom_time_point_seed::value<typename test_uintwide_t_edge::eng_sgn_type::result_type>());
+  test_uintwide_t_edge::eng_dig.seed(::util::util_pseudorandom_time_point_seed::value<typename test_uintwide_t_edge::eng_dig_type::result_type>());
 
   auto result_is_ok = true;
 

@@ -77,7 +77,7 @@ auto ::math::wide_integer::example009a_timed_mul_4_by_4() -> bool
 
   random_engine_type rng; // NOLINT(cert-msc32-c,cert-msc51-cpp)
 
-  rng.seed(util::util_pseudorandom_time_point_seed::value<typename random_engine_type::result_type>());
+  rng.seed(::util::util_pseudorandom_time_point_seed::value<typename random_engine_type::result_type>());
 
   for(auto i = static_cast<typename std::vector<local_timed_mul_4_by_4::big_uint_type>::size_type>(0U); i < local_timed_mul_4_by_4::local_a().size(); ++i)
   {

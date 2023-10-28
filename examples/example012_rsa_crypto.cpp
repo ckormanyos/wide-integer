@@ -398,7 +398,7 @@ auto ::math::wide_integer::example012_rsa_crypto() -> bool
   {
     using local_random_engine_type = std::mt19937;
 
-    local_random_engine_type generator(util::util_pseudorandom_time_point_seed::value<typename std::mt19937::result_type>());
+    local_random_engine_type generator(::util::util_pseudorandom_time_point_seed::value<typename std::mt19937::result_type>());
 
     const bool p_is_prime = rsa_type::is_prime(p, generator);
 

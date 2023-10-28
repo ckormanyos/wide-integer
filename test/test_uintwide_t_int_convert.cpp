@@ -181,9 +181,9 @@ auto ::math::wide_integer::test_uintwide_t_int_convert() -> bool
   using local_sint_type = ::math::wide_integer::uintwide_t<digits2, local_limb_type, void, true>;
   #endif
 
-  local_int_convert::engine_val().seed(util::util_pseudorandom_time_point_seed::value<typename std::mt19937::result_type                                                        >());
-  local_int_convert::engine_sgn().seed(util::util_pseudorandom_time_point_seed::value<typename std::ranlux24_base::result_type                                                  >());
-  local_int_convert::engine_len().seed(util::util_pseudorandom_time_point_seed::value<typename std::linear_congruential_engine<std::uint32_t, 48271, 0, 2147483647>::result_type>()); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
+  local_int_convert::engine_val().seed(::util::util_pseudorandom_time_point_seed::value<typename std::mt19937::result_type                                                        >());
+  local_int_convert::engine_sgn().seed(::util::util_pseudorandom_time_point_seed::value<typename std::ranlux24_base::result_type                                                  >());
+  local_int_convert::engine_len().seed(::util::util_pseudorandom_time_point_seed::value<typename std::linear_congruential_engine<std::uint32_t, 48271, 0, 2147483647>::result_type>()); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
 
   bool result_is_ok = true;
 

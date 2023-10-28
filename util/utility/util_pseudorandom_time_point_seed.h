@@ -5,7 +5,7 @@
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
 
-#ifndef UTIL_PSEUDORANDOM_TIME_POINT_SEED_2023_10_27_H
+#ifndef UTIL_PSEUDORANDOM_TIME_POINT_SEED_2023_10_27_H // NOLINT(llvm-header-guard)
   #define UTIL_PSEUDORANDOM_TIME_POINT_SEED_2023_10_27_H
 
   #include <algorithm>
@@ -36,7 +36,7 @@
         // Get the UCT (time) expressed as a character string and also
         // note its string-length.
 
-        struct timespec ts; timespec_get(&ts, TIME_UTC);
+        struct timespec ts { }; timespec_get(&ts, TIME_UTC);
 
         using strftime_char_array_type = std::array<char, std::tuple_size<strftime_uint8_array_type>::value>;
 
@@ -54,7 +54,7 @@
         std::stringstream strm;
 
         strm << buf.data();
-        strm << '.' << std::setfill('0') << std::setw(9) << ts.tv_nsec;
+        strm << '.' << std::setfill('0') << std::setw(static_cast<std::streamsize>(INT8_C(9))) << ts.tv_nsec;
 
         const auto str_tm = strm.str();
 
@@ -71,11 +71,11 @@
   private:
     template<const std::size_t NumberOfBits,
              typename UnsignedIntegralType>
-    static auto crc_bitwise_template(const std::uint8_t*         message,
-                                     const std::size_t           count,
-                                     const UnsignedIntegralType& polynomial,
-                                     const UnsignedIntegralType& initial_value,
-                                     const UnsignedIntegralType& final_xor_value) -> UnsignedIntegralType
+    static constexpr auto crc_bitwise_template(const std::uint8_t*         message,
+                                               const std::size_t           count,
+                                               const UnsignedIntegralType& polynomial, // NOLINT(bugprone-easily-swappable-parameters)
+                                               const UnsignedIntegralType& initial_value,
+                                               const UnsignedIntegralType& final_xor_value) -> UnsignedIntegralType
     {
       using value_type = UnsignedIntegralType;
 
@@ -135,10 +135,10 @@
       return crc;
     }
 
-    static auto crc_crc64(const std::uint8_t* message, const std::size_t count) -> std::uint64_t
+    static constexpr auto crc_crc64(const std::uint8_t* message, const std::size_t count) -> std::uint64_t
     {
       // check: 0x6C40DF5F0B497347
-      return crc_bitwise_template<64U, std::uint64_t>
+      return crc_bitwise_template<static_cast<std::size_t>(UINT8_C(64)), std::uint64_t>
       (
         message,
         count,

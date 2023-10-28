@@ -227,9 +227,9 @@ auto ::math::wide_integer::test_uintwide_t_float_convert() -> bool
   using local_sint_type = ::math::wide_integer::uintwide_t<digits2, local_limb_type, void, true>;
   #endif
 
-  local_float_convert::engine_man().seed(util::util_pseudorandom_time_point_seed::value<typename std::mt19937::result_type                                                        >());
-  local_float_convert::engine_sgn().seed(util::util_pseudorandom_time_point_seed::value<typename std::ranlux24_base::result_type                                                  >());
-  local_float_convert::engine_e10().seed(util::util_pseudorandom_time_point_seed::value<typename std::linear_congruential_engine<std::uint32_t, 48271, 0, 2147483647>::result_type>()); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
+  local_float_convert::engine_man().seed(::util::util_pseudorandom_time_point_seed::value<typename std::mt19937::result_type                                                        >());
+  local_float_convert::engine_sgn().seed(::util::util_pseudorandom_time_point_seed::value<typename std::ranlux24_base::result_type                                                  >());
+  local_float_convert::engine_e10().seed(::util::util_pseudorandom_time_point_seed::value<typename std::linear_congruential_engine<std::uint32_t, 48271, 0, 2147483647>::result_type>()); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
 
   bool result_is_ok = true;
 
@@ -267,9 +267,9 @@ auto ::math::wide_integer::test_uintwide_t_float_convert() -> bool
     result_is_ok = ((str_boost_signed == str_local_signed) && result_is_ok);
   }
 
-  local_float_convert::engine_man().seed(util::util_pseudorandom_time_point_seed::value<typename std::mt19937::result_type                                                        >());
-  local_float_convert::engine_sgn().seed(util::util_pseudorandom_time_point_seed::value<typename std::ranlux24_base::result_type                                                  >());
-  local_float_convert::engine_e10().seed(util::util_pseudorandom_time_point_seed::value<typename std::linear_congruential_engine<std::uint32_t, 48271, 0, 2147483647>::result_type>()); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
+  local_float_convert::engine_man().seed(::util::util_pseudorandom_time_point_seed::value<typename std::mt19937::result_type                                                        >());
+  local_float_convert::engine_sgn().seed(::util::util_pseudorandom_time_point_seed::value<typename std::ranlux24_base::result_type                                                  >());
+  local_float_convert::engine_e10().seed(::util::util_pseudorandom_time_point_seed::value<typename std::linear_congruential_engine<std::uint32_t, 48271, 0, 2147483647>::result_type>()); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
 
   #if !defined(UINTWIDE_T_REDUCE_TEST_DEPTH)
   for(auto i = static_cast<std::size_t>(0U); i < static_cast<std::size_t>(UINT32_C(0x100000)); ++i)
