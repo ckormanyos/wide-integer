@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////
-//  Copyright Christopher Kormanyos 2018 - 2022.                 //
+//  Copyright Christopher Kormanyos 2018 - 2023.                 //
 //  Distributed under the Boost Software License,                //
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt          //
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)             //
@@ -8,7 +8,6 @@
 #include <algorithm>
 #include <cstddef>
 #include <cstdint>
-#include <ctime>
 #include <iomanip>
 #include <iostream>
 #include <iterator>
@@ -18,6 +17,8 @@
 
 #include <examples/example_uintwide_t.h>
 #include <math/wide_integer/uintwide_t.h>
+
+#include <util/utility/util_pseudorandom_time_point_seed.h>
 
 namespace local_timed_mul_8_by_8
 {
@@ -76,7 +77,7 @@ auto ::math::wide_integer::example009b_timed_mul_8_by_8() -> bool
 
   random_engine_type rng; // NOLINT(cert-msc32-c,cert-msc51-cpp)
 
-  rng.seed(static_cast<typename random_engine_type::result_type>(std::clock()));
+  rng.seed(util::util_pseudorandom_time_point_seed::value<typename random_engine_type::result_type>());
 
   for(auto i = static_cast<typename std::vector<local_timed_mul_8_by_8::big_uint_type>::size_type>(0U); i < local_timed_mul_8_by_8::local_a().size(); ++i)
   {

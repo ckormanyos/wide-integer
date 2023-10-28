@@ -1,5 +1,5 @@
 ﻿///////////////////////////////////////////////////////////////////
-//  Copyright Christopher Kormanyos 2021 - 2022.                 //
+//  Copyright Christopher Kormanyos 2021 - 2023.                 //
 //  Distributed under the Boost Software License,                //
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt          //
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)             //
@@ -10,6 +10,8 @@
 
 #include <examples/example_uintwide_t.h>
 #include <math/wide_integer/uintwide_t.h>
+
+#include <util/utility/util_pseudorandom_time_point_seed.h>
 
 namespace local_rsa
 {
@@ -206,7 +208,7 @@ namespace local_rsa
 
     template<typename RandomEngineType = std::minstd_rand>
     static auto is_prime(const my_uintwide_t& p,
-                         const RandomEngineType& generator = RandomEngineType(static_cast<typename RandomEngineType::result_type>(std::clock()))) -> bool
+                         const RandomEngineType& generator = RandomEngineType(util::util_pseudorandom_time_point_seed::value<typename RandomEngineType::result_type>())) -> bool
     {
       #if defined(WIDE_INTEGER_NAMESPACE)
       using local_distribution_type =
@@ -396,7 +398,7 @@ auto ::math::wide_integer::example012_rsa_crypto() -> bool
   {
     using local_random_engine_type = std::mt19937;
 
-    local_random_engine_type generator(static_cast<typename std::mt19937::result_type>(std::clock()));
+    local_random_engine_type generator(util::util_pseudorandom_time_point_seed::value<typename std::mt19937::result_type>());
 
     const bool p_is_prime = rsa_type::is_prime(p, generator);
 
