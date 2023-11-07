@@ -62,6 +62,12 @@
     <Filter Include="target\micros\stm32f429\make\single">
       <UniqueIdentifier>{d00c386f-1e4f-4741-8c73-e2c26bc38edb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\util">
+      <UniqueIdentifier>{876be41b-c9a3-4a46-bc46-8624178094fd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\util\utility">
+      <UniqueIdentifier>{d0da75c7-dd48-4e37-b1ee-283464e3ce9d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="boost\multiprecision\uintwide_t_backend.hpp">
@@ -105,6 +111,9 @@
     </ClInclude>
     <ClInclude Include="test\test_arithmetic.hpp">
       <Filter>Source Files\test</Filter>
+    </ClInclude>
+    <ClInclude Include="util\utility\util_pseudorandom_time_point_seed.h">
+      <Filter>Source Files\util\utility</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
