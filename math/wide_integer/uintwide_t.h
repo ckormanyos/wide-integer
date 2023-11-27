@@ -254,7 +254,7 @@
   namespace distance_detail
   {
     template<class It>
-    constexpr auto do_distance(It first, It last, std::input_iterator_tag) -> typename std::iterator_traits<It>::difference_type
+    constexpr auto do_distance(It first, It last, std::input_iterator_tag) -> typename std::iterator_traits<It>::difference_type // NOLINT(hicpp-named-parameter,readability-named-parameter)
     {
       typename std::iterator_traits<It>::difference_type result = 0;
 
@@ -268,7 +268,7 @@
     }
  
     template<class It>
-    constexpr auto do_distance(It first, It last, std::random_access_iterator_tag) -> typename std::iterator_traits<It>::difference_type
+    constexpr auto do_distance(It first, It last, std::random_access_iterator_tag) -> typename std::iterator_traits<It>::difference_type // NOLINT(hicpp-named-parameter,readability-named-parameter)
     {
       return last - first;
     }
