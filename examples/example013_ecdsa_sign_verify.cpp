@@ -65,6 +65,12 @@ THE SOFTWARE.
 
 namespace example013_ecdsa
 {
+  #if defined(WIDE_INTEGER_NAMESPACE)
+  using WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::fill_unsafe;
+  #else
+  using ::math::wide_integer::detail::fill_unsafe;
+  #endif
+
   class hash_sha256
   {
   public:
@@ -135,16 +141,16 @@ namespace example013_ecdsa
       // Pad whatever data is left in the buffer.
       if(my_datalen < static_cast<std::uint32_t>(UINT8_C(56U)))
       {
-        std::fill((my_data.begin() + hash_index), (my_data.begin() + static_cast<std::size_t>(UINT8_C(56))), static_cast<std::uint8_t>(UINT8_C(0)));
+        fill_unsafe((my_data.begin() + hash_index), (my_data.begin() + static_cast<std::size_t>(UINT8_C(56))), static_cast<std::uint8_t>(UINT8_C(0)));
       }
       else
       {
         // LCOV_EXCL_START
-        std::fill((my_data.begin() + hash_index), my_data.end(), static_cast<std::uint8_t>(UINT8_C(0)));
+        fill_unsafe((my_data.begin() + hash_index), my_data.end(), static_cast<std::uint8_t>(UINT8_C(0)));
 
         sha256_transform();
 
-        std::fill_n(my_data.begin(), static_cast<std::size_t>(UINT8_C(56)), static_cast<std::uint8_t>(UINT8_C(0)));
+        fill_unsafe(my_data.begin(), my_data.begin() + static_cast<std::size_t>(UINT8_C(56)), static_cast<std::uint8_t>(UINT8_C(0)));
         // LCOV_EXCL_STOP
       }
 

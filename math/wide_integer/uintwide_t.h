@@ -66,55 +66,53 @@
 
   #if (defined(_MSC_VER) && (!defined(__GNUC__) && !defined(__clang__)))
     #if (_MSC_VER >= 1900) && defined(_HAS_CXX20) && (_HAS_CXX20 != 0)
-      #define WIDE_INTEGER_CONSTEXPR constexpr               // NOLINT(cppcoreguidelines-macro-usage)
-      #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 1 // NOLINT(cppcoreguidelines-macro-usage)
       #define WIDE_INTEGER_NODISCARD [[nodiscard]]           // NOLINT(cppcoreguidelines-macro-usage)
     #else
-      #define WIDE_INTEGER_CONSTEXPR
-      #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 0 // NOLINT(cppcoreguidelines-macro-usage)
       #define WIDE_INTEGER_NODISCARD
     #endif
   #else
     #if (defined(__cplusplus) && (__cplusplus >= 201402L))
       #if defined(__AVR__) && (!defined(__GNUC__) || (defined(__GNUC__) && (__cplusplus >= 202002L)))
-      #define WIDE_INTEGER_CONSTEXPR constexpr               // NOLINT(cppcoreguidelines-macro-usage)
-      #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 1 // NOLINT(cppcoreguidelines-macro-usage)
       #define WIDE_INTEGER_NODISCARD [[nodiscard]]           // NOLINT(cppcoreguidelines-macro-usage)
       #elif (defined(__cpp_lib_constexpr_algorithms) && (__cpp_lib_constexpr_algorithms >= 201806))
         #if defined(__clang__)
           #if (__clang_major__ > 9)
-          #define WIDE_INTEGER_CONSTEXPR constexpr               // NOLINT(cppcoreguidelines-macro-usage)
-          #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 1 // NOLINT(cppcoreguidelines-macro-usage)
           #define WIDE_INTEGER_NODISCARD [[nodiscard]]           // NOLINT(cppcoreguidelines-macro-usage)
           #else
-          #define WIDE_INTEGER_CONSTEXPR
-          #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 0 // NOLINT(cppcoreguidelines-macro-usage)
           #define WIDE_INTEGER_NODISCARD
           #endif
         #else
-        #define WIDE_INTEGER_CONSTEXPR constexpr               // NOLINT(cppcoreguidelines-macro-usage)
-        #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 1 // NOLINT(cppcoreguidelines-macro-usage)
         #define WIDE_INTEGER_NODISCARD [[nodiscard]]           // NOLINT(cppcoreguidelines-macro-usage)
         #endif
       #elif (defined(__clang__) && (__clang_major__ >= 10)) && (defined(__cplusplus) && (__cplusplus > 201703L))
         #if defined(__x86_64__)
-        #define WIDE_INTEGER_CONSTEXPR constexpr               // NOLINT(cppcoreguidelines-macro-usage)
-        #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 1 // NOLINT(cppcoreguidelines-macro-usage)
         #define WIDE_INTEGER_NODISCARD [[nodiscard]]           // NOLINT(cppcoreguidelines-macro-usage)
         #else
-        #define WIDE_INTEGER_CONSTEXPR
-        #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 0 // NOLINT(cppcoreguidelines-macro-usage)
         #define WIDE_INTEGER_NODISCARD
         #endif
       #else
-      #define WIDE_INTEGER_CONSTEXPR
-      #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 0 // NOLINT(cppcoreguidelines-macro-usage)
       #define WIDE_INTEGER_NODISCARD
       #endif
     #else
-      #define WIDE_INTEGER_CONSTEXPR
-      #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 0 // NOLINT(cppcoreguidelines-macro-usage)
       #define WIDE_INTEGER_NODISCARD
+    #endif
+  #endif
+
+  #if defined(_MSVC_LANG)
+    #if (_MSVC_LANG >= 202002L)
+    #define WIDE_INTEGER_CONSTEXPR constexpr                // NOLINT(cppcoreguidelines-macro-usage)
+    #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 1  // NOLINT(cppcoreguidelines-macro-usage)
+    #else
+    #define WIDE_INTEGER_CONSTEXPR                          // NOLINT(cppcoreguidelines-macro-usage)
+    #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 0  // NOLINT(cppcoreguidelines-macro-usage)
+    #endif
+  #else
+    #if (__cplusplus >= 202002L)
+    #define WIDE_INTEGER_CONSTEXPR constexpr                // NOLINT(cppcoreguidelines-macro-usage)
+    #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 1  // NOLINT(cppcoreguidelines-macro-usage)
+    #else
+    #define WIDE_INTEGER_CONSTEXPR                          // NOLINT(cppcoreguidelines-macro-usage)
+    #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 0  // NOLINT(cppcoreguidelines-macro-usage)
     #endif
   #endif
 
@@ -171,6 +169,20 @@
     }
   }
 
+  // Use a local, constexpr, unsafe implementation of the max-function.
+  template<typename ArithmeticType>
+  constexpr auto max_unsafe(const ArithmeticType& left, const ArithmeticType& right) -> ArithmeticType
+  {
+    return ((left < right) ? right : left);
+  }
+
+  // Use a local, constexpr, unsafe implementation of the max-function.
+  template<typename ArithmeticType>
+  constexpr auto min_unsafe(const ArithmeticType& left, const ArithmeticType& right) -> ArithmeticType
+  {
+    return ((right < left) ? right : left);
+  }
+
   // Use a local, constexpr, unsafe implementation of the copy-function.
   template<typename InputIterator,
            typename DestinationIterator>
@@ -190,6 +202,88 @@
     }
 
     return dest;
+  }
+
+  // Use a local, constexpr, unsafe implementation of the copy-backward-function.
+  template<typename InputIterator,
+           typename DestinationIterator>
+  constexpr auto copy_backward_unsafe(InputIterator first, InputIterator last, DestinationIterator dest) -> DestinationIterator
+  {
+    using local_destination_value_type = typename std::iterator_traits<DestinationIterator>::value_type;
+
+    while(first != last)
+    {
+      *(--dest) = static_cast<local_destination_value_type>(*(--last));
+    }
+
+    return dest;
+  }
+
+  template<typename T>
+  constexpr auto swap_unsafe(T& left, T& right) -> void
+  {
+    auto tmp = static_cast<T&&>(left);
+
+    left  = static_cast<T&&>(right);
+    right = static_cast<T&&>(tmp);
+  }
+
+  template<typename T>
+  constexpr auto swap_unsafe(T&& left, T&& right) -> void
+  {
+    auto tmp = static_cast<T&&>(left);
+
+    left  = static_cast<T&&>(right);
+    right = static_cast<T&&>(tmp);
+  }
+
+  template<typename InputIt, typename UnaryPredicate>
+  constexpr auto find_if_unsafe(InputIt first, InputIt last, UnaryPredicate p) -> InputIt
+  {
+    for( ; first != last; ++first)
+    {
+      if (p(*first))
+      {
+        return first;
+      }
+    }
+
+    return last;
+  }
+
+  namespace distance_detail
+  {
+    template<class It>
+    constexpr auto do_distance(It first, It last, std::input_iterator_tag) -> typename std::iterator_traits<It>::difference_type
+    {
+      typename std::iterator_traits<It>::difference_type result = 0;
+
+      while (first != last)
+      {
+        ++first;
+        ++result;
+      }
+
+      return result;
+    }
+ 
+    template<class It>
+    constexpr auto do_distance(It first, It last, std::random_access_iterator_tag) -> typename std::iterator_traits<It>::difference_type
+    {
+      return last - first;
+    }
+  } // namespace distance_detail
+
+  template<class It>
+  constexpr auto distance_unsafe(It first, It last) -> typename std::iterator_traits<It>::difference_type
+  {
+    return
+      distance_detail::do_distance
+      (
+        first,
+        last,
+        typename std::iterator_traits<It>::iterator_category()
+      );
   }
 
   template <class UnsignedIntegralType>
@@ -262,7 +356,7 @@
     // Shift the greatest power of 2 dividing both u and v.
     const auto trz = static_cast<unsigned>(ctz_unsafe(u));
 
-    const auto shift_amount = (std::min)(trz, ctz_unsafe(v));
+    const auto shift_amount = (detail::min_unsafe)(trz, ctz_unsafe(v));
 
     v >>= shift_amount;
     u >>= trz;
@@ -275,7 +369,7 @@
 
       if(u > v)
       {
-        std::swap(u, v);
+        swap_unsafe(u, v);
       }
 
       v -= u;
@@ -363,7 +457,11 @@
         elems = std::allocator_traits<allocator_type>::allocate(my_alloc, elem_count);
       }
 
-      math::wide_integer::detail::copy_unsafe(other.elems, other.elems + elem_count, elems);
+      #if defined(WIDE_INTEGER_NAMESPACE)
+      WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::copy_unsafe(other.elems, other.elems + elem_count, elems);
+      #else
+      ::math::wide_integer::detail::copy_unsafe(other.elems, other.elems + elem_count, elems);
+      #endif
     }
 
     template<typename input_iterator>
@@ -379,7 +477,12 @@
         elems = std::allocator_traits<allocator_type>::allocate(my_alloc, elem_count);
       }
 
-      math::wide_integer::detail::copy_unsafe(first, last, elems);
+      #if defined(WIDE_INTEGER_NAMESPACE)
+      WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::copy_unsafe(first, last, elems);
+      #else
+      ::math::wide_integer::detail::copy_unsafe(first, last, elems);
+      #endif
+
     }
 
     WIDE_INTEGER_CONSTEXPR dynamic_array(std::initializer_list<value_type> lst,
@@ -393,7 +496,11 @@
         elems = std::allocator_traits<allocator_type>::allocate(my_alloc, elem_count);
       }
 
-      math::wide_integer::detail::copy_unsafe(lst.begin(), lst.end(), elems);
+      #if defined(WIDE_INTEGER_NAMESPACE)
+      WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::copy_unsafe(lst.begin(), lst.end(), elems);
+      #else
+      ::math::wide_integer::detail::copy_unsafe(lst.begin(), lst.end(), elems);
+      #endif
     }
 
     // Move constructor.
@@ -405,7 +512,8 @@
     }
 
     // Destructor.
-    WIDE_INTEGER_CONSTEXPR virtual ~dynamic_array()
+    //WIDE_INTEGER_CONSTEXPR
+    virtual ~dynamic_array()
     {
       if(!empty())
       {
@@ -432,9 +540,15 @@
     {
       if(this != &other)
       {
-        math::wide_integer::detail::copy_unsafe(other.elems,
-                                                other.elems + (std::min)(elem_count, other.elem_count),
-                                                elems);
+        #if defined(WIDE_INTEGER_NAMESPACE)
+        WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::copy_unsafe(other.elems,
+                                                                        other.elems + WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::min_unsafe(elem_count, other.elem_count),
+                                                                        elems);
+        #else
+        ::math::wide_integer::detail::copy_unsafe(other.elems,
+                                                  other.elems + ::math::wide_integer::detail::min_unsafe(elem_count, other.elem_count),
+                                                  elems);
+        #endif
       }
 
       return *this;
@@ -443,8 +557,13 @@
     // Move assignment operator.
     WIDE_INTEGER_CONSTEXPR auto operator=(dynamic_array&& other) noexcept -> dynamic_array&
     {
-      std::swap(elem_count, other.elem_count);
-      std::swap(elems,      other.elems);
+      #if defined(WIDE_INTEGER_NAMESPACE)
+      WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::swap_unsafe(elem_count, other.elem_count);
+      WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::swap_unsafe(elems,      other.elems);
+      #else
+      ::math::wide_integer::detail::swap_unsafe(elem_count, other.elem_count);
+      ::math::wide_integer::detail::swap_unsafe(elems,      other.elems);
+      #endif
 
       return *this;
     }
@@ -488,15 +607,24 @@
     // Element manipulation members.
     WIDE_INTEGER_CONSTEXPR auto fill(const value_type& value_in) -> void
     {
-      math::wide_integer::detail::fill_unsafe(begin(), begin() + elem_count, value_in);
+      #if defined(WIDE_INTEGER_NAMESPACE)
+      WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::fill_unsafe(begin(), begin() + elem_count, value_in);
+      #else
+      ::math::wide_integer::detail::fill_unsafe(begin(), begin() + elem_count, value_in);
+      #endif
     }
 
     WIDE_INTEGER_CONSTEXPR auto swap(dynamic_array& other) noexcept -> void
     {
       if(this != &other)
       {
-        std::swap(elems,      other.elems);
-        std::swap(elem_count, other.elem_count);
+        #if defined(WIDE_INTEGER_NAMESPACE)
+        WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::swap_unsafe(elems,      other.elems);
+        WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::swap_unsafe(elem_count, other.elem_count);
+        #else
+        ::math::wide_integer::detail::swap_unsafe(elems,      other.elems);
+        ::math::wide_integer::detail::swap_unsafe(elem_count, other.elem_count);
+        #endif
       }
     }
 
@@ -555,7 +683,7 @@
       }
       else
       {
-        const size_type my_count = (std::min)(lhs.size(), rhs.size());
+        const size_type my_count = min_unsafe(lhs.size(), rhs.size());
 
         b_result= std::lexicographical_compare(lhs.cbegin(),
                                                lhs.cbegin() + my_count,
@@ -747,7 +875,7 @@
                             const unsigned_fast_type chunk_size_out) -> OutputIterator
   {
     const auto size_to_loop_through =
-      (std::max)
+      (detail::max_unsafe)
       (
         static_cast<signed_fast_type>(total_bits_to_use - static_cast<signed_fast_type>(INT8_C(1))),
         static_cast<signed_fast_type>(INT8_C(-1))
@@ -1057,21 +1185,21 @@
            typename LimbType,
            typename AllocatorType,
            const bool IsSignedLeft,
-           const bool IsSignedRight,
-           std::enable_if_t<((!IsSignedLeft) && (!IsSignedRight))> const* = nullptr>
+           const bool IsSignedRight>
   WIDE_INTEGER_CONSTEXPR
   auto divmod(const uintwide_t<Width2, LimbType, AllocatorType, IsSignedLeft >& a,
-              const uintwide_t<Width2, LimbType, AllocatorType, IsSignedRight>& b) -> std::pair<uintwide_t<Width2, LimbType, AllocatorType, IsSignedLeft>, uintwide_t<Width2, LimbType, AllocatorType, IsSignedRight>>;
+              const uintwide_t<Width2, LimbType, AllocatorType, IsSignedRight>& b,
+              std::enable_if_t<((!IsSignedLeft) && (!IsSignedRight)), int>* p_nullparam = nullptr) -> std::pair<uintwide_t<Width2, LimbType, AllocatorType, IsSignedLeft>, uintwide_t<Width2, LimbType, AllocatorType, IsSignedRight>>;
 
   template<const size_t Width2,
            typename LimbType,
            typename AllocatorType,
            const bool IsSignedLeft,
-           const bool IsSignedRight,
-           std::enable_if_t<(IsSignedLeft || IsSignedRight)> const* = nullptr>
+           const bool IsSignedRight>
   WIDE_INTEGER_CONSTEXPR
   auto divmod(const uintwide_t<Width2, LimbType, AllocatorType, IsSignedLeft >& a,
-              const uintwide_t<Width2, LimbType, AllocatorType, IsSignedRight>& b) -> std::pair<uintwide_t<Width2, LimbType, AllocatorType, IsSignedLeft>, uintwide_t<Width2, LimbType, AllocatorType, IsSignedRight>>;
+              const uintwide_t<Width2, LimbType, AllocatorType, IsSignedRight>& b,
+              std::enable_if_t<(IsSignedLeft || IsSignedRight), int>* p_nullparam = nullptr) -> std::pair<uintwide_t<Width2, LimbType, AllocatorType, IsSignedLeft>, uintwide_t<Width2, LimbType, AllocatorType, IsSignedRight>>;
 
   template<const size_t Width2,
            typename LimbType = std::uint32_t,
@@ -1229,7 +1357,7 @@
       : base_class_type(MySize, typename base_class_type::value_type(), alloc_in)
     {
       detail::fill_unsafe(base_class_type::begin(),
-                          base_class_type::begin() + (std::min)(MySize, static_cast<typename base_class_type::size_type>(size_in)),
+                          base_class_type::begin() + (detail::min_unsafe)(MySize, static_cast<typename base_class_type::size_type>(size_in)),
                           value_in);
     }
 
@@ -1241,7 +1369,7 @@
       : base_class_type(MySize)
     {
       detail::copy_unsafe(lst.begin(),
-                          lst.begin() + (std::min)(static_cast<typename base_class_type::size_type>(lst.size()), MySize),
+                          lst.begin() + (detail::min_unsafe)(static_cast<typename base_class_type::size_type>(lst.size()), MySize),
                           base_class_type::begin());
     }
 
@@ -1249,7 +1377,8 @@
 
     WIDE_INTEGER_CONSTEXPR auto operator=(fixed_dynamic_array&& other_array) noexcept -> fixed_dynamic_array& = default;
 
-    WIDE_INTEGER_CONSTEXPR ~fixed_dynamic_array() override = default;
+    //WIDE_INTEGER_CONSTEXPR
+    ~fixed_dynamic_array() override = default;
   };
 
   template<typename MyType,
@@ -1294,8 +1423,7 @@
     WIDE_INTEGER_CONSTEXPR fixed_static_array(std::initializer_list<typename base_class_type::value_type> lst)
     {
       const auto size_to_copy =
-        (std::min)(static_cast<size_type>(lst.size()),
-                   MySize);
+        (detail::min_unsafe)(static_cast<size_type>(lst.size()), MySize);
 
       if(size_to_copy < static_cast<size_type>(base_class_type::size()))
       {
@@ -1315,7 +1443,8 @@
       }
     }
 
-    WIDE_INTEGER_CONSTEXPR ~fixed_static_array() = default;
+    //WIDE_INTEGER_CONSTEXPR
+    ~fixed_static_array() = default;
 
     WIDE_INTEGER_CONSTEXPR auto operator=(const fixed_static_array& other_array) -> fixed_static_array& = default;
     WIDE_INTEGER_CONSTEXPR auto operator=(fixed_static_array&& other_array) noexcept -> fixed_static_array& = default;
@@ -1592,7 +1721,8 @@
     constexpr native_float_parts(native_float_parts&& other) noexcept : my_mantissa_part(other.my_mantissa_part),
                                                                         my_exponent_part(other.my_exponent_part) { }
 
-    WIDE_INTEGER_CONSTEXPR ~native_float_parts() = default;
+    //WIDE_INTEGER_CONSTEXPR
+    ~native_float_parts() = default;
 
     WIDE_INTEGER_CONSTEXPR auto operator=(const native_float_parts& other) noexcept -> native_float_parts& // NOLINT(cert-oop54-cpp)
     {
@@ -1965,7 +2095,8 @@
       : values(static_cast<representation_type&&>(other.values)) { }
 
     // Default destructor.
-    WIDE_INTEGER_CONSTEXPR ~uintwide_t() = default;
+    //WIDE_INTEGER_CONSTEXPR
+    ~uintwide_t() = default;
 
     // Assignment operator.
     WIDE_INTEGER_CONSTEXPR auto operator=(const uintwide_t&) -> uintwide_t& = default;
@@ -2618,7 +2749,7 @@
 
         if(field_width != static_cast<unsigned_fast_type>(UINT8_C(0)))
         {
-          field_width = (std::min)(field_width, static_cast<unsigned_fast_type>(str_temp.size() - static_cast<size_t>(UINT8_C(1))));
+          field_width = (detail::min_unsafe)(field_width, static_cast<unsigned_fast_type>(str_temp.size() - static_cast<size_t>(UINT8_C(1))));
 
           while(static_cast<signed_fast_type>(pos) > static_cast<signed_fast_type>((str_temp.size() - static_cast<size_t>(UINT8_C(1))) - field_width)) // NOLINT(altera-id-dependent-backward-branch)
           {
@@ -2691,7 +2822,7 @@
 
         if(field_width != static_cast<unsigned_fast_type>(UINT8_C(0)))
         {
-          field_width = (std::min)(field_width, static_cast<unsigned_fast_type>(str_temp.size() - static_cast<size_t>(UINT8_C(1))));
+          field_width = (detail::min_unsafe)(field_width, static_cast<unsigned_fast_type>(str_temp.size() - static_cast<size_t>(UINT8_C(1))));
 
           while(static_cast<signed_fast_type>(pos) > static_cast<signed_fast_type>((str_temp.size() - static_cast<size_t>(UINT8_C(1))) - field_width)) // NOLINT(altera-id-dependent-backward-branch)
           {
@@ -2753,7 +2884,7 @@
 
         if(field_width != static_cast<unsigned_fast_type>(UINT8_C(0)))
         {
-          field_width = (std::min)(field_width, static_cast<unsigned_fast_type>(str_temp.size() - static_cast<size_t>(UINT8_C(1))));
+          field_width = (detail::min_unsafe)(field_width, static_cast<unsigned_fast_type>(str_temp.size() - static_cast<size_t>(UINT8_C(1))));
 
           while(static_cast<signed_fast_type>(pos) > static_cast<signed_fast_type>((str_temp.size() - static_cast<size_t>(UINT8_C(1))) - field_width)) // NOLINT(altera-id-dependent-backward-branch)
           {
@@ -2891,17 +3022,19 @@
       return (it == values.cend());
     }
 
-    template<const bool RePhraseIsSigned = IsSigned,
-             std::enable_if_t<(!RePhraseIsSigned)> const* = nullptr>
-    static constexpr auto is_neg(const uintwide_t<Width2, LimbType, AllocatorType, RePhraseIsSigned>&) -> bool // NOLINT(hicpp-named-parameter,readability-named-parameter)
+    template<const bool RePhraseIsSigned = IsSigned>
+    static constexpr auto is_neg(const uintwide_t<Width2, LimbType, AllocatorType, RePhraseIsSigned>&, // NOLINT(hicpp-named-parameter,readability-named-parameter)
+                                 std::enable_if_t<(!RePhraseIsSigned), int>* = nullptr) -> bool        // NOLINT(hicpp-named-parameter,readability-named-parameter)
     {
       return false;
     }
 
-    template<const bool RePhraseIsSigned = IsSigned,
-             std::enable_if_t<RePhraseIsSigned> const* = nullptr>
-    static constexpr auto is_neg(const uintwide_t<Width2, LimbType, AllocatorType, RePhraseIsSigned>& a) -> bool
+    template<const bool RePhraseIsSigned = IsSigned>
+    static constexpr auto is_neg(const uintwide_t<Width2, LimbType, AllocatorType, RePhraseIsSigned>& a,
+                                 std::enable_if_t<RePhraseIsSigned, int>* p_nullparam = nullptr) -> bool
     {
+      static_cast<void>(p_nullparam);
+
       return (static_cast<std::uint_fast8_t>(static_cast<std::uint_fast8_t>(a.values.back() >> static_cast<size_t>(std::numeric_limits<typename uintwide_t<Width2, LimbType, AllocatorType, RePhraseIsSigned>::limb_type>::digits - 1)) & 1U) != 0U);
     }
 
@@ -2932,7 +3065,7 @@
         representation_type my_rep(local_number_of_limbs, static_cast<limb_type>(UINT8_C(0)));
 
         detail::copy_unsafe(other_rep.cbegin(),
-                            detail::advance_and_point(other_rep.cbegin(), (std::min)(local_number_of_limbs, static_cast<size_t>(other_rep.size()))),
+                            detail::advance_and_point(other_rep.cbegin(), (detail::min_unsafe)(local_number_of_limbs, static_cast<size_t>(other_rep.size()))),
                             my_rep.begin());
 
         result = uintwide_t(static_cast<representation_type&&>(my_rep));
@@ -2969,7 +3102,7 @@
         representation_type my_rep(local_number_of_limbs, static_cast<limb_type>(UINT8_C(0)));
 
         detail::copy_unsafe(other_rep.cbegin(),
-                            detail::advance_and_point(other_rep.cbegin(), (std::min)(local_number_of_limbs, static_cast<size_t>(other_rep.size()))),
+                            detail::advance_and_point(other_rep.cbegin(), (detail::min_unsafe)(local_number_of_limbs, static_cast<size_t>(other_rep.size()))),
                             my_rep.begin());
 
         result = uintwide_t(static_cast<representation_type&&>(my_rep));
@@ -3051,19 +3184,19 @@
              typename OtherLimbType,
              typename OtherAllocatorType,
              const bool OtherIsSignedLeft,
-             const bool OtherIsSignedRight,
-             std::enable_if_t<((!OtherIsSignedLeft) && (!OtherIsSignedRight))> const*>
+             const bool OtherIsSignedRight>
     friend WIDE_INTEGER_CONSTEXPR auto divmod(const uintwide_t<OtherWidth2, OtherLimbType, OtherAllocatorType, OtherIsSignedLeft >& a, // NOLINT(readability-redundant-declaration)
-                                              const uintwide_t<OtherWidth2, OtherLimbType, OtherAllocatorType, OtherIsSignedRight>& b) -> std::pair<uintwide_t<OtherWidth2, OtherLimbType, OtherAllocatorType, OtherIsSignedLeft>, uintwide_t<OtherWidth2, OtherLimbType, OtherAllocatorType, OtherIsSignedRight>>;
+                                              const uintwide_t<OtherWidth2, OtherLimbType, OtherAllocatorType, OtherIsSignedRight>& b,
+                                              std::enable_if_t<((!OtherIsSignedLeft) && (!OtherIsSignedRight)), int>* p_nullparam) -> std::pair<uintwide_t<OtherWidth2, OtherLimbType, OtherAllocatorType, OtherIsSignedLeft>, uintwide_t<OtherWidth2, OtherLimbType, OtherAllocatorType, OtherIsSignedRight>>;
 
     template<const size_t OtherWidth2,
              typename OtherLimbType,
              typename OtherAllocatorType,
              const bool OtherIsSignedLeft,
-             const bool OtherIsSignedRight,
-             std::enable_if_t<(OtherIsSignedLeft || OtherIsSignedRight)> const*>
+             const bool OtherIsSignedRight>
     friend WIDE_INTEGER_CONSTEXPR auto divmod(const uintwide_t<OtherWidth2, OtherLimbType, OtherAllocatorType, OtherIsSignedLeft >& a, // NOLINT(readability-redundant-declaration)
-                                              const uintwide_t<OtherWidth2, OtherLimbType, OtherAllocatorType, OtherIsSignedRight>& b) -> std::pair<uintwide_t<OtherWidth2, OtherLimbType, OtherAllocatorType, OtherIsSignedLeft>, uintwide_t<OtherWidth2, OtherLimbType, OtherAllocatorType, OtherIsSignedRight>>;
+                                              const uintwide_t<OtherWidth2, OtherLimbType, OtherAllocatorType, OtherIsSignedRight>& b,
+                                              std::enable_if_t<(OtherIsSignedLeft || OtherIsSignedRight), int>* p_nullparam) -> std::pair<uintwide_t<OtherWidth2, OtherLimbType, OtherAllocatorType, OtherIsSignedLeft>, uintwide_t<OtherWidth2, OtherLimbType, OtherAllocatorType, OtherIsSignedRight>>;
 
     explicit constexpr uintwide_t(const representation_type& other_rep)
       : values(static_cast<const representation_type&>(other_rep)) { }
@@ -3189,7 +3322,7 @@
       using local_unknown_integral_type = UnknownBuiltInIntegralType;
       using digits_ratio_type           = digits_ratio<local_unknown_integral_type>;
 
-      const auto ilim = (std::min)(static_cast<unsigned_fast_type>(digits_ratio_type::value),
+      const auto ilim = (detail::min_unsafe)(static_cast<unsigned_fast_type>(digits_ratio_type::value),
                                    static_cast<unsigned_fast_type>(values.size()));
 
       // Handle cases for which the input parameter is less wide
@@ -3482,8 +3615,8 @@
       //   (old) kops_per_sec: 33173.50
       //   (new) kops_per_sec: 95069.43
 
-      local_double_limb_type r1;
-      local_double_limb_type r2;
+      local_double_limb_type r1 { };
+      local_double_limb_type r2 { };
 
       const auto a0b0 = static_cast<local_double_limb_type>(*detail::advance_and_point(a, static_cast<left_difference_type>(0)) * static_cast<local_double_limb_type>(*detail::advance_and_point(b, static_cast<right_difference_type>(INT8_C(0)))));
       const auto a0b1 = static_cast<local_double_limb_type>(*detail::advance_and_point(a, static_cast<left_difference_type>(0)) * static_cast<local_double_limb_type>(*detail::advance_and_point(b, static_cast<right_difference_type>(INT8_C(1)))));
@@ -3648,12 +3781,12 @@
 
       const local_double_limb_type a3b3 = *detail::advance_and_point(a, static_cast<left_difference_type>(INT8_C(3))) * static_cast<local_double_limb_type>(*detail::advance_and_point(b, static_cast<right_difference_type>(INT8_C(3))));
 
-            local_double_limb_type rd1;
-            local_double_limb_type rd2;
-            local_double_limb_type rd3;
-            local_double_limb_type rd4;
-            local_double_limb_type rd5;
-            local_double_limb_type rd6;
+            local_double_limb_type rd1 { };
+            local_double_limb_type rd2 { };
+            local_double_limb_type rd3 { };
+            local_double_limb_type rd4 { };
+            local_double_limb_type rd5 { };
+            local_double_limb_type rd6 { };
 
       // One special case is considered, the case of multiplication
       // of the form BITS/2 * BITS/2 = BITS. In this case, the algorithm
@@ -3958,7 +4091,7 @@
 
           #if defined(WIDE_INTEGER_HAS_CLZ_LIMB_OPTIMIZATIONS)
           const auto jmax =
-            (std::min)(static_cast<unsigned_fast_type>(count - i),
+            (detail::min_unsafe)(static_cast<unsigned_fast_type>(count - i),
                        static_cast<unsigned_fast_type>(count_b + static_cast<unsigned_fast_type>(UINT8_C(1))));
           #else
           const auto jmax = static_cast<unsigned_fast_type>(count - i);
@@ -4347,13 +4480,37 @@
       const auto u_offset =
         static_cast<local_uint_index_type>
         (
-          std::distance(values.crbegin(), std::find_if(values.crbegin(), values.crend(), [](const limb_type& elem) { return (elem != static_cast<limb_type>(UINT8_C(0))); }))
+          detail::distance_unsafe
+          (
+            values.crbegin(),
+            detail::find_if_unsafe
+            (
+              values.crbegin(),
+              values.crend(),
+              [](const limb_type& elem)
+              {
+                return (elem != static_cast<limb_type>(UINT8_C(0)));
+              }
+            )
+          )
         );
 
       const auto v_offset =
         static_cast<local_uint_index_type>
         (
-          std::distance(other.values.crbegin(), std::find_if(other.values.crbegin(), other.values.crend(), [](const limb_type& elem) { return (elem != static_cast<limb_type>(UINT8_C(0))); }))
+          detail::distance_unsafe
+          (
+            other.values.crbegin(),
+            detail::find_if_unsafe
+            (
+              other.values.crbegin(),
+              other.values.crend(),
+              [](const limb_type& elem)
+              {
+                return (elem != static_cast<limb_type>(UINT8_C(0)));
+              }
+            )
+          )
         );
 
       if(v_offset == static_cast<local_uint_index_type>(number_of_limbs))
@@ -4412,13 +4569,15 @@
       }
     }
 
-    template<const size_t RePhraseWidth2 = Width2,
-             std::enable_if_t<(RePhraseWidth2 > static_cast<size_t>(std::numeric_limits<limb_type>::digits))> const* = nullptr>
+    template<const size_t RePhraseWidth2 = Width2>
     WIDE_INTEGER_CONSTEXPR auto eval_divide_knuth_core(const unsigned_fast_type u_offset, // NOLINT(readability-function-cognitive-complexity)
                                                        const unsigned_fast_type v_offset,
                                                        const uintwide_t& other,
-                                                             uintwide_t* remainder) -> void
+                                                             uintwide_t* remainder,
+                                                       std::enable_if_t<(RePhraseWidth2 > static_cast<size_t>(std::numeric_limits<limb_type>::digits)), int>* p_nullparam = nullptr) -> void
     {
+      static_cast<void>(p_nullparam);
+
       using local_uint_index_type = unsigned_fast_type;
 
       if(static_cast<local_uint_index_type>(v_offset + static_cast<local_uint_index_type>(1U)) == static_cast<local_uint_index_type>(number_of_limbs))
@@ -4453,7 +4612,7 @@
                                                                                                            std::allocator<void>,
                                                                                                            AllocatorType>>::template rebind_alloc<limb_type>>>;
 
-        uu_array_type uu;
+        uu_array_type uu { };
 
         representation_type
           vv
@@ -4664,13 +4823,15 @@
       }
     }
 
-    template<const size_t RePhraseWidth2 = Width2,
-             std::enable_if_t<(RePhraseWidth2 <= static_cast<size_t>(std::numeric_limits<limb_type>::digits))> const* = nullptr>
+    template<const size_t RePhraseWidth2 = Width2>
     WIDE_INTEGER_CONSTEXPR auto eval_divide_knuth_core(const unsigned_fast_type u_offset,
                                                        const unsigned_fast_type v_offset,
                                                        const uintwide_t& other,
-                                                             uintwide_t* remainder) -> void
+                                                             uintwide_t* remainder,
+                                                       std::enable_if_t<(RePhraseWidth2 <= static_cast<size_t>(std::numeric_limits<limb_type>::digits)), int>* p_nullparam = nullptr) -> void
     {
+      static_cast<void>(p_nullparam);
+
       static_cast<void>(v_offset);
 
       // The denominator has one single limb.
@@ -4700,16 +4861,16 @@
     WIDE_INTEGER_CONSTEXPR auto shl(IntegralType n) -> void
     {
       const auto offset =
-        (std::min)(static_cast<unsigned_fast_type>(static_cast<unsigned_fast_type>(n) / static_cast<unsigned_fast_type>(std::numeric_limits<limb_type>::digits)),
-                   static_cast<unsigned_fast_type>(number_of_limbs));
+        (detail::min_unsafe)(static_cast<unsigned_fast_type>(static_cast<unsigned_fast_type>(n) / static_cast<unsigned_fast_type>(std::numeric_limits<limb_type>::digits)),
+                             static_cast<unsigned_fast_type>(number_of_limbs));
 
       const auto left_shift_amount = static_cast<unsigned_fast_type>(static_cast<unsigned_fast_type>(n) % static_cast<unsigned_fast_type>(std::numeric_limits<limb_type>::digits));
 
       if(offset > static_cast<unsigned_fast_type>(UINT8_C(0)))
       {
-        std::copy_backward(values.cbegin(),
-                           detail::advance_and_point(values.cbegin(), static_cast<size_t>(number_of_limbs - offset)),
-                           detail::advance_and_point(values.begin(), static_cast<size_t>(number_of_limbs)));
+        detail::copy_backward_unsafe(values.cbegin(),
+                                     detail::advance_and_point(values.cbegin(), static_cast<size_t>(number_of_limbs - offset)),
+                                     detail::advance_and_point(values.begin(), static_cast<size_t>(number_of_limbs)));
 
         detail::fill_unsafe(values.begin(), detail::advance_and_point(values.begin(), static_cast<size_t>(offset)), static_cast<limb_type>(UINT8_C(0)));
       }
@@ -4752,8 +4913,8 @@
     WIDE_INTEGER_CONSTEXPR auto shr(IntegralType n) -> void
     {
       const auto offset =
-        (std::min)(static_cast<unsigned_fast_type>(static_cast<unsigned_fast_type>(n) / static_cast<unsigned_fast_type>(std::numeric_limits<limb_type>::digits)),
-                   static_cast<unsigned_fast_type>(number_of_limbs));
+        (detail::min_unsafe)(static_cast<unsigned_fast_type>(static_cast<unsigned_fast_type>(n) / static_cast<unsigned_fast_type>(std::numeric_limits<limb_type>::digits)),
+                             static_cast<unsigned_fast_type>(number_of_limbs));
 
       const auto right_shift_amount = static_cast<std::uint_fast16_t>(static_cast<unsigned_fast_type>(n) % static_cast<unsigned_fast_type>(std::numeric_limits<limb_type>::digits));
 
@@ -5564,7 +5725,7 @@
       }
     }
 
-    return static_cast<unsigned_fast_type>((std::max)(static_cast<signed_fast_type>(INT8_C(0)), i));
+    return static_cast<unsigned_fast_type>((detail::max_unsafe)(static_cast<signed_fast_type>(INT8_C(0)), i));
   }
 
   template<>
@@ -5623,7 +5784,7 @@
   {
     if(&x != &y)
     {
-      std::swap(x, y);
+      detail::swap_unsafe(x, y);
     }
   }
 
@@ -6095,7 +6256,7 @@
       const unsigned_fast_type u_shift = lsb(u);
       const unsigned_fast_type v_shift = lsb(v);
 
-      const unsigned_fast_type left_shift_amount = (std::min)(u_shift, v_shift);
+      const unsigned_fast_type left_shift_amount = (detail::min_unsafe)(u_shift, v_shift);
 
       u >>= u_shift;
       v >>= v_shift;
@@ -6209,12 +6370,14 @@
            typename LimbType,
            typename AllocatorType,
            const bool IsSignedLeft,
-           const bool IsSignedRight,
-           std::enable_if_t<((!IsSignedLeft) && (!IsSignedRight))> const*>
+           const bool IsSignedRight>
   WIDE_INTEGER_CONSTEXPR
   auto divmod(const uintwide_t<Width2, LimbType, AllocatorType, IsSignedLeft >& a,
-              const uintwide_t<Width2, LimbType, AllocatorType, IsSignedRight>& b) -> std::pair<uintwide_t<Width2, LimbType, AllocatorType, IsSignedLeft>, uintwide_t<Width2, LimbType, AllocatorType, IsSignedRight>>
+              const uintwide_t<Width2, LimbType, AllocatorType, IsSignedRight>& b,
+              std::enable_if_t<((!IsSignedLeft) && (!IsSignedRight)), int>* p_nullparam) -> std::pair<uintwide_t<Width2, LimbType, AllocatorType, IsSignedLeft>, uintwide_t<Width2, LimbType, AllocatorType, IsSignedRight>>
   {
+    static_cast<void>(p_nullparam);
+
     using local_unsigned_wide_type = uintwide_t<Width2, LimbType, AllocatorType, false>;
 
           local_unsigned_wide_type ua(a);
@@ -6233,12 +6396,14 @@
            typename LimbType,
            typename AllocatorType,
            const bool IsSignedLeft,
-           const bool IsSignedRight,
-           std::enable_if_t<(IsSignedLeft || IsSignedRight)> const*>
+           const bool IsSignedRight>
   WIDE_INTEGER_CONSTEXPR
   auto divmod(const uintwide_t<Width2, LimbType, AllocatorType, IsSignedLeft >& a,
-              const uintwide_t<Width2, LimbType, AllocatorType, IsSignedRight>& b) -> std::pair<uintwide_t<Width2, LimbType, AllocatorType, IsSignedLeft>, uintwide_t<Width2, LimbType, AllocatorType, IsSignedRight>>
+              const uintwide_t<Width2, LimbType, AllocatorType, IsSignedRight>& b,
+              std::enable_if_t<(IsSignedLeft || IsSignedRight), int>* p_nullparam) -> std::pair<uintwide_t<Width2, LimbType, AllocatorType, IsSignedLeft>, uintwide_t<Width2, LimbType, AllocatorType, IsSignedRight>>
   {
+    static_cast<void>(p_nullparam);
+
     using local_unsigned_wide_type = uintwide_t<Width2, LimbType, AllocatorType, false>;
 
     using local_unknown_signedness_left_type  = uintwide_t<Width2, LimbType, AllocatorType, IsSignedLeft>;
@@ -6804,9 +6969,9 @@
 
       const auto wr_string_is_ok = x.wr_string(str_temp.begin(), base_rep, show_base, show_pos, is_uppercase);
 
-      auto rit_trim = std::find_if(str_temp.crbegin(),
-                                   str_temp.crend(),
-                                   local_wide_integer_type::is_not_fill_char);
+      auto rit_trim = detail::find_if_unsafe(str_temp.crbegin(),
+                                             str_temp.crend(),
+                                             local_wide_integer_type::is_not_fill_char);
 
       const auto wr_string_and_trim_is_ok =
       (
@@ -6818,13 +6983,13 @@
         const auto chars_retrieved =
           static_cast<local_size_type>
           (
-            str_temp.size() - static_cast<local_size_type>(std::distance(str_temp.crbegin(), rit_trim))
+            str_temp.size() - static_cast<local_size_type>(detail::distance_unsafe(str_temp.crbegin(), rit_trim))
           );
 
-        const auto chars_to_get = static_cast<local_size_type>(std::distance(first, last));
+        const auto chars_to_get = static_cast<local_size_type>(detail::distance_unsafe(first, last));
 
         result.ptr = detail::copy_unsafe(str_temp.cbegin(),
-                                         str_temp.cbegin() + (std::min)(chars_retrieved, chars_to_get),
+                                         str_temp.cbegin() + (detail::min_unsafe)(chars_retrieved, chars_to_get),
                                          first);
 
         result.ec = std::errc();
@@ -6851,9 +7016,9 @@
 
       const auto wr_string_is_ok = x.wr_string(str_temp.begin(), base_rep, show_base, show_pos, is_uppercase);
 
-      auto rit_trim = std::find_if(str_temp.crbegin(),
-                                   str_temp.crend(),
-                                   local_wide_integer_type::is_not_fill_char);
+      auto rit_trim = detail::find_if_unsafe(str_temp.crbegin(),
+                                             str_temp.crend(),
+                                             local_wide_integer_type::is_not_fill_char);
 
       const auto wr_string_and_trim_is_ok =
       (
@@ -6865,13 +7030,13 @@
         const auto chars_retrieved =
           static_cast<local_size_type>
           (
-            str_temp.size() - static_cast<local_size_type>(std::distance(str_temp.crbegin(), rit_trim))
+            str_temp.size() - static_cast<local_size_type>(detail::distance_unsafe(str_temp.crbegin(), rit_trim))
           );
 
-        const auto chars_to_get = static_cast<local_size_type>(std::distance(first, last));
+        const auto chars_to_get = static_cast<local_size_type>(detail::distance_unsafe(first, last));
 
         result.ptr = detail::copy_unsafe(str_temp.cbegin(),
-                                         str_temp.cbegin() + (std::min)(chars_retrieved, chars_to_get),
+                                         str_temp.cbegin() + (detail::min_unsafe)(chars_retrieved, chars_to_get),
                                          first);
 
         result.ec = std::errc();
@@ -6898,9 +7063,9 @@
 
       const auto wr_string_is_ok = x.wr_string(str_temp.begin(), base_rep, show_base, show_pos, is_uppercase);
 
-      auto rit_trim = std::find_if(str_temp.crbegin(),
-                                   str_temp.crend(),
-                                   local_wide_integer_type::is_not_fill_char);
+      auto rit_trim = detail::find_if_unsafe(str_temp.crbegin(),
+                                             str_temp.crend(),
+                                             local_wide_integer_type::is_not_fill_char);
 
       const auto wr_string_and_trim_is_ok =
       (
@@ -6912,13 +7077,13 @@
         const auto chars_retrieved =
           static_cast<local_size_type>
           (
-            str_temp.size() - static_cast<local_size_type>(std::distance(str_temp.crbegin(), rit_trim))
+            str_temp.size() - static_cast<local_size_type>(detail::distance_unsafe(str_temp.crbegin(), rit_trim))
           );
 
-        const auto chars_to_get = static_cast<local_size_type>(std::distance(first, last));
+        const auto chars_to_get = static_cast<local_size_type>(detail::distance_unsafe(first, last));
 
         result.ptr = detail::copy_unsafe(str_temp.cbegin(),
-                                         str_temp.cbegin() + (std::min)(chars_retrieved, chars_to_get),
+                                         str_temp.cbegin() + (detail::min_unsafe)(chars_retrieved, chars_to_get),
                                          first);
 
         result.ec = std::errc();
@@ -6962,9 +7127,9 @@
 
     const auto wr_string_is_ok = x.wr_string(str_temp.begin(), base_rep, show_base, show_pos, is_uppercase);
 
-    auto rit_trim = std::find_if(str_temp.crbegin(),
-                                 str_temp.crend(),
-                                 local_wide_integer_type::is_not_fill_char);
+    auto rit_trim = detail::find_if_unsafe(str_temp.crbegin(),
+                                           str_temp.crend(),
+                                           local_wide_integer_type::is_not_fill_char);
 
     const auto wr_string_and_trim_is_ok =
     (
@@ -6979,7 +7144,7 @@
         static_cast<local_size_type>
         (
             str_temp.size()
-          - static_cast<local_size_type>(std::distance(str_temp.crbegin(), rit_trim))
+          - static_cast<local_size_type>(detail::distance_unsafe(str_temp.crbegin(), rit_trim))
         );
 
       detail::fill_unsafe(str_temp.begin() + str_result_size, str_temp.end(), '\0');
@@ -7024,17 +7189,17 @@
       chunk_size = static_cast<unsigned>(std::numeric_limits<local_input_value_type>::digits);
     }
 
-    chunk_size = (std::min)(static_cast<unsigned>(std::numeric_limits<local_input_value_type>::digits), chunk_size);
+    chunk_size = (detail::min_unsafe)(static_cast<unsigned>(std::numeric_limits<local_input_value_type>::digits), chunk_size);
 
     const auto chunk_is_whole =
       (chunk_size == static_cast<unsigned>(std::numeric_limits<local_result_value_type>::digits));
 
-    const auto input_distance = static_cast<std::size_t>(std::distance(first, last));
+    const auto input_distance = static_cast<std::size_t>(detail::distance_unsafe(first, last));
 
     if(chunk_is_whole)
     {
       const auto copy_len =
-        (std::min)(static_cast<std::size_t>(val.crepresentation().size()), input_distance);
+        (detail::min_unsafe)(static_cast<std::size_t>(val.crepresentation().size()), input_distance);
 
       if(msv_first)
       {
@@ -7071,7 +7236,7 @@
         );
 
       const auto total_bits_to_use =
-        (std::min)
+        (detail::min_unsafe)
         (
           static_cast<signed_fast_type>(total_bits_input),
           static_cast<signed_fast_type>(std::numeric_limits<local_unsigned_wide_integer_type>::digits)
@@ -7132,7 +7297,7 @@
     static_assert(std::numeric_limits<local_result_value_type>::digits != std::numeric_limits<local_input_value_type>::digits,
                   "Error: Erroneous match for input element width and result uintwide_t limb width");
 
-    const auto input_distance = static_cast<std::size_t>(std::distance(first, last));
+    const auto input_distance = static_cast<std::size_t>(detail::distance_unsafe(first, last));
 
     val = 0;
 
@@ -7141,7 +7306,7 @@
       chunk_size = static_cast<unsigned>(std::numeric_limits<local_input_value_type>::digits);
     }
 
-    chunk_size = (std::min)(static_cast<unsigned>(std::numeric_limits<local_input_value_type>::digits), chunk_size);
+    chunk_size = (detail::min_unsafe)(static_cast<unsigned>(std::numeric_limits<local_input_value_type>::digits), chunk_size);
 
     const auto chunk_size_in  = static_cast<unsigned_fast_type>(chunk_size);
     const auto chunk_size_out = static_cast<unsigned_fast_type>(std::numeric_limits<local_result_value_type>::digits);
@@ -7153,7 +7318,7 @@
       );
 
     const auto total_bits_to_use =
-      (std::min)
+      (detail::min_unsafe)
       (
         static_cast<signed_fast_type>(total_bits_input),
         static_cast<signed_fast_type>(std::numeric_limits<local_unsigned_wide_integer_type>::digits)
@@ -7221,7 +7386,7 @@
     static_assert(std::numeric_limits<local_result_value_type>::digits == std::numeric_limits<local_input_value_type>::digits,
                   "Error: Erroneous mismatch for input element width and result uintwide_t limb width");
 
-    chunk_size = (std::min)(static_cast<unsigned>(std::numeric_limits<local_result_value_type>::digits), chunk_size);
+    chunk_size = (detail::min_unsafe)(static_cast<unsigned>(std::numeric_limits<local_result_value_type>::digits), chunk_size);
 
     const auto chunk_size_in  = static_cast<unsigned_fast_type>(std::numeric_limits<local_input_value_type>::digits);
     const auto chunk_size_out = chunk_size;
@@ -7339,7 +7504,7 @@
     static_assert(std::numeric_limits<local_result_value_type>::digits != std::numeric_limits<local_input_value_type>::digits,
                   "Error: Erroneous match for input element width and result uintwide_t limb width");
 
-    chunk_size = (std::min)(static_cast<unsigned>(std::numeric_limits<local_result_value_type>::digits), chunk_size);
+    chunk_size = (detail::min_unsafe)(static_cast<unsigned>(std::numeric_limits<local_result_value_type>::digits), chunk_size);
 
     const auto chunk_size_in  = static_cast<unsigned_fast_type>(std::numeric_limits<local_input_value_type>::digits);
     const auto chunk_size_out = chunk_size;

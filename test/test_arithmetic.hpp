@@ -2916,7 +2916,7 @@ void test_basic_conditionals(Real a, Real b)
 
 template <class T>
 typename std::enable_if<boost::multiprecision::number_category<T>::value == boost::multiprecision::number_kind_complex>::type
-test_relationals(T a, T b)
+test_comparisons(T a, T b)
 {
    BOOST_CHECK_EQUAL((a == b), false);
    BOOST_CHECK_EQUAL((a != b), true);
@@ -2947,7 +2947,7 @@ test_relationals(T a, T b)
 
 template <class T>
 typename std::enable_if<boost::multiprecision::number_category<T>::value != boost::multiprecision::number_kind_complex>::type
-test_relationals(T a, T b)
+test_comparisons(T a, T b)
 {
    BOOST_CHECK_EQUAL((a == b), false);
    BOOST_CHECK_EQUAL((a != b), true);
@@ -3269,7 +3269,7 @@ void test()
    //
    // Comparisons:
    //
-   test_relationals(a, b);
+   test_comparisons(a, b);
    test_members(a);
    //
    // Use in Boolean context:

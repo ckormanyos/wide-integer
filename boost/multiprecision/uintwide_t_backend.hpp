@@ -173,7 +173,8 @@
 
     constexpr uintwide_t_backend(const std::string& str) : m_value(str) { } // NOLINT(google-explicit-constructor,hicpp-explicit-conversions)
 
-    WIDE_INTEGER_CONSTEXPR ~uintwide_t_backend() = default;
+    //WIDE_INTEGER_CONSTEXPR
+    ~uintwide_t_backend() = default;
 
     WIDE_INTEGER_CONSTEXPR auto operator=(const uintwide_t_backend& other) -> uintwide_t_backend& // NOLINT(cert-oop54-cpp)
     {
