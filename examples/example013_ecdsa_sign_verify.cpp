@@ -74,9 +74,9 @@ namespace example013_ecdsa
   {
   public:
     #if defined(WIDE_INTEGER_NAMESPACE)
-    using result_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::array<std::uint8_t, static_cast<std::size_t>(UINT8_C(32))>;
+    using result_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::array_detail::array<std::uint8_t, static_cast<std::size_t>(UINT8_C(32))>;
     #else
-    using result_type = ::math::wide_integer::detail::array<std::uint8_t, static_cast<std::size_t>(UINT8_C(32))>;
+    using result_type = ::math::wide_integer::detail::array_detail::array<std::uint8_t, static_cast<std::size_t>(UINT8_C(32))>;
     #endif
 
     // LCOV_EXCL_START
@@ -190,9 +190,9 @@ namespace example013_ecdsa
 
       for(auto   output_index = static_cast<std::size_t>(UINT8_C(0));
                 #if defined(WIDE_INTEGER_NAMESPACE)
-                 output_index < WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::tuple_size<result_type>::value;
+                 output_index < WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::array_detail::tuple_size<result_type>::value;
                 #else
-                 output_index < ::math::wide_integer::detail::tuple_size<result_type>::value;
+                 output_index < ::math::wide_integer::detail::array_detail::tuple_size<result_type>::value;
                 #endif
                ++output_index)
       {
@@ -222,11 +222,11 @@ namespace example013_ecdsa
 
   private:
     #if defined(WIDE_INTEGER_NAMESPACE)
-    using transform_context_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::array<std::uint32_t, static_cast<std::size_t>(UINT8_C(8))>;
-    using data_array_type        = WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::array<std::uint8_t, static_cast<std::size_t>(UINT8_C(64))>;
+    using transform_context_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::array_detail::array<std::uint32_t, static_cast<std::size_t>(UINT8_C(8))>;
+    using data_array_type        = WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::array_detail::array<std::uint8_t, static_cast<std::size_t>(UINT8_C(64))>;
     #else
-    using transform_context_type = ::math::wide_integer::detail::array<std::uint32_t, static_cast<std::size_t>(UINT8_C(8))>;
-    using data_array_type        = ::math::wide_integer::detail::array<std::uint8_t, static_cast<std::size_t>(UINT8_C(64))>;
+    using transform_context_type = ::math::wide_integer::detail::array_detail::array<std::uint32_t, static_cast<std::size_t>(UINT8_C(8))>;
+    using data_array_type        = ::math::wide_integer::detail::array_detail::array<std::uint8_t, static_cast<std::size_t>(UINT8_C(64))>;
     #endif
 
     std::uint32_t          my_datalen        { }; // NOLINT(readability-identifier-naming)
@@ -237,9 +237,9 @@ namespace example013_ecdsa
     WIDE_INTEGER_CONSTEXPR auto sha256_transform() -> void
     {
       #if defined(WIDE_INTEGER_NAMESPACE)
-      WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::array<std::uint32_t, static_cast<std::size_t>(UINT8_C(64))> m { };
+      WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::array_detail::array<std::uint32_t, static_cast<std::size_t>(UINT8_C(64))> m { };
       #else
-      ::math::wide_integer::detail::array<std::uint32_t, static_cast<std::size_t>(UINT8_C(64))> m { };
+      ::math::wide_integer::detail::array_detail::array<std::uint32_t, static_cast<std::size_t>(UINT8_C(64))> m { };
       #endif
 
       for(auto   i = static_cast<std::size_t>(UINT8_C(0)), j = static_cast<std::size_t>(UINT8_C(0));
@@ -262,9 +262,9 @@ namespace example013_ecdsa
       }
 
       #if defined(WIDE_INTEGER_NAMESPACE)
-      constexpr WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::array<std::uint32_t, 64U> transform_constants =
+      constexpr WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::array_detail::array<std::uint32_t, 64U> transform_constants =
       #else
-      constexpr ::math::wide_integer::detail::array<std::uint32_t, 64U> transform_constants =
+      constexpr ::math::wide_integer::detail::array_detail::array<std::uint32_t, 64U> transform_constants =
       #endif
       {
         static_cast<std::uint32_t>(UINT32_C(0x428A2F98)), static_cast<std::uint32_t>(UINT32_C(0x71374491)), static_cast<std::uint32_t>(UINT32_C(0xB5C0FBCF)), static_cast<std::uint32_t>(UINT32_C(0xE9B5DBA5)),
@@ -834,9 +834,9 @@ auto ::math::wide_integer::example013_ecdsa_sign_verify() -> bool
 
   // Declare the message "Hello!" as an array of chars.
   #if defined(WIDE_INTEGER_NAMESPACE)
-  constexpr WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::array<char, static_cast<std::size_t>(UINT8_C(6))> msg_as_array { 'H', 'e', 'l', 'l', 'o', '!' };
+  constexpr WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::array_detail::array<char, static_cast<std::size_t>(UINT8_C(6))> msg_as_array { 'H', 'e', 'l', 'l', 'o', '!' };
   #else
-  constexpr ::math::wide_integer::detail::array<char, static_cast<std::size_t>(UINT8_C(6))> msg_as_array { 'H', 'e', 'l', 'l', 'o', '!' };
+  constexpr ::math::wide_integer::detail::array_detail::array<char, static_cast<std::size_t>(UINT8_C(6))> msg_as_array { 'H', 'e', 'l', 'l', 'o', '!' };
   #endif
 
   // Get the message to sign as a string and ensure that it is "Hello!".
