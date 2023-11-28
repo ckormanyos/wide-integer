@@ -1216,7 +1216,7 @@ auto test_various_isolated_edge_cases() -> bool // NOLINT(readability-function-c
     rep =
       local_rep_type
       (
-        static_cast<typename local_rep_type::size_type>(rep.size()),
+        static_cast<typename local_rep_type::size_type>(rep.size()), // NOLINT(readability-static-accessed-through-instance)
         (std::numeric_limits<local_value_type>::max)(),
         typename local_rep_type::allocator_type()
       );
@@ -1392,15 +1392,16 @@ auto test_various_isolated_edge_cases() -> bool // NOLINT(readability-function-c
              i < static_cast<unsigned>(loop_count_hi);
            ++i)
   {
-    auto shift_amount =
+    auto shift_amount = // NOLINT(altera-id-dependent-backward-branch)
       static_cast<unsigned>
       (
+          static_cast<int>
           (
-                (std::numeric_limits<local_uintwide_t_small_unsigned_type>::digits / 100)                // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
-            + (((std::numeric_limits<local_uintwide_t_small_unsigned_type>::digits % 100) != 0) ? 1 : 0) // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
+                (std::numeric_limits<local_uintwide_t_small_unsigned_type>::digits / static_cast<int>(INT8_C(100)))
+            + (((std::numeric_limits<local_uintwide_t_small_unsigned_type>::digits % static_cast<int>(INT8_C(100))) != 0) ? 1 : 0)
           )
         *
-          100 // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
+          static_cast<int>(INT8_C(100))
       );
 
     for( ; shift_amount  < static_cast<unsigned>(UINT32_C(2000)); // NOLINT(altera-id-dependent-backward-branch)
