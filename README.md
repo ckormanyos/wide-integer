@@ -570,7 +570,6 @@ enabled or disabled at compile time with the compiler switches:
 #define WIDE_INTEGER_DISABLE_TRIVIAL_COPY_AND_STD_LAYOUT_CHECKS
 #define WIDE_INTEGER_NAMESPACE
 #define WIDE_INTEGER_DISABLE_WIDE_INTEGER_CONSTEXPR
-#define WIDE_INTEGER_TEST_REPRESENTATION_AS_STD_LIST
 #define WIDE_INTEGER_DISABLE_PRIVATE_CLASS_DATA_MEMBERS
 #define WIDE_INTEGER_HAS_CLZ_LIMB_OPTIMIZATIONS
 ```
@@ -746,24 +745,6 @@ for instance, this macro has been used when performing
 algorithmic proof-of-concept via use of `std::list`
 for storage containters (instead of the default-supplied
 dynamic/static array-like containers).
-
-```cpp
-#define WIDE_INTEGER_TEST_REPRESENTATION_AS_STD_LIST
-```
-
-This macro is used only for testing the correct functionality
-of wide-integer when the internal storage representation is
-`std::list<limb_type>`. This feature is useful for verifying
-that the internal algorithms used in wide-integer remain entirely
-iterator-based and do not require any use of random-access
-iteration whatsoever.
-
-When defining the macro `WIDE_INTEGER_TEST_REPRESENTATION_AS_STD_LIST`,
-the macro `WIDE_INTEGER_DISABLE_WIDE_INTEGER_CONSTEXPR` will also
-be defined automatically in order to _disable_
-wide-integer's C++20 `constexpr`-ness. This is necessary
-because the `std::list` container is incompatible with some or most
-of wide-integer's C++20 `constexpr`-ness.
 
 ```cpp
 #define WIDE_INTEGER_DISABLE_PRIVATE_CLASS_DATA_MEMBERS

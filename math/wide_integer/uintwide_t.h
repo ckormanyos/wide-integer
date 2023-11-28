@@ -8,20 +8,12 @@
 #ifndef UINTWIDE_T_2018_10_02_H // NOLINT(llvm-header-guard)
   #define UINTWIDE_T_2018_10_02_H
 
-  #if defined(WIDE_INTEGER_TEST_REPRESENTATION_AS_STD_LIST)
-  #if !defined(WIDE_INTEGER_DISABLE_WIDE_INTEGER_CONSTEXPR)
-  #define WIDE_INTEGER_DISABLE_WIDE_INTEGER_CONSTEXPR
-  #endif
-  #endif
-
   #if ((__cplusplus < 202100L) || (defined(__GNUC__) && defined(__AVR__)))
   #include <ciso646>
   #else
   #include <version>
   #endif
 
-  #include <algorithm>
-  #include <array>
   #if (defined(__cpp_lib_to_chars) && (__cpp_lib_to_chars >= 201611L))
   #include <charconv>
   #endif
@@ -38,11 +30,7 @@
   #include <iomanip>
   #include <istream>
   #endif
-  #include <iterator>
   #include <limits>
-  #if defined(WIDE_INTEGER_TEST_REPRESENTATION_AS_STD_LIST)
-  #include <list>
-  #endif
   #if !defined(WIDE_INTEGER_DISABLE_IMPLEMENT_UTIL_DYNAMIC_ARRAY)
   #include <memory>
   #endif
@@ -98,8 +86,10 @@
     #endif
   #endif
 
+  // 201703L
+
   #if defined(_MSVC_LANG)
-    #if (_MSVC_LANG >= 202002L)
+    #if (_MSVC_LANG >= 201402L)
     #define WIDE_INTEGER_CONSTEXPR constexpr                // NOLINT(cppcoreguidelines-macro-usage)
     #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 1  // NOLINT(cppcoreguidelines-macro-usage)
     #else
@@ -107,7 +97,7 @@
     #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 0  // NOLINT(cppcoreguidelines-macro-usage)
     #endif
   #else
-    #if (__cplusplus >= 202002L)
+    #if (__cplusplus >= 201402L)
     #define WIDE_INTEGER_CONSTEXPR constexpr                // NOLINT(cppcoreguidelines-macro-usage)
     #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 1  // NOLINT(cppcoreguidelines-macro-usage)
     #else
@@ -149,6 +139,122 @@
   namespace math { namespace wide_integer { namespace detail { // NOLINT(modernize-concat-nested-namespaces)
   #endif
 
+  class input_iterator_tag {};
+  class output_iterator_tag {};
+  class forward_iterator_tag : public input_iterator_tag {};
+  class bidirectional_iterator_tag : public forward_iterator_tag {};
+  class random_access_iterator_tag : public bidirectional_iterator_tag {};
+
+  template<typename iterator_type>
+  class iterator_traits
+  {
+  public:
+    using difference_type   = typename iterator_type::difference_type;
+    using value_type        = typename iterator_type::value_type;
+    using pointer           = typename iterator_type::pointer;
+    using reference         = typename iterator_type::reference;
+    using iterator_category = typename iterator_type::iterator_category;
+  };
+
+  template<typename T>
+  class iterator_traits<T*>
+  {
+  public:
+    using difference_type   = std::ptrdiff_t;
+    using value_type        = T;
+    using pointer           = value_type*;
+    using reference         = value_type&;
+    using iterator_category = random_access_iterator_tag;
+  };
+
+  template<typename T>
+  class iterator_traits<const T*>
+  {
+  public:
+    using difference_type   = std::ptrdiff_t;
+    using value_type        = T;
+    using pointer           = const value_type*;
+    using reference         = const value_type&;
+    using iterator_category = random_access_iterator_tag;
+  };
+
+  template<typename my_category,
+           typename my_value_type,
+           typename my_difference_type = std::ptrdiff_t,
+           typename my_pointer_type    = my_value_type*,
+           typename my_reference_type  = my_value_type&>
+  struct my_iterator
+  {
+    using iterator_category = my_category;
+    using value_type        = my_value_type;
+    using difference_type   = my_difference_type;
+    using pointer           = my_pointer_type;
+    using reference         = my_reference_type;
+
+    constexpr my_iterator() = default;
+  };
+
+  template <typename iterator_type>
+  class reverse_iterator : public my_iterator<typename iterator_traits<iterator_type>::iterator_category,
+                                              typename iterator_traits<iterator_type>::value_type,
+                                              typename iterator_traits<iterator_type>::difference_type,
+                                              typename iterator_traits<iterator_type>::pointer,
+                                              typename iterator_traits<iterator_type>::reference>
+  {
+  public:
+    using value_type        = typename iterator_traits<iterator_type>::value_type;
+    using difference_type   = typename iterator_traits<iterator_type>::difference_type;
+    using pointer           = typename iterator_traits<iterator_type>::pointer;
+    using reference         = typename iterator_traits<iterator_type>::reference;
+    using iterator_category = typename iterator_traits<iterator_type>::iterator_category;
+
+    constexpr reverse_iterator() = default;
+
+    explicit constexpr reverse_iterator(iterator_type x) : current(x) { }
+
+    template<typename other>
+    constexpr reverse_iterator(const reverse_iterator<other>& u) : current(u.current) { } // NOLINT(google-explicit-constructor,hicpp-explicit-conversions)
+
+    constexpr auto base() const -> iterator_type { return current; }
+
+    constexpr auto operator* () const -> reference { iterator_type tmp = current; return *--tmp; }
+    constexpr auto operator->() const -> pointer   { return &(operator*()); }
+
+    constexpr auto operator++() -> reverse_iterator& { --current; return *this; }
+    constexpr auto operator--() -> reverse_iterator& { ++current; return *this; }
+
+    constexpr auto operator++(int) -> reverse_iterator { reverse_iterator tmp = *this; --current; return tmp; }
+    constexpr auto operator--(int) -> reverse_iterator { reverse_iterator tmp = *this; ++current; return tmp; }
+
+    constexpr auto operator+(typename reverse_iterator<iterator_type>::difference_type n) const -> reverse_iterator { return reverse_iterator(current - n); }
+    constexpr auto operator-(typename reverse_iterator<iterator_type>::difference_type n) const -> reverse_iterator { return reverse_iterator(current + n); }
+
+    constexpr auto operator+=(typename reverse_iterator<iterator_type>::difference_type n) -> reverse_iterator& { current -= n; return *this; }
+    constexpr auto operator-=(typename reverse_iterator<iterator_type>::difference_type n) -> reverse_iterator& { current += n; return *this; }
+
+    constexpr auto operator[](typename reverse_iterator<iterator_type>::difference_type n) const -> reference { return current[-n - 1]; }
+
+  private:
+    iterator_type current; // NOLINT(readability-identifier-naming)
+
+    friend inline constexpr auto operator< (const reverse_iterator& x, const reverse_iterator& y) -> bool { return (x.current  > y.current); }
+    friend inline constexpr auto operator<=(const reverse_iterator& x, const reverse_iterator& y) -> bool { return (x.current >= y.current); }
+    friend inline constexpr auto operator==(const reverse_iterator& x, const reverse_iterator& y) -> bool { return (x.current == y.current); }
+    friend inline constexpr auto operator!=(const reverse_iterator& x, const reverse_iterator& y) -> bool { return (x.current != y.current); }
+    friend inline constexpr auto operator>=(const reverse_iterator& x, const reverse_iterator& y) -> bool { return (x.current <= y.current); }
+    friend inline constexpr auto operator> (const reverse_iterator& x, const reverse_iterator& y) -> bool { return (x.current <  y.current); }
+
+    friend inline constexpr auto operator-(const reverse_iterator& x, const reverse_iterator& y) -> typename reverse_iterator::difference_type
+    {
+      return (y.current - x.current);
+    }
+
+    friend inline constexpr auto operator+(typename reverse_iterator::difference_type n, const reverse_iterator& x) -> reverse_iterator
+    {
+      return reverse_iterator(x.current - n);
+    }
+  };
+
   // Use a local, constexpr, unsafe implementation of the abs-function.
   template<typename ArithmeticType>
   WIDE_INTEGER_CONSTEXPR auto abs_unsafe(ArithmeticType val) -> ArithmeticType
@@ -163,7 +269,7 @@
   {
     while(first != last)
     {
-      using local_destination_value_type = typename std::iterator_traits<DestinationIterator>::value_type;
+      using local_destination_value_type = typename iterator_traits<DestinationIterator>::value_type;
 
       *first++ = static_cast<local_destination_value_type>(val);
     }
@@ -190,7 +296,7 @@
   {
     while(first != last)
     {
-      using local_destination_value_type = typename std::iterator_traits<DestinationIterator>::value_type;
+      using local_destination_value_type = typename iterator_traits<DestinationIterator>::value_type;
 
       #if (defined(__GNUC__) && (__GNUC__ > 9))
       #pragma GCC diagnostic ignored "-Wstringop-overflow"
@@ -209,7 +315,7 @@
            typename DestinationIterator>
   constexpr auto copy_backward_unsafe(InputIterator first, InputIterator last, DestinationIterator dest) -> DestinationIterator
   {
-    using local_destination_value_type = typename std::iterator_traits<DestinationIterator>::value_type;
+    using local_destination_value_type = typename iterator_traits<DestinationIterator>::value_type;
 
     while(first != last)
     {
@@ -242,7 +348,7 @@
   {
     for( ; first != last; ++first)
     {
-      if (p(*first))
+      if(p(*first))
       {
         return first;
       }
@@ -251,12 +357,56 @@
     return last;
   }
 
+  template<typename ForwardIt, typename T>
+  constexpr auto lower_bound_unsafe(ForwardIt first, ForwardIt last, const T& value) -> ForwardIt
+  {
+    using local_iterator_type = ForwardIt;
+
+    using local_difference_type = typename std::iterator_traits<ForwardIt>::difference_type;
+
+    local_difference_type step { };
+
+    auto count = static_cast<local_difference_type>(last - first); // NOLINT(altera-id-dependent-backward-branch)
+
+    local_iterator_type itr { };
+
+    while(count > static_cast<local_difference_type>(INT8_C(0))) // NOLINT(altera-id-dependent-backward-branch)
+    {
+      itr = first;
+
+      step = static_cast<local_difference_type>(count / static_cast<local_difference_type>(INT8_C(2)));
+
+      itr += step;
+ 
+      if (*itr < value)
+      {
+        first = ++itr;
+
+        count -= static_cast<local_difference_type>(step + static_cast<local_difference_type>(INT8_C(1)));
+      }
+      else
+      {
+        count = step;
+      }
+    }
+
+    return first;
+  }
+
+  template<class ForwardIt, class T>
+  constexpr auto binary_search_unsafe(ForwardIt first, ForwardIt last, const T& value) -> bool
+  {
+    first = lower_bound_unsafe(first, last, value);
+
+    return ((!(first == last)) && (!(value < *first)));
+  }
+
   namespace distance_detail
   {
     template<class It>
-    constexpr auto do_distance(It first, It last, std::input_iterator_tag) -> typename std::iterator_traits<It>::difference_type // NOLINT(hicpp-named-parameter,readability-named-parameter)
+    constexpr auto do_distance(It first, It last, detail::input_iterator_tag) -> typename iterator_traits<It>::difference_type // NOLINT(hicpp-named-parameter,readability-named-parameter)
     {
-      typename std::iterator_traits<It>::difference_type result = 0;
+      typename iterator_traits<It>::difference_type result = 0;
 
       while (first != last)
       {
@@ -268,22 +418,77 @@
     }
  
     template<class It>
-    constexpr auto do_distance(It first, It last, std::random_access_iterator_tag) -> typename std::iterator_traits<It>::difference_type // NOLINT(hicpp-named-parameter,readability-named-parameter)
+    constexpr auto do_distance(It first, It last, std::random_access_iterator_tag) -> typename iterator_traits<It>::difference_type // NOLINT(hicpp-named-parameter,readability-named-parameter)
     {
       return last - first;
     }
   } // namespace distance_detail
 
   template<class It>
-  constexpr auto distance_unsafe(It first, It last) -> typename std::iterator_traits<It>::difference_type
+  constexpr auto distance_unsafe(It first, It last) -> typename iterator_traits<It>::difference_type
   {
     return
-      distance_detail::do_distance
+      detail::distance_detail::do_distance
       (
         first,
         last,
-        typename std::iterator_traits<It>::iterator_category()
+        typename detail::iterator_traits<It>::iterator_category()
       );
+  }
+
+  template<class InputIt1, class InputIt2>
+  constexpr auto equal_unsafe(InputIt1 first1, InputIt1 last1, InputIt2 first2) -> bool
+  {
+    for( ; first1 != last1; ++first1, ++first2)
+    {
+      if(!(*first1 == *first2))
+      {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  template<class InputIt1, class InputIt2>
+  constexpr auto lexicographical_compare_unsafe(InputIt1 first1, InputIt1 last1, InputIt2 first2, InputIt2 last2) -> bool
+  {
+    for( ; (first1 != last1) && (first2 != last2); ++first1, (void) ++first2)
+    {
+      if(*first1 < *first2)
+      {
+        return true;
+      }
+
+      if(*first2 < *first1)
+      {
+        return false;
+      }
+    }
+
+    return ((first1 == last1) && (first2 != last2));
+  }
+
+  template<typename IteratorType>
+  constexpr auto iter_swap_unsafe(IteratorType a, IteratorType b) -> void
+  {
+    // Non-standard behavior:
+    // The (dereferenced) left/right value-types are the same.
+
+    using local_value_type = typename iterator_traits<IteratorType>::value_type;
+
+    swap_unsafe(static_cast<local_value_type&&>(*a), static_cast<local_value_type&&>(*b));
+  }
+
+  template<class ForwardIt1, class ForwardIt2>
+  constexpr auto swap_ranges_unsafe(ForwardIt1 first1, ForwardIt1 last1, ForwardIt2 first2) -> ForwardIt2
+  {
+    for( ; first1 != last1; ++first1, ++first2)
+    {
+      iter_swap_unsafe(first1, first2);
+    }
+
+    return first2;
   }
 
   template <class UnsignedIntegralType>
@@ -379,6 +584,155 @@
     return static_cast<local_unsigned_integral_type>(u << shift_amount);
   }
 
+  template<typename T, std::size_t N>
+  class array
+  {
+  public:
+    // Standard container-local type definitions.
+    using size_type              = std::size_t;
+    using difference_type        = std::ptrdiff_t;
+    using value_type             = T;
+    using pointer                = T*;
+    using const_pointer          = const T*;
+    using reference              = T&;
+    using const_reference        = const T&;
+    using iterator               = pointer;
+    using const_iterator         = const_pointer;
+    using reverse_iterator       = detail::reverse_iterator<iterator>;
+    using const_reverse_iterator = detail::reverse_iterator<const_iterator>;
+
+    value_type elems[N] { }; // NOLINT(cppcoreguidelines-avoid-c-arrays,hicpp-avoid-c-arrays,modernize-avoid-c-arrays,misc-non-private-member-variables-in-classes)
+
+    static constexpr size_type static_size = N;
+
+    constexpr auto begin() -> iterator { return elems; }                 // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay,cppcoreguidelines-pro-bounds-pointer-arithmetic)
+    constexpr auto end  () -> iterator { return elems + N; }             // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay,cppcoreguidelines-pro-bounds-pointer-arithmetic)
+
+    constexpr auto begin() const -> const_iterator { return elems; }     // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay,cppcoreguidelines-pro-bounds-pointer-arithmetic)
+    constexpr auto end  () const -> const_iterator { return elems + N; } // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay,cppcoreguidelines-pro-bounds-pointer-arithmetic)
+
+    constexpr auto cbegin() const -> const_iterator { return elems; }     // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay,cppcoreguidelines-pro-bounds-pointer-arithmetic)
+    constexpr auto cend  () const -> const_iterator { return elems + N; } // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay,cppcoreguidelines-pro-bounds-pointer-arithmetic)
+
+    constexpr auto rbegin() -> reverse_iterator { return reverse_iterator(elems + N); }                    // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay,cppcoreguidelines-pro-bounds-pointer-arithmetic)
+    constexpr auto rend  () -> reverse_iterator { return reverse_iterator(elems); }                        // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay,cppcoreguidelines-pro-bounds-pointer-arithmetic)
+
+    constexpr auto rbegin() const -> const_reverse_iterator { return const_reverse_iterator(elems + N); }  // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay,cppcoreguidelines-pro-bounds-pointer-arithmetic)
+    constexpr auto rend  () const -> const_reverse_iterator { return const_reverse_iterator(elems); }      // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay,cppcoreguidelines-pro-bounds-pointer-arithmetic)
+
+    constexpr auto crbegin() const -> const_reverse_iterator { return const_reverse_iterator(elems + N); } // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay,cppcoreguidelines-pro-bounds-pointer-arithmetic)
+    constexpr auto crend  () const -> const_reverse_iterator { return const_reverse_iterator(elems); }     // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay,cppcoreguidelines-pro-bounds-pointer-arithmetic)
+
+    constexpr auto operator[](const size_type i)       -> reference       { return elems[i]; } // NOLINT(cppcoreguidelines-pro-bounds-constant-array-index)
+    constexpr auto operator[](const size_type i) const -> const_reference { return elems[i]; } // NOLINT(cppcoreguidelines-pro-bounds-constant-array-index)
+
+    constexpr auto at(const size_type i)       -> reference       { return elems[i]; } // NOLINT(cppcoreguidelines-pro-bounds-constant-array-index)
+    constexpr auto at(const size_type i) const -> const_reference { return elems[i]; } // NOLINT(cppcoreguidelines-pro-bounds-constant-array-index)
+
+    constexpr auto front()       -> reference       { return elems[static_cast<size_type>(UINT8_C(0))]; }
+    constexpr auto front() const -> const_reference { return elems[static_cast<size_type>(UINT8_C(0))]; }
+
+    constexpr auto back()       -> reference       { return elems[static_cast<size_type>(N - static_cast<size_type>(UINT8_C(1)))]; }
+    constexpr auto back() const -> const_reference { return elems[static_cast<size_type>(N - static_cast<size_type>(UINT8_C(1)))]; }
+
+    static constexpr auto size()     -> size_type { return N; }
+    static constexpr auto empty()    -> bool      { return false; }
+    static constexpr auto max_size() -> size_type { return N; }
+
+    template<typename T2>
+    constexpr auto swap(array<T2, N>& y) -> void
+    {
+      swap_ranges_unsafe(begin(), end(), y.begin());
+    }
+
+    constexpr auto data() const -> const_pointer { return elems; } // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay)
+    constexpr auto data()       -> pointer       { return elems; } // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay)
+
+    constexpr auto c_array() -> pointer { return elems; }
+
+    template<typename T2>
+    constexpr auto operator=(const array<T2, N>& y) -> array&
+    {
+      copy_unsafe(y.begin(), y.end(), begin());
+
+      return *this;
+    }
+
+    constexpr auto assign(const value_type& value) -> void
+    {
+      fill_unsafe(elems, elems + N, value); // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay,cppcoreguidelines-pro-bounds-pointer-arithmetic)
+    }
+
+    constexpr auto fill(const value_type& value) -> void
+    {
+      assign(value);
+    }
+  };
+
+  template<typename T, size_t N>
+  constexpr auto operator==(const array<T, N>& left, const array<T, N>& right) -> bool
+  {
+    return equal_unsafe(left.begin(), left.end(), right.begin());
+  }
+
+  template<typename T, size_t N>
+  constexpr auto operator<(const array<T, N>& left, const array<T, N>& right) -> bool
+  {
+    return lexicographical_compare_unsafe(left.begin(),
+                                          left.end(),
+                                          right.begin(),
+                                          right.end());
+  }
+
+  template<typename T, size_t N>
+  constexpr auto operator!=(const array<T, N>& left, const array<T, N>& right) -> bool
+  {
+    return ((left == right) == false);
+  }
+
+  template<typename T, size_t N>
+  constexpr auto operator>(const array<T, N>& left, const array<T, N>& right) -> bool
+  {
+    return (right < left);
+  }
+
+  template<typename T, size_t N>
+  constexpr auto operator>=(const array<T, N>& left, const array<T, N>& right) -> bool
+  {
+    return ((left < right) == false);
+  }
+
+  template<typename T, size_t N>
+  constexpr auto operator<=(const array<T, N>& left, const array<T, N>& right) -> bool
+  {
+    return ((right < left) == false);
+  }
+
+  template<typename T, size_t N >
+  constexpr auto swap(array<T, N>& x, array<T, N>& y) -> void
+  {
+    swap_ranges_unsafe(x.begin(), x.end(), y.begin());
+  }
+
+  template<typename T>
+  class tuple_size;
+
+  template<typename T, typename std::size_t N>
+  class tuple_size<array<T, N>> : public std::integral_constant<std::size_t, N> { };
+
+  template<const std::size_t N, typename T>
+  class tuple_element;
+
+  template<const std::size_t I,
+            typename T,
+            const std::size_t N>
+  class tuple_element<I, array<T, N> >
+  {
+    static_assert(I < N, "Sorry, tuple_element index is out of bounds.");
+
+    using type = T;
+  };
+
   #if(__cplusplus >= 201703L)
   } // namespace math::wide_integer::detail
   #else
@@ -419,8 +773,13 @@
     using const_pointer          = const value_type*;
     using size_type              =       SizeType;
     using difference_type        =       DiffType;
-    using reverse_iterator       =       std::reverse_iterator<      value_type*>;
-    using const_reverse_iterator =       std::reverse_iterator<const value_type*>;
+    #if defined(WIDE_INTEGER_NAMESPACE)
+    using reverse_iterator       =       WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::reverse_iterator<      value_type*>;
+    using const_reverse_iterator =       WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::reverse_iterator<const value_type*>;
+    #else
+    using reverse_iterator       =       ::math::wide_integer::detail::reverse_iterator<      value_type*>;
+    using const_reverse_iterator =       ::math::wide_integer::detail::reverse_iterator<const value_type*>;
+    #endif
 
     // Constructors.
     constexpr dynamic_array() : elem_count(static_cast<size_type>(UINT8_C(0))) { }
@@ -883,7 +1242,7 @@
 
     if(size_to_loop_through > static_cast<signed_fast_type>(INT8_C(-1)))
     {
-      using local_output_value_type = typename std::iterator_traits<OutputIterator>::value_type;
+      using local_output_value_type = typename detail::iterator_traits<OutputIterator>::value_type;
 
       *out = static_cast<local_output_value_type>(UINT8_C(0));
 
@@ -897,7 +1256,7 @@
             static_cast<unsigned_fast_type>(i) % chunk_size_in
           );
 
-        using local_input_value_type  = typename std::iterator_traits<ForwardIterator>::value_type;
+        using local_input_value_type  = typename detail::iterator_traits<ForwardIterator>::value_type;
 
         const auto input_bval_is_set =
         (
@@ -1261,7 +1620,7 @@
            const size_t Width2,
            typename LimbType,
            typename AllocatorType,
-           std::enable_if_t<std::numeric_limits<typename std::iterator_traits<ForwardIterator>::value_type>::digits == std::numeric_limits<LimbType>::digits> const* = nullptr>
+           std::enable_if_t<std::numeric_limits<typename detail::iterator_traits<ForwardIterator>::value_type>::digits == std::numeric_limits<LimbType>::digits> const* = nullptr>
   WIDE_INTEGER_CONSTEXPR
   auto import_bits(uintwide_t<Width2, LimbType, AllocatorType, false>& val,
                    ForwardIterator first,
@@ -1273,7 +1632,7 @@
            const size_t Width2,
            typename LimbType,
            typename AllocatorType,
-           std::enable_if_t<!(std::numeric_limits<typename std::iterator_traits<ForwardIterator>::value_type>::digits == std::numeric_limits<LimbType>::digits)> const* = nullptr>
+           std::enable_if_t<!(std::numeric_limits<typename detail::iterator_traits<ForwardIterator>::value_type>::digits == std::numeric_limits<LimbType>::digits)> const* = nullptr>
   WIDE_INTEGER_CONSTEXPR
   auto import_bits(uintwide_t<Width2, LimbType, AllocatorType, false>& val,
                    ForwardIterator first,
@@ -1286,7 +1645,7 @@
            typename LimbType,
            typename AllocatorType,
            const bool IsSigned,
-           std::enable_if_t<std::numeric_limits<typename std::iterator_traits<OutputIterator>::value_type>::digits == std::numeric_limits<LimbType>::digits> const* = nullptr>
+           std::enable_if_t<std::numeric_limits<typename detail::iterator_traits<OutputIterator>::value_type>::digits == std::numeric_limits<LimbType>::digits> const* = nullptr>
   WIDE_INTEGER_CONSTEXPR
   auto export_bits(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& val,
                          OutputIterator out,
@@ -1298,7 +1657,7 @@
            typename LimbType,
            typename AllocatorType,
            const bool IsSigned,
-           std::enable_if_t<!(std::numeric_limits<typename std::iterator_traits<OutputIterator>::value_type>::digits == std::numeric_limits<LimbType>::digits)> const* = nullptr>
+           std::enable_if_t<!(std::numeric_limits<typename detail::iterator_traits<OutputIterator>::value_type>::digits == std::numeric_limits<LimbType>::digits)> const* = nullptr>
   WIDE_INTEGER_CONSTEXPR
   auto export_bits(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& val,
                          OutputIterator out,
@@ -1381,25 +1740,31 @@
     ~fixed_dynamic_array() override = default;
   };
 
+  struct allocator_dummy_unsafe
+  {
+    constexpr allocator_dummy_unsafe() = default;
+  };
+
+
   template<typename MyType,
            const size_t MySize>
-  class fixed_static_array final : public std::array<MyType, static_cast<std::size_t>(MySize)>
+  class fixed_static_array final : public detail::array<MyType, static_cast<std::size_t>(MySize)>
   {
   private:
-    using base_class_type = std::array<MyType, static_cast<std::size_t>(MySize)>;
+    using base_class_type = detail::array<MyType, static_cast<std::size_t>(MySize)>;
 
   public:
     using size_type      = size_t;
     using value_type     = typename base_class_type::value_type;
-    using allocator_type = std::allocator<void>;
+    using allocator_type = allocator_dummy_unsafe;
 
     static constexpr auto static_size() -> size_type { return MySize; }
 
     constexpr fixed_static_array() = default;
 
-    explicit WIDE_INTEGER_CONSTEXPR fixed_static_array(const size_type   size_in,
-                                                       const value_type& value_in = value_type(),
-                                                       allocator_type    alloc_in = allocator_type())
+    explicit WIDE_INTEGER_CONSTEXPR fixed_static_array(const size_type      size_in,
+                                                       const value_type&    value_in = value_type(),
+                                                             allocator_type alloc_in = allocator_type())
     {
       static_cast<void>(alloc_in);
 
@@ -1523,7 +1888,7 @@
                          IntegralType,
                          typename detail::uint_type_helper<static_cast<size_t>(std::numeric_limits<IntegralType>::digits)>::exact_signed_type>;
 
-    using local_difference_type = typename std::iterator_traits<InputIterator>::difference_type;
+    using local_difference_type = typename detail::iterator_traits<InputIterator>::difference_type;
 
     #if !defined(WIDE_INTEGER_DISABLE_WIDE_INTEGER_CONSTEXPR)
     return it + static_cast<local_difference_type>(static_cast<local_signed_integral_type>(n));
@@ -1835,7 +2200,6 @@
                   "Error: Width2 must be 2^n times 1...63 (with n >= 3), while being 16, 24, 32 or larger, and exactly divisible by limb count");
 
     // The type of the internal data representation.
-    #if !defined(WIDE_INTEGER_TEST_REPRESENTATION_AS_STD_LIST)
     using representation_type =
       std::conditional_t
         <std::is_same<AllocatorType, void>::value,
@@ -1846,9 +2210,6 @@
                                      typename std::allocator_traits<std::conditional_t<std::is_same<AllocatorType, void>::value,
                                                                                        std::allocator<void>,
                                                                                        AllocatorType>>::template rebind_alloc<limb_type>>>;
-    #else
-    using representation_type = std::list<limb_type>;
-    #endif
 
     // The iterator types of the internal data representation.
     using iterator               = typename representation_type::iterator;
@@ -2965,7 +3326,7 @@
 
       {
         auto ri =
-          static_cast<typename representation_type::reverse_iterator>
+          static_cast<reverse_iterator>
           (
             detail::advance_and_point
             (
@@ -3239,12 +3600,12 @@
     {
       auto n_return = static_cast<std::int_fast8_t>(INT8_C(0));
 
-      std::reverse_iterator<InputIteratorLeftType>  pa(detail::advance_and_point(a, count));
-      std::reverse_iterator<InputIteratorRightType> pb(detail::advance_and_point(b, count));
+      detail::reverse_iterator<InputIteratorLeftType>  pa(detail::advance_and_point(a, count));
+      detail::reverse_iterator<InputIteratorRightType> pb(detail::advance_and_point(b, count));
 
-      while(pa != std::reverse_iterator<InputIteratorLeftType>(a)) // NOLINT(altera-id-dependent-backward-branch)
+      while(pa != detail::reverse_iterator<InputIteratorLeftType>(a)) // NOLINT(altera-id-dependent-backward-branch)
       {
-        using value_left_type = typename std::iterator_traits<InputIteratorLeftType>::value_type;
+        using value_left_type = typename detail::iterator_traits<InputIteratorLeftType>::value_type;
 
         const auto value_a = *pa++;
         const auto value_b = static_cast<value_left_type>(*pb++);
@@ -3284,8 +3645,8 @@
       template<typename InputIteratorLeft>
       static WIDE_INTEGER_CONSTEXPR auto extract(InputIteratorLeft p_limb, unsigned_fast_type limb_count) -> local_unknown_builtin_integral_type
       {
-        using local_limb_type      = typename std::iterator_traits<InputIteratorLeft>::value_type;
-        using left_difference_type = typename std::iterator_traits<InputIteratorLeft>::difference_type;
+        using local_limb_type      = typename detail::iterator_traits<InputIteratorLeft>::value_type;
+        using left_difference_type = typename detail::iterator_traits<InputIteratorLeft>::difference_type;
 
         auto u = static_cast<local_unsigned_conversion_type>(UINT8_C(0));
 
@@ -3481,19 +3842,19 @@
     {
       auto carry_out = static_cast<std::uint_fast8_t>(carry_in);
 
-      using local_limb_type = typename std::iterator_traits<ResultIterator>::value_type;
+      using local_limb_type = typename detail::iterator_traits<ResultIterator>::value_type;
 
       static_assert
       (
-           (std::numeric_limits<local_limb_type>::digits == std::numeric_limits<typename std::iterator_traits<InputIteratorLeft>::value_type>::digits)
-        && (std::numeric_limits<local_limb_type>::digits == std::numeric_limits<typename std::iterator_traits<InputIteratorRight>::value_type>::digits),
+           (std::numeric_limits<local_limb_type>::digits == std::numeric_limits<typename detail::iterator_traits<InputIteratorLeft>::value_type>::digits)
+        && (std::numeric_limits<local_limb_type>::digits == std::numeric_limits<typename detail::iterator_traits<InputIteratorRight>::value_type>::digits),
         "Error: Internals require same widths for left-right-result limb_types at the moment"
       );
 
       using local_double_limb_type =
         typename detail::uint_type_helper<static_cast<size_t>(std::numeric_limits<local_limb_type>::digits * 2)>::exact_unsigned_type;
 
-      using result_difference_type = typename std::iterator_traits<ResultIterator>::difference_type;
+      using result_difference_type = typename detail::iterator_traits<ResultIterator>::difference_type;
 
       for(auto i = static_cast<unsigned_fast_type>(UINT8_C(0)); i < count; ++i)
       {
@@ -3528,19 +3889,19 @@
                         : static_cast<std::uint_fast8_t>(UINT8_C(0))
         );
 
-      using local_limb_type = typename std::iterator_traits<ResultIterator>::value_type;
+      using local_limb_type = typename detail::iterator_traits<ResultIterator>::value_type;
 
       static_assert
       (
-           (std::numeric_limits<local_limb_type>::digits == std::numeric_limits<typename std::iterator_traits<InputIteratorLeft>::value_type>::digits)
-        && (std::numeric_limits<local_limb_type>::digits == std::numeric_limits<typename std::iterator_traits<InputIteratorRight>::value_type>::digits),
+           (std::numeric_limits<local_limb_type>::digits == std::numeric_limits<typename detail::iterator_traits<InputIteratorLeft>::value_type>::digits)
+        && (std::numeric_limits<local_limb_type>::digits == std::numeric_limits<typename detail::iterator_traits<InputIteratorRight>::value_type>::digits),
         "Error: Internals require same widths for left-right-result limb_types at the moment"
       );
 
       using local_double_limb_type =
         typename detail::uint_type_helper<static_cast<size_t>(std::numeric_limits<local_limb_type>::digits * 2)>::exact_unsigned_type;
 
-      using result_difference_type = typename std::iterator_traits<ResultIterator>::difference_type;
+      using result_difference_type = typename detail::iterator_traits<ResultIterator>::difference_type;
 
       for(auto i = static_cast<unsigned_fast_type>(UINT8_C(0)); i < count; ++i)
       {
@@ -3577,22 +3938,22 @@
     {
       static_cast<void>(count);
 
-      using local_limb_type = typename std::iterator_traits<ResultIterator>::value_type;
+      using local_limb_type = typename detail::iterator_traits<ResultIterator>::value_type;
 
       static_assert
       (
-           (std::numeric_limits<local_limb_type>::digits == std::numeric_limits<typename std::iterator_traits<InputIteratorLeft>::value_type>::digits)
-        && (std::numeric_limits<local_limb_type>::digits == std::numeric_limits<typename std::iterator_traits<InputIteratorRight>::value_type>::digits),
+           (std::numeric_limits<local_limb_type>::digits == std::numeric_limits<typename detail::iterator_traits<InputIteratorLeft>::value_type>::digits)
+        && (std::numeric_limits<local_limb_type>::digits == std::numeric_limits<typename detail::iterator_traits<InputIteratorRight>::value_type>::digits),
         "Error: Internals require same widths for left-right-result limb_types at the moment"
       );
 
       using local_double_limb_type =
         typename detail::uint_type_helper<static_cast<size_t>(static_cast<int>(std::numeric_limits<local_limb_type>::digits * static_cast<int>(INT8_C(2))))>::exact_unsigned_type;
 
-      using result_difference_type = typename std::iterator_traits<ResultIterator>::difference_type;
-      using left_difference_type   = typename std::iterator_traits<InputIteratorLeft>::difference_type;
-      using left_value_type        = typename std::iterator_traits<InputIteratorLeft>::value_type;
-      using right_difference_type  = typename std::iterator_traits<InputIteratorRight>::difference_type;
+      using result_difference_type = typename detail::iterator_traits<ResultIterator>::difference_type;
+      using left_difference_type   = typename detail::iterator_traits<InputIteratorLeft>::difference_type;
+      using left_value_type        = typename detail::iterator_traits<InputIteratorLeft>::value_type;
+      using right_difference_type  = typename detail::iterator_traits<InputIteratorRight>::difference_type;
 
       // The algorithm has been derived from the polynomial multiplication.
       // After the multiplication terms of equal order are grouped
@@ -3722,20 +4083,20 @@
 
       static_assert
       (
-           (std::numeric_limits<typename std::iterator_traits<ResultIterator>::value_type>::digits == std::numeric_limits<typename std::iterator_traits<InputIteratorLeft>::value_type>::digits)
-        && (std::numeric_limits<typename std::iterator_traits<ResultIterator>::value_type>::digits == std::numeric_limits<typename std::iterator_traits<InputIteratorRight>::value_type>::digits),
+           (std::numeric_limits<typename detail::iterator_traits<ResultIterator>::value_type>::digits == std::numeric_limits<typename detail::iterator_traits<InputIteratorLeft>::value_type>::digits)
+        && (std::numeric_limits<typename detail::iterator_traits<ResultIterator>::value_type>::digits == std::numeric_limits<typename detail::iterator_traits<InputIteratorRight>::value_type>::digits),
         "Error: Internals require same widths for left-right-result limb_types at the moment"
       );
 
-      using local_limb_type = typename std::iterator_traits<ResultIterator>::value_type;
+      using local_limb_type = typename detail::iterator_traits<ResultIterator>::value_type;
 
       using local_double_limb_type =
         typename detail::uint_type_helper<static_cast<size_t>(static_cast<int>(std::numeric_limits<local_limb_type>::digits * static_cast<int>(INT8_C(2))))>::exact_unsigned_type;
 
-      using result_difference_type = typename std::iterator_traits<ResultIterator>::difference_type;
-      using left_difference_type   = typename std::iterator_traits<InputIteratorLeft>::difference_type;
-      using left_value_type        = typename std::iterator_traits<InputIteratorLeft>::value_type;
-      using right_difference_type  = typename std::iterator_traits<InputIteratorRight>::difference_type;
+      using result_difference_type = typename detail::iterator_traits<ResultIterator>::difference_type;
+      using left_difference_type   = typename detail::iterator_traits<InputIteratorLeft>::difference_type;
+      using left_value_type        = typename detail::iterator_traits<InputIteratorLeft>::value_type;
+      using right_difference_type  = typename detail::iterator_traits<InputIteratorRight>::difference_type;
 
       // The algorithm has been derived from the polynomial multiplication.
       // After the multiplication terms of equal order are grouped
@@ -4022,12 +4383,12 @@
     {
       static_assert
       (
-           (std::numeric_limits<typename std::iterator_traits<ResultIterator>::value_type>::digits == std::numeric_limits<typename std::iterator_traits<InputIteratorLeft>::value_type>::digits)
-        && (std::numeric_limits<typename std::iterator_traits<ResultIterator>::value_type>::digits == std::numeric_limits<typename std::iterator_traits<InputIteratorRight>::value_type>::digits),
+           (std::numeric_limits<typename detail::iterator_traits<ResultIterator>::value_type>::digits == std::numeric_limits<typename detail::iterator_traits<InputIteratorLeft>::value_type>::digits)
+        && (std::numeric_limits<typename detail::iterator_traits<ResultIterator>::value_type>::digits == std::numeric_limits<typename detail::iterator_traits<InputIteratorRight>::value_type>::digits),
         "Error: Internals require same widths for left-right-result limb_types at the moment"
       );
 
-      using local_limb_type = typename std::iterator_traits<ResultIterator>::value_type;
+      using local_limb_type = typename detail::iterator_traits<ResultIterator>::value_type;
 
       using local_double_limb_type =
         typename detail::uint_type_helper<static_cast<size_t>(std::numeric_limits<local_limb_type>::digits * 2)>::exact_unsigned_type;
@@ -4042,7 +4403,7 @@
       if(count > static_cast<unsigned_fast_type>(UINT8_C(0)))
       {
         {
-          using input_left_value_type  = typename std::iterator_traits<InputIteratorLeft>::value_type;
+          using input_left_value_type  = typename detail::iterator_traits<InputIteratorLeft>::value_type;
 
           auto it_leading_zeros_a = detail::advance_and_point(a, static_cast<unsigned_fast_type>(count - static_cast<unsigned_fast_type>(UINT8_C(1)))); // NOLINT(llvm-qualified-auto,readability-qualified-auto)
 
@@ -4056,7 +4417,7 @@
         }
 
         {
-          using input_right_value_type = typename std::iterator_traits<InputIteratorRight>::value_type;
+          using input_right_value_type = typename detail::iterator_traits<InputIteratorRight>::value_type;
 
           auto it_leading_zeros_b = detail::advance_and_point(b, static_cast<unsigned_fast_type>(count - static_cast<unsigned_fast_type>(UINT8_C(1)))); // NOLINT(llvm-qualified-auto,readability-qualified-auto)
 
@@ -4121,12 +4482,12 @@
     {
       static_assert
       (
-           (std::numeric_limits<typename std::iterator_traits<ResultIterator>::value_type>::digits == std::numeric_limits<typename std::iterator_traits<InputIteratorLeft>::value_type>::digits)
-        && (std::numeric_limits<typename std::iterator_traits<ResultIterator>::value_type>::digits == std::numeric_limits<typename std::iterator_traits<InputIteratorRight>::value_type>::digits),
+           (std::numeric_limits<typename detail::iterator_traits<ResultIterator>::value_type>::digits == std::numeric_limits<typename detail::iterator_traits<InputIteratorLeft>::value_type>::digits)
+        && (std::numeric_limits<typename detail::iterator_traits<ResultIterator>::value_type>::digits == std::numeric_limits<typename detail::iterator_traits<InputIteratorRight>::value_type>::digits),
         "Error: Internals require same widths for left-right-result limb_types at the moment"
       );
 
-      using local_limb_type = typename std::iterator_traits<ResultIterator>::value_type;
+      using local_limb_type = typename detail::iterator_traits<ResultIterator>::value_type;
 
       using local_double_limb_type =
         typename detail::uint_type_helper<static_cast<size_t>(std::numeric_limits<local_limb_type>::digits * 2)>::exact_unsigned_type;
@@ -4170,11 +4531,11 @@
              typename InputIteratorLeft>
     static WIDE_INTEGER_CONSTEXPR auto eval_multiply_1d(      ResultIterator                                               r,
                                                               InputIteratorLeft                                            a,
-                                                        const typename std::iterator_traits<InputIteratorLeft>::value_type b,
+                                                        const typename detail::iterator_traits<InputIteratorLeft>::value_type b,
                                                         const unsigned_fast_type                                           count) -> limb_type
     {
-      using local_limb_type = typename std::iterator_traits<ResultIterator>::value_type;
-      using left_value_type = typename std::iterator_traits<InputIteratorLeft>::value_type;
+      using local_limb_type = typename detail::iterator_traits<ResultIterator>::value_type;
+      using left_value_type = typename detail::iterator_traits<InputIteratorLeft>::value_type;
 
       static_assert
       (
@@ -4198,7 +4559,7 @@
 
         if(count > static_cast<unsigned_fast_type>(UINT8_C(0)))
         {
-          using input_left_value_type  = typename std::iterator_traits<InputIteratorLeft>::value_type;
+          using input_left_value_type  = typename detail::iterator_traits<InputIteratorLeft>::value_type;
 
           auto it_leading_zeros_a = detail::advance_and_point(a, static_cast<unsigned_fast_type>(count - static_cast<unsigned_fast_type>(UINT8_C(1)))); // NOLINT(llvm-qualified-auto,readability-qualified-auto)
 
@@ -4250,9 +4611,9 @@
     static WIDE_INTEGER_CONSTEXPR
     auto eval_multiply_kara_propagate_carry(      InputIteratorLeft                                            t,
                                             const unsigned_fast_type                                           n,
-                                            const typename std::iterator_traits<InputIteratorLeft>::value_type carry) -> void
+                                            const typename detail::iterator_traits<InputIteratorLeft>::value_type carry) -> void
     {
-      using local_limb_type = typename std::iterator_traits<InputIteratorLeft>::value_type;
+      using local_limb_type = typename detail::iterator_traits<InputIteratorLeft>::value_type;
 
       using local_double_limb_type =
         typename detail::uint_type_helper<static_cast<size_t>(static_cast<int>(std::numeric_limits<local_limb_type>::digits * static_cast<int>(INT8_C(2))))>::exact_unsigned_type;
@@ -4283,7 +4644,7 @@
                                              const unsigned_fast_type n,
                                              const bool               has_borrow) -> void
     {
-      using local_limb_type = typename std::iterator_traits<InputIteratorLeft>::value_type;
+      using local_limb_type = typename detail::iterator_traits<InputIteratorLeft>::value_type;
 
       using local_double_limb_type =
         typename detail::uint_type_helper<static_cast<size_t>(static_cast<int>(std::numeric_limits<local_limb_type>::digits * static_cast<int>(INT8_C(2))))>::exact_unsigned_type;
@@ -4333,18 +4694,18 @@
       {
         static_assert
         (
-             (std::numeric_limits<typename std::iterator_traits<ResultIterator>::value_type>::digits == std::numeric_limits<typename std::iterator_traits<InputIteratorLeft>::value_type>::digits)
-          && (std::numeric_limits<typename std::iterator_traits<ResultIterator>::value_type>::digits == std::numeric_limits<typename std::iterator_traits<InputIteratorRight>::value_type>::digits)
-          && (std::numeric_limits<typename std::iterator_traits<ResultIterator>::value_type>::digits == std::numeric_limits<typename std::iterator_traits<InputIteratorTemp>::value_type>::digits),
+             (std::numeric_limits<typename detail::iterator_traits<ResultIterator>::value_type>::digits == std::numeric_limits<typename detail::iterator_traits<InputIteratorLeft>::value_type>::digits)
+          && (std::numeric_limits<typename detail::iterator_traits<ResultIterator>::value_type>::digits == std::numeric_limits<typename detail::iterator_traits<InputIteratorRight>::value_type>::digits)
+          && (std::numeric_limits<typename detail::iterator_traits<ResultIterator>::value_type>::digits == std::numeric_limits<typename detail::iterator_traits<InputIteratorTemp>::value_type>::digits),
           "Error: Internals require same widths for left-right-result limb_types at the moment"
         );
 
-        using local_limb_type = typename std::iterator_traits<ResultIterator>::value_type;
+        using local_limb_type = typename detail::iterator_traits<ResultIterator>::value_type;
 
-        using result_difference_type = typename std::iterator_traits<ResultIterator>::difference_type;
-        using left_difference_type   = typename std::iterator_traits<InputIteratorLeft>::difference_type;
-        using right_difference_type  = typename std::iterator_traits<InputIteratorRight>::difference_type;
-        using temp_difference_type   = typename std::iterator_traits<InputIteratorTemp>::difference_type;
+        using result_difference_type = typename detail::iterator_traits<ResultIterator>::difference_type;
+        using left_difference_type   = typename detail::iterator_traits<InputIteratorLeft>::difference_type;
+        using right_difference_type  = typename detail::iterator_traits<InputIteratorRight>::difference_type;
+        using temp_difference_type   = typename detail::iterator_traits<InputIteratorTemp>::difference_type;
 
         // Based on "Algorithm 1.3 KaratsubaMultiply", Sect. 1.3.2, page 5
         // of R.P. Brent and P. Zimmermann, "Modern Computer Arithmetic",
@@ -4477,41 +4838,23 @@
 
       using local_uint_index_type = unsigned_fast_type;
 
-      const auto u_offset =
-        static_cast<local_uint_index_type>
-        (
-          detail::distance_unsafe
-          (
-            values.crbegin(),
-            detail::find_if_unsafe
-            (
-              values.crbegin(),
-              values.crend(),
-              [](const limb_type& elem)
-              {
-                return (elem != static_cast<limb_type>(UINT8_C(0)));
-              }
-            )
-          )
-        );
+      local_uint_index_type u_offset { };
+      local_uint_index_type v_offset { };
 
-      const auto v_offset =
-        static_cast<local_uint_index_type>
-        (
-          detail::distance_unsafe
-          (
-            other.values.crbegin(),
-            detail::find_if_unsafe
-            (
-              other.values.crbegin(),
-              other.values.crend(),
-              [](const limb_type& elem)
-              {
-                return (elem != static_cast<limb_type>(UINT8_C(0)));
-              }
-            )
-          )
-        );
+      auto crit_u =       values.crbegin();
+      auto crit_v = other.values.crbegin();
+
+      while(crit_u != values.crend() && (*crit_u == static_cast<limb_type>(UINT8_C(0)))) // NOLINT(altera-id-dependent-backward-branch)
+      {
+        ++crit_u;
+        ++u_offset;
+      }
+
+      while(crit_v != other.values.crend() && (*crit_v == static_cast<limb_type>(UINT8_C(0)))) // NOLINT(altera-id-dependent-backward-branch)
+      {
+        ++crit_v;
+        ++v_offset;
+      }
 
       if(v_offset == static_cast<local_uint_index_type>(number_of_limbs))
       {
@@ -4789,7 +5132,7 @@
           {
             auto previous_u = static_cast<limb_type>(UINT8_C(0));
 
-            auto rl_it_rev = static_cast<typename representation_type::reverse_iterator>(rl_it_fwd);
+            auto rl_it_rev = static_cast<reverse_iterator>(rl_it_fwd);
 
             auto ul =
               static_cast<signed_fast_type>
@@ -4942,7 +5285,7 @@
           );
 
         auto r_ai =
-          static_cast<typename representation_type::reverse_iterator>
+          static_cast<reverse_iterator>
           (
             detail::advance_and_point
             (
@@ -6760,19 +7103,17 @@
         // See also:
         // https://www.wolframalpha.com/input/?i=Table%5BPrime%5Bi%5D%2C+%7Bi%2C+2%2C+49%7D%5D
 
-        constexpr std::array<local_limb_type, static_cast<std::size_t>(UINT8_C(48))> small_primes =
-        {{
+        constexpr detail::array<local_limb_type, static_cast<std::size_t>(UINT8_C(48))> small_primes =
+        {
           static_cast<local_limb_type>(UINT8_C(  3)), static_cast<local_limb_type>(UINT8_C(  5)), static_cast<local_limb_type>(UINT8_C(  7)), static_cast<local_limb_type>(UINT8_C( 11)), static_cast<local_limb_type>(UINT8_C( 13)), static_cast<local_limb_type>(UINT8_C( 17)), static_cast<local_limb_type>(UINT8_C( 19)), static_cast<local_limb_type>(UINT8_C( 23)),
           static_cast<local_limb_type>(UINT8_C( 29)), static_cast<local_limb_type>(UINT8_C( 31)), static_cast<local_limb_type>(UINT8_C( 37)), static_cast<local_limb_type>(UINT8_C( 41)), static_cast<local_limb_type>(UINT8_C( 43)), static_cast<local_limb_type>(UINT8_C( 47)), static_cast<local_limb_type>(UINT8_C( 53)), static_cast<local_limb_type>(UINT8_C( 59)),
           static_cast<local_limb_type>(UINT8_C( 61)), static_cast<local_limb_type>(UINT8_C( 67)), static_cast<local_limb_type>(UINT8_C( 71)), static_cast<local_limb_type>(UINT8_C( 73)), static_cast<local_limb_type>(UINT8_C( 79)), static_cast<local_limb_type>(UINT8_C( 83)), static_cast<local_limb_type>(UINT8_C( 89)), static_cast<local_limb_type>(UINT8_C( 97)),
           static_cast<local_limb_type>(UINT8_C(101)), static_cast<local_limb_type>(UINT8_C(103)), static_cast<local_limb_type>(UINT8_C(107)), static_cast<local_limb_type>(UINT8_C(109)), static_cast<local_limb_type>(UINT8_C(113)), static_cast<local_limb_type>(UINT8_C(127)), static_cast<local_limb_type>(UINT8_C(131)), static_cast<local_limb_type>(UINT8_C(137)),
           static_cast<local_limb_type>(UINT8_C(139)), static_cast<local_limb_type>(UINT8_C(149)), static_cast<local_limb_type>(UINT8_C(151)), static_cast<local_limb_type>(UINT8_C(157)), static_cast<local_limb_type>(UINT8_C(163)), static_cast<local_limb_type>(UINT8_C(167)), static_cast<local_limb_type>(UINT8_C(173)), static_cast<local_limb_type>(UINT8_C(179)),
           static_cast<local_limb_type>(UINT8_C(181)), static_cast<local_limb_type>(UINT8_C(191)), static_cast<local_limb_type>(UINT8_C(193)), static_cast<local_limb_type>(UINT8_C(197)), static_cast<local_limb_type>(UINT8_C(199)), static_cast<local_limb_type>(UINT8_C(211)), static_cast<local_limb_type>(UINT8_C(223)), static_cast<local_limb_type>(UINT8_C(227))
-        }};
+        };
 
-        return std::binary_search(small_primes.cbegin(),
-                                  small_primes.cend(),
-                                  n0);
+        return detail::binary_search_unsafe(small_primes.cbegin(), small_primes.cend(), n0);
       }
     }
 
@@ -7160,7 +7501,7 @@
            const size_t Width2,
            typename LimbType,
            typename AllocatorType,
-           std::enable_if_t<std::numeric_limits<typename std::iterator_traits<ForwardIterator>::value_type>::digits == std::numeric_limits<LimbType>::digits> const*>
+           std::enable_if_t<std::numeric_limits<typename detail::iterator_traits<ForwardIterator>::value_type>::digits == std::numeric_limits<LimbType>::digits> const*>
   WIDE_INTEGER_CONSTEXPR
   auto import_bits(uintwide_t<Width2, LimbType, AllocatorType, false>& val,
                    ForwardIterator first,
@@ -7176,10 +7517,10 @@
     // The order of bit-chunks imported is set by msv_first.
 
     using local_unsigned_wide_integer_type = uintwide_t<Width2, LimbType, AllocatorType, false>;
-    using local_result_iterator_type       = typename local_unsigned_wide_integer_type::representation_type::reverse_iterator;
+    using local_result_iterator_type       = typename local_unsigned_wide_integer_type::reverse_iterator;
     using local_result_value_type          = typename local_result_iterator_type::value_type;
     using local_input_iterator_type        = ForwardIterator;
-    using local_input_value_type           = typename std::iterator_traits<local_input_iterator_type>::value_type;
+    using local_input_value_type           = typename detail::iterator_traits<local_input_iterator_type>::value_type;
 
     static_assert(std::numeric_limits<local_result_value_type>::digits == std::numeric_limits<local_input_value_type>::digits,
                   "Error: Mismatch for input element width and result uintwide_t limb width");
@@ -7209,7 +7550,7 @@
       }
       else
       {
-        using local_input_reverse_iterator_type = std::reverse_iterator<local_input_iterator_type>;
+        using local_input_reverse_iterator_type = detail::reverse_iterator<local_input_iterator_type>;
 
         using local_difference_type = typename local_result_iterator_type::difference_type;
 
@@ -7262,7 +7603,7 @@
       }
       else
       {
-        using local_input_reverse_iterator_type = std::reverse_iterator<local_input_iterator_type>;
+        using local_input_reverse_iterator_type = detail::reverse_iterator<local_input_iterator_type>;
 
         detail::import_export_helper(local_input_reverse_iterator_type(last), it_result, total_bits_to_use, chunk_size_in, chunk_size_out);
       }
@@ -7275,7 +7616,7 @@
            const size_t Width2,
            typename LimbType,
            typename AllocatorType,
-           std::enable_if_t<!(std::numeric_limits<typename std::iterator_traits<ForwardIterator>::value_type>::digits == std::numeric_limits<LimbType>::digits)> const*>
+           std::enable_if_t<!(std::numeric_limits<typename detail::iterator_traits<ForwardIterator>::value_type>::digits == std::numeric_limits<LimbType>::digits)> const*>
   WIDE_INTEGER_CONSTEXPR
   auto import_bits(uintwide_t<Width2, LimbType, AllocatorType, false>& val,
                    ForwardIterator first,
@@ -7289,10 +7630,10 @@
     // The order of bit-chunks imported is set by msv_first.
 
     using local_unsigned_wide_integer_type = uintwide_t<Width2, LimbType, AllocatorType, false>;
-    using local_result_iterator_type       = typename local_unsigned_wide_integer_type::representation_type::reverse_iterator;
+    using local_result_iterator_type       = typename local_unsigned_wide_integer_type::reverse_iterator;
     using local_result_value_type          = typename local_result_iterator_type::value_type;
     using local_input_iterator_type        = ForwardIterator;
-    using local_input_value_type           = typename std::iterator_traits<local_input_iterator_type>::value_type;
+    using local_input_value_type           = typename detail::iterator_traits<local_input_iterator_type>::value_type;
 
     static_assert(std::numeric_limits<local_result_value_type>::digits != std::numeric_limits<local_input_value_type>::digits,
                   "Error: Erroneous match for input element width and result uintwide_t limb width");
@@ -7344,7 +7685,7 @@
     }
     else
     {
-      using local_input_reverse_iterator_type = std::reverse_iterator<local_input_iterator_type>;
+      using local_input_reverse_iterator_type = detail::reverse_iterator<local_input_iterator_type>;
 
       detail::import_export_helper(local_input_reverse_iterator_type(last), it_result, total_bits_to_use, chunk_size_in, chunk_size_out);
     }
@@ -7357,7 +7698,7 @@
            typename LimbType,
            typename AllocatorType,
            const bool IsSigned,
-           std::enable_if_t<std::numeric_limits<typename std::iterator_traits<OutputIterator>::value_type>::digits == std::numeric_limits<LimbType>::digits> const*>
+           std::enable_if_t<std::numeric_limits<typename detail::iterator_traits<OutputIterator>::value_type>::digits == std::numeric_limits<LimbType>::digits> const*>
   WIDE_INTEGER_CONSTEXPR
   auto export_bits(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& val,
                          OutputIterator out,
@@ -7373,7 +7714,7 @@
 
     using local_unsigned_wide_integer_type = uintwide_t<Width2, LimbType, AllocatorType, false>;
     using local_result_iterator_type       = OutputIterator;
-    using local_result_value_type          = typename std::iterator_traits<local_result_iterator_type>::value_type;
+    using local_result_value_type          = typename detail::iterator_traits<local_result_iterator_type>::value_type;
     using local_input_value_type           = typename local_unsigned_wide_integer_type::representation_type::value_type;
 
     const auto val_unsigned =
@@ -7411,13 +7752,12 @@
     const auto chunk_is_whole =
       (chunk_size == static_cast<unsigned>(std::numeric_limits<local_result_value_type>::digits));
 
+    using local_input_const_reverse_iterator_type = detail::reverse_iterator<typename local_unsigned_wide_integer_type::representation_type::const_iterator>;
+
     if(chunk_is_whole)
     {
       if(msv_first)
       {
-        using local_input_const_reverse_iterator_type =
-          typename local_unsigned_wide_integer_type::representation_type::const_reverse_iterator;
-
         out = detail::copy_unsafe(local_input_const_reverse_iterator_type(detail::advance_and_point(val.representation().cbegin(), input_distance)),
                                   val.representation().crend(),
                                   out);
@@ -7433,9 +7773,7 @@
     {
       if(msv_first)
       {
-        using local_input_reverse_iterator_type = std::reverse_iterator<typename local_unsigned_wide_integer_type::representation_type::const_iterator>;
-
-        out =   detail::import_export_helper(local_input_reverse_iterator_type(detail::advance_and_point(val_unsigned.crepresentation().cbegin(), input_distance)), out, static_cast<signed_fast_type>(msb_plus_one), chunk_size_in, chunk_size_out)
+        out =   detail::import_export_helper(local_input_const_reverse_iterator_type(detail::advance_and_point(val_unsigned.crepresentation().cbegin(), input_distance)), out, static_cast<signed_fast_type>(msb_plus_one), chunk_size_in, chunk_size_out)
               + static_cast<std::size_t>(UINT8_C(1));
       }
       else
@@ -7454,16 +7792,15 @@
               )
           );
 
-        using local_input_reverse_iterator_type  = typename local_unsigned_wide_integer_type::representation_type::const_reverse_iterator;
-        using local_result_reverse_iterator_type = std::reverse_iterator<local_result_iterator_type>;
+        using local_result_reverse_iterator_type = detail::reverse_iterator<local_result_iterator_type>;
 
-        static_cast<void>(detail::import_export_helper(local_input_reverse_iterator_type (detail::advance_and_point(val_unsigned.crepresentation().cbegin(), input_distance)),
+        static_cast<void>(detail::import_export_helper(local_input_const_reverse_iterator_type (detail::advance_and_point(val_unsigned.crepresentation().cbegin(), input_distance)),
                                                        local_result_reverse_iterator_type(detail::advance_and_point(out, output_distance)), // LCOV_EXCL_LINE
                                                        static_cast<signed_fast_type>(msb_plus_one),
                                                        chunk_size_in,
                                                        chunk_size_out));
 
-        using result_difference_type = typename std::iterator_traits<local_result_iterator_type>::difference_type;
+        using result_difference_type = typename detail::iterator_traits<local_result_iterator_type>::difference_type;
 
         out += static_cast<result_difference_type>(output_distance);
       }
@@ -7477,7 +7814,7 @@
            typename LimbType,
            typename AllocatorType,
            const bool IsSigned,
-           std::enable_if_t<!(std::numeric_limits<typename std::iterator_traits<OutputIterator>::value_type>::digits == std::numeric_limits<LimbType>::digits)> const*>
+           std::enable_if_t<!(std::numeric_limits<typename detail::iterator_traits<OutputIterator>::value_type>::digits == std::numeric_limits<LimbType>::digits)> const*>
   WIDE_INTEGER_CONSTEXPR
   auto export_bits(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& val,
                          OutputIterator out,
@@ -7491,7 +7828,7 @@
 
     using local_unsigned_wide_integer_type = uintwide_t<Width2, LimbType, AllocatorType, false>;
     using local_result_iterator_type       = OutputIterator;
-    using local_result_value_type          = typename std::iterator_traits<local_result_iterator_type>::value_type;
+    using local_result_value_type          = typename detail::iterator_traits<local_result_iterator_type>::value_type;
     using local_input_value_type           = typename local_unsigned_wide_integer_type::representation_type::value_type;
 
     const auto val_unsigned =
@@ -7526,14 +7863,14 @@
           )
       );
 
+    using local_input_const_reverse_iterator_type = typename local_unsigned_wide_integer_type::representation_type::const_reverse_iterator;
+
     if(msv_first)
     {
-      using local_input_reverse_iterator_type = typename local_unsigned_wide_integer_type::representation_type::const_reverse_iterator;
-
       out =
         detail::import_export_helper
         (
-          local_input_reverse_iterator_type(detail::advance_and_point(val_unsigned.crepresentation().cbegin(), input_distance)),
+          local_input_const_reverse_iterator_type(detail::advance_and_point(val_unsigned.crepresentation().cbegin(), input_distance)),
           out,
           static_cast<signed_fast_type>(msb_plus_one),
           chunk_size_in,
@@ -7558,22 +7895,21 @@
             )
         );
 
-      using local_input_reverse_iterator_type  = typename local_unsigned_wide_integer_type::representation_type::const_reverse_iterator;
-      using local_result_reverse_iterator_type = std::reverse_iterator<local_result_iterator_type>;
+      using local_result_reverse_iterator_type = detail::reverse_iterator<local_result_iterator_type>;
 
       static_cast<void>
       (
         detail::import_export_helper
         (
-          local_input_reverse_iterator_type (detail::advance_and_point(val_unsigned.crepresentation().cbegin(), input_distance)),
-          local_result_reverse_iterator_type(detail::advance_and_point(out, output_distance)),
+          local_input_const_reverse_iterator_type(detail::advance_and_point(val_unsigned.crepresentation().cbegin(), input_distance)),
+          local_result_reverse_iterator_type     (detail::advance_and_point(out, output_distance)),
           static_cast<signed_fast_type>(msb_plus_one),
           chunk_size_in,
           chunk_size_out
         )
       );
 
-      using result_difference_type = typename std::iterator_traits<local_result_iterator_type>::difference_type;
+      using result_difference_type = typename detail::iterator_traits<local_result_iterator_type>::difference_type;
 
       out += static_cast<result_difference_type>(output_distance);
     }
