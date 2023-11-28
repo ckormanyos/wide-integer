@@ -100,7 +100,7 @@
     #if (defined(__GNUC__) && defined(__AVR__) && (__GNUC__ < 10))
       #define WIDE_INTEGER_CONSTEXPR                          // NOLINT(cppcoreguidelines-macro-usage)
       #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 0  // NOLINT(cppcoreguidelines-macro-usage)
-    #elif (defined(__GNUC__) && defined(__MINGW__) && (__GNUC__ < 10))
+    #elif (defined(__GNUC__) && defined(__MINGW__) && (__GNUC__ < 9))
       #define WIDE_INTEGER_CONSTEXPR                          // NOLINT(cppcoreguidelines-macro-usage)
       #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 0  // NOLINT(cppcoreguidelines-macro-usage)
     #else
@@ -223,7 +223,7 @@
     template<typename other>
     constexpr reverse_iterator(const reverse_iterator<other>& u) : current(u.current) { } // NOLINT(google-explicit-constructor,hicpp-explicit-conversions)
 
-    constexpr auto base() const -> iterator_type { return current; }
+    WIDE_INTEGER_NODISCARD constexpr auto base() const -> iterator_type { return current; }
 
     constexpr auto operator* () const -> reference { iterator_type tmp = current; return *--tmp; }
     constexpr auto operator->() const -> pointer   { return &(operator*()); }
