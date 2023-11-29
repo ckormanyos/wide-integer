@@ -71,7 +71,7 @@ as shown in the [examples](./examples).
   - Clean header-only C++14 design.
   - Seamless portability to any modern C++14, 17, 20, 23 compiler and beyond.
   - Scalability with small memory footprint and efficiency suitable for both PC/workstation systems as well as _bare-metal_ embedded systems.
-  - C++20 `constexpr`-_ness_ for construction, cast to built-in types, binary arithmetic, comparison operations, some elementary functions and more.
+  - C++14 `constexpr`-_ness_ for construction, cast to built-in types, binary arithmetic, comparison operations, some elementary functions and more.
 
 ## Quick start
 
@@ -337,9 +337,8 @@ as well as MSVC level 4 warnings active on the correspondoing platforms.
 For additional in-depth syntax checking, clang-tidy is used both in CI
 as well as in offline checks to improve static code quality.
 
-Both GCC's run-time
+GCC's run-time
 [sanitizers](https://gcc.gnu.org/onlinedocs/gcc/Instrumentation-Options.html)
-as well as [_valgrind_](https://valgrind.org) (see also [1] and [2] in the References below)
 are used in CI in order to help assure dynamic quality.
 
 Additional quality checks are performed on pull-request
@@ -730,12 +729,12 @@ enabled by defining the macro
 #define WIDE_INTEGER_DISABLE_WIDE_INTEGER_CONSTEXPR
 ```
 
-This advanced macro disables most C++20 `constexpr` features.
+This advanced macro disables most C++14 (and beyond) `constexpr` features.
 It also disables standard layout and trivially constructable
 attributes.This macro can be used (if needed)
 when progressive prototyping or other non-standard investigations
 require disabling most of wide-integer's default-supplied
-C++20 `constexpr`-handling.
+C++14 `constexpr`-handling.
 
 This might be useful when _manually_ substituting
 non-standard, alternate containers instead of using
@@ -754,7 +753,7 @@ This optional macro can be used to switch `uintwide_t`'s
 data member access from _private_ to _public_. This allows the
 `uintwide_t` class to be used as a so-called _structured_ class,
 such as is needed for constant-valued template parameters
-in the sense of C++20's `constexpr`-ness.
+in the sense of C++14's (and beyond) `constexpr`-ness.
 This preprocessor switch was invented based on the discussion in
 [issue 335](https://github.com/ckormanyos/wide-integer/issues/335)
 
@@ -789,15 +788,13 @@ of `uintwide_t` from character strings with subsequent `constexpr` evaluations
 of binary operations multiply, divide, intergal cast and comparison.
 
 See this example fully worked out at the following
-[short link](https://godbolt.org/z/vYsfWYhe4) to [godbolt](https://godbolt.org).
+[short link](https://godbolt.org/z/1WK7czdP6) to [godbolt](https://godbolt.org).
 The generated assembly includes nothing other than the call to `main()`
 and its subsequent `return` of the value zero
 (i.e., `main()`'s successful return-value in this example).
 
 ```cpp
 #include <math/wide_integer/uintwide_t.h>
-
-// Use (at least) a C++14 compiler for this example.
 
 using uint256_t = ::math::wide_integer::uintwide_t<256U>;
 using uint512_t = ::math::wide_integer::uintwide_t<512U>;
@@ -899,18 +896,3 @@ be done, but at the cost of using five 16-bit limbs.
 This degrades performance due to the higher limb count.
 This phenomenon was discussed in
 [issue 234](https://github.com/ckormanyos/wide-integer/issues/234)
-
-## References
-
-A original publications on [_valgrind_](https://valgrind.org)
-and its relation to memory errors can be found in [1] and [2].
-
-[1] Nicholas Nethercote and Julian Seward,
-_Valgrind:_ _A_ _Framework_ _for_ _Heavyweight_ _Dynamic_ _Binary_ _Instrumentation_,
-Proceedings of ACM SIGPLAN 2007 Conference on Programming Language Design and Implementation (PLDI 2007),
-San Diego, California, USA, June 2007.
-
-[2] Nicholas Nethercote and Julian Seward,
-_How_ _to_ _Shadow_ _Every_ _Byte_ _of_ _Memory_ _Used_ _by_ _a_ _Program_.
-Proceedings of the Third International ACM SIGPLAN/SIGOPS Conference on Virtual Execution Environments (VEE 2007),
-San Diego, California, USA, June 2007.
