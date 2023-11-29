@@ -71,7 +71,7 @@ as shown in the [examples](./examples).
   - Clean header-only C++14 design.
   - Seamless portability to any modern C++14, 17, 20, 23 compiler and beyond.
   - Scalability with small memory footprint and efficiency suitable for both PC/workstation systems as well as _bare-metal_ embedded systems.
-  - C++20 `constexpr`-_ness_ for construction, cast to built-in types, binary arithmetic, comparison operations, some elementary functions and more.
+  - C++14 `constexpr`-_ness_ for construction, cast to built-in types, binary arithmetic, comparison operations, some elementary functions and more.
 
 ## Quick start
 
@@ -730,12 +730,12 @@ enabled by defining the macro
 #define WIDE_INTEGER_DISABLE_WIDE_INTEGER_CONSTEXPR
 ```
 
-This advanced macro disables most C++20 `constexpr` features.
+This advanced macro disables most C++14 (and beyond) `constexpr` features.
 It also disables standard layout and trivially constructable
 attributes.This macro can be used (if needed)
 when progressive prototyping or other non-standard investigations
 require disabling most of wide-integer's default-supplied
-C++20 `constexpr`-handling.
+C++14 `constexpr`-handling.
 
 This might be useful when _manually_ substituting
 non-standard, alternate containers instead of using
@@ -754,7 +754,7 @@ This optional macro can be used to switch `uintwide_t`'s
 data member access from _private_ to _public_. This allows the
 `uintwide_t` class to be used as a so-called _structured_ class,
 such as is needed for constant-valued template parameters
-in the sense of C++20's `constexpr`-ness.
+in the sense of C++14's (and beyond) `constexpr`-ness.
 This preprocessor switch was invented based on the discussion in
 [issue 335](https://github.com/ckormanyos/wide-integer/issues/335)
 
@@ -789,15 +789,13 @@ of `uintwide_t` from character strings with subsequent `constexpr` evaluations
 of binary operations multiply, divide, intergal cast and comparison.
 
 See this example fully worked out at the following
-[short link](https://godbolt.org/z/vYsfWYhe4) to [godbolt](https://godbolt.org).
+[short link](https://godbolt.org/z/1WK7czdP6) to [godbolt](https://godbolt.org).
 The generated assembly includes nothing other than the call to `main()`
 and its subsequent `return` of the value zero
 (i.e., `main()`'s successful return-value in this example).
 
 ```cpp
 #include <math/wide_integer/uintwide_t.h>
-
-// Use (at least) a C++14 compiler for this example.
 
 using uint256_t = ::math::wide_integer::uintwide_t<256U>;
 using uint512_t = ::math::wide_integer::uintwide_t<512U>;
