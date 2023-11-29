@@ -8,6 +8,10 @@
 #ifndef UINTWIDE_T_2018_10_02_H // NOLINT(llvm-header-guard)
   #define UINTWIDE_T_2018_10_02_H
 
+  #if defined(__GNUC__)
+  #pragma GCC diagnostic ignored "-Wmissing-declarations"
+  #endif
+
   #if ((__cplusplus < 202100L) || (defined(__GNUC__) && defined(__AVR__)))
   #include <ciso646>
   #else
@@ -309,7 +313,6 @@
     while(first != last)
     {
       using local_destination_value_type = typename iterator_detail::iterator_traits<DestinationIterator>::value_type;
-
       #if (defined(__GNUC__) && (__GNUC__ > 9))
       #pragma GCC diagnostic ignored "-Wstringop-overflow"
       #endif
@@ -7919,5 +7922,9 @@
   #endif
 
   WIDE_INTEGER_NAMESPACE_END
+
+  #if defined(__GNUC__)
+  #pragma GCC diagnostic pop
+  #endif
 
 #endif // UINTWIDE_T_2018_10_02_H
