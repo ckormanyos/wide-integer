@@ -366,7 +366,7 @@
       }
     }
 
-    return last;
+    return last; // LCOV_EXCL_LINE
   }
 
   template<typename ForwardIt, typename T>
@@ -2409,7 +2409,7 @@
                             detail::advance_and_point(uv.crepresentation().cbegin(), sz),
                             values.begin());
 
-        negate();
+        negate(); // LCOV_EXCL_LINE
       }
     }
 
@@ -2943,7 +2943,7 @@
           // Exclude this line from code coverage, even though explicit
           // test cases (search for "result_overshift_is_ok") are known
           // to cover this line.
-          detail::fill_unsafe(values.begin(), values.end(), right_shift_fill_value()); // LCOV_EXCL_LINE
+          detail::fill_unsafe(values.begin(), values.end(), right_shift_fill_value());
         }
         else
         {
@@ -3084,33 +3084,17 @@
         }
         else
         {
-          if(!is_neg(t))
+          uintwide_t<my_width2, limb_type, AllocatorType, false> tu(t);
+
+          while(!tu.is_zero()) // NOLINT(altera-id-dependent-backward-branch)
           {
-            while(!t.is_zero()) // NOLINT(altera-id-dependent-backward-branch)
-            {
-              auto c = static_cast<char>(*t.values.cbegin() & mask);
+            auto c = static_cast<char>(*tu.values.cbegin() & mask);
 
-              if(c <= static_cast<char>(INT8_C(8))) { c = static_cast<char>(c + static_cast<char>(INT8_C(0x30))); }
+            if(c <= static_cast<char>(INT8_C(8))) { c = static_cast<char>(c + static_cast<char>(INT8_C(0x30))); }
 
-              str_temp[static_cast<typename string_storage_oct_type::size_type>(--pos)] = c;
+            str_temp[static_cast<typename string_storage_oct_type::size_type>(--pos)] = c;
 
-              t >>= static_cast<unsigned>(UINT8_C(3));
-            }
-          }
-          else
-          {
-            uintwide_t<my_width2, limb_type, AllocatorType, false> tu(t);
-
-            while(!tu.is_zero()) // NOLINT(altera-id-dependent-backward-branch)
-            {
-              auto c = static_cast<char>(*tu.values.cbegin() & mask);
-
-              if(c <= static_cast<char>(INT8_C(8))) { c = static_cast<char>(c + static_cast<char>(INT8_C(0x30))); }
-
-              str_temp[static_cast<typename string_storage_oct_type::size_type>(--pos)] = c;
-
-              tu >>= static_cast<unsigned>(UINT8_C(3));
-            }
+            tu >>= static_cast<unsigned>(UINT8_C(3));
           }
         }
 
@@ -6607,7 +6591,7 @@
     else if((static_cast<local_ushort_type>(u) == static_cast<local_ushort_type>(UINT8_C(0))) && (u == static_cast<unsigned>(UINT8_C(0))))
     {
       // This handles cases having (u = 0) with (v != 0).
-      result = v;
+      result = v; // LCOV_EXCL_LINE
     }
     else
     {
@@ -6641,36 +6625,26 @@
 
         if(v <= (std::numeric_limits<local_ularge_type>::max)())
         {
-          if(v <= (std::numeric_limits<local_ushort_type>::max)())
-          {
-            const auto vs = *v.crepresentation().cbegin();
-            const auto us = *u.crepresentation().cbegin();
+          const auto my_v_hi =
+            static_cast<local_ushort_type>
+            (
+              (v.crepresentation().size() >= static_cast<typename local_wide_integer_type::representation_type::size_type>(UINT8_C(2)))
+                ? static_cast<local_ushort_type>(*detail::advance_and_point(v.crepresentation().cbegin(), static_cast<local_size_type>(UINT8_C(1))))
+                : static_cast<local_ushort_type>(UINT8_C(0))
+            );
 
-            u = detail::integer_gcd_reduce(vs, us);
-          }
-          else
-          {
-            const auto my_v_hi =
-              static_cast<local_ushort_type>
-              (
-                (v.crepresentation().size() >= static_cast<typename local_wide_integer_type::representation_type::size_type>(UINT8_C(2)))
-                  ? static_cast<local_ushort_type>(*detail::advance_and_point(v.crepresentation().cbegin(), static_cast<local_size_type>(UINT8_C(1))))
-                  : static_cast<local_ushort_type>(UINT8_C(0))
-              );
+          const auto my_u_hi =
+            static_cast<local_ushort_type>
+            (
+              (u.crepresentation().size() >= static_cast<typename local_wide_integer_type::representation_type::size_type>(UINT8_C(2)))
+                ? static_cast<local_ushort_type>(*detail::advance_and_point(u.crepresentation().cbegin(), static_cast<local_size_type>(UINT8_C(1))))
+                : static_cast<local_ushort_type>(UINT8_C(0))
+            );
 
-            const auto my_u_hi =
-              static_cast<local_ushort_type>
-              (
-                (u.crepresentation().size() >= static_cast<typename local_wide_integer_type::representation_type::size_type>(UINT8_C(2)))
-                  ? static_cast<local_ushort_type>(*detail::advance_and_point(u.crepresentation().cbegin(), static_cast<local_size_type>(UINT8_C(1))))
-                  : static_cast<local_ushort_type>(UINT8_C(0))
-              );
+          const local_ularge_type v_large = detail::make_large(*v.crepresentation().cbegin(), my_v_hi);
+          const local_ularge_type u_large = detail::make_large(*u.crepresentation().cbegin(), my_u_hi);
 
-            const local_ularge_type v_large = detail::make_large(*v.crepresentation().cbegin(), my_v_hi);
-            const local_ularge_type u_large = detail::make_large(*u.crepresentation().cbegin(), my_u_hi);
-
-            u = detail::integer_gcd_reduce(v_large, u_large);
-          }
+          u = detail::integer_gcd_reduce(v_large, u_large);
 
           break;
         }
