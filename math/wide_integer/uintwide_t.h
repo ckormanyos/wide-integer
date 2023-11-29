@@ -274,7 +274,7 @@
 
   // Use a local, constexpr, unsafe implementation of the abs-function.
   template<typename ArithmeticType>
-  WIDE_INTEGER_CONSTEXPR auto abs_unsafe(ArithmeticType val) -> ArithmeticType
+  WIDE_INTEGER_CONSTEXPR inline auto abs_unsafe(ArithmeticType val) -> ArithmeticType
   {
     return ((val > static_cast<int>(INT8_C(0))) ? val : -val);
   }
@@ -282,7 +282,7 @@
   // Use a local, constexpr, unsafe implementation of the fill-function.
   template<typename DestinationIterator,
            typename ValueType>
-  WIDE_INTEGER_CONSTEXPR auto fill_unsafe(DestinationIterator first, DestinationIterator last, ValueType val) -> void
+  WIDE_INTEGER_CONSTEXPR inline auto fill_unsafe(DestinationIterator first, DestinationIterator last, ValueType val) -> void
   {
     while(first != last)
     {
@@ -508,8 +508,9 @@
   }
 
   template <class UnsignedIntegralType>
-  WIDE_INTEGER_CONSTEXPR auto clz_unsafe(UnsignedIntegralType v) noexcept -> std::enable_if_t<(   (std::is_integral<UnsignedIntegralType>::value)
-                                                                                               && (std::is_unsigned<UnsignedIntegralType>::value)), unsigned>
+  WIDE_INTEGER_CONSTEXPR
+  inline auto clz_unsafe(UnsignedIntegralType v) noexcept -> std::enable_if_t<(   (std::is_integral<UnsignedIntegralType>::value)
+                                                                        && (std::is_unsigned<UnsignedIntegralType>::value)), unsigned>
   {
     using local_unsigned_integral_type = UnsignedIntegralType;
 
@@ -546,8 +547,9 @@
   }
 
   template<typename UnsignedIntegralType>
-  WIDE_INTEGER_CONSTEXPR auto ctz_unsafe(const UnsignedIntegralType v) noexcept -> std::enable_if_t<(   (std::is_integral<UnsignedIntegralType>::value)
-                                                                                                     && (std::is_unsigned<UnsignedIntegralType>::value)), unsigned>
+  WIDE_INTEGER_CONSTEXPR
+  inline auto ctz_unsafe(const UnsignedIntegralType v) noexcept -> std::enable_if_t<(   (std::is_integral<UnsignedIntegralType>::value)
+                                                                                     && (std::is_unsigned<UnsignedIntegralType>::value)), unsigned>
   {
     using local_unsigned_integral_type = UnsignedIntegralType;
 
@@ -564,8 +566,9 @@
   }
 
   template<typename UnsignedIntegralType>
-  WIDE_INTEGER_CONSTEXPR auto gcd_unsafe(UnsignedIntegralType u, UnsignedIntegralType v) -> std::enable_if_t<(   (std::is_integral<UnsignedIntegralType>::value) // NOLINT(altera-id-dependent-backward-branch)
-                                                                                                              && (std::is_unsigned<UnsignedIntegralType>::value)), UnsignedIntegralType>
+  WIDE_INTEGER_CONSTEXPR
+  inline auto gcd_unsafe(UnsignedIntegralType u, UnsignedIntegralType v) -> std::enable_if_t<(   (std::is_integral<UnsignedIntegralType>::value) // NOLINT(altera-id-dependent-backward-branch)
+                                                                                              && (std::is_unsigned<UnsignedIntegralType>::value)), UnsignedIntegralType>
   {
     using local_unsigned_integral_type = UnsignedIntegralType;
 
@@ -1864,21 +1867,21 @@
   WIDE_INTEGER_CONSTEXPR auto lsb_helper(const UnsignedIntegralType& u) -> unsigned_fast_type;
 
   template<typename UnsignedIntegralType>
-  WIDE_INTEGER_CONSTEXPR auto msb_helper(const UnsignedIntegralType& u) -> unsigned_fast_type;
+  WIDE_INTEGER_CONSTEXPR inline auto msb_helper(const UnsignedIntegralType& u) -> unsigned_fast_type;
 
   template<>
-  WIDE_INTEGER_CONSTEXPR auto msb_helper<std::uint32_t>(const std::uint32_t& u) -> unsigned_fast_type;
+  WIDE_INTEGER_CONSTEXPR inline auto msb_helper<std::uint32_t>(const std::uint32_t& u) -> unsigned_fast_type;
 
   template<>
-  WIDE_INTEGER_CONSTEXPR auto msb_helper<std::uint16_t>(const std::uint16_t& u) -> unsigned_fast_type;
+  WIDE_INTEGER_CONSTEXPR inline auto msb_helper<std::uint16_t>(const std::uint16_t& u) -> unsigned_fast_type;
 
   template<>
-  WIDE_INTEGER_CONSTEXPR auto msb_helper<std::uint8_t>(const std::uint8_t& u) -> unsigned_fast_type;
+  WIDE_INTEGER_CONSTEXPR inline auto msb_helper<std::uint8_t>(const std::uint8_t& u) -> unsigned_fast_type;
 
   // Use a local implementation of string copy.
   template<typename DestinationIterator,
            typename SourceIterator>
-  WIDE_INTEGER_CONSTEXPR auto strcpy_unsafe(DestinationIterator dst, SourceIterator src) -> DestinationIterator
+  WIDE_INTEGER_CONSTEXPR inline auto strcpy_unsafe(DestinationIterator dst, SourceIterator src) -> DestinationIterator
   {
     while((*dst++ = *src++) != '\0') { ; } // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
 
@@ -1886,7 +1889,7 @@
   }
 
   // Use a local implementation of string length.
-  WIDE_INTEGER_CONSTEXPR auto strlen_unsafe(const char* p_str) -> unsigned_fast_type
+  WIDE_INTEGER_CONSTEXPR inline auto strlen_unsafe(const char* p_str) -> unsigned_fast_type
   {
     auto str_len_count = static_cast<unsigned_fast_type>(UINT8_C(0));
 
@@ -6045,7 +6048,7 @@
   }
 
   template<typename UnsignedIntegralType>
-  WIDE_INTEGER_CONSTEXPR auto msb_helper(const UnsignedIntegralType& u) -> unsigned_fast_type
+  WIDE_INTEGER_CONSTEXPR inline auto msb_helper(const UnsignedIntegralType& u) -> unsigned_fast_type
   {
     // Compile-time checks.
     static_assert((   std::is_integral<UnsignedIntegralType>::value
@@ -6080,7 +6083,7 @@
   }
 
   template<>
-  WIDE_INTEGER_CONSTEXPR auto msb_helper<std::uint32_t>(const std::uint32_t& u) -> unsigned_fast_type
+  WIDE_INTEGER_CONSTEXPR inline auto msb_helper<std::uint32_t>(const std::uint32_t& u) -> unsigned_fast_type
   {
     auto r = static_cast<unsigned_fast_type>(UINT8_C(0));
     auto x = static_cast<std::uint_fast32_t>(u);
@@ -6096,7 +6099,7 @@
   }
 
   template<>
-  WIDE_INTEGER_CONSTEXPR auto msb_helper<std::uint16_t>(const std::uint16_t& u) -> unsigned_fast_type
+  WIDE_INTEGER_CONSTEXPR inline auto msb_helper<std::uint16_t>(const std::uint16_t& u) -> unsigned_fast_type
   {
     auto r = static_cast<unsigned_fast_type>(UINT8_C(0));
     auto x = static_cast<std::uint_fast16_t>(u);
@@ -6111,7 +6114,7 @@
   }
 
   template<>
-  WIDE_INTEGER_CONSTEXPR auto msb_helper<std::uint8_t>(const std::uint8_t& u) -> unsigned_fast_type
+  WIDE_INTEGER_CONSTEXPR inline auto msb_helper<std::uint8_t>(const std::uint8_t& u) -> unsigned_fast_type
   {
     auto r = static_cast<unsigned_fast_type>(UINT8_C(0));
     auto x = static_cast<std::uint_fast8_t>(u);
