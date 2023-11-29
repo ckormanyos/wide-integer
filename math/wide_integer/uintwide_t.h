@@ -247,19 +247,19 @@
   private:
     iterator_type current; // NOLINT(readability-identifier-naming)
 
-    friend inline constexpr auto operator< (const reverse_iterator& x, const reverse_iterator& y) -> bool { return (x.current  > y.current); }
-    friend inline constexpr auto operator<=(const reverse_iterator& x, const reverse_iterator& y) -> bool { return (x.current >= y.current); }
-    friend inline constexpr auto operator==(const reverse_iterator& x, const reverse_iterator& y) -> bool { return (x.current == y.current); }
-    friend inline constexpr auto operator!=(const reverse_iterator& x, const reverse_iterator& y) -> bool { return (x.current != y.current); }
-    friend inline constexpr auto operator>=(const reverse_iterator& x, const reverse_iterator& y) -> bool { return (x.current <= y.current); }
-    friend inline constexpr auto operator> (const reverse_iterator& x, const reverse_iterator& y) -> bool { return (x.current <  y.current); }
+    friend constexpr auto operator< (const reverse_iterator& x, const reverse_iterator& y) -> bool { return (x.current  > y.current); }
+    friend constexpr auto operator<=(const reverse_iterator& x, const reverse_iterator& y) -> bool { return (x.current >= y.current); }
+    friend constexpr auto operator==(const reverse_iterator& x, const reverse_iterator& y) -> bool { return (x.current == y.current); }
+    friend constexpr auto operator!=(const reverse_iterator& x, const reverse_iterator& y) -> bool { return (x.current != y.current); }
+    friend constexpr auto operator>=(const reverse_iterator& x, const reverse_iterator& y) -> bool { return (x.current <= y.current); }
+    friend constexpr auto operator> (const reverse_iterator& x, const reverse_iterator& y) -> bool { return (x.current <  y.current); }
 
-    friend inline constexpr auto operator-(const reverse_iterator& x, const reverse_iterator& y) -> typename reverse_iterator::difference_type
+    friend constexpr auto operator-(const reverse_iterator& x, const reverse_iterator& y) -> typename reverse_iterator::difference_type
     {
       return (y.current - x.current);
     }
 
-    friend inline constexpr auto operator+(typename reverse_iterator::difference_type n, const reverse_iterator& x) -> reverse_iterator
+    friend constexpr auto operator+(typename reverse_iterator::difference_type n, const reverse_iterator& x) -> reverse_iterator
     {
       return reverse_iterator(x.current - n);
     }
@@ -654,7 +654,7 @@
     WIDE_INTEGER_NODISCARD static constexpr auto max_size() -> size_type { return N; }
 
     template<typename T2>
-    constexpr auto swap(array<T2, N>& y) -> void
+    constexpr auto swap(array<T2, N>& y) noexcept -> void
     {
       swap_ranges_unsafe(begin(), end(), y.begin());
     }
@@ -723,7 +723,7 @@
   }
 
   template<typename T, size_t N >
-  constexpr auto swap(array<T, N>& x, array<T, N>& y) -> void
+  constexpr auto swap(array<T, N>& x, array<T, N>& y) noexcept -> void
   {
     swap_ranges_unsafe(x.begin(), x.end(), y.begin());
   }
@@ -1857,24 +1857,24 @@
   };
 
   template<typename UnsignedIntegralType>
-  inline WIDE_INTEGER_CONSTEXPR auto lsb_helper(const UnsignedIntegralType& u) -> unsigned_fast_type;
+  WIDE_INTEGER_CONSTEXPR auto lsb_helper(const UnsignedIntegralType& u) -> unsigned_fast_type;
 
   template<typename UnsignedIntegralType>
-  inline WIDE_INTEGER_CONSTEXPR auto msb_helper(const UnsignedIntegralType& u) -> unsigned_fast_type;
+  WIDE_INTEGER_CONSTEXPR auto msb_helper(const UnsignedIntegralType& u) -> unsigned_fast_type;
 
   template<>
-  inline WIDE_INTEGER_CONSTEXPR auto msb_helper<std::uint32_t>(const std::uint32_t& u) -> unsigned_fast_type;
+  WIDE_INTEGER_CONSTEXPR auto msb_helper<std::uint32_t>(const std::uint32_t& u) -> unsigned_fast_type;
 
   template<>
-  inline WIDE_INTEGER_CONSTEXPR auto msb_helper<std::uint16_t>(const std::uint16_t& u) -> unsigned_fast_type;
+  WIDE_INTEGER_CONSTEXPR auto msb_helper<std::uint16_t>(const std::uint16_t& u) -> unsigned_fast_type;
 
   template<>
-  inline WIDE_INTEGER_CONSTEXPR auto msb_helper<std::uint8_t>(const std::uint8_t& u) -> unsigned_fast_type;
+  WIDE_INTEGER_CONSTEXPR auto msb_helper<std::uint8_t>(const std::uint8_t& u) -> unsigned_fast_type;
 
   // Use a local implementation of string copy.
   template<typename DestinationIterator,
            typename SourceIterator>
-  inline WIDE_INTEGER_CONSTEXPR auto strcpy_unsafe(DestinationIterator dst, SourceIterator src) -> DestinationIterator
+  WIDE_INTEGER_CONSTEXPR auto strcpy_unsafe(DestinationIterator dst, SourceIterator src) -> DestinationIterator
   {
     while((*dst++ = *src++) != '\0') { ; } // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
 
@@ -1882,7 +1882,7 @@
   }
 
   // Use a local implementation of string length.
-  inline WIDE_INTEGER_CONSTEXPR auto strlen_unsafe(const char* p_str) -> unsigned_fast_type
+  WIDE_INTEGER_CONSTEXPR auto strlen_unsafe(const char* p_str) -> unsigned_fast_type
   {
     auto str_len_count = static_cast<unsigned_fast_type>(UINT8_C(0));
 
@@ -6011,7 +6011,7 @@
   #endif // !defined(WIDE_INTEGER_DISABLE_FLOAT_INTEROP)
 
   template<typename UnsignedIntegralType>
-  inline WIDE_INTEGER_CONSTEXPR auto lsb_helper(const UnsignedIntegralType& u) -> unsigned_fast_type
+  WIDE_INTEGER_CONSTEXPR auto lsb_helper(const UnsignedIntegralType& u) -> unsigned_fast_type
   {
     // Compile-time checks.
     static_assert((   std::is_integral<UnsignedIntegralType>::value
@@ -6041,7 +6041,7 @@
   }
 
   template<typename UnsignedIntegralType>
-  inline WIDE_INTEGER_CONSTEXPR auto msb_helper(const UnsignedIntegralType& u) -> unsigned_fast_type
+  WIDE_INTEGER_CONSTEXPR auto msb_helper(const UnsignedIntegralType& u) -> unsigned_fast_type
   {
     // Compile-time checks.
     static_assert((   std::is_integral<UnsignedIntegralType>::value
@@ -6076,7 +6076,7 @@
   }
 
   template<>
-  inline WIDE_INTEGER_CONSTEXPR auto msb_helper<std::uint32_t>(const std::uint32_t& u) -> unsigned_fast_type
+  WIDE_INTEGER_CONSTEXPR auto msb_helper<std::uint32_t>(const std::uint32_t& u) -> unsigned_fast_type
   {
     auto r = static_cast<unsigned_fast_type>(UINT8_C(0));
     auto x = static_cast<std::uint_fast32_t>(u);
@@ -6092,7 +6092,7 @@
   }
 
   template<>
-  inline WIDE_INTEGER_CONSTEXPR auto msb_helper<std::uint16_t>(const std::uint16_t& u) -> unsigned_fast_type
+  WIDE_INTEGER_CONSTEXPR auto msb_helper<std::uint16_t>(const std::uint16_t& u) -> unsigned_fast_type
   {
     auto r = static_cast<unsigned_fast_type>(UINT8_C(0));
     auto x = static_cast<std::uint_fast16_t>(u);
@@ -6107,7 +6107,7 @@
   }
 
   template<>
-  inline WIDE_INTEGER_CONSTEXPR auto msb_helper<std::uint8_t>(const std::uint8_t& u) -> unsigned_fast_type
+  WIDE_INTEGER_CONSTEXPR auto msb_helper<std::uint8_t>(const std::uint8_t& u) -> unsigned_fast_type
   {
     auto r = static_cast<unsigned_fast_type>(UINT8_C(0));
     auto x = static_cast<std::uint_fast8_t>(u);
@@ -6139,7 +6139,7 @@
            typename LimbType,
            typename AllocatorType,
            const bool IsSigned>
-  inline WIDE_INTEGER_CONSTEXPR auto lsb(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& x) -> unsigned_fast_type
+  WIDE_INTEGER_CONSTEXPR auto lsb(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& x) -> unsigned_fast_type
   {
     // Calculate the position of the least-significant bit.
     // Use a linear search starting from the least significant limbs.
@@ -6849,14 +6849,14 @@
       result_type param_a; // NOLINT(readability-identifier-naming)
       result_type param_b; // NOLINT(readability-identifier-naming)
 
-      friend inline constexpr auto operator==(const param_type& lhs,
+      friend constexpr auto operator==(const param_type& lhs,
                                               const param_type& rhs) -> bool
       {
         return (   (lhs.param_a == rhs.param_a)
                 && (lhs.param_b == rhs.param_b));
       }
 
-      friend inline constexpr auto operator!=(const param_type& lhs,
+      friend constexpr auto operator!=(const param_type& lhs,
                                               const param_type& rhs) -> bool
       {
         return (   (lhs.param_a != rhs.param_a)

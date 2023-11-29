@@ -778,9 +778,9 @@ This preprocessor switch was motivated by the discussion in
 By default, the preprocessor switch `WIDE_INTEGER_HAS_CLZ_LIMB_OPTIMIZATIONS`
 is not defined and CLZ-limb optimizations are default-_disabled_.
 
-### C++14, 17, 20 `constexpr` support
+### C++14, 17, 20, 23 and beyond `constexpr` support
 
-When using C++20 `uintwide_t` supports compile-time
+When using C++14 and beyond, `uintwide_t` supports compile-time
 `constexpr` construction and evaluation of results
 of binary arithmetic, comparison operators
 and various elementary functions.
@@ -797,7 +797,7 @@ and its subsequent `return` of the value zero
 ```cpp
 #include <math/wide_integer/uintwide_t.h>
 
-// Use (at least) a C++20 compiler for this example.
+// Use (at least) a C++14 compiler for this example.
 
 using uint256_t = ::math::wide_integer::uintwide_t<256U>;
 using uint512_t = ::math::wide_integer::uintwide_t<512U>;
@@ -822,42 +822,6 @@ auto main() -> int
   return (result_is_ok ? 0 : -1);
 }
 ```
-
-The so-called `constexpr`-_ness_ of `uintwide_t` has been checked on GCC 10 and up,
-clang 10 and up (with `-std=c++20`) and VC 14.2 (with `/std:c++latest`),
-also for various embedded compilers such as `avr-gcc` 10 and up,
-`arm-non-eabi-gcc` 10 and up, and more. In addition,
-some compilations using compilers having less modern standards
-such as C++14, 17, 2a have also been checked
-for `constexpr` usage of `uintwide_t`. If you have an older
-compiler, you might have to check the compiler's
-ability to obtain the entire benefit of `constexpr` with `uintwide_t`.
-
-If full `constexpr` compliance is not available or its
-availability is unknown, the preprocessor symbols below can be useful.
-These symbols are defined or set directly within the header(s)
-of the wide_integer library.
-
-```cpp
-WIDE_INTEGER_CONSTEXPR
-WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST
-```
-
-The preprocessor symbol `WIDE_INTEGER_CONSTEXPR` acts as either
-a synonym for `constexpr` or expands to nothing depending on
-whether the availability of `constexpr` support has been automatically
-detected or not.
-The preprocessor symbol `WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST`
-has the value of `0` or `1`, where `1` indicates that `uintwide_t`
-values qualified with `WIDE_INTEGER_CONSTEXPR` are actually
-compile-time constant (i.e., `constexpr`).
-
-Detection of availability of `constexpr` support is implemented
-[with preprocessor queries in uintwide_t.h](https://github.com/ckormanyos/wide-integer/blob/4ad2cb5e96acc0b326c8fc2bbb74546dc90053ef/math/wide_integer/uintwide_t.h#L36).
-These complicated proprocessor queries are not complete (in the sense of
-detecting all world-wide compiler/target systems). If you have
-a specific compiler/target system needing `constexpr` detection,
-please feel free to contact me directly so that this can be implemented.
 
 ### Signed integer support
 

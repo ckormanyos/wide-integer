@@ -109,15 +109,13 @@ constexpr auto loop_count_hi = static_cast<std::uint32_t>(UINT16_C(8));
 #endif
 
 #if defined(WIDE_INTEGER_NAMESPACE)
-using local_uintwide_t_small_unsigned_type =
-  WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<local_edge_cases::local_digits2_small, std::uint16_t, void, false>;
+using local_uintwide_t_small_unsigned_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<local_edge_cases::local_digits2_small, std::uint16_t, void, false>;
+using local_uintwide_t_half_unsigned_type  = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<local_edge_cases::local_digits2_half, std::uint16_t, void, false>;
+using local_uintwide_t_half_signed_type    = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<local_edge_cases::local_digits2_half, std::uint16_t, void, true>;
 #else
-using local_uintwide_t_small_unsigned_type =
-  ::math::wide_integer::uintwide_t<local_edge_cases::local_digits2_small, std::uint16_t, void, false>;
-using local_uintwide_t_half_unsigned_type =
-  ::math::wide_integer::uintwide_t<local_edge_cases::local_digits2_half, std::uint16_t, void, false>;
-using local_uintwide_t_half_signed_type =
-  ::math::wide_integer::uintwide_t<local_edge_cases::local_digits2_half, std::uint16_t, void, true>;
+using local_uintwide_t_small_unsigned_type = ::math::wide_integer::uintwide_t<local_edge_cases::local_digits2_small, std::uint16_t, void, false>;
+using local_uintwide_t_half_unsigned_type  = ::math::wide_integer::uintwide_t<local_edge_cases::local_digits2_half, std::uint16_t, void, false>;
+using local_uintwide_t_half_signed_type    = ::math::wide_integer::uintwide_t<local_edge_cases::local_digits2_half, std::uint16_t, void, true>;
 #endif
 
 #if defined(WIDE_INTEGER_NAMESPACE)
@@ -215,7 +213,7 @@ auto generate_wide_integer_value(bool       is_positive           = true,
                         static_cast<char>
                         (
                             static_cast<char>(c + 'A')
-                          - static_cast<char>(10)
+                          - static_cast<char>(INT8_C(10))
                         );
                     }
                   }
@@ -1453,8 +1451,8 @@ auto test_various_isolated_edge_cases() -> bool // NOLINT(readability-function-c
     auto dis =
       std::uniform_real_distribution<float>
       {
-        static_cast<float>(1.01F),
-        static_cast<float>(1.04F)
+        static_cast<float>(1.01F), // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
+        static_cast<float>(1.04F)  // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
       };
 
     const auto inf_f  = ::local_inf_f () * dis(eng_flt);
@@ -2451,8 +2449,8 @@ auto test_uintwide_t_edge::zero_as_small_unsigned_type() -> const test_uintwide_
   return local_zero_as_small_unsigned_type;
 }
 
-extern test_uintwide_t_edge::local_uintwide_t_small_unsigned_type local_one_plus_as_small_signed_type;
-extern test_uintwide_t_edge::local_uintwide_t_small_signed_type   local_one_minus_as_small_signed_type;
+extern test_uintwide_t_edge::local_uintwide_t_small_unsigned_type local_one_plus_as_small_signed_type;  // NOLINT(cppcoreguidelines-avoid-non-const-global-variables,cert-err58-cpp,)
+extern test_uintwide_t_edge::local_uintwide_t_small_signed_type   local_one_minus_as_small_signed_type; // NOLINT(cppcoreguidelines-avoid-non-const-global-variables,cert-err58-cpp,)
 
 auto test_uintwide_t_edge::one_as_small_unsigned_type() -> const test_uintwide_t_edge::local_uintwide_t_small_unsigned_type& { return local_one_plus_as_small_signed_type; }
 auto test_uintwide_t_edge::m_one_as_small_signed_type() -> const test_uintwide_t_edge::local_uintwide_t_small_signed_type&   { return local_one_minus_as_small_signed_type; }

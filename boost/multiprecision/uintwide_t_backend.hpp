@@ -205,7 +205,7 @@
     WIDE_INTEGER_CONSTEXPR auto operator=(const std::string& str_rep)  -> uintwide_t_backend& { m_value = representation_type(str_rep);  return *this; }
     WIDE_INTEGER_CONSTEXPR auto operator=(const char*        char_ptr) -> uintwide_t_backend& { m_value = representation_type(char_ptr); return *this; }
 
-    WIDE_INTEGER_CONSTEXPR auto swap(uintwide_t_backend& other) -> void
+    WIDE_INTEGER_CONSTEXPR auto swap(uintwide_t_backend& other) noexcept -> void
     {
       m_value.representation().swap(other.m_value.representation());
     }
