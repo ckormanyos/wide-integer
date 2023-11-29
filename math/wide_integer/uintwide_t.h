@@ -9,6 +9,7 @@
   #define UINTWIDE_T_2018_10_02_H
 
   #if defined(__GNUC__)
+  #pragma GCC diagnostic push
   #pragma GCC diagnostic ignored "-Wmissing-declarations"
   #endif
 
