@@ -337,9 +337,8 @@ as well as MSVC level 4 warnings active on the correspondoing platforms.
 For additional in-depth syntax checking, clang-tidy is used both in CI
 as well as in offline checks to improve static code quality.
 
-Both GCC's run-time
+GCC's run-time
 [sanitizers](https://gcc.gnu.org/onlinedocs/gcc/Instrumentation-Options.html)
-as well as [_valgrind_](https://valgrind.org) (see also [1] and [2] in the References below)
 are used in CI in order to help assure dynamic quality.
 
 Additional quality checks are performed on pull-request
@@ -897,18 +896,3 @@ be done, but at the cost of using five 16-bit limbs.
 This degrades performance due to the higher limb count.
 This phenomenon was discussed in
 [issue 234](https://github.com/ckormanyos/wide-integer/issues/234)
-
-## References
-
-A original publications on [_valgrind_](https://valgrind.org)
-and its relation to memory errors can be found in [1] and [2].
-
-[1] Nicholas Nethercote and Julian Seward,
-_Valgrind:_ _A_ _Framework_ _for_ _Heavyweight_ _Dynamic_ _Binary_ _Instrumentation_,
-Proceedings of ACM SIGPLAN 2007 Conference on Programming Language Design and Implementation (PLDI 2007),
-San Diego, California, USA, June 2007.
-
-[2] Nicholas Nethercote and Julian Seward,
-_How_ _to_ _Shadow_ _Every_ _Byte_ _of_ _Memory_ _Used_ _by_ _a_ _Program_.
-Proceedings of the Third International ACM SIGPLAN/SIGOPS Conference on Virtual Execution Environments (VEE 2007),
-San Diego, California, USA, June 2007.
