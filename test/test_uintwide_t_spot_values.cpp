@@ -5,8 +5,8 @@
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
 
-#include <iostream>
-
+#include <algorithm>
+#include <array>
 #include <cassert>
 #include <sstream>
 
@@ -384,14 +384,10 @@ namespace from_issue_266
     using local_uint128_t = ::math::wide_integer::uint128_t;
     #endif
 
-    WIDE_INTEGER_CONSTEXPR local_uint128_t inc_value  ("0x0000000000000001FFFFFFFFFFFFFFFF");
-    WIDE_INTEGER_CONSTEXPR local_uint128_t inc_value_p(++(local_uint128_t(inc_value)));
+    local_uint128_t inc_value  ("0x0000000000000001FFFFFFFFFFFFFFFF");
+    local_uint128_t inc_value_p(++(local_uint128_t(inc_value)));
 
-    const auto result_is_ok = (inc_value_p == local_uint128_t("0x00000000000000020000000000000000"));
-
-    #if(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST == 1)
-    static_assert(inc_value_p == local_uint128_t("0x00000000000000020000000000000000"), "Error: Incrementing 128-bit type is not OK");
-    #endif
+    const auto result_is_ok = ((inc_value_p > inc_value) && (inc_value_p == local_uint128_t("0x00000000000000020000000000000000")));
 
     return result_is_ok;
   }
@@ -406,14 +402,10 @@ namespace from_issue_266
     using local_uint128_t = ::math::wide_integer::uint128_t;
     #endif
 
-    WIDE_INTEGER_CONSTEXPR local_uint128_t dec_value  ("0x00000000000000020000000000000000");
-    WIDE_INTEGER_CONSTEXPR local_uint128_t dec_value_d(--(local_uint128_t(dec_value)));
+    local_uint128_t dec_value  ("0x00000000000000020000000000000000");
+    local_uint128_t dec_value_d(--(local_uint128_t(dec_value)));
 
-    const auto result_is_ok = (dec_value_d == local_uint128_t("0x0000000000000001FFFFFFFFFFFFFFFF"));
-
-    #if(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST == 1)
-    static_assert(dec_value_d == local_uint128_t("0x0000000000000001FFFFFFFFFFFFFFFF"), "Error: Decrementing 128-bit type is not OK");
-    #endif
+    const auto result_is_ok = ((dec_value_d < dec_value) && (dec_value_d == local_uint128_t("0x0000000000000001FFFFFFFFFFFFFFFF")));
 
     return result_is_ok;
   }
@@ -582,13 +574,13 @@ namespace exercise_bad_string_input
     using local_uint128_t = ::math::wide_integer::uint128_t;
     #endif
 
-    WIDE_INTEGER_CONSTEXPR local_uint128_t u("bad-string-input");
+    local_uint128_t u1("bad-string-input");
+    local_uint128_t u2("0xEvenWorse");
 
-    const bool result_bad_string_input_is_ok = (u == (std::numeric_limits<local_uint128_t>::max)());
+    const auto result_bad_string_u1_input_is_ok = (u1 == (std::numeric_limits<local_uint128_t>::max)());
+    const auto result_bad_string_u2_input_is_ok = (u2 == (std::numeric_limits<local_uint128_t>::max)());
 
-    #if(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST == 1)
-    static_assert(u == (std::numeric_limits<local_uint128_t>::max)(), "Error: Reaction to bad string input is not OK");
-    #endif
+    const auto result_bad_string_input_is_ok = (result_bad_string_u1_input_is_ok && result_bad_string_u2_input_is_ok);
 
     return result_bad_string_input_is_ok;
   }
@@ -604,13 +596,13 @@ namespace exercise_pow_zero_one_two
     using local_uint128_t = ::math::wide_integer::uint128_t;
     #endif
 
-    WIDE_INTEGER_CONSTEXPR local_uint128_t u(UINT64_C(9999999978787878));
+    local_uint128_t u(UINT64_C(9999999978787878));
 
     using std::pow;
 
-    WIDE_INTEGER_CONSTEXPR local_uint128_t u0 = pow(u, 0);
-    WIDE_INTEGER_CONSTEXPR local_uint128_t u1 = pow(u, 1);
-    WIDE_INTEGER_CONSTEXPR local_uint128_t u2 = pow(u, 2);
+   local_uint128_t u0 = pow(u, 0);
+   local_uint128_t u1 = pow(u, 1);
+   local_uint128_t u2 = pow(u, 2);
 
     const bool result_pow_is_ok =
       (
@@ -618,12 +610,6 @@ namespace exercise_pow_zero_one_two
         && (u1 == u)
         && (u2 == u * u)
       );
-
-    #if(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST == 1)
-    static_assert(u0 == 1,     "Error: Power of zero is not OK");
-    static_assert(u1 == u,     "Error: Power of one  is not OK");
-    static_assert(u2 == u * u, "Error: Power of two  is not OK");
-    #endif
 
     return result_pow_is_ok;
   }

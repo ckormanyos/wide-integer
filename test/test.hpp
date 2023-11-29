@@ -18,7 +18,7 @@
 namespace detail {
 
 template <class T>
-inline typename std::enable_if<!(boost::multiprecision::detail::is_unsigned<T>::value || boost::multiprecision::is_unsigned_number<T>::value), T>::type
+typename std::enable_if<!(boost::multiprecision::detail::is_unsigned<T>::value || boost::multiprecision::is_unsigned_number<T>::value), T>::type
 abs(const T& a)
 {
    return a < 0 ? -a : a;
@@ -107,19 +107,19 @@ enum
 };
 
 template <class T>
-inline T epsilon_of(const T&)
+T epsilon_of(const T&)
 {
    static_assert(std::numeric_limits<T>::is_specialized, "No numeric_limits support");
    return std::numeric_limits<T>::is_integer ? static_cast<T>(1) : std::numeric_limits<T>::epsilon();
 }
 
 template <class T>
-inline int digits_of(const T&)
+int digits_of(const T&)
 {
    return std::numeric_limits<T>::is_specialized ? std::numeric_limits<T>::digits10 + 3 : std::numeric_limits<long double>::digits10 + 3;
 }
 
-inline std::ostream& report_where(const char* file, int line, const char* function)
+std::ostream& report_where(const char* file, int line, const char* function)
 {
    if (function)
       BOOST_LIGHTWEIGHT_TEST_OSTREAM << "In function: " << function << std::endl;
@@ -129,7 +129,7 @@ inline std::ostream& report_where(const char* file, int line, const char* functi
 
 #define BOOST_MP_REPORT_WHERE report_where(__FILE__, __LINE__, BOOST_CURRENT_FUNCTION)
 
-inline void report_severity(int severity)
+void report_severity(int severity)
 {
    if (severity == error_on_fail)
       ++boost::detail::test_errors();

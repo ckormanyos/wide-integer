@@ -53,7 +53,6 @@ THE SOFTWARE.
 //   from: https://github.com/imahjoub/hash_sha256
 
 #include <algorithm>
-#include <array>
 #include <cstdint>
 #include <random>
 #include <string>
@@ -65,10 +64,20 @@ THE SOFTWARE.
 
 namespace example013_ecdsa
 {
+  #if defined(WIDE_INTEGER_NAMESPACE)
+  using WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::fill_unsafe;
+  #else
+  using ::math::wide_integer::detail::fill_unsafe;
+  #endif
+
   class hash_sha256
   {
   public:
-    using result_type = std::array<std::uint8_t, static_cast<std::size_t>(UINT8_C(32))>;
+    #if defined(WIDE_INTEGER_NAMESPACE)
+    using result_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::array_detail::array<std::uint8_t, static_cast<std::size_t>(UINT8_C(32))>;
+    #else
+    using result_type = ::math::wide_integer::detail::array_detail::array<std::uint8_t, static_cast<std::size_t>(UINT8_C(32))>;
+    #endif
 
     // LCOV_EXCL_START
     constexpr hash_sha256()                       = default;
@@ -135,16 +144,16 @@ namespace example013_ecdsa
       // Pad whatever data is left in the buffer.
       if(my_datalen < static_cast<std::uint32_t>(UINT8_C(56U)))
       {
-        std::fill((my_data.begin() + hash_index), (my_data.begin() + static_cast<std::size_t>(UINT8_C(56))), static_cast<std::uint8_t>(UINT8_C(0)));
+        fill_unsafe((my_data.begin() + hash_index), (my_data.begin() + static_cast<std::size_t>(UINT8_C(56))), static_cast<std::uint8_t>(UINT8_C(0)));
       }
       else
       {
         // LCOV_EXCL_START
-        std::fill((my_data.begin() + hash_index), my_data.end(), static_cast<std::uint8_t>(UINT8_C(0)));
+        fill_unsafe((my_data.begin() + hash_index), my_data.end(), static_cast<std::uint8_t>(UINT8_C(0)));
 
         sha256_transform();
 
-        std::fill_n(my_data.begin(), static_cast<std::size_t>(UINT8_C(56)), static_cast<std::uint8_t>(UINT8_C(0)));
+        fill_unsafe(my_data.begin(), my_data.begin() + static_cast<std::size_t>(UINT8_C(56)), static_cast<std::uint8_t>(UINT8_C(0)));
         // LCOV_EXCL_STOP
       }
 
@@ -180,7 +189,11 @@ namespace example013_ecdsa
         );
 
       for(auto   output_index = static_cast<std::size_t>(UINT8_C(0));
-                 output_index < std::tuple_size<result_type>::value;
+                #if defined(WIDE_INTEGER_NAMESPACE)
+                 output_index < WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::array_detail::tuple_size<result_type>::value;
+                #else
+                 output_index < ::math::wide_integer::detail::array_detail::tuple_size<result_type>::value;
+                #endif
                ++output_index)
       {
         const auto right_shift_amount =
@@ -208,18 +221,26 @@ namespace example013_ecdsa
     }
 
   private:
-    using transform_context_type = std::array<std::uint32_t, static_cast<std::size_t>(UINT8_C(8))>;
+    #if defined(WIDE_INTEGER_NAMESPACE)
+    using transform_context_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::array_detail::array<std::uint32_t, static_cast<std::size_t>(UINT8_C(8))>;
+    using data_array_type        = WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::array_detail::array<std::uint8_t, static_cast<std::size_t>(UINT8_C(64))>;
+    #else
+    using transform_context_type = ::math::wide_integer::detail::array_detail::array<std::uint32_t, static_cast<std::size_t>(UINT8_C(8))>;
+    using data_array_type        = ::math::wide_integer::detail::array_detail::array<std::uint8_t, static_cast<std::size_t>(UINT8_C(64))>;
+    #endif
 
-    std::uint32_t my_datalen { }; // NOLINT(readability-identifier-naming)
-    std::uint64_t my_bitlen  { }; // NOLINT(readability-identifier-naming)
-
-    std::array<std::uint8_t, static_cast<std::size_t>(UINT8_C(64))> my_data { }; // NOLINT(readability-identifier-naming)
-
+    std::uint32_t          my_datalen        { }; // NOLINT(readability-identifier-naming)
+    std::uint64_t          my_bitlen         { }; // NOLINT(readability-identifier-naming)
+    data_array_type        my_data           { }; // NOLINT(readability-identifier-naming)
     transform_context_type transform_context { }; // NOLINT(readability-identifier-naming)
 
     WIDE_INTEGER_CONSTEXPR auto sha256_transform() -> void
     {
-      std::array<std::uint32_t, static_cast<std::size_t>(UINT8_C(64))> m { };
+      #if defined(WIDE_INTEGER_NAMESPACE)
+      WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::array_detail::array<std::uint32_t, static_cast<std::size_t>(UINT8_C(64))> m { };
+      #else
+      ::math::wide_integer::detail::array_detail::array<std::uint32_t, static_cast<std::size_t>(UINT8_C(64))> m { };
+      #endif
 
       for(auto   i = static_cast<std::size_t>(UINT8_C(0)), j = static_cast<std::size_t>(UINT8_C(0));
                  i < static_cast<std::size_t>(UINT8_C(16));
@@ -240,7 +261,11 @@ namespace example013_ecdsa
         m[i] = ssig1(m[i - static_cast<std::size_t>(UINT8_C(2))]) + m[i - static_cast<std::size_t>(UINT8_C(7))] + ssig0(m[i - static_cast<std::size_t>(UINT8_C(15))]) + m[i - static_cast<std::size_t>(UINT8_C(16))]; // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic,cppcoreguidelines-pro-bounds-constant-array-index)
       }
 
-      constexpr std::array<std::uint32_t, 64U> transform_constants =
+      #if defined(WIDE_INTEGER_NAMESPACE)
+      constexpr WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::array_detail::array<std::uint32_t, 64U> transform_constants =
+      #else
+      constexpr ::math::wide_integer::detail::array_detail::array<std::uint32_t, 64U> transform_constants =
+      #endif
       {
         static_cast<std::uint32_t>(UINT32_C(0x428A2F98)), static_cast<std::uint32_t>(UINT32_C(0x71374491)), static_cast<std::uint32_t>(UINT32_C(0xB5C0FBCF)), static_cast<std::uint32_t>(UINT32_C(0xE9B5DBA5)),
         static_cast<std::uint32_t>(UINT32_C(0x3956C25B)), static_cast<std::uint32_t>(UINT32_C(0x59F111F1)), static_cast<std::uint32_t>(UINT32_C(0x923F82A4)), static_cast<std::uint32_t>(UINT32_C(0xAB1C5ED5)),
@@ -808,7 +833,11 @@ auto ::math::wide_integer::example013_ecdsa_sign_verify() -> bool
   #endif
 
   // Declare the message "Hello!" as an array of chars.
-  constexpr std::array<char, static_cast<std::size_t>(UINT8_C(6))> msg_as_array { 'H', 'e', 'l', 'l', 'o', '!' };
+  #if defined(WIDE_INTEGER_NAMESPACE)
+  constexpr WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::array_detail::array<char, static_cast<std::size_t>(UINT8_C(6))> msg_as_array { 'H', 'e', 'l', 'l', 'o', '!' };
+  #else
+  constexpr ::math::wide_integer::detail::array_detail::array<char, static_cast<std::size_t>(UINT8_C(6))> msg_as_array { 'H', 'e', 'l', 'l', 'o', '!' };
+  #endif
 
   // Get the message to sign as a string and ensure that it is "Hello!".
   const auto msg_as_string = std::string(msg_as_array.cbegin(), msg_as_array.cend());
