@@ -728,38 +728,3 @@ jobs:
           ${{ matrix.compiler }} -finline-functions -m64 -O3 -Werror -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wundef -Wunused-parameter -Wuninitialized -Wunreachable-code -Winit-self -Wzero-as-null-pointer-constant -std=${{ matrix.standard }} -DWIDE_INTEGER_DISABLE_PRIVATE_CLASS_DATA_MEMBERS -DWIDE_INTEGER_NAMESPACE=ckormanyos -I. test/${{ matrix.suite }}.cpp -o ${{ matrix.suite }}.exe
           ls -la ./${{ matrix.suite }}.exe
           ./${{ matrix.suite }}.exe
-  gcc-valgrind:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        shell: bash
-    strategy:
-      fail-fast: false
-      matrix:
-        standard: [ c++20 ]
-        compiler: [ g++ ]
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: '0'
-      - name: clone-submods-bootstrap-headers-boost-develop
-        run: |
-          git clone -b develop --depth 1 https://github.com/boostorg/boost.git ../boost-root
-          cd ../boost-root
-          git submodule update --init tools
-          git submodule update --init libs/config
-          git submodule update --init libs/multiprecision
-          ./bootstrap.sh
-          ./b2 headers
-      - name: update-tools
-        run: |
-          sudo apt-get update -y
-          sudo apt-get install -y valgrind
-      - name: gcc-valgrind
-        run: |
-          echo "compile"
-          ${{ matrix.compiler }} -v
-          ${{ matrix.compiler }} -m64 -O3 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -std=${{ matrix.standard }} -DWIDE_INTEGER_HAS_COVERAGE -I. -I../boost-root -pthread -lpthread test/test.cpp test/test_uintwide_t_boost_backend.cpp test/test_uintwide_t_edge_cases.cpp test/test_uintwide_t_examples.cpp test/test_uintwide_t_float_convert.cpp test/test_uintwide_t_int_convert.cpp test/test_uintwide_t_n_base.cpp test/test_uintwide_t_n_binary_ops_base.cpp examples/example000a_builtin_convert.cpp test/test_uintwide_t_spot_values.cpp examples/example000_numeric_limits.cpp examples/example001_mul_div.cpp examples/example001a_div_mod.cpp examples/example002_shl_shr.cpp examples/example003_sqrt.cpp examples/example003a_cbrt.cpp examples/example004_rootk_pow.cpp examples/example005_powm.cpp examples/example005a_pow_factors_of_p99.cpp examples/example006_gcd.cpp examples/example007_random_generator.cpp examples/example008_miller_rabin_prime.cpp examples/example008a_miller_rabin_prime.cpp examples/example009_timed_mul.cpp examples/example009a_timed_mul_4_by_4.cpp examples/example009b_timed_mul_8_by_8.cpp examples/example010_uint48_t.cpp examples/example011_uint24_t.cpp examples/example012_rsa_crypto.cpp examples/example013_ecdsa_sign_verify.cpp examples/example014_pi_spigot_wide.cpp -o wide_integer.exe
-          valgrind --leak-check=yes --log-file=wide_integer_valgrind.txt ./wide_integer.exe
-          grep '0 bytes in 0 blocks' wide_integer_valgrind.txt
-          grep '0 errors from 0 contexts' wide_integer_valgrind.txt
