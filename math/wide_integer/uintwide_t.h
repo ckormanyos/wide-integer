@@ -274,7 +274,7 @@
 
   // Use a local, constexpr, unsafe implementation of the abs-function.
   template<typename ArithmeticType>
-  WIDE_INTEGER_CONSTEXPR inline auto abs_unsafe(ArithmeticType val) -> ArithmeticType
+  constexpr auto abs_unsafe(ArithmeticType val) -> ArithmeticType
   {
     return ((val > static_cast<int>(INT8_C(0))) ? val : -val);
   }
@@ -282,7 +282,7 @@
   // Use a local, constexpr, unsafe implementation of the fill-function.
   template<typename DestinationIterator,
            typename ValueType>
-  WIDE_INTEGER_CONSTEXPR inline auto fill_unsafe(DestinationIterator first, DestinationIterator last, ValueType val) -> void
+  constexpr auto fill_unsafe(DestinationIterator first, DestinationIterator last, ValueType val) -> void
   {
     while(first != last)
     {
@@ -309,7 +309,7 @@
   // Use a local, constexpr, unsafe implementation of the copy-function.
   template<typename InputIterator,
            typename DestinationIterator>
-  WIDE_INTEGER_CONSTEXPR auto copy_unsafe(InputIterator first, InputIterator last, DestinationIterator dest) -> DestinationIterator
+  constexpr auto copy_unsafe(InputIterator first, InputIterator last, DestinationIterator dest) -> DestinationIterator
   {
     while(first != last)
     {
@@ -508,9 +508,8 @@
   }
 
   template <class UnsignedIntegralType>
-  WIDE_INTEGER_CONSTEXPR
-  inline auto clz_unsafe(UnsignedIntegralType v) noexcept -> std::enable_if_t<(   (std::is_integral<UnsignedIntegralType>::value)
-                                                                        && (std::is_unsigned<UnsignedIntegralType>::value)), unsigned>
+  constexpr auto clz_unsafe(UnsignedIntegralType v) noexcept -> std::enable_if_t<(   (std::is_integral<UnsignedIntegralType>::value)
+                                                                                  && (std::is_unsigned<UnsignedIntegralType>::value)), unsigned>
   {
     using local_unsigned_integral_type = UnsignedIntegralType;
 
@@ -547,9 +546,8 @@
   }
 
   template<typename UnsignedIntegralType>
-  WIDE_INTEGER_CONSTEXPR
-  inline auto ctz_unsafe(const UnsignedIntegralType v) noexcept -> std::enable_if_t<(   (std::is_integral<UnsignedIntegralType>::value)
-                                                                                     && (std::is_unsigned<UnsignedIntegralType>::value)), unsigned>
+  constexpr auto ctz_unsafe(const UnsignedIntegralType v) noexcept -> std::enable_if_t<(   (std::is_integral<UnsignedIntegralType>::value)
+                                                                                        && (std::is_unsigned<UnsignedIntegralType>::value)), unsigned>
   {
     using local_unsigned_integral_type = UnsignedIntegralType;
 
@@ -566,9 +564,8 @@
   }
 
   template<typename UnsignedIntegralType>
-  WIDE_INTEGER_CONSTEXPR
-  inline auto gcd_unsafe(UnsignedIntegralType u, UnsignedIntegralType v) -> std::enable_if_t<(   (std::is_integral<UnsignedIntegralType>::value) // NOLINT(altera-id-dependent-backward-branch)
-                                                                                              && (std::is_unsigned<UnsignedIntegralType>::value)), UnsignedIntegralType>
+  constexpr auto gcd_unsafe(UnsignedIntegralType u, UnsignedIntegralType v) -> std::enable_if_t<(   (std::is_integral<UnsignedIntegralType>::value) // NOLINT(altera-id-dependent-backward-branch)
+                                                                                                 && (std::is_unsigned<UnsignedIntegralType>::value)), UnsignedIntegralType>
   {
     using local_unsigned_integral_type = UnsignedIntegralType;
 
@@ -1864,24 +1861,24 @@
   };
 
   template<typename UnsignedIntegralType>
-  WIDE_INTEGER_CONSTEXPR auto lsb_helper(const UnsignedIntegralType& u) -> unsigned_fast_type;
+  constexpr auto lsb_helper(const UnsignedIntegralType& u) -> unsigned_fast_type;
 
   template<typename UnsignedIntegralType>
-  WIDE_INTEGER_CONSTEXPR inline auto msb_helper(const UnsignedIntegralType& u) -> unsigned_fast_type;
+  constexpr auto msb_helper(const UnsignedIntegralType& u) -> unsigned_fast_type;
 
   template<>
-  WIDE_INTEGER_CONSTEXPR inline auto msb_helper<std::uint32_t>(const std::uint32_t& u) -> unsigned_fast_type;
+  constexpr auto msb_helper<std::uint32_t>(const std::uint32_t& u) -> unsigned_fast_type;
 
   template<>
-  WIDE_INTEGER_CONSTEXPR inline auto msb_helper<std::uint16_t>(const std::uint16_t& u) -> unsigned_fast_type;
+  constexpr auto msb_helper<std::uint16_t>(const std::uint16_t& u) -> unsigned_fast_type;
 
   template<>
-  WIDE_INTEGER_CONSTEXPR inline auto msb_helper<std::uint8_t>(const std::uint8_t& u) -> unsigned_fast_type;
+  constexpr auto msb_helper<std::uint8_t>(const std::uint8_t& u) -> unsigned_fast_type;
 
   // Use a local implementation of string copy.
   template<typename DestinationIterator,
            typename SourceIterator>
-  WIDE_INTEGER_CONSTEXPR inline auto strcpy_unsafe(DestinationIterator dst, SourceIterator src) -> DestinationIterator
+  constexpr auto strcpy_unsafe(DestinationIterator dst, SourceIterator src) -> DestinationIterator
   {
     while((*dst++ = *src++) != '\0') { ; } // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
 
@@ -1889,7 +1886,7 @@
   }
 
   // Use a local implementation of string length.
-  WIDE_INTEGER_CONSTEXPR inline auto strlen_unsafe(const char* p_str) -> unsigned_fast_type
+  constexpr auto strlen_unsafe(const char* p_str) -> unsigned_fast_type
   {
     auto str_len_count = static_cast<unsigned_fast_type>(UINT8_C(0));
 
@@ -4946,7 +4943,7 @@
         const auto d =
           static_cast<limb_type>
           (
-              static_cast<double_limb_type>(static_cast<double_limb_type>(1U) << static_cast<unsigned>(std::numeric_limits<limb_type>::digits))
+              static_cast<double_limb_type>(static_cast<double_limb_type>(UINT8_C(1)) << static_cast<unsigned>(std::numeric_limits<limb_type>::digits))
             / static_cast<double_limb_type>(static_cast<double_limb_type>(*detail::advance_and_point(other.values.cbegin(), static_cast<size_t>(static_cast<local_uint_index_type>(number_of_limbs - 1U) - v_offset))) + static_cast<limb_type>(1U))
           );
 
@@ -4955,9 +4952,9 @@
 
         using uu_array_type =
           std::conditional_t<std::is_same<AllocatorType, void>::value,
-                             detail::fixed_static_array <limb_type, number_of_limbs + 1U>,
+                             detail::fixed_static_array <limb_type, static_cast<size_t>(number_of_limbs + static_cast<size_t>(UINT8_C(1)))>,
                              detail::fixed_dynamic_array<limb_type,
-                                                         number_of_limbs + 1U,
+                                                         static_cast<size_t>(number_of_limbs + static_cast<size_t>(UINT8_C(1))),
                                                          typename std::allocator_traits<std::conditional_t<std::is_same<AllocatorType, void>::value,
                                                                                                            std::allocator<void>,
                                                                                                            AllocatorType>>::template rebind_alloc<limb_type>>>;
@@ -6018,7 +6015,7 @@
   #endif // !defined(WIDE_INTEGER_DISABLE_FLOAT_INTEROP)
 
   template<typename UnsignedIntegralType>
-  WIDE_INTEGER_CONSTEXPR auto lsb_helper(const UnsignedIntegralType& u) -> unsigned_fast_type
+  constexpr auto lsb_helper(const UnsignedIntegralType& u) -> unsigned_fast_type
   {
     // Compile-time checks.
     static_assert((   std::is_integral<UnsignedIntegralType>::value
@@ -6048,7 +6045,7 @@
   }
 
   template<typename UnsignedIntegralType>
-  WIDE_INTEGER_CONSTEXPR inline auto msb_helper(const UnsignedIntegralType& u) -> unsigned_fast_type
+  constexpr auto msb_helper(const UnsignedIntegralType& u) -> unsigned_fast_type
   {
     // Compile-time checks.
     static_assert((   std::is_integral<UnsignedIntegralType>::value
@@ -6083,7 +6080,7 @@
   }
 
   template<>
-  WIDE_INTEGER_CONSTEXPR inline auto msb_helper<std::uint32_t>(const std::uint32_t& u) -> unsigned_fast_type
+  constexpr auto msb_helper<std::uint32_t>(const std::uint32_t& u) -> unsigned_fast_type
   {
     auto r = static_cast<unsigned_fast_type>(UINT8_C(0));
     auto x = static_cast<std::uint_fast32_t>(u);
@@ -6099,7 +6096,7 @@
   }
 
   template<>
-  WIDE_INTEGER_CONSTEXPR inline auto msb_helper<std::uint16_t>(const std::uint16_t& u) -> unsigned_fast_type
+  constexpr auto msb_helper<std::uint16_t>(const std::uint16_t& u) -> unsigned_fast_type
   {
     auto r = static_cast<unsigned_fast_type>(UINT8_C(0));
     auto x = static_cast<std::uint_fast16_t>(u);
@@ -6114,7 +6111,7 @@
   }
 
   template<>
-  WIDE_INTEGER_CONSTEXPR inline auto msb_helper<std::uint8_t>(const std::uint8_t& u) -> unsigned_fast_type
+  constexpr auto msb_helper<std::uint8_t>(const std::uint8_t& u) -> unsigned_fast_type
   {
     auto r = static_cast<unsigned_fast_type>(UINT8_C(0));
     auto x = static_cast<std::uint_fast8_t>(u);
@@ -6149,7 +6146,7 @@
   WIDE_INTEGER_CONSTEXPR auto lsb(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& x) -> unsigned_fast_type
   {
     // Calculate the position of the least-significant bit.
-    // Use a linear search starting from the least significant limbs.
+    // Use a linear search starting from the least significant limb.
 
     using local_wide_integer_type = uintwide_t<Width2, LimbType, AllocatorType, IsSigned>;
     using local_value_type        = typename local_wide_integer_type::representation_type::value_type;
@@ -6187,7 +6184,7 @@
   WIDE_INTEGER_CONSTEXPR auto msb(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& x) -> unsigned_fast_type
   {
     // Calculate the position of the most-significant bit.
-    // Use a linear search starting from the most significant limbs.
+    // Use a linear search starting from the most significant limb.
 
     using local_wide_integer_type = uintwide_t<Width2, LimbType, AllocatorType, IsSigned>;
     using local_value_type        = typename local_wide_integer_type::representation_type::value_type;
@@ -6251,16 +6248,18 @@
       // involving the position of the msb.
       const auto msb_pos = msb(m);
 
+      const auto msb_pos_mod_2 = static_cast<unsigned_fast_type>(msb_pos % static_cast<unsigned_fast_type>(UINT8_C(2)));
+
       // Obtain the initial value.
       const auto left_shift_amount =
         static_cast<unsigned_fast_type>
         (
-          ((static_cast<unsigned_fast_type>(msb_pos % static_cast<unsigned_fast_type>(UINT8_C(2))) == static_cast<unsigned_fast_type>(UINT8_C(0)))
-            ? static_cast<unsigned_fast_type>(1U + static_cast<unsigned_fast_type>((msb_pos + static_cast<unsigned_fast_type>(UINT8_C(0))) / 2U))
-            : static_cast<unsigned_fast_type>(1U + static_cast<unsigned_fast_type>((msb_pos + static_cast<unsigned_fast_type>(UINT8_C(1))) / 2U)))
+          ((msb_pos_mod_2 == static_cast<unsigned_fast_type>(UINT8_C(0)))
+            ? static_cast<unsigned_fast_type>(UINT8_C(1)) + static_cast<unsigned_fast_type>((msb_pos + static_cast<unsigned_fast_type>(UINT8_C(0))) / 2U)
+            : static_cast<unsigned_fast_type>(UINT8_C(1)) + static_cast<unsigned_fast_type>((msb_pos + static_cast<unsigned_fast_type>(UINT8_C(1))) / 2U))
         );
 
-      auto u = static_cast<local_wide_integer_type>(static_cast<std::uint_fast8_t>(UINT8_C(1))) << left_shift_amount;
+      auto u = static_cast<local_wide_integer_type>(static_cast<unsigned>(UINT8_C(1))) << left_shift_amount;
 
       // Perform the iteration for the square root.
       // See Algorithm 1.13 SqrtInt, Sect. 1.5.1
@@ -6313,18 +6312,22 @@
         static_cast<unsigned_fast_type>
         (
           (msb_pos_mod_3 == static_cast<unsigned_fast_type>(UINT8_C(0)))
-            ? static_cast<unsigned_fast_type>(static_cast<unsigned_fast_type>(UINT8_C(1)) + static_cast<unsigned_fast_type>(static_cast<unsigned_fast_type>(msb_pos + static_cast<unsigned_fast_type>(UINT8_C(0))) / 3U))
-            : static_cast<unsigned_fast_type>(static_cast<unsigned_fast_type>(UINT8_C(1)) + static_cast<unsigned_fast_type>(static_cast<unsigned_fast_type>(msb_pos + static_cast<unsigned_fast_type>(static_cast<unsigned_fast_type>(UINT8_C(3)) - msb_pos_mod_3)) / 3U))
+            ? static_cast<unsigned_fast_type>(UINT8_C(1)) + static_cast<unsigned_fast_type>(static_cast<unsigned_fast_type>(msb_pos + static_cast<unsigned_fast_type>(UINT8_C(0))) / 3U)
+            : static_cast<unsigned_fast_type>(UINT8_C(1)) + static_cast<unsigned_fast_type>(static_cast<unsigned_fast_type>(msb_pos + static_cast<unsigned_fast_type>(static_cast<unsigned_fast_type>(UINT8_C(3)) - msb_pos_mod_3)) / 3U)
         );
 
-      auto u = static_cast<local_wide_integer_type>(static_cast<std::uint_fast8_t>(UINT8_C(1))) << left_shift_amount;
+      auto u = static_cast<local_wide_integer_type>(static_cast<unsigned>(UINT8_C(1))) << left_shift_amount;
 
       // Perform the iteration for the k'th root.
       // See Algorithm 1.14 RootInt, Sect. 1.5.2
       // in R.P. Brent and Paul Zimmermann, "Modern Computer Arithmetic",
       // Cambridge University Press, 2011.
 
-      const auto three_minus_one = static_cast<unsigned_fast_type>(static_cast<unsigned>(3U - 1U));
+      const auto three_minus_one =
+        static_cast<unsigned_fast_type>
+        (
+          static_cast<unsigned>(static_cast<unsigned>(UINT8_C(3)) - static_cast<unsigned>(UINT8_C(1)))
+        );
 
       for(auto i = static_cast<unsigned_fast_type>(UINT8_C(0)); i < static_cast<unsigned_fast_type>(UINT8_C(64)); ++i)
       {
@@ -6385,10 +6388,10 @@
       {
         // Obtain the initial guess via algorithms
         // involving the position of the msb.
-        const unsigned_fast_type msb_pos = msb(m);
+        const auto msb_pos = msb(m);
 
         // Obtain the initial value.
-        const unsigned_fast_type msb_pos_mod_k = msb_pos % k;
+        const auto msb_pos_mod_k = static_cast<unsigned_fast_type>(msb_pos % static_cast<unsigned_fast_type>(k));
 
         const auto left_shift_amount =
           static_cast<unsigned_fast_type>
@@ -6398,7 +6401,7 @@
               : static_cast<unsigned_fast_type>(UINT8_C(1)) + static_cast<unsigned_fast_type>(static_cast<unsigned_fast_type>(msb_pos + static_cast<unsigned_fast_type>(k - msb_pos_mod_k)) / k))
           );
 
-        auto u = static_cast<local_wide_integer_type>(static_cast<std::uint_fast8_t>(UINT8_C(1))) << left_shift_amount;
+        auto u = static_cast<local_wide_integer_type>(static_cast<unsigned>(UINT8_C(1))) << left_shift_amount;
 
         // Perform the iteration for the k'th root.
         // See Algorithm 1.14 RootInt, Sect. 1.5.2
@@ -6505,15 +6508,15 @@
 
     auto p0 = static_cast<local_limb_type>(p); // NOLINT(altera-id-dependent-backward-branch)
 
-    if((p0 == static_cast<local_limb_type>(UINT8_C(0))) && (p == static_cast<OtherIntegralTypeP>(0)))
+    if((p0 == static_cast<local_limb_type>(UINT8_C(0))) && (p == static_cast<OtherIntegralTypeP>(static_cast<int>(INT8_C(0)))))
     {
       result = local_normal_width_type((m != static_cast<unsigned>(UINT8_C(1))) ? static_cast<std::uint8_t>(UINT8_C(1)) : static_cast<std::uint8_t>(UINT8_C(0)));
     }
-    else if((p0 == static_cast<local_limb_type>(UINT8_C(1))) && (p == static_cast<OtherIntegralTypeP>(1)))
+    else if((p0 == static_cast<local_limb_type>(UINT8_C(1))) && (p == static_cast<OtherIntegralTypeP>(static_cast<int>(INT8_C(1)))))
     {
       result = b % m;
     }
-    else if((p0 == static_cast<local_limb_type>(UINT8_C(2))) && (p == static_cast<OtherIntegralTypeP>(2)))
+    else if((p0 == static_cast<local_limb_type>(UINT8_C(2))) && (p == static_cast<OtherIntegralTypeP>(static_cast<int>(INT8_C(2)))))
     {
       y *= y;
       y %= m_local;
