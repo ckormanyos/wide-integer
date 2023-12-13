@@ -7534,7 +7534,7 @@
     {
       local_input_iterator_type non_const_first = first;
 
-      while(non_const_first != last)
+      while(non_const_first != last) // NOLINT(altera-id-dependent-backward-branch)
       {
         ++non_const_first;
         ++input_distance;
@@ -7647,7 +7647,7 @@
     {
       local_input_iterator_type non_const_first = first;
 
-      while(non_const_first != last)
+      while(non_const_first != last) // NOLINT(altera-id-dependent-backward-branch)
       {
         ++non_const_first;
         ++input_distance;
