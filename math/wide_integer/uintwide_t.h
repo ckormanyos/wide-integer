@@ -95,26 +95,31 @@
 
   #if defined(_MSVC_LANG)
     #if (_MSVC_LANG >= 201402L)
-    #define WIDE_INTEGER_CONSTEXPR constexpr                // NOLINT(cppcoreguidelines-macro-usage)
-    #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 1  // NOLINT(cppcoreguidelines-macro-usage)
+      #if (defined(_MSC_VER) && (_MSC_VER < 1920))
+        #define WIDE_INTEGER_CONSTEXPR                          // NOLINT(cppcoreguidelines-macro-usage)
+        #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 0  // NOLINT(cppcoreguidelines-macro-usage)
+      #else
+        #define WIDE_INTEGER_CONSTEXPR constexpr                // NOLINT(cppcoreguidelines-macro-usage)
+        #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 1  // NOLINT(cppcoreguidelines-macro-usage)
+      #endif
     #else
-    #define WIDE_INTEGER_CONSTEXPR                          // NOLINT(cppcoreguidelines-macro-usage)
-    #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 0  // NOLINT(cppcoreguidelines-macro-usage)
+    #define WIDE_INTEGER_CONSTEXPR                              // NOLINT(cppcoreguidelines-macro-usage)
+    #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 0      // NOLINT(cppcoreguidelines-macro-usage)
     #endif
   #else
     #if (defined(__AVR__) && (defined(__GNUC__) && (__GNUC__ < 10)))
-      #define WIDE_INTEGER_CONSTEXPR                          // NOLINT(cppcoreguidelines-macro-usage)
-      #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 0  // NOLINT(cppcoreguidelines-macro-usage)
+      #define WIDE_INTEGER_CONSTEXPR                            // NOLINT(cppcoreguidelines-macro-usage)
+      #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 0    // NOLINT(cppcoreguidelines-macro-usage)
     #elif (defined(__MINGW32__) && (defined(__GNUC__) && (__GNUC__ < 9)))
-      #define WIDE_INTEGER_CONSTEXPR                          // NOLINT(cppcoreguidelines-macro-usage)
-      #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 0  // NOLINT(cppcoreguidelines-macro-usage)
+      #define WIDE_INTEGER_CONSTEXPR                            // NOLINT(cppcoreguidelines-macro-usage)
+      #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 0    // NOLINT(cppcoreguidelines-macro-usage)
     #else
       #if (__cplusplus >= 201402L)
-      #define WIDE_INTEGER_CONSTEXPR constexpr                // NOLINT(cppcoreguidelines-macro-usage)
-      #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 1  // NOLINT(cppcoreguidelines-macro-usage)
+      #define WIDE_INTEGER_CONSTEXPR constexpr                  // NOLINT(cppcoreguidelines-macro-usage)
+      #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 1    // NOLINT(cppcoreguidelines-macro-usage)
       #else
-      #define WIDE_INTEGER_CONSTEXPR                          // NOLINT(cppcoreguidelines-macro-usage)
-      #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 0  // NOLINT(cppcoreguidelines-macro-usage)
+      #define WIDE_INTEGER_CONSTEXPR                            // NOLINT(cppcoreguidelines-macro-usage)
+      #define WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST 0    // NOLINT(cppcoreguidelines-macro-usage)
       #endif
     #endif
   #endif
