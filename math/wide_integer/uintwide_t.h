@@ -2550,10 +2550,15 @@
 
         // TBD: Can proper/better template specialization remove the need for if constexpr here?
         #if (   (defined(_MSC_VER) && ((_MSC_VER >= 1900) && defined(_HAS_CXX17) && (_HAS_CXX17 != 0))) \
-             || (defined(__cplusplus) && ((__cplusplus >= 201703L) || defined(__cpp_if_constexpr))))
+             || (defined(__cplusplus) && ((__cplusplus >= 201703L) || defined(__cpp_if_constexpr))) \
+             || (defined(_MSVC_LANG) && ((_MSVC_LANG >= 201703L) || defined(__cpp_if_constexpr))))
         if constexpr(Width2 < OtherWidth2)
         #else
+        #if defined(_MSC_VER)
+        #pragma warning(disable : 4127)
         if(Width2 < OtherWidth2)
+        #pragma warning(default:4127)
+        #endif
         #endif
         {
           detail::fill_unsafe(detail::advance_and_point(other.values.begin(), sz), other.values.end(), static_cast<limb_type>(UINT8_C(0)));
@@ -2574,7 +2579,11 @@
              || (defined(__cplusplus) && ((__cplusplus >= 201703L) || defined(__cpp_if_constexpr))))
         if constexpr(Width2 < OtherWidth2)
         #else
+        #if defined(_MSC_VER)
+        #pragma warning(disable : 4127)
         if(Width2 < OtherWidth2)
+        #pragma warning(default:4127)
+        #endif
         #endif
         {
           detail::fill_unsafe(detail::advance_and_point(other.values.begin(), sz), other.values.end(), static_cast<limb_type>(UINT8_C(0)));
