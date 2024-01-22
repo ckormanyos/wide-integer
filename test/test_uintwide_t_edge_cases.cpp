@@ -1844,6 +1844,27 @@ auto test_to_and_from_chars_and_to_string() -> bool // NOLINT(readability-functi
     }
     #endif
 
+    {
+      auto str_false = from_chars_strings_dec.back();
+
+      local_uintwide_t_small_signed_type val_false { };
+
+      const auto fc_result_ok = from_chars(str_false.data(), str_false.data() + str_false.length(), val_false, 10); // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+
+      const auto result_false_correct_is_ok = ((val_false == from_chars_vals.back()) && (fc_result_ok.ec == std::errc()));
+
+      // Now make the false-string to actually be false.
+      str_false.back() = 'Z';
+
+      const auto fc_result_not_ok = from_chars(str_false.data(), str_false.data() + str_false.length(), val_false, 10); // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+
+      const auto result_false_false_is_ok = ((val_false != from_chars_vals.back()) && (fc_result_not_ok.ec != std::errc()));
+
+      const auto result_both_vals_false_are_ok = (result_false_correct_is_ok && result_false_false_is_ok);
+
+      result_is_ok = (result_both_vals_false_are_ok && result_is_ok);
+    }
+
     const from_chars_str_array_type from_chars_strings_hex =
     {{
       std::string("0x217B907900B4119043037FA80D33976A08FCA38343D756BD61F2744C273FF155"),
