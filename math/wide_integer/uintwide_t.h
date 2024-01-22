@@ -5392,9 +5392,10 @@
         ++pos;
       }
 
-      std::uint_fast8_t base { };
+      // Set the base if the client has supplied a non-zero base-hint.
+      auto base = static_cast<std::uint_fast8_t>(base_hint);
 
-      if(base_hint == 0)
+      if(base == static_cast<std::uint_fast8_t>(UINT8_C(0)))
       {
         base = static_cast<std::uint_fast8_t>(UINT8_C(10));
 
@@ -5426,11 +5427,6 @@
             ;
           }
         }
-      }
-      else
-      {
-        // Set the base if the client has supplied a non-zero base-hint.
-        base = static_cast<std::uint_fast8_t>(base_hint);
       }
 
       auto char_is_valid = true;
