@@ -3574,12 +3574,10 @@
              typename OtherLimbType,
              typename OtherAllocatorType,
              const bool OtherIsSigned>
-    friend
-    WIDE_INTEGER_CONSTEXPR
-    auto from_chars(const char* first,
-                    const char* last,
-                    uintwide_t<OtherWidth2, OtherLimbType, OtherAllocatorType, OtherIsSigned>& x,
-                    int base) -> std::from_chars_result;
+    friend WIDE_INTEGER_CONSTEXPR auto from_chars(const char* first, // NOLINT(readability-redundant-declaration)
+                                                  const char* last,
+                                                  uintwide_t<OtherWidth2, OtherLimbType, OtherAllocatorType, OtherIsSigned>& x,
+                                                  int base) -> std::from_chars_result;
     #endif
 
     template<const size_t OtherWidth2,

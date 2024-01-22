@@ -1866,7 +1866,7 @@ auto test_to_and_from_chars_and_to_string() -> bool // NOLINT(readability-functi
       {
         local_uintwide_t_small_signed_type val { };
 
-        const auto fc_result = from_chars(str.data(), str.data() + str.length(), val, 10);
+        const auto fc_result = from_chars(str.data(), str.data() + str.length(), val, 10); // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
 
         const auto result_from_chars_val_is_ok = ((val == from_chars_vals[index]) && (fc_result.ec == std::errc()));
 
@@ -1884,7 +1884,7 @@ auto test_to_and_from_chars_and_to_string() -> bool // NOLINT(readability-functi
       {
         local_uintwide_t_small_signed_type val { };
 
-        const auto fc_result = from_chars(str.data() + static_cast<std::string::size_type>(UINT8_C(2)), str.data() + str.length(), val, 16);
+        const auto fc_result = from_chars(str.data() + static_cast<std::string::size_type>(UINT8_C(2)), str.data() + str.length(), val, 16); // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
 
         const auto result_from_chars_val_is_ok = ((val == from_chars_vals[index]) && (fc_result.ec == std::errc()));
 
@@ -1902,7 +1902,7 @@ auto test_to_and_from_chars_and_to_string() -> bool // NOLINT(readability-functi
       {
         local_uintwide_t_small_signed_type val { };
 
-        const auto fc_result = from_chars(str.data() + static_cast<std::string::size_type>(UINT8_C(1)), str.data() + str.length(), val, 8);
+        const auto fc_result = from_chars(str.data() + static_cast<std::string::size_type>(UINT8_C(1)), str.data() + str.length(), val, 8); // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
 
         const auto result_from_chars_val_is_ok = ((val == from_chars_vals[index]) && (fc_result.ec == std::errc()));
 
