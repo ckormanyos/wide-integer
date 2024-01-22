@@ -868,7 +868,14 @@ in the wide-integer project.
   - All wide-integer-types are move constructable.
   - All wide-integer types having the same widths and having the same limb-type (but possibly different sign) are move-assignable and `std::move()`-capable.
 
-### Importing and exporting bits
+### Importing and exporting characters and bits
+
+For sufficiently modern standards-conforming compilers,
+namespace-specific functions `to_chars()` and `from_chars()`
+are available. These each have the _usual_ `<charconv>`-like
+behavior and can also be used in `constexpr`-context.
+For motivational words on these, see also
+[issue 398](https://github.com/ckormanyos/wide-integer/issues/398).
 
 Support for importing and exporting bits is granted by the subroutines
 `import_bits()` and `export_bits()`. Their interfaces, input/output forms
