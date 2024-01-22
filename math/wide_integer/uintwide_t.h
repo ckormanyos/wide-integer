@@ -1,5 +1,5 @@
 ﻿///////////////////////////////////////////////////////////////////
-//  Copyright Christopher Kormanyos 1999 - 2023.                 //
+//  Copyright Christopher Kormanyos 1999 - 2024.                 //
 //  Distributed under the Boost Software License,                //
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt          //
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)             //
@@ -1617,10 +1617,21 @@
            typename LimbType,
            typename AllocatorType,
            const bool IsSigned>
+  WIDE_INTEGER_CONSTEXPR
   auto to_chars(char* first,
                 char* last,
                 const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& x,
                 int base = static_cast<int>(INT8_C(10))) -> std::to_chars_result;
+
+  template<const size_t Width2,
+           typename LimbType,
+           typename AllocatorType,
+           const bool IsSigned>
+  WIDE_INTEGER_CONSTEXPR
+  auto from_chars(const char* first,
+                  const char* last,
+                  uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& x,
+                  int base = static_cast<int>(INT8_C(10))) -> std::from_chars_result;
   #endif
 
   #if !defined(WIDE_INTEGER_DISABLE_TO_STRING)
@@ -2454,7 +2465,7 @@
           typename representation_type::allocator_type()
         }
     {
-      if(!rd_string(str_input))
+      if(!rd_string(str_input, (std::numeric_limits<unsigned_fast_type>::max)(), 0))
       {
         static_cast<void>(operator=((std::numeric_limits<uintwide_t>::max)()));
       }
@@ -3548,6 +3559,28 @@
   private:
   #endif
     friend auto ::test_uintwide_t_edge::test_various_isolated_edge_cases() -> bool;
+
+    template<const size_t OtherWidth2,
+             typename OtherLimbType,
+             typename OtherAllocatorType,
+             const bool OtherIsSignedLeft,
+             const bool OtherIsSignedRight>
+    friend WIDE_INTEGER_CONSTEXPR auto divmod(const uintwide_t<OtherWidth2, OtherLimbType, OtherAllocatorType, OtherIsSignedLeft >& a, // NOLINT(readability-redundant-declaration)
+                                              const uintwide_t<OtherWidth2, OtherLimbType, OtherAllocatorType, OtherIsSignedRight>& b,
+                                              std::enable_if_t<((!OtherIsSignedLeft) && (!OtherIsSignedRight)), int>* p_nullparam) -> std::pair<uintwide_t<OtherWidth2, OtherLimbType, OtherAllocatorType, OtherIsSignedLeft>, uintwide_t<OtherWidth2, OtherLimbType, OtherAllocatorType, OtherIsSignedRight>>;
+
+    #if (defined(__cpp_lib_to_chars) && (__cpp_lib_to_chars >= 201611L))
+    template<const size_t OtherWidth2,
+             typename OtherLimbType,
+             typename OtherAllocatorType,
+             const bool OtherIsSigned>
+    friend
+    WIDE_INTEGER_CONSTEXPR
+    auto from_chars(const char* first,
+                    const char* last,
+                    uintwide_t<OtherWidth2, OtherLimbType, OtherAllocatorType, OtherIsSigned>& x,
+                    int base) -> std::from_chars_result;
+    #endif
 
     template<const size_t OtherWidth2,
              typename OtherLimbType,
@@ -5331,13 +5364,15 @@
     }
 
     // Read string function.
-    WIDE_INTEGER_CONSTEXPR auto rd_string(const char* str_input) -> bool // NOLINT(readability-function-cognitive-complexity)
+    WIDE_INTEGER_CONSTEXPR auto rd_string(const char* str_input, const unsigned_fast_type count, const int base_hint) -> bool // NOLINT(readability-function-cognitive-complexity,bugprone-easily-swappable-parameters)
     {
       detail::fill_unsafe(values.begin(), values.end(), static_cast<limb_type>(UINT8_C(0)));
 
-      const auto str_length = detail::strlen_unsafe(str_input);
-
-      auto base = static_cast<std::uint_fast8_t>(UINT8_C(10));
+      const auto str_length =
+        static_cast<unsigned_fast_type>
+        (
+          (count == (std::numeric_limits<unsigned_fast_type>::max)()) ? detail::strlen_unsafe(str_input) : count
+        );
 
       auto pos = static_cast<unsigned_fast_type>(UINT8_C(0));
 
@@ -5359,33 +5394,45 @@
         ++pos;
       }
 
-      // Perform a dynamic detection of the base.
-      if(str_length > static_cast<unsigned_fast_type>(static_cast<std::size_t>(pos) + static_cast<std::size_t>(UINT8_C(0))))
+      std::uint_fast8_t base { };
+
+      if(base_hint == 0)
       {
-        const auto might_be_oct_or_hex = ((str_input[static_cast<std::size_t>(static_cast<std::size_t>(pos) + static_cast<std::size_t>(UINT8_C(0)))] == '0') && (str_length > static_cast<unsigned_fast_type>(static_cast<std::size_t>(pos) + static_cast<std::size_t>(UINT8_C(0))))); // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+        base = static_cast<std::uint_fast8_t>(UINT8_C(10));
 
-        if(might_be_oct_or_hex)
+        // Perform a dynamic detection of the base.
+        if(str_length > static_cast<unsigned_fast_type>(static_cast<std::size_t>(pos) + static_cast<std::size_t>(UINT8_C(0))))
         {
-          if((str_input[static_cast<std::size_t>(static_cast<std::size_t>(pos) + static_cast<std::size_t>(UINT8_C(1)))] >= '0') && (str_input[static_cast<std::size_t>(static_cast<std::size_t>(pos) + static_cast<std::size_t>(UINT8_C(1)))] <= '8')) // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
-          {
-            // The input format is octal.
-            base = static_cast<std::uint_fast8_t>(UINT8_C(8));
+          const auto might_be_oct_or_hex = ((str_input[static_cast<std::size_t>(static_cast<std::size_t>(pos) + static_cast<std::size_t>(UINT8_C(0)))] == '0') && (str_length > static_cast<unsigned_fast_type>(static_cast<std::size_t>(pos) + static_cast<std::size_t>(UINT8_C(0))))); // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
 
-            pos = static_cast<unsigned_fast_type>(static_cast<std::size_t>(pos) + static_cast<std::size_t>(UINT8_C(1)));
+          if(might_be_oct_or_hex)
+          {
+            if((str_input[static_cast<std::size_t>(static_cast<std::size_t>(pos) + static_cast<std::size_t>(UINT8_C(1)))] >= '0') && (str_input[static_cast<std::size_t>(static_cast<std::size_t>(pos) + static_cast<std::size_t>(UINT8_C(1)))] <= '8')) // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+            {
+              // The input format is octal.
+              base = static_cast<std::uint_fast8_t>(UINT8_C(8));
+
+              pos = static_cast<unsigned_fast_type>(static_cast<std::size_t>(pos) + static_cast<std::size_t>(UINT8_C(1)));
+            }
+            else if((str_input[static_cast<std::size_t>(static_cast<std::size_t>(pos) + static_cast<std::size_t>(UINT8_C(1)))] == 'x') || (str_input[static_cast<std::size_t>(static_cast<std::size_t>(pos) + static_cast<std::size_t>(UINT8_C(1)))] == 'X')) // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+            {
+              // The input format is hexadecimal.
+              base = static_cast<std::uint_fast8_t>(UINT8_C(16));
+
+              pos = static_cast<unsigned_fast_type>(static_cast<std::size_t>(pos) + static_cast<std::size_t>(UINT8_C(2)));
+            }
           }
-          else if((str_input[static_cast<std::size_t>(static_cast<std::size_t>(pos) + static_cast<std::size_t>(UINT8_C(1)))] == 'x') || (str_input[static_cast<std::size_t>(static_cast<std::size_t>(pos) + static_cast<std::size_t>(UINT8_C(1)))] == 'X')) // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+          else if((str_input[static_cast<std::size_t>(static_cast<std::size_t>(pos) + static_cast<std::size_t>(UINT8_C(0)))] >= '0') && (str_input[static_cast<std::size_t>(static_cast<std::size_t>(pos) + static_cast<std::size_t>(UINT8_C(0)))] <= '9')) // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
           {
-            // The input format is hexadecimal.
-            base = static_cast<std::uint_fast8_t>(UINT8_C(16));
-
-            pos = static_cast<unsigned_fast_type>(static_cast<std::size_t>(pos) + static_cast<std::size_t>(UINT8_C(2)));
+            // The input format is decimal.
+            ;
           }
         }
-        else if((str_input[static_cast<std::size_t>(static_cast<std::size_t>(pos) + static_cast<std::size_t>(UINT8_C(0)))] >= '0') && (str_input[static_cast<std::size_t>(static_cast<std::size_t>(pos) + static_cast<std::size_t>(UINT8_C(0)))] <= '9')) // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
-        {
-          // The input format is decimal.
-          ;
-        }
+      }
+      else
+      {
+        // Set the base if the client has supplied a non-zero base-hint.
+        base = static_cast<std::uint_fast8_t>(base_hint);
       }
 
       auto char_is_valid = true;
@@ -7283,6 +7330,7 @@
            typename LimbType,
            typename AllocatorType,
            const bool IsSigned>
+  WIDE_INTEGER_CONSTEXPR
   auto to_chars(char* first,
                 char* last,
                 const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& x,
@@ -7437,6 +7485,53 @@
 
         result.ec = std::errc();
       }
+    }
+
+    return result;
+  }
+
+  template<const size_t Width2,
+           typename LimbType,
+           typename AllocatorType,
+           const bool IsSigned>
+  WIDE_INTEGER_CONSTEXPR
+  auto from_chars(const char* first,
+                  const char* last,
+                  uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& x,
+                  int base) -> std::from_chars_result
+  {
+    using local_wide_integer_type = uintwide_t<Width2, LimbType, AllocatorType, IsSigned>;
+
+    using local_wide_integer_type = uintwide_t<Width2, LimbType, AllocatorType, IsSigned>;
+    using local_limb_type         = typename local_wide_integer_type::limb_type;
+
+    detail::fill_unsafe(x.values.begin(), x.values.end(), static_cast<local_limb_type>(UINT8_C(0)));
+
+    const auto str_len = static_cast<unsigned_fast_type>(detail::distance_unsafe(first, last));
+
+    const auto result_rd_string_is_ok = x.rd_string(first, str_len, base);
+
+    std::from_chars_result result { };
+
+    if(result_rd_string_is_ok)
+    {
+      result =
+        std::from_chars_result
+        {
+          last,
+          std::errc()
+        };
+    }
+    else
+    {
+      result =
+        std::from_chars_result
+        {
+          last,
+          std::errc::result_out_of_range
+        };
+
+      detail::fill_unsafe(x.values.begin(), x.values.end(), static_cast<local_limb_type>(UINT8_C(0)));
     }
 
     return result;

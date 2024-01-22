@@ -1,5 +1,5 @@
 ﻿///////////////////////////////////////////////////////////////////////////////
-//  Copyright Christopher Kormanyos 2019 - 2023.
+//  Copyright Christopher Kormanyos 2019 - 2024.
 //  Distributed under the Boost Software License,
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -149,6 +149,38 @@ using boost_uint_type =
   boost::multiprecision::number<boost_uint_backend_type,
                                 boost::multiprecision::et_off>;
 #endif
+
+} // namespace test_uintwide_t_edge
+
+// LCOV_EXCL_START
+#if (defined(__cpp_lib_to_chars) && (__cpp_lib_to_chars >= 201611L))
+#if (defined (WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST) && (WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST == 1))
+WIDE_INTEGER_CONSTEXPR auto constexpr_test_from_chars() -> ::test_uintwide_t_edge::local_uintwide_t_small_signed_type
+{
+  const char str_oct[] = "03065217317131113762053502330331263237375335355677425522565630540315656637703556251373"; // NOLINT(cppcoreguidelines-avoid-c-arrays,hicpp-avoid-c-arrays,modernize-avoid-c-arrays)
+
+  ::test_uintwide_t_edge::local_uintwide_t_small_signed_type val { };
+
+  using std::from_chars;
+
+  const auto fc_result =
+    from_chars
+    (
+      str_oct + static_cast<std::size_t>(UINT8_C(1)),                                             // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay,cppcoreguidelines-pro-bounds-pointer-arithmetic)
+      str_oct + static_cast<std::size_t>(sizeof(str_oct) - static_cast<std::size_t>(UINT8_C(1))), // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay,cppcoreguidelines-pro-bounds-pointer-arithmetic)
+      val,
+      8
+    );
+
+  static_cast<void>(fc_result);
+
+  return val;
+}
+#endif
+#endif
+// LCOV_EXCL_STOP
+
+namespace test_uintwide_t_edge {
 
 enum class local_base
 {
@@ -1691,14 +1723,14 @@ auto test_various_isolated_edge_cases() -> bool // NOLINT(readability-function-c
   return result_is_ok;
 }
 
-auto test_to_chars_and_to_string() -> bool // NOLINT(readability-function-cognitive-complexity)
+auto test_to_and_from_chars_and_to_string() -> bool // NOLINT(readability-function-cognitive-complexity)
 {
   eng_sgn.seed(util::util_pseudorandom_time_point_seed::value<typename eng_sgn_type::result_type>());
   eng_dig.seed(util::util_pseudorandom_time_point_seed::value<typename eng_dig_type::result_type>());
 
   auto result_is_ok = true;
 
-  #if defined(__cpp_lib_to_chars)
+  #if (defined(__cpp_lib_to_chars) && (__cpp_lib_to_chars >= 201611L))
   for(auto   i = static_cast<unsigned>(UINT8_C(0));
              i < static_cast<unsigned>(loop_count_hi);
            ++i)
@@ -1781,7 +1813,106 @@ auto test_to_chars_and_to_string() -> bool // NOLINT(readability-function-cognit
 
     result_is_ok = (result_n_to_from_string_dec_is_ok && result_is_ok);
   }
-  #endif // __cpp_lib_to_chars
+
+  {
+    using from_chars_vals_array_type = std::array<local_uintwide_t_small_signed_type, static_cast<std::size_t>(UINT8_C(3))>;
+    using from_chars_str_array_type  = std::array<std::string, static_cast<std::size_t>(UINT8_C(3))>;
+
+    const from_chars_str_array_type from_chars_strings_dec =
+    {{
+      std::string("15144643305917092583843275533505256431413500728112133531049985787371431391573"),
+      std::string("32468694466796117852331137634732746549554240939117027005983522724188427316919"),
+      std::string("22464118857179526662260684853039985803178920824202321315045157411980838523643")
+    }};
+
+    const from_chars_vals_array_type from_chars_vals =
+    {{
+      local_uintwide_t_small_signed_type(from_chars_strings_dec[0U].c_str()),
+      local_uintwide_t_small_signed_type(from_chars_strings_dec[1U].c_str()),
+      local_uintwide_t_small_signed_type(from_chars_strings_dec[2U].c_str())
+    }};
+
+    #if (defined (WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST) && (WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST == 1))
+    {
+      WIDE_INTEGER_CONSTEXPR local_uintwide_t_small_signed_type compile_time_val("22464118857179526662260684853039985803178920824202321315045157411980838523643");
+
+      static_assert(::constexpr_test_from_chars() == compile_time_val, "Error: Can not perform constexpr-from_chars() at compile-time");
+
+      const auto result_constexpr_test_from_chars_is_ok = (::constexpr_test_from_chars() == compile_time_val);
+
+      result_is_ok = (result_constexpr_test_from_chars_is_ok && result_is_ok);
+    }
+    #endif
+
+    const from_chars_str_array_type from_chars_strings_hex =
+    {{
+      std::string("0x217B907900B4119043037FA80D33976A08FCA38343D756BD61F2744C273FF155"),
+      std::string("0x47C8A13C35D6BFC31A75B127413559683B4FD3E725429CBC7221E5351BD2EEB7"),
+      std::string("0x31AA3D9E5925FC857426C365669F7EB75DBBF8AD4AEB98B03375D9FE1DB952FB")
+    }};
+
+    const from_chars_str_array_type from_chars_strings_oct =
+    {{
+      std::string("02057344074400550106202060157752006463456650107712160320753526572607623504604717770525"),
+      std::string("04371050236065655377030647266111640465262640732375174711241234570710417123243364567267"),
+      std::string("03065217317131113762053502330331263237375335355677425522565630540315656637703556251373")
+    }};
+
+    {
+      // Test from_chars for dec.
+      std::size_t index { };
+
+      for(const auto& str : from_chars_strings_dec)
+      {
+        local_uintwide_t_small_signed_type val { };
+
+        const auto fc_result = from_chars(str.data(), str.data() + str.length(), val, 10);
+
+        const auto result_from_chars_val_is_ok = ((val == from_chars_vals[index]) && (fc_result.ec == std::errc()));
+
+        result_is_ok = (result_from_chars_val_is_ok && result_is_ok);
+
+        ++index;
+      }
+    }
+
+    {
+      // Test from_chars for hex.
+      std::size_t index { };
+
+      for(const auto& str : from_chars_strings_hex)
+      {
+        local_uintwide_t_small_signed_type val { };
+
+        const auto fc_result = from_chars(str.data() + static_cast<std::string::size_type>(UINT8_C(2)), str.data() + str.length(), val, 16);
+
+        const auto result_from_chars_val_is_ok = ((val == from_chars_vals[index]) && (fc_result.ec == std::errc()));
+
+        result_is_ok = (result_from_chars_val_is_ok && result_is_ok);
+
+        ++index;
+      }
+    }
+
+    {
+      // Test from_chars for dec.
+      std::size_t index { };
+
+      for(const auto& str : from_chars_strings_oct)
+      {
+        local_uintwide_t_small_signed_type val { };
+
+        const auto fc_result = from_chars(str.data() + static_cast<std::string::size_type>(UINT8_C(1)), str.data() + str.length(), val, 8);
+
+        const auto result_from_chars_val_is_ok = ((val == from_chars_vals[index]) && (fc_result.ec == std::errc()));
+
+        result_is_ok = (result_from_chars_val_is_ok && result_is_ok);
+
+        ++index;
+      }
+    }
+  }
+  #endif // (defined(__cpp_lib_to_chars) && (__cpp_lib_to_chars >= 201611L))
 
   #if !defined(WIDE_INTEGER_DISABLE_TO_STRING)
   for(auto   i = static_cast<unsigned>(UINT8_C(0));
@@ -2419,7 +2550,7 @@ auto ::math::wide_integer::test_uintwide_t_edge_cases() -> bool
   result_is_ok = (test_uintwide_t_edge::test_small_prime_and_non_prime      () && result_is_ok);
   result_is_ok = (test_uintwide_t_edge::test_some_gcd_and_equal_left_right  () && result_is_ok);
   result_is_ok = (test_uintwide_t_edge::test_various_isolated_edge_cases    () && result_is_ok);
-  result_is_ok = (test_uintwide_t_edge::test_to_chars_and_to_string         () && result_is_ok);
+  result_is_ok = (test_uintwide_t_edge::test_to_and_from_chars_and_to_string() && result_is_ok);
   result_is_ok = (test_uintwide_t_edge::test_import_bits                    () && result_is_ok);
   result_is_ok = (test_uintwide_t_edge::test_export_bits                    () && result_is_ok);
 
