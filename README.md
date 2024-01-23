@@ -71,7 +71,7 @@ as shown in the [examples](./examples).
   - Clean header-only C++14 design.
   - Seamless portability to any modern C++14, 17, 20, 23 compiler and beyond.
   - Scalability with small memory footprint and efficiency suitable for both PC/workstation systems as well as _bare-metal_ embedded systems.
-  - C++14 `constexpr`-_ness_ for construction, cast to built-in types, binary arithmetic, comparison operations, some elementary functions and more.
+  - C++14 `constexpr`-_ness_.
 
 ## Quick start
 
@@ -568,7 +568,6 @@ enabled or disabled at compile time with the compiler switches:
 #define WIDE_INTEGER_HAS_MUL_8_BY_8_UNROLL
 #define WIDE_INTEGER_DISABLE_TRIVIAL_COPY_AND_STD_LAYOUT_CHECKS
 #define WIDE_INTEGER_NAMESPACE
-#define WIDE_INTEGER_DISABLE_WIDE_INTEGER_CONSTEXPR
 #define WIDE_INTEGER_DISABLE_PRIVATE_CLASS_DATA_MEMBERS
 #define WIDE_INTEGER_HAS_CLZ_LIMB_OPTIMIZATIONS
 ```
@@ -722,29 +721,6 @@ In this default state, `namespace` `::math::wide_integer` is used
 and the `uintwide_t` class and its associated implementation
 details reside therein.
 
-Domain-specific, non-supported prototyping can be (partially)
-enabled by defining the macro
-
-```cpp
-#define WIDE_INTEGER_DISABLE_WIDE_INTEGER_CONSTEXPR
-```
-
-This advanced macro disables most C++14 (and beyond) `constexpr` features.
-It also disables standard layout and trivially constructable
-attributes.This macro can be used (if needed)
-when progressive prototyping or other non-standard investigations
-require disabling most of wide-integer's default-supplied
-C++14 `constexpr`-handling.
-
-This might be useful when _manually_ substituting
-non-standard, alternate containers instead of using
-wide-integer's default-supplied containers.
-Note: During verification steps of wide-integer,
-for instance, this macro has been used when performing
-algorithmic proof-of-concept via use of `std::list`
-for storage containters (instead of the default-supplied
-dynamic/static array-like containers).
-
 ```cpp
 #define WIDE_INTEGER_DISABLE_PRIVATE_CLASS_DATA_MEMBERS
 ```
@@ -779,11 +755,11 @@ is not defined and CLZ-limb optimizations are default-_disabled_.
 
 ### C++14, 17, 20, 23 and beyond `constexpr` support
 
-When using C++14 and beyond, `uintwide_t` supports compile-time
-`constexpr` construction and evaluation of results
-of binary arithmetic, comparison operators
-and various elementary functions.
-The following code, for instance, shows compile-time instantiations
+`uintwide_t` supports C++14 (and beyond) compile-time
+`constexpr`-ness for all constructions, casts, operations,
+evaluation of function results, etc.
+
+The code below, for instance, shows compile-time instantiations
 of `uintwide_t` from character strings with subsequent `constexpr` evaluations
 of binary operations multiply, divide, intergal cast and comparison.
 
@@ -873,9 +849,8 @@ in the wide-integer project.
 For sufficiently modern standards-conforming compilers,
 namespace-specific functions `to_chars()` and `from_chars()`
 are available. These each have the _usual_ `<charconv>`-like
-behavior and can also be used in `constexpr`-context.
-For motivational words on these, see also
-[issue 398](https://github.com/ckormanyos/wide-integer/issues/398).
+behavior, known from C++17. For motivational words to/from-chars,
+see also [issue 398](https://github.com/ckormanyos/wide-integer/issues/398).
 
 Support for importing and exporting bits is granted by the subroutines
 `import_bits()` and `export_bits()`. Their interfaces, input/output forms

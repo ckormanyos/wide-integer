@@ -1,5 +1,5 @@
 ﻿///////////////////////////////////////////////////////////////////
-//  Copyright Christopher Kormanyos 2018 - 2023.                 //
+//  Copyright Christopher Kormanyos 2018 - 2024.                 //
 //  Distributed under the Boost Software License,                //
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt          //
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)             //
@@ -111,7 +111,7 @@ auto ::math::wide_integer::example008a_miller_rabin_prime() -> bool
   random_engine2_type gen2(static_cast<typename random_engine2_type::result_type>(seed_start));
 
   // Select prime candidates from a range of 10^150 ... max(uint512_t)-1.
-  WIDE_INTEGER_CONSTEXPR local_wide_integer_type
+  constexpr local_wide_integer_type
     dist_min
     (
       "1"
@@ -120,7 +120,7 @@ auto ::math::wide_integer::example008a_miller_rabin_prime() -> bool
       "00000000000000000000000000000000000000000000000000"
     );
 
-  WIDE_INTEGER_CONSTEXPR auto dist_max =
+  constexpr auto dist_max =
     local_wide_integer_type
     {
         (std::numeric_limits<local_wide_integer_type>::max)()

@@ -154,8 +154,7 @@ using boost_uint_type =
 
 // LCOV_EXCL_START
 #if (defined(__cpp_lib_to_chars) && (__cpp_lib_to_chars >= 201611L))
-#if (defined (WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST) && (WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST == 1))
-WIDE_INTEGER_CONSTEXPR auto constexpr_test_from_chars() -> ::test_uintwide_t_edge::local_uintwide_t_small_signed_type
+constexpr auto constexpr_test_from_chars() -> ::test_uintwide_t_edge::local_uintwide_t_small_signed_type
 {
   const char str_oct[] = "03065217317131113762053502330331263237375335355677425522565630540315656637703556251373"; // NOLINT(cppcoreguidelines-avoid-c-arrays,hicpp-avoid-c-arrays,modernize-avoid-c-arrays)
 
@@ -176,7 +175,6 @@ WIDE_INTEGER_CONSTEXPR auto constexpr_test_from_chars() -> ::test_uintwide_t_edg
 
   return val;
 }
-#endif
 #endif
 // LCOV_EXCL_STOP
 
@@ -1833,9 +1831,8 @@ auto test_to_and_from_chars_and_to_string() -> bool // NOLINT(readability-functi
     }};
 
     // Test constexpr-context of from_chars().
-    #if (defined (WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST) && (WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST == 1))
     {
-      WIDE_INTEGER_CONSTEXPR local_uintwide_t_small_signed_type compile_time_val("22464118857179526662260684853039985803178920824202321315045157411980838523643");
+      constexpr local_uintwide_t_small_signed_type compile_time_val("22464118857179526662260684853039985803178920824202321315045157411980838523643");
 
       static_assert(::constexpr_test_from_chars() == compile_time_val, "Error: Can not perform constexpr-from_chars() at compile-time");
 
@@ -1843,7 +1840,6 @@ auto test_to_and_from_chars_and_to_string() -> bool // NOLINT(readability-functi
 
       result_is_ok = (result_constexpr_test_from_chars_is_ok && result_is_ok);
     }
-    #endif
 
     // Successively test one success and one known failing case.
     {
