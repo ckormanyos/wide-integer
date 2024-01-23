@@ -91,8 +91,6 @@
     #endif
   #endif
 
-  // 201703L
-
   #if defined(_MSVC_LANG)
     #if (_MSVC_LANG >= 201402L)
       #if (defined(_MSC_VER) && (_MSC_VER < 1920))
@@ -425,7 +423,7 @@
   namespace distance_detail
   {
     template<class It>
-    constexpr auto do_distance(It first, It last, detail::iterator_detail::random_access_iterator_tag) -> typename detail::iterator_detail::iterator_traits<It>::difference_type // NOLINT(hicpp-named-parameter,readability-named-parameter)
+    constexpr auto do_distance_unsafe(It first, It last, detail::iterator_detail::random_access_iterator_tag) -> typename detail::iterator_detail::iterator_traits<It>::difference_type // NOLINT(hicpp-named-parameter,readability-named-parameter)
     {
       using local_difference_type = typename detail::iterator_detail::iterator_traits<It>::difference_type;
 
@@ -439,7 +437,7 @@
     using local_iterator_category_type = typename iterator_detail::iterator_traits<It>::iterator_category;
 
     return
-      distance_detail::do_distance
+      distance_detail::do_distance_unsafe
       (
         first,
         last,
@@ -797,7 +795,7 @@
     #endif
 
     // Constructors.
-    constexpr dynamic_array() : elem_count(static_cast<size_type>(UINT8_C(0))) { }
+    constexpr dynamic_array() = delete;
 
     explicit WIDE_INTEGER_CONSTEXPR dynamic_array(      size_type       count_in,
                                                         const_reference value_in = value_type(),
@@ -1359,10 +1357,10 @@
                                                                                                                                           uintwide_t<Width2, LimbType, AllocatorType, IsSigned>>;
 
   template<typename IntegralType, const size_t Width2, typename LimbType, typename AllocatorType, const bool IsSigned>
-  WIDE_INTEGER_CONSTEXPR auto operator%(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& u, const IntegralType& v) -> std::enable_if_t<(    std::is_integral   <IntegralType>::value
-                                                                                                                                                    &&  std::is_unsigned   <IntegralType>::value
-                                                                                                                                                    && (std::numeric_limits<IntegralType>::digits <= std::numeric_limits<LimbType>::digits)),
-                                                                                                                                                    typename uintwide_t<Width2, LimbType, AllocatorType, IsSigned>::limb_type>;
+  constexpr auto operator%(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& u, const IntegralType& v) -> std::enable_if_t<(    std::is_integral   <IntegralType>::value
+                                                                                                                                       &&  std::is_unsigned   <IntegralType>::value
+                                                                                                                                       && (std::numeric_limits<IntegralType>::digits <= std::numeric_limits<LimbType>::digits)),
+                                                                                                                                       typename uintwide_t<Width2, LimbType, AllocatorType, IsSigned>::limb_type>;
 
   template<typename IntegralType, const size_t Width2, typename LimbType, typename AllocatorType, const bool IsSigned>
   constexpr auto operator%(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& u, const IntegralType& v) -> std::enable_if_t<(    std::is_integral   <IntegralType>::value
@@ -1477,20 +1475,20 @@
            typename LimbType,
            typename AllocatorType,
            const bool IsSigned>
-  WIDE_INTEGER_CONSTEXPR auto swap(uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& x,
-                                   uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& y) noexcept -> void;
+  constexpr auto swap(uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& x,
+                      uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& y) noexcept -> void;
 
   template<const size_t Width2,
            typename LimbType,
            typename AllocatorType,
            const bool IsSigned>
-  WIDE_INTEGER_CONSTEXPR auto lsb(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& x) -> unsigned_fast_type;
+  constexpr auto lsb(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& x) -> unsigned_fast_type;
 
   template<const size_t Width2,
            typename LimbType,
            typename AllocatorType,
            const bool IsSigned>
-  WIDE_INTEGER_CONSTEXPR auto msb(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& x) -> unsigned_fast_type;
+  constexpr auto msb(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& x) -> unsigned_fast_type;
 
   template<const size_t Width2,
            typename LimbType,
@@ -1502,26 +1500,26 @@
            typename LimbType,
            typename AllocatorType,
            const bool IsSigned>
-  WIDE_INTEGER_CONSTEXPR auto sqrt(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& m) -> uintwide_t<Width2, LimbType, AllocatorType, IsSigned>;
+  constexpr auto sqrt(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& m) -> uintwide_t<Width2, LimbType, AllocatorType, IsSigned>;
 
   template<const size_t Width2,
            typename LimbType,
            typename AllocatorType,
            const bool IsSigned>
-  WIDE_INTEGER_CONSTEXPR auto cbrt(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& m) -> uintwide_t<Width2, LimbType, AllocatorType, IsSigned>;
+  constexpr auto cbrt(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& m) -> uintwide_t<Width2, LimbType, AllocatorType, IsSigned>;
 
   template<const size_t Width2,
            typename LimbType,
            typename AllocatorType,
            const bool IsSigned>
-  WIDE_INTEGER_CONSTEXPR auto rootk(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& m, const std::uint_fast8_t k) -> uintwide_t<Width2, LimbType, AllocatorType, IsSigned>; // NOLINT(readability-avoid-const-params-in-decls)
+  constexpr auto rootk(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& m, const std::uint_fast8_t k) -> uintwide_t<Width2, LimbType, AllocatorType, IsSigned>; // NOLINT(readability-avoid-const-params-in-decls)
 
   template<typename OtherUnsignedIntegralTypeP,
            const size_t Width2,
            typename LimbType,
            typename AllocatorType,
            const bool IsSigned>
-  WIDE_INTEGER_CONSTEXPR auto pow(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& b, const OtherUnsignedIntegralTypeP& p) -> uintwide_t<Width2, LimbType, AllocatorType, IsSigned>;
+  constexpr auto pow(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& b, const OtherUnsignedIntegralTypeP& p) -> uintwide_t<Width2, LimbType, AllocatorType, IsSigned>;
 
   template<typename OtherUnsignedIntegralTypeP,
            typename OtherUnsignedIntegralTypeM,
@@ -1529,9 +1527,9 @@
            typename LimbType,
            typename AllocatorType,
            const bool IsSigned>
-  WIDE_INTEGER_CONSTEXPR auto powm(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& b,
-                                   const OtherUnsignedIntegralTypeP&    p,
-                                   const OtherUnsignedIntegralTypeM&    m) -> uintwide_t<Width2, LimbType, AllocatorType, IsSigned>;
+  constexpr auto powm(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& b,
+                      const OtherUnsignedIntegralTypeP&    p,
+                      const OtherUnsignedIntegralTypeM&    m) -> uintwide_t<Width2, LimbType, AllocatorType, IsSigned>;
 
   template<const size_t Width2,
            typename LimbType,
@@ -1560,20 +1558,18 @@
            typename AllocatorType,
            const bool IsSignedLeft,
            const bool IsSignedRight>
-  WIDE_INTEGER_CONSTEXPR
-  auto divmod(const uintwide_t<Width2, LimbType, AllocatorType, IsSignedLeft >& a,
-              const uintwide_t<Width2, LimbType, AllocatorType, IsSignedRight>& b,
-              std::enable_if_t<((!IsSignedLeft) && (!IsSignedRight)), int>* p_nullparam = nullptr) -> std::pair<uintwide_t<Width2, LimbType, AllocatorType, IsSignedLeft>, uintwide_t<Width2, LimbType, AllocatorType, IsSignedRight>>;
+  constexpr auto divmod(const uintwide_t<Width2, LimbType, AllocatorType, IsSignedLeft >& a,
+                        const uintwide_t<Width2, LimbType, AllocatorType, IsSignedRight>& b,
+                        std::enable_if_t<((!IsSignedLeft) && (!IsSignedRight)), int>* p_nullparam = nullptr) -> std::pair<uintwide_t<Width2, LimbType, AllocatorType, IsSignedLeft>, uintwide_t<Width2, LimbType, AllocatorType, IsSignedRight>>;
 
   template<const size_t Width2,
            typename LimbType,
            typename AllocatorType,
            const bool IsSignedLeft,
            const bool IsSignedRight>
-  WIDE_INTEGER_CONSTEXPR
-  auto divmod(const uintwide_t<Width2, LimbType, AllocatorType, IsSignedLeft >& a,
-              const uintwide_t<Width2, LimbType, AllocatorType, IsSignedRight>& b,
-              std::enable_if_t<(IsSignedLeft || IsSignedRight), int>* p_nullparam = nullptr) -> std::pair<uintwide_t<Width2, LimbType, AllocatorType, IsSignedLeft>, uintwide_t<Width2, LimbType, AllocatorType, IsSignedRight>>;
+  constexpr auto divmod(const uintwide_t<Width2, LimbType, AllocatorType, IsSignedLeft >& a,
+                        const uintwide_t<Width2, LimbType, AllocatorType, IsSignedRight>& b,
+                        std::enable_if_t<(IsSignedLeft || IsSignedRight), int>* p_nullparam = nullptr) -> std::pair<uintwide_t<Width2, LimbType, AllocatorType, IsSignedLeft>, uintwide_t<Width2, LimbType, AllocatorType, IsSignedRight>>;
 
   template<const size_t Width2,
            typename LimbType = std::uint32_t,
@@ -3286,7 +3282,7 @@
 
     template<const bool RePhraseIsSigned = IsSigned,
              std::enable_if_t<(!RePhraseIsSigned)> const* = nullptr>
-    WIDE_INTEGER_NODISCARD WIDE_INTEGER_CONSTEXPR auto compare(const uintwide_t<Width2, LimbType, AllocatorType, RePhraseIsSigned>& other) const -> std::int_fast8_t
+    WIDE_INTEGER_NODISCARD constexpr auto compare(const uintwide_t<Width2, LimbType, AllocatorType, RePhraseIsSigned>& other) const -> std::int_fast8_t
     {
       return compare_ranges(values.cbegin(),
                             other.values.cbegin(),
@@ -3295,7 +3291,7 @@
 
     template<const bool RePhraseIsSigned = IsSigned,
              std::enable_if_t<RePhraseIsSigned> const* = nullptr>
-    WIDE_INTEGER_NODISCARD WIDE_INTEGER_CONSTEXPR auto compare(const uintwide_t<Width2, LimbType, AllocatorType, RePhraseIsSigned>& other) const -> std::int_fast8_t
+    WIDE_INTEGER_NODISCARD constexpr auto compare(const uintwide_t<Width2, LimbType, AllocatorType, RePhraseIsSigned>& other) const -> std::int_fast8_t
     {
       auto n_result = std::int_fast8_t { };
 
@@ -3325,7 +3321,7 @@
     // this is known to be used in the coverage tests.
 
     // LCOV_EXCL_START
-    WIDE_INTEGER_CONSTEXPR auto negate() -> void
+    constexpr auto negate() -> void
     {
       bitwise_not();
 
@@ -3565,9 +3561,27 @@
              typename OtherAllocatorType,
              const bool OtherIsSignedLeft,
              const bool OtherIsSignedRight>
-    friend WIDE_INTEGER_CONSTEXPR auto divmod(const uintwide_t<OtherWidth2, OtherLimbType, OtherAllocatorType, OtherIsSignedLeft >& a, // NOLINT(readability-redundant-declaration)
-                                              const uintwide_t<OtherWidth2, OtherLimbType, OtherAllocatorType, OtherIsSignedRight>& b,
-                                              std::enable_if_t<((!OtherIsSignedLeft) && (!OtherIsSignedRight)), int>* p_nullparam) -> std::pair<uintwide_t<OtherWidth2, OtherLimbType, OtherAllocatorType, OtherIsSignedLeft>, uintwide_t<OtherWidth2, OtherLimbType, OtherAllocatorType, OtherIsSignedRight>>;
+    friend constexpr auto divmod(const uintwide_t<OtherWidth2, OtherLimbType, OtherAllocatorType, OtherIsSignedLeft >& a, // NOLINT(readability-redundant-declaration)
+                                 const uintwide_t<OtherWidth2, OtherLimbType, OtherAllocatorType, OtherIsSignedRight>& b,
+                                 std::enable_if_t<((!OtherIsSignedLeft) && (!OtherIsSignedRight)), int>* p_nullparam) -> std::pair<uintwide_t<OtherWidth2, OtherLimbType, OtherAllocatorType, OtherIsSignedLeft>, uintwide_t<OtherWidth2, OtherLimbType, OtherAllocatorType, OtherIsSignedRight>>;
+
+    template<const size_t OtherWidth2,
+             typename OtherLimbType,
+             typename OtherAllocatorType,
+             const bool OtherIsSignedLeft,
+             const bool OtherIsSignedRight>
+    friend constexpr auto divmod(const uintwide_t<OtherWidth2, OtherLimbType, OtherAllocatorType, OtherIsSignedLeft >& a, // NOLINT(readability-redundant-declaration)
+                                 const uintwide_t<OtherWidth2, OtherLimbType, OtherAllocatorType, OtherIsSignedRight>& b,
+                                 std::enable_if_t<((!OtherIsSignedLeft) && (!OtherIsSignedRight)), int>* p_nullparam) -> std::pair<uintwide_t<OtherWidth2, OtherLimbType, OtherAllocatorType, OtherIsSignedLeft>, uintwide_t<OtherWidth2, OtherLimbType, OtherAllocatorType, OtherIsSignedRight>>;
+
+    template<const size_t OtherWidth2,
+             typename OtherLimbType,
+             typename OtherAllocatorType,
+             const bool OtherIsSignedLeft,
+             const bool OtherIsSignedRight>
+    friend constexpr auto divmod(const uintwide_t<OtherWidth2, OtherLimbType, OtherAllocatorType, OtherIsSignedLeft >& a, // NOLINT(readability-redundant-declaration)
+                                 const uintwide_t<OtherWidth2, OtherLimbType, OtherAllocatorType, OtherIsSignedRight>& b,
+                                 std::enable_if_t<(OtherIsSignedLeft || OtherIsSignedRight), int>* p_nullparam) -> std::pair<uintwide_t<OtherWidth2, OtherLimbType, OtherAllocatorType, OtherIsSignedLeft>, uintwide_t<OtherWidth2, OtherLimbType, OtherAllocatorType, OtherIsSignedRight>>;
 
     #if (defined(__cpp_lib_to_chars) && (__cpp_lib_to_chars >= 201611L))
     template<const size_t OtherWidth2,
@@ -3580,35 +3594,17 @@
                                                   int base) -> std::from_chars_result;
     #endif
 
-    template<const size_t OtherWidth2,
-             typename OtherLimbType,
-             typename OtherAllocatorType,
-             const bool OtherIsSignedLeft,
-             const bool OtherIsSignedRight>
-    friend WIDE_INTEGER_CONSTEXPR auto divmod(const uintwide_t<OtherWidth2, OtherLimbType, OtherAllocatorType, OtherIsSignedLeft >& a, // NOLINT(readability-redundant-declaration)
-                                              const uintwide_t<OtherWidth2, OtherLimbType, OtherAllocatorType, OtherIsSignedRight>& b,
-                                              std::enable_if_t<((!OtherIsSignedLeft) && (!OtherIsSignedRight)), int>* p_nullparam) -> std::pair<uintwide_t<OtherWidth2, OtherLimbType, OtherAllocatorType, OtherIsSignedLeft>, uintwide_t<OtherWidth2, OtherLimbType, OtherAllocatorType, OtherIsSignedRight>>;
-
-    template<const size_t OtherWidth2,
-             typename OtherLimbType,
-             typename OtherAllocatorType,
-             const bool OtherIsSignedLeft,
-             const bool OtherIsSignedRight>
-    friend WIDE_INTEGER_CONSTEXPR auto divmod(const uintwide_t<OtherWidth2, OtherLimbType, OtherAllocatorType, OtherIsSignedLeft >& a, // NOLINT(readability-redundant-declaration)
-                                              const uintwide_t<OtherWidth2, OtherLimbType, OtherAllocatorType, OtherIsSignedRight>& b,
-                                              std::enable_if_t<(OtherIsSignedLeft || OtherIsSignedRight), int>* p_nullparam) -> std::pair<uintwide_t<OtherWidth2, OtherLimbType, OtherAllocatorType, OtherIsSignedLeft>, uintwide_t<OtherWidth2, OtherLimbType, OtherAllocatorType, OtherIsSignedRight>>;
-
     explicit constexpr uintwide_t(const representation_type& other_rep)
       : values(static_cast<const representation_type&>(other_rep)) { }
 
-    explicit constexpr uintwide_t(representation_type&& other_rep)
+    explicit constexpr uintwide_t(representation_type&& other_rep) noexcept
       : values(static_cast<representation_type&&>(other_rep)) { }
 
     template<const bool RePhraseIsSigned,
              std::enable_if_t<(!RePhraseIsSigned)> const* = nullptr>
-    static WIDE_INTEGER_CONSTEXPR auto extract_hex_digits(uintwide_t<Width2, LimbType, AllocatorType, RePhraseIsSigned>& tu,
-                                                          char* pstr,
-                                                          const bool is_uppercase) -> unsigned_fast_type
+    static constexpr auto extract_hex_digits(uintwide_t<Width2, LimbType, AllocatorType, RePhraseIsSigned>& tu,
+                                             char* pstr,
+                                             const bool is_uppercase) -> unsigned_fast_type
     {
       constexpr auto mask = static_cast<limb_type>(UINT8_C(0xF));
 
@@ -3633,9 +3629,9 @@
 
     template<typename InputIteratorLeftType,
              typename InputIteratorRightType>
-    static WIDE_INTEGER_CONSTEXPR auto compare_ranges(      InputIteratorLeftType  a,
-                                                            InputIteratorRightType b,
-                                                      const unsigned_fast_type     count) -> std::int_fast8_t
+    static constexpr auto compare_ranges(      InputIteratorLeftType  a,
+                                               InputIteratorRightType b,
+                                         const unsigned_fast_type     count) -> std::int_fast8_t
     {
       auto n_return = static_cast<std::int_fast8_t>(INT8_C(0));
 
@@ -5717,10 +5713,10 @@
   }
 
   template<typename IntegralType, const size_t Width2, typename LimbType, typename AllocatorType, const bool IsSigned>
-  WIDE_INTEGER_CONSTEXPR auto operator%(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& u, const IntegralType& v) -> std::enable_if_t<(    std::is_integral<IntegralType>::value
-                                                                                                                                                    &&  std::is_unsigned<IntegralType>::value
-                                                                                                                                                    && (std::numeric_limits<IntegralType>::digits <= std::numeric_limits<LimbType>::digits)),
-                                                                                                                                                    typename uintwide_t<Width2, LimbType, AllocatorType, IsSigned>::limb_type>
+  constexpr auto operator%(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& u, const IntegralType& v) -> std::enable_if_t<(    std::is_integral<IntegralType>::value
+                                                                                                                                       &&  std::is_unsigned<IntegralType>::value
+                                                                                                                                       && (std::numeric_limits<IntegralType>::digits <= std::numeric_limits<LimbType>::digits)),
+                                                                                                                                       typename uintwide_t<Width2, LimbType, AllocatorType, IsSigned>::limb_type>
   {
     using local_wide_integer_type = uintwide_t<Width2, LimbType, AllocatorType, IsSigned>;
 
@@ -6175,8 +6171,8 @@
            typename LimbType,
            typename AllocatorType,
            const bool IsSigned>
-  WIDE_INTEGER_CONSTEXPR auto swap(uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& x,
-                                   uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& y) noexcept -> void
+  constexpr auto swap(uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& x,
+                      uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& y) noexcept -> void
   {
     if(&x != &y)
     {
@@ -6188,7 +6184,7 @@
            typename LimbType,
            typename AllocatorType,
            const bool IsSigned>
-  WIDE_INTEGER_CONSTEXPR auto lsb(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& x) -> unsigned_fast_type
+  constexpr auto lsb(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& x) -> unsigned_fast_type
   {
     // Calculate the position of the least-significant bit.
     // Use a linear search starting from the least significant limb.
@@ -6226,7 +6222,7 @@
            typename LimbType,
            typename AllocatorType,
            const bool IsSigned>
-  WIDE_INTEGER_CONSTEXPR auto msb(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& x) -> unsigned_fast_type
+  constexpr auto msb(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& x) -> unsigned_fast_type
   {
     // Calculate the position of the most-significant bit.
     // Use a linear search starting from the most significant limb.
@@ -6275,7 +6271,7 @@
            typename LimbType,
            typename AllocatorType,
            const bool IsSigned>
-  WIDE_INTEGER_CONSTEXPR auto sqrt(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& m) -> uintwide_t<Width2, LimbType, AllocatorType, IsSigned>
+  constexpr auto sqrt(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& m) -> uintwide_t<Width2, LimbType, AllocatorType, IsSigned>
   {
     // Calculate the square root.
 
@@ -6328,7 +6324,7 @@
            typename LimbType,
            typename AllocatorType,
            const bool IsSigned>
-  WIDE_INTEGER_CONSTEXPR auto cbrt(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& m) -> uintwide_t<Width2, LimbType, AllocatorType, IsSigned> // NOLINT(misc-no-recursion)
+  constexpr auto cbrt(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& m) -> uintwide_t<Width2, LimbType, AllocatorType, IsSigned> // NOLINT(misc-no-recursion)
   {
     // Calculate the cube root.
 
@@ -6403,7 +6399,7 @@
            typename LimbType,
            typename AllocatorType,
            const bool IsSigned>
-  WIDE_INTEGER_CONSTEXPR auto rootk(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& m, std::uint_fast8_t k) -> uintwide_t<Width2, LimbType, AllocatorType, IsSigned>
+  constexpr auto rootk(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& m, std::uint_fast8_t k) -> uintwide_t<Width2, LimbType, AllocatorType, IsSigned>
   {
     // Calculate the k'th root.
 
@@ -6486,7 +6482,7 @@
            typename LimbType,
            typename AllocatorType,
            const bool IsSigned>
-  WIDE_INTEGER_CONSTEXPR auto pow(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& b, const OtherIntegralTypeP& p) -> uintwide_t<Width2, LimbType, AllocatorType, IsSigned>
+  constexpr auto pow(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& b, const OtherIntegralTypeP& p) -> uintwide_t<Width2, LimbType, AllocatorType, IsSigned>
   {
     // Calculate (b ^ p).
     using local_wide_integer_type = uintwide_t<Width2, LimbType, AllocatorType, IsSigned>;
@@ -6537,9 +6533,9 @@
            typename LimbType,
            typename AllocatorType,
            const bool IsSigned>
-  WIDE_INTEGER_CONSTEXPR auto powm(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& b,
-                                   const OtherIntegralTypeP& p,
-                                   const OtherIntegralTypeM& m) -> uintwide_t<Width2, LimbType, AllocatorType, IsSigned>
+  constexpr auto powm(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& b,
+                      const OtherIntegralTypeP& p,
+                      const OtherIntegralTypeM& m) -> uintwide_t<Width2, LimbType, AllocatorType, IsSigned>
   {
     // Calculate (b ^ p) % m.
 
@@ -6763,10 +6759,9 @@
            typename AllocatorType,
            const bool IsSignedLeft,
            const bool IsSignedRight>
-  WIDE_INTEGER_CONSTEXPR
-  auto divmod(const uintwide_t<Width2, LimbType, AllocatorType, IsSignedLeft >& a,
-              const uintwide_t<Width2, LimbType, AllocatorType, IsSignedRight>& b,
-              std::enable_if_t<((!IsSignedLeft) && (!IsSignedRight)), int>* p_nullparam) -> std::pair<uintwide_t<Width2, LimbType, AllocatorType, IsSignedLeft>, uintwide_t<Width2, LimbType, AllocatorType, IsSignedRight>>
+  constexpr auto divmod(const uintwide_t<Width2, LimbType, AllocatorType, IsSignedLeft >& a,
+                        const uintwide_t<Width2, LimbType, AllocatorType, IsSignedRight>& b,
+                        std::enable_if_t<((!IsSignedLeft) && (!IsSignedRight)), int>* p_nullparam) -> std::pair<uintwide_t<Width2, LimbType, AllocatorType, IsSignedLeft>, uintwide_t<Width2, LimbType, AllocatorType, IsSignedRight>>
   {
     static_cast<void>(p_nullparam);
 
@@ -6789,10 +6784,9 @@
            typename AllocatorType,
            const bool IsSignedLeft,
            const bool IsSignedRight>
-  WIDE_INTEGER_CONSTEXPR
-  auto divmod(const uintwide_t<Width2, LimbType, AllocatorType, IsSignedLeft >& a,
-              const uintwide_t<Width2, LimbType, AllocatorType, IsSignedRight>& b,
-              std::enable_if_t<(IsSignedLeft || IsSignedRight), int>* p_nullparam) -> std::pair<uintwide_t<Width2, LimbType, AllocatorType, IsSignedLeft>, uintwide_t<Width2, LimbType, AllocatorType, IsSignedRight>>
+  constexpr auto divmod(const uintwide_t<Width2, LimbType, AllocatorType, IsSignedLeft >& a,
+                        const uintwide_t<Width2, LimbType, AllocatorType, IsSignedRight>& b,
+                        std::enable_if_t<(IsSignedLeft || IsSignedRight), int>* p_nullparam) -> std::pair<uintwide_t<Width2, LimbType, AllocatorType, IsSignedLeft>, uintwide_t<Width2, LimbType, AllocatorType, IsSignedRight>>
   {
     static_cast<void>(p_nullparam);
 
