@@ -26,21 +26,19 @@ auto ::math::wide_integer::example001_mul_div() -> bool
                  && std::numeric_limits<uint512_t>::digits == static_cast<int>(INT16_C(512))),
                 "Error: Incorrect digit count for this example");
 
-  WIDE_INTEGER_CONSTEXPR uint256_t a("0xF4DF741DE58BCB2F37F18372026EF9CBCFC456CB80AF54D53BDEED78410065DE");
-  WIDE_INTEGER_CONSTEXPR uint256_t b("0x166D63E0202B3D90ECCEAA046341AB504658F55B974A7FD63733ECF89DD0DF75");
+  constexpr uint256_t a("0xF4DF741DE58BCB2F37F18372026EF9CBCFC456CB80AF54D53BDEED78410065DE");
+  constexpr uint256_t b("0x166D63E0202B3D90ECCEAA046341AB504658F55B974A7FD63733ECF89DD0DF75");
 
-  WIDE_INTEGER_CONSTEXPR auto c = uint512_t(a) * uint512_t(b);
-  WIDE_INTEGER_CONSTEXPR auto d = (a / b);
+  constexpr auto c = uint512_t(a) * uint512_t(b);
+  constexpr auto d = (a / b);
 
-  WIDE_INTEGER_CONSTEXPR auto result_is_ok =
+  constexpr auto result_is_ok =
   (
         (c == "0x1573D6A7CEA734D99865C4F428184983CDB018B80E9CC44B83C773FBE11993E7E491A360C57EB4306C61F9A04F7F7D99BE3676AAD2D71C5592D5AE70F84AF076")
      && (static_cast<std::uint_fast8_t>(d) == static_cast<std::uint_fast8_t>(UINT8_C(10)))
   );
 
-  #if (defined(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST) && (WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST != 0))
   static_assert(result_is_ok, "Error: example001_mul_div not OK!");
-  #endif
 
   return result_is_ok;
 }

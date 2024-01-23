@@ -123,9 +123,9 @@ auto ::math::wide_integer::test_uintwide_t_boost_backend() -> bool
 
   // Test a very simple constexpr example.
   {
-    WIDE_INTEGER_CONSTEXPR local_uint_type cu { "123" };
+    constexpr local_uint_type cu { "123" };
 
-    WIDE_INTEGER_CONSTEXPR bool result_cu_is_ok = (cu == 123U); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
+    constexpr bool result_cu_is_ok = (cu == 123U); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
 
     result_is_ok = (result_cu_is_ok && result_is_ok);
 
