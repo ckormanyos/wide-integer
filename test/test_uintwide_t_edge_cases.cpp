@@ -1832,6 +1832,7 @@ auto test_to_and_from_chars_and_to_string() -> bool // NOLINT(readability-functi
       local_uintwide_t_small_signed_type(from_chars_strings_dec[2U].c_str())
     }};
 
+    // Test constexpr-context of from_chars().
     #if (defined (WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST) && (WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST == 1))
     {
       WIDE_INTEGER_CONSTEXPR local_uintwide_t_small_signed_type compile_time_val("22464118857179526662260684853039985803178920824202321315045157411980838523643");
@@ -1844,6 +1845,7 @@ auto test_to_and_from_chars_and_to_string() -> bool // NOLINT(readability-functi
     }
     #endif
 
+    // Successively test one success and one known failing case.
     {
       auto str_false = from_chars_strings_dec.back();
 
@@ -1853,12 +1855,12 @@ auto test_to_and_from_chars_and_to_string() -> bool // NOLINT(readability-functi
 
       const auto result_false_correct_is_ok = ((val_false == from_chars_vals.back()) && (fc_result_ok.ec == std::errc()));
 
-      // Now make the false-string to actually be false.
+      // Now ensure that the failing test-string is actually wrong and should/will fail.
       str_false.back() = 'Z';
 
       const auto fc_result_not_ok = from_chars(str_false.data(), str_false.data() + str_false.length(), val_false, 10); // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
 
-      const auto result_false_false_is_ok = ((val_false != from_chars_vals.back()) && (fc_result_not_ok.ec != std::errc()));
+      const auto result_false_false_is_ok = ((val_false != from_chars_vals.back()) && (fc_result_not_ok.ec != std::errc()) && (val_false == 0));
 
       const auto result_both_vals_false_are_ok = (result_false_correct_is_ok && result_false_false_is_ok);
 
@@ -1879,8 +1881,10 @@ auto test_to_and_from_chars_and_to_string() -> bool // NOLINT(readability-functi
       std::string("03065217317131113762053502330331263237375335355677425522565630540315656637703556251373")
     }};
 
+    // Test from_chars for decimal, hexadecimal and octal bases.
+
     {
-      // Test from_chars for dec.
+      // Decimal.
       std::size_t index { };
 
       for(const auto& str : from_chars_strings_dec)
@@ -1898,7 +1902,7 @@ auto test_to_and_from_chars_and_to_string() -> bool // NOLINT(readability-functi
     }
 
     {
-      // Test from_chars for hex.
+      // Hexadecimal.
       std::size_t index { };
 
       for(const auto& str : from_chars_strings_hex)
@@ -1916,7 +1920,7 @@ auto test_to_and_from_chars_and_to_string() -> bool // NOLINT(readability-functi
     }
 
     {
-      // Test from_chars for dec.
+      // Octal.
       std::size_t index { };
 
       for(const auto& str : from_chars_strings_oct)
