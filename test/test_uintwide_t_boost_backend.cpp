@@ -129,9 +129,7 @@ auto ::math::wide_integer::test_uintwide_t_boost_backend() -> bool
 
     result_is_ok = (result_cu_is_ok && result_is_ok);
 
-    #if defined(WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST) && (WIDE_INTEGER_CONSTEXPR_IS_COMPILE_TIME_CONST != 0)
     static_assert(result_cu_is_ok, "Error: test_uintwide_t_boost_backend not OK!");
-    #endif
   }
 
   return result_is_ok;

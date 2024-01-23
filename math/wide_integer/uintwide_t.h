@@ -1683,7 +1683,7 @@
   template<typename MyType,
            const size_t MySize,
            typename MyAlloc>
-  class fixed_dynamic_array final : public detail::dynamic_array<MyType, MyAlloc, size_t, ptrdiff_t>
+  class fixed_dynamic_array final : public detail::dynamic_array<MyType, MyAlloc, size_t, ptrdiff_t> // NOLINT(cppcoreguidelines-special-member-functions,hicpp-special-member-functions)
   {
   private:
     using base_class_type = detail::dynamic_array<MyType, MyAlloc, size_t, ptrdiff_t>;
@@ -1855,11 +1855,7 @@
 
   template<typename InputIterator,
            typename IntegralType>
-  #if !defined(WIDE_INTEGER_DISABLE_WIDE_INTEGER_CONSTEXPR)
   constexpr auto advance_and_point(InputIterator it, IntegralType n) -> InputIterator
-  #else
-  constexpr auto advance_and_point(InputIterator it, IntegralType n) -> InputIterator
-  #endif
   {
     using local_signed_integral_type =
       std::conditional_t<std::is_signed<IntegralType>::value,
@@ -1868,15 +1864,7 @@
 
     using local_difference_type = typename detail::iterator_detail::iterator_traits<InputIterator>::difference_type;
 
-    #if !defined(WIDE_INTEGER_DISABLE_WIDE_INTEGER_CONSTEXPR)
     return it + static_cast<local_difference_type>(static_cast<local_signed_integral_type>(n));
-    #else
-    auto my_it = it;
-
-    std::advance(my_it, static_cast<local_difference_type>(static_cast<local_signed_integral_type>(n)));
-
-    return my_it;
-    #endif
   }
 
   template<typename UnsignedShortType,
@@ -2115,7 +2103,7 @@
            typename LimbType,
            typename AllocatorType,
            const bool IsSigned>
-  class uintwide_t
+  class uintwide_t // NOLINT(cppcoreguidelines-special-member-functions,hicpp-special-member-functions)
   {
   public:
     template<const size_t OtherWidth2,

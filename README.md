@@ -568,7 +568,6 @@ enabled or disabled at compile time with the compiler switches:
 #define WIDE_INTEGER_HAS_MUL_8_BY_8_UNROLL
 #define WIDE_INTEGER_DISABLE_TRIVIAL_COPY_AND_STD_LAYOUT_CHECKS
 #define WIDE_INTEGER_NAMESPACE
-#define WIDE_INTEGER_DISABLE_WIDE_INTEGER_CONSTEXPR
 #define WIDE_INTEGER_DISABLE_PRIVATE_CLASS_DATA_MEMBERS
 #define WIDE_INTEGER_HAS_CLZ_LIMB_OPTIMIZATIONS
 ```
@@ -721,29 +720,6 @@ By default the macro `WIDE_INTEGER_NAMESPACE` is not defined.
 In this default state, `namespace` `::math::wide_integer` is used
 and the `uintwide_t` class and its associated implementation
 details reside therein.
-
-Domain-specific, non-supported prototyping can be (partially)
-enabled by defining the macro
-
-```cpp
-#define WIDE_INTEGER_DISABLE_WIDE_INTEGER_CONSTEXPR
-```
-
-This advanced macro disables most C++14 (and beyond) `constexpr` features.
-It also disables standard layout and trivially constructable
-attributes.This macro can be used (if needed)
-when progressive prototyping or other non-standard investigations
-require disabling most of wide-integer's default-supplied
-C++14 `constexpr`-handling.
-
-This might be useful when _manually_ substituting
-non-standard, alternate containers instead of using
-wide-integer's default-supplied containers.
-Note: During verification steps of wide-integer,
-for instance, this macro has been used when performing
-algorithmic proof-of-concept via use of `std::list`
-for storage containters (instead of the default-supplied
-dynamic/static array-like containers).
 
 ```cpp
 #define WIDE_INTEGER_DISABLE_PRIVATE_CLASS_DATA_MEMBERS
