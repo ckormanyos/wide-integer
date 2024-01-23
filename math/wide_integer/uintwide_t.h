@@ -1741,8 +1741,8 @@
     constexpr fixed_static_array() = default;
 
     explicit constexpr fixed_static_array(const size_type      size_in,
-                                                       const value_type&    value_in = value_type(),
-                                                             allocator_type alloc_in = allocator_type())
+                                          const value_type&    value_in = value_type(),
+                                                allocator_type alloc_in = allocator_type())
     {
       static_cast<void>(alloc_in);
 
@@ -1991,6 +1991,8 @@
   class native_float_parts final
   {
   public:
+    constexpr native_float_parts() = delete;
+
     // Emphasize: This template class can be used with native floating-point
     // types like float, double and long double. Note: For long double,
     // you need to verify that the mantissa fits in unsigned long long.
@@ -2052,7 +2054,6 @@
     constexpr native_float_parts(native_float_parts&& other) noexcept : my_mantissa_part(other.my_mantissa_part),
                                                                         my_exponent_part(other.my_exponent_part) { }
 
-    //constexpr
     ~native_float_parts() = default;
 
     constexpr auto operator=(const native_float_parts& other) noexcept -> native_float_parts& // NOLINT(cert-oop54-cpp)
@@ -2076,8 +2077,6 @@
 
     WIDE_INTEGER_NODISCARD constexpr auto get_mantissa() const -> unsigned long long { return my_mantissa_part; } // NOLINT(google-runtime-int)
     WIDE_INTEGER_NODISCARD constexpr auto get_exponent() const -> int                { return my_exponent_part; }
-
-    constexpr native_float_parts() = delete;
 
   private:
     unsigned long long my_mantissa_part { }; // NOLINT(readability-identifier-naming,google-runtime-int)

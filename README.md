@@ -71,7 +71,7 @@ as shown in the [examples](./examples).
   - Clean header-only C++14 design.
   - Seamless portability to any modern C++14, 17, 20, 23 compiler and beyond.
   - Scalability with small memory footprint and efficiency suitable for both PC/workstation systems as well as _bare-metal_ embedded systems.
-  - C++14 `constexpr`-_ness_ for construction, cast to built-in types, binary arithmetic, comparison operations, some elementary functions and more.
+  - C++14 `constexpr`-_ness_.
 
 ## Quick start
 
@@ -755,11 +755,11 @@ is not defined and CLZ-limb optimizations are default-_disabled_.
 
 ### C++14, 17, 20, 23 and beyond `constexpr` support
 
-When using C++14 and beyond, `uintwide_t` supports compile-time
-`constexpr` construction and evaluation of results
-of binary arithmetic, comparison operators
-and various elementary functions.
-The following code, for instance, shows compile-time instantiations
+`uintwide_t` supports C++14 (and beyond) compile-time
+`constexpr`-ness for all constructions, casts, operations,
+evaluation of function results, etc.
+
+The code below, for instance, shows compile-time instantiations
 of `uintwide_t` from character strings with subsequent `constexpr` evaluations
 of binary operations multiply, divide, intergal cast and comparison.
 
