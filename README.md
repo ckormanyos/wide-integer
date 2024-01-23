@@ -849,9 +849,8 @@ in the wide-integer project.
 For sufficiently modern standards-conforming compilers,
 namespace-specific functions `to_chars()` and `from_chars()`
 are available. These each have the _usual_ `<charconv>`-like
-behavior and can also be used in `constexpr`-context.
-For motivational words on these, see also
-[issue 398](https://github.com/ckormanyos/wide-integer/issues/398).
+behavior, known from C++17. For motivational words to/from-chars,
+see also [issue 398](https://github.com/ckormanyos/wide-integer/issues/398).
 
 Support for importing and exporting bits is granted by the subroutines
 `import_bits()` and `export_bits()`. Their interfaces, input/output forms
