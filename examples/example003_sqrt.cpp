@@ -9,11 +9,11 @@
 #include <math/wide_integer/uintwide_t.h>
 
 #if (defined(__GNUC__) && defined(__AVR__) && (__GNUC__ < 10))
-#define WIDE_INTEGER_EXAMPLE003_CONSTEXPR_OR_CONST const
-#define WIDE_INTEGER_EXAMPLE003_CONSTEXPR_IS_COMPILE_TIME_CONSTANT 0
+#define WIDE_INTEGER_EXAMPLE003_CONSTEXPR_OR_CONST const             // NOLINT(cppcoreguidelines-macro-usage)
+#define WIDE_INTEGER_EXAMPLE003_CONSTEXPR_IS_COMPILE_TIME_CONSTANT 0 // NOLINT(cppcoreguidelines-macro-usage)
 #else
-#define WIDE_INTEGER_EXAMPLE003_CONSTEXPR_OR_CONST constexpr
-#define WIDE_INTEGER_EXAMPLE003_CONSTEXPR_IS_COMPILE_TIME_CONSTANT 1
+#define WIDE_INTEGER_EXAMPLE003_CONSTEXPR_OR_CONST constexpr         // NOLINT(cppcoreguidelines-macro-usage)
+#define WIDE_INTEGER_EXAMPLE003_CONSTEXPR_IS_COMPILE_TIME_CONSTANT 1 // NOLINT(cppcoreguidelines-macro-usage)
 #endif
 
 #if defined(WIDE_INTEGER_NAMESPACE)
