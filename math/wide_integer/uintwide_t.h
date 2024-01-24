@@ -234,12 +234,10 @@
 
   } // namespace iterator_detail
 
+  // Forward declaration of:
   // Use a local, constexpr, unsafe implementation of the abs-function.
   template<typename ArithmeticType>
-  constexpr auto abs_unsafe(ArithmeticType val) -> ArithmeticType
-  {
-    return ((val > static_cast<int>(INT8_C(0))) ? val : -val);
-  }
+  constexpr auto abs_unsafe(ArithmeticType val) -> ArithmeticType;
 
   // Use a local, constexpr, unsafe implementation of the fill-function.
   template<typename DestinationIterator,
@@ -2411,7 +2409,7 @@
     }
 
     // Move constructor.
-    constexpr uintwide_t(uintwide_t&&) noexcept = default;
+    constexpr uintwide_t(uintwide_t&&) noexcept = default; // LCOV_EXCL_LINE
 
     // Move-like constructor from the other signed-ness type.
     // This constructor is non-explicit because it is a trivial conversion.
@@ -2421,7 +2419,7 @@
       : values(static_cast<representation_type&&>(other.values)) { }
 
     // Assignment operator.
-    constexpr auto operator=(const uintwide_t&) -> uintwide_t& = default;
+    constexpr auto operator=(const uintwide_t&) -> uintwide_t& = default; // LCOV_EXCL_LINE
 
     // Assignment operator from the other signed-ness type.
     template<const bool OtherIsSigned,
@@ -2434,7 +2432,7 @@
     }
 
     // Trivial move assignment operator.
-    constexpr auto operator=(uintwide_t&& other) noexcept -> uintwide_t& = default;
+    constexpr auto operator=(uintwide_t&& other) noexcept -> uintwide_t& = default; // LCOV_EXCL_LINE
 
     // Trivial move assignment operator from the other signed-ness type.
     template<const bool OtherIsSigned,
@@ -2486,29 +2484,13 @@
                                  : static_cast<size_t>(other_wide_integer_type::number_of_limbs)
         );
 
-      other_wide_integer_type other;
+      other_wide_integer_type other { };
 
       if(!this_is_neg)
       {
         detail::copy_unsafe(crepresentation().cbegin(),
                             detail::advance_and_point(crepresentation().cbegin(), sz),
                             other.values.begin());
-
-        // TBD: Can proper/better template specialization remove the need for if constexpr here?
-        #if (   (defined(_MSC_VER) && ((_MSC_VER >= 1900) && defined(_HAS_CXX17) && (_HAS_CXX17 != 0))) \
-             || (defined(__cplusplus) && ((__cplusplus >= 201703L) || defined(__cpp_if_constexpr))) \
-             || (defined(_MSVC_LANG) && ((_MSVC_LANG >= 201703L) || defined(__cpp_if_constexpr))))
-        if constexpr(Width2 < OtherWidth2)
-        #else
-        #if defined(_MSC_VER)
-        #pragma warning(disable : 4127)
-        if(Width2 < OtherWidth2)
-        #pragma warning(default:4127)
-        #endif
-        #endif
-        {
-          detail::fill_unsafe(detail::advance_and_point(other.values.begin(), sz), other.values.end(), static_cast<limb_type>(UINT8_C(0)));
-        }
       }
       else
       {
@@ -2519,21 +2501,6 @@
         detail::copy_unsafe(uv.crepresentation().cbegin(),
                             detail::advance_and_point(uv.crepresentation().cbegin(), sz),
                             other.values.begin());
-
-        // TBD: Can proper/better template specialization remove the need for if constexpr here?
-        #if (   (defined(_MSC_VER) && ((_MSC_VER >= 1900) && defined(_HAS_CXX17) && (_HAS_CXX17 != 0))) \
-             || (defined(__cplusplus) && ((__cplusplus >= 201703L) || defined(__cpp_if_constexpr))))
-        if constexpr(Width2 < OtherWidth2)
-        #else
-        #if defined(_MSC_VER)
-        #pragma warning(disable : 4127)
-        if(Width2 < OtherWidth2)
-        #pragma warning(default:4127)
-        #endif
-        #endif
-        {
-          detail::fill_unsafe(detail::advance_and_point(other.values.begin(), sz), other.values.end(), static_cast<limb_type>(UINT8_C(0)));
-        }
 
         other.negate();
       }
@@ -3009,7 +2976,7 @@
 
       if(base_rep == static_cast<std::uint_fast8_t>(UINT8_C(8)))
       {
-        uintwide_t t(*this);
+        uintwide_t<my_width2, limb_type, AllocatorType, false> t(*this);
 
         const auto mask = static_cast<limb_type>(static_cast<std::uint8_t>(0x7U));
 
@@ -3038,17 +3005,15 @@
         }
         else
         {
-          uintwide_t<my_width2, limb_type, AllocatorType, false> tu(t);
-
-          while(!tu.is_zero()) // NOLINT(altera-id-dependent-backward-branch)
+          while(!t.is_zero()) // NOLINT(altera-id-dependent-backward-branch)
           {
-            auto c = static_cast<char>(*tu.values.cbegin() & mask);
+            auto c = static_cast<char>(*t.values.cbegin() & mask);
 
             if(c <= static_cast<char>(INT8_C(8))) { c = static_cast<char>(c + static_cast<char>(INT8_C(0x30))); }
 
             str_temp[static_cast<typename string_storage_oct_type::size_type>(--pos)] = c;
 
-            tu >>= static_cast<unsigned>(UINT8_C(3));
+            t >>= static_cast<unsigned>(UINT8_C(3));
           }
         }
 
@@ -6570,17 +6535,17 @@
     if(u == v)
     { // NOLINT(bugprone-branch-clone)
       // This handles cases having (u = v) and also (u = v = 0).
-      result = u; // LCOV_EXCL_LINE
+      result = std::move(u); // LCOV_EXCL_LINE
     }
     else if((static_cast<local_ushort_type>(v) == static_cast<local_ushort_type>(UINT8_C(0))) && (v == static_cast<unsigned>(UINT8_C(0))))
     {
       // This handles cases having (v = 0) with (u != 0).
-      result = u; // LCOV_EXCL_LINE
+      result = std::move(u); // LCOV_EXCL_LINE
     }
     else if((static_cast<local_ushort_type>(u) == static_cast<local_ushort_type>(UINT8_C(0))) && (u == static_cast<unsigned>(UINT8_C(0))))
     {
       // This handles cases having (u = 0) with (v != 0).
-      result = v; // LCOV_EXCL_LINE
+      result = std::move(v); // LCOV_EXCL_LINE
     }
     else
     {
@@ -6644,8 +6609,13 @@
 
       result = (u << left_shift_amount);
     }
+   
+    if(u_is_neg != v_is_neg)
+    {
+      result.negate();
+    }
 
-    return ((u_is_neg == v_is_neg) ? result : -result);
+    return result;
   }
 
   template<typename UnsignedShortType>
@@ -6656,6 +6626,24 @@
   }
 
   namespace detail {
+
+  // Use a local, constexpr, unsafe implementation of the abs-function.
+  template<typename ArithmeticType>
+  constexpr auto abs_unsafe(ArithmeticType val) -> ArithmeticType
+  {
+    if(val > static_cast<int>(INT8_C(0)))
+    {
+      return val;
+    }
+    else // NOLINT(llvm-else-after-return,readability-else-after-return)
+    {
+      ArithmeticType val_unsigned(val);
+
+      val_unsigned.negate();
+
+      return val_unsigned;
+    }
+  }
 
   template<typename IntegerType>
   constexpr auto lcm_impl(const IntegerType& a, const IntegerType& b) -> IntegerType
@@ -7766,12 +7754,12 @@
     using local_result_value_type          = typename detail::iterator_detail::iterator_traits<local_result_iterator_type>::value_type;
     using local_input_value_type           = typename local_unsigned_wide_integer_type::representation_type::value_type;
 
-    const auto val_unsigned =
-    (
-      (!uintwide_t<Width2, LimbType, AllocatorType, IsSigned>::is_neg(val))
-        ? static_cast<local_unsigned_wide_integer_type>(val)
-        : static_cast<local_unsigned_wide_integer_type>(-val)
-    );
+    local_unsigned_wide_integer_type val_unsigned(val);
+
+    if(uintwide_t<Width2, LimbType, AllocatorType, IsSigned>::is_neg(val))
+    {
+      val_unsigned.negate();
+    }
 
     static_assert(std::numeric_limits<local_result_value_type>::digits == std::numeric_limits<local_input_value_type>::digits,
                   "Error: Erroneous mismatch for input element width and result uintwide_t limb width");
@@ -7880,12 +7868,12 @@
     using local_result_value_type          = typename detail::iterator_detail::iterator_traits<local_result_iterator_type>::value_type;
     using local_input_value_type           = typename local_unsigned_wide_integer_type::representation_type::value_type;
 
-    const auto val_unsigned =
-    (
-      (!uintwide_t<Width2, LimbType, AllocatorType, IsSigned>::is_neg(val))
-        ? static_cast<local_unsigned_wide_integer_type>(val)
-        : static_cast<local_unsigned_wide_integer_type>(-val)
-    );
+    local_unsigned_wide_integer_type val_unsigned(val);
+
+    if(uintwide_t<Width2, LimbType, AllocatorType, IsSigned>::is_neg(val))
+    {
+      val_unsigned.negate();
+    }
 
     static_assert(std::numeric_limits<local_result_value_type>::digits != std::numeric_limits<local_input_value_type>::digits,
                   "Error: Erroneous match for input element width and result uintwide_t limb width");
