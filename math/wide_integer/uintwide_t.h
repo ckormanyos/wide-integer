@@ -2434,7 +2434,7 @@
     }
 
     // Trivial move assignment operator.
-    constexpr auto operator=(uintwide_t&& other) noexcept -> uintwide_t& = default;
+    constexpr auto operator=(uintwide_t&& other) noexcept -> uintwide_t& = default; // LCOV_EXCL_LINE
 
     // Trivial move assignment operator from the other signed-ness type.
     template<const bool OtherIsSigned,
