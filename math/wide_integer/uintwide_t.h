@@ -2411,7 +2411,7 @@
     }
 
     // Move constructor.
-    constexpr uintwide_t(uintwide_t&&) noexcept = default;
+    constexpr uintwide_t(uintwide_t&&) noexcept = default; // LCOV_EXCL_LINE
 
     // Move-like constructor from the other signed-ness type.
     // This constructor is non-explicit because it is a trivial conversion.
@@ -2421,7 +2421,7 @@
       : values(static_cast<representation_type&&>(other.values)) { }
 
     // Assignment operator.
-    constexpr auto operator=(const uintwide_t&) -> uintwide_t& = default;
+    constexpr auto operator=(const uintwide_t&) -> uintwide_t& = default; // LCOV_EXCL_LINE
 
     // Assignment operator from the other signed-ness type.
     template<const bool OtherIsSigned,
@@ -6611,8 +6611,13 @@
 
       result = (u << left_shift_amount);
     }
+   
+    if(u_is_neg != v_is_neg)
+    {
+      result.negate();
+    }
 
-    return ((u_is_neg == v_is_neg) ? result : -result);
+    return result;
   }
 
   template<typename UnsignedShortType>
@@ -7733,12 +7738,12 @@
     using local_result_value_type          = typename detail::iterator_detail::iterator_traits<local_result_iterator_type>::value_type;
     using local_input_value_type           = typename local_unsigned_wide_integer_type::representation_type::value_type;
 
-    const auto val_unsigned =
-    (
-      (!uintwide_t<Width2, LimbType, AllocatorType, IsSigned>::is_neg(val))
-        ? static_cast<local_unsigned_wide_integer_type>(val)
-        : static_cast<local_unsigned_wide_integer_type>(-val)
-    );
+    local_unsigned_wide_integer_type val_unsigned(val);
+
+    if(uintwide_t<Width2, LimbType, AllocatorType, IsSigned>::is_neg(val))
+    {
+      val_unsigned.negate();
+    }
 
     static_assert(std::numeric_limits<local_result_value_type>::digits == std::numeric_limits<local_input_value_type>::digits,
                   "Error: Erroneous mismatch for input element width and result uintwide_t limb width");
@@ -7847,12 +7852,12 @@
     using local_result_value_type          = typename detail::iterator_detail::iterator_traits<local_result_iterator_type>::value_type;
     using local_input_value_type           = typename local_unsigned_wide_integer_type::representation_type::value_type;
 
-    const auto val_unsigned =
-    (
-      (!uintwide_t<Width2, LimbType, AllocatorType, IsSigned>::is_neg(val))
-        ? static_cast<local_unsigned_wide_integer_type>(val)
-        : static_cast<local_unsigned_wide_integer_type>(-val)
-    );
+    local_unsigned_wide_integer_type val_unsigned(val);
+
+    if(uintwide_t<Width2, LimbType, AllocatorType, IsSigned>::is_neg(val))
+    {
+      val_unsigned.negate();
+    }
 
     static_assert(std::numeric_limits<local_result_value_type>::digits != std::numeric_limits<local_input_value_type>::digits,
                   "Error: Erroneous match for input element width and result uintwide_t limb width");
