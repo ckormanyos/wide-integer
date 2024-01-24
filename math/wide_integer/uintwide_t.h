@@ -234,12 +234,10 @@
 
   } // namespace iterator_detail
 
+  // Forward declaration of:
   // Use a local, constexpr, unsafe implementation of the abs-function.
   template<typename ArithmeticType>
-  constexpr auto abs_unsafe(ArithmeticType val) -> ArithmeticType
-  {
-    return ((val > static_cast<int>(INT8_C(0))) ? val : -val);
-  }
+  constexpr auto abs_unsafe(ArithmeticType val) -> ArithmeticType;
 
   // Use a local, constexpr, unsafe implementation of the fill-function.
   template<typename DestinationIterator,
@@ -6628,6 +6626,24 @@
   }
 
   namespace detail {
+
+  // Use a local, constexpr, unsafe implementation of the abs-function.
+  template<typename ArithmeticType>
+  constexpr auto abs_unsafe(ArithmeticType val) -> ArithmeticType
+  {
+    if(val > static_cast<int>(INT8_C(0)))
+    {
+      return val;
+    }
+    else
+    {
+      ArithmeticType val_unsigned(val);
+
+      val_unsigned.negate();
+
+      return std::move(val_unsigned);
+    }
+  }
 
   template<typename IntegerType>
   constexpr auto lcm_impl(const IntegerType& a, const IntegerType& b) -> IntegerType
