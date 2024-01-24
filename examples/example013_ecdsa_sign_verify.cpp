@@ -722,7 +722,7 @@ namespace example013_ecdsa
           * sexatuple_sint_type(inverse_mod(k, curve_n()))
         );
 
-        s = double_sint_type(divmod(num, n).second);
+        s = std::move(double_sint_type(divmod(num, n).second));
       }
 
       return
@@ -738,14 +738,14 @@ namespace example013_ecdsa
                                        MsgIteratorType                  msg_last,
                                  const std::pair<uint_type, uint_type>& sig) -> bool
     {
-      const auto w = sexatuple_sint_type(inverse_mod(sig.second, curve_n()));
+      const sexatuple_sint_type w(inverse_mod(sig.second, curve_n()));
 
-      const auto n = sexatuple_sint_type(curve_n());
+      const sexatuple_sint_type n(curve_n());
 
       const auto z = hash_message(msg_first, msg_last);
 
-      const auto u1 = double_sint_type(divmod(sexatuple_sint_type(z)         * w, n).second);
-      const auto u2 = double_sint_type(divmod(sexatuple_sint_type(sig.first) * w, n).second);
+      const double_sint_type u1(divmod(sexatuple_sint_type(z)         * w, n).second);
+      const double_sint_type u2(divmod(sexatuple_sint_type(sig.first) * w, n).second);
 
       const auto pt =
         point_add

@@ -2486,29 +2486,13 @@
                                  : static_cast<size_t>(other_wide_integer_type::number_of_limbs)
         );
 
-      other_wide_integer_type other;
+      other_wide_integer_type other { };
 
       if(!this_is_neg)
       {
         detail::copy_unsafe(crepresentation().cbegin(),
                             detail::advance_and_point(crepresentation().cbegin(), sz),
                             other.values.begin());
-
-        // TBD: Can proper/better template specialization remove the need for if constexpr here?
-        #if (   (defined(_MSC_VER) && ((_MSC_VER >= 1900) && defined(_HAS_CXX17) && (_HAS_CXX17 != 0))) \
-             || (defined(__cplusplus) && ((__cplusplus >= 201703L) || defined(__cpp_if_constexpr))) \
-             || (defined(_MSVC_LANG) && ((_MSVC_LANG >= 201703L) || defined(__cpp_if_constexpr))))
-        if constexpr(Width2 < OtherWidth2)
-        #else
-        #if defined(_MSC_VER)
-        #pragma warning(disable : 4127)
-        if(Width2 < OtherWidth2)
-        #pragma warning(default:4127)
-        #endif
-        #endif
-        {
-          detail::fill_unsafe(detail::advance_and_point(other.values.begin(), sz), other.values.end(), static_cast<limb_type>(UINT8_C(0)));
-        }
       }
       else
       {
@@ -2519,21 +2503,6 @@
         detail::copy_unsafe(uv.crepresentation().cbegin(),
                             detail::advance_and_point(uv.crepresentation().cbegin(), sz),
                             other.values.begin());
-
-        // TBD: Can proper/better template specialization remove the need for if constexpr here?
-        #if (   (defined(_MSC_VER) && ((_MSC_VER >= 1900) && defined(_HAS_CXX17) && (_HAS_CXX17 != 0))) \
-             || (defined(__cplusplus) && ((__cplusplus >= 201703L) || defined(__cpp_if_constexpr))))
-        if constexpr(Width2 < OtherWidth2)
-        #else
-        #if defined(_MSC_VER)
-        #pragma warning(disable : 4127)
-        if(Width2 < OtherWidth2)
-        #pragma warning(default:4127)
-        #endif
-        #endif
-        {
-          detail::fill_unsafe(detail::advance_and_point(other.values.begin(), sz), other.values.end(), static_cast<limb_type>(UINT8_C(0)));
-        }
 
         other.negate();
       }
@@ -3009,7 +2978,7 @@
 
       if(base_rep == static_cast<std::uint_fast8_t>(UINT8_C(8)))
       {
-        uintwide_t t(*this);
+        uintwide_t<my_width2, limb_type, AllocatorType, false> t(*this);
 
         const auto mask = static_cast<limb_type>(static_cast<std::uint8_t>(0x7U));
 
@@ -3038,17 +3007,15 @@
         }
         else
         {
-          uintwide_t<my_width2, limb_type, AllocatorType, false> tu(t);
-
-          while(!tu.is_zero()) // NOLINT(altera-id-dependent-backward-branch)
+          while(!t.is_zero()) // NOLINT(altera-id-dependent-backward-branch)
           {
-            auto c = static_cast<char>(*tu.values.cbegin() & mask);
+            auto c = static_cast<char>(*t.values.cbegin() & mask);
 
             if(c <= static_cast<char>(INT8_C(8))) { c = static_cast<char>(c + static_cast<char>(INT8_C(0x30))); }
 
             str_temp[static_cast<typename string_storage_oct_type::size_type>(--pos)] = c;
 
-            tu >>= static_cast<unsigned>(UINT8_C(3));
+            t >>= static_cast<unsigned>(UINT8_C(3));
           }
         }
 
@@ -6570,17 +6537,17 @@
     if(u == v)
     { // NOLINT(bugprone-branch-clone)
       // This handles cases having (u = v) and also (u = v = 0).
-      result = u; // LCOV_EXCL_LINE
+      result = std::move(u); // LCOV_EXCL_LINE
     }
     else if((static_cast<local_ushort_type>(v) == static_cast<local_ushort_type>(UINT8_C(0))) && (v == static_cast<unsigned>(UINT8_C(0))))
     {
       // This handles cases having (v = 0) with (u != 0).
-      result = u; // LCOV_EXCL_LINE
+      result = std::move(u); // LCOV_EXCL_LINE
     }
     else if((static_cast<local_ushort_type>(u) == static_cast<local_ushort_type>(UINT8_C(0))) && (u == static_cast<unsigned>(UINT8_C(0))))
     {
       // This handles cases having (u = 0) with (v != 0).
-      result = v; // LCOV_EXCL_LINE
+      result = std::move(v); // LCOV_EXCL_LINE
     }
     else
     {
