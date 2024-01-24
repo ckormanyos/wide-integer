@@ -6635,7 +6635,7 @@
     {
       return val;
     }
-    else
+    else // NOLINT(llvm-else-after-return,readability-else-after-return)
     {
       ArithmeticType val_unsigned(val);
 
