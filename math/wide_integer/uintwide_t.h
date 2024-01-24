@@ -6641,7 +6641,7 @@
 
       val_unsigned.negate();
 
-      return std::move(val_unsigned);
+      return val_unsigned;
     }
   }
 
