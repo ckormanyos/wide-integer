@@ -59,33 +59,13 @@
 
   #if (defined(_MSC_VER) && (!defined(__GNUC__) && !defined(__clang__)))
     #if (_MSC_VER >= 1900) && defined(_HAS_CXX20) && (_HAS_CXX20 != 0)
-      #define WIDE_INTEGER_NODISCARD [[nodiscard]]           // NOLINT(cppcoreguidelines-macro-usage)
+      #define WIDE_INTEGER_NODISCARD [[nodiscard]]     // NOLINT(cppcoreguidelines-macro-usage)
     #else
       #define WIDE_INTEGER_NODISCARD
     #endif
   #else
-    #if (defined(__cplusplus) && (__cplusplus >= 201402L))
-      #if defined(__AVR__) && (!defined(__GNUC__) || (defined(__GNUC__) && (__cplusplus >= 202002L)))
-      #define WIDE_INTEGER_NODISCARD [[nodiscard]]           // NOLINT(cppcoreguidelines-macro-usage)
-      #elif (defined(__cpp_lib_constexpr_algorithms) && (__cpp_lib_constexpr_algorithms >= 201806))
-        #if defined(__clang__)
-          #if (__clang_major__ > 9)
-          #define WIDE_INTEGER_NODISCARD [[nodiscard]]           // NOLINT(cppcoreguidelines-macro-usage)
-          #else
-          #define WIDE_INTEGER_NODISCARD
-          #endif
-        #else
-        #define WIDE_INTEGER_NODISCARD [[nodiscard]]           // NOLINT(cppcoreguidelines-macro-usage)
-        #endif
-      #elif (defined(__clang__) && (__clang_major__ >= 10)) && (defined(__cplusplus) && (__cplusplus > 201703L))
-        #if defined(__x86_64__)
-        #define WIDE_INTEGER_NODISCARD [[nodiscard]]           // NOLINT(cppcoreguidelines-macro-usage)
-        #else
-        #define WIDE_INTEGER_NODISCARD
-        #endif
-      #else
-      #define WIDE_INTEGER_NODISCARD
-      #endif
+    #if (defined(__has_cpp_attribute) && (__has_cpp_attribute(nodiscard) >= 201603L))
+      #define WIDE_INTEGER_NODISCARD [[nodiscard]]     // NOLINT(cppcoreguidelines-macro-usage)
     #else
       #define WIDE_INTEGER_NODISCARD
     #endif
@@ -2928,12 +2908,6 @@
       return result_min;
     }
 
-    template<const bool OtherIsSigned>
-    static constexpr auto limits_helper_lowest() -> uintwide_t
-    {
-      return limits_helper_min<OtherIsSigned>();
-    }
-
     // Write string function.
     template<typename OutputStrIterator>
     constexpr auto wr_string(      OutputStrIterator  str_result, // NOLINT(readability-function-cognitive-complexity)
@@ -5507,9 +5481,9 @@
     static constexpr int max_exponent    = digits;
     static constexpr int max_exponent10  = static_cast<int>((static_cast<std::uintmax_t>(max_exponent) * UINTMAX_C(75257499)) / UINTMAX_C(250000000));
 
-    static constexpr auto (max) () -> local_wide_integer_type { return local_wide_integer_type::template limits_helper_max   <IsSigned>(); }
-    static constexpr auto (min) () -> local_wide_integer_type { return local_wide_integer_type::template limits_helper_min   <IsSigned>(); }
-    static constexpr auto lowest() -> local_wide_integer_type { return local_wide_integer_type::template limits_helper_lowest<IsSigned>(); }
+    static constexpr auto (max) () -> local_wide_integer_type { return local_wide_integer_type::template limits_helper_max<IsSigned>(); }
+    static constexpr auto (min) () -> local_wide_integer_type { return local_wide_integer_type::template limits_helper_min<IsSigned>(); }
+    static constexpr auto lowest() -> local_wide_integer_type { return local_wide_integer_type::template limits_helper_min<IsSigned>(); }
   };
 
   template<class T>
