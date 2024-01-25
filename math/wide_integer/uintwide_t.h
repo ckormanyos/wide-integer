@@ -2712,7 +2712,7 @@
         auto itr_b = other.values.cbegin(); // NOLINT(llvm-qualified-auto,readability-qualified-auto)
 
         // Perform bitwise OR.
-        for(auto itr_a = values.begin(); itr_a != values.end(); ++itr_a, ++itr_b)
+        for(auto itr_a = values.begin(); itr_a != values.end(); ++itr_a, ++itr_b) // NOLINT(altera-id-dependent-backward-branch)
         {
           *itr_a = static_cast<limb_type>(*itr_a | *itr_b);
         }
@@ -2732,7 +2732,7 @@
         auto itr_b = other.values.cbegin(); // NOLINT(llvm-qualified-auto,readability-qualified-auto)
 
         // Perform bitwise XOR.
-        for(auto itr_a = values.begin(); itr_a != values.end(); ++itr_a, ++itr_b)
+        for(auto itr_a = values.begin(); itr_a != values.end(); ++itr_a, ++itr_b) // NOLINT(altera-id-dependent-backward-branch)
         {
           *itr_a = static_cast<limb_type>(*itr_a ^ *itr_b);
         }
@@ -2748,7 +2748,7 @@
         auto itr_b = other.values.cbegin(); // NOLINT(llvm-qualified-auto,readability-qualified-auto)
 
         // Perform bitwise AND.
-        for(auto itr_a = values.begin(); itr_a != values.end(); ++itr_a, ++itr_b)
+        for(auto itr_a = values.begin(); itr_a != values.end(); ++itr_a, ++itr_b) // NOLINT(altera-id-dependent-backward-branch)
         {
           *itr_a = static_cast<limb_type>(*itr_a & *itr_b);
         }
