@@ -64,7 +64,7 @@
       #define WIDE_INTEGER_NODISCARD
     #endif
   #else
-    #if (defined(__has_cpp_attribute) && (__has_cpp_attribute(nodiscard) >= 201603L))
+    #if ((defined(__cplusplus) && (__cplusplus >= 201703L)) && (defined(__has_cpp_attribute) && (__has_cpp_attribute(nodiscard) >= 201603L)))
       #define WIDE_INTEGER_NODISCARD [[nodiscard]]     // NOLINT(cppcoreguidelines-macro-usage)
     #else
       #define WIDE_INTEGER_NODISCARD
