@@ -71,7 +71,7 @@ as shown in the [examples](./examples).
   - Clean header-only C++14 design.
   - Seamless portability to any modern C++14, 17, 20, 23 compiler and beyond.
   - Scalability with small memory footprint and efficiency suitable for both PC/workstation systems as well as _bare-metal_ embedded systems.
-  - C++14 `constexpr`-_ness_.
+  - C++14, 17, 20, 23 and beyond `constexpr`-ness.
 
 ## Quick start
 
@@ -729,7 +729,7 @@ This optional macro can be used to switch `uintwide_t`'s
 data member access from _private_ to _public_. This allows the
 `uintwide_t` class to be used as a so-called _structured_ class,
 such as is needed for constant-valued template parameters
-in the sense of C++14's (and beyond) `constexpr`-ness.
+in a `constexpr` context.
 This preprocessor switch was invented based on the discussion in
 [issue 335](https://github.com/ckormanyos/wide-integer/issues/335)
 
@@ -755,7 +755,7 @@ is not defined and CLZ-limb optimizations are default-_disabled_.
 
 ### C++14, 17, 20, 23 and beyond `constexpr` support
 
-`uintwide_t` supports C++14 (and beyond) compile-time
+`uintwide_t` supports C++14, 17, 20, 23 and beyond compile-time
 `constexpr`-ness for all constructions, casts, operations,
 evaluation of function results, etc.
 
@@ -849,8 +849,10 @@ in the wide-integer project.
 For sufficiently modern standards-conforming compilers,
 namespace-specific functions `to_chars()` and `from_chars()`
 are available. These each have the _usual_ `<charconv>`-like
-behavior, known from C++17. For motivational words to/from-chars,
-see also [issue 398](https://github.com/ckormanyos/wide-integer/issues/398).
+behavior, known from C++17. For motivational words on
+`to_chars()` and `from_chars()`,
+see also [issue 153](https://github.com/ckormanyos/wide-integer/issues/153)
+and [issue 398](https://github.com/ckormanyos/wide-integer/issues/398).
 
 Support for importing and exporting bits is granted by the subroutines
 `import_bits()` and `export_bits()`. Their interfaces, input/output forms

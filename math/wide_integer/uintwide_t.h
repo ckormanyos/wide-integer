@@ -2611,7 +2611,7 @@
       }
       else if(other.is_zero())
       {
-        *this = limits_helper_max(IsSigned);
+        static_cast<void>(operator=(limits_helper_max<IsSigned>()));
       }
       else
       {
@@ -2709,14 +2709,12 @@
     {
       if(this != &other) // LCOV_EXCL_LINE
       {
-        auto bi = other.values.cbegin(); // NOLINT(llvm-qualified-auto,readability-qualified-auto)
+        auto itr_b = other.values.cbegin(); // NOLINT(llvm-qualified-auto,readability-qualified-auto)
 
         // Perform bitwise OR.
-        for(auto& a : values)
+        for(auto itr_a = values.begin(); itr_a != values.end(); ++itr_a, ++itr_b)
         {
-          a = static_cast<limb_type>(a | *bi);
-
-          ++bi;
+          *itr_a = static_cast<limb_type>(*itr_a | *itr_b);
         }
       }
 
@@ -2731,14 +2729,12 @@
       }
       else
       {
-        auto bi = other.values.cbegin(); // NOLINT(llvm-qualified-auto,readability-qualified-auto)
+        auto itr_b = other.values.cbegin(); // NOLINT(llvm-qualified-auto,readability-qualified-auto)
 
         // Perform bitwise XOR.
-        for(auto& a : values)
+        for(auto itr_a = values.begin(); itr_a != values.end(); ++itr_a, ++itr_b)
         {
-          a = static_cast<limb_type>(a ^ *bi);
-
-          ++bi;
+          *itr_a = static_cast<limb_type>(*itr_a ^ *itr_b);
         }
       }
 
@@ -2749,14 +2745,12 @@
     {
       if(this != &other) // LCOV_EXCL_LINE
       {
-        auto bi = other.values.cbegin(); // NOLINT(llvm-qualified-auto,readability-qualified-auto)
+        auto itr_b = other.values.cbegin(); // NOLINT(llvm-qualified-auto,readability-qualified-auto)
 
         // Perform bitwise AND.
-        for(auto& a : values)
+        for(auto itr_a = values.begin(); itr_a != values.end(); ++itr_a, ++itr_b)
         {
-          a = static_cast<limb_type>(a & *bi);
-
-          ++bi;
+          *itr_a = static_cast<limb_type>(*itr_a & *itr_b);
         }
       }
 
@@ -2884,82 +2878,60 @@
     constexpr auto operator>=(const uintwide_t& other) const -> bool { return (compare(other) >= static_cast<std::int_fast8_t>( 0)); }
 
     // Helper functions for supporting std::numeric_limits<>.
-    static constexpr auto limits_helper_max(bool is_signed) -> uintwide_t
+    template<const bool OtherIsSigned>
+    static constexpr auto limits_helper_max() -> std::enable_if_t<(!OtherIsSigned), uintwide_t>
     {
-      return
-      (!is_signed)
-        ? from_rep
-          (
-            representation_type
-            (
-              number_of_limbs, (std::numeric_limits<limb_type>::max)()
-            )
-          )
-        :   from_rep
-            (
-              representation_type
-              (
-                number_of_limbs, (std::numeric_limits<limb_type>::max)() // LCOV_EXCL_LINE
-              )
-            )
-          ^
-            (
-                 uintwide_t(static_cast<std::uint8_t>(UINT8_C(1)))
-              << static_cast<std::uint32_t>(my_width2 - static_cast<std::uint8_t>(UINT8_C(1)))
-            )
-        ;
+      uintwide_t result_max { };
+
+      detail::fill_unsafe(result_max.values.begin(), result_max.values.end(), (std::numeric_limits<limb_type>::max)());
+
+      return result_max;
     }
 
-    static constexpr auto limits_helper_min(bool is_signed) -> uintwide_t
+    template<const bool OtherIsSigned>
+    static constexpr auto limits_helper_max() -> std::enable_if_t<OtherIsSigned, uintwide_t>
     {
-      return
-      (!is_signed)
-        ? from_rep
-          (
-            representation_type
-            (
-              number_of_limbs, static_cast<limb_type>(UINT8_C(0))
-            )
-          )
-        :   from_rep
-            (
-              representation_type
-              (
-                number_of_limbs, static_cast<limb_type>(UINT8_C(0)) // LCOV_EXCL_LINE
-              )
-            )
-          |
-            (
-                 uintwide_t(static_cast<std::uint8_t>(UINT8_C(1)))
-              << static_cast<std::uint32_t>(my_width2 - static_cast<std::uint8_t>(UINT8_C(1)))
-            )
-        ;
+      uintwide_t result_max { };
+
+      detail::fill_unsafe(result_max.values.begin(), result_max.values.end(), (std::numeric_limits<limb_type>::max)());
+
+      constexpr auto high_bit_limb =
+        static_cast<limb_type>
+        (
+          static_cast<limb_type>(UINT8_C(1)) << static_cast<unsigned>(std::numeric_limits<limb_type>::digits - static_cast<int>(INT8_C(1)))
+        );
+
+      result_max.values.back() ^= high_bit_limb;
+
+      return result_max;
     }
 
-    static constexpr auto limits_helper_lowest(bool is_signed) -> uintwide_t
+    template<const bool OtherIsSigned>
+    static constexpr auto limits_helper_min() -> std::enable_if_t<(!OtherIsSigned), uintwide_t>
     {
-      return
-      (!is_signed)
-        ? from_rep
-          (
-            representation_type
-            (
-              number_of_limbs, static_cast<limb_type>(UINT8_C(0))
-            )
-          )
-        :   from_rep
-            (
-              representation_type
-              (
-                number_of_limbs, static_cast<limb_type>(UINT8_C(0))
-              )
-            )
-          |
-            (
-                 uintwide_t(static_cast<std::uint8_t>(UINT8_C(1)))
-              << static_cast<std::uint32_t>(my_width2 - static_cast<std::uint8_t>(UINT8_C(1)))
-            )
-        ;
+      return uintwide_t { };
+    }
+
+    template<const bool OtherIsSigned>
+    static constexpr auto limits_helper_min() -> std::enable_if_t<OtherIsSigned, uintwide_t>
+    {
+      uintwide_t result_min { };
+
+      constexpr auto high_bit_limb =
+        static_cast<limb_type>
+        (
+          static_cast<limb_type>(UINT8_C(1)) << static_cast<unsigned>(std::numeric_limits<limb_type>::digits - static_cast<int>(INT8_C(1)))
+        );
+
+      result_min.values.back() |= high_bit_limb;
+
+      return result_min;
+    }
+
+    template<const bool OtherIsSigned>
+    static constexpr auto limits_helper_lowest() -> uintwide_t
+    {
+      return limits_helper_min<OtherIsSigned>();
     }
 
     // Write string function.
@@ -4531,14 +4503,14 @@
             );
 
           *r++  = static_cast<local_limb_type>(carry);
-          carry = detail::make_hi<local_limb_type>(carry);
+          carry = static_cast<local_double_limb_type>(detail::make_hi<local_limb_type>(carry));
         }
 
         #if defined(WIDE_INTEGER_HAS_CLZ_LIMB_OPTIMIZATIONS)
         for( ; i < count; ++i)
         {
           *r++  = static_cast<local_limb_type>(carry);
-          carry = detail::make_hi<local_limb_type>(static_cast<local_double_limb_type>(UINT8_C(0)));
+          carry = static_cast<local_double_limb_type>(UINT8_C(0));
         }
         #endif
       }
@@ -4798,7 +4770,7 @@
       {
         // The denominator is zero. Set the maximum value and return.
         // This also catches (0 / 0) and sets the maximum value for it.
-        static_cast<void>(operator=(limits_helper_max(IsSigned))); // LCOV_EXCL_LINE
+        static_cast<void>(operator=(limits_helper_max<IsSigned>())); // LCOV_EXCL_LINE
 
         if(remainder != nullptr) // LCOV_EXCL_LINE
         {
@@ -5535,9 +5507,9 @@
     static constexpr int max_exponent    = digits;
     static constexpr int max_exponent10  = static_cast<int>((static_cast<std::uintmax_t>(max_exponent) * UINTMAX_C(75257499)) / UINTMAX_C(250000000));
 
-    static constexpr auto (max) () -> local_wide_integer_type { return local_wide_integer_type::limits_helper_max   (IsSigned); }
-    static constexpr auto (min) () -> local_wide_integer_type { return local_wide_integer_type::limits_helper_min   (IsSigned); }
-    static constexpr auto lowest() -> local_wide_integer_type { return local_wide_integer_type::limits_helper_lowest(IsSigned); }
+    static constexpr auto (max) () -> local_wide_integer_type { return local_wide_integer_type::template limits_helper_max   <IsSigned>(); }
+    static constexpr auto (min) () -> local_wide_integer_type { return local_wide_integer_type::template limits_helper_min   <IsSigned>(); }
+    static constexpr auto lowest() -> local_wide_integer_type { return local_wide_integer_type::template limits_helper_lowest<IsSigned>(); }
   };
 
   template<class T>

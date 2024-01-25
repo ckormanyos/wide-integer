@@ -66,12 +66,30 @@ auto ::math::wide_integer::example000_numeric_limits() -> bool
     #endif
 
     constexpr int256_t my_max   ("0x7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF");
-    constexpr int256_t my_min   ("-57896044618658097711785492504343953926634992332820282019728792003956564819968");
-    constexpr int256_t my_lowest("-57896044618658097711785492504343953926634992332820282019728792003956564819968");
+    constexpr int256_t my_min   ("0x8000000000000000000000000000000000000000000000000000000000000000");
+
+    #if (defined(_MSC_VER) && (_MSC_VER < 1920))
+    #pragma warning(push)
+    #pragma warning(disable : 4307)
+    #endif
+    constexpr int256_t my_min2  ("-57896044618658097711785492504343953926634992332820282019728792003956564819968");
+    #if (defined(_MSC_VER) && (_MSC_VER < 1920))
+    #pragma warning(pop)
+    #endif
+
+    constexpr int256_t my_lowest = my_min2;
+
+    static_assert((std::numeric_limits<int256_t>::max)  () == my_max, "Error: example000_numeric_limits signed not OK!");
+    static_assert((std::numeric_limits<int256_t>::min)  () == my_min, "Error: example000_numeric_limits signed not OK!");
+    static_assert((std::numeric_limits<int256_t>::min)  () == my_min2, "Error: example000_numeric_limits signed not OK!");
+    static_assert( std::numeric_limits<int256_t>::lowest() == my_lowest, "Error: example000_numeric_limits signed not OK!");
+    static_assert( std::numeric_limits<int256_t>::digits   == static_cast<int>(INT32_C(255)), "Error: example000_numeric_limits signed not OK!");
+    static_assert( std::numeric_limits<int256_t>::digits10 == static_cast<int>(INT32_C(76)), "Error: example000_numeric_limits signed not OK!");
 
     constexpr bool result_int256_t_is_ok =
          ((std::numeric_limits<int256_t>::max)  () == my_max)
       && ((std::numeric_limits<int256_t>::min)  () == my_min)
+      && ((std::numeric_limits<int256_t>::min)  () == my_min2)
       && ( std::numeric_limits<int256_t>::lowest() == my_lowest)
       && ( std::numeric_limits<int256_t>::digits   == static_cast<int>(INT32_C(255)))
       && ( std::numeric_limits<int256_t>::digits10 == static_cast<int>(INT32_C(76)))

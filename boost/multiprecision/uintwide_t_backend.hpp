@@ -8,6 +8,7 @@
 #ifndef UINTWIDE_T_BACKEND_2019_12_15_HPP // NOLINT(llvm-header-guard)
   #define UINTWIDE_T_BACKEND_2019_12_15_HPP
 
+  #include <algorithm>
   #include <cstdint>
   #include <limits>
   #include <string>
