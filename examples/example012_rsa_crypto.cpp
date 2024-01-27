@@ -263,7 +263,7 @@ namespace local_rsa
         s = std::move(make_positive(s, phi_of_m));
       }
 
-      private_key = private_key_type { s, my_p, my_q };
+      private_key = std::move( private_key_type { s, my_p, my_q } );
     }
 
   private:

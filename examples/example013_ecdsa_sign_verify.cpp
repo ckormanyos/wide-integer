@@ -707,9 +707,10 @@ namespace example013_ecdsa
       {
         // TBD: Be sure to limit to random.randrange(1, curve.n).
         const auto k =
-          double_sint_type
           (
-            (p_uint_seed == nullptr) ? static_cast<double_sint_type>(get_pseudo_random_uint<uint_type>()) : static_cast<double_sint_type>(*p_uint_seed)
+            (p_uint_seed == nullptr)
+              ? std::move(static_cast<double_sint_type>(get_pseudo_random_uint<uint_type>()))
+              : std::move(static_cast<double_sint_type>(*p_uint_seed))
           );
 
         const auto pt = scalar_mult(k, { curve_gx(), curve_gy() } );
