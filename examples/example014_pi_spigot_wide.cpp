@@ -137,10 +137,12 @@ namespace example014_pi_spigot
               - i
             );
 
-          const auto di =
-            ((j == static_cast<std::uint32_t>(UINT8_C(0)))
-              ? static_cast<unsigned_large_type>(d_init())
-              : static_cast<unsigned_large_type>(my_pi_in[my_index]));
+          unsigned_large_type di { my_pi_in[my_index] };
+
+          if(j == static_cast<std::uint32_t>(UINT8_C(0)))
+          {
+            di = std::move(static_cast<unsigned_large_type>(d_init()));
+          }
 
           val_d += (di * local_pow10);
 

@@ -6583,7 +6583,7 @@
     }
     else // NOLINT(llvm-else-after-return,readability-else-after-return)
     {
-      ArithmeticType val_unsigned(val);
+      ArithmeticType val_unsigned = std::move(val);
 
       val_unsigned.negate();
 

@@ -81,13 +81,13 @@ namespace local_rsa
           return b;
         }
 
-        local_integer_type tmp_x;
-        local_integer_type tmp_y;
+        local_integer_type tmp_x { };
+        local_integer_type tmp_y { };
 
         local_integer_type gcd_ext = extended_euclidean(b % a, a, &tmp_x, &tmp_y);
 
-        *x = tmp_y - ((b / a) * tmp_x);
-        *y = tmp_x;
+        *x = std::move(tmp_y - ((b / a) * tmp_x));
+        *y = std::move(tmp_x);
 
         return gcd_ext;
       }
@@ -250,17 +250,20 @@ namespace local_rsa
 
     auto calculate_private_key() -> void
     {
-      my_uintwide_t a = phi_of_m;
-      my_uintwide_t b = my_r;
+      my_uintwide_t a { phi_of_m };
+      my_uintwide_t b { my_r };
 
       my_uintwide_t x { };
       my_uintwide_t s { };
 
       euclidean::extended_euclidean(a, b, &x, &s);
 
-      s = is_neg(s) ? make_positive(s, phi_of_m) : s;
+      if(is_neg(s))
+      {
+        s = std::move(make_positive(s, phi_of_m));
+      }
 
-      private_key = private_key_type { s, my_p, my_q };
+      private_key = std::move( private_key_type { std::move(s), my_p, my_q } );
     }
 
   private:
