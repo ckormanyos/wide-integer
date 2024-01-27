@@ -705,13 +705,15 @@ namespace example013_ecdsa
 
       while((r == 0) || (s == 0)) // NOLINT(altera-id-dependent-backward-branch)
       {
+        const uint_type
+          uk
+          {
+            (p_uint_seed == nullptr) ? std::move(get_pseudo_random_uint<uint_type>()) : *p_uint_seed
+          };
+
         // TBD: Be sure to limit to random.randrange(1, curve.n).
-        const auto k =
-          (
-            (p_uint_seed == nullptr)
-              ? std::move(static_cast<double_sint_type>(get_pseudo_random_uint<uint_type>()))
-              : std::move(static_cast<double_sint_type>(*p_uint_seed))
-          );
+
+        const double_sint_type k { std::move(static_cast<double_sint_type>(uk)) };
 
         const auto pt = scalar_mult(k, { curve_gx(), curve_gy() } );
 

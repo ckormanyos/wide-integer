@@ -250,8 +250,8 @@ namespace local_rsa
 
     auto calculate_private_key() -> void
     {
-      my_uintwide_t a = phi_of_m;
-      my_uintwide_t b = my_r;
+      my_uintwide_t a { phi_of_m };
+      my_uintwide_t b { my_r };
 
       my_uintwide_t x { };
       my_uintwide_t s { };
@@ -263,7 +263,7 @@ namespace local_rsa
         s = std::move(make_positive(s, phi_of_m));
       }
 
-      private_key = std::move( private_key_type { s, my_p, my_q } );
+      private_key = std::move( private_key_type { std::move(s), my_p, my_q } );
     }
 
   private:
