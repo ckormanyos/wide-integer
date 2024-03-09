@@ -576,6 +576,8 @@ jobs:
         run: git config --global core.autocrlf input
       - uses: actions/checkout@v2
       - uses: cygwin/cygwin-install-action@master
+        with:
+          check-sig: false
       - name: Install Packages
         run: cyg-get git gcc-core gcc-g++
       - name: boost-clone-develop
