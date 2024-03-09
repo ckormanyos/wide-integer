@@ -578,8 +578,8 @@ jobs:
       - uses: cygwin/cygwin-install-action@master
         with:
           check-sig: false
-      - name: Install Packages
-        run: cyg-get git gcc-core gcc-g++
+          site: https://ftp.fau.de/cygwin/
+          packages: git gcc-core gcc-g++
       - name: boost-clone-develop
         run: bash -l -c 'cd $(cygpath -u "$GITHUB_WORKSPACE") && git clone -b develop --depth 1 https://github.com/boostorg/boost.git ../boost-root'
       - name: boost-update-tools
