@@ -576,10 +576,7 @@ jobs:
         with:
           check-sig: false
           site: https://ftp.fau.de/cygwin/
-      - name: Install Package Manager
-        run: choco install -y cygwin
-      - name: Install Package Manager
-        run: choco install -y cyg-get
+          packages: cyg-get
       - name: Install Packages
         run: cyg-get git gcc-core gcc-g++
       - name: boost-clone-develop
