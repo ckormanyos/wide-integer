@@ -572,21 +572,18 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: '0'
+      - name: clone-submods-boost-develop
+        run: |
+          git clone -b develop --depth 1 https://github.com/boostorg/boost.git ../boost-root
+          cd ../boost-root
+          git submodule update --init tools
+          git submodule update --init libs/config
+          git submodule update --init libs/multiprecision
       - uses: cygwin/cygwin-install-action@master
         with:
           check-sig: false
           site: https://ftp.fau.de/cygwin/
-          packages: cyg-get
-      - name: Install Packages
-        run: bash -l -c 'cd $(cygpath -u "$GITHUB_WORKSPACE") && cyg-get git gcc-core gcc-g++'
-      - name: boost-clone-develop
-        run: bash -l -c 'cd $(cygpath -u "$GITHUB_WORKSPACE") && git clone -b develop --depth 1 https://github.com/boostorg/boost.git ../boost-root'
-      - name: boost-update-tools
-        run: bash -l -c 'cd $(cygpath -u "$GITHUB_WORKSPACE")/../boost-root && git submodule update --init tools'
-      - name: boost-update-config
-        run: bash -l -c 'cd $(cygpath -u "$GITHUB_WORKSPACE")/../boost-root && git submodule update --init libs/config'
-      - name: boost-update-multiprecision
-        run: bash -l -c 'cd $(cygpath -u "$GITHUB_WORKSPACE")/../boost-root && git submodule update --init libs/multiprecision'
+          packages: gcc-core gcc-g++
       - name: boost-bootstrap
         run: bash -l -c 'cd $(cygpath -u "$GITHUB_WORKSPACE")/../boost-root && ./bootstrap.sh'
       - name: boost-generate-headers
