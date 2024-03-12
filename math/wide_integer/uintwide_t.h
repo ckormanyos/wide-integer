@@ -228,7 +228,9 @@
     {
       using local_destination_value_type = typename iterator_detail::iterator_traits<DestinationIterator>::value_type;
 
-      *first++ = static_cast<local_destination_value_type>(val);
+      *first = static_cast<local_destination_value_type>(val);
+
+      ++first;
     }
   }
 
@@ -282,16 +284,7 @@
   }
 
   template<typename T>
-  constexpr auto swap_unsafe(T& left, T& right) -> void
-  {
-    auto tmp = static_cast<T&&>(left);
-
-    left  = static_cast<T&&>(right);
-    right = static_cast<T&&>(tmp);
-  }
-
-  template<typename T>
-  constexpr auto swap_unsafe(T&& left, T&& right) -> void
+  constexpr auto swap_unsafe(T& left, T& right) noexcept -> void
   {
     auto tmp = static_cast<T&&>(left);
 
@@ -302,12 +295,14 @@
   template<typename InputIt, typename UnaryPredicate>
   constexpr auto find_if_unsafe(InputIt first, InputIt last, UnaryPredicate p) -> InputIt
   {
-    for( ; first != last; ++first)
+    while(first != last)
     {
       if(p(*first))
       {
         return first;
       }
+
+      ++first;
     }
 
     return last; // LCOV_EXCL_LINE
@@ -385,12 +380,15 @@
   template<class InputIt1, class InputIt2>
   constexpr auto equal_unsafe(InputIt1 first1, InputIt1 last1, InputIt2 first2) -> bool
   {
-    for( ; first1 != last1; ++first1, ++first2)
+    while(first1 != last1)
     {
       if(!(*first1 == *first2))
       {
         return false;
       }
+
+      ++first1;
+      ++first2;
     }
 
     return true;
@@ -399,7 +397,7 @@
   template<class InputIt1, class InputIt2>
   constexpr auto lexicographical_compare_unsafe(InputIt1 first1, InputIt1 last1, InputIt2 first2, InputIt2 last2) -> bool
   {
-    for( ; (first1 != last1) && (first2 != last2); ++first1, (void) ++first2)
+    while((first1 != last1) && (first2 != last2))
     {
       if(*first1 < *first2)
       {
@@ -410,28 +408,31 @@
       {
         return false;
       }
+
+      ++first1;
+      ++first2;
     }
 
     return ((first1 == last1) && (first2 != last2));
   }
 
-  template<typename IteratorType>
-  constexpr auto iter_swap_unsafe(IteratorType a, IteratorType b) -> void
+  template<typename Iterator1, typename Iterator2>
+  constexpr auto iter_swap_unsafe(Iterator1 a, Iterator2 b) -> void
   {
-    // Non-standard behavior:
-    // The (dereferenced) left/right value-types are the same.
+    using local_value_type = typename iterator_detail::iterator_traits<Iterator1>::value_type;
 
-    using local_value_type = typename iterator_detail::iterator_traits<IteratorType>::value_type;
-
-    swap_unsafe(static_cast<local_value_type&&>(*a), static_cast<local_value_type&&>(*b));
+    swap_unsafe(static_cast<local_value_type&>(*a), static_cast<local_value_type&>(*b));
   }
 
   template<class ForwardIt1, class ForwardIt2>
   constexpr auto swap_ranges_unsafe(ForwardIt1 first1, ForwardIt1 last1, ForwardIt2 first2) -> ForwardIt2
   {
-    for( ; first1 != last1; ++first1, ++first2)
+    while(first1 != last1)
     {
       iter_swap_unsafe(first1, first2);
+
+      ++first1;
+      ++first2;
     }
 
     return first2;
