@@ -2547,6 +2547,43 @@ auto test_export_bits() -> bool // NOLINT(readability-function-cognitive-complex
   return result_is_ok;
 }
 
+auto test_edge_uintwide_t_backend() -> bool
+{
+  using local_small_uintwide_t_backend_type = boost::multiprecision::uintwide_t_backend<local_edge_cases::local_digits2_small>;
+
+  using local_small_uintwide_t_type = boost::multiprecision::number<local_small_uintwide_t_backend_type, boost::multiprecision::et_off>;
+
+  auto result_is_ok = true;
+
+  {
+    // This odd-looking code is intended to pick up some non-covered lines
+    // in the Boost-intended uintwide_t_backend class.
+
+    local_small_uintwide_t_type gcd_max { 0 };
+
+    for(auto   i = static_cast<unsigned>(UINT8_C(0));
+               i < static_cast<unsigned>(UINT32_C(64));
+             ++i)
+    {
+      const auto u = generate_wide_integer_value<local_small_uintwide_t_type>();
+      const auto v = generate_wide_integer_value<local_small_uintwide_t_type>();
+
+      const auto gcd_uv = gcd(-u, -v);
+
+      if(gcd_uv > gcd_max)
+      {
+        gcd_max = gcd_uv;
+      }
+    }
+
+    const bool result_gcd_is_ok = (gcd_max > 0);
+
+    result_is_ok = (result_gcd_is_ok && result_is_ok);
+  }
+
+  return result_is_ok;
+}
+
 } // namespace test_uintwide_t_edge
 
 // LCOV_EXCL_START
@@ -2574,6 +2611,7 @@ auto ::math::wide_integer::test_uintwide_t_edge_cases() -> bool
   result_is_ok = (test_uintwide_t_edge::test_to_and_from_chars_and_to_string() && result_is_ok);
   result_is_ok = (test_uintwide_t_edge::test_import_bits                    () && result_is_ok);
   result_is_ok = (test_uintwide_t_edge::test_export_bits                    () && result_is_ok);
+  result_is_ok = (test_uintwide_t_edge::test_edge_uintwide_t_backend        () && result_is_ok);
 
   return result_is_ok;
 }
