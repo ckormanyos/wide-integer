@@ -47,7 +47,7 @@
 #endif
 
 #if (BOOST_VERSION < 108000)
-#if (defined(__clang__) && (__clang_major__ > 9)) && !defined(__APPLE__)
+#if ((defined(__clang__) && (__clang_major__ > 9)) && !defined(__APPLE__))
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-copy"
 #endif
@@ -136,7 +136,7 @@ auto ::math::wide_integer::test_uintwide_t_boost_backend() -> bool
 }
 
 #if (BOOST_VERSION < 108000)
-#if (defined(__clang__) && (__clang_major__ > 9)) && !defined(__APPLE__)
+#if ((defined(__clang__) && (__clang_major__ > 9)) && !defined(__APPLE__))
 #pragma GCC diagnostic pop
 #endif
 #endif
