@@ -50,6 +50,7 @@
   #include <string>
   #endif
   #include <type_traits>
+  #include <utility>
 
   #if (defined(__clang__) && (__clang_major__ <= 9))
   #define WIDE_INTEGER_NUM_LIMITS_CLASS_TYPE struct // NOLINT(cppcoreguidelines-macro-usage)
@@ -995,10 +996,10 @@
       {
         const size_type my_count = min_unsafe(lhs.size(), rhs.size());
 
-        b_result= std::lexicographical_compare(lhs.cbegin(),
-                                               lhs.cbegin() + my_count,
-                                               rhs.cbegin(),
-                                               rhs.cbegin() + my_count);
+        b_result = lexicographical_compare_unsafe(lhs.cbegin(),
+                                                  lhs.cbegin() + my_count,
+                                                  rhs.cbegin(),
+                                                  rhs.cbegin() + my_count);
       }
     }
 
