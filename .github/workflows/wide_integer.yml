@@ -508,13 +508,13 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: '0'
+      - name: clone-boost-develop
+        working-directory: ${{ runner.workspace }}
+        run: |
+          git clone -b develop --depth 1 https://github.com/boostorg/boost.git ${{ runner.workspace }}/boost-root
       - name: clone-boost-submods
         working-directory: ${{ runner.workspace }}/boost-root
         run: |
-          git clone -b develop --depth 1 https://github.com/boostorg/boost.git ../boost-root
-          cd ../boost-root
           git submodule update --init tools
           git submodule update --init libs/config
           git submodule update --init libs/multiprecision
@@ -533,7 +533,8 @@ jobs:
         shell: cmd
         working-directory: ./
         run: |
-          set INCLUDE=%cd%;%cd%\..\boost-root;%INCLUDE%
+          set INCLUDE=%cd%;
+          set INCLUDE=${{ runner.workspace }}\boost-root;%INCLUDE%
           MSBuild -m wide_integer_vs2022.sln -p:useenv=true -p:Configuration=Release -p:Platform=x64 /t:Rebuild
           dir %cd%\x64\Release\wide_integer_vs2022.exe
           %cd%\x64\Release\wide_integer_vs2022.exe
