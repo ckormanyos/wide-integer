@@ -510,9 +510,6 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: '0'
-      - uses: ilammy/msvc-dev-cmd@v1
-        with:
-          toolset: 14.2
       - name: clone-submods-bootstrap-headers-boost-develop
         run: |
           git clone -b develop --depth 1 https://github.com/boostorg/boost.git ../boost-root
@@ -521,7 +518,7 @@ jobs:
           git submodule update --init libs/config
           git submodule update --init libs/multiprecision
           ./bootstrap.bat
-          ./b2 headers
+          ./b2 toolset=msvc-14.4 headers
       - uses: actions/checkout@v4
       - uses: ilammy/msvc-dev-cmd@v1
         with:
@@ -553,9 +550,6 @@ jobs:
           msystem: UCRT64
           update: true
           install: git mingw-w64-ucrt-x86_64-gcc
-      - uses: ilammy/msvc-dev-cmd@v1
-        with:
-          toolset: 14.2
       - name: clone-submods-bootstrap-headers-boost-develop
         run: |
           git clone -b develop --depth 1 https://github.com/boostorg/boost.git ../boost-root
@@ -564,7 +558,7 @@ jobs:
           git submodule update --init libs/config
           git submodule update --init libs/multiprecision
           ./bootstrap.bat
-          ./b2 headers
+          ./b2 toolset=msvc-14.4 headers
       - name: msys2-winhost-x64
         working-directory: ./
         run: |
