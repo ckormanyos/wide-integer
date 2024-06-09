@@ -30,7 +30,7 @@ jobs:
           git submodule update --init libs/multiprecision
       - uses: ilammy/msvc-dev-cmd@v1
         with:
-          toolset: 14.35
+          vsversion: 2022
       - name: bootstrap-boost
         working-directory: ${{ runner.workspace }}/boost-root
         run: |
