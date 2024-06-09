@@ -36,9 +36,6 @@ jobs:
         run: |
           ./bootstrap.bat
           ./b2 headers
-      - uses: ilammy/msvc-dev-cmd@v1
-        with:
-          vsversion: 2022
       - name: msvc-release-x64-vs2022
         shell: cmd
         working-directory: ./
