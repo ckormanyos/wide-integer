@@ -510,19 +510,25 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: '0'
-      - name: clone-submods-bootstrap-headers-boost-develop
+      - name: clone-boost-submods
+        working-directory: ${{ runner.workspace }}/boost-root
         run: |
           git clone -b develop --depth 1 https://github.com/boostorg/boost.git ../boost-root
           cd ../boost-root
           git submodule update --init tools
           git submodule update --init libs/config
           git submodule update --init libs/multiprecision
-          ./bootstrap.bat vc142
-          ./b2 toolset=msvc-14.2 headers
       - uses: ilammy/msvc-dev-cmd@v1
         with:
           toolset: 14.2
-      - uses: actions/checkout@v4
+      - name: bootstrap-boost
+        working-directory: ${{ runner.workspace }}/boost-root
+        run: |
+          ./bootstrap.bat
+          ./b2 headers
+      - uses: ilammy/msvc-dev-cmd@v1
+        with:
+          toolset: 14.3
       - name: msvc-release-x64-vs2022
         shell: cmd
         working-directory: ./
@@ -531,9 +537,6 @@ jobs:
           MSBuild -m wide_integer_vs2022.sln -p:useenv=true -p:Configuration=Release -p:Platform=x64 /t:Rebuild
           dir %cd%\x64\Release\wide_integer_vs2022.exe
           %cd%\x64\Release\wide_integer_vs2022.exe
-      - uses: ilammy/msvc-dev-cmd@v1
-        with:
-          toolset: 14.3
   msys2-winhost-x64:
     runs-on: windows-latest
     defaults:
