@@ -22,7 +22,7 @@
         <img src="https://img.shields.io/github/commit-activity/y/ckormanyos/wide-integer" alt="GitHub commit activity" /></a>
     <a href="https://github.com/ckormanyos/wide-integer">
         <img src="https://img.shields.io/github/languages/code-size/ckormanyos/wide-integer" alt="GitHub code size in bytes" /></a>
-    <a href="https://godbolt.org/z/b6qoaMf4e" alt="godbolt">
+    <a href="https://godbolt.org/z/on9nax1sM" alt="godbolt">
         <img src="https://img.shields.io/badge/try%20it%20on-godbolt-green" /></a>
 </p>
 
@@ -366,7 +366,7 @@ with a simple mixture of 256-bit and 512-bit unsigned integral types.
 
 This example, compiled with successful output result,
 is shown in its entirety in the following
-[short link](https://godbolt.org/z/fq9E5aW9v) to [godbolt](https://godbolt.org).
+[short link](https://godbolt.org/z/on9nax1sM) to [godbolt](https://godbolt.org).
 
 ```cpp
 #include <iomanip>
@@ -376,8 +376,8 @@ is shown in its entirety in the following
 
 auto main() -> int
 {
-  using ::math::wide_integer::uint256_t;
-  using ::math::wide_integer::uint512_t;
+  using uint256_t = ::math::wide_integer::uint256_t;
+  using uint512_t = ::math::wide_integer::uint512_t;
 
   // Construction from string. Additional constructors
   // are available from other built-in types.
@@ -386,24 +386,24 @@ auto main() -> int
   const uint256_t b("0x166D63E0202B3D90ECCEAA046341AB504658F55B974A7FD63733ECF89DD0DF75");
 
   // Elementary arithmetic operations.
-  const auto c = uint512_t(a) * uint512_t(b);
-  const auto d = (a / b);
+  const uint512_t c = (uint512_t(a) * uint512_t(b));
+  const uint256_t d = (a / b);
 
   // Logical comparison.
   const auto result_is_ok = (   (c == "0x1573D6A7CEA734D99865C4F428184983CDB018B80E9CC44B83C773FBE11993E7E491A360C57EB4306C61F9A04F7F7D99BE3676AAD2D71C5592D5AE70F84AF076")
                              && (d == "0xA"));
 
   // Print the hexadecimal representation string output.
-  const auto flg = std::cout.flags();
+  std::stringstream strm;
 
-  std::cout << "0x" << std::hex << std::uppercase << c << std::endl;
-  std::cout << "0x" << std::hex << std::uppercase << d << std::endl;
+  strm << "0x" << std::hex << std::uppercase << c << '\n';
+  strm << "0x" << std::hex << std::uppercase << d << '\n';
 
   // Visualize if the result is OK.
 
-  std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
+  strm << "result_is_ok: " << std::boolalpha << result_is_ok;
 
-  std::cout.flags(flg);
+  std::cout << strm.str() << std::endl;
 }
 ```
 
