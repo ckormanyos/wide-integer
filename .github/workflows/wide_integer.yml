@@ -520,7 +520,7 @@ jobs:
           git submodule update --init tools
           git submodule update --init libs/config
           git submodule update --init libs/multiprecision
-          ./bootstrap.bat toolset=msvc-14.2
+          ./bootstrap.bat vc142
           ./b2 toolset=msvc-14.2 headers
       - uses: actions/checkout@v4
       - uses: ilammy/msvc-dev-cmd@v1
@@ -563,7 +563,7 @@ jobs:
           git submodule update --init tools
           git submodule update --init libs/config
           git submodule update --init libs/multiprecision
-          ./bootstrap.bat toolset=msvc-14.2
+          ./bootstrap.bat vc142
           ./b2 toolset=msvc-14.2 headers
       - name: msys2-winhost-x64
         working-directory: ./
