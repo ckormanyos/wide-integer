@@ -553,6 +553,9 @@ jobs:
           msystem: UCRT64
           update: true
           install: git mingw-w64-ucrt-x86_64-gcc
+      - uses: ilammy/msvc-dev-cmd@v1
+        with:
+          toolset: 14.2
       - name: clone-submods-bootstrap-headers-boost-develop
         run: |
           git clone -b develop --depth 1 https://github.com/boostorg/boost.git ../boost-root
