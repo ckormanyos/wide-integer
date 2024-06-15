@@ -2939,7 +2939,7 @@
                                                                                            std::allocator<void>,
                                                                                            AllocatorType>>::template rebind_alloc<limb_type>>>;
 
-        string_storage_oct_type str_temp; // LCOV_EXCL_LINE
+        string_storage_oct_type str_temp { }; // LCOV_EXCL_LINE
 
         auto pos = // LCOV_EXCL_LINE
           static_cast<unsigned_fast_type>
@@ -3011,7 +3011,7 @@
                                                                                            std::allocator<void>,
                                                                                            AllocatorType>>::template rebind_alloc<limb_type>>>;
 
-        string_storage_dec_type str_temp;
+        string_storage_dec_type str_temp { };
 
         auto pos = static_cast<unsigned_fast_type>(str_temp.size() - static_cast<size_t>(UINT8_C(1)));
 
@@ -3077,7 +3077,7 @@
                                                                                            std::allocator<void>,
                                                                                            AllocatorType>>::template rebind_alloc<limb_type>>>;
 
-        string_storage_hex_type str_temp;
+        string_storage_hex_type str_temp { };
 
         auto pos = static_cast<unsigned_fast_type>(str_temp.size() - static_cast<size_t>(UINT8_C(1)));
 
@@ -3704,8 +3704,8 @@
                                                                                                          std::allocator<void>,
                                                                                                          AllocatorType>>::template rebind_alloc<limb_type>>>;
 
-      result_array_type  result;
-      storage_array_type t;
+      result_array_type  result { };
+      storage_array_type t { };
 
       eval_multiply_kara_n_by_n_to_2n(result.begin(),
                                       u.values.cbegin(),
@@ -5720,7 +5720,7 @@
 
       // TBD: There is redundant storage of this kind both here
       // in this subroutine as well as in the wr_string method.
-      string_storage_oct_type str_result; // LCOV_EXCL_LINE
+      string_storage_oct_type str_result { }; // LCOV_EXCL_LINE
 
       str_result.fill('\0');
 
@@ -5743,7 +5743,7 @@
 
       // TBD: There is redundant storage of this kind both here
       // in this subroutine as well as in the wr_string method.
-      string_storage_dec_type str_result;
+      string_storage_dec_type str_result { };
 
       str_result.fill('\0');
 
@@ -5766,7 +5766,7 @@
 
       // TBD: There is redundant storage of this kind both here
       // in this subroutine as well as in the wr_string method.
-      string_storage_hex_type str_result;
+      string_storage_hex_type str_result { };
 
       str_result.fill('\0');
 
@@ -7422,7 +7422,7 @@
 
     using local_size_type = typename string_storage_dec_type::size_type;
 
-    string_storage_dec_type str_temp; // LCOV_EXCL_LINE
+    string_storage_dec_type str_temp { }; // LCOV_EXCL_LINE
 
     str_temp.fill(local_wide_integer_type::my_fill_char());
 
