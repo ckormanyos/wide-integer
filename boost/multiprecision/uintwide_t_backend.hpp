@@ -532,9 +532,7 @@
                            const uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& p,
                            const uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& m) -> void
   {
-    result.representation() = powm(b.crepresentation(),
-                                   p.crepresentation(),
-                                   m.crepresentation());
+    result.representation() = powm(b.crepresentation(), p.crepresentation(), m.crepresentation());
   }
 
   template<
@@ -553,26 +551,6 @@
                            const OtherIntegralTypeM                                         m) -> void
   {
     result.representation() = powm(b.crepresentation(), p.crepresentation(), m);
-  }
-
-  template<
-  #if defined(WIDE_INTEGER_NAMESPACE)
-           const WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t MyWidth2,
-  #else
-           const ::math::wide_integer::size_t MyWidth2,
-  #endif
-           typename MyLimbType,
-           typename MyAllocatorType,
-           typename OtherIntegralTypeP,
-           std::enable_if_t<(std::is_integral<OtherIntegralTypeP>::value)> const* = nullptr>
-  constexpr auto eval_powm(      uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& result,
-                           const uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& b,
-                           const OtherIntegralTypeP                                         p,
-                           const uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& m) -> void
-  {
-    result.representation() = powm(b.crepresentation(),
-                                   p,
-                                   m.crepresentation());
   }
 
   template<
