@@ -38,7 +38,7 @@ jobs:
           git submodule update --init libs/multiprecision
           ./bootstrap.sh
           ./b2 headers
-      - name: gcc-clang-native
+      - name: clang-fuzzing
         run: |
           grep BOOST_VERSION ../boost-root/boost/version.hpp
           echo "compile and instrument fuzzing test"
@@ -46,4 +46,4 @@ jobs:
           clang++ -g -O2 -fsanitize=fuzzer,address,undefined -I. -I../boost-root test/fuzzing/test_fuzzing_${{ matrix.tcase }}.cpp -o test_fuzzing_${{ matrix.tcase }}
           echo "ls test_fuzzing_${{ matrix.tcase }}"
           ls -la test_fuzzing_${{ matrix.tcase }}
-          ./test_fuzzing_${{ matrix.tcase }} -max_total_time=180
+          ./test_fuzzing_${{ matrix.tcase }} -max_total_time=240

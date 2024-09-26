@@ -4,6 +4,8 @@
 <p align="center">
     <a href="https://github.com/ckormanyos/wide-integer/actions">
         <img src="https://github.com/ckormanyos/wide-integer/actions/workflows/wide_integer.yml/badge.svg" alt="Build Status"></a>
+    <a href="https://github.com/ckormanyos/wide-integer/actions?query=workflow%3Awide_integer_fuzzing">
+        <img src="https://github.com/ckormanyos/wide-integer/actions/workflows/wide_integer_fuzzing_.yml/badge.svg" alt="Build Status"></a>
     <a href="https://github.com/ckormanyos/wide-integer/issues?q=is%3Aissue+is%3Aopen+sort%3Aupdated-desc">
         <img src="https://custom-icon-badges.herokuapp.com/github/issues-raw/ckormanyos/wide-integer?logo=github" alt="Issues" /></a>
     <a href="https://github.com/ckormanyos/wide-integer/actions?query=workflow%3ACodeQL">
@@ -340,6 +342,8 @@ as well as in offline checks to improve static code quality.
 GCC's run-time
 [sanitizers](https://gcc.gnu.org/onlinedocs/gcc/Instrumentation-Options.html)
 are used in CI in order to help assure dynamic quality.
+This effort also includes _fuzzing_ with
+[libFuzzer](https://llvm.org/docs/LibFuzzer.html).
 
 Additional quality checks are performed on pull-request
 and merge to master using modern third party open-source services.
