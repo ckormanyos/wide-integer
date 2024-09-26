@@ -6,7 +6,7 @@
 //
 
 // cd /mnt/c/Users/ckorm/Documents/Ks/PC_Software/NumericalPrograms/ExtendedNumberTypes/wide_integer
-// clang++ -g -O2 -fsanitize=fuzzer,address,undefined -I. -I/mnt/c/boost/boost_1_85_0 test/fuzzing/test_fuzzing_prime.cpp -o test_fuzzing_prime
+// clang++ -std=c++20 -g -O2 -fsanitize=fuzzer,address,undefined -I. -I/mnt/c/boost/boost_1_85_0 test/fuzzing/test_fuzzing_prime.cpp -o test_fuzzing_prime
 // ./test_fuzzing_prime -max_total_time=180
 
 #include <math/wide_integer/uintwide_t.h>
@@ -64,31 +64,29 @@ auto fuzzing::eval_prime(const std::uint8_t* data, std::size_t size) -> bool
     distribution_type distribution1;
     distribution_type distribution2;
 
-    local_uint_type p0 { };
+    local_uint_type p0 { 0U };
 
     // Import the random data into the prime candidate.
     import_bits
     (
       p0,
       data,
-      data + size,
-      8U
+      data + size
     );
 
     const bool miller_rabin_result_local { miller_rabin(p0, 25U, distribution2, generator2) };
 
-    const boost_uint_type
-      pb
+    auto from_string =
+      [](const local_uint_type& ui)
       {
-        [&p0]()
-        {
-          std::stringstream strm { };
+        std::stringstream strm { };
 
-          strm << p0;
+        strm << ui;
 
-          return strm.str();
-        }()
+        return boost_uint_type { strm.str() };
       };
+
+    const boost_uint_type pb { std::move(from_string(p0)) };
 
     // Ensure that both uintwide_t as well as boost obtain
     // the same prime (or non-prime) result.
