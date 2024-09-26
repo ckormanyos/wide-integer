@@ -22,7 +22,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        tcase: [ add, div ]
+        tcase: [ add, sub, mul, div ]
     steps:
       - uses: actions/checkout@v4
         with:
