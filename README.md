@@ -4,8 +4,8 @@
 <p align="center">
     <a href="https://github.com/ckormanyos/wide-integer/actions">
         <img src="https://github.com/ckormanyos/wide-integer/actions/workflows/wide_integer.yml/badge.svg" alt="Build Status"></a>
-    <a href="https://github.com/ckormanyos/wide-integer/actions?query=workflow%3Awide_integer_fuzzing">
-        <img src="https://github.com/ckormanyos/wide-integer/actions/workflows/wide_integer_fuzzing_.yml/badge.svg" alt="Build Status"></a>
+    <a href="https://github.com/ckormanyos/wide-integer/actions">
+        <img src="https://github.com/ckormanyos/wide-integer/actions/workflows/wide_integer_fuzzing.yml/badge.svg" alt="Build Status"></a>
     <a href="https://github.com/ckormanyos/wide-integer/issues?q=is%3Aissue+is%3Aopen+sort%3Aupdated-desc">
         <img src="https://custom-icon-badges.herokuapp.com/github/issues-raw/ckormanyos/wide-integer?logo=github" alt="Issues" /></a>
     <a href="https://github.com/ckormanyos/wide-integer/actions?query=workflow%3ACodeQL">
