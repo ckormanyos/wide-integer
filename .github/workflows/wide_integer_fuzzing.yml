@@ -1,0 +1,49 @@
+# ------------------------------------------------------------------------------
+#  Copyright Christopher Kormanyos 2024.
+#  Distributed under the Boost Software License,
+#  Version 1.0. (See accompanying file LICENSE_1_0.txt
+#  or copy at http://www.boost.org/LICENSE_1_0.txt)
+# ------------------------------------------------------------------------------
+
+name: wide_integer_fuzzing
+on:
+  push:
+    branches:
+      - '**'
+  pull_request:
+  schedule:
+    - cron: '15 2 * * *' # run at 2:15 AM UTC
+jobs:
+  clang-fuzzing:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    strategy:
+      fail-fast: false
+      matrix:
+        tcase: [ add, div ]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: '0'
+      - name: update-tools
+        run: sudo apt install llvm lld
+      - name: clone-submods-bootstrap-headers-boost-develop
+        run: |
+          git clone -b develop --depth 1 https://github.com/boostorg/boost.git ../boost-root
+          cd ../boost-root
+          git submodule update --init tools
+          git submodule update --init libs/config
+          git submodule update --init libs/multiprecision
+          ./bootstrap.sh
+          ./b2 headers
+      - name: gcc-clang-native
+        run: |
+          grep BOOST_VERSION ../boost-root/boost/version.hpp
+          echo "compile and instrument fuzzing test"
+          clang++ -v
+          clang++ -g -O2 -fsanitize=fuzzer,address,undefined -I. -I../boost-root test/fuzzing/test_fuzzing_${{ matrix.tcase }}.cpp -o test_fuzzing_${{ matrix.tcase }}
+          echo "ls test_fuzzing_${{ matrix.tcase }}"
+          ls -la test_fuzzing_${{ matrix.tcase }}
+          ./test_fuzzing_${{ matrix.tcase }} -max_total_time=180
