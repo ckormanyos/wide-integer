@@ -7125,9 +7125,9 @@
       }
     }
 
-    const unsigned_fast_type k = lsb(nm1);
+    const unsigned_fast_type k { lsb(nm1) };
 
-    const local_wide_integer_type q = nm1 >> k;
+    const local_wide_integer_type q { nm1 >> k };
 
     using local_param_type = typename DistributionType::param_type;
 
@@ -7139,22 +7139,23 @@
     // Assume the test will pass, even though it usually does not pass.
     bool result { true };
 
-    // Loop over the trials and perform the primality testing.
-    for(std::size_t it { 0U }; ((it < number_of_trials) && result); ++it) // NOLINT(altera-id-dependent-backward-branch)
+    // Loop over the trials to perform the primality testing.
+
+    for(std::size_t idx { 0U }; ((idx < number_of_trials) && result); ++idx) // NOLINT(altera-id-dependent-backward-branch)
     {
       x = distribution(generator, params);
       y = powm(x, q, np);
 
-      std::size_t j { 0U };
+      std::size_t jdx { 0U };
 
       // Continue while y is not nm1, and while y is not 1,
       // and while the result is true.
 
       while((y != nm1) && (y != 1U) && result) // NOLINT(altera-id-dependent-backward-branch)
       {
-        ++j;
+        ++jdx;
 
-        if (std::size_t { j } == k)
+        if (std::size_t { jdx } == k)
         {
           // Mark failure if max iterations reached.
           result = false;
@@ -7167,9 +7168,9 @@
       }
 
       // Check for (y == 1) after the loop.
-      if((y == 1U) && (j != std::size_t { 0U }))
+      if((y == 1U) && (jdx != std::size_t { 0U }))
       {
-        // Mark failure if (y == 1) and (j != 0).
+        // Mark failure if (y == 1) and (jdx != 0).
         result = false;
       }
     }
