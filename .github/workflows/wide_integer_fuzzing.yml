@@ -22,7 +22,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        tcase: [ add, sub, mul, div ]
+        tcase: [ add, sub, mul, div, prime ]
     steps:
       - uses: actions/checkout@v4
         with:
@@ -43,7 +43,7 @@ jobs:
           grep BOOST_VERSION ../boost-root/boost/version.hpp
           echo "compile and instrument fuzzing test"
           clang++ -v
-          clang++ -g -O2 -fsanitize=fuzzer,address,undefined -I. -I../boost-root test/fuzzing/test_fuzzing_${{ matrix.tcase }}.cpp -o test_fuzzing_${{ matrix.tcase }}
+          clang++ -std=c++20 -g -O2 -fsanitize=fuzzer -I. -I../boost-root test/fuzzing/test_fuzzing_${{ matrix.tcase }}.cpp -o test_fuzzing_${{ matrix.tcase }}
           echo "ls test_fuzzing_${{ matrix.tcase }}"
           ls -la test_fuzzing_${{ matrix.tcase }}
-          ./test_fuzzing_${{ matrix.tcase }} -max_total_time=240
+          ./test_fuzzing_${{ matrix.tcase }} -max_total_time=240 -jobs=8

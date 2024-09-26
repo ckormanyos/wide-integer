@@ -7133,58 +7133,48 @@
 
     const local_param_type params(local_wide_integer_type(2U), np - 2U);
 
-    auto is_probably_prime = true;
+    local_wide_integer_type x { };
+    local_wide_integer_type y { };
 
-    auto i = static_cast<unsigned_fast_type>(UINT8_C(0));
+    // Assume the test will pass, even though it usually does not pass.
+    bool result { true };
 
-    auto x = local_wide_integer_type { };
-    auto y = local_wide_integer_type { };
-
-    // Execute the random trials.
-    do
+    // Loop over the trials and perform the primality testing.
+    for(std::size_t it { 0U }; ((it < number_of_trials) && result); ++it) // NOLINT(altera-id-dependent-backward-branch)
     {
       x = distribution(generator, params);
       y = powm(x, q, np);
 
-      auto j = static_cast<unsigned_fast_type>(UINT8_C(0));
+      std::size_t j { 0U };
 
-      while(y != nm1) // NOLINT(altera-id-dependent-backward-branch)
+      // Continue while y is not nm1, and while y is not 1,
+      // and while the result is true.
+
+      while((y != nm1) && (y != 1U) && result) // NOLINT(altera-id-dependent-backward-branch)
       {
-        const local_limb_type y0(y);
+        ++j;
 
-        if((y0 == static_cast<local_limb_type>(UINT8_C(1))) && (y == 1U))
+        if (std::size_t { j } == k)
         {
-          if(j != static_cast<unsigned_fast_type>(UINT8_C(0)))
-          {
-            is_probably_prime = false;
-          }
-          else
-          {
-            break;
-          }
+          // Mark failure if max iterations reached.
+          result = false;
         }
         else
         {
-          ++j;
-
-          if(j == k)
-          {
-            is_probably_prime = false;
-          }
-          else
-          {
-            y = powm(y, 2U, np);
-          }
+          // Continue with the next value of y.
+          y = powm(y, 2, np);
         }
       }
 
-      ++i;
+      // Check for (y == 1) after the loop.
+      if((y == 1U) && (j != std::size_t { 0U }))
+      {
+        // Mark failure if (y == 1) and (j != 0).
+        result = false;
+      }
     }
-    while((i < number_of_trials) && is_probably_prime);
 
-    // The prime candidate is probably prime in the sense
-    // of the very high probability resulting from Miller-Rabin.
-    return is_probably_prime;
+    return result;
   }
 
   #if (defined(__cpp_lib_to_chars) && (__cpp_lib_to_chars >= 201611L))
