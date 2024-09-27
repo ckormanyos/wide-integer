@@ -15,13 +15,10 @@
 #include <boost/multiprecision/cpp_int.hpp>
 #include <boost/multiprecision/miller_rabin.hpp>
 
-#include <algorithm>
 #include <cassert>
 #include <cstddef>
 #include <cstdint>
 #include <random>
-#include <sstream>
-#include <vector>
 
 namespace fuzzing
 {
@@ -65,32 +62,30 @@ auto fuzzing::eval_prime(const std::uint8_t* data, std::size_t size) -> bool
     distribution_type distribution2;
 
     local_uint_type p0 { 0U };
+    boost_uint_type pb { 0U };
 
     // Import the random data into the prime candidate.
     import_bits
     (
       p0,
       data,
-      data + size
+      data + size,
+      8U
     );
 
-    const bool miller_rabin_result_local { miller_rabin(p0, 25U, distribution2, generator2) };
-
-    auto from_string =
-      [](const local_uint_type& ui)
-      {
-        std::stringstream strm { };
-
-        strm << ui;
-
-        return boost_uint_type { strm.str() };
-      };
-
-    const boost_uint_type pb { std::move(from_string(p0)) };
+    // Import the random data into the boost control prime candidate.
+    import_bits
+    (
+      pb,
+      data,
+      data + size,
+      8U
+    );
 
     // Ensure that both uintwide_t as well as boost obtain
     // the same prime (or non-prime) result.
 
+    const bool miller_rabin_result_local { miller_rabin(p0, 25U, distribution2, generator2) };
     const bool miller_rabin_result_boost { boost::multiprecision::miller_rabin_test(pb, 25U, generator2) };
 
     const bool

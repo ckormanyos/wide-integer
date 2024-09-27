@@ -46,4 +46,4 @@ jobs:
           clang++ -std=c++20 -g -O2 -fsanitize=fuzzer -I. -I../boost-root test/fuzzing/test_fuzzing_${{ matrix.tcase }}.cpp -o test_fuzzing_${{ matrix.tcase }}
           echo "ls test_fuzzing_${{ matrix.tcase }}"
           ls -la test_fuzzing_${{ matrix.tcase }}
-          ./test_fuzzing_${{ matrix.tcase }} -max_total_time=240 -jobs=8
+          ./test_fuzzing_${{ matrix.tcase }} -max_total_time=300 -jobs=8

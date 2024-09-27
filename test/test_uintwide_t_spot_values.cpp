@@ -5,13 +5,71 @@
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
 
+#include <math/wide_integer/uintwide_t.h>
+#include <test/test_uintwide_t.h>
+
 #include <algorithm>
 #include <array>
 #include <cassert>
 #include <sstream>
+#include <string>
+#include <vector>
 
-#include <math/wide_integer/uintwide_t.h>
-#include <test/test_uintwide_t.h>
+namespace from_issue_429
+{
+  auto test_uintwide_t_spot_values_from_issue_429() -> bool
+  {
+    #if defined(WIDE_INTEGER_NAMESPACE)
+    using local_uint_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::uint256_t;
+    #else
+    using local_uint_type = ::math::wide_integer::uint256_t;
+    #endif
+
+    const std::vector<std::uint8_t>
+      input
+      (
+        {
+          0x00, 0x00, 0x00, 0xff,
+          0xff, 0xff, 0xff, 0xff,
+          0xff, 0xff, 0x21, 0x62,
+          0xff, 0xff, 0xff, 0xff,
+          0x21
+        }
+    );
+
+    local_uint_type p0_local { };
+
+    // Import the data into the wide integer.
+    import_bits
+    (
+      p0_local,
+      input.cbegin(),
+      input.cend(),
+      static_cast<unsigned>(UINT8_C(8))
+    );
+
+    std::stringstream strm_local { };
+
+    strm_local << std::hex << p0_local;
+
+    const std::string str_local { strm_local.str() };
+
+    const bool result_import_is_ok { str_local == "ffffffffffffff2162ffffffff21" };
+
+    std::vector<std::uint8_t> export_local(input.size());
+
+    export_bits(p0_local, export_local.begin(), static_cast<unsigned>(UINT8_C(8)));
+
+    const bool result_export_is_ok
+    {
+      export_local == std::vector<std::uint8_t>( { 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x21, 0x62, 0xff, 0xff, 0xff, 0xff, 0x21, 0x00, 0x00, 0x00 } )
+    };
+
+    const bool result_import_export_is_ok { result_import_is_ok && result_export_is_ok };
+
+    return result_import_export_is_ok;
+  }
+} // namespace from_issue_429
 
 namespace from_issue_362
 {
@@ -650,6 +708,12 @@ namespace local_test_spot_values
 auto local_test_spot_values::test() -> bool // NOLINT(readability-function-cognitive-complexity)
 {
   auto result_is_ok = true;
+
+  {
+    // See also: https://github.com/ckormanyos/wide-integer/issues/429
+
+    result_is_ok = (from_issue_429::test_uintwide_t_spot_values_from_issue_429() && result_is_ok);
+  }
 
   {
     // See also: https://github.com/ckormanyos/wide-integer/issues/362
