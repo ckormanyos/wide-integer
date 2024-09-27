@@ -5,13 +5,94 @@
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
 
+#include <test/test_uintwide_t.h>
+#include <math/wide_integer/uintwide_t.h>
+
+#include <boost/multiprecision/cpp_int.hpp>
+
 #include <algorithm>
 #include <array>
 #include <cassert>
 #include <sstream>
+#include <string>
+#include <vector>
 
-#include <math/wide_integer/uintwide_t.h>
-#include <test/test_uintwide_t.h>
+namespace from_issue_429
+{
+  auto test_uintwide_t_spot_values_from_issue_429() -> bool
+  {
+    #if defined(WIDE_INTEGER_NAMESPACE)
+    using local_uint_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::uint256_t;
+    #else
+    using local_uint_type = ::math::wide_integer::uint256_t;
+    #endif
+
+    using boost_uint_backend_type =
+      boost::multiprecision::cpp_int_backend<static_cast<unsigned>(UINT32_C(256)),
+                                             static_cast<unsigned>(UINT32_C(256)),
+                                             boost::multiprecision::unsigned_magnitude>;
+
+    using boost_uint_type = boost::multiprecision::number<boost_uint_backend_type,
+                                                          boost::multiprecision::et_off>;
+
+
+    const std::vector<std::uint8_t>
+      input
+      (
+        {
+          0x00, 0x00, 0x00, 0xff,
+          0xff, 0xff, 0xff, 0xff,
+          0xff, 0xff, 0x21, 0x62,
+          0xff, 0xff, 0xff, 0xff,
+          0x21
+        }
+    );
+
+    local_uint_type p0_local { };
+    boost_uint_type p0_boost { };
+
+    // Import the data into the wide integer.
+    import_bits
+    (
+      p0_local,
+      input.cbegin(),
+      input.cend(),
+      8U
+    );
+
+    // Import the data into boost's cpp_int.
+    import_bits
+    (
+      p0_boost,
+      input.cbegin(),
+      input.cend(),
+      8U
+    );
+
+    std::stringstream strm_local { };
+    std::stringstream strm_boost { };
+
+    strm_local << std::hex << p0_local;
+    strm_boost << std::hex << p0_boost;
+
+    const std::string str_local { strm_local.str() };
+    const std::string str_boost { strm_boost.str() };
+
+    const bool result_import_is_ok { str_local == str_boost };
+
+    std::vector<std::uint8_t> export_local(input.size());
+    std::vector<std::uint8_t> export_boost(input.size());
+
+    export_bits(p0_local, export_local.begin(), 8U);
+    export_bits(p0_boost, export_boost.begin(), 8U);
+
+    const bool result_export_is_ok { export_local == export_boost };
+
+    const bool result_import_export_is_ok { result_import_is_ok && result_export_is_ok };
+
+    return result_import_export_is_ok;
+  }
+} // namespace from_issue_429
 
 namespace from_issue_362
 {
@@ -650,6 +731,12 @@ namespace local_test_spot_values
 auto local_test_spot_values::test() -> bool // NOLINT(readability-function-cognitive-complexity)
 {
   auto result_is_ok = true;
+
+  {
+    // See also: https://github.com/ckormanyos/wide-integer/issues/429
+
+    result_is_ok = (from_issue_429::test_uintwide_t_spot_values_from_issue_429() && result_is_ok);
+  }
 
   {
     // See also: https://github.com/ckormanyos/wide-integer/issues/362
