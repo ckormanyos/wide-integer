@@ -5,17 +5,8 @@
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
 
-#if defined(__GNUC__)
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wconversion"
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wsign-conversion"
-#endif
-
 #include <test/test_uintwide_t.h>
 #include <math/wide_integer/uintwide_t.h>
-
-#include <boost/multiprecision/cpp_int.hpp>
 
 #include <algorithm>
 #include <array>
@@ -34,15 +25,6 @@ namespace from_issue_429
     using local_uint_type = ::math::wide_integer::uint256_t;
     #endif
 
-    using boost_uint_backend_type =
-      boost::multiprecision::cpp_int_backend<static_cast<unsigned>(UINT32_C(256)),
-                                             static_cast<unsigned>(UINT32_C(256)),
-                                             boost::multiprecision::unsigned_magnitude>;
-
-    using boost_uint_type = boost::multiprecision::number<boost_uint_backend_type,
-                                                          boost::multiprecision::et_off>;
-
-
     const std::vector<std::uint8_t>
       input
       (
@@ -56,7 +38,6 @@ namespace from_issue_429
     );
 
     local_uint_type p0_local { };
-    boost_uint_type p0_boost { };
 
     // Import the data into the wide integer.
     import_bits
@@ -67,33 +48,22 @@ namespace from_issue_429
       8U
     );
 
-    // Import the data into boost's cpp_int.
-    import_bits
-    (
-      p0_boost,
-      input.cbegin(),
-      input.cend(),
-      8U
-    );
-
     std::stringstream strm_local { };
-    std::stringstream strm_boost { };
 
     strm_local << std::hex << p0_local;
-    strm_boost << std::hex << p0_boost;
 
     const std::string str_local { strm_local.str() };
-    const std::string str_boost { strm_boost.str() };
 
-    const bool result_import_is_ok { str_local == str_boost };
+    const bool result_import_is_ok { str_local == "ffffffffffffff2162ffffffff21" };
 
     std::vector<std::uint8_t> export_local(input.size());
-    std::vector<std::uint8_t> export_boost(input.size());
 
     export_bits(p0_local, export_local.begin(), 8U);
-    export_bits(p0_boost, export_boost.begin(), 8U);
 
-    const bool result_export_is_ok { export_local == export_boost };
+    const bool result_export_is_ok
+    {
+      export_local == std::vector<std::uint8_t>( { 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x21, 0x62, 0xff, 0xff, 0xff, 0xff, 0x21, 0x00, 0x00, 0x00 } )
+    };
 
     const bool result_import_export_is_ok { result_import_is_ok && result_export_is_ok };
 
@@ -1633,8 +1603,3 @@ auto ::math::wide_integer::test_uintwide_t_spot_values() -> bool // NOLINT(reada
 {
   return local_test_spot_values::test();
 }
-
-#if defined(__GNUC__)
-#pragma GCC diagnostic pop
-#pragma GCC diagnostic pop
-#endif
