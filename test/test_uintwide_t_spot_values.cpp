@@ -5,6 +5,13 @@
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
 
+#if defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wconversion"
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsign-conversion"
+#endif
+
 #include <test/test_uintwide_t.h>
 #include <math/wide_integer/uintwide_t.h>
 
@@ -1626,3 +1633,8 @@ auto ::math::wide_integer::test_uintwide_t_spot_values() -> bool // NOLINT(reada
 {
   return local_test_spot_values::test();
 }
+
+#if defined(__GNUC__)
+#pragma GCC diagnostic pop
+#pragma GCC diagnostic pop
+#endif
