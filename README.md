@@ -24,7 +24,7 @@
         <img src="https://img.shields.io/github/commit-activity/y/ckormanyos/wide-integer" alt="GitHub commit activity" /></a>
     <a href="https://github.com/ckormanyos/wide-integer">
         <img src="https://img.shields.io/github/languages/code-size/ckormanyos/wide-integer" alt="GitHub code size in bytes" /></a>
-    <a href="https://godbolt.org/z/on9nax1sM" alt="godbolt">
+    <a href="https://godbolt.org/z/Gj7cEc3jc" alt="godbolt">
         <img src="https://img.shields.io/badge/try%20it%20on-godbolt-green" /></a>
 </p>
 
@@ -104,14 +104,14 @@ See also the following informative links to Wolfram Alpha(R).
 
 This example, compiled with successful output result,
 is shown in its entirety in the following
-[short link](https://godbolt.org/z/eWKzqx77G) to [godbolt](https://godbolt.org).
+[short link](https://godbolt.org/z/4bYPWxzEY) to [godbolt](https://godbolt.org).
 
 In particular,
 
 ```cpp
-#include <iostream>
-
 #include <math/wide_integer/uintwide_t.h>
+
+#include <iostream>
 
 using uint512_t = ::math::wide_integer::uintwide_t<512U, std::uint32_t>;
 
@@ -370,13 +370,14 @@ with a simple mixture of 256-bit and 512-bit unsigned integral types.
 
 This example, compiled with successful output result,
 is shown in its entirety in the following
-[short link](https://godbolt.org/z/on9nax1sM) to [godbolt](https://godbolt.org).
+[short link](https://godbolt.org/z/Gj7cEc3jc) to [godbolt](https://godbolt.org).
 
 ```cpp
+#include <math/wide_integer/uintwide_t.h>
+
 #include <iomanip>
 #include <iostream>
-
-#include <math/wide_integer/uintwide_t.h>
+#include <sstream>
 
 auto main() -> int
 {
@@ -422,13 +423,13 @@ The example below calculates an integer square root.
 
 This example, compiled with successful output result,
 is shown in its entirety in the following
-[short link](https://godbolt.org/z/Gf4sfeP48) to [godbolt](https://godbolt.org).
+[short link](https://godbolt.org/z/KofWbMq8M) to [godbolt](https://godbolt.org).
 
 ```cpp
+#include <math/wide_integer/uintwide_t.h>
+
 #include <iomanip>
 #include <iostream>
-
-#include <math/wide_integer/uintwide_t.h>
 
 auto main() -> int
 {
@@ -440,20 +441,27 @@ auto main() -> int
 
   const auto result_is_ok = (s == "0xFA5FE7853F1D4AD92BDF244179CA178B");
 
+  const auto flg = std::cout.flags();
+
   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
+
+  std::cout.flags(flg);
+
+  return (result_is_ok ? 0 : -1);
 }
 ```
 
 The following sample performs add, subtract, multiply and divide of `uint48_t`.
 See this example also in the following
-[short link](https://godbolt.org/z/vMqWav5P6) to [godbolt](https://godbolt.org).
+[short link](https://godbolt.org/z/hc8GWMhed) to [godbolt](https://godbolt.org).
 
 ```cpp
+#include <math/wide_integer/uintwide_t.h>
+
 #include <iomanip>
 #include <iostream>
 #include <random>
-
-#include <math/wide_integer/uintwide_t.h>
+#include <sstream>
 
 auto main() -> int
 {
@@ -488,7 +496,11 @@ auto main() -> int
                                  && (static_cast<std::uint64_t>(c_mul) == static_cast<std::uint64_t>((a64 * b64) & static_cast<std::uint64_t>(UINT64_C(0x0000FFFFFFFFFFFF))))
                                  && (static_cast<std::uint64_t>(c_div) == static_cast<std::uint64_t>((a64 / b64) & static_cast<std::uint64_t>(UINT64_C(0x0000FFFFFFFFFFFF))))));
 
-  std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
+  std::stringstream strm { };
+
+  strm << "result_is_ok: " << std::boolalpha << result_is_ok;
+
+  std::cout << strm.str() << std::endl;
 }
 ```
 
@@ -500,13 +512,14 @@ it is large enough to hold the value of $10^{3,333}$
 prior to (and following) the cube root operation.
 
 See this example fully worked out at the following
-[short link](https://godbolt.org/z/aKKesPK36) to [godbolt](https://godbolt.org)
+[short link](https://godbolt.org/z/nE1eq7h6M) to [godbolt](https://godbolt.org)
 
 ```cpp
+#include <math/wide_integer/uintwide_t.h>
+
 #include <iomanip>
 #include <iostream>
-
-#include <math/wide_integer/uintwide_t.h>
+#include <sstream>
 
 auto main() -> int
 {
@@ -529,9 +542,13 @@ auto main() -> int
 
   const auto result_is_ok = (s == uint11264_t(str_control.data()));
 
-  std::cout << s << std::endl;
+  std::stringstream strm { };
 
-  std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
+  strm << s;
+
+  strm << "\nresult_is_ok: " << std::boolalpha << result_is_ok;
+
+  std::cout << strm.str() << std::endl;
 }
 ```
 
@@ -768,7 +785,7 @@ of `uintwide_t` from character strings with subsequent `constexpr` evaluations
 of binary operations multiply, divide, intergal cast and comparison.
 
 See this example fully worked out at the following
-[short link](https://godbolt.org/z/1WK7czdP6) to [godbolt](https://godbolt.org).
+[short link](https://godbolt.org/z/avWGasbdj) to [godbolt](https://godbolt.org).
 The generated assembly includes nothing other than the call to `main()`
 and its subsequent `return` of the value zero
 (i.e., `main()`'s successful return-value in this example).
@@ -794,10 +811,7 @@ constexpr auto result_is_ok = (   (c == "0x1573D6A7CEA734D99865C4F428184983CDB01
 // constexpr verification.
 static_assert(result_is_ok, "Error: example is not OK!");
 
-auto main() -> int
-{
-  return (result_is_ok ? 0 : -1);
-}
+auto main() -> int { }
 ```
 
 ### Signed integer support
@@ -816,7 +830,7 @@ using int256_t = ::math::wide_integer::uintwide_t<256U, std::uint32_t, void, tru
 const int256_t n1(-3);
 const int256_t n2(-3);
 
-// 9
+// +9
 const int256_t n3 = n1 * n2;
 ```
 
