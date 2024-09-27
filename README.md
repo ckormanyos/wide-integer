@@ -104,7 +104,7 @@ See also the following informative links to Wolfram Alpha(R).
 
 This example, compiled with successful output result,
 is shown in its entirety in the following
-[short link](https://godbolt.org/z/4bYPWxzEY) to [godbolt](https://godbolt.org).
+[short link](https://godbolt.org/z/bjxxrK1xP) to [godbolt](https://godbolt.org).
 
 In particular,
 
@@ -113,17 +113,18 @@ In particular,
 
 #include <iostream>
 
-using uint512_t = ::math::wide_integer::uintwide_t<512U, std::uint32_t>;
-
-static const uint512_t x = 3U;
-
 auto main() -> int
 {
-  // Compute x^301, i.e., 3^301.
+  using uint512_t = ::math::wide_integer::uintwide_t<512U, std::uint32_t>;
+
+  const uint512_t x { 3U };
+
   const auto p3 = pow(x, 301);
 
   // 410674437175765127973978082146264947899391086876012309414440570235106991532497229781400618467066824164751453321793982128440538198297087323698003
-  std::cout << p3 << std::endl;
+  std::cout << "p3: " << p3 << std::endl;
+
+  std::cout << "Cast p3 to double: " << double { p3 } << std::endl;
 }
 ```
 
