@@ -5,8 +5,8 @@
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
 
-#include <test/test_uintwide_t.h>
 #include <math/wide_integer/uintwide_t.h>
+#include <test/test_uintwide_t.h>
 
 #include <algorithm>
 #include <array>
@@ -45,7 +45,7 @@ namespace from_issue_429
       p0_local,
       input.cbegin(),
       input.cend(),
-      8U
+      static_cast<unsigned>(UINT8_C(8))
     );
 
     std::stringstream strm_local { };
@@ -58,7 +58,7 @@ namespace from_issue_429
 
     std::vector<std::uint8_t> export_local(input.size());
 
-    export_bits(p0_local, export_local.begin(), 8U);
+    export_bits(p0_local, export_local.begin(), static_cast<unsigned>(UINT8_C(8)));
 
     const bool result_export_is_ok
     {
