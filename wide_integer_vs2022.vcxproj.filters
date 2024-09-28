@@ -240,6 +240,12 @@
     <ClCompile Include="test\fuzzing\test_fuzzing_prime.cpp">
       <Filter>Source Files\test\fuzzing</Filter>
     </ClCompile>
+    <ClCompile Include="test\fuzzing\test_fuzzing_sdiv.cpp">
+      <Filter>Source Files\test\fuzzing</Filter>
+    </ClCompile>
+    <ClCompile Include="test\fuzzing\test_fuzzing_cbrt.cpp">
+      <Filter>Source Files\test\fuzzing</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include=".github\workflows\wide_integer.yml">
