@@ -6,8 +6,8 @@
 //
 
 // cd /mnt/c/Users/ckorm/Documents/Ks/PC_Software/NumericalPrograms/ExtendedNumberTypes/wide_integer
-// clang++ -std=c++20 -g -O2 -fsanitize=fuzzer,address,undefined -I. -I/mnt/c/boost/boost_1_85_0 test/fuzzing/test_fuzzing_div.cpp -o test_fuzzing_div
-// ./test_fuzzing_div -max_total_time=180
+// clang++ -std=c++20 -g -O2 -fsanitize=fuzzer -I. -I/mnt/c/boost/boost_1_85_0 test/fuzzing/test_fuzzing_sdiv.cpp -o test_fuzzing_sdiv
+// ./test_fuzzing_sdiv -max_total_time=300
 
 #include <math/wide_integer/uintwide_t.h>
 
@@ -18,6 +18,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <random>
+#include <sstream>
 #include <vector>
 
 namespace fuzzing
@@ -62,10 +63,10 @@ namespace fuzzing
 
   using local_sint_type = ::math::wide_integer::int256_t;
 
-  auto eval_div(const std::uint8_t* data, std::size_t size) -> bool;
+  auto eval_op(const std::uint8_t* data, std::size_t size) -> bool;
 }
 
-auto fuzzing::eval_div(const std::uint8_t* data, std::size_t size) -> bool
+auto fuzzing::eval_op(const std::uint8_t* data, std::size_t size) -> bool
 {
   const std::size_t
     max_size
@@ -78,43 +79,31 @@ auto fuzzing::eval_div(const std::uint8_t* data, std::size_t size) -> bool
 
   bool result_is_ok { true };
 
-  if((size > std::size_t { UINT8_C(1) }) && (size < std::size_t { max_size * 2U }))
+  if((size > std::size_t { UINT8_C(1) }) && (size <= std::size_t { max_size * 2U }))
   {
     local_uint_type a_local { 0U };
     local_uint_type b_local { 0U };
 
-    boost_uint_type a_boost { 0U };
-    boost_uint_type b_boost { 0U };
-
-    do
-    {
-      // Import data into their respective uintwide_t a and b values.
-      import_bits
-      (
-        a_local,
-        data,
-        data + std::size_t { size / 2U },
-        8U
-      );
-
-      import_bits
-      (
-        b_local,
-        data + std::size_t { size / 2U },
-        data + size,
-        8U
-      );
-    }
-    while
+    // Import data into the uintwide_t a and b values.
+    import_bits
     (
-         a_local >= local_uint_type { (std::numeric_limits<local_sint_type>::max)() }
-      && b_local >= local_uint_type { (std::numeric_limits<local_sint_type>::max)() }
+      a_local,
+      data,
+      data + std::size_t { size / 2U },
+      8U
     );
 
-    if(a_local + 128U < b_local)
+    import_bits
+    (
+      b_local,
+      data + std::size_t { size / 2U },
+      data + size,
+      8U
+    );
+
+    if(a_local + 256U < b_local)
     {
       std::swap(a_local, b_local);
-      std::swap(a_boost, b_boost);
     }
 
     if(b_local != 0U)
@@ -122,8 +111,16 @@ auto fuzzing::eval_div(const std::uint8_t* data, std::size_t size) -> bool
       local_sint_type a_signed_local { a_local };
       local_sint_type b_signed_local { b_local };
 
-      if(pseudo_random_sign_bit()) { a_signed_local = -a_signed_local; }
-      if(pseudo_random_sign_bit()) { b_signed_local = -b_signed_local; }
+      const int
+        sign_mixer
+        {
+          (pseudo_random_sign_bit() << 1U) | pseudo_random_sign_bit()
+        };
+
+      if     (sign_mixer == 0) { }
+      else if(sign_mixer == 1) { a_signed_local = -a_signed_local; }
+      else if(sign_mixer == 2) { b_signed_local = -b_signed_local; }
+      else                     { a_signed_local = -a_signed_local; b_signed_local = -b_signed_local; }
 
       std::stringstream strm_a_local { };
       std::stringstream strm_b_local { };
@@ -144,7 +141,7 @@ auto fuzzing::eval_div(const std::uint8_t* data, std::size_t size) -> bool
       export_bits(result_signed_boost, result_signed_data_boost.data(), 8U);
 
       // Verify that both uintwide_t as well as boost obtain the same result.
-      const bool result_div_is_ok =
+      const bool result_op_is_ok =
         std::equal
         (
           result_signed_data_local.cbegin(),
@@ -153,7 +150,7 @@ auto fuzzing::eval_div(const std::uint8_t* data, std::size_t size) -> bool
           result_signed_data_boost.cend()
         );
 
-      result_is_ok = (result_div_is_ok && result_is_ok);
+      result_is_ok = (result_op_is_ok && result_is_ok);
     }
   }
 
@@ -167,7 +164,7 @@ auto fuzzing::eval_div(const std::uint8_t* data, std::size_t size) -> bool
 extern "C"
 int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size)
 {
-  const bool result_one_div_is_ok { fuzzing::eval_div(data, size) };
+  const bool result_one_div_is_ok { fuzzing::eval_op(data, size) };
 
   return (result_one_div_is_ok ? 0 : -1);
 }

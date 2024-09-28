@@ -6,8 +6,8 @@
 //
 
 // cd /mnt/c/Users/ckorm/Documents/Ks/PC_Software/NumericalPrograms/ExtendedNumberTypes/wide_integer
-// clang++ -std=c++20 -g -O2 -fsanitize=fuzzer,address,undefined -I. -I/mnt/c/boost/boost_1_85_0 test/fuzzing/test_fuzzing_prime.cpp -o test_fuzzing_prime
-// ./test_fuzzing_prime -max_total_time=180
+// clang++ -std=c++20 -g -O2 -fsanitize=fuzzer -I. -I/mnt/c/boost/boost_1_85_0 test/fuzzing/test_fuzzing_prime.cpp -o test_fuzzing_prime
+// ./test_fuzzing_prime -max_total_time=300
 
 #include <math/wide_integer/uintwide_t.h>
 #include <util/utility/util_pseudorandom_time_point_seed.h>
@@ -32,10 +32,10 @@ namespace fuzzing
 
   using local_uint_type = ::math::wide_integer::uint256_t;
 
-  auto eval_prime(const std::uint8_t* data, std::size_t size) -> bool;
+  auto eval_op(const std::uint8_t* data, std::size_t size) -> bool;
 }
 
-auto fuzzing::eval_prime(const std::uint8_t* data, std::size_t size) -> bool
+auto fuzzing::eval_op(const std::uint8_t* data, std::size_t size) -> bool
 {
   const std::size_t
     max_size
@@ -89,12 +89,12 @@ auto fuzzing::eval_prime(const std::uint8_t* data, std::size_t size) -> bool
     const bool miller_rabin_result_boost { boost::multiprecision::miller_rabin_test(pb, 25U, generator2) };
 
     const bool
-      result_prime_or_not_prime_is_ok
+      result_op_is_ok
       {
         miller_rabin_result_local == miller_rabin_result_boost
       };
 
-    result_is_ok = (result_prime_or_not_prime_is_ok && result_is_ok);
+    result_is_ok = (result_op_is_ok && result_is_ok);
   }
 
   // Assert the correct result.
@@ -107,7 +107,7 @@ auto fuzzing::eval_prime(const std::uint8_t* data, std::size_t size) -> bool
 extern "C"
 int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size)
 {
-  const bool result_one_prime_is_ok { fuzzing::eval_prime(data, size) };
+  const bool result_one_prime_is_ok { fuzzing::eval_op(data, size) };
 
   return (result_one_prime_is_ok ? 0 : -1);
 }
