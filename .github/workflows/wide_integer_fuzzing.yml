@@ -43,4 +43,4 @@ jobs:
           grep BOOST_VERSION ../boost-root/boost/version.hpp
           ${{ matrix.compiler }} -v
           echo "run fuzzing test"
-          bash ./run_fuzzing.sh
+          ./run_fuzzing.sh

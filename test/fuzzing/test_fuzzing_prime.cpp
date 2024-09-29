@@ -50,16 +50,18 @@ auto fuzzing::eval_op(const std::uint8_t* data, std::size_t size) -> bool
 
   if((size > std::size_t { max_size / 2U }) && (size <= max_size))
   {
-    using random_engine1_type = std::linear_congruential_engine<std::uint32_t, UINT32_C(48271), UINT32_C(0), UINT32_C(2147483647)>;
-    using random_engine2_type = std::mt19937;
+    using random_engine_type = std::mt19937_64;
 
     using distribution_type = ::math::wide_integer::uniform_int_distribution<local_uint_type::my_width2, typename local_uint_type::limb_type>;
 
-    random_engine1_type generator1(util::util_pseudorandom_time_point_seed::value<typename random_engine1_type::result_type>());
-    random_engine2_type generator2(util::util_pseudorandom_time_point_seed::value<typename random_engine2_type::result_type>());
+    //random_engine1_type generator1(util::util_pseudorandom_time_point_seed::value<typename random_engine1_type::result_type>());
+    random_engine_type
+      generator
+      {
+        util::util_pseudorandom_time_point_seed::value<typename random_engine_type::result_type>()
+      };
 
-    distribution_type distribution1;
-    distribution_type distribution2;
+    distribution_type distribution { };
 
     local_uint_type p0 { 0U };
     boost_uint_type pb { 0U };
@@ -85,8 +87,8 @@ auto fuzzing::eval_op(const std::uint8_t* data, std::size_t size) -> bool
     // Ensure that both uintwide_t as well as boost obtain
     // the same prime (or non-prime) result.
 
-    const bool miller_rabin_result_local { miller_rabin(p0, 25U, distribution2, generator2) };
-    const bool miller_rabin_result_boost { boost::multiprecision::miller_rabin_test(pb, 25U, generator2) };
+    const bool miller_rabin_result_local { miller_rabin(p0, 25U, distribution, generator) };
+    const bool miller_rabin_result_boost { boost::multiprecision::miller_rabin_test(pb, 25U, generator) };
 
     const bool
       result_op_is_ok

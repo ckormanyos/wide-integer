@@ -6,17 +6,15 @@ else
     MY_BOOST=../boost-root
 fi
 
-echo compiling...
 
-
-clang++ -std=c++20 -g -O2 -Wall -Wextra -fsanitize=fuzzer -I. -I$MY_BOOST test/fuzzing/test_fuzzing_add.cpp   -o test_fuzzing_add
-clang++ -std=c++20 -g -O2 -Wall -Wextra -fsanitize=fuzzer -I. -I$MY_BOOST test/fuzzing/test_fuzzing_sub.cpp   -o test_fuzzing_sub
-clang++ -std=c++20 -g -O2 -Wall -Wextra -fsanitize=fuzzer -I. -I$MY_BOOST test/fuzzing/test_fuzzing_mul.cpp   -o test_fuzzing_mul
-clang++ -std=c++20 -g -O2 -Wall -Wextra -fsanitize=fuzzer -I. -I$MY_BOOST test/fuzzing/test_fuzzing_div.cpp   -o test_fuzzing_div
-clang++ -std=c++20 -g -O2 -Wall -Wextra -fsanitize=fuzzer -I. -I$MY_BOOST test/fuzzing/test_fuzzing_sdiv.cpp  -o test_fuzzing_sdiv
-clang++ -std=c++20 -g -O2 -Wall -Wextra -fsanitize=fuzzer -I. -I$MY_BOOST test/fuzzing/test_fuzzing_sqrt.cpp  -o test_fuzzing_sqrt
-clang++ -std=c++20 -g -O2 -Wall -Wextra -fsanitize=fuzzer -I. -I$MY_BOOST test/fuzzing/test_fuzzing_powm.cpp  -o test_fuzzing_powm
-clang++ -std=c++20 -g -O2 -Wall -Wextra -fsanitize=fuzzer -I. -I$MY_BOOST test/fuzzing/test_fuzzing_prime.cpp -o test_fuzzing_prime
+echo 'compiling test/fuzzing/test_fuzzing_add.cpp'   && clang++ -std=c++20 -g -O2 -Wall -Wextra -fsanitize=fuzzer -I. -I$MY_BOOST test/fuzzing/test_fuzzing_add.cpp   -o test_fuzzing_add
+echo 'compiling test/fuzzing/test_fuzzing_sub.cpp'   && clang++ -std=c++20 -g -O2 -Wall -Wextra -fsanitize=fuzzer -I. -I$MY_BOOST test/fuzzing/test_fuzzing_sub.cpp   -o test_fuzzing_sub
+echo 'compiling test/fuzzing/test_fuzzing_mul.cpp'   && clang++ -std=c++20 -g -O2 -Wall -Wextra -fsanitize=fuzzer -I. -I$MY_BOOST test/fuzzing/test_fuzzing_mul.cpp   -o test_fuzzing_mul
+echo 'compiling test/fuzzing/test_fuzzing_div.cpp'   && clang++ -std=c++20 -g -O2 -Wall -Wextra -fsanitize=fuzzer -I. -I$MY_BOOST test/fuzzing/test_fuzzing_div.cpp   -o test_fuzzing_div
+echo 'compiling test/fuzzing/test_fuzzing_sdiv.cpp'  && clang++ -std=c++20 -g -O2 -Wall -Wextra -fsanitize=fuzzer -I. -I$MY_BOOST test/fuzzing/test_fuzzing_sdiv.cpp  -o test_fuzzing_sdiv
+echo 'compiling test/fuzzing/test_fuzzing_sqrt.cpp'  && clang++ -std=c++20 -g -O2 -Wall -Wextra -fsanitize=fuzzer -I. -I$MY_BOOST test/fuzzing/test_fuzzing_sqrt.cpp  -o test_fuzzing_sqrt
+echo 'compiling test/fuzzing/test_fuzzing_powm.cpp'  && clang++ -std=c++20 -g -O2 -Wall -Wextra -fsanitize=fuzzer -I. -I$MY_BOOST test/fuzzing/test_fuzzing_powm.cpp  -o test_fuzzing_powm
+echo 'compiling test/fuzzing/test_fuzzing_prime.cpp' && clang++ -std=c++20 -g -O2 -Wall -Wextra -fsanitize=fuzzer -I. -I$MY_BOOST test/fuzzing/test_fuzzing_prime.cpp -o test_fuzzing_prime
 
 
 ls -la test_fuzzing_add test_fuzzing_sub test_fuzzing_mul test_fuzzing_div test_fuzzing_sdiv test_fuzzing_sqrt test_fuzzing_powm test_fuzzing_prime
