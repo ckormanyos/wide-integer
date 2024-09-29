@@ -1455,22 +1455,22 @@
            const bool IsSigned>
   constexpr auto rootk(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& m, const std::uint_fast8_t k) -> uintwide_t<Width2, LimbType, AllocatorType, IsSigned>; // NOLINT(readability-avoid-const-params-in-decls)
 
-  template<typename OtherUnsignedIntegralTypeP,
+  template<typename OtherIntegralTypeP,
            const size_t Width2,
            typename LimbType,
            typename AllocatorType,
            const bool IsSigned>
-  constexpr auto pow(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& b, const OtherUnsignedIntegralTypeP& p) -> uintwide_t<Width2, LimbType, AllocatorType, IsSigned>;
+  constexpr auto pow(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& b, const OtherIntegralTypeP& p) -> uintwide_t<Width2, LimbType, AllocatorType, IsSigned>;
 
-  template<typename OtherUnsignedIntegralTypeP,
-           typename OtherUnsignedIntegralTypeM,
+  template<typename OtherIntegralTypeP,
+           typename OtherIntegralTypeM,
            const size_t Width2,
            typename LimbType,
            typename AllocatorType,
            const bool IsSigned>
   constexpr auto powm(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& b,
-                      const OtherUnsignedIntegralTypeP&    p,
-                      const OtherUnsignedIntegralTypeM&    m) -> uintwide_t<Width2, LimbType, AllocatorType, IsSigned>;
+                      const OtherIntegralTypeP& p,
+                      const OtherIntegralTypeM& m) -> uintwide_t<Width2, LimbType, AllocatorType, IsSigned>;
 
   template<const size_t Width2,
            typename LimbType,

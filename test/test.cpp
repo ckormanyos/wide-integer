@@ -141,6 +141,7 @@ auto test_uintwide_t_0008192_by_0012288() -> bool;
 auto test_uintwide_t_0012288_by_0008192() -> bool;
 auto test_uintwide_t_0000032_by_0000032_4_by_4() -> bool;
 auto test_uintwide_t_0000064_by_0000064_4_by_4() -> bool;
+auto run() -> bool;
 
 auto test_uintwide_t_small_bits() -> bool
 {
