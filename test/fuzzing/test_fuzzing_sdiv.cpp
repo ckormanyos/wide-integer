@@ -6,7 +6,7 @@
 //
 
 // cd /mnt/c/Users/ckorm/Documents/Ks/PC_Software/NumericalPrograms/ExtendedNumberTypes/wide_integer
-// clang++ -std=c++20 -g -O2 -fsanitize=fuzzer -I. -I/mnt/c/boost/boost_1_85_0 test/fuzzing/test_fuzzing_sdiv.cpp -o test_fuzzing_sdiv
+// clang++ -std=c++20 -g -O2 -Wall -Wextra -fsanitize=fuzzer -I. -I/mnt/c/boost/boost_1_85_0 test/fuzzing/test_fuzzing_sdiv.cpp -o test_fuzzing_sdiv
 // ./test_fuzzing_sdiv -max_total_time=300
 
 #include <math/wide_integer/uintwide_t.h>
@@ -84,7 +84,7 @@ auto fuzzing::eval_op(const std::uint8_t* data, std::size_t size) -> bool
     local_uint_type a_local { 0U };
     local_uint_type b_local { 0U };
 
-    // Import data into the uintwide_t a and b values.
+    // Import data into the uintwide_t values.
     import_bits
     (
       a_local,

@@ -6,7 +6,7 @@
 //
 
 // cd /mnt/c/Users/ckorm/Documents/Ks/PC_Software/NumericalPrograms/ExtendedNumberTypes/wide_integer
-// clang++ -std=c++20 -g -O2 -fsanitize=fuzzer -I. -I/mnt/c/boost/boost_1_85_0 test/fuzzing/test_fuzzing_prime.cpp -o test_fuzzing_prime
+// clang++ -std=c++20 -g -O2 -Wall -Wextra -fsanitize=fuzzer -I. -I/mnt/c/boost/boost_1_85_0 test/fuzzing/test_fuzzing_prime.cpp -o test_fuzzing_prime
 // ./test_fuzzing_prime -max_total_time=300
 
 #include <math/wide_integer/uintwide_t.h>
@@ -64,7 +64,7 @@ auto fuzzing::eval_op(const std::uint8_t* data, std::size_t size) -> bool
     local_uint_type p0 { 0U };
     boost_uint_type pb { 0U };
 
-    // Import the random data into the prime candidate.
+    // Import the data into the uintwide_t prime candidate.
     import_bits
     (
       p0,
@@ -73,7 +73,7 @@ auto fuzzing::eval_op(const std::uint8_t* data, std::size_t size) -> bool
       8U
     );
 
-    // Import the random data into the boost control prime candidate.
+    // Import the data into the boost prime candidate.
     import_bits
     (
       pb,

@@ -243,7 +243,10 @@
     <ClCompile Include="test\fuzzing\test_fuzzing_sdiv.cpp">
       <Filter>Source Files\test\fuzzing</Filter>
     </ClCompile>
-    <ClCompile Include="test\fuzzing\test_fuzzing_cbrt.cpp">
+    <ClCompile Include="test\fuzzing\test_fuzzing_sqrt.cpp">
+      <Filter>Source Files\test\fuzzing</Filter>
+    </ClCompile>
+    <ClCompile Include="test\fuzzing\test_fuzzing_powm.cpp">
       <Filter>Source Files\test\fuzzing</Filter>
     </ClCompile>
   </ItemGroup>
