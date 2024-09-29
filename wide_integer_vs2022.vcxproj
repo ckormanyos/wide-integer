@@ -317,6 +317,7 @@
     <None Include=".tidy\make\make_tidy_03_flags.gmk" />
     <None Include="codecov.yml" />
     <None Include="README.md" />
+    <None Include="run_fuzzing.sh" />
     <None Include="sonar-project.properties" />
     <None Include="target\build\test_examples_emulator.py">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>

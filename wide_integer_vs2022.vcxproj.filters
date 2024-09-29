@@ -296,6 +296,7 @@
     <None Include=".github\workflows\wide_integer_fuzzing.yml">
       <Filter>.github\workflows</Filter>
     </None>
+    <None Include="run_fuzzing.sh" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="examples\CMakeLists.txt">
