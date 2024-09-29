@@ -259,9 +259,11 @@
       using local_destination_value_type = typename iterator_detail::iterator_traits<DestinationIterator>::value_type;
       #if (defined(__GNUC__) && (__GNUC__ > 9))
       #pragma GCC diagnostic ignored "-Wstringop-overflow"
+      #pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
       #endif
       *dest++ = static_cast<local_destination_value_type>(*first++);
       #if (defined(__GNUC__) && (__GNUC__ > 9))
+      #pragma GCC diagnostic pop
       #pragma GCC diagnostic pop
       #endif
     }
