@@ -12,7 +12,7 @@ on:
       - '**'
   pull_request:
   schedule:
-    - cron: '15 2 * * *' # run at 2:15 AM UTC
+    - cron: '0 2 * * *' # run at 2:00 AM UTC
 jobs:
   clang-fuzzing:
     runs-on: ubuntu-latest

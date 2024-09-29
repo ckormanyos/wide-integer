@@ -22,28 +22,28 @@ exit_compile=$?
 
 
 # Start each executable in the background and save their process IDs
-./test_fuzzing_add -max_total_time=600 -max_len=34 -verbosity=0 -close_fd_mask=3 &
+./test_fuzzing_add -max_total_time=900 -max_len=34 -verbosity=0 -close_fd_mask=3 &
 pid_add=$!
 
-./test_fuzzing_sub -max_total_time=600 -max_len=34 -verbosity=0 -close_fd_mask=3 &
+./test_fuzzing_sub -max_total_time=900 -max_len=34 -verbosity=0 -close_fd_mask=3 &
 pid_sub=$!
 
-./test_fuzzing_mul -max_total_time=600 -max_len=34 -verbosity=0 -close_fd_mask=3 &
+./test_fuzzing_mul -max_total_time=900 -max_len=34 -verbosity=0 -close_fd_mask=3 &
 pid_mul=$!
 
-./test_fuzzing_div -max_total_time=600 -max_len=34 -verbosity=0 -close_fd_mask=3 &
+./test_fuzzing_div -max_total_time=900 -max_len=34 -verbosity=0 -close_fd_mask=3 &
 pid_div=$!
 
-./test_fuzzing_sdiv -max_total_time=600 -max_len=34 -verbosity=0 -close_fd_mask=3 &
+./test_fuzzing_sdiv -max_total_time=900 -max_len=34 -verbosity=0 -close_fd_mask=3 &
 pid_sdiv=$!
 
-./test_fuzzing_sqrt -max_total_time=600 -max_len=34 -verbosity=0 -close_fd_mask=3 &
+./test_fuzzing_sqrt -max_total_time=900 -max_len=34 -verbosity=0 -close_fd_mask=3 &
 pid_sqrt=$!
 
-./test_fuzzing_powm -max_total_time=600 -max_len=34 -verbosity=0 -close_fd_mask=3 &
+./test_fuzzing_powm -max_total_time=900 -max_len=34 -verbosity=0 -close_fd_mask=3 &
 pid_powm=$!
 
-./test_fuzzing_prime -max_total_time=600 -max_len=34 -verbosity=0 -close_fd_mask=3 &
+./test_fuzzing_prime -max_total_time=900 -max_len=34 -verbosity=0 -close_fd_mask=3 &
 pid_prime=$!
 
 
