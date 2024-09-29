@@ -243,7 +243,10 @@
     <ClCompile Include="test\fuzzing\test_fuzzing_sdiv.cpp">
       <Filter>Source Files\test\fuzzing</Filter>
     </ClCompile>
-    <ClCompile Include="test\fuzzing\test_fuzzing_cbrt.cpp">
+    <ClCompile Include="test\fuzzing\test_fuzzing_sqrt.cpp">
+      <Filter>Source Files\test\fuzzing</Filter>
+    </ClCompile>
+    <ClCompile Include="test\fuzzing\test_fuzzing_powm.cpp">
       <Filter>Source Files\test\fuzzing</Filter>
     </ClCompile>
   </ItemGroup>
@@ -293,6 +296,7 @@
     <None Include=".github\workflows\wide_integer_fuzzing.yml">
       <Filter>.github\workflows</Filter>
     </None>
+    <None Include="run_fuzzing.sh" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="examples\CMakeLists.txt">

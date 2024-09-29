@@ -6,8 +6,8 @@
 //
 
 // cd /mnt/c/Users/ckorm/Documents/Ks/PC_Software/NumericalPrograms/ExtendedNumberTypes/wide_integer
-// clang++ -std=c++20 -g -O2 -Wall -Wextra -fsanitize=fuzzer -I. -I/mnt/c/boost/boost_1_85_0 test/fuzzing/test_fuzzing_sub.cpp -o test_fuzzing_sub
-// ./test_fuzzing_sub -max_total_time=300
+// clang++ -std=c++20 -g -O2 -Wall -Wextra -fsanitize=fuzzer -I. -I/mnt/c/boost/boost_1_85_0 test/fuzzing/test_fuzzing_powm.cpp -o test_fuzzing_powm
+// ./test_fuzzing_powm -max_total_time=300
 
 #include <math/wide_integer/uintwide_t.h>
 
@@ -47,27 +47,37 @@ auto fuzzing::eval_op(const std::uint8_t* data, std::size_t size) -> bool
 
   bool result_is_ok { true };
 
-  if((size > std::size_t { UINT8_C(1) }) && (size <= std::size_t { max_size * 2U }))
+  if((size > std::size_t { UINT8_C(6) }) && (size <= std::size_t { max_size * 3U }))
   {
-    local_uint_type a_local { 0U };
     local_uint_type b_local { 0U };
+    local_uint_type p_local { 0U };
+    local_uint_type m_local { 0U };
 
-    boost_uint_type a_boost { 0U };
     boost_uint_type b_boost { 0U };
+    boost_uint_type p_boost { 0U };
+    boost_uint_type m_boost { 0U };
 
     // Import data into the uintwide_t values.
     import_bits
     (
-      a_local,
+      b_local,
       data,
-      data + std::size_t { size / 2U },
+      data + std::size_t { size / 3U },
       8U
     );
 
     import_bits
     (
-      b_local,
-      data + std::size_t { size / 2U },
+      p_local,
+      data + std::size_t { size / 3U },
+      data + std::size_t { std::size_t { size * 2U } / 3U },
+      8U
+    );
+
+    import_bits
+    (
+      m_local,
+      data + std::size_t { std::size_t { size * 2U } / 3U },
       data + size,
       8U
     );
@@ -75,40 +85,51 @@ auto fuzzing::eval_op(const std::uint8_t* data, std::size_t size) -> bool
     // Import data into the boost values.
     import_bits
     (
-      a_boost,
+      b_boost,
       data,
-      data + std::size_t { size / 2U },
+      data + std::size_t { size / 3U },
       8U
     );
 
     import_bits
     (
-      b_boost,
-      data + std::size_t { size / 2U },
+      p_boost,
+      data + std::size_t { size / 3U },
+      data + std::size_t { std::size_t { size * 2U } / 3U },
+      8U
+    );
+
+    import_bits
+    (
+      m_boost,
+      data + std::size_t { std::size_t { size * 2U } / 3U },
       data + size,
       8U
     );
 
-    local_uint_type result_local { a_local - b_local };
-    boost_uint_type result_boost { a_boost - b_boost };
+    if(m_local != 0U)
+    {
+      local_uint_type result_local { powm(b_local, p_local, m_local) };
+      boost_uint_type result_boost { powm(b_boost, p_boost, m_boost) };
 
-    std::vector<std::uint8_t> result_data_local(max_size, UINT8_C(0));
-    std::vector<std::uint8_t> result_data_boost(result_data_local.size(), UINT8_C(0));
+      std::vector<std::uint8_t> result_data_local(max_size, UINT8_C(0));
+      std::vector<std::uint8_t> result_data_boost(result_data_local.size(), UINT8_C(0));
 
-    export_bits(result_local, result_data_local.data(), 8U);
-    export_bits(result_boost, result_data_boost.data(), 8U);
+      export_bits(result_local, result_data_local.data(), 8U);
+      export_bits(result_boost, result_data_boost.data(), 8U);
 
-    // Verify that both uintwide_t as well as boost obtain the same result.
-    const bool result_op_is_ok =
-      std::equal
-      (
-        result_data_local.cbegin(),
-        result_data_local.cend(),
-        result_data_boost.cbegin(),
-        result_data_boost.cend()
-      );
+      // Verify that both uintwide_t as well as boost obtain the same result.
+      const bool result_op_is_ok =
+        std::equal
+        (
+          result_data_local.cbegin(),
+          result_data_local.cend(),
+          result_data_boost.cbegin(),
+          result_data_boost.cend()
+        );
 
-    result_is_ok = (result_op_is_ok && result_is_ok);
+      result_is_ok = (result_op_is_ok && result_is_ok);
+    }
   }
 
   // Assert the correct result.
@@ -121,7 +142,7 @@ auto fuzzing::eval_op(const std::uint8_t* data, std::size_t size) -> bool
 extern "C"
 int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size)
 {
-  const bool result_one_sub_is_ok { fuzzing::eval_op(data, size) };
+  const bool result_one_div_is_ok { fuzzing::eval_op(data, size) };
 
-  return (result_one_sub_is_ok ? 0 : -1);
+  return (result_one_div_is_ok ? 0 : -1);
 }

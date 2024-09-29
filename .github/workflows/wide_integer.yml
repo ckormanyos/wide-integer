@@ -12,7 +12,7 @@ on:
       - '**'
   pull_request:
   schedule:
-    - cron: '0 2 * * *' # run at 2 AM UTC
+    - cron: '5 2 * * *' # run at 2:05 AM UTC
 jobs:
   cmake-linux:
     runs-on: ubuntu-latest
@@ -66,7 +66,7 @@ jobs:
           git submodule update --init libs/multiprecision
       - uses: ilammy/msvc-dev-cmd@v1
         with:
-          toolset: 14.2
+          toolset: 14.4
       - name: bootstrap-boost
         working-directory: ${{runner.workspace}}/boost-root
         run: |
