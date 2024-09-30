@@ -2941,13 +2941,19 @@
                                                                                            std::allocator<void>,
                                                                                            AllocatorType>>::template rebind_alloc<limb_type>>>;
 
+        static_assert(string_storage_oct_type::static_size() > unsigned_fast_type { UINT8_C(1) },
+                      "Error: String storage length must be greater than one");
+
         string_storage_oct_type str_temp { }; // LCOV_EXCL_LINE
 
-        auto pos = // LCOV_EXCL_LINE
+        unsigned_fast_type
+          pos
+          {
           static_cast<unsigned_fast_type>
           (
-            str_temp.size() - static_cast<size_t>(UINT8_C(1)) // LCOV_EXCL_LINE
-          );
+              string_storage_oct_type::static_size() - static_cast<size_t>(UINT8_C(1)) // LCOV_EXCL_LINE
+            )
+          };
 
         if(t.is_zero())
         {
@@ -3013,9 +3019,19 @@
                                                                                            std::allocator<void>,
                                                                                            AllocatorType>>::template rebind_alloc<limb_type>>>;
 
-        string_storage_dec_type str_temp { };
+        static_assert(string_storage_dec_type::static_size() > unsigned_fast_type { UINT8_C(1) },
+                      "Error: String storage length must be greater than one");
 
-        auto pos = static_cast<unsigned_fast_type>(str_temp.size() - static_cast<size_t>(UINT8_C(1)));
+        string_storage_dec_type str_temp { }; // LCOV_EXCL_LINE
+
+        unsigned_fast_type
+          pos
+          {
+            static_cast<unsigned_fast_type>
+            (
+              string_storage_dec_type::static_size() - static_cast<size_t>(UINT8_C(1)) // LCOV_EXCL_LINE
+            )
+          };
 
         if(t.is_zero())
         {
@@ -3079,9 +3095,19 @@
                                                                                            std::allocator<void>,
                                                                                            AllocatorType>>::template rebind_alloc<limb_type>>>;
 
-        string_storage_hex_type str_temp { };
+        static_assert(string_storage_hex_type::static_size() > unsigned_fast_type { UINT8_C(1) },
+                      "Error: String storage length must be greater than one");
 
-        auto pos = static_cast<unsigned_fast_type>(str_temp.size() - static_cast<size_t>(UINT8_C(1)));
+        string_storage_hex_type str_temp { }; // LCOV_EXCL_LINE
+
+        unsigned_fast_type
+          pos
+          {
+            static_cast<unsigned_fast_type>
+            (
+              string_storage_hex_type::static_size() - static_cast<size_t>(UINT8_C(1)) // LCOV_EXCL_LINE
+            )
+          };
 
         if(t.is_zero())
         {
