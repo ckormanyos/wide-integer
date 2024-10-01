@@ -2987,7 +2987,7 @@
         {
           field_width = (detail::min_unsafe)(field_width, static_cast<unsigned_fast_type>(str_temp.size() - static_cast<size_t>(UINT8_C(1)))); // LCOV_EXCL_LINE
 
-          while(static_cast<signed_fast_type>(pos) > static_cast<signed_fast_type>((str_temp.size() - static_cast<size_t>(UINT8_C(1))) - field_width) && (pos > signed_fast_type { UINT8_C(0) })) // NOLINT(altera-id-dependent-backward-branch)
+          while(static_cast<signed_fast_type>(pos) > static_cast<signed_fast_type>((str_temp.size() - static_cast<size_t>(UINT8_C(1))) - field_width)) // NOLINT(altera-id-dependent-backward-branch)
           {
             str_temp[static_cast<typename string_storage_oct_type::size_type>(--pos)] = fill_char_str;
           }
@@ -3073,7 +3073,7 @@
         {
           field_width = (detail::min_unsafe)(field_width, static_cast<unsigned_fast_type>(str_temp.size() - static_cast<size_t>(UINT8_C(1)))); // LCOV_EXCL_LINE
 
-          while(static_cast<signed_fast_type>(pos) > static_cast<signed_fast_type>((str_temp.size() - static_cast<size_t>(UINT8_C(1))) - field_width) && (pos > signed_fast_type { UINT8_C(0) })) // NOLINT(altera-id-dependent-backward-branch)
+          while(static_cast<signed_fast_type>(pos) > static_cast<signed_fast_type>((str_temp.size() - static_cast<size_t>(UINT8_C(1))) - field_width)) // NOLINT(altera-id-dependent-backward-branch)
           {
             str_temp[static_cast<typename string_storage_dec_type::size_type>(--pos)] = fill_char_str;
           }
@@ -3145,7 +3145,7 @@
         {
           field_width = (detail::min_unsafe)(field_width, static_cast<unsigned_fast_type>(str_temp.size() - static_cast<size_t>(UINT8_C(1)))); // LCOV_EXCL_LINE
 
-          while(static_cast<signed_fast_type>(pos) > static_cast<signed_fast_type>((str_temp.size() - static_cast<size_t>(UINT8_C(1))) - field_width) && (pos > signed_fast_type { UINT8_C(0) })) // NOLINT(altera-id-dependent-backward-branch)
+          while(static_cast<signed_fast_type>(pos) > static_cast<signed_fast_type>((str_temp.size() - static_cast<size_t>(UINT8_C(1))) - field_width)) // NOLINT(altera-id-dependent-backward-branch)
           {
             str_temp[static_cast<typename string_storage_hex_type::size_type>(--pos)] = fill_char_str;
           }
@@ -6112,10 +6112,10 @@
     using local_wide_integer_type = uintwide_t<Width2, LimbType, AllocatorType, IsSigned>;
     using local_value_type        = typename local_wide_integer_type::representation_type::value_type;
 
-    auto bpos   = static_cast<unsigned_fast_type>(UINT8_C(0));
-    auto offset = static_cast<unsigned_fast_type>(x.crepresentation().size() - 1U);
+    unsigned_fast_type bpos   { static_cast<unsigned_fast_type>(UINT8_C(0)) };
+    std::uint32_t      offset { static_cast<std::uint32_t>(x.crepresentation().size() - 1U) };
 
-    for(auto ri = x.crepresentation().crbegin(); ri != x.crepresentation().crend(); ++ri, --offset) // NOLINT(altera-id-dependent-backward-branch)
+    for(auto ri { x.crepresentation().crbegin() }; ri != x.crepresentation().crend(); ++ri, --offset) // NOLINT(altera-id-dependent-backward-branch)
     {
       const auto vr = static_cast<local_value_type>(*ri & (std::numeric_limits<local_value_type>::max)());
 
@@ -6127,7 +6127,7 @@
               detail::msb_helper(*ri)
             + static_cast<unsigned_fast_type>
               (
-                static_cast<unsigned_fast_type>(std::numeric_limits<local_value_type>::digits) * offset
+                static_cast<unsigned_fast_type>(std::numeric_limits<local_value_type>::digits) * static_cast<unsigned_fast_type>(offset)
               )
           );
 
