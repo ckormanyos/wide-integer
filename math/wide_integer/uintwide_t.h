@@ -6757,20 +6757,16 @@
     struct param_type
     {
     public:
-      explicit constexpr
-        param_type
-        (
-          const result_type& p_a = (std::numeric_limits<result_type>::min)(), // NOLINT(modernize-pass-by-value)
-          const result_type& p_b = (std::numeric_limits<result_type>::max)()  // NOLINT(modernize-pass-by-value)
-        ) : param_a(p_a),
+      explicit constexpr param_type(const result_type& p_a, const result_type& p_b)  // NOLINT(modernize-pass-by-value)
+          : param_a(p_a),
             param_b(p_b) { }
 
       constexpr param_type(const param_type& other) : param_a(other.param_a),
                                                                    param_b(other.param_b) { }
 
       constexpr param_type(param_type&& other) noexcept
-        : param_a(static_cast<result_type&&>(other.param_a)),
-          param_b(static_cast<result_type&&>(other.param_b)) { }
+        : param_a(std::move(static_cast<result_type&&>(other.param_a))),
+          param_b(std::move(static_cast<result_type&&>(other.param_b))) { }
 
       ~param_type() = default;
 
@@ -6787,8 +6783,8 @@
 
       constexpr auto operator=(param_type&& other) noexcept -> param_type&
       {
-        param_a = other.param_a;
-        param_b = other.param_b;
+        param_a = std::move(static_cast<result_type&&>(other.param_a));
+        param_b = std::move(static_cast<result_type&&>(other.param_b));
 
         return *this;
       }
@@ -6800,21 +6796,17 @@
       constexpr auto set_b(const result_type& p_b) -> void { param_b = p_b; }
 
     private:
-      result_type param_a; // NOLINT(readability-identifier-naming)
-      result_type param_b; // NOLINT(readability-identifier-naming)
+      result_type param_a { (std::numeric_limits<result_type>::min)() }; // NOLINT(readability-identifier-naming)
+      result_type param_b { (std::numeric_limits<result_type>::max)() }; // NOLINT(readability-identifier-naming)
 
-      friend constexpr auto operator==(const param_type& lhs,
-                                              const param_type& rhs) -> bool
+      friend constexpr auto operator==(const param_type& lhs, const param_type& rhs) -> bool
       {
-        return (   (lhs.param_a == rhs.param_a)
-                && (lhs.param_b == rhs.param_b));
+        return ((lhs.param_a == rhs.param_a) && (lhs.param_b == rhs.param_b));
       }
 
-      friend constexpr auto operator!=(const param_type& lhs,
-                                              const param_type& rhs) -> bool
+      friend constexpr auto operator!=(const param_type& lhs, const param_type& rhs) -> bool
       {
-        return (   (lhs.param_a != rhs.param_a)
-                || (lhs.param_b != rhs.param_b));
+        return (   (lhs.param_a != rhs.param_a) || (lhs.param_b != rhs.param_b));
       }
     };
 
