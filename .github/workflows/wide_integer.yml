@@ -605,7 +605,7 @@ jobs:
       - name: wide-integer-run
         run: bash -l -c 'cd $(cygpath -u "$GITHUB_WORKSPACE") && ./wide_integer.exe'
   gcc-arm-none-eabi:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     defaults:
       run:
         shell: bash
