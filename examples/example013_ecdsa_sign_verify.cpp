@@ -711,7 +711,7 @@ namespace example013_ecdsa
             (p_uint_seed == nullptr) ? std::move(get_pseudo_random_uint<uint_type>()) : *p_uint_seed
           };
 
-        const double_sint_type k { std::move(static_cast<double_sint_type>(uk)) };
+        const double_sint_type k { uk };
 
         const point_type pt { scalar_mult(k, { curve_gx(), curve_gy() } ) };
 
