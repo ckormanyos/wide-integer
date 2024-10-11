@@ -109,7 +109,7 @@ namespace local_rsa
       }
 
     private:
-      const public_key_type& public_key; // NOLINT(readability-identifier-naming)
+      const public_key_type& public_key; // NOLINT(readability-identifier-naming,cppcoreguidelines-avoid-const-or-ref-data-members)
     };
 
     class decryptor
@@ -132,7 +132,7 @@ namespace local_rsa
       }
 
     private:
-      const private_key_type& private_key; // NOLINT(readability-identifier-naming)
+      const private_key_type& private_key; // NOLINT(readability-identifier-naming,cppcoreguidelines-avoid-const-or-ref-data-members)
     };
 
     rsa_base(const rsa_base& other) : my_p       (other.my_p),
