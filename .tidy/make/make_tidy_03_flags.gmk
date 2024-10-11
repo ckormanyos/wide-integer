@@ -46,6 +46,7 @@ TIDY_CHECKS  = "*,                                                             \
                 -misc-include-cleaner,                                         \
                 -misc-const-correctness,                                       \
                 -readability-identifier-length,                                \
+                -readability-redundant-casting,                                \
                 -altera-struct-pack-align,                                     \
                 -altera-unroll-loops,                                          \
                 -fuchsia-*,                                                    \
