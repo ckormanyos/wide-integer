@@ -1,5 +1,5 @@
 ﻿# ------------------------------------------------------------------------------
-#  Copyright Christopher Kormanyos 2022.
+#  Copyright Christopher Kormanyos 2022 - 2024.
 #  Distributed under the Boost Software License,
 #  Version 1.0. (See accompanying file LICENSE_1_0.txt
 #  or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -42,6 +42,9 @@ C_INCLUDES  :=$(addprefix -I,$(C_INCLUDES))
 
 TIDY_CHECKS  = "*,                                                             \
                 -modernize-type-traits,                                        \
+                -modernize-use-constraints,                                    \
+                -misc-include-cleaner,                                         \
+                -misc-const-correctness,                                       \
                 -readability-identifier-length,                                \
                 -altera-struct-pack-align,                                     \
                 -altera-unroll-loops,                                          \
