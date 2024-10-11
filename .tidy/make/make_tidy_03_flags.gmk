@@ -41,8 +41,11 @@ C_INCLUDES  :=$(addprefix -I,$(C_INCLUDES))
 
 
 TIDY_CHECKS  = "*,                                                             \
+                -cppcoreguidelines-rvalue-reference-param-not-moved,           \
+                -cppcoreguidelines-avoid-do-while,                             \
                 -modernize-type-traits,                                        \
                 -modernize-use-constraints,                                    \
+                -misc-header-include-cycle,                                    \
                 -misc-include-cleaner,                                         \
                 -misc-const-correctness,                                       \
                 -readability-identifier-length,                                \

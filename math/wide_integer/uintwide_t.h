@@ -1650,7 +1650,7 @@
              typename LimbType,
              typename AllocatorType,
              const bool IsSigned>
-    WIDE_INTEGER_NUM_LIMITS_CLASS_TYPE numeric_limits<::math::wide_integer::uintwide_t<Width2, LimbType, AllocatorType, IsSigned>>;
+    WIDE_INTEGER_NUM_LIMITS_CLASS_TYPE numeric_limits<::math::wide_integer::uintwide_t<Width2, LimbType, AllocatorType, IsSigned>>; // NOLINT(cert-dcl58-cpp)
     #endif
   } // namespace std
 
@@ -5396,7 +5396,7 @@
       {
         ++(*it);
       }
-      while((*it++ == static_cast<limb_type>(UINT8_C(0))) && (it != values.end())); // NOLINT(altera-id-dependent-backward-branch)
+      while((*it++ == static_cast<limb_type>(UINT8_C(0))) && (it != values.end())); // NOLINT(altera-id-dependent-backward-branch,bugprone-inc-dec-in-conditions)
     }
 
     constexpr auto predecrement() -> void
@@ -5409,7 +5409,7 @@
       {
         --(*it);
       }
-      while((*it++ == (std::numeric_limits<limb_type>::max)()) && (it != values.end())); // NOLINT(altera-id-dependent-backward-branch)
+      while((*it++ == (std::numeric_limits<limb_type>::max)()) && (it != values.end())); // NOLINT(altera-id-dependent-backward-branch,bugprone-inc-dec-in-conditions)
     }
   };
 
@@ -5553,7 +5553,7 @@
              typename LimbType,
              typename AllocatorType,
              const bool IsSigned>
-    WIDE_INTEGER_NUM_LIMITS_CLASS_TYPE numeric_limits<::math::wide_integer::uintwide_t<Width2, LimbType, AllocatorType, IsSigned>>
+    WIDE_INTEGER_NUM_LIMITS_CLASS_TYPE numeric_limits<::math::wide_integer::uintwide_t<Width2, LimbType, AllocatorType, IsSigned>> // NOLINT(cert-dcl58-cpp)
       : public ::math::wide_integer::numeric_limits_uintwide_t_base<Width2, LimbType, AllocatorType, IsSigned> { };
     #endif
   } // namespace std
