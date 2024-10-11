@@ -180,7 +180,7 @@ constexpr auto constexpr_test_from_chars() -> ::test_uintwide_t_edge::local_uint
 
 namespace test_uintwide_t_edge {
 
-enum class local_base
+enum class local_base // NOLINT(performance-enum-size)
 {
   dec,
   hex,
@@ -275,7 +275,7 @@ auto generate_wide_integer_value(bool       is_positive           = true,
       (
         is_positive
           ? '+'
-          : static_cast<char>((dist_sgn(eng_sgn) != static_cast<std::uint32_t>(UINT32_C(0))) ? '+' : '-')
+          : static_cast<char>((dist_sgn(eng_sgn) != static_cast<std::uint32_t>(UINT32_C(0))) ? '+' : '-') // NOLINT(readability-avoid-nested-conditional-operator)
       );
 
     str_x.insert(str_x.begin(), static_cast<std::size_t>(UINT8_C(1)), sign_char_to_insert);
@@ -957,7 +957,7 @@ auto test_various_roots_and_pow_etc() -> bool
     {
       const auto cbrt_u = cbrt(u);
 
-      const auto result_cbrt_is_ok = (cbrt_u == cbrt_ctrl[i++]);
+      const auto result_cbrt_is_ok = (cbrt_u == cbrt_ctrl[i++]); // NOLINT(cppcoreguidelines-pro-bounds-constant-array-index)
 
       result_is_ok = (result_cbrt_is_ok && result_is_ok);
     }
@@ -1889,7 +1889,7 @@ auto test_to_and_from_chars_and_to_string() -> bool // NOLINT(readability-functi
 
         const auto fc_result = from_chars(str.data(), str.data() + str.length(), val, 10); // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
 
-        const auto result_from_chars_val_is_ok = ((val == from_chars_vals[index]) && (fc_result.ec == std::errc()));
+        const auto result_from_chars_val_is_ok = ((val == from_chars_vals[index]) && (fc_result.ec == std::errc())); // NOLINT(cppcoreguidelines-pro-bounds-constant-array-index)
 
         result_is_ok = (result_from_chars_val_is_ok && result_is_ok);
 
@@ -1907,7 +1907,7 @@ auto test_to_and_from_chars_and_to_string() -> bool // NOLINT(readability-functi
 
         const auto fc_result = from_chars(str.data() + static_cast<std::string::size_type>(UINT8_C(2)), str.data() + str.length(), val, 16); // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
 
-        const auto result_from_chars_val_is_ok = ((val == from_chars_vals[index]) && (fc_result.ec == std::errc()));
+        const auto result_from_chars_val_is_ok = ((val == from_chars_vals[index]) && (fc_result.ec == std::errc())); // NOLINT(cppcoreguidelines-pro-bounds-constant-array-index)
 
         result_is_ok = (result_from_chars_val_is_ok && result_is_ok);
 
@@ -1925,7 +1925,7 @@ auto test_to_and_from_chars_and_to_string() -> bool // NOLINT(readability-functi
 
         const auto fc_result = from_chars(str.data() + static_cast<std::string::size_type>(UINT8_C(1)), str.data() + str.length(), val, 8); // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
 
-        const auto result_from_chars_val_is_ok = ((val == from_chars_vals[index]) && (fc_result.ec == std::errc()));
+        const auto result_from_chars_val_is_ok = ((val == from_chars_vals[index]) && (fc_result.ec == std::errc())); // NOLINT(cppcoreguidelines-pro-bounds-constant-array-index)
 
         result_is_ok = (result_from_chars_val_is_ok && result_is_ok);
 
@@ -2296,7 +2296,7 @@ auto test_import_bits() -> bool // NOLINT(readability-function-cognitive-complex
               index + static_cast<local_size_type>(UINT8_C(1))
             );
 
-          elem = make_large(bits[index], bits[index_plus_one]);
+          elem = make_large(bits[index], bits[index_plus_one]); // NOLINT(cppcoreguidelines-pro-bounds-constant-array-index)
 
           index = static_cast<local_size_type>(index + static_cast<local_size_type>(UINT8_C(2)));
         }

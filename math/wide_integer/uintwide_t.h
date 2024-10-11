@@ -1650,7 +1650,7 @@
              typename LimbType,
              typename AllocatorType,
              const bool IsSigned>
-    WIDE_INTEGER_NUM_LIMITS_CLASS_TYPE numeric_limits<::math::wide_integer::uintwide_t<Width2, LimbType, AllocatorType, IsSigned>>;
+    WIDE_INTEGER_NUM_LIMITS_CLASS_TYPE numeric_limits<::math::wide_integer::uintwide_t<Width2, LimbType, AllocatorType, IsSigned>>; // NOLINT(cert-dcl58-cpp)
     #endif
   } // namespace std
 
@@ -2505,7 +2505,7 @@
     {
       if(this == &other)
       {
-        const uintwide_t self(other);
+        const uintwide_t self(other); // NOLINT(performance-unnecessary-copy-initialization)
 
         // Unary addition function.
         const auto carry = eval_add_n(values.begin(), // LCOV_EXCL_LINE
@@ -2950,7 +2950,7 @@
           pos
           {
             static_cast<signed_fast_type>
-          (
+            (
               string_storage_oct_type::static_size() - static_cast<size_t>(UINT8_C(1)) // LCOV_EXCL_LINE
             )
           };
@@ -2987,7 +2987,7 @@
         {
           field_width = (detail::min_unsafe)(field_width, static_cast<unsigned_fast_type>(str_temp.size() - static_cast<size_t>(UINT8_C(1)))); // LCOV_EXCL_LINE
 
-          while(static_cast<signed_fast_type>(pos) > static_cast<signed_fast_type>((str_temp.size() - static_cast<size_t>(UINT8_C(1))) - field_width) && (pos > signed_fast_type { UINT8_C(0) })) // NOLINT(altera-id-dependent-backward-branch)
+          while(static_cast<signed_fast_type>(pos) > static_cast<signed_fast_type>((str_temp.size() - static_cast<size_t>(UINT8_C(1))) - field_width)) // NOLINT(altera-id-dependent-backward-branch)
           {
             str_temp[static_cast<typename string_storage_oct_type::size_type>(--pos)] = fill_char_str;
           }
@@ -3059,21 +3059,21 @@
 
         if(pos > signed_fast_type { UINT8_C(0) })
         {
-        if(show_pos && (!str_has_neg_sign))
-        {
-          str_temp[static_cast<typename string_storage_dec_type::size_type>(--pos)] = '+';
-        }
-        else if(str_has_neg_sign)
-        {
-          str_temp[static_cast<typename string_storage_dec_type::size_type>(--pos)] = '-';
-        }
+          if(show_pos && (!str_has_neg_sign))
+          {
+            str_temp[static_cast<typename string_storage_dec_type::size_type>(--pos)] = '+';
+          }
+          else if(str_has_neg_sign)
+          {
+            str_temp[static_cast<typename string_storage_dec_type::size_type>(--pos)] = '-';
+          }
         }
 
         if(field_width != static_cast<unsigned_fast_type>(UINT8_C(0)))
         {
           field_width = (detail::min_unsafe)(field_width, static_cast<unsigned_fast_type>(str_temp.size() - static_cast<size_t>(UINT8_C(1)))); // LCOV_EXCL_LINE
 
-          while(static_cast<signed_fast_type>(pos) > static_cast<signed_fast_type>((str_temp.size() - static_cast<size_t>(UINT8_C(1))) - field_width) && (pos > signed_fast_type { UINT8_C(0) })) // NOLINT(altera-id-dependent-backward-branch)
+          while(static_cast<signed_fast_type>(pos) > static_cast<signed_fast_type>((str_temp.size() - static_cast<size_t>(UINT8_C(1))) - field_width)) // NOLINT(altera-id-dependent-backward-branch)
           {
             str_temp[static_cast<typename string_storage_dec_type::size_type>(--pos)] = fill_char_str;
           }
@@ -3145,7 +3145,7 @@
         {
           field_width = (detail::min_unsafe)(field_width, static_cast<unsigned_fast_type>(str_temp.size() - static_cast<size_t>(UINT8_C(1)))); // LCOV_EXCL_LINE
 
-          while(static_cast<signed_fast_type>(pos) > static_cast<signed_fast_type>((str_temp.size() - static_cast<size_t>(UINT8_C(1))) - field_width) && (pos > signed_fast_type { UINT8_C(0) })) // NOLINT(altera-id-dependent-backward-branch)
+          while(static_cast<signed_fast_type>(pos) > static_cast<signed_fast_type>((str_temp.size() - static_cast<size_t>(UINT8_C(1))) - field_width)) // NOLINT(altera-id-dependent-backward-branch)
           {
             str_temp[static_cast<typename string_storage_hex_type::size_type>(--pos)] = fill_char_str;
           }
@@ -5396,7 +5396,7 @@
       {
         ++(*it);
       }
-      while((*it++ == static_cast<limb_type>(UINT8_C(0))) && (it != values.end())); // NOLINT(altera-id-dependent-backward-branch)
+      while((*it++ == static_cast<limb_type>(UINT8_C(0))) && (it != values.end())); // NOLINT(altera-id-dependent-backward-branch,bugprone-inc-dec-in-conditions)
     }
 
     constexpr auto predecrement() -> void
@@ -5409,7 +5409,7 @@
       {
         --(*it);
       }
-      while((*it++ == (std::numeric_limits<limb_type>::max)()) && (it != values.end())); // NOLINT(altera-id-dependent-backward-branch)
+      while((*it++ == (std::numeric_limits<limb_type>::max)()) && (it != values.end())); // NOLINT(altera-id-dependent-backward-branch,bugprone-inc-dec-in-conditions)
     }
   };
 
@@ -5553,7 +5553,7 @@
              typename LimbType,
              typename AllocatorType,
              const bool IsSigned>
-    WIDE_INTEGER_NUM_LIMITS_CLASS_TYPE numeric_limits<::math::wide_integer::uintwide_t<Width2, LimbType, AllocatorType, IsSigned>>
+    WIDE_INTEGER_NUM_LIMITS_CLASS_TYPE numeric_limits<::math::wide_integer::uintwide_t<Width2, LimbType, AllocatorType, IsSigned>> // NOLINT(cert-dcl58-cpp)
       : public ::math::wide_integer::numeric_limits_uintwide_t_base<Width2, LimbType, AllocatorType, IsSigned> { };
     #endif
   } // namespace std
@@ -6112,10 +6112,10 @@
     using local_wide_integer_type = uintwide_t<Width2, LimbType, AllocatorType, IsSigned>;
     using local_value_type        = typename local_wide_integer_type::representation_type::value_type;
 
-    auto bpos   = static_cast<unsigned_fast_type>(UINT8_C(0));
-    auto offset = static_cast<unsigned_fast_type>(x.crepresentation().size() - 1U);
+    unsigned_fast_type bpos   { static_cast<unsigned_fast_type>(UINT8_C(0)) };
+    std::uint32_t      offset { static_cast<std::uint32_t>(x.crepresentation().size() - 1U) };
 
-    for(auto ri = x.crepresentation().crbegin(); ri != x.crepresentation().crend(); ++ri, --offset) // NOLINT(altera-id-dependent-backward-branch)
+    for(auto ri { x.crepresentation().crbegin() }; ri != x.crepresentation().crend(); ++ri, --offset) // NOLINT(altera-id-dependent-backward-branch)
     {
       const auto vr = static_cast<local_value_type>(*ri & (std::numeric_limits<local_value_type>::max)());
 
@@ -6127,7 +6127,7 @@
               detail::msb_helper(*ri)
             + static_cast<unsigned_fast_type>
               (
-                static_cast<unsigned_fast_type>(std::numeric_limits<local_value_type>::digits) * offset
+                static_cast<unsigned_fast_type>(std::numeric_limits<local_value_type>::digits) * static_cast<unsigned_fast_type>(offset)
               )
           );
 
@@ -6757,20 +6757,16 @@
     struct param_type
     {
     public:
-      explicit constexpr
-        param_type
-        (
-          const result_type& p_a = (std::numeric_limits<result_type>::min)(), // NOLINT(modernize-pass-by-value)
-          const result_type& p_b = (std::numeric_limits<result_type>::max)()  // NOLINT(modernize-pass-by-value)
-        ) : param_a(p_a),
+      explicit constexpr param_type(const result_type& p_a, const result_type& p_b)  // NOLINT(modernize-pass-by-value)
+          : param_a(p_a),
             param_b(p_b) { }
 
       constexpr param_type(const param_type& other) : param_a(other.param_a),
-                                                                   param_b(other.param_b) { }
+                                                      param_b(other.param_b) { }
 
       constexpr param_type(param_type&& other) noexcept
-        : param_a(static_cast<result_type&&>(other.param_a)),
-          param_b(static_cast<result_type&&>(other.param_b)) { }
+        : param_a(std::move(static_cast<result_type&&>(other.param_a))),
+          param_b(std::move(static_cast<result_type&&>(other.param_b))) { }
 
       ~param_type() = default;
 
@@ -6787,8 +6783,8 @@
 
       constexpr auto operator=(param_type&& other) noexcept -> param_type&
       {
-        param_a = other.param_a;
-        param_b = other.param_b;
+        param_a = std::move(static_cast<result_type&&>(other.param_a));
+        param_b = std::move(static_cast<result_type&&>(other.param_b));
 
         return *this;
       }
@@ -6800,21 +6796,17 @@
       constexpr auto set_b(const result_type& p_b) -> void { param_b = p_b; }
 
     private:
-      result_type param_a; // NOLINT(readability-identifier-naming)
-      result_type param_b; // NOLINT(readability-identifier-naming)
+      result_type param_a { (std::numeric_limits<result_type>::min)() }; // NOLINT(readability-identifier-naming)
+      result_type param_b { (std::numeric_limits<result_type>::max)() }; // NOLINT(readability-identifier-naming)
 
-      friend constexpr auto operator==(const param_type& lhs,
-                                              const param_type& rhs) -> bool
+      friend constexpr auto operator==(const param_type& lhs, const param_type& rhs) -> bool
       {
-        return (   (lhs.param_a == rhs.param_a)
-                && (lhs.param_b == rhs.param_b));
+        return ((lhs.param_a == rhs.param_a) && (lhs.param_b == rhs.param_b));
       }
 
-      friend constexpr auto operator!=(const param_type& lhs,
-                                              const param_type& rhs) -> bool
+      friend constexpr auto operator!=(const param_type& lhs, const param_type& rhs) -> bool
       {
-        return (   (lhs.param_a != rhs.param_a)
-                || (lhs.param_b != rhs.param_b));
+        return (   (lhs.param_a != rhs.param_a) || (lhs.param_b != rhs.param_b));
       }
     };
 

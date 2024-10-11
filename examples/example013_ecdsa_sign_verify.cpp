@@ -384,7 +384,7 @@ namespace example013_ecdsa
            const char* CoordGy,
            const char* SubGroupOrderN,
            const int   SubGroupCoFactorH>
-  struct elliptic_curve : public ecc_point<CurveBits, LimbType, CoordGx, CoordGy>
+  struct elliptic_curve : public ecc_point<CurveBits, LimbType, CoordGx, CoordGy> // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay)
   {
     using base_class_type = ecc_point<CurveBits, LimbType, CoordGx, CoordGy>; // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay)
 
@@ -711,21 +711,20 @@ namespace example013_ecdsa
             (p_uint_seed == nullptr) ? std::move(get_pseudo_random_uint<uint_type>()) : *p_uint_seed
           };
 
-        // TBD: Be sure to limit to random.randrange(1, curve.n).
+        const double_sint_type k { uk };
 
-        const double_sint_type k { std::move(static_cast<double_sint_type>(uk)) };
-
-        const auto pt = scalar_mult(k, { curve_gx(), curve_gy() } );
+        const point_type pt { scalar_mult(k, { curve_gx(), curve_gy() } ) };
 
         r = divmod(pt.my_x, curve_n()).second;
 
-        const auto num =
-        (
-           (sexatuple_sint_type(z) + (sexatuple_sint_type(r) * pk))
-          * sexatuple_sint_type(inverse_mod(k, curve_n()))
-        );
+        const sexatuple_sint_type
+          num
+          {
+             (sexatuple_sint_type(z) + (sexatuple_sint_type(r) * pk))
+            * sexatuple_sint_type(inverse_mod(k, curve_n()))
+          };
 
-        s = std::move(double_sint_type(divmod(num, n).second));
+        s = double_sint_type { divmod(num, n).second };
       }
 
       return
