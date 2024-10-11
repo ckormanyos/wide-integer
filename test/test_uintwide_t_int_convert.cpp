@@ -144,7 +144,7 @@ namespace local_int_convert
   }
 
   template<typename UnsignedIntegralType>
-  static auto hexlexical_cast(const UnsignedIntegralType& u) -> std::string
+  auto hexlexical_cast(const UnsignedIntegralType& u) -> std::string
   {
     std::stringstream ss;
 

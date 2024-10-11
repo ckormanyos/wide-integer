@@ -957,7 +957,7 @@ auto test_various_roots_and_pow_etc() -> bool
     {
       const auto cbrt_u = cbrt(u);
 
-      const auto result_cbrt_is_ok = (cbrt_u == cbrt_ctrl[i++]);
+      const auto result_cbrt_is_ok = (cbrt_u == cbrt_ctrl[i++]); // NOLINT(cppcoreguidelines-pro-bounds-constant-array-index)
 
       result_is_ok = (result_cbrt_is_ok && result_is_ok);
     }
