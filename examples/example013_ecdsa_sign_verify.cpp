@@ -384,7 +384,7 @@ namespace example013_ecdsa
            const char* CoordGy,
            const char* SubGroupOrderN,
            const int   SubGroupCoFactorH>
-  struct elliptic_curve : public ecc_point<CurveBits, LimbType, CoordGx, CoordGy>
+  struct elliptic_curve : public ecc_point<CurveBits, LimbType, CoordGx, CoordGy> // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay)
   {
     using base_class_type = ecc_point<CurveBits, LimbType, CoordGx, CoordGy>; // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay)
 
@@ -720,8 +720,8 @@ namespace example013_ecdsa
         const sexatuple_sint_type
           num
           {
-           (sexatuple_sint_type(z) + (sexatuple_sint_type(r) * pk))
-          * sexatuple_sint_type(inverse_mod(k, curve_n()))
+             (sexatuple_sint_type(z) + (sexatuple_sint_type(r) * pk))
+            * sexatuple_sint_type(inverse_mod(k, curve_n()))
           };
 
         s = double_sint_type { divmod(num, n).second };

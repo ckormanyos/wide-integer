@@ -2505,7 +2505,7 @@
     {
       if(this == &other)
       {
-        const uintwide_t self(other);
+        const uintwide_t self(other); // NOLINT(performance-unnecessary-copy-initialization)
 
         // Unary addition function.
         const auto carry = eval_add_n(values.begin(), // LCOV_EXCL_LINE
@@ -2950,7 +2950,7 @@
           pos
           {
             static_cast<signed_fast_type>
-          (
+            (
               string_storage_oct_type::static_size() - static_cast<size_t>(UINT8_C(1)) // LCOV_EXCL_LINE
             )
           };
@@ -3059,14 +3059,14 @@
 
         if(pos > signed_fast_type { UINT8_C(0) })
         {
-        if(show_pos && (!str_has_neg_sign))
-        {
-          str_temp[static_cast<typename string_storage_dec_type::size_type>(--pos)] = '+';
-        }
-        else if(str_has_neg_sign)
-        {
-          str_temp[static_cast<typename string_storage_dec_type::size_type>(--pos)] = '-';
-        }
+          if(show_pos && (!str_has_neg_sign))
+          {
+            str_temp[static_cast<typename string_storage_dec_type::size_type>(--pos)] = '+';
+          }
+          else if(str_has_neg_sign)
+          {
+            str_temp[static_cast<typename string_storage_dec_type::size_type>(--pos)] = '-';
+          }
         }
 
         if(field_width != static_cast<unsigned_fast_type>(UINT8_C(0)))
@@ -6762,7 +6762,7 @@
             param_b(p_b) { }
 
       constexpr param_type(const param_type& other) : param_a(other.param_a),
-                                                                   param_b(other.param_b) { }
+                                                      param_b(other.param_b) { }
 
       constexpr param_type(param_type&& other) noexcept
         : param_a(std::move(static_cast<result_type&&>(other.param_a))),
