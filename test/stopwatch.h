@@ -77,7 +77,21 @@
     {
       const time_point_type stop { now() };
 
-      const std::uintmax_t
+      #if defined(__CYGWIN__)
+
+      const time_point_type
+        elapsed_ns
+        {
+          static_cast<time_point_type>
+          (
+              static_cast<time_point_type>(static_cast<time_point_type>(stop - m_start) * UINTMAX_C(1000000000))
+            / static_cast<time_point_type>(CLOCKS_PER_SEC)
+          )
+        };
+
+      #else
+
+      const time_point_type
         elapsed_ns
         {
           static_cast<time_point_type>
@@ -85,6 +99,8 @@
             stop - m_start
           )
         };
+
+      #endif
 
       return elapsed_ns;
     }
