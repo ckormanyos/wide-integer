@@ -53,7 +53,7 @@
     {
       #if defined(__CYGWIN__)
 
-      return static_cast<time_point_type>(std::clock());
+      return static_cast<std::uint64_t>(std::clock());
 
       #else
 
