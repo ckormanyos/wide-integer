@@ -94,7 +94,7 @@ auto ::math::wide_integer::example009_timed_mul() -> bool
 
   stopwatch_type my_stopwatch { };
 
-  while(stopwatch_type::elapsed_time<float>(my_stopwatch) < static_cast<float>(6.0L))
+  while(stopwatch_type::elapsed_time<float>(my_stopwatch) < static_cast<float>(6.0L)) // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
   {
     local_timed_mul::local_a().at(index) * local_timed_mul::local_b().at(index);
 
