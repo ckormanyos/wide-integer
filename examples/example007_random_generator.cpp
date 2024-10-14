@@ -45,7 +45,7 @@ namespace local_random
     // Purosely use the default seed.
     random_engine_type generator; // NOLINT(cert-msc32-c,cert-msc51-cpp)
 
-    distribution_type distribution;
+    distribution_type distribution { };
 
     const wide_integer_type n = distribution(generator);
 

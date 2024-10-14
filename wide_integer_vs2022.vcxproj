@@ -190,6 +190,7 @@
     <ClInclude Include="examples\example_uintwide_t.h" />
     <ClInclude Include="math\wide_integer\uintwide_t.h" />
     <ClInclude Include="test\parallel_for.h" />
+    <ClInclude Include="test\stopwatch.h" />
     <ClInclude Include="test\test.hpp" />
     <ClInclude Include="test\test_arithmetic.hpp" />
     <ClInclude Include="test\test_uintwide_t.h" />

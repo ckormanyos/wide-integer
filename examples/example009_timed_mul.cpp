@@ -5,6 +5,12 @@
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)             //
 ///////////////////////////////////////////////////////////////////
 
+#include <examples/example_uintwide_t.h>
+#include <math/wide_integer/uintwide_t.h>
+#include <test/stopwatch.h>
+
+#include <util/utility/util_pseudorandom_time_point_seed.h>
+
 #include <algorithm>
 #include <cstddef>
 #include <cstdint>
@@ -13,11 +19,6 @@
 #include <limits>
 #include <random>
 #include <vector>
-
-#include <examples/example_uintwide_t.h>
-#include <math/wide_integer/uintwide_t.h>
-
-#include <util/utility/util_pseudorandom_time_point_seed.h>
 
 namespace local_timed_mul
 {
@@ -89,17 +90,13 @@ auto ::math::wide_integer::example009_timed_mul() -> bool
   std::uint64_t count = 0U;
   std::size_t   index = 0U;
 
-  float total_time { };
+  using stopwatch_type = concurrency::stopwatch;
 
-  const auto begin = std::clock();
+  stopwatch_type my_stopwatch { };
 
-  for(;;)
+  while(stopwatch_type::elapsed_time<float>(my_stopwatch) < static_cast<float>(6.0L)) // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
   {
     local_timed_mul::local_a().at(index) * local_timed_mul::local_b().at(index);
-
-    const auto end = std::clock();
-
-    total_time = static_cast<float>(static_cast<float>(end - begin) / CLOCKS_PER_SEC);
 
     ++count;
     ++index;
@@ -108,14 +105,9 @@ auto ::math::wide_integer::example009_timed_mul() -> bool
     {
       index = 0U;
     }
-
-    if(total_time > static_cast<float>(6.0L)) // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
-    {
-      break;
-    }
   }
 
-  const float kops_per_sec = static_cast<float>(count) / static_cast<float>(static_cast<float>(total_time * 1000.0F));
+  const float kops_per_sec = static_cast<float>(count) / static_cast<float>(static_cast<float>(stopwatch_type::elapsed_time<float>(my_stopwatch) * 1000.0F));
 
   {
     const auto flg = std::cout.flags();
