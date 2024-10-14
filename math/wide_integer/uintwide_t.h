@@ -6757,7 +6757,7 @@
     struct param_type
     {
     public:
-      constexpr param_type() { }
+      constexpr param_type() { } // NOLINT(hicpp-use-equals-default,modernize-use-equals-default)
 
       explicit constexpr param_type(const result_type& p_a, const result_type& p_b)  // NOLINT(modernize-pass-by-value)
           : param_a { p_a },

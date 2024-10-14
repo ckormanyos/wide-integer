@@ -637,13 +637,14 @@ namespace example013_ecdsa
       // This subroutine generate a random private-public key pair.
       // The input parameter p_uint_seed can, however, be used to
       // provide a fixed-input value for the private key.
-
-      // TBD: Be sure to limit to random.randrange(1, curve.n).
+      // Also be sure to limit to random.randrange(1, curve.n).
 
       const auto private_key =
         uint_type
         (
-          (p_uint_seed == nullptr) ? get_pseudo_random_uint<uint_type>() : *p_uint_seed
+          (p_uint_seed == nullptr)
+            ? get_pseudo_random_uint<uint_type>(uint_type { static_cast<unsigned>(UINT8_C(1)) }, curve_n())
+            : *p_uint_seed
         );
 
       const auto public_key  = scalar_mult(private_key, { curve_gx(), curve_gy() } );
@@ -652,8 +653,8 @@ namespace example013_ecdsa
       {
         private_key,
         {
-          uint_type(public_key.my_x),
-          uint_type(public_key.my_y)
+          uint_type { public_key.my_x },
+          uint_type { public_key.my_y }
         }
       };
     }
