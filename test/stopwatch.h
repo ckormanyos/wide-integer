@@ -30,23 +30,9 @@
   public:
     using time_point_type = std::uintmax_t;
 
-    stopwatch()
-    {
-      reset();
-    }
-
     auto reset() -> void
     {
-      timespec ts { };
-
-      timespec_get(&ts, TIME_UTC);
-
-      m_start =
-        static_cast<time_point_type>
-        (
-            static_cast<time_point_type>(static_cast<time_point_type>(ts.tv_sec) * UINTMAX_C(1000000000))
-          + static_cast<time_point_type>(ts.tv_nsec)
-        );
+      m_start = now();
     }
 
     template<typename RepresentationRequestedTimeType>
@@ -63,23 +49,33 @@
     }
 
   private:
-    time_point_type m_start { }; // NOLINT(readability-identifier-naming)
+    time_point_type m_start { now() }; // NOLINT(readability-identifier-naming)
 
-    STOPWATCH_NODISCARD auto elapsed() const -> time_point_type
+    STOPWATCH_NODISCARD static auto now() -> time_point_type
     {
+      #if defined(__CYGWIN__)
+
+      return static_cast<time_point_type>(std::clock());
+
+      #else
+
       timespec ts { };
 
       timespec_get(&ts, TIME_UTC);
 
-      time_point_type
-        stop
-        {
-          static_cast<time_point_type>
-          (
-              static_cast<time_point_type>(static_cast<time_point_type>(ts.tv_sec) * UINTMAX_C(1000000000))
-            + static_cast<time_point_type>(ts.tv_nsec)
-          )
-        };
+      return
+        static_cast<time_point_type>
+        (
+            static_cast<time_point_type>(static_cast<time_point_type>(ts.tv_sec) * UINTMAX_C(1000000000))
+          + static_cast<time_point_type>(ts.tv_nsec)
+        );
+
+      #endif
+    }
+
+    STOPWATCH_NODISCARD auto elapsed() const -> time_point_type
+    {
+      const time_point_type stop { now() };
 
       const std::uintmax_t
         elapsed_ns

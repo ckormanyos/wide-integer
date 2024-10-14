@@ -26,22 +26,9 @@
     template<typename IntegralType>
     static auto value() -> IntegralType
     {
-      // Get the time (t_now).
-      timespec ts { };
+      const std::uint64_t t_now { now() };
 
-      timespec_get(&ts, TIME_UTC);
-
-      const std::uint64_t
-        t_now
-        {
-          static_cast<std::uint64_t>
-          (
-              static_cast<std::uint64_t>(static_cast<std::uint64_t>(ts.tv_sec) * UINT64_C(1000000000))
-            + static_cast<std::uint64_t>(ts.tv_nsec)
-          )
-        };
-
-      std::stringstream strm;
+      std::stringstream strm { };
 
       using strtime_uint8_array_type = std::array<std::uint8_t, static_cast<std::size_t>(UINT8_C(16))>;
 
@@ -62,6 +49,29 @@
     static constexpr auto test() noexcept -> bool;
 
   private:
+    static auto now() -> std::uint64_t
+    {
+      #if defined(__CYGWIN__)
+
+      return static_cast<time_point_type>(std::clock());
+
+      #else
+
+      // Get the time (t_now).
+      timespec ts { };
+
+      timespec_get(&ts, TIME_UTC);
+
+      return
+        static_cast<std::uint64_t>
+        (
+            static_cast<std::uint64_t>(static_cast<std::uint64_t>(ts.tv_sec) * UINT64_C(1000000000))
+          + static_cast<std::uint64_t>(ts.tv_nsec)
+        );
+
+      #endif
+    }
+
     template<const std::size_t NumberOfBits,
              typename UnsignedIntegralType>
     static constexpr auto crc_bitwise_template(const std::uint8_t*        message,
