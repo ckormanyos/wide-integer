@@ -30,11 +30,12 @@
 // cov-build --dir cov-int g++ -finline-functions -march=native -mtune=native -O3 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -std=c++14 -DWIDE_INTEGER_HAS_LIMB_TYPE_UINT64 -DWIDE_INTEGER_HAS_MUL_8_BY_8_UNROLL -I. -I/mnt/c/boost/boost_1_85_0 -pthread -lpthread test/test.cpp test/test_uintwide_t_boost_backend.cpp test/test_uintwide_t_edge_cases.cpp test/test_uintwide_t_examples.cpp test/test_uintwide_t_float_convert.cpp test/test_uintwide_t_int_convert.cpp test/test_uintwide_t_n_base.cpp test/test_uintwide_t_n_binary_ops_base.cpp examples/example000a_builtin_convert.cpp test/test_uintwide_t_spot_values.cpp examples/example000_numeric_limits.cpp examples/example001_mul_div.cpp examples/example001a_div_mod.cpp examples/example002_shl_shr.cpp examples/example003_sqrt.cpp examples/example003a_cbrt.cpp examples/example004_rootk_pow.cpp examples/example005_powm.cpp examples/example005a_pow_factors_of_p99.cpp examples/example006_gcd.cpp examples/example007_random_generator.cpp examples/example008_miller_rabin_prime.cpp examples/example008a_miller_rabin_prime.cpp examples/example009_timed_mul.cpp examples/example009a_timed_mul_4_by_4.cpp examples/example009b_timed_mul_8_by_8.cpp examples/example010_uint48_t.cpp examples/example011_uint24_t.cpp examples/example012_rsa_crypto.cpp examples/example013_ecdsa_sign_verify.cpp examples/example014_pi_spigot_wide.cpp -o wide_integer.exe
 // tar caf wide-integer.bz2 cov-int
 
-#include <ctime>
-#include <iomanip>
-#include <iostream>
+#include <test/stopwatch.h>
 
 #include <boost/version.hpp>
+
+#include <iomanip>
+#include <iostream>
 
 #if !defined(BOOST_VERSION)
 #error BOOST_VERSION is not defined. Ensure that <boost/version.hpp> is properly included.
@@ -579,7 +580,9 @@ auto run() -> bool // NOLINT(readability-function-cognitive-complexity)
   using boost_wrapexcept_runtime_type = ::boost::wrapexcept<std::runtime_error>;
   #endif
 
-  const auto start = std::clock();
+  using stopwatch_type = concurrency::stopwatch;
+
+  stopwatch_type my_stopwatch { };
 
   bool result_is_ok = true;
 
@@ -637,7 +640,7 @@ auto run() -> bool // NOLINT(readability-function-cognitive-complexity)
   }
   #endif
 
-  const auto stop = std::clock();
+  const auto execution_time = stopwatch_type::elapsed_time<float>(my_stopwatch);
 
   {
     const auto flg = std::cout.flags();
@@ -648,7 +651,7 @@ auto run() -> bool // NOLINT(readability-function-cognitive-complexity)
               << ", time: "
               << std::fixed
               << std::setprecision(1)
-              << static_cast<float>(static_cast<float>(stop - start) / CLOCKS_PER_SEC)
+              << execution_time
               << "s"
               << std::endl;
 

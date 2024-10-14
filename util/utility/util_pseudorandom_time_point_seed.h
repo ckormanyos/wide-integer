@@ -26,46 +26,37 @@
     template<typename IntegralType>
     static auto value() -> IntegralType
     {
-      using strftime_uint8_array_type = std::array<std::uint8_t, static_cast<std::size_t>(UINT8_C(64))>;
+      // Get the time (t_now).
+      timespec ts { };
 
-      strftime_uint8_array_type buf_u8 { }; buf_u8.fill(static_cast<std::uint8_t>(UINT8_C(0)));
+      timespec_get(&ts, TIME_UTC);
 
-      std::size_t str_tm_len { };
+      const std::uint64_t
+        t_now
+        {
+          static_cast<std::uint64_t>
+          (
+              static_cast<std::uint64_t>(static_cast<std::uint64_t>(ts.tv_sec) * UINT64_C(1000000000))
+            + static_cast<std::uint64_t>(ts.tv_nsec)
+          )
+        };
 
-      {
-        // Get the time.
-        const std::time_t now = std::time(nullptr);
+      std::stringstream strm;
 
-        using strftime_char_array_type = std::array<char, std::tuple_size<strftime_uint8_array_type>::value>;
+      using strtime_uint8_array_type = std::array<std::uint8_t, static_cast<std::size_t>(UINT8_C(16))>;
 
-        strftime_char_array_type buf { };
+      strtime_uint8_array_type buf_u8 { }; buf_u8.fill(static_cast<std::uint8_t>(UINT8_C(0)));
 
-        #if defined(_MSC_VER)
-        #pragma warning(push)
-        #pragma warning(disable : 4996)
-        #endif
-        // Format the time in a calendar-style.
-        strftime(buf.data(), buf.size(), "%c", std::localtime(&now)); // NOLINT(concurrency-mt-unsafe)
-        #if defined(_MSC_VER)
-        #pragma warning( pop )
-        #endif
+      // Get the string representation of the time point.
+      strm << std::setw(std::tuple_size<strtime_uint8_array_type>::value) << std::hex << std::uppercase << std::setfill('0') << t_now;
 
-        std::stringstream strm;
+      const std::string str_tm { strm.str() };
 
-        // Append the clock()-time in arbitrary units.
-        strm << buf.data();
-        strm << '+' << std::setfill('0') << std::setw(static_cast<std::streamsize>(INT8_C(9))) << std::clock();
-
-        const auto str_tm = strm.str();
-
-        str_tm_len = str_tm.length();
-
-        std::copy(str_tm.cbegin(), str_tm.cend(), buf_u8.begin());
-      }
+      std::copy(str_tm.cbegin(), str_tm.cend(), buf_u8.begin());
 
       using local_integral_type = IntegralType;
 
-      return static_cast<local_integral_type>(crc_crc64(buf_u8.data(), str_tm_len));
+      return static_cast<local_integral_type>(crc_crc64(buf_u8.data(), buf_u8.size()));
     }
 
     static constexpr auto test() noexcept -> bool;

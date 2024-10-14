@@ -605,7 +605,8 @@ namespace example013_ecdsa
     }
 
     template<typename UnknownWideUintType>
-    static auto get_pseudo_random_uint() -> UnknownWideUintType
+    static auto get_pseudo_random_uint(const UnknownWideUintType& a = (std::numeric_limits<UnknownWideUintType>::min)(),
+                                       const UnknownWideUintType& b = (std::numeric_limits<UnknownWideUintType>::max)()) -> UnknownWideUintType
     {
       using local_wide_unsigned_integer_type = UnknownWideUintType;
 
@@ -624,7 +625,7 @@ namespace example013_ecdsa
 
       local_random_engine_type generator(seed_value);
 
-      local_distribution_type dist;
+      local_distribution_type dist { a, b };
 
       const auto unsigned_pseudo_random_value = dist(generator);
 

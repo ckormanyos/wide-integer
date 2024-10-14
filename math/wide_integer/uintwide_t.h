@@ -6757,9 +6757,11 @@
     struct param_type
     {
     public:
+      constexpr param_type() { }
+
       explicit constexpr param_type(const result_type& p_a, const result_type& p_b)  // NOLINT(modernize-pass-by-value)
-          : param_a(p_a),
-            param_b(p_b) { }
+          : param_a { p_a },
+            param_b { p_b } { }
 
       constexpr param_type(const param_type& other) : param_a(other.param_a),
                                                       param_b(other.param_b) { }

@@ -118,6 +118,9 @@
     <ClInclude Include="util\utility\util_pseudorandom_time_point_seed.h">
       <Filter>Source Files\util\utility</Filter>
     </ClInclude>
+    <ClInclude Include="test\stopwatch.h">
+      <Filter>Source Files\test</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="test\test.cpp">
