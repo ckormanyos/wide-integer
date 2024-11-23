@@ -320,7 +320,7 @@
     <None Include="README.md" />
     <None Include="run_fuzzing.sh" />
     <None Include="sonar-project.properties" />
-    <None Include="target\build\test_examples_emulator.py">
+    <None Include="target\build\test_examples_emulator.gdb">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>

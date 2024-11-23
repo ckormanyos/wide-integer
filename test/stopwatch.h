@@ -61,7 +61,9 @@
 
       timespec ts { };
 
-      timespec_get(&ts, TIME_UTC);
+      const int ntsp { timespec_get(&ts, TIME_UTC) };
+
+      static_cast<void>(ntsp);
 
       return
         static_cast<time_point_type>

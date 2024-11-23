@@ -68,10 +68,10 @@ extern "C"
 {
   extern volatile std::uint32_t example_standalone_result;
 
-  auto example_run_standalone       (void) -> bool;
-  auto example_get_standalone_result(void) -> bool;
+  auto example_run_standalone       () -> bool;
+  auto example_get_standalone_result() noexcept -> bool;
 
-  auto example_run_standalone(void) -> bool
+  auto example_run_standalone() -> bool
   {
     bool result_is_ok = true;
 
@@ -97,12 +97,9 @@ extern "C"
     return result_is_ok;
   }
 
-  auto example_get_standalone_result(void) -> bool
+  auto example_get_standalone_result() noexcept -> bool
   {
-    volatile auto result_is_ok =
-      (example_standalone_result == static_cast<std::uint32_t>(UINT32_C(0xF00DCAFE)));
-
-    return result_is_ok;
+    return { example_standalone_result == static_cast<std::uint32_t>(UINT32_C(0xF00DCAFE)) };
   }
 }
 
@@ -118,7 +115,7 @@ auto main() -> int
 
 extern "C"
 {
-  volatile std::uint32_t example_standalone_result;
+  volatile std::uint32_t example_standalone_result { };
 }
 
 #endif
