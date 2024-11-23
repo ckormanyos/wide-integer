@@ -13,13 +13,13 @@ monitor halt
 load
 
 # Set a breakpoint at the specified subroutine.
-break app_benchmark_get_standalone_result
+break example_get_standalone_result
 
 # Start or continue program execution.
 continue
 
 # Format and print the value of a variable.
-printf "value 0x%X\n\n", example_get_standalone_result
+printf "value 0x%X\n\n", example_standalone_result
 
 # Delete (all) breakpoint(s).
 delete
