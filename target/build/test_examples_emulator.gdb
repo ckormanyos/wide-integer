@@ -1,4 +1,4 @@
-﻿
+
 # Connect to the target (e.g., OpenOCD or another GDB server).
 target remote localhost:9999
 monitor halt
