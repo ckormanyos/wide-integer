@@ -287,7 +287,7 @@
       <Filter>.github\workflows</Filter>
     </None>
     <None Include="codecov.yml" />
-    <None Include="target\build\test_examples_emulator.py">
+    <None Include="target\build\test_examples_emulator.gdb">
       <Filter>target\build</Filter>
     </None>
     <None Include="target\micros\stm32f429\make\stm32f429.ld">

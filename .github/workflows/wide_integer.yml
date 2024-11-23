@@ -633,7 +633,7 @@ jobs:
           string: ${{ matrix.example }}
       - name: build-example-stm32f429
         run: |
-          PATH="${{ runner.workspace }}/wide_integer/emu_env/arm-gnu-toolchain-13.3.rel1-x86_64-arm-none-eabi/bin:$PATH"
+          PATH="${{ runner.workspace }}/wide-integer/emu_env/arm-gnu-toolchain-13.3.rel1-x86_64-arm-none-eabi/bin:$PATH"
           echo 'Query arm-none-eabi-g++ version'
           echo
           arm-none-eabi-g++ -v
@@ -645,17 +645,17 @@ jobs:
         working-directory: ./
       - name: emulate-target stm32f429
         run: |
-          PATH="${{ runner.workspace }}/wide_integer/emu_env/xpack-qemu-arm-8.2.6-1/bin:$PATH"
+          PATH="${{ runner.workspace }}/wide-integer/emu_env/xpack-qemu-arm-8.2.6-1/bin:$PATH"
           qemu-system-gnuarmeclipse --verbose --mcu STM32F429ZI --nographic --gdb tcp::9999 -d unimp,guest_errors &
           sleep 2
         working-directory: ./
       - name: run-test-on-target
         run: |
           sleep 2
-          PATH="${{ runner.workspace }}/wide_integer/emu_env/arm-gnu-toolchain-13.3.rel1-x86_64-arm-none-eabi/bin:$PATH"
+          PATH="${{ runner.workspace }}/wide-integer/emu_env/arm-gnu-toolchain-13.3.rel1-x86_64-arm-none-eabi/bin:$PATH"
           echo 'Run test on target'
           echo
-          arm-none-eabi-gdb ./bin/${{ matrix.example }}.elf -x ./target/build/test_app_benchmarks_emulator.gdb > ./${{ matrix.example }}.txt
+          arm-none-eabi-gdb ./bin/${{ matrix.example }}.elf -x ./target/build/test_examples_emulator.gdb > ./${{ matrix.example }}.txt
           cat ./${{ matrix.example }}.txt
           echo
           echo 'We will now grep for the right answer...'
