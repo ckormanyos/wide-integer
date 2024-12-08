@@ -250,7 +250,7 @@
     constexpr auto negate() -> void
     {
       m_value.negate();
-    }
+    } // LCOV_EXCL_LINE
 
     WIDE_INTEGER_NODISCARD constexpr auto compare(const uintwide_t_backend& other_mp_cpp_backend) const -> int
     {
@@ -326,7 +326,7 @@
   constexpr auto eval_multiply(uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& result, const uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>& x) -> void
   {
     result.representation() *= x.crepresentation();
-  }
+  } // LCOV_EXCL_LINE
 
   template<
   #if defined(WIDE_INTEGER_NAMESPACE)

@@ -36,6 +36,7 @@
 
 #include <iomanip>
 #include <iostream>
+#include <sstream>
 
 #if !defined(BOOST_VERSION)
 #error BOOST_VERSION is not defined. Ensure that <boost/version.hpp> is properly included.
@@ -643,19 +644,19 @@ auto run() -> bool // NOLINT(readability-function-cognitive-complexity)
   const auto execution_time = stopwatch_type::elapsed_time<float>(my_stopwatch);
 
   {
-    const auto flg = std::cout.flags();
+    std::stringstream strm { };
 
-    std::cout << "result_is_ok: "
-              << std::boolalpha
-              << result_is_ok
-              << ", time: "
-              << std::fixed
-              << std::setprecision(1)
-              << execution_time
-              << "s"
-              << std::endl;
+    strm << "result_is_ok: "
+         << std::boolalpha
+         << result_is_ok
+         << ", time: "
+         << std::fixed
+         << std::setprecision(1)
+         << execution_time
+         << "s"
+         ;
 
-    std::cout.flags(flg);
+    std::cout << strm.str() << std::endl;
   }
 
   return result_is_ok;
@@ -665,9 +666,9 @@ auto run() -> bool // NOLINT(readability-function-cognitive-complexity)
 
 auto main() -> int // NOLINT(bugprone-exception-escape)
 {
-  const auto result_is_ok = local::run();
+  const bool result_is_ok { local::run() };
 
-  const auto result_of_main = (result_is_ok ? 0 : -1);
+  const int result_of_main { (result_is_ok ? static_cast<int>(INT8_C(0)) : static_cast<int>(INT8_C(-1))) };
 
   std::cout << "result_of_main: " << result_of_main << std::endl;
 
