@@ -7133,6 +7133,19 @@
 
     const auto nm1 = static_cast<local_wide_integer_type>(np - static_cast<unsigned>(UINT8_C(1)));
 
+    auto
+      isone
+      {
+        [](const local_wide_integer_type& t1)
+        {
+          return
+          (
+               (static_cast<local_limb_type>(t1) == local_limb_type { UINT8_C(1) })
+            && (t1 == unsigned { UINT8_C(1) })
+          );
+        }
+      };
+
     // Since we have already excluded all small factors
     // up to and including 227, n is greater than 227.
 
@@ -7140,11 +7153,9 @@
       // Perform a single Fermat test which will
       // exclude many non-prime candidates.
 
-      const local_wide_integer_type fn = powm(local_wide_integer_type(static_cast<local_limb_type>(228U)), nm1, np);
+      const local_wide_integer_type fn { powm(local_wide_integer_type(static_cast<local_limb_type>(228U)), nm1, np) };
 
-      const auto fn0 = static_cast<local_limb_type>(fn);
-
-      if((fn0 != static_cast<local_limb_type>(UINT8_C(1))) && (fn != 1U))
+      if(!isone(fn))
       {
         return false;
       }
@@ -7158,8 +7169,8 @@
 
     const local_param_type params(local_wide_integer_type(2U), np - 2U);
 
-    local_wide_integer_type x { };
-    local_wide_integer_type y { };
+    local_wide_integer_type x;
+    local_wide_integer_type y;
 
     // Assume the test will pass, even though it usually does not pass.
     bool result { true };
@@ -7171,16 +7182,20 @@
       x = distribution(generator, params);
       y = powm(x, q, np);
 
+      using local_double_width_type = typename local_wide_integer_type::double_width_type;
+
+      const local_double_width_type np_dbl { np };
+
       std::size_t jdx { 0U };
 
       // Continue while y is not nm1, and while y is not 1,
       // and while the result is true.
 
-      while((y != nm1) && (y != 1U) && result) // NOLINT(altera-id-dependent-backward-branch)
+      while((y != nm1) && (!isone(y)) && result) // NOLINT(altera-id-dependent-backward-branch)
       {
         ++jdx;
 
-        if (std::size_t { jdx } == k)
+        if(std::size_t { jdx } == k)
         {
           // Mark failure if max iterations reached.
           result = false;
@@ -7188,12 +7203,21 @@
         else
         {
           // Continue with the next value of y.
-          y = powm(y, 2, np);
+
+          // Manually calculate:
+          //   y = powm(y, 2, np);
+
+          local_double_width_type yd { y };
+
+          yd *= yd;
+          yd %= np_dbl;
+
+          y = local_wide_integer_type { yd };
         }
       }
 
       // Check for (y == 1) after the loop.
-      if((y == 1U) && (jdx != std::size_t { 0U }))
+      if(isone(y) && (jdx != std::size_t { 0U }))
       {
         // Mark failure if (y == 1) and (jdx != 0).
         result = false;
