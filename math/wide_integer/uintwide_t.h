@@ -7161,13 +7161,18 @@
       }
     }
 
-    const unsigned_fast_type k { lsb(nm1) };
+    const unsigned k { static_cast<unsigned>(lsb(nm1)) };
 
     const local_wide_integer_type q { nm1 >> k };
 
     using local_param_type = typename DistributionType::param_type;
 
-    const local_param_type params(local_wide_integer_type(2U), np - 2U);
+    const local_param_type
+      params
+      {
+        local_wide_integer_type { unsigned { UINT8_C(2) } },
+        np - unsigned { UINT8_C(2) }
+      };
 
     local_wide_integer_type x;
     local_wide_integer_type y;
@@ -7177,7 +7182,7 @@
 
     // Loop over the trials to perform the primality testing.
 
-    for(std::size_t idx { 0U }; ((idx < number_of_trials) && result); ++idx) // NOLINT(altera-id-dependent-backward-branch)
+    for(std::size_t idx { UINT8_C(0) }; ((idx < number_of_trials) && result); ++idx) // NOLINT(altera-id-dependent-backward-branch)
     {
       x = distribution(generator, params);
       y = powm(x, q, np);
@@ -7186,7 +7191,7 @@
 
       const local_double_width_type np_dbl { np };
 
-      std::size_t jdx { 0U };
+      std::size_t jdx { UINT8_C(0) };
 
       // Continue while y is not nm1, and while y is not 1,
       // and while the result is true.
@@ -7195,7 +7200,7 @@
       {
         ++jdx;
 
-        if(std::size_t { jdx } == k)
+        if(jdx == static_cast<std::size_t>(k))
         {
           // Mark failure if max iterations reached.
           result = false;
@@ -7217,7 +7222,7 @@
       }
 
       // Check for (y == 1) after the loop.
-      if(isone(y) && (jdx != std::size_t { 0U }))
+      if(isone(y) && (jdx != std::size_t { UINT8_C(0) }))
       {
         // Mark failure if (y == 1) and (jdx != 0).
         result = false;
