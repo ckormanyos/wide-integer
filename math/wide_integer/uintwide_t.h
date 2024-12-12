@@ -7182,7 +7182,9 @@
 
     // Loop over the trials to perform the primality testing.
 
-    for(std::size_t idx { UINT8_C(0) }; ((idx < number_of_trials) && result); ++idx) // NOLINT(altera-id-dependent-backward-branch)
+    std::size_t idx { UINT8_C(0) };
+
+    do
     {
       x = distribution(generator, params);
       y = powm(x, q, np);
@@ -7227,7 +7229,10 @@
         // Mark failure if (y == 1) and (jdx != 0).
         result = false;
       }
+
+      ++idx;
     }
+    while((idx < number_of_trials) && result);
 
     return result;
   }
