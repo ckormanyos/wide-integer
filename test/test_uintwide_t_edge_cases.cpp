@@ -1447,15 +1447,15 @@ auto test_various_isolated_edge_cases() -> bool // NOLINT(readability-function-c
     std::array<std::uint8_t, std::size_t { UINT8_C(16) }>
       buffer
       {
-        0x00U, 0x00U, 0x00U, 0x04U, 0x00U, 0x00U, 0x00U, 0xFFU,
-        0x0FU, 0x00U, 0x00U, 0x00U, 0x00U, 0x03U, 0x00U, 0x00U
+        0x00U, 0x00U, 0x00U, 0x04U, 0x00U, 0x00U, 0x00U, 0xFFU, // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
+        0x0FU, 0x00U, 0x00U, 0x00U, 0x00U, 0x03U, 0x00U, 0x00U  // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
       };
 
-    local_uint64_type a_uint { *reinterpret_cast<std::uint64_t*>(buffer.data() + std::size_t { 0U * max_size }) };
-    local_uint64_type b_uint { *reinterpret_cast<std::uint64_t*>(buffer.data() + std::size_t { 1U * max_size }) };
+    local_uint64_type a_uint { *reinterpret_cast<std::uint64_t*>(buffer.data() + std::size_t { 0U * max_size }) }; // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
+    local_uint64_type b_uint { *reinterpret_cast<std::uint64_t*>(buffer.data() + std::size_t { 1U * max_size }) }; // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
 
-    local_ctrl64_type a_ctrl { *reinterpret_cast<std::uint64_t*>(buffer.data() + std::size_t { 0U * max_size }) };
-    local_ctrl64_type b_ctrl { *reinterpret_cast<std::uint64_t*>(buffer.data() + std::size_t { 1U * max_size }) };
+    local_ctrl64_type a_ctrl { *reinterpret_cast<std::uint64_t*>(buffer.data() + std::size_t { 0U * max_size }) }; // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
+    local_ctrl64_type b_ctrl { *reinterpret_cast<std::uint64_t*>(buffer.data() + std::size_t { 1U * max_size }) }; // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
 
     if(a_uint < b_uint)
     {
