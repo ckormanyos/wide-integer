@@ -166,7 +166,7 @@
     using reference         = typename iterator_traits<iterator_type>::reference;
     using iterator_category = typename iterator_traits<iterator_type>::iterator_category;
 
-    constexpr reverse_iterator() { }
+    constexpr reverse_iterator() { } // NOLINT(hicpp-use-equals-default,modernize-use-equals-default)
 
     explicit constexpr reverse_iterator(iterator_type x) : current(x) { }
 

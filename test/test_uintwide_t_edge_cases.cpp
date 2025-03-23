@@ -110,14 +110,15 @@ constexpr auto loop_count_hi = static_cast<std::uint32_t>(UINT16_C(8));
 #endif
 
 #if defined(WIDE_INTEGER_NAMESPACE)
+using local_uintwide_t_tiny_unsigned_type  = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<local_edge_cases::local_digits2_tiny,  std::uint16_t, void, false>;
 using local_uintwide_t_small_unsigned_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<local_edge_cases::local_digits2_small, std::uint16_t, void, false>;
-using local_uintwide_t_half_unsigned_type  = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<local_edge_cases::local_digits2_half, std::uint16_t, void, false>;
-using local_uintwide_t_half_signed_type    = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<local_edge_cases::local_digits2_half, std::uint16_t, void, true>;
+using local_uintwide_t_half_unsigned_type  = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<local_edge_cases::local_digits2_half,  std::uint16_t, void, false>;
+using local_uintwide_t_half_signed_type    = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<local_edge_cases::local_digits2_half,  std::uint16_t, void, true>;
 #else
-using local_uintwide_t_tiny_unsigned_type  = ::math::wide_integer::uintwide_t<local_edge_cases::local_digits2_tiny, std::uint16_t, void, false>;
+using local_uintwide_t_tiny_unsigned_type  = ::math::wide_integer::uintwide_t<local_edge_cases::local_digits2_tiny,  std::uint16_t, void, false>;
 using local_uintwide_t_small_unsigned_type = ::math::wide_integer::uintwide_t<local_edge_cases::local_digits2_small, std::uint16_t, void, false>;
-using local_uintwide_t_half_unsigned_type  = ::math::wide_integer::uintwide_t<local_edge_cases::local_digits2_half, std::uint16_t, void, false>;
-using local_uintwide_t_half_signed_type    = ::math::wide_integer::uintwide_t<local_edge_cases::local_digits2_half, std::uint16_t, void, true>;
+using local_uintwide_t_half_unsigned_type  = ::math::wide_integer::uintwide_t<local_edge_cases::local_digits2_half,  std::uint16_t, void, false>;
+using local_uintwide_t_half_signed_type    = ::math::wide_integer::uintwide_t<local_edge_cases::local_digits2_half,  std::uint16_t, void, true>;
 #endif
 
 #if defined(WIDE_INTEGER_NAMESPACE)
