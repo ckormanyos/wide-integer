@@ -1,5 +1,5 @@
 ﻿///////////////////////////////////////////////////////////////////////////////
-//  Copyright Christopher Kormanyos 2019 - 2024.
+//  Copyright Christopher Kormanyos 2019 - 2025.
 //  Distributed under the Boost Software License,
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -95,6 +95,7 @@ namespace local_edge_cases {
   #if !defined(UINTWIDE_T_REDUCE_TEST_DEPTH)
   constexpr auto local_digits2       = static_cast<std::size_t>(UINT16_C(16384));
   #endif
+  constexpr auto local_digits2_tiny  = static_cast<std::size_t>(UINT8_C(64));
   constexpr auto local_digits2_small = static_cast<std::size_t>(UINT16_C(256));
   constexpr auto local_digits2_half  = static_cast<std::size_t>(UINT16_C(128));
 
@@ -113,6 +114,7 @@ using local_uintwide_t_small_unsigned_type = WIDE_INTEGER_NAMESPACE::math::wide_
 using local_uintwide_t_half_unsigned_type  = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<local_edge_cases::local_digits2_half, std::uint16_t, void, false>;
 using local_uintwide_t_half_signed_type    = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<local_edge_cases::local_digits2_half, std::uint16_t, void, true>;
 #else
+using local_uintwide_t_tiny_unsigned_type  = ::math::wide_integer::uintwide_t<local_edge_cases::local_digits2_tiny, std::uint16_t, void, false>;
 using local_uintwide_t_small_unsigned_type = ::math::wide_integer::uintwide_t<local_edge_cases::local_digits2_small, std::uint16_t, void, false>;
 using local_uintwide_t_half_unsigned_type  = ::math::wide_integer::uintwide_t<local_edge_cases::local_digits2_half, std::uint16_t, void, false>;
 using local_uintwide_t_half_signed_type    = ::math::wide_integer::uintwide_t<local_edge_cases::local_digits2_half, std::uint16_t, void, true>;
@@ -1424,6 +1426,54 @@ auto test_some_gcd_and_equal_left_right() -> bool
 auto test_various_isolated_edge_cases() -> bool // NOLINT(readability-function-cognitive-complexity)
 {
   auto result_is_ok = true;
+
+  {
+    // See also bug report in legacy project long_long_long
+    // https://github.com/ckormanyos/long_long_long/issues/11
+
+    using local_uint64_type = local_uintwide_t_tiny_unsigned_type;
+    using local_ctrl64_type = std::uint64_t;
+
+    constexpr std::size_t
+      max_size
+      {
+        static_cast<std::size_t>
+        (
+          std::numeric_limits<local_uint64_type>::digits / 8
+        )
+      };
+
+    std::array<std::uint8_t, std::size_t { UINT8_C(16) }>
+      buffer
+      {
+        0x00U, 0x00U, 0x00U, 0x04U, 0x00U, 0x00U, 0x00U, 0xFFU,
+        0x0FU, 0x00U, 0x00U, 0x00U, 0x00U, 0x03U, 0x00U, 0x00U
+      };
+
+    local_uint64_type a_uint { *reinterpret_cast<std::uint64_t*>(buffer.data() + std::size_t { 0U * max_size }) };
+    local_uint64_type b_uint { *reinterpret_cast<std::uint64_t*>(buffer.data() + std::size_t { 1U * max_size }) };
+
+    local_ctrl64_type a_ctrl { *reinterpret_cast<std::uint64_t*>(buffer.data() + std::size_t { 0U * max_size }) };
+    local_ctrl64_type b_ctrl { *reinterpret_cast<std::uint64_t*>(buffer.data() + std::size_t { 1U * max_size }) };
+
+    if(a_uint < b_uint)
+    {
+      std::swap(a_uint, b_uint);
+      std::swap(a_ctrl, b_ctrl);
+    }
+
+    const local_uint64_type c_uint = a_uint / b_uint;
+    const local_ctrl64_type c_ctrl = a_ctrl / b_ctrl;
+
+    const bool
+      result_op_is_ok
+      {
+           (static_cast<std::uint64_t>(c_uint) == c_ctrl)
+        && (UINT64_C(0x000000000054FFFF) == c_ctrl)
+      };
+
+    result_is_ok = (result_op_is_ok && result_is_ok);
+  }
 
   {
     using local_rep_type   = typename local_uintwide_t_small_unsigned_type::representation_type;
