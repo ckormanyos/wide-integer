@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Example call:
+# bash run_fuzzing.sh /mnt/c/boost/boost_1_87_0
+
 if [[ "$1" != "" ]]; then
     MY_BOOST="$1"
 else

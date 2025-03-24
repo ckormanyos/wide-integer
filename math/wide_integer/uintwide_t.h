@@ -118,7 +118,7 @@
   class iterator_traits<T*>
   {
   public:
-    using difference_type   = std::ptrdiff_t;
+    using difference_type   = ::std::ptrdiff_t;
     using value_type        = T;
     using pointer           = value_type*;
     using reference         = value_type&;
@@ -129,7 +129,7 @@
   class iterator_traits<const T*>
   {
   public:
-    using difference_type   = std::ptrdiff_t;
+    using difference_type   = ::std::ptrdiff_t;
     using value_type        = T;
     using pointer           = const value_type*;
     using reference         = const value_type&;
@@ -138,7 +138,7 @@
 
   template<typename my_category,
            typename my_value_type,
-           typename my_difference_type = std::ptrdiff_t,
+           typename my_difference_type = ::std::ptrdiff_t,
            typename my_pointer_type    = my_value_type*,
            typename my_reference_type  = my_value_type&>
   struct my_iterator
@@ -538,13 +538,13 @@
 
   namespace array_detail {
 
-  template<typename T, std::size_t N>
+  template<typename T, ::std::size_t N>
   class array
   {
   public:
     // Standard container-local type definitions.
-    using size_type              = std::size_t;
-    using difference_type        = std::ptrdiff_t;
+    using size_type              = ::std::size_t;
+    using difference_type        = ::std::ptrdiff_t;
     using value_type             = T;
     using pointer                = T*;
     using const_pointer          = const T*;
@@ -671,15 +671,15 @@
   template<typename T>
   class tuple_size;
 
-  template<typename T, typename std::size_t N>
+  template<typename T, typename ::std::size_t N>
   class tuple_size<array<T, N>> : public std::integral_constant<std::size_t, N> { };
 
-  template<const std::size_t N, typename T>
+  template<const ::std::size_t N, typename T>
   class tuple_element;
 
-  template<const std::size_t I,
+  template<const ::std::size_t I,
             typename T,
-            const std::size_t N>
+            const ::std::size_t N>
   class tuple_element<I, array<T, N> >
   {
     static_assert(I < N, "Sorry, tuple_element index is out of bounds.");
@@ -706,9 +706,9 @@
   namespace util {
 
   template<typename ValueType,
-           typename AllocatorType = std::allocator<ValueType>,
-           typename SizeType      = std::size_t,
-           typename DiffType      = std::ptrdiff_t>
+           typename AllocatorType = ::std::allocator<ValueType>,
+           typename SizeType      = ::std::size_t,
+           typename DiffType      = ::std::ptrdiff_t>
   class dynamic_array;
 
   template<typename ValueType,
@@ -3225,15 +3225,15 @@
       auto hi_part        = static_cast<limb_type>(UINT8_C(0));
 
       {
-        auto ri =
-          static_cast<reverse_iterator>
-          (
+        reverse_iterator
+          ri
+          {
             detail::advance_and_point
             (
               values.begin(),
               static_cast<size_t>(number_of_limbs - static_cast<size_t>(u_offset))
             )
-          );
+          };
 
         for( ; ri != values.rend(); ++ri) // NOLINT(altera-id-dependent-backward-branch)
         {
@@ -3264,10 +3264,21 @@
           static_cast<double_limb_type>
           (
              static_cast<double_limb_type>(*values.cbegin())
-           + static_cast<double_limb_type>(static_cast<double_limb_type>(long_numerator - static_cast<double_limb_type>(static_cast<double_limb_type>(short_denominator) * hi_part)) << static_cast<unsigned>(std::numeric_limits<limb_type>::digits))
+           + static_cast<double_limb_type>
+             (
+                  static_cast<double_limb_type>
+                  (
+                    long_numerator - static_cast<double_limb_type>(static_cast<double_limb_type>(short_denominator) * hi_part)
+                  )
+               << static_cast<unsigned>(std::numeric_limits<limb_type>::digits)
+             )
           );
 
-        *remainder = static_cast<limb_type>(long_numerator >> static_cast<unsigned>(std::numeric_limits<limb_type>::digits));
+        *remainder =
+          static_cast<limb_type>
+          (
+            long_numerator >> static_cast<unsigned>(std::numeric_limits<limb_type>::digits)
+          );
       }
     }
 
@@ -3292,10 +3303,8 @@
 
     template<const bool RePhraseIsSigned = IsSigned>
     static constexpr auto is_neg(const uintwide_t<Width2, LimbType, AllocatorType, RePhraseIsSigned>& a,
-                                 std::enable_if_t<RePhraseIsSigned, int>* p_nullparam = nullptr) -> bool
+                                 std::enable_if_t<RePhraseIsSigned, int>* = nullptr) -> bool
     {
-      static_cast<void>(p_nullparam);
-
       return (static_cast<std::uint_fast8_t>(static_cast<std::uint_fast8_t>(a.values.back() >> static_cast<size_t>(std::numeric_limits<typename uintwide_t<Width2, LimbType, AllocatorType, RePhraseIsSigned>::limb_type>::digits - 1)) & 1U) != 0U);
     }
 
@@ -7179,7 +7188,7 @@
     // Assume the test will pass, even though it usually does not pass.
     bool result_candidate_is_prime { true };
 
-    std::size_t idx { UINT8_C(0) };
+    ::std::size_t idx { UINT8_C(0) };
 
     using local_double_width_type = typename local_wide_integer_type::double_width_type;
 
@@ -7190,7 +7199,7 @@
     {
       local_wide_integer_type y { powm(distribution(generator, params), q, np) };
 
-      std::size_t jdx { UINT8_C(0) };
+      ::std::size_t jdx { UINT8_C(0) };
 
       // Continue while y is not nm1, and while y is not 1,
       // and while the result is true.
@@ -7220,7 +7229,7 @@
       }
 
       // Check for (y == 1) after the loop.
-      if(local_functor_isone(y) && (jdx != std::size_t { UINT8_C(0) }))
+      if(local_functor_isone(y) && (jdx != ::std::size_t { UINT8_C(0) }))
       {
         // Mark failure if (y == 1) and (jdx != 0).
         result_candidate_is_prime = false;
@@ -7544,7 +7553,7 @@
     const auto chunk_is_whole =
       (chunk_size == static_cast<unsigned>(std::numeric_limits<local_result_value_type>::digits));
 
-    std::size_t input_distance { };
+    ::std::size_t input_distance { };
 
     {
       local_input_iterator_type non_const_first = first;
@@ -7657,7 +7666,7 @@
     static_assert(std::numeric_limits<local_result_value_type>::digits != std::numeric_limits<local_input_value_type>::digits,
                   "Error: Erroneous match for input element width and result uintwide_t limb width");
 
-    std::size_t input_distance { };
+    ::std::size_t input_distance { };
 
     {
       local_input_iterator_type non_const_first = first;
