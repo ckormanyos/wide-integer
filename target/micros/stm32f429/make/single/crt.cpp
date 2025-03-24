@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright Christopher Kormanyos 2018 - 2024.
+//  Copyright Christopher Kormanyos 2018 - 2025.
 //  Distributed under the Boost Software License,
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -75,7 +75,7 @@ extern "C"
 
 void crt::init_ram()
 {
-  typedef std::uint32_t memory_aligned_type;
+  using memory_aligned_type = ::std::uint32_t;
 
   // Copy the data segment initializers from ROM to RAM.
   // Note that all data segments are aligned by 4.
@@ -98,8 +98,8 @@ extern "C"
 {
   struct ctor_type
   {
-    typedef void(*function_type)();
-    typedef std::reverse_iterator<const function_type*> const_reverse_iterator;
+    using function_type = void(*)();
+    using const_reverse_iterator = std::reverse_iterator<const function_type*>;
   };
 
   extern ctor_type::function_type _ctors_end[];
@@ -143,7 +143,7 @@ extern "C" void __sys_tick_handler   () { for(;;) { ; } }
 
 namespace
 {
-  typedef void(*isr_type)();
+  using isr_type = void(*)();
 
   constexpr std::size_t number_of_interrupts = 128U;
 }
