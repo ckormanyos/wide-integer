@@ -3302,8 +3302,8 @@
     }
 
     template<const bool RePhraseIsSigned = IsSigned>
-    static constexpr auto is_neg(const uintwide_t<Width2, LimbType, AllocatorType, RePhraseIsSigned>& a,
-                                 std::enable_if_t<RePhraseIsSigned, int>* = nullptr) -> bool
+    static constexpr auto is_neg(const uintwide_t<Width2, LimbType, AllocatorType, RePhraseIsSigned>& a, // NOLINT(hicpp-named-parameter,readability-named-parameter)
+                                 std::enable_if_t<RePhraseIsSigned, int>* = nullptr) -> bool             // NOLINT(hicpp-named-parameter,readability-named-parameter)
     {
       return (static_cast<std::uint_fast8_t>(static_cast<std::uint_fast8_t>(a.values.back() >> static_cast<size_t>(std::numeric_limits<typename uintwide_t<Width2, LimbType, AllocatorType, RePhraseIsSigned>::limb_type>::digits - 1)) & 1U) != 0U);
     }
