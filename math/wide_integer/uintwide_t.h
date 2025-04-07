@@ -387,13 +387,10 @@
   {
     while(first1 != last1)
     {
-      if(!(*first1 == *first2))
+      if(!(*first1++ == *first2++))
       {
         return false;
       }
-
-      ++first1;
-      ++first2;
     }
 
     return true;
@@ -404,7 +401,7 @@
   {
     while((first1 != last1) && (first2 != last2))
     {
-      if(*first1 < *first2)
+      if(*first1++ < *first2++)
       {
         return true;
       }
@@ -413,9 +410,6 @@
       {
         return false;
       }
-
-      ++first1;
-      ++first2;
     }
 
     return ((first1 == last1) && (first2 != last2));
@@ -449,9 +443,9 @@
   {
     using local_unsigned_integral_type = UnsignedIntegralType;
 
-    auto yy_val = static_cast<local_unsigned_integral_type>(UINT8_C(0));
+    local_unsigned_integral_type yy_val { local_unsigned_integral_type { UINT8_C(0) } };
 
-    auto nn_val = static_cast<unsigned>(std::numeric_limits<local_unsigned_integral_type>::digits);
+    unsigned nn_val { static_cast<unsigned>(std::numeric_limits<local_unsigned_integral_type>::digits) };
 
     auto cc_val = // NOLINT(altera-id-dependent-backward-branch)
       static_cast<unsigned>
@@ -511,9 +505,9 @@
     if(v == static_cast<local_unsigned_integral_type>(UINT8_C(0))) { return u; }
 
     // Shift the greatest power of 2 dividing both u and v.
-    const auto trz = static_cast<unsigned>(ctz_unsafe(u));
+    const unsigned trz { static_cast<unsigned>(ctz_unsafe(u)) };
 
-    const auto shift_amount = (detail::min_unsafe)(trz, ctz_unsafe(v));
+    const unsigned shift_amount { detail::min_unsafe(trz, ctz_unsafe(v)) };
 
     v >>= shift_amount;
     u >>= trz;
@@ -2092,7 +2086,7 @@
     template<const size_t OtherWidth2,
              typename OtherLimbType,
              typename OtherAllocatorType,
-             const bool OtherIsSigned>
+             const bool RePhraseIsSigned>
     friend class uintwide_t;
 
     // Class-local type definitions.
@@ -2310,19 +2304,19 @@
     #endif
 
     // Copy-like constructor from the other signed-ness type.
-    template<const bool OtherIsSigned,
-             std::enable_if_t<(OtherIsSigned != IsSigned)> const* = nullptr>
-    constexpr uintwide_t(const uintwide_t<Width2, LimbType, AllocatorType, OtherIsSigned>& other) // NOLINT(google-explicit-constructor,hicpp-explicit-conversions)
+    template<const bool RePhraseIsSigned,
+             std::enable_if_t<(RePhraseIsSigned != IsSigned)> const* = nullptr>
+    constexpr uintwide_t(const uintwide_t<Width2, LimbType, AllocatorType, RePhraseIsSigned>& other) // NOLINT(google-explicit-constructor,hicpp-explicit-conversions)
       : values(other.values) { }
 
     // Copy-like constructor from the another type having width that is wider
     // (but has the same limb type) and possibly a different signed-ness.
     template<const size_t OtherWidth2,
-             const bool OtherIsSigned,
+             const bool RePhraseIsSigned,
              std::enable_if_t<(Width2 < OtherWidth2)> const* = nullptr>
-    explicit constexpr uintwide_t(const uintwide_t<OtherWidth2, LimbType, AllocatorType, OtherIsSigned>& v)
+    explicit constexpr uintwide_t(const uintwide_t<OtherWidth2, LimbType, AllocatorType, RePhraseIsSigned>& v)
     {
-      using other_wide_integer_type = uintwide_t<OtherWidth2, LimbType, AllocatorType, OtherIsSigned>;
+      using other_wide_integer_type = uintwide_t<OtherWidth2, LimbType, AllocatorType, RePhraseIsSigned>;
 
       const auto v_is_neg = (other_wide_integer_type::is_neg(v));
 
@@ -2349,11 +2343,11 @@
     // Copy-like constructor from the another type having width that is less wide
     // (but has the same limb type) and possibly a different signed-ness.
     template<const size_t OtherWidth2,
-             const bool OtherIsSigned,
+             const bool RePhraseIsSigned,
              std::enable_if_t<(Width2 > OtherWidth2)> const* = nullptr>
-    explicit constexpr uintwide_t(const uintwide_t<OtherWidth2, LimbType, AllocatorType, OtherIsSigned>& v)
+    explicit constexpr uintwide_t(const uintwide_t<OtherWidth2, LimbType, AllocatorType, RePhraseIsSigned>& v)
     {
-      using other_wide_integer_type = uintwide_t<OtherWidth2, LimbType, AllocatorType, OtherIsSigned>;
+      using other_wide_integer_type = uintwide_t<OtherWidth2, LimbType, AllocatorType, RePhraseIsSigned>;
 
       constexpr auto sz = static_cast<size_t>(other_wide_integer_type::number_of_limbs);
 
@@ -2399,18 +2393,18 @@
 
     // Move-like constructor from the other signed-ness type.
     // This constructor is non-explicit because it is a trivial conversion.
-    template<const bool OtherIsSigned,
-             std::enable_if_t<(IsSigned != OtherIsSigned)> const* = nullptr>
-    constexpr uintwide_t(uintwide_t<Width2, LimbType, AllocatorType, OtherIsSigned>&& other) // NOLINT(google-explicit-constructor,hicpp-explicit-conversions)
+    template<const bool RePhraseIsSigned,
+             std::enable_if_t<(IsSigned != RePhraseIsSigned)> const* = nullptr>
+    constexpr uintwide_t(uintwide_t<Width2, LimbType, AllocatorType, RePhraseIsSigned>&& other) // NOLINT(google-explicit-constructor,hicpp-explicit-conversions)
       : values(static_cast<representation_type&&>(other.values)) { }
 
     // Assignment operator.
     constexpr auto operator=(const uintwide_t&) -> uintwide_t& = default; // LCOV_EXCL_LINE
 
     // Assignment operator from the other signed-ness type.
-    template<const bool OtherIsSigned,
-             std::enable_if_t<(OtherIsSigned != IsSigned)> const* = nullptr>
-    constexpr auto operator=(const uintwide_t<Width2, LimbType, AllocatorType, OtherIsSigned>& other) -> uintwide_t&
+    template<const bool RePhraseIsSigned,
+             std::enable_if_t<(RePhraseIsSigned != IsSigned)> const* = nullptr>
+    constexpr auto operator=(const uintwide_t<Width2, LimbType, AllocatorType, RePhraseIsSigned>& other) -> uintwide_t&
     {
       values = other.values;
 
@@ -2421,9 +2415,9 @@
     constexpr auto operator=(uintwide_t&& other) noexcept -> uintwide_t& = default; // LCOV_EXCL_LINE
 
     // Trivial move assignment operator from the other signed-ness type.
-    template<const bool OtherIsSigned,
-             std::enable_if_t<(IsSigned != OtherIsSigned)> const* = nullptr>
-    constexpr auto operator=(uintwide_t<Width2, LimbType, AllocatorType, OtherIsSigned>&& other) -> uintwide_t&
+    template<const bool RePhraseIsSigned,
+             std::enable_if_t<(IsSigned != RePhraseIsSigned)> const* = nullptr>
+    constexpr auto operator=(uintwide_t<Width2, LimbType, AllocatorType, RePhraseIsSigned>&& other) -> uintwide_t&
     {
       values = static_cast<representation_type&&>(other.values);
 
@@ -2456,12 +2450,12 @@
     // Cast operator that casts to a uintwide_t possibly having a different width
     // and/or possibly having a different signed-ness, but having the same limb type.
     template<const size_t OtherWidth2,
-             const bool OtherIsSigned>
-    constexpr operator uintwide_t<OtherWidth2, LimbType, AllocatorType, OtherIsSigned>() const // NOLINT(hicpp-explicit-conversions,google-explicit-constructor)
+             const bool RePhraseIsSigned>
+    constexpr operator uintwide_t<OtherWidth2, LimbType, AllocatorType, RePhraseIsSigned>() const // NOLINT(hicpp-explicit-conversions,google-explicit-constructor)
     {
       const auto this_is_neg = is_neg(*this);
 
-      using other_wide_integer_type = uintwide_t<OtherWidth2, LimbType, AllocatorType, OtherIsSigned>;
+      using other_wide_integer_type = uintwide_t<OtherWidth2, LimbType, AllocatorType, RePhraseIsSigned>;
 
       constexpr auto sz =
         static_cast<size_t>
@@ -2864,8 +2858,8 @@
     constexpr auto operator>=(const uintwide_t& other) const -> bool { return (compare(other) >= static_cast<std::int_fast8_t>( 0)); }
 
     // Helper functions for supporting std::numeric_limits<>.
-    template<const bool OtherIsSigned>
-    static constexpr auto limits_helper_max() -> std::enable_if_t<(!OtherIsSigned), uintwide_t>
+    template<const bool RePhraseIsSigned>
+    static constexpr auto limits_helper_max() -> std::enable_if_t<(!RePhraseIsSigned), uintwide_t>
     {
       uintwide_t result_max { };
 
@@ -2874,8 +2868,8 @@
       return result_max;
     }
 
-    template<const bool OtherIsSigned>
-    static constexpr auto limits_helper_max() -> std::enable_if_t<OtherIsSigned, uintwide_t>
+    template<const bool RePhraseIsSigned>
+    static constexpr auto limits_helper_max() -> std::enable_if_t<RePhraseIsSigned, uintwide_t>
     {
       uintwide_t result_max { };
 
@@ -2892,14 +2886,14 @@
       return result_max;
     }
 
-    template<const bool OtherIsSigned>
-    static constexpr auto limits_helper_min() -> std::enable_if_t<(!OtherIsSigned), uintwide_t>
+    template<const bool RePhraseIsSigned>
+    static constexpr auto limits_helper_min() -> std::enable_if_t<(!RePhraseIsSigned), uintwide_t>
     {
       return uintwide_t { };
     }
 
-    template<const bool OtherIsSigned>
-    static constexpr auto limits_helper_min() -> std::enable_if_t<OtherIsSigned, uintwide_t>
+    template<const bool RePhraseIsSigned>
+    static constexpr auto limits_helper_min() -> std::enable_if_t<RePhraseIsSigned, uintwide_t>
     {
       uintwide_t result_min { };
 
@@ -3481,10 +3475,10 @@
     template<const size_t OtherWidth2,
              typename OtherLimbType,
              typename OtherAllocatorType,
-             const bool OtherIsSigned>
+             const bool RePhraseIsSigned>
     friend constexpr auto from_chars(const char* first, // NOLINT(readability-redundant-declaration)
                                      const char* last,
-                                     uintwide_t<OtherWidth2, OtherLimbType, OtherAllocatorType, OtherIsSigned>& x,
+                                     uintwide_t<OtherWidth2, OtherLimbType, OtherAllocatorType, RePhraseIsSigned>& x,
                                      int base) -> std::from_chars_result;
     #endif
 
@@ -5527,7 +5521,7 @@
 
     static constexpr auto (max) () -> local_wide_integer_type { return local_wide_integer_type::template limits_helper_max<IsSigned>(); }
     static constexpr auto (min) () -> local_wide_integer_type { return local_wide_integer_type::template limits_helper_min<IsSigned>(); }
-    static constexpr auto lowest() -> local_wide_integer_type { return local_wide_integer_type::template limits_helper_min<IsSigned>(); }
+    static constexpr auto lowest() -> local_wide_integer_type { return (min)(); }
   };
 
   template<class T>
