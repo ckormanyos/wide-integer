@@ -66,6 +66,6 @@ jobs:
         run: |
           ${{ matrix.compiler }} -v
           echo 'compiling test/fuzzing/test_fuzzing_div_versus_cppalliance_int128.cpp'
-          ${{ matrix.compiler }} -std=c++20 -g -O2 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -fsanitize=fuzzer -I. -I../../cppalliance-int128/include test/fuzzing/test_fuzzing_div_versus_cppalliance_int128.cpp -o test_fuzzing_div_versus_cppalliance_int128
+          ${{ matrix.compiler }} -std=c++20 -g -O2 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -fsanitize=fuzzer -I. -I../cppalliance-int128/include test/fuzzing/test_fuzzing_div_versus_cppalliance_int128.cpp -o test_fuzzing_div_versus_cppalliance_int128
           echo "run test_fuzzing_div_versus_cppalliance_int128"
           ./test_fuzzing_div_versus_cppalliance_int128 -max_total_time=900 -max_len=32
