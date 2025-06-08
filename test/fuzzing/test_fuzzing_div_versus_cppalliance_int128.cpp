@@ -32,8 +32,6 @@ namespace fuzzing
                const LocalUintType& b_local) -> bool;
 }
 
-unsigned error_injection { };
-
 template <typename CntrlUintType,
           typename LocalUintType>
 auto fuzzing::eval_op(const CntrlUintType& a_cntrl,
@@ -43,8 +41,6 @@ auto fuzzing::eval_op(const CntrlUintType& a_cntrl,
 {
   using cntrl_uint_type = CntrlUintType;
   using local_uint_type = LocalUintType;
-
-  ++error_injection;
 
   const local_uint_type result_local { local_uint_type(a_local) /= b_local };
   const cntrl_uint_type result_cntrl { cntrl_uint_type(a_cntrl) /= b_cntrl };
