@@ -1,5 +1,5 @@
 ﻿///////////////////////////////////////////////////////////////////
-//  Copyright Christopher Kormanyos 2018 - 2024.                 //
+//  Copyright Christopher Kormanyos 2018 - 2025.                 //
 //  Distributed under the Boost Software License,                //
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt          //
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)             //
@@ -8,7 +8,7 @@
 // This Miller-Rabin primality test is loosely based on
 // an adaptation of some code from Boost.Multiprecision.
 // The Boost.Multiprecision code can be found here:
-// https://www.boost.org/doc/libs/1_78_0/libs/multiprecision/doc/html/boost_multiprecision/tut/primetest.html
+// https://www.boost.org/doc/libs/1_88_0/libs/multiprecision/doc/html/boost_multiprecision/tut/primetest.html
 
 #include <random>
 #include <sstream>

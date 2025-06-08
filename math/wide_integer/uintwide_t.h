@@ -6246,7 +6246,7 @@
 
       auto u = static_cast<local_wide_integer_type>(static_cast<unsigned>(UINT8_C(1))) << left_shift_amount;
 
-      // Perform the iteration for the k'th root.
+      // Perform the iteration for the k'th root (applied for k = 3).
       // See Algorithm 1.14 RootInt, Sect. 1.5.2
       // in R.P. Brent and Paul Zimmermann, "Modern Computer Arithmetic",
       // Cambridge University Press, 2011.
@@ -6999,7 +6999,7 @@
     // This Miller-Rabin primality test is loosely based on
     // an adaptation of some code from Boost.Multiprecision.
     // The Boost.Multiprecision code can be found here:
-    // https://www.boost.org/doc/libs/1_87_0/libs/multiprecision/doc/html/boost_multiprecision/tut/primetest.html
+    // https://www.boost.org/doc/libs/1_88_0/libs/multiprecision/doc/html/boost_multiprecision/tut/primetest.html
 
     // Note: Some comments in this subroutine use the Wolfram Language(TM).
     // These can be exercised at the web links to WolframAlpha(R) provided
