@@ -252,6 +252,9 @@
     <ClCompile Include="test\fuzzing\test_fuzzing_powm.cpp">
       <Filter>Source Files\test\fuzzing</Filter>
     </ClCompile>
+    <ClCompile Include="test\fuzzing\test_fuzzing_div_versus_cppalliance_int128.cpp">
+      <Filter>Source Files\test\fuzzing</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include=".github\workflows\wide_integer.yml">
