@@ -5,9 +5,9 @@
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
 
-// cd /mnt/c/Users/ckorm/Documents/Ks/PC_Software/Test
-// clang++ -std=c++20 -g -O2 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -fsanitize=fuzzer -I. -I/mnt/c/ChrisGitRepos/cppalliance/int128/include -I../NumericalPrograms/ExtendedNumberTypes/wide_integer test.cpp -o test
-// ./test -max_total_time=1200 -max_len=32
+// cd /mnt/c/Users/ckorm/Documents/Ks/PC_Software/NumericalPrograms/ExtendedNumberTypes/wide_integer
+// clang++ -std=c++20 -g -O2 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -fsanitize=fuzzer -I. -I/mnt/c/ChrisGitRepos/cppalliance/int128/include -I../NumericalPrograms/ExtendedNumberTypes/wide_integer test/fuzzing/test_fuzzing_div_versus_cppalliance_int128.cpp -o test_fuzzing_div_versus_cppalliance_int128
+// ./test_fuzzing_div_versus_cppalliance_int128 -max_total_time=1200 -max_len=32
 
 #include <math/wide_integer/uintwide_t.h>
 
@@ -42,6 +42,13 @@ auto fuzzing::eval_op(const CntrlUintType& a_cntrl,
   using cntrl_uint_type = CntrlUintType;
   using local_uint_type = LocalUintType;
 
+  static_assert
+  (
+       (std::numeric_limits<cntrl_uint_type>::digits == std::numeric_limits<local_uint_type>::digits)
+    && (std::numeric_limits<cntrl_uint_type>::digits == int { INT32_C(128) }),
+    "Error: the control and local types must both have 128 binary digits"
+  );
+
   const local_uint_type result_local { local_uint_type(a_local) /= b_local };
   const cntrl_uint_type result_cntrl { cntrl_uint_type(a_cntrl) /= b_cntrl };
 
@@ -63,7 +70,7 @@ auto fuzzing::eval_op(const CntrlUintType& a_cntrl,
 
   if(!result_is_ok)
   {
-    std::cout << "Error: lhs: " << a_local << " rhs: " << b_local << " result obtained: " << result_local << std::endl;
+    std::cout << "Error: lhs: " << a_local << ", rhs: " << b_local << ", result obtained: " << result_local << std::endl;
   }
 
   return result_is_ok;
