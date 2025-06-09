@@ -1,5 +1,5 @@
 # ------------------------------------------------------------------------------
-#  Copyright Christopher Kormanyos 2020 - 2024.
+#  Copyright Christopher Kormanyos 2020 - 2025.
 #  Distributed under the Boost Software License,
 #  Version 1.0. (See accompanying file LICENSE_1_0.txt
 #  or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -703,7 +703,7 @@ jobs:
           ${{ matrix.compiler }} -v
           echo
           echo "compile ./test_uintwide_t_boost_backend_via_test_arithmetic.exe"
-          ${{ matrix.compiler }} -finline-functions -m64 -O2 -Werror -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wundef -Wunused-parameter -Wuninitialized -Wunreachable-code -Winit-self -Wzero-as-null-pointer-constant -std=${{ matrix.standard }} -DWIDE_INTEGER_HAS_LIMB_TYPE_UINT64 -I. -I../boost-root test/test_uintwide_t_boost_backend_via_test_arithmetic.cpp -o test_uintwide_t_boost_backend_via_test_arithmetic.exe
+          ${{ matrix.compiler }} -finline-functions -m64 -O2 -Werror -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wundef -Wunused-parameter -Wuninitialized -Wunreachable-code -Winit-self -Wzero-as-null-pointer-constant -std=${{ matrix.standard }} -I. -I../boost-root test/test_uintwide_t_boost_backend_via_test_arithmetic.cpp -o test_uintwide_t_boost_backend_via_test_arithmetic.exe
           echo "ls -la ./test_uintwide_t_boost_backend_via_test_arithmetic.exe"
           echo
           echo "verify presence of ./test_uintwide_t_boost_backend_via_test_arithmetic.exe"
