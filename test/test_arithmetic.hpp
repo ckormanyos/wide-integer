@@ -1,5 +1,7 @@
 ///////////////////////////////////////////////////////////////
-//  Copyright 2012 John Maddock. Distributed under the Boost
+//  Copyright 2012 John Maddock.
+//  Copyright 2022 - 2025 Christopher Kormanyos.
+//  Distributed under the Boost
 //  Software License, Version 1.0. (See accompanying file
 //  LICENSE_1_0.txt or copy at https://www.boost.org/LICENSE_1_0.txt
 
@@ -7,17 +9,18 @@
 #include <vld.h>
 #endif
 
-#include <functional>
-#include <numeric>
-#include <type_traits>
-#include <typeinfo>
-#include "test.hpp"
+#include <test/test.hpp>
 
 #ifndef BOOST_MP_STANDALONE
 #include <boost/math/special_functions/pow.hpp>
 #include <boost/integer/common_factor_rt.hpp>
 #include <boost/lexical_cast.hpp>
 #endif
+
+#include <functional>
+#include <numeric>
+#include <type_traits>
+#include <typeinfo>
 
 template <class T>
 struct is_boost_rational : public std::integral_constant<bool, false>
