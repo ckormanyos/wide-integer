@@ -1,5 +1,5 @@
 ﻿///////////////////////////////////////////////////////////////
-//  Copyright 2022 Christopher Kormanyos.
+//  Copyright 2022 - 2025 Christopher Kormanyos.
 //  Distributed under the Boost
 //  Software License, Version 1.0. (See accompanying file
 //  LICENSE_1_0.txt or copy at https://www.boost.org/LICENSE_1_0.txt
@@ -41,21 +41,14 @@
 #endif
 #endif
 
-#if defined(__GNUC__)
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wshadow"
-#endif
-
-#include <boost/multiprecision/cpp_int.hpp>
-#include <boost/multiprecision/uintwide_t_backend.hpp>
-
-#include "test_arithmetic.hpp"
-
+#include <test/test_arithmetic.hpp>
 #include <test/test_uintwide_t.h>
 
+#include <boost/multiprecision/uintwide_t_backend.hpp>
 
-// cd /mnt/c/Users/User/Documents/Ks/PC_Software/NumericalPrograms/ExtendedNumberTypes/wide_integer
-// g++-10 -finline-functions -march=native -mtune=native -O3 -Wall -std=gnu++20 -DWIDE_INTEGER_HAS_LIMB_TYPE_UINT64 -I. -I/mnt/c/boost/boost_1_78_0 test/test_uintwide_t_boost_backend_via_test_arithmetic.cpp -o test_uintwide_t_boost_backend_via_test_arithmetic.exe
+// cd /mnt/c/Users/ckorm/Documents/Ks/PC_Software/NumericalPrograms/ExtendedNumberTypes/wide_integer
+// g++ -march=native -mtune=native -O2 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -std=c++20 -DWIDE_INTEGER_HAS_LIMB_TYPE_UINT64 -I. -I/mnt/c/boost/boost_1_88_0 test/test_uintwide_t_boost_backend_via_test_arithmetic.cpp -o test_uintwide_t_boost_backend_via_test_arithmetic
+// ./test_uintwide_t_boost_backend_via_test_arithmetic
 
 auto main() -> int
 {
@@ -68,14 +61,8 @@ auto main() -> int
 
   test<local_big_uint_type>();
 
-  const int n_errors = boost::report_errors();
-
-  return ((n_errors == 0) ? 0 : -1);
+  return boost::report_errors();
 }
-
-#if defined(__GNUC__)
-#pragma GCC diagnostic pop
-#endif
 
 #if (BOOST_VERSION < 108000)
 #if ((defined(__clang__) && (__clang_major__ > 9)) && !defined(__APPLE__))

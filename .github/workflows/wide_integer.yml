@@ -678,7 +678,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        standard: [ gnu++14, gnu++20 ]
+        standard: [ c++14, c++20 ]
         compiler: [ g++, clang++ ]
     steps:
       - uses: actions/checkout@v4
@@ -699,11 +699,17 @@ jobs:
       - name: gcc-clang-boost_backend
         run: |
           grep BOOST_VERSION ../boost-root/boost/version.hpp
-          echo "compile ./test_uintwide_t_boost_backend_via_test_arithmetic.exe"
+          echo "print compiler version"
           ${{ matrix.compiler }} -v
-          ${{ matrix.compiler }} -finline-functions -m64 -O3 -Werror -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wundef -Wunused-parameter -Wuninitialized -Wunreachable-code -Winit-self -Wzero-as-null-pointer-constant -std=${{ matrix.standard }} -DWIDE_INTEGER_HAS_LIMB_TYPE_UINT64 -I. -I../boost-root test/test_uintwide_t_boost_backend_via_test_arithmetic.cpp -o test_uintwide_t_boost_backend_via_test_arithmetic.exe
+          echo
+          echo "compile ./test_uintwide_t_boost_backend_via_test_arithmetic.exe"
+          ${{ matrix.compiler }} -finline-functions -m64 -O2 -Werror -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wundef -Wunused-parameter -Wuninitialized -Wunreachable-code -Winit-self -Wzero-as-null-pointer-constant -std=${{ matrix.standard }} -DWIDE_INTEGER_HAS_LIMB_TYPE_UINT64 -I. -I../boost-root test/test_uintwide_t_boost_backend_via_test_arithmetic.cpp -o test_uintwide_t_boost_backend_via_test_arithmetic.exe
           echo "ls -la ./test_uintwide_t_boost_backend_via_test_arithmetic.exe"
+          echo
+          echo "verify presence of ./test_uintwide_t_boost_backend_via_test_arithmetic.exe"
           ls -la ./test_uintwide_t_boost_backend_via_test_arithmetic.exe
+          echo
+          echo "execute ./test_uintwide_t_boost_backend_via_test_arithmetic.exe"
           ./test_uintwide_t_boost_backend_via_test_arithmetic.exe
   gcc-clang-xtra:
     runs-on: ubuntu-latest

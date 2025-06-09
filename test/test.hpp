@@ -1,5 +1,7 @@
 ///////////////////////////////////////////////////////////////
-//  Copyright 2012 John Maddock. Distributed under the Boost
+//  Copyright 2012 John Maddock.
+//  Copyright 2022 - 2025 Christopher Kormanyos.
+//  Distributed under the Boost
 //  Software License, Version 1.0. (See accompanying file
 //  LICENSE_1_0.txt or copy at https://www.boost.org/LICENSE_1_0.txt
 //
@@ -7,13 +9,15 @@
 #ifndef BOOST_MULTIPRECISION_TEST_HPP
 #define BOOST_MULTIPRECISION_TEST_HPP
 
-#include <limits>
-#include <cmath>
-#include <typeinfo>
-
 #include <boost/detail/lightweight_test.hpp>
 #include <boost/current_function.hpp>
 #include <boost/multiprecision/number.hpp>
+
+#include <cmath>
+#include <cstdlib>
+#include <iomanip>
+#include <limits>
+#include <typeinfo>
 
 namespace detail {
 
