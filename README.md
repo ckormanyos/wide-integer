@@ -84,7 +84,7 @@ using the [`uintwide_t.h` header](./math/wide_integer/uintwide_t.h)
 is straightforward. Identify the header within
 its directory. Include this header path to the compiler's set
 of include paths or in your project.
-Then simply `#include <uintwide_t.h>` the normal C++ way.
+Then simply `#include <uintwide_t.h>` in the normal C++ way.
 
 Easy application follows via traditional C-style typedef or alias
 such as `uint512_t`. An instance of the defined type can be used very much
