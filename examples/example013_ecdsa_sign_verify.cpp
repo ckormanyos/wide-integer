@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////
-//  Copyright Christopher Kormanyos 2023.                        //
+//  Copyright Christopher Kormanyos 2023 - 2025.                 //
 //  Distributed under the Boost Software License,                //
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt          //
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)             //
@@ -72,6 +72,18 @@ namespace example013_ecdsa
 
   class hash_sha256
   {
+  private:
+    #if defined(WIDE_INTEGER_NAMESPACE)
+    using transform_context_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::array_detail::array<std::uint32_t, static_cast<std::size_t>(UINT8_C(8))>;
+    using data_array_type        = WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::array_detail::array<std::uint8_t, static_cast<std::size_t>(UINT8_C(64))>;
+    #else
+    using transform_context_type = ::math::wide_integer::detail::array_detail::array<std::uint32_t, static_cast<std::size_t>(UINT8_C(8))>;
+    using data_array_type        = ::math::wide_integer::detail::array_detail::array<std::uint8_t, static_cast<std::size_t>(UINT8_C(64))>;
+    #endif
+
+    using data_array_size_type = typename data_array_type::size_type;
+    using transform_context_size_type = typename transform_context_type::size_type;
+
   public:
     #if defined(WIDE_INTEGER_NAMESPACE)
     using result_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::array_detail::array<std::uint8_t, static_cast<std::size_t>(UINT8_C(32))>;
@@ -101,21 +113,21 @@ namespace example013_ecdsa
       my_datalen = static_cast<std::uint32_t>(UINT8_C(0));
       my_bitlen  = static_cast<std::uint64_t>(UINT8_C(0));
 
-      transform_context[static_cast<std::size_t>(UINT8_C(0))] = static_cast<std::uint32_t>(UINT32_C(0x6A09E667));
-      transform_context[static_cast<std::size_t>(UINT8_C(1))] = static_cast<std::uint32_t>(UINT32_C(0xBB67AE85));
-      transform_context[static_cast<std::size_t>(UINT8_C(2))] = static_cast<std::uint32_t>(UINT32_C(0x3C6EF372));
-      transform_context[static_cast<std::size_t>(UINT8_C(3))] = static_cast<std::uint32_t>(UINT32_C(0xA54FF53A));
-      transform_context[static_cast<std::size_t>(UINT8_C(4))] = static_cast<std::uint32_t>(UINT32_C(0x510E527F));
-      transform_context[static_cast<std::size_t>(UINT8_C(5))] = static_cast<std::uint32_t>(UINT32_C(0x9B05688C));
-      transform_context[static_cast<std::size_t>(UINT8_C(6))] = static_cast<std::uint32_t>(UINT32_C(0x1F83D9AB));
-      transform_context[static_cast<std::size_t>(UINT8_C(7))] = static_cast<std::uint32_t>(UINT32_C(0x5BE0CD19));
+      transform_context[static_cast<transform_context_size_type>(UINT8_C(0))] = static_cast<std::uint32_t>(UINT32_C(0x6A09E667));
+      transform_context[static_cast<transform_context_size_type>(UINT8_C(1))] = static_cast<std::uint32_t>(UINT32_C(0xBB67AE85));
+      transform_context[static_cast<transform_context_size_type>(UINT8_C(2))] = static_cast<std::uint32_t>(UINT32_C(0x3C6EF372));
+      transform_context[static_cast<transform_context_size_type>(UINT8_C(3))] = static_cast<std::uint32_t>(UINT32_C(0xA54FF53A));
+      transform_context[static_cast<transform_context_size_type>(UINT8_C(4))] = static_cast<std::uint32_t>(UINT32_C(0x510E527F));
+      transform_context[static_cast<transform_context_size_type>(UINT8_C(5))] = static_cast<std::uint32_t>(UINT32_C(0x9B05688C));
+      transform_context[static_cast<transform_context_size_type>(UINT8_C(6))] = static_cast<std::uint32_t>(UINT32_C(0x1F83D9AB));
+      transform_context[static_cast<transform_context_size_type>(UINT8_C(7))] = static_cast<std::uint32_t>(UINT32_C(0x5BE0CD19));
     }
 
     constexpr void update(const std::uint8_t* msg, const size_t length)
     {
       for (auto i = static_cast<std::size_t>(UINT8_C(0)); i < length; ++i)
       {
-        my_data[my_datalen] = msg[i]; // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic,cppcoreguidelines-pro-bounds-constant-array-index)
+        my_data[static_cast<data_array_size_type>(my_datalen)] = msg[i]; // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic,cppcoreguidelines-pro-bounds-constant-array-index)
         my_datalen++;
 
         if(my_datalen == static_cast<std::uint32_t>(UINT8_C(64)))
@@ -137,7 +149,7 @@ namespace example013_ecdsa
 
       auto hash_index = static_cast<std::size_t>(my_datalen);
 
-      my_data[hash_index] = static_cast<std::uint8_t>(UINT8_C(0x80)); // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic,cppcoreguidelines-pro-bounds-constant-array-index)
+      my_data[static_cast<data_array_size_type>(hash_index)] = static_cast<std::uint8_t>(UINT8_C(0x80)); // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic,cppcoreguidelines-pro-bounds-constant-array-index)
 
       ++hash_index;
 
@@ -168,14 +180,14 @@ namespace example013_ecdsa
             )
         );
 
-      my_data[static_cast<std::size_t>(UINT8_C(63))] = static_cast<std::uint8_t>(my_bitlen >> static_cast<unsigned>(UINT8_C( 0)));
-      my_data[static_cast<std::size_t>(UINT8_C(62))] = static_cast<std::uint8_t>(my_bitlen >> static_cast<unsigned>(UINT8_C( 8)));
-      my_data[static_cast<std::size_t>(UINT8_C(61))] = static_cast<std::uint8_t>(my_bitlen >> static_cast<unsigned>(UINT8_C(16)));
-      my_data[static_cast<std::size_t>(UINT8_C(60))] = static_cast<std::uint8_t>(my_bitlen >> static_cast<unsigned>(UINT8_C(24)));
-      my_data[static_cast<std::size_t>(UINT8_C(59))] = static_cast<std::uint8_t>(my_bitlen >> static_cast<unsigned>(UINT8_C(32)));
-      my_data[static_cast<std::size_t>(UINT8_C(58))] = static_cast<std::uint8_t>(my_bitlen >> static_cast<unsigned>(UINT8_C(40)));
-      my_data[static_cast<std::size_t>(UINT8_C(57))] = static_cast<std::uint8_t>(my_bitlen >> static_cast<unsigned>(UINT8_C(48)));
-      my_data[static_cast<std::size_t>(UINT8_C(56))] = static_cast<std::uint8_t>(my_bitlen >> static_cast<unsigned>(UINT8_C(56)));
+      my_data[static_cast<data_array_size_type>(UINT8_C(63))] = static_cast<std::uint8_t>(my_bitlen >> static_cast<unsigned>(UINT8_C( 0)));
+      my_data[static_cast<data_array_size_type>(UINT8_C(62))] = static_cast<std::uint8_t>(my_bitlen >> static_cast<unsigned>(UINT8_C( 8)));
+      my_data[static_cast<data_array_size_type>(UINT8_C(61))] = static_cast<std::uint8_t>(my_bitlen >> static_cast<unsigned>(UINT8_C(16)));
+      my_data[static_cast<data_array_size_type>(UINT8_C(60))] = static_cast<std::uint8_t>(my_bitlen >> static_cast<unsigned>(UINT8_C(24)));
+      my_data[static_cast<data_array_size_type>(UINT8_C(59))] = static_cast<std::uint8_t>(my_bitlen >> static_cast<unsigned>(UINT8_C(32)));
+      my_data[static_cast<data_array_size_type>(UINT8_C(58))] = static_cast<std::uint8_t>(my_bitlen >> static_cast<unsigned>(UINT8_C(40)));
+      my_data[static_cast<data_array_size_type>(UINT8_C(57))] = static_cast<std::uint8_t>(my_bitlen >> static_cast<unsigned>(UINT8_C(48)));
+      my_data[static_cast<data_array_size_type>(UINT8_C(56))] = static_cast<std::uint8_t>(my_bitlen >> static_cast<unsigned>(UINT8_C(56)));
 
       sha256_transform();
 
@@ -189,11 +201,11 @@ namespace example013_ecdsa
         );
 
       for(auto   output_index = static_cast<std::size_t>(UINT8_C(0));
-                #if defined(WIDE_INTEGER_NAMESPACE)
+                 #if defined(WIDE_INTEGER_NAMESPACE)
                  output_index < WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::array_detail::tuple_size<result_type>::value;
-                #else
+                 #else
                  output_index < ::math::wide_integer::detail::array_detail::tuple_size<result_type>::value;
-                #endif
+                 #endif
                ++output_index)
       {
         const auto right_shift_amount =
@@ -213,7 +225,7 @@ namespace example013_ecdsa
         hash_result[output_index] =
           static_cast<std::uint8_t>
           (
-            transform_context[(output_index / conversion_scale)] >> right_shift_amount
+            transform_context[static_cast<transform_context_size_type>(output_index / conversion_scale)] >> right_shift_amount
           );
       }
 
@@ -221,14 +233,6 @@ namespace example013_ecdsa
     }
 
   private:
-    #if defined(WIDE_INTEGER_NAMESPACE)
-    using transform_context_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::array_detail::array<std::uint32_t, static_cast<std::size_t>(UINT8_C(8))>;
-    using data_array_type        = WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::array_detail::array<std::uint8_t, static_cast<std::size_t>(UINT8_C(64))>;
-    #else
-    using transform_context_type = ::math::wide_integer::detail::array_detail::array<std::uint32_t, static_cast<std::size_t>(UINT8_C(8))>;
-    using data_array_type        = ::math::wide_integer::detail::array_detail::array<std::uint8_t, static_cast<std::size_t>(UINT8_C(64))>;
-    #endif
-
     std::uint32_t          my_datalen        { }; // NOLINT(readability-identifier-naming)
     std::uint64_t          my_bitlen         { }; // NOLINT(readability-identifier-naming)
     data_array_type        my_data           { }; // NOLINT(readability-identifier-naming)
@@ -249,10 +253,10 @@ namespace example013_ecdsa
         m[i] = // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic,cppcoreguidelines-pro-bounds-constant-array-index)
           static_cast<std::uint32_t>
           (
-              static_cast<std::uint32_t>(static_cast<std::uint32_t>(my_data[j + static_cast<std::size_t>(UINT8_C(0))]) << static_cast<unsigned>(UINT8_C(24))) // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic,cppcoreguidelines-pro-bounds-constant-array-index)
-            | static_cast<std::uint32_t>(static_cast<std::uint32_t>(my_data[j + static_cast<std::size_t>(UINT8_C(1))]) << static_cast<unsigned>(UINT8_C(16))) // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic,cppcoreguidelines-pro-bounds-constant-array-index)
-            | static_cast<std::uint32_t>(static_cast<std::uint32_t>(my_data[j + static_cast<std::size_t>(UINT8_C(2))]) << static_cast<unsigned>(UINT8_C( 8))) // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic,cppcoreguidelines-pro-bounds-constant-array-index)
-            | static_cast<std::uint32_t>(static_cast<std::uint32_t>(my_data[j + static_cast<std::size_t>(UINT8_C(3))]) << static_cast<unsigned>(UINT8_C( 0))) // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic,cppcoreguidelines-pro-bounds-constant-array-index)
+              static_cast<std::uint32_t>(static_cast<std::uint32_t>(my_data[static_cast<data_array_size_type>(j + static_cast<data_array_size_type>(UINT8_C(0)))]) << static_cast<unsigned>(UINT8_C(24))) // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic,cppcoreguidelines-pro-bounds-constant-array-index)
+            | static_cast<std::uint32_t>(static_cast<std::uint32_t>(my_data[static_cast<data_array_size_type>(j + static_cast<data_array_size_type>(UINT8_C(1)))]) << static_cast<unsigned>(UINT8_C(16))) // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic,cppcoreguidelines-pro-bounds-constant-array-index)
+            | static_cast<std::uint32_t>(static_cast<std::uint32_t>(my_data[static_cast<data_array_size_type>(j + static_cast<data_array_size_type>(UINT8_C(2)))]) << static_cast<unsigned>(UINT8_C( 8))) // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic,cppcoreguidelines-pro-bounds-constant-array-index)
+            | static_cast<std::uint32_t>(static_cast<std::uint32_t>(my_data[static_cast<data_array_size_type>(j + static_cast<data_array_size_type>(UINT8_C(3)))]) << static_cast<unsigned>(UINT8_C( 0))) // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic,cppcoreguidelines-pro-bounds-constant-array-index)
           );
       }
 

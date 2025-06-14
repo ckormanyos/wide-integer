@@ -61,8 +61,8 @@ auto fuzzing::eval_op(const CntrlUintType& a_cntrl,
   const std::uint64_t result_cntrl_lo = static_cast<std::uint64_t>(result_cntrl);
   const std::uint64_t result_cntrl_hi = static_cast<std::uint64_t>(result_cntrl >> unsigned { UINT8_C(64) });
 
-  // Verify that both the local (test) type as well as control type
-  // obtain the same numerical result.
+  // Verify that both the local (test) type as well as the
+  // control type obtain the same numerical result.
 
   const bool
     result_is_ok
