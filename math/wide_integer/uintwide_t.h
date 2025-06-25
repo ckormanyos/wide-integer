@@ -984,21 +984,12 @@
     }
     else
     {
-      if(size_of_left_is_zero)
-      {
-        const auto size_of_right_is_zero = (rhs.size() == static_cast<size_type>(UINT8_C(0)));
+      const size_type my_count = min_unsafe(lhs.size(), rhs.size());
 
-        b_result = (!size_of_right_is_zero);
-      }
-      else
-      {
-        const size_type my_count = min_unsafe(lhs.size(), rhs.size());
-
-        b_result = lexicographical_compare_unsafe(lhs.cbegin(),
-                                                  lhs.cbegin() + my_count,
-                                                  rhs.cbegin(),
-                                                  rhs.cbegin() + my_count);
-      }
+      b_result = lexicographical_compare_unsafe(lhs.cbegin(),
+                                                lhs.cbegin() + my_count,
+                                                rhs.cbegin(),
+                                                rhs.cbegin() + my_count);
     }
 
     return b_result;
