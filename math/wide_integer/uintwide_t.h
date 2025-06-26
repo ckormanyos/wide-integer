@@ -399,9 +399,9 @@
   template<class InputIt1, class InputIt2>
   constexpr auto lexicographical_compare_unsafe(InputIt1 first1, InputIt1 last1, InputIt2 first2, InputIt2 last2) -> bool
   {
-    while((first1 != last1) && (first2 != last2))
+    for( ; (first1 != last1) && (first2 != last2); static_cast<void>(++first1), static_cast<void>(++first2))
     {
-      if(*first1++ < *first2++)
+      if(*first1 < *first2)
       {
         return true;
       }
@@ -850,14 +850,22 @@
       if(this != &other)
       {
         #if defined(WIDE_INTEGER_NAMESPACE)
-        WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::copy_unsafe(other.elems,
-                                                                        other.elems + WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::min_unsafe(elem_count, other.elem_count),
-                                                                        elems);
+        WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::copy_unsafe
         #else
-        ::math::wide_integer::detail::copy_unsafe(other.elems,
-                                                  other.elems + ::math::wide_integer::detail::min_unsafe(elem_count, other.elem_count),
-                                                  elems);
+        ::math::wide_integer::detail::copy_unsafe
         #endif
+        (
+          other.elems,
+          #if defined(WIDE_INTEGER_NAMESPACE)
+          other.elems + WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::min_unsafe
+          #else
+          other.elems + ::math::wide_integer::detail::min_unsafe
+          #endif
+          (
+            elem_count, other.elem_count
+          ),
+          elems
+        );
       }
 
       return *this;
@@ -896,9 +904,9 @@
     constexpr auto data() const -> const_pointer { return elems; }
 
     // Size and capacity.
-    constexpr auto size    () const -> size_type { return  elem_count; }
-    constexpr auto max_size() const -> size_type { return  elem_count; }
-    constexpr auto empty   () const -> bool      { return (elem_count == static_cast<size_type>(UINT8_C(0))); }
+    constexpr auto size    () const noexcept -> size_type { return  elem_count; }
+    constexpr auto max_size() const noexcept -> size_type { return  elem_count; }
+    constexpr auto empty   () const noexcept -> bool      { return (elem_count == static_cast<size_type>(UINT8_C(0))); }
 
     // Element access members.
     constexpr auto operator[](const size_type i)       -> reference       { return elems[i]; }
@@ -928,10 +936,10 @@
       if(this != &other)
       {
         #if defined(WIDE_INTEGER_NAMESPACE)
-        WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::swap_unsafe(elems,      other.elems);
+        WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::swap_unsafe(elems, other.elems);
         WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::swap_unsafe(elem_count, other.elem_count);
         #else
-        ::math::wide_integer::detail::swap_unsafe(elems,      other.elems);
+        ::math::wide_integer::detail::swap_unsafe(elems, other.elems);
         ::math::wide_integer::detail::swap_unsafe(elem_count, other.elem_count);
         #endif
       }
@@ -954,14 +962,16 @@
   constexpr auto operator==(const dynamic_array<ValueType, AllocatorType>& lhs,
                             const dynamic_array<ValueType, AllocatorType>& rhs) -> bool
   {
-    using local_size_type = typename dynamic_array<ValueType, AllocatorType>::size_type;
-
     return
     (
          (lhs.size() == rhs.size())
       && (
-              (lhs.size() == static_cast<local_size_type>(UINT8_C(0)))
-           || std::equal(lhs.cbegin(), lhs.cend(), rhs.cbegin())
+              lhs.empty()
+           #if defined(WIDE_INTEGER_NAMESPACE)
+           || WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::equal_unsafe(lhs.cbegin(), lhs.cend(), rhs.cbegin())
+           #else
+           || ::math::wide_integer::detail::equal_unsafe(lhs.cbegin(), lhs.cend(), rhs.cbegin())
+           #endif
          )
     );
   }
@@ -970,26 +980,29 @@
   constexpr auto operator<(const dynamic_array<ValueType, AllocatorType>& lhs,
                            const dynamic_array<ValueType, AllocatorType>& rhs) -> bool
   {
-    using size_type = typename dynamic_array<ValueType, AllocatorType>::size_type;
-
-    const auto size_of_left_is_zero = (lhs.size() == static_cast<size_type>(UINT8_C(0)));
-
     bool b_result { };
 
-    if(size_of_left_is_zero)
+    if(lhs.empty())
     {
-      const auto size_of_right_is_zero = (rhs.size() == static_cast<size_type>(UINT8_C(0)));
-
-      b_result = (!size_of_right_is_zero);
+      b_result = (!rhs.empty());
     }
     else
     {
-      const size_type my_count = min_unsafe(lhs.size(), rhs.size());
+      // Note: Use lexicographical_compare here. If the dynamic arrays
+      // have unequal sizes, then simply ignore the size differences.
 
-      b_result = lexicographical_compare_unsafe(lhs.cbegin(),
-                                                lhs.cbegin() + my_count,
-                                                rhs.cbegin(),
-                                                rhs.cbegin() + my_count);
+      b_result =
+        #if defined(WIDE_INTEGER_NAMESPACE)
+        WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::lexicographical_compare_unsafe
+        #else
+        ::math::wide_integer::detail::lexicographical_compare_unsafe
+        #endif
+        (
+          lhs.cbegin(),
+          lhs.cend(),
+          rhs.cbegin(),
+          rhs.cend()
+        );
     }
 
     return b_result;

@@ -2635,6 +2635,105 @@ auto test_edge_uintwide_t_backend() -> bool
   return result_is_ok;
 }
 
+namespace from_pr_454
+{
+  auto test_proj_specific_containers() -> bool
+  {
+    bool result_is_ok { true };
+
+    {
+      // Test container comparisons.
+
+      #if defined(WIDE_INTEGER_NAMESPACE)
+      using local_dynamic_array_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::dynamic_array<local_uintwide_t_small_unsigned_type>;
+      #else
+      using local_dynamic_array_type = ::math::wide_integer::detail::dynamic_array<local_uintwide_t_small_unsigned_type>;
+      #endif
+
+      using ctrl_container_type = std::vector<local_uintwide_t_small_unsigned_type>;
+
+      const local_uintwide_t_small_unsigned_type local_one  (one_as_small_unsigned_type());
+      const local_uintwide_t_small_unsigned_type local_two  (local_one   + local_one);
+      const local_uintwide_t_small_unsigned_type local_three(local_two   + local_one);
+      const local_uintwide_t_small_unsigned_type local_four (local_three + local_one);
+
+      local_dynamic_array_type lhs_orig { local_one, local_two, local_three };
+      local_dynamic_array_type rhs_same { local_one, local_two, local_three };
+      local_dynamic_array_type rhs_less { local_one, local_two, local_two };
+      local_dynamic_array_type rhs_grtr { local_one, local_two, local_four };
+
+      ctrl_container_type ctrl_lhs_orig(lhs_orig.cbegin(), lhs_orig.cend());
+      ctrl_container_type ctrl_rhs_same(rhs_same.cbegin(), rhs_same.cend());
+      ctrl_container_type ctrl_rhs_less(rhs_less.cbegin(), rhs_less.cend());
+      ctrl_container_type ctrl_rhs_grtr(rhs_grtr.cbegin(), rhs_grtr.cend());
+
+      local_dynamic_array_type lhs_zero_size(std::size_t { UINT8_C(0) });
+
+      ctrl_container_type ctrl_rhs_zero_size(std::size_t { UINT8_C(0) });
+
+      bool result_compare_is_ok { };
+
+      result_compare_is_ok = ((lhs_orig == rhs_same) == (ctrl_lhs_orig == ctrl_rhs_same)); result_is_ok = (result_compare_is_ok && result_is_ok);
+
+      result_compare_is_ok = ((lhs_orig >  rhs_less) == (ctrl_lhs_orig >  ctrl_rhs_less)); result_is_ok = (result_compare_is_ok && result_is_ok);
+      result_compare_is_ok = ((lhs_orig != rhs_less) == (ctrl_lhs_orig != ctrl_rhs_less)); result_is_ok = (result_compare_is_ok && result_is_ok);
+
+      result_compare_is_ok = ((lhs_orig <  rhs_grtr) == (ctrl_lhs_orig <  ctrl_rhs_grtr)); result_is_ok = (result_compare_is_ok && result_is_ok);
+      result_compare_is_ok = ((lhs_orig != rhs_grtr) == (ctrl_lhs_orig != ctrl_rhs_grtr)); result_is_ok = (result_compare_is_ok && result_is_ok);
+
+      result_compare_is_ok = ((lhs_orig == rhs_same) == (ctrl_lhs_orig == ctrl_rhs_same)); result_is_ok = (result_compare_is_ok && result_is_ok);
+
+      const bool result_zero_is_ok =
+      (
+            (lhs_zero_size.size() == std::size_t { UINT8_C(0) })
+        &&  (lhs_zero_size < rhs_same)
+        && ((lhs_zero_size < rhs_same) == (ctrl_container_type(std::size_t { UINT8_C(0) }) < ctrl_rhs_same))
+        && ((lhs_zero_size == local_dynamic_array_type(std::size_t { UINT8_C(0) })) == (ctrl_container_type(std::size_t { UINT8_C(0) }) == ctrl_rhs_zero_size))
+      );
+
+      result_is_ok = (result_zero_is_ok && result_is_ok);
+
+      {
+        local_dynamic_array_type rhs_shrt { local_one, local_two };
+
+        ctrl_container_type ctrl_rhs_shrt(rhs_shrt.cbegin(), rhs_shrt.cend());
+
+        #if defined(WIDE_INTEGER_NAMESPACE)
+        using WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::lexicographical_compare_unsafe;
+        #else
+        using ::math::wide_integer::detail::lexicographical_compare_unsafe;
+        #endif
+
+        bool result_b0
+        {
+          lexicographical_compare_unsafe
+          (
+            lhs_orig.cbegin(),
+            lhs_orig.cend(),
+            rhs_shrt.cbegin(),
+            rhs_shrt.cend()
+          )
+        };
+
+        bool result_b1
+        {
+          lexicographical_compare_unsafe
+          (
+            ctrl_lhs_orig.cbegin(),
+            ctrl_lhs_orig.cend(),
+            ctrl_rhs_shrt.cbegin(),
+            ctrl_rhs_shrt.cend()
+          )
+        };
+
+        const bool result_lex_compare_is_ok = (result_b0 == result_b1); result_is_ok = (result_lex_compare_is_ok && result_is_ok);
+      }
+    }
+
+    return result_is_ok;
+  }
+} // namespace from_pr_454
+
 } // namespace test_uintwide_t_edge
 
 // LCOV_EXCL_START
@@ -2653,16 +2752,17 @@ auto ::math::wide_integer::test_uintwide_t_edge_cases() -> bool
   result_is_ok = (test_uintwide_t_edge::test_various_edge_operations        () && result_is_ok);
   #endif
   // LCOV_EXCL_STOP
-  result_is_ok = (test_uintwide_t_edge::test_various_ostream_ops            () && result_is_ok);
-  result_is_ok = (test_uintwide_t_edge::test_various_roots_and_pow_etc      () && result_is_ok);
-  result_is_ok = (test_uintwide_t_edge::test_ops_n_half_by_n_half           () && result_is_ok);
-  result_is_ok = (test_uintwide_t_edge::test_small_prime_and_non_prime      () && result_is_ok);
-  result_is_ok = (test_uintwide_t_edge::test_some_gcd_and_equal_left_right  () && result_is_ok);
-  result_is_ok = (test_uintwide_t_edge::test_various_isolated_edge_cases    () && result_is_ok);
-  result_is_ok = (test_uintwide_t_edge::test_to_and_from_chars_and_to_string() && result_is_ok);
-  result_is_ok = (test_uintwide_t_edge::test_import_bits                    () && result_is_ok);
-  result_is_ok = (test_uintwide_t_edge::test_export_bits                    () && result_is_ok);
-  result_is_ok = (test_uintwide_t_edge::test_edge_uintwide_t_backend        () && result_is_ok);
+  result_is_ok = (test_uintwide_t_edge::test_various_ostream_ops                     () && result_is_ok);
+  result_is_ok = (test_uintwide_t_edge::test_various_roots_and_pow_etc               () && result_is_ok);
+  result_is_ok = (test_uintwide_t_edge::test_ops_n_half_by_n_half                    () && result_is_ok);
+  result_is_ok = (test_uintwide_t_edge::test_small_prime_and_non_prime               () && result_is_ok);
+  result_is_ok = (test_uintwide_t_edge::test_some_gcd_and_equal_left_right           () && result_is_ok);
+  result_is_ok = (test_uintwide_t_edge::test_various_isolated_edge_cases             () && result_is_ok);
+  result_is_ok = (test_uintwide_t_edge::test_to_and_from_chars_and_to_string         () && result_is_ok);
+  result_is_ok = (test_uintwide_t_edge::test_import_bits                             () && result_is_ok);
+  result_is_ok = (test_uintwide_t_edge::test_export_bits                             () && result_is_ok);
+  result_is_ok = (test_uintwide_t_edge::test_edge_uintwide_t_backend                 () && result_is_ok);
+  result_is_ok = (test_uintwide_t_edge::from_pr_454::test_proj_specific_containers   () && result_is_ok);
 
   return result_is_ok;
 }
