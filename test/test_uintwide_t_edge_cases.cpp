@@ -2661,11 +2661,13 @@ namespace from_pr_454
       local_dynamic_array_type rhs_same { local_one, local_two, local_three };
       local_dynamic_array_type rhs_less { local_one, local_two, local_two };
       local_dynamic_array_type rhs_grtr { local_one, local_two, local_four };
+      local_dynamic_array_type rhs_long { local_one, local_two, local_four, local_one - local_one };
 
       ctrl_container_type ctrl_lhs_orig(lhs_orig.cbegin(), lhs_orig.cend());
       ctrl_container_type ctrl_rhs_same(rhs_same.cbegin(), rhs_same.cend());
       ctrl_container_type ctrl_rhs_less(rhs_less.cbegin(), rhs_less.cend());
       ctrl_container_type ctrl_rhs_grtr(rhs_grtr.cbegin(), rhs_grtr.cend());
+      ctrl_container_type ctrl_rhs_long(rhs_long.cbegin(), rhs_long.cend());
 
       local_dynamic_array_type lhs_zero_size(std::size_t { UINT8_C(0) });
 
@@ -2674,8 +2676,16 @@ namespace from_pr_454
       bool result_compare_is_ok { };
 
       result_compare_is_ok = ((lhs_orig == rhs_same) == (ctrl_lhs_orig == ctrl_rhs_same)); result_is_ok = (result_compare_is_ok && result_is_ok);
+
       result_compare_is_ok = ((lhs_orig >  rhs_less) == (ctrl_lhs_orig >  ctrl_rhs_less)); result_is_ok = (result_compare_is_ok && result_is_ok);
+      result_compare_is_ok = ((lhs_orig != rhs_less) == (ctrl_lhs_orig != ctrl_rhs_less)); result_is_ok = (result_compare_is_ok && result_is_ok);
+
       result_compare_is_ok = ((lhs_orig <  rhs_grtr) == (ctrl_lhs_orig <  ctrl_rhs_grtr)); result_is_ok = (result_compare_is_ok && result_is_ok);
+      result_compare_is_ok = ((lhs_orig != rhs_grtr) == (ctrl_lhs_orig != ctrl_rhs_grtr)); result_is_ok = (result_compare_is_ok && result_is_ok);
+
+      result_compare_is_ok = ((lhs_orig <  rhs_long) == (ctrl_lhs_orig <  ctrl_rhs_long)); result_is_ok = (result_compare_is_ok && result_is_ok);
+      result_compare_is_ok = ((lhs_orig != rhs_long) == (ctrl_lhs_orig != ctrl_rhs_long)); result_is_ok = (result_compare_is_ok && result_is_ok);
+
       result_compare_is_ok = ((lhs_orig == rhs_same) == (ctrl_lhs_orig == ctrl_rhs_same)); result_is_ok = (result_compare_is_ok && result_is_ok);
 
       const bool result_zero_is_ok =
