@@ -961,7 +961,7 @@
          (lhs.size() == rhs.size())
       && (
               (lhs.size() == static_cast<local_size_type>(UINT8_C(0)))
-           || std::equal(lhs.cbegin(), lhs.cend(), rhs.cbegin())
+           || ::math::wide_integer::detail::equal_unsafe(lhs.cbegin(), lhs.cend(), rhs.cbegin())
          )
     );
   }
@@ -984,12 +984,13 @@
     }
     else
     {
-      const size_type my_count = min_unsafe(lhs.size(), rhs.size());
+      const size_type my_count = ::math::wide_integer::detail::min_unsafe(lhs.size(), rhs.size());
 
-      b_result = lexicographical_compare_unsafe(lhs.cbegin(),
-                                                lhs.cbegin() + my_count,
-                                                rhs.cbegin(),
-                                                rhs.cbegin() + my_count);
+      b_result = ::math::wide_integer::detail::lexicographical_compare_unsafe(lhs.cbegin(),
+                                                                              lhs.cbegin() + my_count,
+                                                                              rhs.cbegin(),
+                                                                              rhs.cbegin() + my_count);
+      
     }
 
     return b_result;
