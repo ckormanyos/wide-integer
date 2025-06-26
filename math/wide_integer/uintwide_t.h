@@ -399,9 +399,9 @@
   template<class InputIt1, class InputIt2>
   constexpr auto lexicographical_compare_unsafe(InputIt1 first1, InputIt1 last1, InputIt2 first2, InputIt2 last2) -> bool
   {
-    while((first1 != last1) && (first2 != last2))
+    for( ; (first1 != last1) && (first2 != last2); static_cast<void>(++first1), static_cast<void>(++first2))
     {
-      if(*first1++ < *first2++)
+      if(*first1 < *first2)
       {
         return true;
       }
