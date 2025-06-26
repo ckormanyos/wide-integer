@@ -2661,7 +2661,7 @@ namespace from_pr_454
       local_dynamic_array_type rhs_same { local_one, local_two, local_three };
       local_dynamic_array_type rhs_less { local_one, local_two, local_two };
       local_dynamic_array_type rhs_grtr { local_one, local_two, local_four };
-      local_dynamic_array_type rhs_long { local_one, local_two, local_four, local_one - local_one };
+      local_dynamic_array_type rhs_long { local_one, local_two, local_four, zero_as_small_unsigned_type() };
 
       ctrl_container_type ctrl_lhs_orig(lhs_orig.cbegin(), lhs_orig.cend());
       ctrl_container_type ctrl_rhs_same(rhs_same.cbegin(), rhs_same.cend());
