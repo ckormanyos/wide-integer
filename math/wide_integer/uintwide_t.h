@@ -904,9 +904,9 @@
     constexpr auto data() const -> const_pointer { return elems; }
 
     // Size and capacity.
-    constexpr auto size    () const -> size_type { return  elem_count; }
-    constexpr auto max_size() const -> size_type { return  elem_count; }
-    constexpr auto empty   () const -> bool      { return (elem_count == static_cast<size_type>(UINT8_C(0))); }
+    constexpr auto size    () const noexcept -> size_type { return  elem_count; }
+    constexpr auto max_size() const noexcept -> size_type { return  elem_count; }
+    constexpr auto empty   () const noexcept -> bool      { return (elem_count == static_cast<size_type>(UINT8_C(0))); }
 
     // Element access members.
     constexpr auto operator[](const size_type i)       -> reference       { return elems[i]; }
@@ -936,10 +936,10 @@
       if(this != &other)
       {
         #if defined(WIDE_INTEGER_NAMESPACE)
-        WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::swap_unsafe(elems,      other.elems);
+        WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::swap_unsafe(elems, other.elems);
         WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::swap_unsafe(elem_count, other.elem_count);
         #else
-        ::math::wide_integer::detail::swap_unsafe(elems,      other.elems);
+        ::math::wide_integer::detail::swap_unsafe(elems, other.elems);
         ::math::wide_integer::detail::swap_unsafe(elem_count, other.elem_count);
         #endif
       }
@@ -962,13 +962,11 @@
   constexpr auto operator==(const dynamic_array<ValueType, AllocatorType>& lhs,
                             const dynamic_array<ValueType, AllocatorType>& rhs) -> bool
   {
-    using local_size_type = typename dynamic_array<ValueType, AllocatorType>::size_type;
-
     return
     (
          (lhs.size() == rhs.size())
       && (
-              (lhs.size() == static_cast<local_size_type>(UINT8_C(0)))
+              lhs.empty()
            #if defined(WIDE_INTEGER_NAMESPACE)
            || WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::equal_unsafe(lhs.cbegin(), lhs.cend(), rhs.cbegin())
            #else
@@ -982,25 +980,16 @@
   constexpr auto operator<(const dynamic_array<ValueType, AllocatorType>& lhs,
                            const dynamic_array<ValueType, AllocatorType>& rhs) -> bool
   {
-    using size_type = typename dynamic_array<ValueType, AllocatorType>::size_type;
-
-    const auto size_of_left_is_zero = (lhs.size() == static_cast<size_type>(UINT8_C(0)));
-
     bool b_result { };
 
-    if(size_of_left_is_zero)
+    if(lhs.empty())
     {
-      const auto size_of_right_is_zero = (rhs.size() == static_cast<size_type>(UINT8_C(0)));
-
-      b_result = (!size_of_right_is_zero);
+      b_result = (!rhs.empty());
     }
     else
     {
-      #if defined(WIDE_INTEGER_NAMESPACE)
-      const size_type my_count = WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::min_unsafe(lhs.size(), rhs.size());
-      #else
-      const size_type my_count = ::math::wide_integer::detail::min_unsafe(lhs.size(), rhs.size());
-      #endif
+      // Note: Use lexicographical_compare here. If the dynamic arrays
+      // have unequal sizes, then simply ignore the size differences.
 
       b_result =
         #if defined(WIDE_INTEGER_NAMESPACE)
@@ -1010,11 +999,10 @@
         #endif
         (
           lhs.cbegin(),
-          lhs.cbegin() + my_count,
+          lhs.cend(),
           rhs.cbegin(),
-          rhs.cbegin() + my_count
+          rhs.cend()
         );
-      
     }
 
     return b_result;
