@@ -447,7 +447,7 @@
 
     unsigned nn_val { static_cast<unsigned>(std::numeric_limits<local_unsigned_integral_type>::digits) };
 
-    auto cc_val = // NOLINT(altera-id-dependent-backward-branch)
+    unsigned cc_val = // NOLINT(altera-id-dependent-backward-branch)
       static_cast<unsigned>
       (
         std::numeric_limits<local_unsigned_integral_type>::digits / static_cast<int>(INT8_C(2))
