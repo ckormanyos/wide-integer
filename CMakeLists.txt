@@ -28,6 +28,8 @@ target_include_directories(
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>
   $<INSTALL_INTERFACE:include>)
 
+add_library(WideInteger::WideInteger ALIAS WideInteger)
+
 install(TARGETS WideInteger EXPORT WideIntegerTargets)
 install(
   FILES math/wide_integer/uintwide_t.h
