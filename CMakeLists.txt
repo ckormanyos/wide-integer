@@ -2,12 +2,22 @@ project(wide-integer)
 
 cmake_minimum_required(VERSION 3.16.3)
 
-find_package(Boost)
-if (Boost_FOUND)
-  include(CTest)
+if (${CMAKE_CURRENT_SOURCE_DIR} STREQUAL ${CMAKE_SOURCE_DIR})
+  set(WIDE_INTEGER_MASTER_PROJECT ON)
+else()
+  set(WIDE_INTEGER_MASTER_PROJECT OFF)
+endif()
 
-  add_subdirectory("examples")
-  add_subdirectory("test")
+option(ENABLE_TESTS "Enable/disable tests" ${WIDE_INTEGER_MASTER_PROJECT})
+
+if (ENABLE_TESTS)
+  find_package(Boost)
+  if (Boost_FOUND)
+    include(CTest)
+
+    add_subdirectory("examples")
+    add_subdirectory("test")
+  endif()
 endif()
 
 add_library(WideInteger INTERFACE)
