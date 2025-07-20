@@ -2675,11 +2675,15 @@ namespace from_pr_454
 
       result_compare_is_ok = ((lhs_orig == rhs_same) == (ctrl_lhs_orig == ctrl_rhs_same)); result_is_ok = (result_compare_is_ok && result_is_ok);
 
-      result_compare_is_ok = ((lhs_orig >  rhs_less) == (ctrl_lhs_orig >  ctrl_rhs_less)); result_is_ok = (result_compare_is_ok && result_is_ok);
-      result_compare_is_ok = ((lhs_orig != rhs_less) == (ctrl_lhs_orig != ctrl_rhs_less)); result_is_ok = (result_compare_is_ok && result_is_ok);
+      result_compare_is_ok = (  (lhs_orig >  rhs_less)  ==   (ctrl_lhs_orig >  ctrl_rhs_less));  result_is_ok = (result_compare_is_ok && result_is_ok);
+      result_compare_is_ok = (  (lhs_orig >= rhs_less)  ==   (ctrl_lhs_orig >= ctrl_rhs_less));  result_is_ok = (result_compare_is_ok && result_is_ok);
+      result_compare_is_ok = (  (lhs_orig != rhs_less)  ==   (ctrl_lhs_orig != ctrl_rhs_less));  result_is_ok = (result_compare_is_ok && result_is_ok);
+      result_compare_is_ok = ((!(lhs_orig == rhs_less)) == (!(ctrl_lhs_orig == ctrl_rhs_less))); result_is_ok = (result_compare_is_ok && result_is_ok);
 
-      result_compare_is_ok = ((lhs_orig <  rhs_grtr) == (ctrl_lhs_orig <  ctrl_rhs_grtr)); result_is_ok = (result_compare_is_ok && result_is_ok);
-      result_compare_is_ok = ((lhs_orig != rhs_grtr) == (ctrl_lhs_orig != ctrl_rhs_grtr)); result_is_ok = (result_compare_is_ok && result_is_ok);
+      result_compare_is_ok = (  (lhs_orig <  rhs_grtr) ==    (ctrl_lhs_orig <  ctrl_rhs_grtr));  result_is_ok = (result_compare_is_ok && result_is_ok);
+      result_compare_is_ok = (  (lhs_orig <= rhs_grtr) ==    (ctrl_lhs_orig <= ctrl_rhs_grtr));  result_is_ok = (result_compare_is_ok && result_is_ok);
+      result_compare_is_ok = (  (lhs_orig != rhs_grtr) ==    (ctrl_lhs_orig != ctrl_rhs_grtr));  result_is_ok = (result_compare_is_ok && result_is_ok);
+      result_compare_is_ok = ((!(lhs_orig == rhs_grtr)) == (!(ctrl_lhs_orig == ctrl_rhs_grtr))); result_is_ok = (result_compare_is_ok && result_is_ok);
 
       result_compare_is_ok = ((lhs_orig == rhs_same) == (ctrl_lhs_orig == ctrl_rhs_same)); result_is_ok = (result_compare_is_ok && result_is_ok);
 
