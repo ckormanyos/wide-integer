@@ -1,0 +1,16 @@
+
+#define __cplusplus 199711L
+
+#define WIDE_INTEGER_NAMESPACE ckormanyos
+
+#if defined(WIDE_INTEGER_NAMESPACE)
+  #define WIDE_INTEGER_NAMESPACE_BEGIN namespace WIDE_INTEGER_NAMESPACE {   // NOLINT(cppcoreguidelines-macro-usage)
+  #define WIDE_INTEGER_NAMESPACE_END } // namespace WIDE_INTEGER_NAMESPACE  // NOLINT(cppcoreguidelines-macro-usage)
+#else
+  #define WIDE_INTEGER_NAMESPACE_BEGIN
+  #define WIDE_INTEGER_NAMESPACE_END
+#endif
+
+#define WIDE_INTEGER_NODISCARD [[nodiscard]]
+
+#define UINT8_C(x) (x)
