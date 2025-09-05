@@ -1,5 +1,5 @@
 ﻿# ------------------------------------------------------------------------------
-#  Copyright Christopher Kormanyos 2022 - 2024.
+#  Copyright Christopher Kormanyos 2022 - 2025.
 #  Distributed under the Boost Software License,
 #  Version 1.0. (See accompanying file LICENSE_1_0.txt
 #  or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -17,7 +17,7 @@ jobs:
     name: sonar-gcc-native
     runs-on: ubuntu-latest
     env:
-      SONAR_SCANNER_VERSION: 5.0.1.3006
+      SONAR_SCANNER_VERSION: 5.3.1
       SONAR_SERVER_URL: "https://sonarcloud.io"
       BUILD_WRAPPER_OUT_DIR: build_wrapper_output_directory # Directory where build-wrapper output will be placed
     steps:
