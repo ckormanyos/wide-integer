@@ -184,9 +184,6 @@
     constexpr auto operator++(int) -> reverse_iterator { reverse_iterator tmp = *this; --current; return tmp; }
     constexpr auto operator--(int) -> reverse_iterator { reverse_iterator tmp = *this; ++current; return tmp; }
 
-    constexpr auto operator+(typename reverse_iterator<iterator_type>::difference_type n) const -> reverse_iterator { return reverse_iterator(current - n); }
-    constexpr auto operator-(typename reverse_iterator<iterator_type>::difference_type n) const -> reverse_iterator { return reverse_iterator(current + n); }
-
     constexpr auto operator+=(typename reverse_iterator<iterator_type>::difference_type n) -> reverse_iterator& { current -= n; return *this; }
     constexpr auto operator-=(typename reverse_iterator<iterator_type>::difference_type n) -> reverse_iterator& { current += n; return *this; }
 
@@ -194,6 +191,9 @@
 
   private:
     iterator_type current; // NOLINT(readability-identifier-naming)
+
+    friend constexpr auto operator+(const reverse_iterator& x, typename reverse_iterator<iterator_type>::difference_type n) -> reverse_iterator { return reverse_iterator(x.current - n); }
+    friend constexpr auto operator-(const reverse_iterator& x, typename reverse_iterator<iterator_type>::difference_type n) -> reverse_iterator { return reverse_iterator(x.current + n); }
 
     friend constexpr auto operator< (const reverse_iterator& x, const reverse_iterator& y) -> bool { return (x.current  > y.current); }
     friend constexpr auto operator<=(const reverse_iterator& x, const reverse_iterator& y) -> bool { return (x.current >= y.current); }
@@ -438,8 +438,8 @@
   }
 
   template <class UnsignedIntegralType>
-  constexpr auto clz_unsafe(UnsignedIntegralType v) noexcept -> std::enable_if_t<(   (std::is_integral<UnsignedIntegralType>::value)
-                                                                                  && (std::is_unsigned<UnsignedIntegralType>::value)), unsigned>
+  constexpr auto clz_unsafe(UnsignedIntegralType v) noexcept -> std::enable_if_t<(   std::is_integral<UnsignedIntegralType>::value
+                                                                                  && std::is_unsigned<UnsignedIntegralType>::value), unsigned>
   {
     using local_unsigned_integral_type = UnsignedIntegralType;
 
@@ -476,8 +476,8 @@
   }
 
   template<typename UnsignedIntegralType>
-  constexpr auto ctz_unsafe(const UnsignedIntegralType v) noexcept -> std::enable_if_t<(   (std::is_integral<UnsignedIntegralType>::value)
-                                                                                        && (std::is_unsigned<UnsignedIntegralType>::value)), unsigned>
+  constexpr auto ctz_unsafe(const UnsignedIntegralType v) noexcept -> std::enable_if_t<(   std::is_integral<UnsignedIntegralType>::value
+                                                                                        && std::is_unsigned<UnsignedIntegralType>::value), unsigned>
   {
     using local_unsigned_integral_type = UnsignedIntegralType;
 
@@ -494,8 +494,8 @@
   }
 
   template<typename UnsignedIntegralType>
-  constexpr auto gcd_unsafe(UnsignedIntegralType u, UnsignedIntegralType v) -> std::enable_if_t<(   (std::is_integral<UnsignedIntegralType>::value) // NOLINT(altera-id-dependent-backward-branch)
-                                                                                                 && (std::is_unsigned<UnsignedIntegralType>::value)), UnsignedIntegralType>
+  constexpr auto gcd_unsafe(UnsignedIntegralType u, UnsignedIntegralType v) -> std::enable_if_t<(   std::is_integral<UnsignedIntegralType>::value // NOLINT(altera-id-dependent-backward-branch)
+                                                                                                 && std::is_unsigned<UnsignedIntegralType>::value), UnsignedIntegralType>
   {
     using local_unsigned_integral_type = UnsignedIntegralType;
 
@@ -615,46 +615,25 @@
     {
       assign(value);
     }
+
+    friend constexpr auto operator==(const array& left, const array& right) -> bool
+    {
+      return equal_unsafe(left.begin(), left.end(), right.begin());
+    }
+
+    friend constexpr auto operator<(const array& left, const array& right) -> bool
+    {
+      return lexicographical_compare_unsafe(left.begin(),
+                                            left.end(),
+                                            right.begin(),
+                                            right.end());
+    }
+
+    friend constexpr auto operator!=(const array& left, const array& right) -> bool { return (!(left == right)); }
+    friend constexpr auto operator> (const array& left, const array& right) -> bool { return (right < left); }
+    friend constexpr auto operator>=(const array& left, const array& right) -> bool { return (!(left < right)); }
+    friend constexpr auto operator<=(const array& left, const array& right) -> bool { return (!(right < left)); }
   };
-
-  template<typename T, size_t N>
-  constexpr auto operator==(const array<T, N>& left, const array<T, N>& right) -> bool
-  {
-    return equal_unsafe(left.begin(), left.end(), right.begin());
-  }
-
-  template<typename T, size_t N>
-  constexpr auto operator<(const array<T, N>& left, const array<T, N>& right) -> bool
-  {
-    return lexicographical_compare_unsafe(left.begin(),
-                                          left.end(),
-                                          right.begin(),
-                                          right.end());
-  }
-
-  template<typename T, size_t N>
-  constexpr auto operator!=(const array<T, N>& left, const array<T, N>& right) -> bool
-  {
-    return (!(left == right));
-  }
-
-  template<typename T, size_t N>
-  constexpr auto operator>(const array<T, N>& left, const array<T, N>& right) -> bool
-  {
-    return (right < left);
-  }
-
-  template<typename T, size_t N>
-  constexpr auto operator>=(const array<T, N>& left, const array<T, N>& right) -> bool
-  {
-    return (!(left < right));
-  }
-
-  template<typename T, size_t N>
-  constexpr auto operator<=(const array<T, N>& left, const array<T, N>& right) -> bool
-  {
-    return (!(right < left));
-  }
 
   template<typename T, size_t N >
   constexpr auto swap(array<T, N>& x, array<T, N>& y) noexcept -> void
@@ -956,85 +935,58 @@
   private:
     mutable size_type elem_count;        // NOLINT(readability-identifier-naming)
     pointer           elems { nullptr }; // NOLINT(readability-identifier-naming,altera-id-dependent-backward-branch)
+
+    friend constexpr auto operator==(const dynamic_array& lhs, const dynamic_array& rhs) -> bool
+    {
+      return
+      (
+           (lhs.size() == rhs.size())
+        && (
+                lhs.empty()
+             #if defined(WIDE_INTEGER_NAMESPACE)
+             || WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::equal_unsafe(lhs.cbegin(), lhs.cend(), rhs.cbegin())
+             #else
+             || ::math::wide_integer::detail::equal_unsafe(lhs.cbegin(), lhs.cend(), rhs.cbegin())
+             #endif
+           )
+      );
+    }
+
+    friend constexpr auto operator<(const dynamic_array& lhs, const dynamic_array& rhs) -> bool
+    {
+      bool b_result { };
+
+      if(lhs.empty())
+      {
+        b_result = (!rhs.empty());
+      }
+      else
+      {
+        // Note: Use lexicographical_compare here. If the dynamic arrays
+        // have unequal sizes, then simply ignore the size differences.
+
+        b_result =
+          #if defined(WIDE_INTEGER_NAMESPACE)
+          WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::lexicographical_compare_unsafe
+          #else
+          ::math::wide_integer::detail::lexicographical_compare_unsafe
+          #endif
+          (
+            lhs.cbegin(),
+            lhs.cend(),
+            rhs.cbegin(),
+            rhs.cend()
+          );
+      }
+
+      return b_result;
+    }
+
+    friend constexpr auto operator!=(const dynamic_array& lhs, const dynamic_array& rhs) -> bool { return (!(lhs == rhs)); }
+    friend constexpr auto operator> (const dynamic_array& lhs, const dynamic_array& rhs) -> bool { return (rhs < lhs); }
+    friend constexpr auto operator>=(const dynamic_array& lhs, const dynamic_array& rhs) -> bool { return (!(lhs < rhs)); }
+    friend constexpr auto operator<=(const dynamic_array& lhs, const dynamic_array& rhs) -> bool { return (!(rhs < lhs)); }
   };
-
-  template<typename ValueType, typename AllocatorType>
-  constexpr auto operator==(const dynamic_array<ValueType, AllocatorType>& lhs,
-                            const dynamic_array<ValueType, AllocatorType>& rhs) -> bool
-  {
-    return
-    (
-         (lhs.size() == rhs.size())
-      && (
-              lhs.empty()
-           #if defined(WIDE_INTEGER_NAMESPACE)
-           || WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::equal_unsafe(lhs.cbegin(), lhs.cend(), rhs.cbegin())
-           #else
-           || ::math::wide_integer::detail::equal_unsafe(lhs.cbegin(), lhs.cend(), rhs.cbegin())
-           #endif
-         )
-    );
-  }
-
-  template<typename ValueType, typename AllocatorType>
-  constexpr auto operator<(const dynamic_array<ValueType, AllocatorType>& lhs,
-                           const dynamic_array<ValueType, AllocatorType>& rhs) -> bool
-  {
-    bool b_result { };
-
-    if(lhs.empty())
-    {
-      b_result = (!rhs.empty());
-    }
-    else
-    {
-      // Note: Use lexicographical_compare here. If the dynamic arrays
-      // have unequal sizes, then simply ignore the size differences.
-
-      b_result =
-        #if defined(WIDE_INTEGER_NAMESPACE)
-        WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::lexicographical_compare_unsafe
-        #else
-        ::math::wide_integer::detail::lexicographical_compare_unsafe
-        #endif
-        (
-          lhs.cbegin(),
-          lhs.cend(),
-          rhs.cbegin(),
-          rhs.cend()
-        );
-    }
-
-    return b_result;
-  }
-
-  template<typename ValueType, typename AllocatorType>
-  constexpr auto operator!=(const dynamic_array<ValueType, AllocatorType>& lhs,
-                            const dynamic_array<ValueType, AllocatorType>& rhs) -> bool
-  {
-    return (!(lhs == rhs));
-  }
-
-  template<typename ValueType, typename AllocatorType>
-  constexpr auto operator>(const dynamic_array<ValueType, AllocatorType>& lhs,
-                           const dynamic_array<ValueType, AllocatorType>& rhs) -> bool
-  {
-    return (rhs < lhs);
-  }
-
-  template<typename ValueType, typename AllocatorType>
-  constexpr auto operator>=(const dynamic_array<ValueType, AllocatorType>& lhs,
-                            const dynamic_array<ValueType, AllocatorType>& rhs) -> bool
-  {
-    return (!(lhs < rhs));
-  }
-
-  template<typename ValueType, typename AllocatorType>
-  constexpr auto operator<=(const dynamic_array<ValueType, AllocatorType>& lhs,
-                            const dynamic_array<ValueType, AllocatorType>& rhs) -> bool
-  {
-    return (!(rhs < lhs));
-  }
 
   template<typename ValueType, typename AllocatorType>
   constexpr auto swap(dynamic_array<ValueType, AllocatorType>& x,
@@ -7003,7 +6955,7 @@
     // This Miller-Rabin primality test is loosely based on
     // an adaptation of some code from Boost.Multiprecision.
     // The Boost.Multiprecision code can be found here:
-    // https://www.boost.org/doc/libs/1_88_0/libs/multiprecision/doc/html/boost_multiprecision/tut/primetest.html
+    // https://www.boost.org/doc/libs/1_89_0/libs/multiprecision/doc/html/boost_multiprecision/tut/primetest.html
 
     // Note: Some comments in this subroutine use the Wolfram Language(TM).
     // These can be exercised at the web links to WolframAlpha(R) provided
