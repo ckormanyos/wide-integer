@@ -17,7 +17,7 @@ jobs:
     name: sonar-gcc-native
     runs-on: ubuntu-latest
     env:
-      SONAR_SCANNER_VERSION: 5.3.1
+      SONAR_SCANNER_VERSION: 6.2.0.4584
       SONAR_SERVER_URL: "https://sonarcloud.io"
       BUILD_WRAPPER_OUT_DIR: build_wrapper_output_directory # Directory where build-wrapper output will be placed
     steps:
