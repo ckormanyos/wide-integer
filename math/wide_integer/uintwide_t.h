@@ -1432,8 +1432,8 @@
                      const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& b) -> uintwide_t<Width2, LimbType, AllocatorType, IsSigned>;
 
   template<typename UnsignedShortType>
-  constexpr auto gcd(const UnsignedShortType& u, const UnsignedShortType& v) -> std::enable_if_t<(   (std::is_integral<UnsignedShortType>::value)
-                                                                                                  && (std::is_unsigned<UnsignedShortType>::value)), UnsignedShortType>;
+  constexpr auto gcd(const UnsignedShortType& u, const UnsignedShortType& v) -> std::enable_if_t<(   std::is_integral<UnsignedShortType>::value
+                                                                                                  && std::is_unsigned<UnsignedShortType>::value), UnsignedShortType>;
 
   template<const size_t Width2,
            typename LimbType,
@@ -1443,8 +1443,8 @@
                      const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& b) -> uintwide_t<Width2, LimbType, AllocatorType, IsSigned>;
 
   template<typename UnsignedShortType>
-  constexpr auto lcm(const UnsignedShortType& a, const UnsignedShortType& b) -> std::enable_if_t<(   (std::is_integral<UnsignedShortType>::value)
-                                                                                                  && (std::is_unsigned<UnsignedShortType>::value)), UnsignedShortType>;
+  constexpr auto lcm(const UnsignedShortType& a, const UnsignedShortType& b) -> std::enable_if_t<(   std::is_integral<UnsignedShortType>::value
+                                                                                                  && std::is_unsigned<UnsignedShortType>::value), UnsignedShortType>;
 
   template<const size_t Width2,
            typename LimbType,
@@ -6559,8 +6559,8 @@
   }
 
   template<typename UnsignedShortType>
-  constexpr auto gcd(const UnsignedShortType& u, const UnsignedShortType& v) -> std::enable_if_t<(   (std::is_integral<UnsignedShortType>::value)
-                                                                                                  && (std::is_unsigned<UnsignedShortType>::value)), UnsignedShortType>
+  constexpr auto gcd(const UnsignedShortType& u, const UnsignedShortType& v) -> std::enable_if_t<(   std::is_integral<UnsignedShortType>::value
+                                                                                                  && std::is_unsigned<UnsignedShortType>::value), UnsignedShortType>
   {
     return detail::gcd_unsafe(u, v);
   }
@@ -6614,8 +6614,8 @@
   }
 
   template<typename UnsignedShortType>
-  constexpr auto lcm(const UnsignedShortType& a, const UnsignedShortType& b) -> std::enable_if_t<(   (std::is_integral<UnsignedShortType>::value)
-                                                                                                  && (std::is_unsigned<UnsignedShortType>::value)), UnsignedShortType>
+  constexpr auto lcm(const UnsignedShortType& a, const UnsignedShortType& b) -> std::enable_if_t<(   std::is_integral<UnsignedShortType>::value
+                                                                                                  && std::is_unsigned<UnsignedShortType>::value), UnsignedShortType>
   {
     return detail::lcm_impl(a, b);
   }
