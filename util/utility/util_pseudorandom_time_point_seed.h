@@ -60,7 +60,7 @@
       // Get the time (t_now).
       timespec ts { };
 
-      timespec_get(&ts, TIME_UTC);
+      static_cast<void>(timespec_get(&ts, TIME_UTC));
 
       return
         static_cast<std::uint64_t>

@@ -1,5 +1,5 @@
 ﻿///////////////////////////////////////////////////////////////////
-//  Copyright Christopher Kormanyos 2019 - 2024.                 //
+//  Copyright Christopher Kormanyos 2019 - 2025.                 //
 //  Distributed under the Boost Software License,                //
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt          //
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)             //
@@ -785,7 +785,7 @@
   (
           UnsignedIntegralType*                                                                 result,
     const uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>&                            val,
-          std::enable_if_t<(    (std::is_integral<UnsignedIntegralType>::value)
+          std::enable_if_t<(     std::is_integral<UnsignedIntegralType>::value
                             && (!std::is_signed  <UnsignedIntegralType>::value))>* p_nullparam = nullptr
   ) -> void
   {
