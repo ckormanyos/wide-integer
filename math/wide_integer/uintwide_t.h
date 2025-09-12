@@ -580,8 +580,8 @@
     WIDE_INTEGER_NODISCARD constexpr auto front()       -> reference       { return elems[static_cast<size_type>(UINT8_C(0))]; }
     WIDE_INTEGER_NODISCARD constexpr auto front() const -> const_reference { return elems[static_cast<size_type>(UINT8_C(0))]; }
 
-    WIDE_INTEGER_NODISCARD constexpr auto back()       -> reference       { return elems[static_cast<size_type>(N - static_cast<size_type>(UINT8_C(1)))]; }
-    WIDE_INTEGER_NODISCARD constexpr auto back() const -> const_reference { return elems[static_cast<size_type>(N - static_cast<size_type>(UINT8_C(1)))]; }
+    WIDE_INTEGER_NODISCARD constexpr auto back()       -> reference       { return elems[N - UINT8_C(1)]; }
+    WIDE_INTEGER_NODISCARD constexpr auto back() const -> const_reference { return elems[N - UINT8_C(1)]; }
 
     WIDE_INTEGER_NODISCARD static constexpr auto size()     -> size_type { return N; }
     WIDE_INTEGER_NODISCARD static constexpr auto empty()    -> bool      { return false; }
@@ -2937,9 +2937,9 @@
 
         if(field_width != static_cast<unsigned_fast_type>(UINT8_C(0)))
         {
-          field_width = (detail::min_unsafe)(field_width, static_cast<unsigned_fast_type>(str_temp.size() - static_cast<size_t>(UINT8_C(1)))); // LCOV_EXCL_LINE
+          field_width = (detail::min_unsafe)(field_width, static_cast<unsigned_fast_type>(str_temp.size() - UINT8_C(1))); // LCOV_EXCL_LINE
 
-          while(static_cast<signed_fast_type>(pos) > static_cast<signed_fast_type>((str_temp.size() - static_cast<size_t>(UINT8_C(1))) - field_width)) // NOLINT(altera-id-dependent-backward-branch)
+          while(static_cast<signed_fast_type>(pos) > static_cast<signed_fast_type>((str_temp.size() - UINT8_C(1)) - static_cast<size_t>(field_width))) // NOLINT(altera-id-dependent-backward-branch)
           {
             str_temp[static_cast<typename string_storage_oct_type::size_type>(--pos)] = fill_char_str;
           }
@@ -3023,15 +3023,15 @@
 
         if(field_width != static_cast<unsigned_fast_type>(UINT8_C(0)))
         {
-          field_width = (detail::min_unsafe)(field_width, static_cast<unsigned_fast_type>(str_temp.size() - static_cast<size_t>(UINT8_C(1)))); // LCOV_EXCL_LINE
+          field_width = (detail::min_unsafe)(field_width, static_cast<unsigned_fast_type>(str_temp.size() - size_t { UINT8_C(1) })); // LCOV_EXCL_LINE
 
-          while(static_cast<signed_fast_type>(pos) > static_cast<signed_fast_type>((str_temp.size() - static_cast<size_t>(UINT8_C(1))) - field_width)) // NOLINT(altera-id-dependent-backward-branch)
+          while(static_cast<signed_fast_type>(pos) > static_cast<signed_fast_type>((str_temp.size() - size_t { UINT8_C(1) }) - static_cast<size_t>(field_width))) // NOLINT(altera-id-dependent-backward-branch)
           {
             str_temp[static_cast<typename string_storage_dec_type::size_type>(--pos)] = fill_char_str;
           }
         }
 
-        str_temp[static_cast<typename string_storage_dec_type::size_type>(str_temp.size() - static_cast<size_t>(UINT8_C(1)))] = '\0';
+        str_temp[static_cast<typename string_storage_dec_type::size_type>(str_temp.size() - size_t { UINT8_C(1) })] = '\0';
 
         detail::strcpy_unsafe(str_result, str_temp.data() + pos);
       }
@@ -3060,7 +3060,7 @@
           {
             static_cast<signed_fast_type>
             (
-              string_storage_hex_type::static_size() - static_cast<size_t>(UINT8_C(1)) // LCOV_EXCL_LINE
+              string_storage_hex_type::static_size() - size_t { UINT8_C(1) } // LCOV_EXCL_LINE
             )
           };
 
@@ -3095,9 +3095,9 @@
 
         if(field_width != static_cast<unsigned_fast_type>(UINT8_C(0)))
         {
-          field_width = (detail::min_unsafe)(field_width, static_cast<unsigned_fast_type>(str_temp.size() - static_cast<size_t>(UINT8_C(1)))); // LCOV_EXCL_LINE
+          field_width = (detail::min_unsafe)(field_width, static_cast<unsigned_fast_type>(str_temp.size() - size_t { UINT8_C(1) })); // LCOV_EXCL_LINE
 
-          while(static_cast<signed_fast_type>(pos) > static_cast<signed_fast_type>((str_temp.size() - static_cast<size_t>(UINT8_C(1))) - field_width)) // NOLINT(altera-id-dependent-backward-branch)
+          while(static_cast<signed_fast_type>(pos) > static_cast<signed_fast_type>((str_temp.size() - size_t { UINT8_C(1) }) - static_cast<size_t>(field_width))) // NOLINT(altera-id-dependent-backward-branch)
           {
             str_temp[static_cast<typename string_storage_hex_type::size_type>(--pos)] = fill_char_str;
           }
@@ -4826,9 +4826,9 @@
 
         using uu_array_type =
           std::conditional_t<std::is_same<AllocatorType, void>::value,
-                             detail::fixed_static_array <limb_type, static_cast<size_t>(number_of_limbs + static_cast<size_t>(UINT8_C(1)))>,
+                             detail::fixed_static_array <limb_type, number_of_limbs + size_t { UINT8_C(1) }>,
                              detail::fixed_dynamic_array<limb_type,
-                                                         static_cast<size_t>(number_of_limbs + static_cast<size_t>(UINT8_C(1))),
+                                                         number_of_limbs + size_t { UINT8_C(1) },
                                                          typename std::allocator_traits<std::conditional_t<std::is_same<AllocatorType, void>::value,
                                                                                                            std::allocator<void>,
                                                                                                            AllocatorType>>::template rebind_alloc<limb_type>>>;
@@ -6195,9 +6195,9 @@
       const auto left_shift_amount =
         static_cast<unsigned_fast_type>
         (
-          (msb_pos_mod_3 == static_cast<unsigned_fast_type>(UINT8_C(0)))
-            ? static_cast<unsigned_fast_type>(UINT8_C(1)) + static_cast<unsigned_fast_type>(static_cast<unsigned_fast_type>(msb_pos + static_cast<unsigned_fast_type>(UINT8_C(0))) / 3U)
-            : static_cast<unsigned_fast_type>(UINT8_C(1)) + static_cast<unsigned_fast_type>(static_cast<unsigned_fast_type>(msb_pos + static_cast<unsigned_fast_type>(static_cast<unsigned_fast_type>(UINT8_C(3)) - msb_pos_mod_3)) / 3U)
+          (msb_pos_mod_3 == unsigned_fast_type { UINT8_C(0) })
+            ? unsigned_fast_type { UINT8_C(1) } + static_cast<unsigned_fast_type>(msb_pos / unsigned_fast_type { UINT8_C(3) })
+            : unsigned_fast_type { UINT8_C(1) } + static_cast<unsigned_fast_type>((msb_pos + (unsigned_fast_type { UINT8_C(3) } - msb_pos_mod_3)) / unsigned_fast_type { UINT8_C(3) })
         );
 
       auto u = static_cast<local_wide_integer_type>(static_cast<unsigned>(UINT8_C(1))) << left_shift_amount;
@@ -6280,9 +6280,9 @@
         const auto left_shift_amount =
           static_cast<unsigned_fast_type>
           (
-            ((msb_pos_mod_k == static_cast<unsigned_fast_type>(UINT8_C(0)))
-              ? static_cast<unsigned_fast_type>(UINT8_C(1)) + static_cast<unsigned_fast_type>(static_cast<unsigned_fast_type>(msb_pos + static_cast<unsigned_fast_type>(UINT8_C(0))) / k)
-              : static_cast<unsigned_fast_type>(UINT8_C(1)) + static_cast<unsigned_fast_type>(static_cast<unsigned_fast_type>(msb_pos + static_cast<unsigned_fast_type>(k - msb_pos_mod_k)) / k))
+            (msb_pos_mod_k == unsigned_fast_type { UINT8_C(0) })
+              ? unsigned_fast_type { UINT8_C(1) } + static_cast<unsigned_fast_type>(msb_pos / unsigned_fast_type { k })
+              : unsigned_fast_type { UINT8_C(1) } + static_cast<unsigned_fast_type>((msb_pos + (unsigned_fast_type { k } - msb_pos_mod_k)) / unsigned_fast_type { k })
           );
 
         auto u = static_cast<local_wide_integer_type>(static_cast<unsigned>(UINT8_C(1))) << left_shift_amount;
@@ -6783,9 +6783,9 @@
     explicit constexpr uniform_int_distribution(const param_type& other_params)
       : my_params(other_params) { }
 
-    constexpr uniform_int_distribution(const uniform_int_distribution& other_distribution) = delete;
+    constexpr uniform_int_distribution(const uniform_int_distribution& other) : my_params(other.my_params) { }
 
-    constexpr uniform_int_distribution(uniform_int_distribution&& other) noexcept : my_params(other.my_params) { }
+    constexpr uniform_int_distribution(uniform_int_distribution&& other) noexcept : my_params(static_cast<param_type&&>(other.my_params)) { }
 
     ~uniform_int_distribution() = default;
 
@@ -6801,7 +6801,7 @@
 
     auto constexpr operator=(uniform_int_distribution&& other) noexcept -> uniform_int_distribution&
     {
-      my_params = other.my_params;
+      my_params = static_cast<param_type&&>(other.my_params);
 
       return *this;
     }

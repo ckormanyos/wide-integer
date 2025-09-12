@@ -199,9 +199,9 @@ std::uniform_int_distribution<std::uint32_t> dist_dig_dec(UINT32_C(1), UINT32_C(
 std::uniform_int_distribution<std::uint32_t> dist_dig_hex(UINT32_C(1), UINT32_C(15)); // NOLINT(cert-err58-cpp,cppcoreguidelines-avoid-non-const-global-variables)
 std::uniform_int_distribution<std::uint32_t> dist_dig_oct(UINT32_C(1), UINT32_C(7));  // NOLINT(cert-err58-cpp,cppcoreguidelines-avoid-non-const-global-variables)
 
-eng_sgn_type eng_sgn; // NOLINT(cert-msc32-c,cert-msc51-cpp,cert-err58-cpp,cppcoreguidelines-avoid-non-const-global-variables)
-eng_dig_type eng_dig; // NOLINT(cert-msc32-c,cert-msc51-cpp,cert-err58-cpp,cppcoreguidelines-avoid-non-const-global-variables)
-eng_flt_type eng_flt; // NOLINT(cert-msc32-c,cert-msc51-cpp,cert-err58-cpp,cppcoreguidelines-avoid-non-const-global-variables)
+auto eng_sgn() -> eng_sgn_type& { static eng_sgn_type instance { }; return instance; } // NOLINT(cert-msc32-c,cert-msc51-cpp,cert-err58-cpp,cppcoreguidelines-avoid-non-const-global-variables)
+auto eng_dig() -> eng_dig_type& { static eng_dig_type instance { }; return instance; } // NOLINT(cert-msc32-c,cert-msc51-cpp,cert-err58-cpp,cppcoreguidelines-avoid-non-const-global-variables)
+auto eng_flt() -> eng_flt_type& { static eng_flt_type instance { }; return instance; } // NOLINT(cert-msc32-c,cert-msc51-cpp,cert-err58-cpp,cppcoreguidelines-avoid-non-const-global-variables)
 
 auto zero_as_limb               () -> const typename local_uintwide_t_small_unsigned_type::limb_type&;
 auto zero_as_small_unsigned_type() -> const local_uintwide_t_small_unsigned_type&;
@@ -229,12 +229,12 @@ auto generate_wide_integer_value(bool       is_positive           = true,
 
                   if(base_to_get == local_base::oct)
                   {
-                    c = static_cast<char>(dist_dig_oct(eng_dig));
+                    c = static_cast<char>(dist_dig_oct(eng_dig()));
                     c = static_cast<char>(c + '0');
                   }
                   else if(base_to_get == local_base::hex)
                   {
-                    c = static_cast<char>(dist_dig_hex(eng_dig));
+                    c = static_cast<char>(dist_dig_hex(eng_dig()));
 
                     if(c < static_cast<char>(INT8_C(10)))
                     {
@@ -252,7 +252,7 @@ auto generate_wide_integer_value(bool       is_positive           = true,
                   }
                   else
                   {
-                    c = static_cast<char>(dist_dig_dec(eng_dig));
+                    c = static_cast<char>(dist_dig_dec(eng_dig()));
                     c = static_cast<char>(c + static_cast<char>(INT8_C(0x30)));
                   }
 
@@ -278,7 +278,7 @@ auto generate_wide_integer_value(bool       is_positive           = true,
       (
         is_positive
           ? '+'
-          : static_cast<char>((dist_sgn(eng_sgn) != static_cast<std::uint32_t>(UINT32_C(0))) ? '+' : '-') // NOLINT(readability-avoid-nested-conditional-operator)
+          : static_cast<char>((dist_sgn(eng_sgn()) != static_cast<std::uint32_t>(UINT32_C(0))) ? '+' : '-') // NOLINT(readability-avoid-nested-conditional-operator)
       );
 
     str_x.insert(str_x.begin(), static_cast<std::size_t>(UINT8_C(1)), sign_char_to_insert);
@@ -410,8 +410,8 @@ auto test_various_ostream_ops() -> bool
 {
   auto result_is_ok = true;
 
-  eng_sgn.seed(util::util_pseudorandom_time_point_seed::value<typename eng_sgn_type::result_type>());
-  eng_dig.seed(util::util_pseudorandom_time_point_seed::value<typename eng_dig_type::result_type>());
+  eng_sgn().seed(util::util_pseudorandom_time_point_seed::value<typename eng_sgn_type::result_type>());
+  eng_dig().seed(util::util_pseudorandom_time_point_seed::value<typename eng_dig_type::result_type>());
 
   {
     const auto u = local_uintwide_t_small_unsigned_type(static_cast<std::uint32_t>(UINT32_C(29363)));
@@ -1451,11 +1451,28 @@ auto test_various_isolated_edge_cases() -> bool // NOLINT(readability-function-c
         0x0FU, 0x00U, 0x00U, 0x00U, 0x00U, 0x03U, 0x00U, 0x00U  // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
       };
 
-    local_uint64_type a_uint { *reinterpret_cast<std::uint64_t*>(buffer.data() + std::size_t { 0U * max_size }) }; // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
-    local_uint64_type b_uint { *reinterpret_cast<std::uint64_t*>(buffer.data() + std::size_t { 1U * max_size }) }; // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
+    auto
+      load_uint64_t
+      {
+        [](const std::uint8_t* p_first)
+        {
+          return
+              std::uint64_t { *(p_first + std::size_t { UINT8_C(0) }) } << unsigned { UINT8_C(0) }
+            | std::uint64_t { *(p_first + std::size_t { UINT8_C(1) }) } << unsigned { UINT8_C(8) }
+            | std::uint64_t { *(p_first + std::size_t { UINT8_C(2) }) } << unsigned { UINT8_C(16) }
+            | std::uint64_t { *(p_first + std::size_t { UINT8_C(3) }) } << unsigned { UINT8_C(24) }
+            | std::uint64_t { *(p_first + std::size_t { UINT8_C(4) }) } << unsigned { UINT8_C(32) }
+            | std::uint64_t { *(p_first + std::size_t { UINT8_C(5) }) } << unsigned { UINT8_C(40) }
+            | std::uint64_t { *(p_first + std::size_t { UINT8_C(6) }) } << unsigned { UINT8_C(48) }
+            | std::uint64_t { *(p_first + std::size_t { UINT8_C(7) }) } << unsigned { UINT8_C(56) };
+        }
+      };
 
-    local_ctrl64_type a_ctrl { *reinterpret_cast<std::uint64_t*>(buffer.data() + std::size_t { 0U * max_size }) }; // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
-    local_ctrl64_type b_ctrl { *reinterpret_cast<std::uint64_t*>(buffer.data() + std::size_t { 1U * max_size }) }; // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
+    local_uint64_type a_uint { load_uint64_t(buffer.data() + std::size_t { 0U * max_size }) }; // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
+    local_uint64_type b_uint { load_uint64_t(buffer.data() + std::size_t { 1U * max_size }) }; // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
+
+    local_ctrl64_type a_ctrl { load_uint64_t(buffer.data() + std::size_t { 0U * max_size }) }; // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
+    local_ctrl64_type b_ctrl { load_uint64_t(buffer.data() + std::size_t { 1U * max_size }) }; // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
 
     if(a_uint < b_uint)
     {
@@ -1527,7 +1544,7 @@ auto test_various_isolated_edge_cases() -> bool // NOLINT(readability-function-c
              i < static_cast<unsigned>(UINT8_C(16));
            ++i)
   {
-    eng_flt.seed(util::util_pseudorandom_time_point_seed::value<typename eng_flt_type::result_type>());
+    eng_flt().seed(util::util_pseudorandom_time_point_seed::value<typename eng_flt_type::result_type>());
 
     std::uniform_real_distribution<float>
       dis
@@ -1539,9 +1556,9 @@ auto test_various_isolated_edge_cases() -> bool // NOLINT(readability-function-c
         }
       };
 
-    const auto inf_f  = ::local_inf_f () * dis(eng_flt);
-    const auto inf_d  = ::local_inf_d () * static_cast<double>(dis(eng_flt));
-    const auto inf_ld = ::local_inf_ld() * static_cast<long double>(dis(eng_flt));
+    const auto inf_f  = ::local_inf_f () * dis(eng_flt());
+    const auto inf_d  = ::local_inf_d () * static_cast<double>(dis(eng_flt()));
+    const auto inf_ld = ::local_inf_ld() * static_cast<long double>(dis(eng_flt()));
 
     local_uintwide_t_small_unsigned_type u_inf_f (inf_f);
     local_uintwide_t_small_unsigned_type u_inf_d (inf_d);
@@ -1777,8 +1794,8 @@ auto test_various_isolated_edge_cases() -> bool // NOLINT(readability-function-c
 
 auto test_to_and_from_chars_and_to_string() -> bool // NOLINT(readability-function-cognitive-complexity)
 {
-  eng_sgn.seed(util::util_pseudorandom_time_point_seed::value<typename eng_sgn_type::result_type>());
-  eng_dig.seed(util::util_pseudorandom_time_point_seed::value<typename eng_dig_type::result_type>());
+  eng_sgn().seed(util::util_pseudorandom_time_point_seed::value<typename eng_sgn_type::result_type>());
+  eng_dig().seed(util::util_pseudorandom_time_point_seed::value<typename eng_dig_type::result_type>());
 
   auto result_is_ok = true;
 
@@ -2094,8 +2111,8 @@ auto test_to_and_from_chars_and_to_string() -> bool // NOLINT(readability-functi
 
 auto test_import_bits() -> bool // NOLINT(readability-function-cognitive-complexity)
 {
-  eng_sgn.seed(util::util_pseudorandom_time_point_seed::value<typename eng_sgn_type::result_type>());
-  eng_dig.seed(util::util_pseudorandom_time_point_seed::value<typename eng_dig_type::result_type>());
+  eng_sgn().seed(util::util_pseudorandom_time_point_seed::value<typename eng_sgn_type::result_type>());
+  eng_dig().seed(util::util_pseudorandom_time_point_seed::value<typename eng_dig_type::result_type>());
 
   using local_boost_small_uint_backend_type =
     boost::multiprecision::cpp_int_backend<local_edge_cases::local_digits2_small,
@@ -2413,8 +2430,8 @@ auto test_import_bits() -> bool // NOLINT(readability-function-cognitive-complex
 
 auto test_export_bits() -> bool // NOLINT(readability-function-cognitive-complexity)
 {
-  eng_sgn.seed(util::util_pseudorandom_time_point_seed::value<typename eng_sgn_type::result_type>());
-  eng_dig.seed(util::util_pseudorandom_time_point_seed::value<typename eng_dig_type::result_type>());
+  eng_sgn().seed(util::util_pseudorandom_time_point_seed::value<typename eng_sgn_type::result_type>());
+  eng_dig().seed(util::util_pseudorandom_time_point_seed::value<typename eng_dig_type::result_type>());
 
   using local_boost_small_uint_backend_type =
     boost::multiprecision::cpp_int_backend<local_edge_cases::local_digits2_small,
@@ -2750,8 +2767,8 @@ auto WIDE_INTEGER_NAMESPACE::math::wide_integer::test_uintwide_t_edge_cases() ->
 auto ::math::wide_integer::test_uintwide_t_edge_cases() -> bool
 #endif
 {
-  test_uintwide_t_edge::eng_sgn.seed(::util::util_pseudorandom_time_point_seed::value<typename test_uintwide_t_edge::eng_sgn_type::result_type>());
-  test_uintwide_t_edge::eng_dig.seed(::util::util_pseudorandom_time_point_seed::value<typename test_uintwide_t_edge::eng_dig_type::result_type>());
+  test_uintwide_t_edge::eng_sgn().seed(::util::util_pseudorandom_time_point_seed::value<typename test_uintwide_t_edge::eng_sgn_type::result_type>());
+  test_uintwide_t_edge::eng_dig().seed(::util::util_pseudorandom_time_point_seed::value<typename test_uintwide_t_edge::eng_dig_type::result_type>());
 
   auto result_is_ok = true;
 
