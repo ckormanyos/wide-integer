@@ -1509,7 +1509,7 @@ auto test_various_isolated_edge_cases() -> bool // NOLINT(readability-function-c
     rep =
       local_rep_type
       (
-        static_cast<typename local_rep_type::size_type>(rep.size()), // NOLINT(readability-static-accessed-through-instance)
+        static_cast<typename local_rep_type::size_type>(local_rep_type::size()),
         (std::numeric_limits<local_value_type>::max)(),
         typename local_rep_type::allocator_type()
       );
@@ -1529,11 +1529,14 @@ auto test_various_isolated_edge_cases() -> bool // NOLINT(readability-function-c
   {
     eng_flt.seed(util::util_pseudorandom_time_point_seed::value<typename eng_flt_type::result_type>());
 
-    auto dis =
-      std::uniform_real_distribution<float>
+    std::uniform_real_distribution<float>
+      dis
       {
-        static_cast<float>(1.01F), // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
-        static_cast<float>(1.04F)  // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
+        std::uniform_real_distribution<float>
+        {
+          static_cast<float>(1.01L), // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
+          static_cast<float>(1.04L)  // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
+        }
       };
 
     const auto inf_f  = ::local_inf_f () * dis(eng_flt);
@@ -2794,18 +2797,18 @@ auto test_uintwide_t_edge::zero_as_small_unsigned_type() -> const test_uintwide_
   return local_zero_as_small_unsigned_type;
 }
 
-extern test_uintwide_t_edge::local_uintwide_t_small_unsigned_type local_one_plus_as_small_signed_type;  // NOLINT(cppcoreguidelines-avoid-non-const-global-variables,cert-err58-cpp,)
-extern test_uintwide_t_edge::local_uintwide_t_small_signed_type   local_one_minus_as_small_signed_type; // NOLINT(cppcoreguidelines-avoid-non-const-global-variables,cert-err58-cpp,)
+extern const test_uintwide_t_edge::local_uintwide_t_small_unsigned_type local_one_plus_as_small_signed_type;  // NOLINT(cppcoreguidelines-avoid-non-const-global-variables,cert-err58-cpp,)
+extern const test_uintwide_t_edge::local_uintwide_t_small_signed_type   local_one_minus_as_small_signed_type; // NOLINT(cppcoreguidelines-avoid-non-const-global-variables,cert-err58-cpp,)
 
 auto test_uintwide_t_edge::one_as_small_unsigned_type() -> const test_uintwide_t_edge::local_uintwide_t_small_unsigned_type& { return local_one_plus_as_small_signed_type; }
 auto test_uintwide_t_edge::m_one_as_small_signed_type() -> const test_uintwide_t_edge::local_uintwide_t_small_signed_type&   { return local_one_minus_as_small_signed_type; }
 
-test_uintwide_t_edge::local_uintwide_t_small_unsigned_type local_one_plus_as_small_signed_type // NOLINT(cppcoreguidelines-avoid-non-const-global-variables,cert-err58-cpp)
+const test_uintwide_t_edge::local_uintwide_t_small_unsigned_type local_one_plus_as_small_signed_type // NOLINT(cppcoreguidelines-avoid-non-const-global-variables,cert-err58-cpp)
 {
   static_cast<std::make_signed_t<typename test_uintwide_t_edge::local_uintwide_t_small_signed_type::limb_type>>(UINT8_C(1))
 };
 
-test_uintwide_t_edge::local_uintwide_t_small_signed_type local_one_minus_as_small_signed_type // NOLINT(cppcoreguidelines-avoid-non-const-global-variables,cert-err58-cpp)
+const test_uintwide_t_edge::local_uintwide_t_small_signed_type local_one_minus_as_small_signed_type // NOLINT(cppcoreguidelines-avoid-non-const-global-variables,cert-err58-cpp)
 {
   static_cast<std::make_signed_t<typename test_uintwide_t_edge::local_uintwide_t_small_signed_type::limb_type>>(INT8_C(-1))
 };
