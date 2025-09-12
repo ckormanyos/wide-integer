@@ -1457,14 +1457,14 @@ auto test_various_isolated_edge_cases() -> bool // NOLINT(readability-function-c
         [](const std::uint8_t* p_first)
         {
           return
-              std::uint64_t { *(p_first + std::size_t { UINT8_C(0) }) } << unsigned { UINT8_C(0) }
-            | std::uint64_t { *(p_first + std::size_t { UINT8_C(1) }) } << unsigned { UINT8_C(8) }
-            | std::uint64_t { *(p_first + std::size_t { UINT8_C(2) }) } << unsigned { UINT8_C(16) }
-            | std::uint64_t { *(p_first + std::size_t { UINT8_C(3) }) } << unsigned { UINT8_C(24) }
-            | std::uint64_t { *(p_first + std::size_t { UINT8_C(4) }) } << unsigned { UINT8_C(32) }
-            | std::uint64_t { *(p_first + std::size_t { UINT8_C(5) }) } << unsigned { UINT8_C(40) }
-            | std::uint64_t { *(p_first + std::size_t { UINT8_C(6) }) } << unsigned { UINT8_C(48) }
-            | std::uint64_t { *(p_first + std::size_t { UINT8_C(7) }) } << unsigned { UINT8_C(56) };
+              std::uint64_t { *(p_first + std::size_t { UINT8_C(0) }) } << unsigned { UINT8_C(0) }   // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+            | std::uint64_t { *(p_first + std::size_t { UINT8_C(1) }) } << unsigned { UINT8_C(8) }   // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+            | std::uint64_t { *(p_first + std::size_t { UINT8_C(2) }) } << unsigned { UINT8_C(16) }  // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+            | std::uint64_t { *(p_first + std::size_t { UINT8_C(3) }) } << unsigned { UINT8_C(24) }  // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+            | std::uint64_t { *(p_first + std::size_t { UINT8_C(4) }) } << unsigned { UINT8_C(32) }  // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+            | std::uint64_t { *(p_first + std::size_t { UINT8_C(5) }) } << unsigned { UINT8_C(40) }  // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+            | std::uint64_t { *(p_first + std::size_t { UINT8_C(6) }) } << unsigned { UINT8_C(48) }  // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+            | std::uint64_t { *(p_first + std::size_t { UINT8_C(7) }) } << unsigned { UINT8_C(56) }; // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
         }
       };
 
@@ -1665,7 +1665,7 @@ auto test_various_isolated_edge_cases() -> bool // NOLINT(readability-function-c
   {
     // Verify division of zero by zero which returns the maximum of the type.
 
-    auto z = zero_as_small_unsigned_type();
+    local_uintwide_t_small_unsigned_type z = zero_as_small_unsigned_type();
 
     z /= zero_as_small_unsigned_type();
 
