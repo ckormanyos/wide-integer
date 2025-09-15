@@ -1,5 +1,5 @@
 ﻿///////////////////////////////////////////////////////////////////
-//  Copyright Christopher Kormanyos 2018 - 2024.                 //
+//  Copyright Christopher Kormanyos 2018 - 2025.                 //
 //  Distributed under the Boost Software License,                //
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt          //
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)             //
@@ -7,14 +7,6 @@
 
 #include <examples/example_uintwide_t.h>
 #include <math/wide_integer/uintwide_t.h>
-
-#if (defined(__GNUC__) && defined(__AVR__) && (__GNUC__ < 10))
-#define WIDE_INTEGER_EXAMPLE003_CONSTEXPR_OR_CONST const             // NOLINT(cppcoreguidelines-macro-usage)
-#define WIDE_INTEGER_EXAMPLE003_CONSTEXPR_IS_COMPILE_TIME_CONSTANT 0 // NOLINT(cppcoreguidelines-macro-usage)
-#else
-#define WIDE_INTEGER_EXAMPLE003_CONSTEXPR_OR_CONST constexpr         // NOLINT(cppcoreguidelines-macro-usage)
-#define WIDE_INTEGER_EXAMPLE003_CONSTEXPR_IS_COMPILE_TIME_CONSTANT 1 // NOLINT(cppcoreguidelines-macro-usage)
-#endif
 
 #if defined(WIDE_INTEGER_NAMESPACE)
 auto WIDE_INTEGER_NAMESPACE::math::wide_integer::example003_sqrt() -> bool
@@ -28,16 +20,13 @@ auto ::math::wide_integer::example003_sqrt() -> bool
   using ::math::wide_integer::uint256_t;
   #endif
 
-  WIDE_INTEGER_EXAMPLE003_CONSTEXPR_OR_CONST uint256_t a("0xF4DF741DE58BCB2F37F18372026EF9CBCFC456CB80AF54D53BDEED78410065DE");
+  constexpr uint256_t a("0xF4DF741DE58BCB2F37F18372026EF9CBCFC456CB80AF54D53BDEED78410065DE");
 
-  WIDE_INTEGER_EXAMPLE003_CONSTEXPR_OR_CONST uint256_t s = sqrt(a);
+  constexpr uint256_t s = sqrt(a);
 
-  WIDE_INTEGER_EXAMPLE003_CONSTEXPR_OR_CONST bool result_is_ok = (s == "0xFA5FE7853F1D4AD92BDF244179CA178B");
+  constexpr bool result_is_ok = (s == "0xFA5FE7853F1D4AD92BDF244179CA178B");
 
-  #if (defined(WIDE_INTEGER_EXAMPLE003_CONSTEXPR_IS_COMPILE_TIME_CONSTANT) \
-           && (WIDE_INTEGER_EXAMPLE003_CONSTEXPR_IS_COMPILE_TIME_CONSTANT == 1))
   static_assert(result_is_ok, "Error: example003_sqrt not OK!");
-  #endif
 
   return result_is_ok;
 }

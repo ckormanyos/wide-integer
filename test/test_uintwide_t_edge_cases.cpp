@@ -194,10 +194,10 @@ using eng_sgn_type = std::ranlux24;
 using eng_dig_type = std::ranlux48;
 using eng_flt_type = eng_dig_type;
 
-std::uniform_int_distribution<std::uint32_t> dist_sgn    (UINT32_C(0), UINT32_C(1));  // NOLINT(cert-err58-cpp,cppcoreguidelines-avoid-non-const-global-variables)
-std::uniform_int_distribution<std::uint32_t> dist_dig_dec(UINT32_C(1), UINT32_C(9));  // NOLINT(cert-err58-cpp,cppcoreguidelines-avoid-non-const-global-variables)
-std::uniform_int_distribution<std::uint32_t> dist_dig_hex(UINT32_C(1), UINT32_C(15)); // NOLINT(cert-err58-cpp,cppcoreguidelines-avoid-non-const-global-variables)
-std::uniform_int_distribution<std::uint32_t> dist_dig_oct(UINT32_C(1), UINT32_C(7));  // NOLINT(cert-err58-cpp,cppcoreguidelines-avoid-non-const-global-variables)
+auto dist_sgn    () -> std::uniform_int_distribution<std::uint32_t>& { static std::uniform_int_distribution<std::uint32_t> instance(UINT32_C(0), UINT32_C(1));  return instance; } // NOLINT(cert-err58-cpp,cppcoreguidelines-avoid-non-const-global-variables)
+auto dist_dig_dec() -> std::uniform_int_distribution<std::uint32_t>& { static std::uniform_int_distribution<std::uint32_t> instance(UINT32_C(1), UINT32_C(9));  return instance; } // NOLINT(cert-err58-cpp,cppcoreguidelines-avoid-non-const-global-variables)
+auto dist_dig_hex() -> std::uniform_int_distribution<std::uint32_t>& { static std::uniform_int_distribution<std::uint32_t> instance(UINT32_C(1), UINT32_C(15)); return instance; } // NOLINT(cert-err58-cpp,cppcoreguidelines-avoid-non-const-global-variables)
+auto dist_dig_oct() -> std::uniform_int_distribution<std::uint32_t>& { static std::uniform_int_distribution<std::uint32_t> instance(UINT32_C(1), UINT32_C(7));  return instance; } // NOLINT(cert-err58-cpp,cppcoreguidelines-avoid-non-const-global-variables)
 
 auto eng_sgn() -> eng_sgn_type& { static eng_sgn_type instance { }; return instance; } // NOLINT(cert-msc32-c,cert-msc51-cpp,cert-err58-cpp,cppcoreguidelines-avoid-non-const-global-variables)
 auto eng_dig() -> eng_dig_type& { static eng_dig_type instance { }; return instance; } // NOLINT(cert-msc32-c,cert-msc51-cpp,cert-err58-cpp,cppcoreguidelines-avoid-non-const-global-variables)
@@ -227,14 +227,18 @@ auto generate_wide_integer_value(bool       is_positive           = true,
                 {
                   char c { };
 
+                  auto& my_dist_dig_oct = dist_dig_oct();
+                  auto& my_dist_dig_dec = dist_dig_dec();
+                  auto& my_dist_dig_hex = dist_dig_hex();
+
                   if(base_to_get == local_base::oct)
                   {
-                    c = static_cast<char>(dist_dig_oct(eng_dig()));
+                    c = static_cast<char>(my_dist_dig_oct(eng_dig()));
                     c = static_cast<char>(c + '0');
                   }
                   else if(base_to_get == local_base::hex)
                   {
-                    c = static_cast<char>(dist_dig_hex(eng_dig()));
+                    c = static_cast<char>(my_dist_dig_hex(eng_dig()));
 
                     if(c < static_cast<char>(INT8_C(10)))
                     {
@@ -252,7 +256,7 @@ auto generate_wide_integer_value(bool       is_positive           = true,
                   }
                   else
                   {
-                    c = static_cast<char>(dist_dig_dec(eng_dig()));
+                    c = static_cast<char>(my_dist_dig_dec(eng_dig()));
                     c = static_cast<char>(c + static_cast<char>(INT8_C(0x30)));
                   }
 
@@ -271,6 +275,8 @@ auto generate_wide_integer_value(bool       is_positive           = true,
 
   if(base_to_get == local_base::dec)
   {
+    auto& my_dist_sgn = dist_sgn();
+
     // Insert either a positive sign or a negative sign
     // (always one or the other) depending on the sign of x.
     const auto sign_char_to_insert =
@@ -278,7 +284,7 @@ auto generate_wide_integer_value(bool       is_positive           = true,
       (
         is_positive
           ? '+'
-          : static_cast<char>((dist_sgn(eng_sgn()) != static_cast<std::uint32_t>(UINT32_C(0))) ? '+' : '-') // NOLINT(readability-avoid-nested-conditional-operator)
+          : static_cast<char>((my_dist_sgn(eng_sgn()) != static_cast<std::uint32_t>(UINT32_C(0))) ? '+' : '-') // NOLINT(readability-avoid-nested-conditional-operator)
       );
 
     str_x.insert(str_x.begin(), static_cast<std::size_t>(UINT8_C(1)), sign_char_to_insert);

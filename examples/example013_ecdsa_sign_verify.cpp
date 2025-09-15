@@ -368,8 +368,8 @@ namespace example013_ecdsa
     using point_type =
       struct point_type
       {
-        constexpr point_type(double_sint_type x = static_cast<double_sint_type>(static_cast<unsigned>(UINT8_C(0))), // NOLINT(google-explicit-constructor,hicpp-explicit-conversions,bugprone-easily-swappable-parameters)
-                             double_sint_type y = static_cast<double_sint_type>(static_cast<unsigned>(UINT8_C(0)))) noexcept
+        explicit constexpr point_type(double_sint_type x = static_cast<double_sint_type>(static_cast<unsigned>(UINT8_C(0))), // NOLINT(google-explicit-constructor,hicpp-explicit-conversions,bugprone-easily-swappable-parameters)
+                                      double_sint_type y = static_cast<double_sint_type>(static_cast<unsigned>(UINT8_C(0)))) noexcept
           : my_x(x),
             my_y(y) { } // LCOV_EXCL_LINE
 
@@ -559,10 +559,11 @@ namespace example013_ecdsa
       y3.negate();
 
       return
-      {
+      point_type
+      (
         double_sint_type(divmod(x3, duodectuple_sint_type(curve_p())).second),
         double_sint_type(divmod(y3, duodectuple_sint_type(curve_p())).second)
-      };
+      );
     }
 
     static auto scalar_mult(const double_sint_type& k, const point_type& point) -> point_type // NOLINT(misc-no-recursion)
@@ -651,7 +652,7 @@ namespace example013_ecdsa
             : *p_uint_seed
         );
 
-      const auto public_key  = scalar_mult(private_key, { curve_gx(), curve_gy() } );
+      const auto public_key  = scalar_mult(private_key, point_type(curve_gx(), curve_gy()));
 
       return
       {
@@ -719,7 +720,7 @@ namespace example013_ecdsa
 
         const double_sint_type k { uk };
 
-        const point_type pt { scalar_mult(k, { curve_gx(), curve_gy() } ) };
+        const point_type pt(scalar_mult(k, point_type(curve_gx(), curve_gy())));
 
         r = divmod(pt.my_x, curve_n()).second;
 
@@ -758,8 +759,8 @@ namespace example013_ecdsa
       const auto pt =
         point_add
         (
-          scalar_mult(u1, { curve_gx(), curve_gy() } ),
-          scalar_mult(u2, { pub.first,  pub.second } )
+          scalar_mult(u1,point_type(curve_gx(), curve_gy())),
+          scalar_mult(u2,point_type(pub.first,  pub.second))
         );
 
       return
@@ -853,9 +854,12 @@ auto ::math::wide_integer::example013_ecdsa_sign_verify() -> bool
 
     const auto keypair = elliptic_curve_type::make_keypair(&seed_keygen);
 
+    using local_point_type = typename elliptic_curve_type::point_type;
+
     const auto result_is_on_curve_is_ok =
       elliptic_curve_type::is_on_curve
       (
+        local_point_type
         {
           std::get<1>(keypair).first,
           std::get<1>(keypair).second
