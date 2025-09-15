@@ -231,14 +231,16 @@ auto generate_wide_integer_value(bool       is_positive           = true,
                   auto& my_dist_dig_dec = dist_dig_dec();
                   auto& my_dist_dig_hex = dist_dig_hex();
 
+                  auto& my_eng_dig = eng_dig();
+
                   if(base_to_get == local_base::oct)
                   {
-                    c = static_cast<char>(my_dist_dig_oct(eng_dig()));
+                    c = static_cast<char>(my_dist_dig_oct(my_eng_dig));
                     c = static_cast<char>(c + '0');
                   }
                   else if(base_to_get == local_base::hex)
                   {
-                    c = static_cast<char>(my_dist_dig_hex(eng_dig()));
+                    c = static_cast<char>(my_dist_dig_hex(my_eng_dig));
 
                     if(c < static_cast<char>(INT8_C(10)))
                     {
@@ -256,7 +258,7 @@ auto generate_wide_integer_value(bool       is_positive           = true,
                   }
                   else
                   {
-                    c = static_cast<char>(my_dist_dig_dec(eng_dig()));
+                    c = static_cast<char>(my_dist_dig_dec(my_eng_dig));
                     c = static_cast<char>(c + static_cast<char>(INT8_C(0x30)));
                   }
 
@@ -277,15 +279,17 @@ auto generate_wide_integer_value(bool       is_positive           = true,
   {
     auto& my_dist_sgn = dist_sgn();
 
+    auto& my_eng_sgn = eng_sgn();
+
     // Insert either a positive sign or a negative sign
     // (always one or the other) depending on the sign of x.
-    const auto sign_char_to_insert =
-      static_cast<char>
-      (
-        is_positive
-          ? '+'
-          : static_cast<char>((my_dist_sgn(eng_sgn()) != static_cast<std::uint32_t>(UINT32_C(0))) ? '+' : '-') // NOLINT(readability-avoid-nested-conditional-operator)
-      );
+
+    char sign_char_to_insert { '+' };
+
+    if((!is_positive) && (my_dist_sgn(my_eng_sgn) == std::uint32_t { UINT8_C(0) }))
+    {
+      sign_char_to_insert = '-';
+    }
 
     str_x.insert(str_x.begin(), static_cast<std::size_t>(UINT8_C(1)), sign_char_to_insert);
   }
@@ -1545,36 +1549,39 @@ auto test_various_isolated_edge_cases() -> bool // NOLINT(readability-function-c
     result_is_ok = (rep_as_max3_is_ok && result_is_ok);
   }
 
-
-  for(auto   i = static_cast<unsigned>(UINT8_C(0));
-             i < static_cast<unsigned>(UINT8_C(16));
-           ++i)
   {
-    eng_flt().seed(util::util_pseudorandom_time_point_seed::value<typename eng_flt_type::result_type>());
+    auto& my_eng_flt = eng_flt();
 
-    std::uniform_real_distribution<float>
-      dis
-      {
-        std::uniform_real_distribution<float>
+    for(auto   i = static_cast<unsigned>(UINT8_C(0));
+               i < static_cast<unsigned>(UINT8_C(16));
+             ++i)
+    {
+      my_eng_flt.seed(util::util_pseudorandom_time_point_seed::value<typename eng_flt_type::result_type>());
+
+      std::uniform_real_distribution<float>
+        dis
         {
-          static_cast<float>(1.01L), // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
-          static_cast<float>(1.04L)  // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
-        }
-      };
+          std::uniform_real_distribution<float>
+          {
+            static_cast<float>(1.01L), // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
+            static_cast<float>(1.04L)  // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
+          }
+        };
 
-    const auto inf_f  = ::local_inf_f () * dis(eng_flt());
-    const auto inf_d  = ::local_inf_d () * static_cast<double>(dis(eng_flt()));
-    const auto inf_ld = ::local_inf_ld() * static_cast<long double>(dis(eng_flt()));
+      const auto inf_f  = ::local_inf_f () * dis(my_eng_flt);
+      const auto inf_d  = ::local_inf_d () * static_cast<double>(dis(my_eng_flt));
+      const auto inf_ld = ::local_inf_ld() * static_cast<long double>(dis(my_eng_flt));
 
-    local_uintwide_t_small_unsigned_type u_inf_f (inf_f);
-    local_uintwide_t_small_unsigned_type u_inf_d (inf_d);
-    local_uintwide_t_small_unsigned_type u_inf_ld(inf_ld);
+      local_uintwide_t_small_unsigned_type u_inf_f (inf_f);
+      local_uintwide_t_small_unsigned_type u_inf_d (inf_d);
+      local_uintwide_t_small_unsigned_type u_inf_ld(inf_ld);
 
-    const auto result_infinities_is_ok = (   (u_inf_f  == 0)
-                                          && (u_inf_d  == 0)
-                                          && (u_inf_ld == 0));
+      const auto result_infinities_is_ok = (   (u_inf_f  == 0)
+                                            && (u_inf_d  == 0)
+                                            && (u_inf_ld == 0));
 
-    result_is_ok = (result_infinities_is_ok && result_is_ok);
+      result_is_ok = (result_infinities_is_ok && result_is_ok);
+    }
   }
 
   for(auto   i = static_cast<unsigned>(UINT8_C(0));
