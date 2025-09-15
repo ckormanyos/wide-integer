@@ -1319,25 +1319,25 @@ auto local_test_spot_values::test() -> bool // NOLINT(readability-function-cogni
     using ::math::wide_integer::uint256_t;
     #endif
 
-    // FromDigits["C9DD3EA24800F584CB28C25CC0E6FF1",16]
-    // 16770224695321632575655872732632870897
+    // Consider: FromDigits["C9DD3EA24800F584CB28C25CC0E6FF1",16]
+    //   Expected control result: 16770224695321632575655872732632870897
     constexpr uint256_t a("0xC9DD3EA24800F584CB28C25CC0E6FF1");
 
-    // FromDigits["1E934A2EEA60A2AD14ECCAE7AD82C069",16]
-    // 40641612127094559121321599356729737321
+    // Consider: FromDigits["1E934A2EEA60A2AD14ECCAE7AD82C069",16]
+    //   Expected control result: 40641612127094559121321599356729737321
     constexpr uint256_t b("0x1E934A2EEA60A2AD14ECCAE7AD82C069");
 
     constexpr auto v  = b - 1U;
     constexpr auto lm = lcm(a - 1U, v);
     constexpr auto gd = gcd(a - 1U, v);
 
-    // LCM[16770224695321632575655872732632870897 - 1, 40641612127094559121321599356729737321 - 1]
+    // Consider: LCM[16770224695321632575655872732632870897 - 1, 40641612127094559121321599356729737321 - 1]
     result_is_ok = ((lm == uint256_t("28398706972978513348490390087175345493497748446743697820448222113648043280")) && result_is_ok);
 
     static_assert(lm == uint256_t("28398706972978513348490390087175345493497748446743697820448222113648043280"),
                   "Error: Rudimentary LCM calculation result is wrong");
 
-    // GCD[16770224695321632575655872732632870897 - 1, 40641612127094559121321599356729737321 - 1]
+    // Consiedr: GCD[16770224695321632575655872732632870897 - 1, 40641612127094559121321599356729737321 - 1]
     result_is_ok = ((gd == static_cast<unsigned>(UINT8_C(24))) && result_is_ok);
 
     static_assert(gd == static_cast<unsigned>(UINT8_C(24)),
@@ -1412,13 +1412,13 @@ auto local_test_spot_values::test() -> bool // NOLINT(readability-function-cogni
       using ww_t = ::math::wide_integer::uintwide_t<static_cast<math::wide_integer::size_t>(UINT32_C(64)), std::uint32_t, void, true>;
       #endif
 
-      w_t  neg     (-2);
-      ww_t neg_wide(-2);
-      ww_t neg_wide_cast = ww_t(neg);
+      const w_t  neg     (-2);
+      const ww_t neg_wide(-2);
+      const ww_t neg_wide_cast(neg);
 
-      std::string str_neg;
-      std::string str_neg_wide;
-      std::string str_neg_wide_cast;
+      std::string str_neg { };
+      std::string str_neg_wide { };
+      std::string str_neg_wide_cast { };
 
       { std::stringstream strm; strm << neg;           str_neg           = strm.str(); }
       { std::stringstream strm; strm << neg_wide;      str_neg_wide      = strm.str(); }
@@ -1442,13 +1442,13 @@ auto local_test_spot_values::test() -> bool // NOLINT(readability-function-cogni
       using ww_t = ::math::wide_integer::uintwide_t<static_cast<math::wide_integer::size_t>(UINT32_C(64)), std::uint8_t, void, true>;
       #endif
 
-      w_t  neg     (-2);
-      ww_t neg_wide(-2);
-      ww_t neg_wide_cast = ww_t(neg);
+      const w_t  neg     (-2);
+      const ww_t neg_wide(-2);
+      const ww_t neg_wide_cast(neg);
 
-      std::string str_neg;
-      std::string str_neg_wide;
-      std::string str_neg_wide_cast;
+      std::string str_neg { };
+      std::string str_neg_wide { };
+      std::string str_neg_wide_cast { };
 
       { std::stringstream strm; strm << neg;           str_neg           = strm.str(); }
       { std::stringstream strm; strm << neg_wide;      str_neg_wide      = strm.str(); }
@@ -1501,11 +1501,8 @@ auto local_test_spot_values::test() -> bool // NOLINT(readability-function-cogni
     constexpr uint512_t d = (a % b);
 
     //   QuotientRemainder
-    //     [698937339790347543053797400564366118744312537138445607919548628175822115805812983955794321304304417541511379093392776018867245622409026835324102460829431,
-    //      100041341335406267530943777943625254875702684549707174207105689918734693139781]
-    //
-    //     {6986485091668619828842978360442127600954041171641881730123945989288792389271,
-    //      100041341335406267530943777943625254875702684549707174207105689918734693139780}
+    //     Consider: [698937339790347543053797400564366118744312537138445607919548628175822115805812983955794321304304417541511379093392776018867245622409026835324102460829431, 100041341335406267530943777943625254875702684549707174207105689918734693139781]
+    //     Expected control result: {6986485091668619828842978360442127600954041171641881730123945989288792389271, 100041341335406267530943777943625254875702684549707174207105689918734693139780}
 
     constexpr bool c_is_ok = (c == "6986485091668619828842978360442127600954041171641881730123945989288792389271");
     constexpr bool d_is_ok = (d == "100041341335406267530943777943625254875702684549707174207105689918734693139780");
@@ -1529,10 +1526,9 @@ auto local_test_spot_values::test() -> bool // NOLINT(readability-function-cogni
     // Note: Some of the comments in this file use the Wolfram Language(TM).
     //
     // Create two pseudo-random 256-bit unsigned integers.
-    //   Table[IntegerString[RandomInteger[(2^256) - 1], 16], 2]
+    //   Consider: Table[IntegerString[RandomInteger[(2^256) - 1], 16], 2]
     //
-    //   {F4DF741DE58BCB2F37F18372026EF9CBCFC456CB80AF54D53BDEED78410065DE,
-    //    166D63E0202B3D90ECCEAA046341AB504658F55B974A7FD63733ECF89DD0DF75}
+    //   Expected control result: {F4DF741DE58BCB2F37F18372026EF9CBCFC456CB80AF54D53BDEED78410065DE, 166D63E0202B3D90ECCEAA046341AB504658F55B974A7FD63733ECF89DD0DF75}
     //
     // Set the values of two random 256-bit unsigned integers.
     //   a = 0xF4DF741DE58BCB2F37F18372026EF9CBCFC456CB80AF54D53BDEED78410065DE
@@ -1559,7 +1555,7 @@ auto local_test_spot_values::test() -> bool // NOLINT(readability-function-cogni
 
     result_is_ok = (result_mul_is_ok && result_is_ok);
 
-    constexpr uint256_t q(10U); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
+    constexpr uint256_t q(unsigned { UINT8_C(10) });
 
     constexpr auto result_div_is_ok = ((a / b) == q);
 
@@ -1578,8 +1574,8 @@ auto local_test_spot_values::test() -> bool // NOLINT(readability-function-cogni
     {
       // See also: https://github.com/ckormanyos/wide-integer/issues/274
 
-      constexpr auto result_mod1_is_ok  = ((a % 1) == 0);
-      constexpr auto result_mod7u_is_ok = ((a % 7U) == 3U); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
+      constexpr auto result_mod1_is_ok  = ((a % int { INT8_C(1) }) == 0);
+      constexpr auto result_mod7u_is_ok = ((a % unsigned { UINT8_C(7) }) == unsigned { UINT8_C(3) });
 
       static_assert(result_mod1_is_ok,  "Error: Static check of spot value modulus with 1 is not OK");
       static_assert(result_mod7u_is_ok, "Error: Static check of spot value modulus with 7U is not OK");

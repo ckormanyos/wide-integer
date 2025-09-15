@@ -4806,8 +4806,8 @@
         detail::copy_unsafe(r0, detail::advance_and_point(r0, static_cast<result_difference_type>(static_cast<result_difference_type>(n) * static_cast<result_difference_type>(2U))), t0);
 
         // Step 2
-        //   r1 += a1*b1
-        //   r1 += a0*b0
+        //   r1 -> r1 + a1*b1
+        //   r1 -> r1 + a0*b0
         auto carry = static_cast<local_limb_type>(eval_add_n(r1, r1, t2, n));
         eval_multiply_kara_propagate_carry(r3, nh, carry);
         carry = static_cast<local_limb_type>(eval_add_n(r1, r1, t0, n));
@@ -6526,14 +6526,14 @@
         // Now u and v are both odd, so diff(u, v) is even.
         // Let u = min(u, v), v = diff(u, v) / 2.
 
-        if(u > v)
-        {
-          swap(u, v);
-        }
-
         if(u == v)
         {
           break;
+        }
+
+        if(u > v)
+        {
+          swap(u, v);
         }
 
         if(v <= (std::numeric_limits<local_ularge_type>::max)())
