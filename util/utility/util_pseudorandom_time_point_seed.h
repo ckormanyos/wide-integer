@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright Christopher Kormanyos 2023.
+//  Copyright Christopher Kormanyos 2023 - 2025.
 //  Distributed under the Boost Software License,
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -154,15 +154,17 @@
 
   constexpr auto util_pseudorandom_time_point_seed::test() noexcept -> bool
   {
-    constexpr std::uint8_t crc64_test_data[static_cast<std::size_t>(UINT8_C(9))] = // NOLINT(cppcoreguidelines-avoid-c-arrays,hicpp-avoid-c-arrays,modernize-avoid-c-arrays)
-    {
+    using crc64_test_data_array_type = std::array<std::uint8_t, std::size_t { UINT8_C(9) }>;
+
+    constexpr crc64_test_data_array_type crc64_test_data =
+    {{
       0x31U, 0x32U, 0x33U, 0x34U, 0x35U, 0x36U, 0x37U, 0x38U, 0x39U
-    };
+    }};
 
     constexpr auto crc64_test_result =  crc_bitwise_template<static_cast<std::size_t>(UINT8_C(64)), std::uint64_t>
     (
-      crc64_test_data, // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay)
-      sizeof(crc64_test_data),
+      &crc64_test_data[std::size_t { UINT8_C(0) }],
+      std::tuple_size<crc64_test_data_array_type>::value,
       static_cast<std::uint64_t>(UINT64_C(0x42F0E1EBA9EA3693)),
       static_cast<std::uint64_t>(UINT64_C(0x0000000000000000)),
       static_cast<std::uint64_t>(UINT64_C(0x0000000000000000))
