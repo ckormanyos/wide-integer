@@ -170,9 +170,9 @@
              std::enable_if_t<std::is_floating_point<FloatingPointType>::value> const* = nullptr>
     constexpr uintwide_t_backend(FloatingPointType f) : m_value(representation_type(static_cast<long double>(f))) { } // NOLINT(google-explicit-constructor,hicpp-explicit-conversions)
 
-    constexpr explicit uintwide_t_backend(const char* p_cstr) : m_value(p_cstr) { }
+    explicit constexpr uintwide_t_backend(const char* p_cstr) : m_value(p_cstr) { }
 
-    constexpr explicit uintwide_t_backend(const std::string& str) : m_value(str) { }
+    explicit constexpr uintwide_t_backend(const std::string& str) : m_value(str) { }
 
     //constexpr
     ~uintwide_t_backend() = default;
