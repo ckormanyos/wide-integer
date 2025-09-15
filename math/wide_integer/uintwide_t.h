@@ -3398,6 +3398,129 @@
     friend constexpr auto operator<=(const uintwide_t& u, const uintwide_t& v) -> bool { return (u.compare(v) <= static_cast<std::int_fast8_t>( 0)); }
     friend constexpr auto operator>=(const uintwide_t& u, const uintwide_t& v) -> bool { return (u.compare(v) >= static_cast<std::int_fast8_t>( 0)); }
 
+    // Non-member comparison functions of (uintwide_t cmp IntegralType).
+    template<typename IntegralType> friend constexpr auto operator==(const uintwide_t& u, const IntegralType& v) -> std::enable_if_t<std::is_integral<IntegralType>::value, bool> { return u == uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(v); }
+    template<typename IntegralType> friend constexpr auto operator!=(const uintwide_t& u, const IntegralType& v) -> std::enable_if_t<std::is_integral<IntegralType>::value, bool> { return u != uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(v); }
+    template<typename IntegralType> friend constexpr auto operator> (const uintwide_t& u, const IntegralType& v) -> std::enable_if_t<std::is_integral<IntegralType>::value, bool> { return u >  uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(v); }
+    template<typename IntegralType> friend constexpr auto operator< (const uintwide_t& u, const IntegralType& v) -> std::enable_if_t<std::is_integral<IntegralType>::value, bool> { return u <  uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(v); }
+    template<typename IntegralType> friend constexpr auto operator>=(const uintwide_t& u, const IntegralType& v) -> std::enable_if_t<std::is_integral<IntegralType>::value, bool> { return u >= uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(v); }
+    template<typename IntegralType> friend constexpr auto operator<=(const uintwide_t& u, const IntegralType& v) -> std::enable_if_t<std::is_integral<IntegralType>::value, bool> { return u <= uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(v); }
+
+    // Non-member comparison functions of (IntegralType cmp uintwide_t).
+    template<typename IntegralType> friend constexpr auto operator==(const IntegralType& u, const uintwide_t& v) -> std::enable_if_t<std::is_integral<IntegralType>::value, bool> { return uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(u) == v; }
+    template<typename IntegralType> friend constexpr auto operator!=(const IntegralType& u, const uintwide_t& v) -> std::enable_if_t<std::is_integral<IntegralType>::value, bool> { return uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(u) != v; }
+    template<typename IntegralType> friend constexpr auto operator> (const IntegralType& u, const uintwide_t& v) -> std::enable_if_t<std::is_integral<IntegralType>::value, bool> { return uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(u) >  v; }
+    template<typename IntegralType> friend constexpr auto operator< (const IntegralType& u, const uintwide_t& v) -> std::enable_if_t<std::is_integral<IntegralType>::value, bool> { return uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(u) <  v; }
+    template<typename IntegralType> friend constexpr auto operator>=(const IntegralType& u, const uintwide_t& v) -> std::enable_if_t<std::is_integral<IntegralType>::value, bool> { return uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(u) >= v; }
+    template<typename IntegralType> friend constexpr auto operator<=(const IntegralType& u, const uintwide_t& v) -> std::enable_if_t<std::is_integral<IntegralType>::value, bool> { return uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(u) <= v; }
+
+    #if !defined(WIDE_INTEGER_DISABLE_FLOAT_INTEROP)
+    // Non-member comparison functions of (uintwide_t cmp FloatingPointType).
+    template<typename FloatingPointType> friend constexpr auto operator==(const uintwide_t& u, const FloatingPointType& f) -> std::enable_if_t<std::is_floating_point<FloatingPointType>::value, bool> { return u == uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(f); }
+    template<typename FloatingPointType> friend constexpr auto operator!=(const uintwide_t& u, const FloatingPointType& f) -> std::enable_if_t<std::is_floating_point<FloatingPointType>::value, bool> { return u != uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(f); }
+    template<typename FloatingPointType> friend constexpr auto operator> (const uintwide_t& u, const FloatingPointType& f) -> std::enable_if_t<std::is_floating_point<FloatingPointType>::value, bool> { return u >  uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(f); }
+    template<typename FloatingPointType> friend constexpr auto operator< (const uintwide_t& u, const FloatingPointType& f) -> std::enable_if_t<std::is_floating_point<FloatingPointType>::value, bool> { return u <  uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(f); }
+    template<typename FloatingPointType> friend constexpr auto operator>=(const uintwide_t& u, const FloatingPointType& f) -> std::enable_if_t<std::is_floating_point<FloatingPointType>::value, bool> { return u >= uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(f); }
+    template<typename FloatingPointType> friend constexpr auto operator<=(const uintwide_t& u, const FloatingPointType& f) -> std::enable_if_t<std::is_floating_point<FloatingPointType>::value, bool> { return u <= uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(f); }
+
+    // Non-member comparison functions of (FloatingPointType cmp uintwide_t).
+    template<typename FloatingPointType> friend constexpr auto operator==(const FloatingPointType& f, const uintwide_t& v) -> std::enable_if_t<std::is_floating_point<FloatingPointType>::value, bool> { return uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(f) == v; }
+    template<typename FloatingPointType> friend constexpr auto operator!=(const FloatingPointType& f, const uintwide_t& v) -> std::enable_if_t<std::is_floating_point<FloatingPointType>::value, bool> { return uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(f) != v; }
+    template<typename FloatingPointType> friend constexpr auto operator> (const FloatingPointType& f, const uintwide_t& v) -> std::enable_if_t<std::is_floating_point<FloatingPointType>::value, bool> { return uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(f) >  v; }
+    template<typename FloatingPointType> friend constexpr auto operator< (const FloatingPointType& f, const uintwide_t& v) -> std::enable_if_t<std::is_floating_point<FloatingPointType>::value, bool> { return uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(f) <  v; }
+    template<typename FloatingPointType> friend constexpr auto operator>=(const FloatingPointType& f, const uintwide_t& v) -> std::enable_if_t<std::is_floating_point<FloatingPointType>::value, bool> { return uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(f) >= v; }
+    template<typename FloatingPointType> friend constexpr auto operator<=(const FloatingPointType& f, const uintwide_t& v) -> std::enable_if_t<std::is_floating_point<FloatingPointType>::value, bool> { return uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(f) <= v; }
+    #endif // !defined(WIDE_INTEGER_DISABLE_FLOAT_INTEROP)
+
+    // Non-member binary add, sub, mul, div, mod of (uintwide_t op uintwide_t).
+    friend constexpr auto operator+ (const uintwide_t& u, const uintwide_t& v) -> uintwide_t { return uintwide_t(u).operator+=(v); }
+    friend constexpr auto operator- (const uintwide_t& u, const uintwide_t& v) -> uintwide_t { return uintwide_t(u).operator-=(v); }
+    friend constexpr auto operator* (const uintwide_t& u, const uintwide_t& v) -> uintwide_t { return uintwide_t(u).operator*=(v); }
+    friend constexpr auto operator/ (const uintwide_t& u, const uintwide_t& v) -> uintwide_t { return uintwide_t(u).operator/=(v); }
+    friend constexpr auto operator% (const uintwide_t& u, const uintwide_t& v) -> uintwide_t { return uintwide_t(u).operator%=(v); }
+
+    // Non-member binary logic operations of (uintwide_t op uintwide_t).
+    friend constexpr auto operator| (const uintwide_t& u, const uintwide_t& v) -> uintwide_t { return uintwide_t(u).operator|=(v); }
+    friend constexpr auto operator^ (const uintwide_t& u, const uintwide_t& v) -> uintwide_t { return uintwide_t(u).operator^=(v); }
+    friend constexpr auto operator& (const uintwide_t& u, const uintwide_t& v) -> uintwide_t { return uintwide_t(u).operator&=(v); }
+
+    // Non-member binary add, sub, mul, div, mod of (uintwide_t op IntegralType).
+    template<typename IntegralType> friend constexpr auto operator+(const uintwide_t& u, const IntegralType& v) -> std::enable_if_t<std::is_integral<IntegralType>::value, uintwide_t> { return uintwide_t(u).operator+=(uintwide_t(v)); }
+    template<typename IntegralType> friend constexpr auto operator-(const uintwide_t& u, const IntegralType& v) -> std::enable_if_t<std::is_integral<IntegralType>::value, uintwide_t> { return uintwide_t(u).operator-=(uintwide_t(v)); }
+    template<typename IntegralType> friend constexpr auto operator*(const uintwide_t& u, const IntegralType& v) -> std::enable_if_t<std::is_integral<IntegralType>::value, uintwide_t> { return uintwide_t(u).operator*=(uintwide_t(v)); }
+    template<typename IntegralType> friend constexpr auto operator/(const uintwide_t& u, const IntegralType& v) -> std::enable_if_t<std::is_integral<IntegralType>::value, uintwide_t> { return uintwide_t(u).operator/=(uintwide_t(v)); }
+
+    template<typename IntegralType>
+    friend constexpr auto operator%(const uintwide_t& u, const IntegralType& v) -> std::enable_if_t<(   std::is_integral<IntegralType>::value
+                                                                                                     && std::is_signed<IntegralType>::value),
+                                                                                                        uintwide_t>
+    {
+      return uintwide_t(u).operator%=(uintwide_t(v));
+    }
+
+    template<typename IntegralType>
+    friend constexpr auto operator%(const uintwide_t& u, const IntegralType& v) -> std::enable_if_t<(    std::is_integral<IntegralType>::value
+                                                                                                     &&  std::is_unsigned<IntegralType>::value
+                                                                                                     && (std::numeric_limits<IntegralType>::digits <= std::numeric_limits<LimbType>::digits)),
+                                                                                                     limb_type>
+    {
+      const auto u_is_neg = uintwide_t::is_neg(u);
+
+      uintwide_t remainder { };
+
+      uintwide_t((!u_is_neg) ? u : -u).eval_divide_by_single_limb(v, static_cast<unsigned_fast_type>(UINT8_C(0)), &remainder);
+
+      auto u_rem = static_cast<limb_type>(remainder);
+
+      return ((!u_is_neg) ? u_rem : static_cast<limb_type>(static_cast<limb_type>(~u_rem) + static_cast<limb_type>(UINT8_C(1))));
+    }
+
+    template<typename IntegralType>
+    friend constexpr auto operator%(const uintwide_t& u, const IntegralType& v) -> std::enable_if_t<(    std::is_integral<IntegralType>::value
+                                                                                                     &&  std::is_unsigned<IntegralType>::value
+                                                                                                     && (std::numeric_limits<IntegralType>::digits > std::numeric_limits<LimbType>::digits)),
+                                                                                                     uintwide_t>
+    {
+      return uintwide_t(u).operator%=(uintwide_t(v));
+    }
+
+    // Non-member binary add, sub, mul, div, mod of (IntegralType op uintwide_t).
+    template<typename IntegralType> friend constexpr auto operator+(const IntegralType& u, const uintwide_t& v) -> std::enable_if_t<std::is_integral<IntegralType>::value, uintwide_t> { return uintwide_t(u).operator+=(v); }
+    template<typename IntegralType> friend constexpr auto operator-(const IntegralType& u, const uintwide_t& v) -> std::enable_if_t<std::is_integral<IntegralType>::value, uintwide_t> { return uintwide_t(u).operator-=(v); }
+    template<typename IntegralType> friend constexpr auto operator*(const IntegralType& u, const uintwide_t& v) -> std::enable_if_t<std::is_integral<IntegralType>::value, uintwide_t> { return uintwide_t(u).operator*=(v); }
+    template<typename IntegralType> friend constexpr auto operator/(const IntegralType& u, const uintwide_t& v) -> std::enable_if_t<std::is_integral<IntegralType>::value, uintwide_t> { return uintwide_t(u).operator/=(v); }
+    template<typename IntegralType> friend constexpr auto operator%(const IntegralType& u, const uintwide_t& v) -> std::enable_if_t<std::is_integral<IntegralType>::value, uintwide_t> { return uintwide_t(u).operator%=(v); }
+
+    #if !defined(WIDE_INTEGER_DISABLE_FLOAT_INTEROP)
+    // Non-member binary add, sub, mul, div, mod of (uintwide_t op FloatingPointType).
+    template<typename FloatingPointType> friend constexpr auto operator+(const uintwide_t& u, const FloatingPointType& f) -> std::enable_if_t<std::is_floating_point<FloatingPointType>::value, uintwide_t> { return uintwide_t(u).operator+=(uintwide_t(f)); }
+    template<typename FloatingPointType> friend constexpr auto operator-(const uintwide_t& u, const FloatingPointType& f) -> std::enable_if_t<std::is_floating_point<FloatingPointType>::value, uintwide_t> { return uintwide_t(u).operator-=(uintwide_t(f)); }
+    template<typename FloatingPointType> friend constexpr auto operator*(const uintwide_t& u, const FloatingPointType& f) -> std::enable_if_t<std::is_floating_point<FloatingPointType>::value, uintwide_t> { return uintwide_t(u).operator*=(uintwide_t(f)); }
+    template<typename FloatingPointType> friend constexpr auto operator/(const uintwide_t& u, const FloatingPointType& f) -> std::enable_if_t<std::is_floating_point<FloatingPointType>::value, uintwide_t> { return uintwide_t(u).operator/=(uintwide_t(f)); }
+    template<typename FloatingPointType> friend constexpr auto operator%(const uintwide_t& u, const FloatingPointType& f) -> std::enable_if_t<std::is_floating_point<FloatingPointType>::value, uintwide_t> { return uintwide_t(u).operator%=(uintwide_t(f)); }
+
+    // Non-member binary add, sub, mul, div, mod of (FloatingPointType op uintwide_t).
+    template<typename FloatingPointType> friend constexpr auto operator+(const FloatingPointType& f, const uintwide_t& v) -> std::enable_if_t<std::is_floating_point<FloatingPointType>::value, uintwide_t> { return uintwide_t(f).operator+=(v); }
+    template<typename FloatingPointType> friend constexpr auto operator-(const FloatingPointType& f, const uintwide_t& v) -> std::enable_if_t<std::is_floating_point<FloatingPointType>::value, uintwide_t> { return uintwide_t(f).operator-=(v); }
+    template<typename FloatingPointType> friend constexpr auto operator*(const FloatingPointType& f, const uintwide_t& v) -> std::enable_if_t<std::is_floating_point<FloatingPointType>::value, uintwide_t> { return uintwide_t(f).operator*=(v); }
+    template<typename FloatingPointType> friend constexpr auto operator/(const FloatingPointType& f, const uintwide_t& v) -> std::enable_if_t<std::is_floating_point<FloatingPointType>::value, uintwide_t> { return uintwide_t(f).operator/=(v); }
+    template<typename FloatingPointType> friend constexpr auto operator%(const FloatingPointType& f, const uintwide_t& v) -> std::enable_if_t<std::is_floating_point<FloatingPointType>::value, uintwide_t> { return uintwide_t(f).operator%=(v); }
+    #endif
+
+    // Non-member binary logic operations of (uintwide_t op IntegralType).
+    template<typename IntegralType> friend constexpr auto operator|(const uintwide_t& u, const IntegralType& v) -> std::enable_if_t<std::is_integral<IntegralType>::value, uintwide_t> { return uintwide_t(u).operator|=(uintwide_t(v)); }
+    template<typename IntegralType> friend constexpr auto operator^(const uintwide_t& u, const IntegralType& v) -> std::enable_if_t<std::is_integral<IntegralType>::value, uintwide_t> { return uintwide_t(u).operator^=(uintwide_t(v)); }
+    template<typename IntegralType> friend constexpr auto operator&(const uintwide_t& u, const IntegralType& v) -> std::enable_if_t<std::is_integral<IntegralType>::value, uintwide_t> { return uintwide_t(u).operator&=(uintwide_t(v)); }
+
+    // Non-member binary binary logic operations of (IntegralType op uintwide_t).
+    template<typename IntegralType> friend constexpr auto operator|(const IntegralType& u, const uintwide_t& v) -> std::enable_if_t<std::is_integral<IntegralType>::value, uintwide_t> { return uintwide_t(u).operator|=(v); }
+    template<typename IntegralType> friend constexpr auto operator^(const IntegralType& u, const uintwide_t& v) -> std::enable_if_t<std::is_integral<IntegralType>::value, uintwide_t> { return uintwide_t(u).operator^=(v); }
+    template<typename IntegralType> friend constexpr auto operator&(const IntegralType& u, const uintwide_t& v) -> std::enable_if_t<std::is_integral<IntegralType>::value, uintwide_t> { return uintwide_t(u).operator&=(v); }
+
+    // Non-member shift functions of (uintwide_t shift IntegralType).
+    template<typename IntegralType> friend constexpr auto operator<<(const uintwide_t& u, const IntegralType n) -> std::enable_if_t<std::is_integral<IntegralType>::value, uintwide_t> { return uintwide_t(u).operator<<=(n); }
+    template<typename IntegralType> friend constexpr auto operator>>(const uintwide_t& u, const IntegralType n) -> std::enable_if_t<std::is_integral<IntegralType>::value, uintwide_t> { return uintwide_t(u).operator>>=(n); }
+
     template<const size_t OtherWidth2,
              typename OtherLimbType,
              typename OtherAllocatorType,
@@ -5524,137 +5647,6 @@
   #else
   namespace math { namespace wide_integer { // NOLINT(modernize-concat-nested-namespaces)
   #endif
-
-  // Non-member binary add, sub, mul, div, mod of (uintwide_t op uintwide_t).
-  template<const size_t Width2, typename LimbType, typename AllocatorType, const bool IsSigned> constexpr auto operator+ (const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& u, const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& v) -> uintwide_t<Width2, LimbType, AllocatorType, IsSigned> { return uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(u).operator+=(v); }
-  template<const size_t Width2, typename LimbType, typename AllocatorType, const bool IsSigned> constexpr auto operator- (const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& u, const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& v) -> uintwide_t<Width2, LimbType, AllocatorType, IsSigned> { return uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(u).operator-=(v); }
-  template<const size_t Width2, typename LimbType, typename AllocatorType, const bool IsSigned> constexpr auto operator* (const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& u, const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& v) -> uintwide_t<Width2, LimbType, AllocatorType, IsSigned> { return uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(u).operator*=(v); }
-  template<const size_t Width2, typename LimbType, typename AllocatorType, const bool IsSigned> constexpr auto operator/ (const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& u, const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& v) -> uintwide_t<Width2, LimbType, AllocatorType, IsSigned> { return uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(u).operator/=(v); }
-  template<const size_t Width2, typename LimbType, typename AllocatorType, const bool IsSigned> constexpr auto operator% (const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& u, const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& v) -> uintwide_t<Width2, LimbType, AllocatorType, IsSigned> { return uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(u).operator%=(v); }
-
-  // Non-member binary logic operations of (uintwide_t op uintwide_t).
-  template<const size_t Width2, typename LimbType, typename AllocatorType, const bool IsSigned> constexpr auto operator| (const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& u, const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& v) -> uintwide_t<Width2, LimbType, AllocatorType, IsSigned> { return uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(u).operator|=(v); }
-  template<const size_t Width2, typename LimbType, typename AllocatorType, const bool IsSigned> constexpr auto operator^ (const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& u, const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& v) -> uintwide_t<Width2, LimbType, AllocatorType, IsSigned> { return uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(u).operator^=(v); }
-  template<const size_t Width2, typename LimbType, typename AllocatorType, const bool IsSigned> constexpr auto operator& (const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& u, const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& v) -> uintwide_t<Width2, LimbType, AllocatorType, IsSigned> { return uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(u).operator&=(v); }
-
-  // Non-member binary add, sub, mul, div, mod of (uintwide_t op IntegralType).
-  template<typename IntegralType, const size_t Width2, typename LimbType, typename AllocatorType, const bool IsSigned> constexpr auto operator+(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& u, const IntegralType& v) -> std::enable_if_t<std::is_integral<IntegralType>::value, uintwide_t<Width2, LimbType, AllocatorType, IsSigned>> { return uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(u).operator+=(uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(v)); }
-  template<typename IntegralType, const size_t Width2, typename LimbType, typename AllocatorType, const bool IsSigned> constexpr auto operator-(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& u, const IntegralType& v) -> std::enable_if_t<std::is_integral<IntegralType>::value, uintwide_t<Width2, LimbType, AllocatorType, IsSigned>> { return uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(u).operator-=(uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(v)); }
-  template<typename IntegralType, const size_t Width2, typename LimbType, typename AllocatorType, const bool IsSigned> constexpr auto operator*(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& u, const IntegralType& v) -> std::enable_if_t<std::is_integral<IntegralType>::value, uintwide_t<Width2, LimbType, AllocatorType, IsSigned>> { return uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(u).operator*=(uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(v)); }
-  template<typename IntegralType, const size_t Width2, typename LimbType, typename AllocatorType, const bool IsSigned> constexpr auto operator/(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& u, const IntegralType& v) -> std::enable_if_t<std::is_integral<IntegralType>::value, uintwide_t<Width2, LimbType, AllocatorType, IsSigned>> { return uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(u).operator/=(uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(v)); }
-
-  template<typename IntegralType, const size_t Width2, typename LimbType, typename AllocatorType, const bool IsSigned>
-  constexpr auto operator%(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& u, const IntegralType& v) -> std::enable_if_t<(   std::is_integral<IntegralType>::value
-                                                                                                                                       && std::is_signed<IntegralType>::value),
-                                                                                                                                          uintwide_t<Width2, LimbType, AllocatorType, IsSigned>>
-  {
-    using local_wide_integer_type = uintwide_t<Width2, LimbType, AllocatorType, IsSigned>;
-
-    return local_wide_integer_type(u).operator%=(local_wide_integer_type(v));
-  }
-
-  template<typename IntegralType, const size_t Width2, typename LimbType, typename AllocatorType, const bool IsSigned>
-  constexpr auto operator%(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& u, const IntegralType& v) -> std::enable_if_t<(    std::is_integral<IntegralType>::value
-                                                                                                                                       &&  std::is_unsigned<IntegralType>::value
-                                                                                                                                       && (std::numeric_limits<IntegralType>::digits <= std::numeric_limits<LimbType>::digits)),
-                                                                                                                                       typename uintwide_t<Width2, LimbType, AllocatorType, IsSigned>::limb_type>
-  {
-    using local_wide_integer_type = uintwide_t<Width2, LimbType, AllocatorType, IsSigned>;
-
-    const auto u_is_neg = local_wide_integer_type::is_neg(u);
-
-    local_wide_integer_type remainder;
-
-    local_wide_integer_type((!u_is_neg) ? u : -u).eval_divide_by_single_limb(v, static_cast<unsigned_fast_type>(UINT8_C(0)), &remainder);
-
-    using local_limb_type = typename local_wide_integer_type::limb_type;
-
-    auto u_rem = static_cast<local_limb_type>(remainder);
-
-    return ((!u_is_neg) ? u_rem : static_cast<local_limb_type>(static_cast<local_limb_type>(~u_rem) + static_cast<local_limb_type>(UINT8_C(1))));
-  }
-
-  template<typename IntegralType, const size_t Width2, typename LimbType, typename AllocatorType, const bool IsSigned>
-  constexpr auto operator%(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& u, const IntegralType& v) -> std::enable_if_t<(    std::is_integral<IntegralType>::value
-                                                                                                                                       &&  std::is_unsigned<IntegralType>::value
-                                                                                                                                       && (std::numeric_limits<IntegralType>::digits > std::numeric_limits<LimbType>::digits)),
-                                                                                                                                       uintwide_t<Width2, LimbType, AllocatorType, IsSigned>>
-  {
-    using local_wide_integer_type = uintwide_t<Width2, LimbType, AllocatorType, IsSigned>;
-
-    return local_wide_integer_type(u).operator%=(local_wide_integer_type(v));
-  }
-
-  // Non-member binary add, sub, mul, div, mod of (IntegralType op uintwide_t).
-  template<typename IntegralType, const size_t Width2, typename LimbType, typename AllocatorType, const bool IsSigned> constexpr auto operator+(const IntegralType& u, const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& v) -> std::enable_if_t<std::is_integral<IntegralType>::value, uintwide_t<Width2, LimbType, AllocatorType, IsSigned>> { return uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(u).operator+=(v); }
-  template<typename IntegralType, const size_t Width2, typename LimbType, typename AllocatorType, const bool IsSigned> constexpr auto operator-(const IntegralType& u, const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& v) -> std::enable_if_t<std::is_integral<IntegralType>::value, uintwide_t<Width2, LimbType, AllocatorType, IsSigned>> { return uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(u).operator-=(v); }
-  template<typename IntegralType, const size_t Width2, typename LimbType, typename AllocatorType, const bool IsSigned> constexpr auto operator*(const IntegralType& u, const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& v) -> std::enable_if_t<std::is_integral<IntegralType>::value, uintwide_t<Width2, LimbType, AllocatorType, IsSigned>> { return uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(u).operator*=(v); }
-  template<typename IntegralType, const size_t Width2, typename LimbType, typename AllocatorType, const bool IsSigned> constexpr auto operator/(const IntegralType& u, const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& v) -> std::enable_if_t<std::is_integral<IntegralType>::value, uintwide_t<Width2, LimbType, AllocatorType, IsSigned>> { return uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(u).operator/=(v); }
-  template<typename IntegralType, const size_t Width2, typename LimbType, typename AllocatorType, const bool IsSigned> constexpr auto operator%(const IntegralType& u, const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& v) -> std::enable_if_t<std::is_integral<IntegralType>::value, uintwide_t<Width2, LimbType, AllocatorType, IsSigned>> { return uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(u).operator%=(v); }
-
-  #if !defined(WIDE_INTEGER_DISABLE_FLOAT_INTEROP)
-  // Non-member binary add, sub, mul, div, mod of (uintwide_t op FloatingPointType).
-  template<typename FloatingPointType, const size_t Width2, typename LimbType, typename AllocatorType, const bool IsSigned> constexpr auto operator+(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& u, const FloatingPointType& f) -> std::enable_if_t<std::is_floating_point<FloatingPointType>::value, uintwide_t<Width2, LimbType, AllocatorType, IsSigned>> { return uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(u).operator+=(uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(f)); }
-  template<typename FloatingPointType, const size_t Width2, typename LimbType, typename AllocatorType, const bool IsSigned> constexpr auto operator-(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& u, const FloatingPointType& f) -> std::enable_if_t<std::is_floating_point<FloatingPointType>::value, uintwide_t<Width2, LimbType, AllocatorType, IsSigned>> { return uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(u).operator-=(uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(f)); }
-  template<typename FloatingPointType, const size_t Width2, typename LimbType, typename AllocatorType, const bool IsSigned> constexpr auto operator*(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& u, const FloatingPointType& f) -> std::enable_if_t<std::is_floating_point<FloatingPointType>::value, uintwide_t<Width2, LimbType, AllocatorType, IsSigned>> { return uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(u).operator*=(uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(f)); }
-  template<typename FloatingPointType, const size_t Width2, typename LimbType, typename AllocatorType, const bool IsSigned> constexpr auto operator/(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& u, const FloatingPointType& f) -> std::enable_if_t<std::is_floating_point<FloatingPointType>::value, uintwide_t<Width2, LimbType, AllocatorType, IsSigned>> { return uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(u).operator/=(uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(f)); }
-  template<typename FloatingPointType, const size_t Width2, typename LimbType, typename AllocatorType, const bool IsSigned> constexpr auto operator%(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& u, const FloatingPointType& f) -> std::enable_if_t<std::is_floating_point<FloatingPointType>::value, uintwide_t<Width2, LimbType, AllocatorType, IsSigned>> { return uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(u).operator%=(uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(f)); }
-
-  // Non-member binary add, sub, mul, div, mod of (FloatingPointType op uintwide_t).
-  template<typename FloatingPointType, const size_t Width2, typename LimbType, typename AllocatorType, const bool IsSigned> constexpr auto operator+(const FloatingPointType& f, const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& v) -> std::enable_if_t<std::is_floating_point<FloatingPointType>::value, uintwide_t<Width2, LimbType, AllocatorType, IsSigned>> { return uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(f).operator+=(v); }
-  template<typename FloatingPointType, const size_t Width2, typename LimbType, typename AllocatorType, const bool IsSigned> constexpr auto operator-(const FloatingPointType& f, const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& v) -> std::enable_if_t<std::is_floating_point<FloatingPointType>::value, uintwide_t<Width2, LimbType, AllocatorType, IsSigned>> { return uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(f).operator-=(v); }
-  template<typename FloatingPointType, const size_t Width2, typename LimbType, typename AllocatorType, const bool IsSigned> constexpr auto operator*(const FloatingPointType& f, const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& v) -> std::enable_if_t<std::is_floating_point<FloatingPointType>::value, uintwide_t<Width2, LimbType, AllocatorType, IsSigned>> { return uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(f).operator*=(v); }
-  template<typename FloatingPointType, const size_t Width2, typename LimbType, typename AllocatorType, const bool IsSigned> constexpr auto operator/(const FloatingPointType& f, const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& v) -> std::enable_if_t<std::is_floating_point<FloatingPointType>::value, uintwide_t<Width2, LimbType, AllocatorType, IsSigned>> { return uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(f).operator/=(v); }
-  template<typename FloatingPointType, const size_t Width2, typename LimbType, typename AllocatorType, const bool IsSigned> constexpr auto operator%(const FloatingPointType& f, const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& v) -> std::enable_if_t<std::is_floating_point<FloatingPointType>::value, uintwide_t<Width2, LimbType, AllocatorType, IsSigned>> { return uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(f).operator%=(v); }
-  #endif
-
-  // Non-member binary logic operations of (uintwide_t op IntegralType).
-  template<typename IntegralType, const size_t Width2, typename LimbType, typename AllocatorType, const bool IsSigned> constexpr auto operator|(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& u, const IntegralType& v) -> std::enable_if_t<std::is_integral<IntegralType>::value, uintwide_t<Width2, LimbType, AllocatorType, IsSigned>> { return uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(u).operator|=(uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(v)); }
-  template<typename IntegralType, const size_t Width2, typename LimbType, typename AllocatorType, const bool IsSigned> constexpr auto operator^(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& u, const IntegralType& v) -> std::enable_if_t<std::is_integral<IntegralType>::value, uintwide_t<Width2, LimbType, AllocatorType, IsSigned>> { return uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(u).operator^=(uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(v)); }
-  template<typename IntegralType, const size_t Width2, typename LimbType, typename AllocatorType, const bool IsSigned> constexpr auto operator&(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& u, const IntegralType& v) -> std::enable_if_t<std::is_integral<IntegralType>::value, uintwide_t<Width2, LimbType, AllocatorType, IsSigned>> { return uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(u).operator&=(uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(v)); }
-
-  // Non-member binary binary logic operations of (IntegralType op uintwide_t).
-  template<typename IntegralType, const size_t Width2, typename LimbType, typename AllocatorType, const bool IsSigned> constexpr auto operator|(const IntegralType& u, const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& v) -> std::enable_if_t<std::is_integral<IntegralType>::value, uintwide_t<Width2, LimbType, AllocatorType, IsSigned>> { return uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(u).operator|=(v); }
-  template<typename IntegralType, const size_t Width2, typename LimbType, typename AllocatorType, const bool IsSigned> constexpr auto operator^(const IntegralType& u, const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& v) -> std::enable_if_t<std::is_integral<IntegralType>::value, uintwide_t<Width2, LimbType, AllocatorType, IsSigned>> { return uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(u).operator^=(v); }
-  template<typename IntegralType, const size_t Width2, typename LimbType, typename AllocatorType, const bool IsSigned> constexpr auto operator&(const IntegralType& u, const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& v) -> std::enable_if_t<std::is_integral<IntegralType>::value, uintwide_t<Width2, LimbType, AllocatorType, IsSigned>> { return uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(u).operator&=(v); }
-
-  // Non-member shift functions of (uintwide_t shift IntegralType).
-  template<typename IntegralType, const size_t Width2, typename LimbType, typename AllocatorType, const bool IsSigned> constexpr auto operator<<(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& u, const IntegralType n) -> std::enable_if_t<std::is_integral<IntegralType>::value, uintwide_t<Width2, LimbType, AllocatorType, IsSigned>> { return uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(u).operator<<=(n); }
-  template<typename IntegralType, const size_t Width2, typename LimbType, typename AllocatorType, const bool IsSigned> constexpr auto operator>>(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& u, const IntegralType n) -> std::enable_if_t<std::is_integral<IntegralType>::value, uintwide_t<Width2, LimbType, AllocatorType, IsSigned>> { return uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(u).operator>>=(n); }
-
-  // Non-member comparison functions of (uintwide_t cmp IntegralType).
-  template<typename IntegralType, const size_t Width2, typename LimbType, typename AllocatorType, const bool IsSigned> constexpr auto operator==(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& u, const IntegralType& v) -> std::enable_if_t<std::is_integral<IntegralType>::value, bool> { return u == uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(v); }
-  template<typename IntegralType, const size_t Width2, typename LimbType, typename AllocatorType, const bool IsSigned> constexpr auto operator!=(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& u, const IntegralType& v) -> std::enable_if_t<std::is_integral<IntegralType>::value, bool> { return u != uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(v); }
-  template<typename IntegralType, const size_t Width2, typename LimbType, typename AllocatorType, const bool IsSigned> constexpr auto operator> (const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& u, const IntegralType& v) -> std::enable_if_t<std::is_integral<IntegralType>::value, bool> { return u >  uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(v); }
-  template<typename IntegralType, const size_t Width2, typename LimbType, typename AllocatorType, const bool IsSigned> constexpr auto operator< (const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& u, const IntegralType& v) -> std::enable_if_t<std::is_integral<IntegralType>::value, bool> { return u <  uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(v); }
-  template<typename IntegralType, const size_t Width2, typename LimbType, typename AllocatorType, const bool IsSigned> constexpr auto operator>=(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& u, const IntegralType& v) -> std::enable_if_t<std::is_integral<IntegralType>::value, bool> { return u >= uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(v); }
-  template<typename IntegralType, const size_t Width2, typename LimbType, typename AllocatorType, const bool IsSigned> constexpr auto operator<=(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& u, const IntegralType& v) -> std::enable_if_t<std::is_integral<IntegralType>::value, bool> { return u <= uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(v); }
-
-  // Non-member comparison functions of (IntegralType cmp uintwide_t).
-  template<typename IntegralType, const size_t Width2, typename LimbType, typename AllocatorType, const bool IsSigned> constexpr auto operator==(const IntegralType& u, const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& v) -> std::enable_if_t<std::is_integral<IntegralType>::value, bool> { return uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(u) == v; }
-  template<typename IntegralType, const size_t Width2, typename LimbType, typename AllocatorType, const bool IsSigned> constexpr auto operator!=(const IntegralType& u, const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& v) -> std::enable_if_t<std::is_integral<IntegralType>::value, bool> { return uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(u) != v; }
-  template<typename IntegralType, const size_t Width2, typename LimbType, typename AllocatorType, const bool IsSigned> constexpr auto operator> (const IntegralType& u, const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& v) -> std::enable_if_t<std::is_integral<IntegralType>::value, bool> { return uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(u) >  v; }
-  template<typename IntegralType, const size_t Width2, typename LimbType, typename AllocatorType, const bool IsSigned> constexpr auto operator< (const IntegralType& u, const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& v) -> std::enable_if_t<std::is_integral<IntegralType>::value, bool> { return uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(u) <  v; }
-  template<typename IntegralType, const size_t Width2, typename LimbType, typename AllocatorType, const bool IsSigned> constexpr auto operator>=(const IntegralType& u, const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& v) -> std::enable_if_t<std::is_integral<IntegralType>::value, bool> { return uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(u) >= v; }
-  template<typename IntegralType, const size_t Width2, typename LimbType, typename AllocatorType, const bool IsSigned> constexpr auto operator<=(const IntegralType& u, const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& v) -> std::enable_if_t<std::is_integral<IntegralType>::value, bool> { return uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(u) <= v; }
-
-  #if !defined(WIDE_INTEGER_DISABLE_FLOAT_INTEROP)
-  // Non-member comparison functions of (uintwide_t cmp FloatingPointType).
-  template<typename FloatingPointType, const size_t Width2, typename LimbType, typename AllocatorType, const bool IsSigned> constexpr auto operator==(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& u, const FloatingPointType& f) -> std::enable_if_t<std::is_floating_point<FloatingPointType>::value, bool> { return u == uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(f); }
-  template<typename FloatingPointType, const size_t Width2, typename LimbType, typename AllocatorType, const bool IsSigned> constexpr auto operator!=(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& u, const FloatingPointType& f) -> std::enable_if_t<std::is_floating_point<FloatingPointType>::value, bool> { return u != uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(f); }
-  template<typename FloatingPointType, const size_t Width2, typename LimbType, typename AllocatorType, const bool IsSigned> constexpr auto operator> (const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& u, const FloatingPointType& f) -> std::enable_if_t<std::is_floating_point<FloatingPointType>::value, bool> { return u >  uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(f); }
-  template<typename FloatingPointType, const size_t Width2, typename LimbType, typename AllocatorType, const bool IsSigned> constexpr auto operator< (const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& u, const FloatingPointType& f) -> std::enable_if_t<std::is_floating_point<FloatingPointType>::value, bool> { return u <  uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(f); }
-  template<typename FloatingPointType, const size_t Width2, typename LimbType, typename AllocatorType, const bool IsSigned> constexpr auto operator>=(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& u, const FloatingPointType& f) -> std::enable_if_t<std::is_floating_point<FloatingPointType>::value, bool> { return u >= uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(f); }
-  template<typename FloatingPointType, const size_t Width2, typename LimbType, typename AllocatorType, const bool IsSigned> constexpr auto operator<=(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& u, const FloatingPointType& f) -> std::enable_if_t<std::is_floating_point<FloatingPointType>::value, bool> { return u <= uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(f); }
-
-  // Non-member comparison functions of (FloatingPointType cmp uintwide_t).
-  template<typename FloatingPointType, const size_t Width2, typename LimbType, typename AllocatorType, const bool IsSigned> constexpr auto operator==(const FloatingPointType& f, const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& v) -> std::enable_if_t<std::is_floating_point<FloatingPointType>::value, bool> { return uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(f) == v; }
-  template<typename FloatingPointType, const size_t Width2, typename LimbType, typename AllocatorType, const bool IsSigned> constexpr auto operator!=(const FloatingPointType& f, const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& v) -> std::enable_if_t<std::is_floating_point<FloatingPointType>::value, bool> { return uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(f) != v; }
-  template<typename FloatingPointType, const size_t Width2, typename LimbType, typename AllocatorType, const bool IsSigned> constexpr auto operator> (const FloatingPointType& f, const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& v) -> std::enable_if_t<std::is_floating_point<FloatingPointType>::value, bool> { return uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(f) >  v; }
-  template<typename FloatingPointType, const size_t Width2, typename LimbType, typename AllocatorType, const bool IsSigned> constexpr auto operator< (const FloatingPointType& f, const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& v) -> std::enable_if_t<std::is_floating_point<FloatingPointType>::value, bool> { return uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(f) <  v; }
-  template<typename FloatingPointType, const size_t Width2, typename LimbType, typename AllocatorType, const bool IsSigned> constexpr auto operator>=(const FloatingPointType& f, const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& v) -> std::enable_if_t<std::is_floating_point<FloatingPointType>::value, bool> { return uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(f) >= v; }
-  template<typename FloatingPointType, const size_t Width2, typename LimbType, typename AllocatorType, const bool IsSigned> constexpr auto operator<=(const FloatingPointType& f, const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& v) -> std::enable_if_t<std::is_floating_point<FloatingPointType>::value, bool> { return uintwide_t<Width2, LimbType, AllocatorType, IsSigned>(f) <= v; }
-  #endif // !defined(WIDE_INTEGER_DISABLE_FLOAT_INTEROP)
 
   #if !defined(WIDE_INTEGER_DISABLE_IOSTREAM)
 
