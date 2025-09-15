@@ -529,7 +529,7 @@ namespace example013_ecdsa
 
       if((x1 == x2) && (y1 != y2))
       {
-        // point1 + (-point1) = 0
+        // Equivalent to: point1 + (-point1) = 0
         return point_type { }; // LCOV_EXCL_LINE
       }
 

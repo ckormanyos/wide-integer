@@ -970,7 +970,9 @@ auto test_various_roots_and_pow_etc() -> bool
     {
       const auto cbrt_u = cbrt(u);
 
-      const auto result_cbrt_is_ok = (cbrt_u == cbrt_ctrl[i++]); // NOLINT(cppcoreguidelines-pro-bounds-constant-array-index)
+      const auto result_cbrt_is_ok = (cbrt_u == cbrt_ctrl[i]); // NOLINT(cppcoreguidelines-pro-bounds-constant-array-index)
+
+      ++i;
 
       result_is_ok = (result_cbrt_is_ok && result_is_ok);
     }
@@ -1223,7 +1225,7 @@ auto test_some_gcd_and_equal_left_right() -> bool
         static_cast<int>(std::numeric_limits<local_uintwide_t_small_unsigned_type>::digits10 - static_cast<int>(INT8_C(1)))
       );
 
-    const auto right = left;
+    const auto& right = left;
 
     {
       const auto result_gcd_left_equal_right_is_ok = ((left == right) && (gcd(left, right) == left));
@@ -1233,7 +1235,7 @@ auto test_some_gcd_and_equal_left_right() -> bool
 
     {
       const auto u_left  = left + static_cast<unsigned>(UINT8_C(1));
-      const auto v_right = right;
+      const auto& v_right = right;
 
       const auto result_gcd_left_unequal_right_is_ok = ((u_left != v_right) && (gcd(u_left, v_right) != u_left));
 

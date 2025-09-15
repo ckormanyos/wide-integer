@@ -1212,6 +1212,15 @@
     return out;
   }
 
+  template<typename NumericType>
+  constexpr auto div_maker_recursive(NumericType& val_to_divide, const NumericType& denom, const int power) -> void // NOLINT(misc-no-recursion)
+  {
+    if(power > 0)
+    {
+      div_maker_recursive(val_to_divide /= denom, denom, power - 1); // NOLINT(misc-no-recursion)
+    }
+  }
+
   } // namespace detail
 
   using detail::size_t;
@@ -1690,7 +1699,7 @@
         // Exclude this line from code coverage, even though explicit
         // test cases (search for "result_overshift_is_ok") are known
         // to cover this line.
-        detail::fill_unsafe(base_class_type::begin(), base_class_type::end(), value_in); // LCOV_EXCL_LINE
+        detail::fill_unsafe(base_class_type::begin(), base_class_type::end(), value_in);
       }
     }
 
@@ -2485,7 +2494,7 @@
     {
       if(this == &other)
       {
-        detail::fill_unsafe(values.begin(), values.end(), static_cast<typename representation_type::value_type>(UINT8_C(0))); // LCOV_EXCL_LINE
+        detail::fill_unsafe(values.begin(), values.end(), static_cast<typename representation_type::value_type>(UINT8_C(0)));
       }
       else
       {
@@ -2899,7 +2908,9 @@
 
         if(t.is_zero())
         {
-          str_temp[static_cast<typename string_storage_oct_type::size_type>(--pos)] = '0';
+          --pos;
+
+          str_temp[static_cast<typename string_storage_oct_type::size_type>(pos)] = '0';
         }
         else
         {
@@ -2909,7 +2920,9 @@
 
             if(c <= static_cast<char>(INT8_C(8))) { c = static_cast<char>(c + static_cast<char>(INT8_C(0x30))); }
 
-            str_temp[static_cast<typename string_storage_oct_type::size_type>(--pos)] = c;
+            --pos;
+
+            str_temp[static_cast<typename string_storage_oct_type::size_type>(pos)] = c;
 
             t >>= static_cast<unsigned>(UINT8_C(3));
           }
@@ -2917,12 +2930,16 @@
 
         if(show_base && (pos > signed_fast_type { UINT8_C(0) }))
         {
-          str_temp[static_cast<typename string_storage_oct_type::size_type>(--pos)] = '0';
+          --pos;
+
+          str_temp[static_cast<typename string_storage_oct_type::size_type>(pos)] = '0';
         }
 
         if(show_pos && (pos > signed_fast_type { UINT8_C(0) }))
         {
-          str_temp[static_cast<typename string_storage_oct_type::size_type>(--pos)] = '+';
+          --pos;
+
+          str_temp[static_cast<typename string_storage_oct_type::size_type>(pos)] = '+';
         }
 
         if(field_width != static_cast<unsigned_fast_type>(UINT8_C(0)))
@@ -2931,7 +2948,9 @@
 
           while(static_cast<signed_fast_type>(pos) > static_cast<signed_fast_type>((str_temp.size() - UINT8_C(1)) - static_cast<size_t>(field_width))) // NOLINT(altera-id-dependent-backward-branch)
           {
-            str_temp[static_cast<typename string_storage_oct_type::size_type>(--pos)] = fill_char_str;
+            --pos;
+
+            str_temp[static_cast<typename string_storage_oct_type::size_type>(pos)] = fill_char_str;
           }
         }
 
@@ -2977,7 +2996,9 @@
 
         if(t.is_zero())
         {
-          str_temp[static_cast<typename string_storage_dec_type::size_type>(--pos)] = '0';
+          --pos;
+
+          str_temp[static_cast<typename string_storage_dec_type::size_type>(pos)] = '0';
         }
         else
         {
@@ -2987,7 +3008,9 @@
 
             t.eval_divide_by_single_limb(static_cast<limb_type>(UINT8_C(10)), 0U, nullptr);
 
-            str_temp[static_cast<typename string_storage_dec_type::size_type>(--pos)] =
+            --pos;
+
+            str_temp[static_cast<typename string_storage_dec_type::size_type>(pos)] =
               static_cast<char>
               (
                   static_cast<limb_type>
@@ -3003,11 +3026,15 @@
         {
           if(show_pos && (!str_has_neg_sign))
           {
-            str_temp[static_cast<typename string_storage_dec_type::size_type>(--pos)] = '+';
+            --pos;
+
+            str_temp[static_cast<typename string_storage_dec_type::size_type>(pos)] = '+';
           }
           else if(str_has_neg_sign)
           {
-            str_temp[static_cast<typename string_storage_dec_type::size_type>(--pos)] = '-';
+            --pos;
+
+            str_temp[static_cast<typename string_storage_dec_type::size_type>(pos)] = '-';
           }
         }
 
@@ -3017,7 +3044,9 @@
 
           while(static_cast<signed_fast_type>(pos) > static_cast<signed_fast_type>((str_temp.size() - size_t { UINT8_C(1) }) - static_cast<size_t>(field_width))) // NOLINT(altera-id-dependent-backward-branch)
           {
-            str_temp[static_cast<typename string_storage_dec_type::size_type>(--pos)] = fill_char_str;
+            --pos;
+
+            str_temp[static_cast<typename string_storage_dec_type::size_type>(pos)] = fill_char_str;
           }
         }
 
@@ -3056,7 +3085,9 @@
 
         if(t.is_zero())
         {
-          str_temp[static_cast<typename string_storage_hex_type::size_type>(--pos)] = '0';
+          --pos;
+
+          str_temp[static_cast<typename string_storage_hex_type::size_type>(pos)] = '0';
         }
         else
         {
@@ -3073,14 +3104,20 @@
 
         if(show_base && (pos > signed_fast_type { UINT8_C(1) }))
         {
-          str_temp[static_cast<typename string_storage_hex_type::size_type>(--pos)] = (is_uppercase ? 'X' : 'x');
+          --pos;
 
-          str_temp[static_cast<typename string_storage_hex_type::size_type>(--pos)] = '0';
+          str_temp[static_cast<typename string_storage_hex_type::size_type>(pos)] = (is_uppercase ? 'X' : 'x');
+
+          --pos;
+
+          str_temp[static_cast<typename string_storage_hex_type::size_type>(pos)] = '0';
         }
 
         if(show_pos && (pos > signed_fast_type { UINT8_C(0) }))
         {
-          str_temp[static_cast<typename string_storage_hex_type::size_type>(--pos)] = '+';
+          --pos;
+
+          str_temp[static_cast<typename string_storage_hex_type::size_type>(pos)] = '+';
         }
 
         if(field_width != static_cast<unsigned_fast_type>(UINT8_C(0)))
@@ -3089,7 +3126,9 @@
 
           while(static_cast<signed_fast_type>(pos) > static_cast<signed_fast_type>((str_temp.size() - size_t { UINT8_C(1) }) - static_cast<size_t>(field_width))) // NOLINT(altera-id-dependent-backward-branch)
           {
-            str_temp[static_cast<typename string_storage_hex_type::size_type>(--pos)] = fill_char_str;
+            --pos;
+
+            str_temp[static_cast<typename string_storage_hex_type::size_type>(pos)] = fill_char_str;
           }
         }
 
@@ -5401,11 +5440,11 @@
         {
           if(base == static_cast<std::uint_fast8_t>(UINT8_C(8)))
           {
-            char_is_valid = ((c >= '0') && (c <= '8'));
+            char_is_valid = ((c >= '0') && (c <= '7'));
 
             if(char_is_valid)
             {
-              const auto uc_oct = static_cast<std::uint8_t>(c - static_cast<char>(UINT8_C(0x30)));
+              const auto uc_oct = static_cast<std::uint8_t>(c - '0');
 
               static_cast<void>(operator<<=(static_cast<unsigned>(UINT8_C(3))));
 
@@ -5418,7 +5457,7 @@
 
             if(char_is_valid)
             {
-              const auto uc_dec = static_cast<std::uint8_t>(c - static_cast<char>(UINT8_C(0x30)));
+              const auto uc_dec = static_cast<std::uint8_t>(c - '0');
 
               static_cast<void>(mul_by_limb(static_cast<limb_type>(UINT8_C(10))));
 
@@ -6199,21 +6238,19 @@
       {
         s = u;
 
-        local_wide_integer_type m_over_s_pow_3_minus_one = m;
+        local_wide_integer_type m_over_s_pow_3_minus_one(m);
 
-        for(auto   j = static_cast<unsigned_fast_type>(UINT8_C(0));
-                   j < static_cast<unsigned_fast_type>(static_cast<unsigned>(3U - 1U));
-                 ++j)
-        {
-          // Use a loop here to divide by s^(3 - 1) because
-          // without a loop, s^(3 - 1) is likely to overflow.
-
-          m_over_s_pow_3_minus_one /= s;
-        }
+        // Use an unrolled loop to divide by s^2 here.
+        // Without a loop, s^2 could potentially overflow.
+        m_over_s_pow_3_minus_one /= s;
+        m_over_s_pow_3_minus_one /= s;
 
         u = ((s * three_minus_one) + m_over_s_pow_3_minus_one) / static_cast<unsigned>(UINT8_C(3));
 
-        if(u >= s) { break; }
+        if(u >= s)
+        {
+          break;
+        }
       }
     }
 
@@ -6282,19 +6319,19 @@
         {
           s = u;
 
-          local_wide_integer_type m_over_s_pow_k_minus_one = m;
+          local_wide_integer_type m_over_s_pow_k_minus_one(m);
 
-          for(auto j = static_cast<unsigned_fast_type>(UINT8_C(0)); j < k_minus_one; ++j) // NOLINT(altera-id-dependent-backward-branch)
-          {
-            // Use a loop here to divide by s^(k - 1) because
-            // without a loop, s^(k - 1) is likely to overflow.
-
-            m_over_s_pow_k_minus_one /= s;
-          }
+          // Use a recursive call here to divide by s^(k - 1). This behaves like
+          // a loop. Without a "loop" (i.e., a recursive call) here, s^(k - 1)
+          // could potentially overflow.
+          detail::div_maker_recursive(m_over_s_pow_k_minus_one, s, static_cast<int>(k_minus_one));
 
           u = ((s * k_minus_one) + m_over_s_pow_k_minus_one) / k;
 
-          if(u >= s) { break; } // LCOV_EXCL_LINE
+          if(u >= s)
+          {
+            break;
+          }
         }
       }
     }
@@ -6901,27 +6938,10 @@
 
       return result;
     }
+
+    friend constexpr auto operator==(const uniform_int_distribution& lhs, const uniform_int_distribution& rhs) -> bool { return (lhs.param() == rhs.param()); }
+    friend constexpr auto operator!=(const uniform_int_distribution& lhs, const uniform_int_distribution& rhs) -> bool { return (lhs.param() != rhs.param()); }
   };
-
-  template<const size_t Width2,
-           typename LimbType,
-           typename AllocatorType,
-           const bool IsSigned>
-  constexpr auto operator==(const uniform_int_distribution<Width2, LimbType, AllocatorType, IsSigned>& lhs,
-                            const uniform_int_distribution<Width2, LimbType, AllocatorType, IsSigned>& rhs) -> bool
-  {
-    return (lhs.param() == rhs.param());
-  }
-
-  template<const size_t Width2,
-           typename LimbType,
-           typename AllocatorType,
-           const bool IsSigned>
-  constexpr auto operator!=(const uniform_int_distribution<Width2, LimbType, AllocatorType, IsSigned>& lhs,
-                            const uniform_int_distribution<Width2, LimbType, AllocatorType, IsSigned>& rhs) -> bool
-  {
-    return (lhs.param() != rhs.param());
-  }
 
   template<typename DistributionType,
            typename GeneratorType,
@@ -7149,7 +7169,7 @@
         {
           // Continue with the next value of y.
 
-          // Manually calculate: y = powm(y, 2, np);
+          // Manually calculate: y-squared-mod-np;
 
           local_double_width_type yd { y };
 

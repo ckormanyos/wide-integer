@@ -1,5 +1,5 @@
 ﻿///////////////////////////////////////////////////////////////////////////////
-//  Copyright Christopher Kormanyos 2019 - 2024.
+//  Copyright Christopher Kormanyos 2019 - 2025.
 //  Distributed under the Boost Software License,
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -953,25 +953,21 @@ auto local_test_spot_values::test() -> bool // NOLINT(readability-function-cogni
     static_assert(std::is_trivially_constructible<local_int160_type,  const local_int160_type& >::value, "Error: Types are not trivially constructible");
 
     // Static test of conversion rules.
-    //                               <local_uint128_type, local_uint128_type>
     static_assert(std::is_convertible<local_uint128_type, local_int128_type >::value, "Error: Types are not convertible");
     static_assert(std::is_convertible<local_uint128_type, local_uint160_type>::value, "Error: Types are not convertible");
     static_assert(std::is_convertible<local_uint128_type, local_int160_type >::value, "Error: Types are not convertible");
 
     static_assert(std::is_convertible<local_int128_type,  local_uint128_type>::value, "Error: Types are not convertible");
-    //                               <local_int128_type,  local_int128_type >
     static_assert(std::is_convertible<local_int128_type,  local_uint160_type>::value, "Error: Types are not convertible");
     static_assert(std::is_convertible<local_int128_type,  local_int160_type >::value, "Error: Types are not convertible");
 
     static_assert(std::is_convertible<local_uint160_type, local_uint128_type>::value, "Error: Types are not convertible");
     static_assert(std::is_convertible<local_uint160_type, local_int128_type >::value, "Error: Types are not convertible");
-    //                               <local_uint160_type, local_uint160_type>
     static_assert(std::is_convertible<local_uint160_type, local_int160_type >::value, "Error: Types are not convertible");
 
     static_assert(std::is_convertible<local_int160_type,  local_uint128_type>::value, "Error: Types are not convertible");
     static_assert(std::is_convertible<local_int160_type,  local_int128_type >::value, "Error: Types are not convertible");
     static_assert(std::is_convertible<local_int160_type,  local_uint160_type>::value, "Error: Types are not convertible");
-    //                               <local_int160_type,  local_int160_type >
   }
 
   {
