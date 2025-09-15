@@ -1213,11 +1213,11 @@
   }
 
   template<typename NumericType>
-  constexpr auto div_maker_recursive(NumericType& val_to_divide, const NumericType& denom, const int power) -> void
+  constexpr auto div_maker_recursive(NumericType& val_to_divide, const NumericType& denom, const int power) -> void // NOLINT(misc-no-recursion)
   {
     if(power > 0)
     {
-      div_maker_recursive(val_to_divide /= denom, denom, power - 1);
+      div_maker_recursive(val_to_divide /= denom, denom, power - 1); // NOLINT(misc-no-recursion)
     }
   }
 
