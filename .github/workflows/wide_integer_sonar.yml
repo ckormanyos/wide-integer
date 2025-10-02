@@ -39,7 +39,9 @@ jobs:
       uses: SonarSource/sonarqube-scan-action@v6.0.0
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
       with:
         args: >
           --define sonar.cfamily.compile-commands=${{ runner.workspace }}/build_wrapper_output_directory/compile_commands.json
+          -Dsonar.organization=ckormanyos
+          -Dsonar.projectName=wide-integer
+          -Dsonar.projectKey=ckormanyos_wide-integer
