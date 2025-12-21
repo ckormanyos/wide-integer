@@ -8,9 +8,9 @@ else()
   set(WIDE_INTEGER_MASTER_PROJECT OFF)
 endif()
 
-option(ENABLE_TESTS "Enable/disable tests" ${WIDE_INTEGER_MASTER_PROJECT})
+option(WIDE_INTEGER_ENABLE_TESTS "Enable/disable tests" ${WIDE_INTEGER_MASTER_PROJECT})
 
-if (ENABLE_TESTS)
+if (WIDE_INTEGER_ENABLE_TESTS)
   find_package(Boost)
   if (Boost_FOUND)
     include(CTest)
