@@ -13,7 +13,7 @@
   #pragma GCC diagnostic ignored "-Wmissing-declarations"
   #endif
 
-  #if ((__cplusplus < 202100L) || (defined(__GNUC__) && defined(__AVR__)))
+  #if ((__cplusplus < 202002L) || (defined(__GNUC__) && defined(__AVR__)))
   #include <ciso646>
   #else
   #include <version>
