@@ -878,7 +878,7 @@ and [issue 398](https://github.com/ckormanyos/wide-integer/issues/398).
 Support for importing and exporting bits is granted by the subroutines
 `import_bits()` and `export_bits()`. Their interfaces, input/output forms
 and constraints are intended to be identical with those used in
-[Boost's import/export-bits functions](https://www.boost.org/doc/libs/1_80_0/libs/multiprecision/doc/html/boost_multiprecision/tut/import_export.html).
+[Boost's import/export-bits functions](https://www.boost.org/doc/libs/1_90_0/libs/multiprecision/doc/html/boost_multiprecision/tut/import_export.html).
 
 ### Alternatives and limitations
 
@@ -886,7 +886,7 @@ Alternative libraries for big integral types include,
 among others, most notably
 [GMP](https://gmplib.org/)
 and
-[`Boost.Multiprecision`](https://www.boost.org/doc/libs/1_79_0/libs/multiprecision/doc/html/index.html).
+[`Boost.Multiprecision`](https://www.boost.org/doc/libs/1_90_0/libs/multiprecision/doc/html/index.html).
 
 At the moment, the digit range of wide-integer is limited
 to the granularity of the full limb type.
