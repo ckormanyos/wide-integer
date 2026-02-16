@@ -29,30 +29,35 @@ echo 'compiling test/fuzzing/test_fuzzing_prime.cpp' && clang++ -std=c++20 -g -O
 ls -la test_fuzzing_add test_fuzzing_sub test_fuzzing_mul test_fuzzing_div test_fuzzing_sdiv test_fuzzing_sqrt test_fuzzing_powm test_fuzzing_prime
 exit_compile=$?
 
+rnd_seed=-seed=$(($(date +%s%N) % 4294967295))
+
+echo
+echo seed is $rnd_seed
+echo
 
 # Start each executable in the background and save their process IDs
-./test_fuzzing_add -max_total_time=900 -max_len=34 -verbosity=0 -close_fd_mask=3 &
+./test_fuzzing_add -max_total_time=900 -max_len=34 -verbosity=0 -close_fd_mask=3 $rnd_seed &
 pid_add=$!
 
-./test_fuzzing_sub -max_total_time=900 -max_len=34 -verbosity=0 -close_fd_mask=3 &
+./test_fuzzing_sub -max_total_time=900 -max_len=34 -verbosity=0 -close_fd_mask=3 $rnd_seed &
 pid_sub=$!
 
-./test_fuzzing_mul -max_total_time=900 -max_len=34 -verbosity=0 -close_fd_mask=3 &
+./test_fuzzing_mul -max_total_time=900 -max_len=34 -verbosity=0 -close_fd_mask=3 $rnd_seed &
 pid_mul=$!
 
-./test_fuzzing_div -max_total_time=900 -max_len=34 -verbosity=0 -close_fd_mask=3 &
+./test_fuzzing_div -max_total_time=900 -max_len=34 -verbosity=0 -close_fd_mask=3 $rnd_seed &
 pid_div=$!
 
-./test_fuzzing_sdiv -max_total_time=900 -max_len=34 -verbosity=0 -close_fd_mask=3 &
+./test_fuzzing_sdiv -max_total_time=900 -max_len=34 -verbosity=0 -close_fd_mask=3 $rnd_seed &
 pid_sdiv=$!
 
-./test_fuzzing_sqrt -max_total_time=900 -max_len=34 -verbosity=0 -close_fd_mask=3 &
+./test_fuzzing_sqrt -max_total_time=900 -max_len=34 -verbosity=0 -close_fd_mask=3 $rnd_seed &
 pid_sqrt=$!
 
-./test_fuzzing_powm -max_total_time=900 -max_len=34 -verbosity=0 -close_fd_mask=3 &
+./test_fuzzing_powm -max_total_time=900 -max_len=34 -verbosity=0 -close_fd_mask=3 $rnd_seed &
 pid_powm=$!
 
-./test_fuzzing_prime -max_total_time=900 -max_len=34 -verbosity=0 -close_fd_mask=3 &
+./test_fuzzing_prime -max_total_time=900 -max_len=34 -verbosity=0 -close_fd_mask=3 $rnd_seed &
 pid_prime=$!
 
 
