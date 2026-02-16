@@ -5707,7 +5707,7 @@
     const auto show_base    = ((my_flags & std::ios::showbase)  == std::ios::showbase);
     const auto is_uppercase = ((my_flags & std::ios::uppercase) == std::ios::uppercase);
 
-    auto base_rep = std::uint_fast8_t { };
+    std::uint_fast8_t base_rep { };
 
     if     ((my_flags & std::ios::oct) == std::ios::oct) { base_rep = static_cast<std::uint_fast8_t>(UINT8_C( 8)); }
     else if((my_flags & std::ios::hex) == std::ios::hex) { base_rep = static_cast<std::uint_fast8_t>(UINT8_C(16)); }
@@ -5800,7 +5800,7 @@
   auto operator>>(std::basic_istream<char_type, traits_type>& in,
                   uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& x) -> std::basic_istream<char_type, traits_type>&
   {
-    std::string str_in;
+    std::string str_in { };
 
     in >> str_in;
 
@@ -5837,11 +5837,11 @@
   {
     using local_floating_point_type = FloatingPointType;
 
-    const auto x_is_neg = (x < static_cast<local_floating_point_type>(0.0L));
+    const bool x_is_neg { (x < static_cast<local_floating_point_type>(0.0L)) };
 
     local_floating_point_type f = (x_is_neg ? -x : x); // NOLINT(altera-id-dependent-backward-branch)
 
-    auto e2 = static_cast<int>(INT8_C(0));
+    int e2 { static_cast<int>(INT8_C(0)) };
 
     constexpr auto two_pow32 =
       static_cast<long double>
@@ -5888,7 +5888,7 @@
   {
     using local_floating_point_type = FloatingPointType;
 
-    auto x_is_finite = true;
+    bool x_is_finite { true };
 
     const auto x_is_nan = (x != x);
 
@@ -6141,7 +6141,7 @@
 
     using local_wide_integer_type = uintwide_t<Width2, LimbType, AllocatorType, IsSigned>;
 
-    local_wide_integer_type s;
+    local_wide_integer_type s { };
 
     if(m.is_zero() || local_wide_integer_type::is_neg(m))
     {
@@ -6350,8 +6350,8 @@
     using local_wide_integer_type = uintwide_t<Width2, LimbType, AllocatorType, IsSigned>;
     using local_limb_type         = typename local_wide_integer_type::limb_type;
 
-    local_wide_integer_type result;
-    auto p0 = static_cast<local_limb_type>(p);
+    local_wide_integer_type result { };
+    local_limb_type p0 { static_cast<local_limb_type>(p) };
 
     if((p0 == static_cast<local_limb_type>(UINT8_C(0))) && (p == static_cast<OtherIntegralTypeP>(0)))
     {
@@ -6370,8 +6370,8 @@
     {
       result = local_wide_integer_type(static_cast<std::uint8_t>(UINT8_C(1)));
 
-      local_wide_integer_type y      (b);
-      local_wide_integer_type p_local(p);
+      local_wide_integer_type y       { b };
+      local_wide_integer_type p_local { p };
 
       while(((p0 = static_cast<local_limb_type>(p_local)) != static_cast<local_limb_type>(UINT8_C(0))) || (p_local != static_cast<local_wide_integer_type>(UINT8_C(0)))) // NOLINT(altera-id-dependent-backward-branch)
       {
@@ -6405,11 +6405,11 @@
     using local_double_width_type = typename local_normal_width_type::double_width_type;
     using local_limb_type         = typename local_normal_width_type::limb_type;
 
-          local_normal_width_type result;
-          local_double_width_type y      (b);
-    const local_double_width_type m_local(m);
+          local_normal_width_type result  { };
+          local_double_width_type y       { b };
+    const local_double_width_type m_local { m };
 
-    auto p0 = static_cast<local_limb_type>(p); // NOLINT(altera-id-dependent-backward-branch)
+    local_limb_type p0 { static_cast<local_limb_type>(p) }; // NOLINT(altera-id-dependent-backward-branch)
 
     if((p0 == static_cast<local_limb_type>(UINT8_C(0))) && (p == static_cast<OtherIntegralTypeP>(static_cast<int>(INT8_C(0)))))
     {
@@ -6693,8 +6693,8 @@
     using divmod_result_pair_type =
       std::pair<local_unknown_signedness_left_type, local_unknown_signedness_right_type>;
 
-    auto result =
-      divmod_result_pair_type
+    divmod_result_pair_type
+      result
       {
         local_unknown_signedness_left_type  { },
         local_unknown_signedness_right_type { }
@@ -6957,10 +6957,10 @@
     // This Miller-Rabin primality test is loosely based on
     // an adaptation of some code from Boost.Multiprecision.
     // The Boost.Multiprecision code can be found here:
-    // https://www.boost.org/doc/libs/1_89_0/libs/multiprecision/doc/html/boost_multiprecision/tut/primetest.html
+    // https://www.boost.org/doc/libs/1_90_0/libs/multiprecision/doc/html/boost_multiprecision/tut/primetest.html
 
     // Note: Some comments in this subroutine use the Wolfram Language(TM).
-    // These can be exercised at the web links to WolframAlpha(R) provided
+    // These can be exercised at the web links to WolframAlpha(R) provided.
 
     using local_wide_integer_type = uintwide_t<Width2, LimbType, AllocatorType, IsSigned>;
     using local_limb_type         = typename local_wide_integer_type::limb_type;

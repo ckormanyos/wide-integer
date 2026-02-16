@@ -1,7 +1,13 @@
-#!/bin/bash
+#!/usr/bin/env bash
+#
+#  Copyright Christopher Kormanyos 2024 - 2026.
+#  Distributed under the Boost Software License,
+#  Version 1.0. (See accompanying file LICENSE_1_0.txt
+#  or copy at http://www.boost.org/LICENSE_1_0.txt)
+#
 
 # Example call:
-# bash run_fuzzing.sh /mnt/c/boost/boost_1_87_0
+# bash run_fuzzing.sh /mnt/c/boost/boost_1_90_0
 
 if [[ "$1" != "" ]]; then
     MY_BOOST="$1"
