@@ -303,6 +303,7 @@
       <Filter>.github\workflows</Filter>
     </None>
     <None Include="run_fuzzing.sh" />
+    <None Include="Makefile" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="examples\CMakeLists.txt">
