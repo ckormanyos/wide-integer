@@ -1,5 +1,5 @@
 ﻿///////////////////////////////////////////////////////////////////
-//  Copyright Christopher Kormanyos 2019 - 2025.                 //
+//  Copyright Christopher Kormanyos 2019 - 2026.                 //
 //  Distributed under the Boost Software License,                //
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt          //
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)             //
@@ -950,7 +950,19 @@
       static constexpr bool                    has_infinity      = false;
       static constexpr bool                    has_quiet_NaN     = false;
       static constexpr bool                    has_signaling_NaN = false;
+      #ifdef _MSC_VER
+      #  pragma warning(push)
+      #  pragma warning(disable : 4996)
+      #elif (defined(__clang__) && (__clang_major__ >= 17))
+      #  pragma clang diagnostic push
+      #  pragma clang diagnostic ignored "-Wdeprecated-declarations"
+      #endif
       static constexpr std::float_denorm_style has_denorm        = std::denorm_absent;
+      #ifdef _MSC_VER
+      #pragma warning(pop)
+      #elif (defined(__clang__) && (__clang_major__ >= 17))
+      #  pragma clang diagnostic pop
+      #endif
       static constexpr bool                    has_denorm_loss   = false;
       static constexpr bool                    traps             = false;
       static constexpr bool                    tinyness_before   = false;
@@ -1002,7 +1014,19 @@
     template<const WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t MyWidth2, typename MyLimbType, typename MyAllocatorType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr bool                    std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>, ExpressionTemplatesOptions>>::has_infinity;      // NOLINT(readability-redundant-declaration)
     template<const WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t MyWidth2, typename MyLimbType, typename MyAllocatorType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr bool                    std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>, ExpressionTemplatesOptions>>::has_quiet_NaN;     // NOLINT(readability-redundant-declaration)
     template<const WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t MyWidth2, typename MyLimbType, typename MyAllocatorType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr bool                    std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>, ExpressionTemplatesOptions>>::has_signaling_NaN; // NOLINT(readability-redundant-declaration)
+    #ifdef _MSC_VER
+    #  pragma warning(push)
+    #  pragma warning(disable : 4996)
+    #elif (defined(__clang__) && (__clang_major__ >= 17))
+    #  pragma clang diagnostic push
+    #  pragma clang diagnostic ignored "-Wdeprecated-declarations"
+    #endif
     template<const WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t MyWidth2, typename MyLimbType, typename MyAllocatorType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr std::float_denorm_style std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>, ExpressionTemplatesOptions>>::has_denorm;        // NOLINT(readability-redundant-declaration)
+    #ifdef _MSC_VER
+    #pragma warning(pop)
+    #elif (defined(__clang__) && (__clang_major__ >= 17))
+    #  pragma clang diagnostic pop
+    #endif
     template<const WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t MyWidth2, typename MyLimbType, typename MyAllocatorType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr bool                    std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>, ExpressionTemplatesOptions>>::has_denorm_loss;   // NOLINT(readability-redundant-declaration)
     template<const WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t MyWidth2, typename MyLimbType, typename MyAllocatorType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr bool                    std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>, ExpressionTemplatesOptions>>::traps;             // NOLINT(readability-redundant-declaration)
     template<const WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t MyWidth2, typename MyLimbType, typename MyAllocatorType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr bool                    std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>, ExpressionTemplatesOptions>>::tinyness_before;   // NOLINT(readability-redundant-declaration)
@@ -1028,7 +1052,19 @@
     template<const ::math::wide_integer::size_t MyWidth2, typename MyLimbType, typename MyAllocatorType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr bool                    std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>, ExpressionTemplatesOptions>>::has_infinity;      // NOLINT(readability-redundant-declaration)
     template<const ::math::wide_integer::size_t MyWidth2, typename MyLimbType, typename MyAllocatorType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr bool                    std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>, ExpressionTemplatesOptions>>::has_quiet_NaN;     // NOLINT(readability-redundant-declaration)
     template<const ::math::wide_integer::size_t MyWidth2, typename MyLimbType, typename MyAllocatorType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr bool                    std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>, ExpressionTemplatesOptions>>::has_signaling_NaN; // NOLINT(readability-redundant-declaration)
+    #ifdef _MSC_VER
+    #  pragma warning(push)
+    #  pragma warning(disable : 4996)
+    #elif (defined(__clang__) && (__clang_major__ >= 17))
+    #  pragma clang diagnostic push
+    #  pragma clang diagnostic ignored "-Wdeprecated-declarations"
+    #endif
     template<const ::math::wide_integer::size_t MyWidth2, typename MyLimbType, typename MyAllocatorType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr std::float_denorm_style std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>, ExpressionTemplatesOptions>>::has_denorm;        // NOLINT(readability-redundant-declaration)
+    #ifdef _MSC_VER
+    #pragma warning(pop)
+    #elif (defined(__clang__) && (__clang_major__ >= 17))
+    #  pragma clang diagnostic pop
+    #endif
     template<const ::math::wide_integer::size_t MyWidth2, typename MyLimbType, typename MyAllocatorType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr bool                    std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>, ExpressionTemplatesOptions>>::has_denorm_loss;   // NOLINT(readability-redundant-declaration)
     template<const ::math::wide_integer::size_t MyWidth2, typename MyLimbType, typename MyAllocatorType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr bool                    std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>, ExpressionTemplatesOptions>>::traps;             // NOLINT(readability-redundant-declaration)
     template<const ::math::wide_integer::size_t MyWidth2, typename MyLimbType, typename MyAllocatorType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr bool                    std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>, ExpressionTemplatesOptions>>::tinyness_before;   // NOLINT(readability-redundant-declaration)
