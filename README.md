@@ -323,7 +323,7 @@ A sample command line for building the executable `wide_integer`
 with the Makefile is shown below.
 
 ```sh
-make MY_CC=clang++ MY_STD=c++23 MY_BOOST_ROOT=../boost-root_0 all
+make MY_CC=clang++ MY_STD=c++23 MY_BOOST_ROOT=../boost-root all
 ```
 
 ## Testing, CI and Quality Checks
