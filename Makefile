@@ -111,7 +111,7 @@ endif
 
 
 compile_and_link :
-	$(ECHO) +++ compiling and linking to wide_integer
-	$(ECHO)
-	$(CC) $(CPPFLAGS) $(C_INCLUDES) $(LDFLAGS) $(FILES_SRC) -o wide_integer
-	$(ECHO)
+	@-$(ECHO) +++ compiling and linking to wide_integer
+	@-$(ECHO)
+	@-$(CC) $(CPPFLAGS) $(C_INCLUDES) $(LDFLAGS) $(FILES_SRC) -o wide_integer
+	@-$(ECHO)

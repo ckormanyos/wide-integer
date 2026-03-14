@@ -313,6 +313,19 @@ examples/example014_pi_spigot_wide.cpp      \
 -o wide_integer.exe
 ```
 
+### Build on the *nix command line via GNUmake
+
+There is straightforward GNUmake support via [Makefile](./Makefile).
+The Makefile supports various command-line options that allow tuning the compiler,
+language standard, Boost's root directory, etc.
+
+A sample command line for building the executable `wide_integer`
+with the Makefile is shown below.
+
+```sh
+make MY_CC=clang++ MY_STD=c++23 MY_BOOST_ROOT=../boost-root all
+```
+
 ## Testing, CI and Quality Checks
 
 ### Testing
