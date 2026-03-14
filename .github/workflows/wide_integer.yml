@@ -148,12 +148,12 @@ jobs:
       - name: gcc-clang-native
         run: |
           grep BOOST_VERSION ../boost-root/boost/version.hpp
-          echo "compile ./wide_integer.exe" (use the Makefile)
+          echo "compile and link to ./wide_integer via Makefile"
           ${{ matrix.compiler }} -v
           make MY_STD=${{ matrix.standard }} MY_CC=${{ matrix.compiler }} MY_BOOST_ROOT=../boost-root all
-          echo "ls ./wide_integer.exe"
-          ls -la ./wide_integer.exe
-          ./wide_integer.exe
+          echo "ls ./wide_integer"
+          ls -la ./wide_integer
+          ./wide_integer
   gcc-clang-native-limb_type_uint64_t:
     runs-on: ubuntu-latest
     defaults:
