@@ -5,7 +5,8 @@
 #  or copy at http://www.boost.org/LICENSE_1_0.txt)
 #
 
-# local machine
+# My local machine
+# cd /mnt/c/Users/ckorm/Documents/Ks/PC_Software/NumericalPrograms/ExtendedNumberTypes/wide_integer
 # make MY_CC=g++ MY_BOOST_ROOT=/mnt/c/boost/boost_1_90_0 all
 
 # MacOS with brew llvm
@@ -110,8 +111,13 @@ ifeq ($(MY_BREW),brew)
 LDFLAGS      += -L/opt/homebrew/opt/llvm/lib
 endif
 
+clean :
+	@-$(ECHO)
+	@-$(ECHO) +++ cleaning
+	@-rm -f ./wide_integer || true
 
-compile_and_link :
+
+compile_and_link : clean
 	@-$(ECHO)
 	@-$(ECHO) +++ print compiler version
 	@-$(CC) --version
@@ -120,6 +126,6 @@ compile_and_link :
 	@-$(ECHO)
 	-$(CC) $(CPPFLAGS) $(C_DEFINES) $(C_INCLUDES) $(LDFLAGS) $(FILES_SRC) -o wide_integer
 	@-$(ECHO)
-	@-$(ECHO) +++ created executable wide_integer
+	@-$(ECHO) +++ check for executable wide_integer
 	-ls -la ./wide_integer
 	@-$(ECHO)
