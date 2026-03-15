@@ -88,7 +88,8 @@ CPPFLAGS     := -std=$(STD)                                         \
 
 
 C_DEFINES    := -DWIDE_INTEGER_HAS_LIMB_TYPE_UINT64                 \
-                -DWIDE_INTEGER_HAS_MUL_8_BY_8_UNROLL
+                -DWIDE_INTEGER_HAS_MUL_8_BY_8_UNROLL                \
+                -DWIDE_INTEGER_NAMESPACE=ckormanyos
 
 
 C_INCLUDES   := -I.                                                 \
@@ -117,7 +118,8 @@ compile_and_link :
 	@-$(ECHO)
 	@-$(ECHO) +++ compiling and linking to wide_integer
 	@-$(ECHO)
-	-$(CC) $(CPPFLAGS) $(C_INCLUDES) $(LDFLAGS) $(FILES_SRC) -o wide_integer
+	-$(CC) $(CPPFLAGS) $(C_DEFINES) $(C_INCLUDES) $(LDFLAGS) $(FILES_SRC) -o wide_integer
 	@-$(ECHO)
 	@-$(ECHO) +++ created executable wide_integer
+	-ls -la ./wide_integer
 	@-$(ECHO)
