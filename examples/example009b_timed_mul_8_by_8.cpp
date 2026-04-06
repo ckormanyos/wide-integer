@@ -47,6 +47,8 @@ namespace local_timed_mul_8_by_8
   using big_uint_type = ::math::wide_integer::uintwide_t<static_cast<math::wide_integer::size_t>(UINT32_C(256))>;
   #endif
 
+  auto local_a() -> std::vector<big_uint_type>&;
+
   auto local_a() -> std::vector<big_uint_type>&
   {
     static std::vector<big_uint_type>
@@ -57,6 +59,8 @@ namespace local_timed_mul_8_by_8
 
     return my_local_a;
   }
+
+  auto local_b() -> std::vector<big_uint_type>&;
 
   auto local_b() -> std::vector<big_uint_type>&
   {

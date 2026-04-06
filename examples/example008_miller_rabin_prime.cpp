@@ -43,6 +43,8 @@ namespace local_example008_miller_rabin_prime
   using random_engine1_type = std::linear_congruential_engine<std::uint32_t, UINT32_C(48271), UINT32_C(0), UINT32_C(2147483647)>;
   using random_engine2_type = std::mt19937;
 
+  auto example008_miller_rabin_prime_run() -> bool;
+
   auto example008_miller_rabin_prime_run() -> bool
   {
     // Use a pseudo-random seed for this test.
@@ -95,6 +97,8 @@ namespace local_example008_miller_rabin_prime
 
     return result_is_ok;
   }
+
+  auto example008_miller_rabin_prime_check_known_primes() -> bool;
 
   auto example008_miller_rabin_prime_check_known_primes() -> bool
   {
