@@ -66,7 +66,7 @@ namespace local_int_convert
 {
   auto engine_val() -> std::mt19937&;
   auto engine_sgn() -> std::ranlux24_base&;
-  auto engine_len() -> std::linear_congruential_engine<std::uint32_t, 48271, 0, 2147483647>&;
+  auto engine_len() -> std::linear_congruential_engine<std::uint32_t, 48271, 0, 2147483647>&; // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
 
   auto engine_val() -> std::mt19937&                                                         { static std::mt19937                                                         my_engine_val; return my_engine_val; } // NOLINT(cert-msc32-c,cert-msc51-cpp)
   auto engine_sgn() -> std::ranlux24_base&                                                   { static std::ranlux24_base                                                   my_engine_sgn; return my_engine_sgn; } // NOLINT(cert-msc32-c,cert-msc51-cpp)
