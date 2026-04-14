@@ -49,6 +49,8 @@ namespace local_timed_mul
   using big_uint_type = ::math::wide_integer::uintwide_t<wide_integer_test9_digits2>;
   #endif
 
+  auto local_a() -> std::vector<big_uint_type>&;
+
   auto local_a() -> std::vector<big_uint_type>&
   {
     static std::vector<big_uint_type>
@@ -59,6 +61,8 @@ namespace local_timed_mul
 
     return my_local_a;
   }
+
+  auto local_b() -> std::vector<big_uint_type>&;
 
   auto local_b() -> std::vector<big_uint_type>&
   {

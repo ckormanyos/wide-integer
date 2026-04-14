@@ -194,6 +194,15 @@ using eng_sgn_type = std::ranlux24;
 using eng_dig_type = std::ranlux48;
 using eng_flt_type = eng_dig_type;
 
+auto dist_sgn    () -> std::uniform_int_distribution<std::uint32_t>&;
+auto dist_dig_dec() -> std::uniform_int_distribution<std::uint32_t>&;
+auto dist_dig_hex() -> std::uniform_int_distribution<std::uint32_t>&;
+auto dist_dig_oct() -> std::uniform_int_distribution<std::uint32_t>&;
+
+auto eng_sgn() -> eng_sgn_type&;
+auto eng_dig() -> eng_dig_type&;
+auto eng_flt() -> eng_flt_type&;
+
 auto dist_sgn    () -> std::uniform_int_distribution<std::uint32_t>& { static std::uniform_int_distribution<std::uint32_t> instance(UINT32_C(0), UINT32_C(1));  return instance; } // NOLINT(cert-err58-cpp,cppcoreguidelines-avoid-non-const-global-variables)
 auto dist_dig_dec() -> std::uniform_int_distribution<std::uint32_t>& { static std::uniform_int_distribution<std::uint32_t> instance(UINT32_C(1), UINT32_C(9));  return instance; } // NOLINT(cert-err58-cpp,cppcoreguidelines-avoid-non-const-global-variables)
 auto dist_dig_hex() -> std::uniform_int_distribution<std::uint32_t>& { static std::uniform_int_distribution<std::uint32_t> instance(UINT32_C(1), UINT32_C(15)); return instance; } // NOLINT(cert-err58-cpp,cppcoreguidelines-avoid-non-const-global-variables)
@@ -298,6 +307,8 @@ auto generate_wide_integer_value(bool       is_positive           = true,
 }
 
 #if !defined(UINTWIDE_T_REDUCE_TEST_DEPTH)
+auto test_various_edge_operations() -> bool;
+
 auto test_various_edge_operations() -> bool
 {
   const auto u_max_local = (std::numeric_limits<local_uint_type>::max)();
@@ -415,6 +426,8 @@ auto test_various_edge_operations() -> bool
   return result_is_ok;
 }
 #endif
+
+auto test_various_ostream_ops() -> bool;
 
 auto test_various_ostream_ops() -> bool
 {
@@ -677,6 +690,8 @@ auto test_various_ostream_ops() -> bool
   return result_is_ok;
 }
 
+auto test_ops_n_half_by_n_half() -> bool;
+
 auto test_ops_n_half_by_n_half() -> bool
 {
   auto result_is_ok = true;
@@ -859,6 +874,8 @@ auto test_ops_n_half_by_n_half() -> bool
 
   return result_is_ok;
 }
+
+auto test_various_roots_and_pow_etc() -> bool;
 
 auto test_various_roots_and_pow_etc() -> bool
 {
@@ -1071,6 +1088,8 @@ namespace local_edge_cases
     };
 } // namespace local_edge_cases
 
+auto test_small_prime_and_non_prime() -> bool;
+
 auto test_small_prime_and_non_prime() -> bool
 {
   constexpr auto local_my_width2 = local_uintwide_t_small_unsigned_type::my_width2;
@@ -1206,6 +1225,8 @@ auto test_small_prime_and_non_prime() -> bool
 
   return result_is_ok;
 }
+
+auto test_some_gcd_and_equal_left_right() -> bool;
 
 auto test_some_gcd_and_equal_left_right() -> bool
 {
@@ -1807,6 +1828,8 @@ auto test_various_isolated_edge_cases() -> bool // NOLINT(readability-function-c
   return result_is_ok;
 }
 
+auto test_to_and_from_chars_and_to_string() -> bool;
+
 auto test_to_and_from_chars_and_to_string() -> bool // NOLINT(readability-function-cognitive-complexity)
 {
   eng_sgn().seed(util::util_pseudorandom_time_point_seed::value<typename eng_sgn_type::result_type>());
@@ -2123,6 +2146,8 @@ auto test_to_and_from_chars_and_to_string() -> bool // NOLINT(readability-functi
 
   return result_is_ok;
 }
+
+auto test_import_bits() -> bool;
 
 auto test_import_bits() -> bool // NOLINT(readability-function-cognitive-complexity)
 {
@@ -2443,6 +2468,8 @@ auto test_import_bits() -> bool // NOLINT(readability-function-cognitive-complex
   return result_is_ok;
 }
 
+auto test_export_bits() -> bool;
+
 auto test_export_bits() -> bool // NOLINT(readability-function-cognitive-complexity)
 {
   eng_sgn().seed(util::util_pseudorandom_time_point_seed::value<typename eng_sgn_type::result_type>());
@@ -2633,6 +2660,8 @@ auto test_export_bits() -> bool // NOLINT(readability-function-cognitive-complex
   return result_is_ok;
 }
 
+auto test_edge_uintwide_t_backend() -> bool;
+
 auto test_edge_uintwide_t_backend() -> bool
 {
   using local_small_uintwide_t_backend_type = boost::multiprecision::uintwide_t_backend<local_edge_cases::local_digits2_small>;
@@ -2672,6 +2701,8 @@ auto test_edge_uintwide_t_backend() -> bool
 
 namespace from_pr_454
 {
+  auto test_proj_specific_containers() -> bool;
+
   auto test_proj_specific_containers() -> bool
   {
     bool result_is_ok { true };

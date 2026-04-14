@@ -17,6 +17,8 @@
 
 namespace from_issue_429
 {
+  auto test_uintwide_t_spot_values_from_issue_429() -> bool;
+
   auto test_uintwide_t_spot_values_from_issue_429() -> bool
   {
     #if defined(WIDE_INTEGER_NAMESPACE)
@@ -73,6 +75,8 @@ namespace from_issue_429
 
 namespace from_issue_362
 {
+  auto test_uintwide_t_spot_values_from_issue_362() -> bool;
+
   auto test_uintwide_t_spot_values_from_issue_362() -> bool
   {
     #if defined(WIDE_INTEGER_NAMESPACE)
@@ -93,6 +97,8 @@ namespace from_issue_362
 
 namespace from_issue_342
 {
+  auto test_uintwide_t_spot_values_from_issue_342_pos() -> bool;
+
   auto test_uintwide_t_spot_values_from_issue_342_pos() -> bool
   {
     // See also: https://github.com/ckormanyos/wide-integer/issues/342
@@ -129,6 +135,8 @@ namespace from_issue_342
 
     return result_is_ok;
   }
+
+  auto test_uintwide_t_spot_values_from_issue_342_mix() -> bool;
 
   auto test_uintwide_t_spot_values_from_issue_342_mix() -> bool
   {
@@ -235,6 +243,8 @@ namespace from_issue_339
   using sint2048 = ::math::wide_integer::uintwide_t<uint2048::my_width2, typename uint2048::limb_type, void, true>;
   #endif
 
+  auto modInverse(uint2048 A, uint2048 M) -> uint2048; // NOLINT(readability-identifier-naming)
+
   auto modInverse(uint2048 A, uint2048 M) -> uint2048 // NOLINT(readability-identifier-naming)
   {
     uint4096 m0 = M;
@@ -266,6 +276,8 @@ namespace from_issue_339
 
     return x;
   }
+
+  auto test_uintwide_t_spot_values_from_issue_339_underflow_2048_4096() -> bool;
 
   auto test_uintwide_t_spot_values_from_issue_339_underflow_2048_4096() -> bool
   {
@@ -327,6 +339,8 @@ namespace from_issue_316
      51, 140,   5,  95, 102, 187, 133, 248
   };
 
+  auto test_uintwide_t_spot_values_from_issue_316_import_export_original() -> bool;
+
   auto test_uintwide_t_spot_values_from_issue_316_import_export_original() -> bool
   {
     // See also: https://github.com/ckormanyos/wide-integer/issues/316
@@ -385,6 +399,8 @@ namespace from_issue_316
     return result_is_ok;
   }
 
+  auto test_uintwide_t_spot_values_from_issue_316_import_export_extended() -> bool;
+
   auto test_uintwide_t_spot_values_from_issue_316_import_export_extended() -> bool
   {
     // See also: https://github.com/ckormanyos/wide-integer/issues/316
@@ -432,6 +448,8 @@ namespace from_issue_316
 
 namespace from_issue_266
 {
+  auto test_uintwide_t_spot_values_from_issue_266_inc() -> bool;
+
   auto test_uintwide_t_spot_values_from_issue_266_inc() -> bool
   {
     // See also: https://github.com/ckormanyos/wide-integer/issues/266
@@ -449,6 +467,8 @@ namespace from_issue_266
 
     return result_is_ok;
   }
+
+  auto test_uintwide_t_spot_values_from_issue_266_dec() -> bool;
 
   auto test_uintwide_t_spot_values_from_issue_266_dec() -> bool
   {
@@ -624,6 +644,8 @@ namespace from_pull_request_130
 
 namespace exercise_bad_string_input
 {
+  auto test_uintwide_t_spot_values_exercise_bad_string_input() -> bool;
+
   auto test_uintwide_t_spot_values_exercise_bad_string_input() -> bool
   {
     #if defined(WIDE_INTEGER_NAMESPACE)
@@ -646,6 +668,8 @@ namespace exercise_bad_string_input
 
 namespace exercise_pow_zero_one_two
 {
+  auto test_uintwide_t_spot_values_exercise_pow_zero_one_two() -> bool;
+
   auto test_uintwide_t_spot_values_exercise_pow_zero_one_two() -> bool
   {
     #if defined(WIDE_INTEGER_NAMESPACE)
@@ -675,6 +699,8 @@ namespace exercise_pow_zero_one_two
 
 namespace exercise_octal
 {
+  auto test_uintwide_t_spot_values_exercise_octal() -> bool;
+
   auto test_uintwide_t_spot_values_exercise_octal() -> bool
   {
     #if defined(WIDE_INTEGER_NAMESPACE)

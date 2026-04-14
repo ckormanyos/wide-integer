@@ -8,11 +8,6 @@
 #ifndef UINTWIDE_T_2018_10_02_H // NOLINT(llvm-header-guard)
   #define UINTWIDE_T_2018_10_02_H
 
-  #if defined(__GNUC__)
-  #pragma GCC diagnostic push
-  #pragma GCC diagnostic ignored "-Wmissing-declarations"
-  #endif
-
   #if ((__cplusplus < 202002L) || (defined(__GNUC__) && defined(__AVR__)))
   #include <ciso646>
   #else
@@ -1544,25 +1539,27 @@
            const size_t Width2,
            typename LimbType,
            typename AllocatorType,
+           const bool IsSigned,
            std::enable_if_t<std::numeric_limits<typename detail::iterator_detail::iterator_traits<ForwardIterator>::value_type>::digits == std::numeric_limits<LimbType>::digits> const* = nullptr>
   constexpr
-  auto import_bits(uintwide_t<Width2, LimbType, AllocatorType, false>& val,
+  auto import_bits(uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& val,
                    ForwardIterator first,
                    ForwardIterator last,
                    unsigned        chunk_size = static_cast<unsigned>(UINT8_C(0)),
-                   bool            msv_first  = true) -> uintwide_t<Width2, LimbType, AllocatorType, false>&;
+                   bool            msv_first  = true) -> uintwide_t<Width2, LimbType, AllocatorType, IsSigned>&;
 
   template<typename ForwardIterator,
            const size_t Width2,
            typename LimbType,
            typename AllocatorType,
+           const bool IsSigned,
            std::enable_if_t<!(std::numeric_limits<typename detail::iterator_detail::iterator_traits<ForwardIterator>::value_type>::digits == std::numeric_limits<LimbType>::digits)> const* = nullptr>
   constexpr
-  auto import_bits(uintwide_t<Width2, LimbType, AllocatorType, false>& val,
+  auto import_bits(uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& val,
                    ForwardIterator first,
                    ForwardIterator last,
                    unsigned        chunk_size = static_cast<unsigned>(UINT8_C(0)),
-                   bool            msv_first  = true) -> uintwide_t<Width2, LimbType, AllocatorType, false>&;
+                   bool            msv_first  = true) -> uintwide_t<Width2, LimbType, AllocatorType, IsSigned>&;
 
   template<typename OutputIterator,
            const size_t Width2,
@@ -2456,7 +2453,7 @@
     WIDE_INTEGER_NODISCARD constexpr auto  representation() const -> const representation_type& { return values; }
     WIDE_INTEGER_NODISCARD constexpr auto crepresentation() const -> const representation_type& { return values; }
 
-    // Unary operators: not, plus and minus.
+    // Unary operators plus and minus.
     constexpr auto operator+() const -> const uintwide_t& { return *this; }
     constexpr auto operator-() const ->       uintwide_t  { uintwide_t tmp(*this); tmp.negate(); return tmp; }
 
@@ -2464,12 +2461,10 @@
     {
       if(this == &other)
       {
-        const uintwide_t self(other); // NOLINT(performance-unnecessary-copy-initialization)
-
         // Unary addition function.
         const auto carry = eval_add_n(values.begin(), // LCOV_EXCL_LINE
                                       values.cbegin(),
-                                      self.values.cbegin(),
+                                      other.values.cbegin(),
                                       static_cast<unsigned_fast_type>(number_of_limbs),
                                       static_cast<limb_type>(UINT8_C(0)));
 
@@ -2515,9 +2510,7 @@
     {
       if(this == &other)
       {
-        const uintwide_t other_as_self_copy(other); // NOLINT(performance-unnecessary-copy-initialization)
-
-        eval_mul_unary(*this, other_as_self_copy);
+        eval_mul_unary(*this, uintwide_t(other)); // NOLINT(performance-unnecessary-copy-initialization)
       }
       else
       {
@@ -5082,15 +5075,41 @@
           // expression [(u[uj] * b + u[uj - 1] - q_hat * v[vj0 - 1]) * b]
           // exceeds the range of uintwide_t.
 
-          for(auto t = static_cast<double_limb_type>(u_j_j1 - static_cast<double_limb_type>(q_hat * static_cast<double_limb_type>(vv_at_vj0)));
-                     ;
-                   t = static_cast<double_limb_type>(t + vv_at_vj0), --q_hat)
           {
-            if(   (detail::make_hi<limb_type>(t) != static_cast<limb_type>(UINT8_C(0)))
-               || (   static_cast<double_limb_type>(static_cast<double_limb_type>(vv_at_vj0_minus_one) * q_hat)
-                   <= static_cast<double_limb_type>(static_cast<double_limb_type>(t << static_cast<unsigned>(std::numeric_limits<limb_type>::digits)) + *detail::advance_and_point(uu.cbegin(), static_cast<size_t>(uj - 2U)))))
+            const auto u_j_minus_2 =
+              *detail::advance_and_point(uu.cbegin(), static_cast<size_t>(uj - 2U));
+
+            auto t =
+              static_cast<double_limb_type>
+              (
+                u_j_j1 - static_cast<double_limb_type>(q_hat * static_cast<double_limb_type>(vv_at_vj0))
+              );
+
+            while(true)
             {
-              break;
+              const bool t_overflow =
+                (detail::make_hi<limb_type>(t) != static_cast<limb_type>(UINT8_C(0)));
+
+              const auto lhs =
+                static_cast<double_limb_type>
+                (
+                  static_cast<double_limb_type>(vv_at_vj0_minus_one) * q_hat
+                );
+
+              const auto rhs =
+                static_cast<double_limb_type>
+                (
+                  static_cast<double_limb_type>(t << static_cast<unsigned>(std::numeric_limits<limb_type>::digits))
+                  + u_j_minus_2
+                );
+
+              if(t_overflow || (lhs <= rhs))
+              {
+                break;
+              }
+
+              t = static_cast<double_limb_type>(t + vv_at_vj0);
+              --q_hat;
             }
           }
 
@@ -7471,13 +7490,14 @@
            const size_t Width2,
            typename LimbType,
            typename AllocatorType,
+           const bool IsSigned,
            std::enable_if_t<std::numeric_limits<typename detail::iterator_detail::iterator_traits<ForwardIterator>::value_type>::digits == std::numeric_limits<LimbType>::digits> const*>
   constexpr
-  auto import_bits(uintwide_t<Width2, LimbType, AllocatorType, false>& val,
+  auto import_bits(uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& val,
                    ForwardIterator first,
                    ForwardIterator last,
                    unsigned        chunk_size,
-                   bool            msv_first) -> uintwide_t<Width2, LimbType, AllocatorType, false>&
+                   bool            msv_first) -> uintwide_t<Width2, LimbType, AllocatorType, IsSigned>&
   {
     // This subroutine implements limb-by-limb import of bit-chunks.
     // This template specialization is intended for full chunk sizes,
@@ -7596,13 +7616,14 @@
            const size_t Width2,
            typename LimbType,
            typename AllocatorType,
+           const bool IsSigned,
            std::enable_if_t<!(std::numeric_limits<typename detail::iterator_detail::iterator_traits<ForwardIterator>::value_type>::digits == std::numeric_limits<LimbType>::digits)> const*>
   constexpr
-  auto import_bits(uintwide_t<Width2, LimbType, AllocatorType, false>& val,
+  auto import_bits(uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& val,
                    ForwardIterator first,
                    ForwardIterator last,
                    unsigned        chunk_size,
-                   bool            msv_first) -> uintwide_t<Width2, LimbType, AllocatorType, false>&
+                   bool            msv_first) -> uintwide_t<Width2, LimbType, AllocatorType, IsSigned>&
   {
     // This subroutine implements limb-by-limb import of bit-chunks.
     // This template specialization is intended for non-full chunk sizes,
@@ -7915,9 +7936,5 @@
   #endif
 
   WIDE_INTEGER_NAMESPACE_END
-
-  #if defined(__GNUC__)
-  #pragma GCC diagnostic pop
-  #endif
 
 #endif // UINTWIDE_T_2018_10_02_H
