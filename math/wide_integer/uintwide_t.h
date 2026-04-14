@@ -1539,25 +1539,27 @@
            const size_t Width2,
            typename LimbType,
            typename AllocatorType,
+           const bool IsSigned,
            std::enable_if_t<std::numeric_limits<typename detail::iterator_detail::iterator_traits<ForwardIterator>::value_type>::digits == std::numeric_limits<LimbType>::digits> const* = nullptr>
   constexpr
-  auto import_bits(uintwide_t<Width2, LimbType, AllocatorType, false>& val,
+  auto import_bits(uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& val,
                    ForwardIterator first,
                    ForwardIterator last,
                    unsigned        chunk_size = static_cast<unsigned>(UINT8_C(0)),
-                   bool            msv_first  = true) -> uintwide_t<Width2, LimbType, AllocatorType, false>&;
+                   bool            msv_first  = true) -> uintwide_t<Width2, LimbType, AllocatorType, IsSigned>&;
 
   template<typename ForwardIterator,
            const size_t Width2,
            typename LimbType,
            typename AllocatorType,
+           const bool IsSigned,
            std::enable_if_t<!(std::numeric_limits<typename detail::iterator_detail::iterator_traits<ForwardIterator>::value_type>::digits == std::numeric_limits<LimbType>::digits)> const* = nullptr>
   constexpr
-  auto import_bits(uintwide_t<Width2, LimbType, AllocatorType, false>& val,
+  auto import_bits(uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& val,
                    ForwardIterator first,
                    ForwardIterator last,
                    unsigned        chunk_size = static_cast<unsigned>(UINT8_C(0)),
-                   bool            msv_first  = true) -> uintwide_t<Width2, LimbType, AllocatorType, false>&;
+                   bool            msv_first  = true) -> uintwide_t<Width2, LimbType, AllocatorType, IsSigned>&;
 
   template<typename OutputIterator,
            const size_t Width2,
@@ -7488,13 +7490,14 @@
            const size_t Width2,
            typename LimbType,
            typename AllocatorType,
+           const bool IsSigned,
            std::enable_if_t<std::numeric_limits<typename detail::iterator_detail::iterator_traits<ForwardIterator>::value_type>::digits == std::numeric_limits<LimbType>::digits> const*>
   constexpr
-  auto import_bits(uintwide_t<Width2, LimbType, AllocatorType, false>& val,
+  auto import_bits(uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& val,
                    ForwardIterator first,
                    ForwardIterator last,
                    unsigned        chunk_size,
-                   bool            msv_first) -> uintwide_t<Width2, LimbType, AllocatorType, false>&
+                   bool            msv_first) -> uintwide_t<Width2, LimbType, AllocatorType, IsSigned>&
   {
     // This subroutine implements limb-by-limb import of bit-chunks.
     // This template specialization is intended for full chunk sizes,
@@ -7613,13 +7616,14 @@
            const size_t Width2,
            typename LimbType,
            typename AllocatorType,
+           const bool IsSigned,
            std::enable_if_t<!(std::numeric_limits<typename detail::iterator_detail::iterator_traits<ForwardIterator>::value_type>::digits == std::numeric_limits<LimbType>::digits)> const*>
   constexpr
-  auto import_bits(uintwide_t<Width2, LimbType, AllocatorType, false>& val,
+  auto import_bits(uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& val,
                    ForwardIterator first,
                    ForwardIterator last,
                    unsigned        chunk_size,
-                   bool            msv_first) -> uintwide_t<Width2, LimbType, AllocatorType, false>&
+                   bool            msv_first) -> uintwide_t<Width2, LimbType, AllocatorType, IsSigned>&
   {
     // This subroutine implements limb-by-limb import of bit-chunks.
     // This template specialization is intended for non-full chunk sizes,
