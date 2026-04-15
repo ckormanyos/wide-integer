@@ -48,7 +48,7 @@ auto fuzzing::eval_op(const std::uint8_t* data, std::size_t size) -> bool
 
   bool result_is_ok { true };
 
-  if((size > std::size_t { max_size / 2U }) && (size <= max_size))
+  if(size <= max_size)
   {
     using random_engine_type = std::mt19937_64;
 
@@ -66,7 +66,7 @@ auto fuzzing::eval_op(const std::uint8_t* data, std::size_t size) -> bool
     local_uint_type p0 { 0U };
     boost_uint_type pb { 0U };
 
-    // Import the data into the uintwide_t prime candidate.
+    // Import data into the uintwide_t prime candidate.
     import_bits
     (
       p0,
@@ -75,7 +75,7 @@ auto fuzzing::eval_op(const std::uint8_t* data, std::size_t size) -> bool
       8U
     );
 
-    // Import the data into the boost prime candidate.
+    // Import data into the boost prime candidate.
     import_bits
     (
       pb,

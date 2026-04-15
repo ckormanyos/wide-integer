@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright Christopher Kormanyos 2025 - 2026.
+//  Copyright Christopher Kormanyos 2024 - 2026.
 //  Distributed under the Boost Software License,
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -47,7 +47,9 @@ auto fuzzing::eval_op(const std::uint8_t* data, std::size_t size) -> bool
 
   bool result_is_ok { true };
 
-  if((size > std::size_t { UINT8_C(1) }) && (size <= std::size_t { max_size * 2U }))
+  size = (std::min)(size, std::size_t { max_size * 2U });
+
+  if(size > std::size_t { UINT8_C(1) })
   {
     local_uint_type a_local { 0U };
     local_uint_type b_local { 0U };
