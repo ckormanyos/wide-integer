@@ -38,25 +38,25 @@ echo
 ./test_fuzzing_add -max_total_time=900 -max_len=66 -verbosity=0 -close_fd_mask=3 $rnd_seed &
 pid_add=$!
 
-./test_fuzzing_sub -max_total_time=300 -max_len=66 -verbosity=0 -close_fd_mask=3 $rnd_seed &
+./test_fuzzing_sub -max_total_time=900 -max_len=66 -verbosity=0 -close_fd_mask=3 $rnd_seed &
 pid_sub=$!
 
-./test_fuzzing_mul -max_total_time=300 -max_len=66 -verbosity=0 -close_fd_mask=3 $rnd_seed &
+./test_fuzzing_mul -max_total_time=900 -max_len=66 -verbosity=0 -close_fd_mask=3 $rnd_seed &
 pid_mul=$!
 
-./test_fuzzing_div -max_total_time=300 -max_len=66 -verbosity=0 -close_fd_mask=3 $rnd_seed &
+./test_fuzzing_div -max_total_time=900 -max_len=66 -verbosity=0 -close_fd_mask=3 $rnd_seed &
 pid_div=$!
 
-./test_fuzzing_sdiv -max_total_time=300 -max_len=66 -verbosity=0 -close_fd_mask=3 $rnd_seed &
+./test_fuzzing_sdiv -max_total_time=900 -max_len=66 -verbosity=0 -close_fd_mask=3 $rnd_seed &
 pid_sdiv=$!
 
-./test_fuzzing_sqrt -max_total_time=300 -max_len=34 -verbosity=0 -close_fd_mask=3 $rnd_seed &
+./test_fuzzing_sqrt -max_total_time=900 -max_len=34 -verbosity=0 -close_fd_mask=3 $rnd_seed &
 pid_sqrt=$!
 
-./test_fuzzing_powm -max_total_time=300 -max_len=98 -verbosity=0 -close_fd_mask=3 $rnd_seed &
+./test_fuzzing_powm -max_total_time=900 -max_len=98 -verbosity=0 -close_fd_mask=3 $rnd_seed &
 pid_powm=$!
 
-./test_fuzzing_prime -max_total_time=300 -max_len=34 -verbosity=0 -close_fd_mask=3 $rnd_seed &
+./test_fuzzing_prime -max_total_time=900 -max_len=34 -verbosity=0 -close_fd_mask=3 $rnd_seed &
 pid_prime=$!
 
 
