@@ -7170,19 +7170,23 @@
     {
       local_wide_integer_type y { powm(distribution(generator, params), q, np) };
 
-      for(std::size_t   j = std::size_t { UINT8_C(0) };
-                      ((j < static_cast<std::size_t>(k)) && result_candidate_is_prime);
-                      ++j)
+      for(auto   j = std::size_t { UINT8_C(0) };
+               ((j < static_cast<std::size_t>(k)) && result_candidate_is_prime); // NOLINT(altera-id-dependent-backward-branch)
+               ++j)
       {
         if (y == nm1)
         {
-          // This trial passes.
+          // This trial passes and the candidate is very probably prime
+          // within the limits of Miller-Rabin.
+
           break;
         }
 
         if(local_functor_isone(y))
         {
-          // Failure, but only if this is not the first step.
+          // Failure and the candidate isnot prime, but only if this is
+          // not the first step.
+
           if(j != std::size_t { UINT8_C(0) })
           {
             result_candidate_is_prime = false;
@@ -7198,7 +7202,9 @@
           y = static_cast<local_wide_integer_type>((y_dbl * y_dbl) % np_dbl);
         }
 
-        // If we reach the final iteration without hitting nm1, then it is not prime.
+        // If we reach the final iteration without hitting nm1,
+        // then the candidate is not prime.
+
         if(static_cast<unsigned>(j + std::size_t { UINT8_C(1) }) == k)
         {
           result_candidate_is_prime = false;
