@@ -80,7 +80,7 @@ as shown in the [examples](./examples).
 ## Quick start
 
 When working in your own project with wide-integer,
-using the [`uintwide_t.h` header](./math/wide_integer/uintwide_t.h)
+using the [uintwide_t.h header](./math/wide_integer/uintwide_t.h)
 is straightforward. Identify the header within
 its directory. Include this header path to the compiler's set
 of include paths or in your project.
@@ -189,28 +189,28 @@ Various interesting and algorithmically challenging
 It is hoped that the examples provide inspiration and guidance
 on how to use wide-integer.
 
-  - ![example000_numeric_limits.cpp](./examples/example000_numeric_limits.cpp) verifies parts of the specializations of `std::numeric_limits` for (unsigned) `uint256_t`and (signed) `int256_t`.
-  - ![example000a_builtin_convert.cpp](./examples/example000a_builtin_convert.cpp) exercises some conversions to/from built-in types/`uintwide_t`.
-  - ![example001_mul_div.cpp](./examples/example001_mul_div.cpp) performs multiplication and division.
-  - ![example001a_div_mod.cpp](./examples/example001a_div_mod.cpp) exercises division and modulus calculations.
-  - ![example002_shl_shr.cpp](./examples/example002_shl_shr.cpp) does a few left and right shift operations.
-  - ![example003_sqrt.cpp](./examples/example003_sqrt.cpp) computes a square root.
-  - ![example003a_cbrt](./examples/example003a_cbrt.cpp) computes a cube root.
-  - ![example004_rootk_pow.cpp](./examples/example004_rootk_pow.cpp) computes an integral seventh root and its corresponding power. A negative-valued cube root is also tested.
-  - ![example005_powm.cpp](./examples/example005_powm.cpp) tests the power-modulus function `powm`.
-  - ![example005a_pow_factors_of_p99.cpp](./examples/example005a_pow_factors_of_p99.cpp) verifies a beautiful, known prime factorization result from a classic tabulated value.
-  - ![example006_gcd.cpp](./examples/example006_gcd.cpp) tests several computations of greatest common divisor using the `gcd` function.
-  - ![example007_random_generator.cpp](./examples/example007_random_generator.cpp) computes some large pseudo-random integers.
-  - ![example008_miller_rabin_prime.cpp](./examples/example008_miller_rabin_prime.cpp) implements primality testing via Miller-Rabin.
-  - ![example008a_miller_rabin_prime.cpp](./examples/example008a_miller_rabin_prime.cpp) verifies Boost's interpretation of Miller-Rabin primality testing using `uintwide_t`-based types.
-  - ![example009_timed_mul.cpp](./examples/example009_timed_mul.cpp) measures multiplication timings.
-  - ![example009a_timed_mul_4_by_4.cpp](./examples/example009a_timed_mul_4_by_4.cpp) also measures multiplication timings for the special case of wide integers having four limbs.
-  - ![example009b_timed_mul_8_by_8.cpp](./examples/example009b_timed_mul_8_by_8.cpp) measures, yet again, multiplication timings for the special case of wide integers having eight limbs.
-  - ![example010_uint48_t.cpp](./examples/example010_uint48_t.cpp) verifies 48-bit integer caluclations.
-  - ![example011_uint24_t.cpp](./examples/example011_uint24_t.cpp) performs calculations with 24-bits, which is definitely on the small side of the range of wide-integer.
-  - ![example012_rsa_crypto.cpp](./examples/example012_rsa_crypto.cpp) performs cryptographic calculations with 2048-bits, exploring a standardized test case.
-  - ![example013_ecdsa_sign_verify.cpp](./examples/example013_ecdsa_sign_verify.cpp) provides an intuitive view on elliptic-curve algebra, depicting a well-known cryptographic key-gen/sign/verify method.
-  - ![example014_pi_spigot_wide.cpp](./examples/example014_pi_spigot_wide.cpp) calculates $10,001$ decimal digits of the mathematical constant $\pi$ using a `uintwide_t`-based template spigot algorithm.
+  - [example000_numeric_limits.cpp](./examples/example000_numeric_limits.cpp) verifies parts of the specializations of `std::numeric_limits` for (unsigned) `uint256_t`and (signed) `int256_t`.
+  - [example000a_builtin_convert.cpp](./examples/example000a_builtin_convert.cpp) exercises some conversions to/from built-in types/`uintwide_t`.
+  - [example001_mul_div.cpp](./examples/example001_mul_div.cpp) performs multiplication and division.
+  - [example001a_div_mod.cpp](./examples/example001a_div_mod.cpp) exercises division and modulus calculations.
+  - [example002_shl_shr.cpp](./examples/example002_shl_shr.cpp) does a few left and right shift operations.
+  - [example003_sqrt.cpp](./examples/example003_sqrt.cpp) computes a square root.
+  - [example003a_cbrt](./examples/example003a_cbrt.cpp) computes a cube root.
+  - [example004_rootk_pow.cpp](./examples/example004_rootk_pow.cpp) computes an integral seventh root and its corresponding power. A negative-valued cube root is also tested.
+  - [example005_powm.cpp](./examples/example005_powm.cpp) tests the power-modulus function `powm`.
+  - [example005a_pow_factors_of_p99.cpp](./examples/example005a_pow_factors_of_p99.cpp) verifies a beautiful, known prime factorization result from a classic tabulated value.
+  - [example006_gcd.cpp](./examples/example006_gcd.cpp) tests several computations of greatest common divisor using the `gcd` function.
+  - [example007_random_generator.cpp](./examples/example007_random_generator.cpp) computes some large pseudo-random integers.
+  - [example008_miller_rabin_prime.cpp](./examples/example008_miller_rabin_prime.cpp) implements primality testing via Miller-Rabin.
+  - [example008a_miller_rabin_prime.cpp](./examples/example008a_miller_rabin_prime.cpp) verifies Boost's interpretation of Miller-Rabin primality testing using `uintwide_t`-based types.
+  - [example009_timed_mul.cpp](./examples/example009_timed_mul.cpp) measures multiplication timings.
+  - [example009a_timed_mul_4_by_4.cpp](./examples/example009a_timed_mul_4_by_4.cpp) also measures multiplication timings for the special case of wide integers having four limbs.
+  - [example009b_timed_mul_8_by_8.cpp](./examples/example009b_timed_mul_8_by_8.cpp) measures, yet again, multiplication timings for the special case of wide integers having eight limbs.
+  - [example010_uint48_t.cpp](./examples/example010_uint48_t.cpp) verifies 48-bit integer caluclations.
+  - [example011_uint24_t.cpp](./examples/example011_uint24_t.cpp) performs calculations with 24-bits, which is definitely on the small side of the range of wide-integer.
+  - [example012_rsa_crypto.cpp](./examples/example012_rsa_crypto.cpp) performs cryptographic calculations with 2048-bits, exploring a standardized test case.
+  - [example013_ecdsa_sign_verify.cpp](./examples/example013_ecdsa_sign_verify.cpp) provides an intuitive view on elliptic-curve algebra, depicting a well-known cryptographic key-gen/sign/verify method.
+  - [example014_pi_spigot_wide.cpp](./examples/example014_pi_spigot_wide.cpp) calculates $10,001$ decimal digits of the mathematical constant $\pi$ using a `uintwide_t`-based template spigot algorithm.
 
 ## Building
 
