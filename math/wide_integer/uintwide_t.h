@@ -7159,56 +7159,58 @@
     // Assume the test will pass, even though it usually does not pass.
     bool result_candidate_is_prime { true };
 
-    ::std::size_t idx { UINT8_C(0) };
-
     using local_double_width_type = typename local_wide_integer_type::double_width_type;
 
     const local_double_width_type np_dbl { np };
 
-    // Loop over the trials to perform the primality testing.
-    do
+    // We will now run the trials.
+    for(std::size_t   trial { std::size_t { UINT8_C(0) } };
+                    ((trial < number_of_trials) && result_candidate_is_prime);
+                    ++trial)
     {
       local_wide_integer_type y { powm(distribution(generator, params), q, np) };
 
-      ::std::size_t jdx { UINT8_C(0) };
-
-      // Continue while y is not nm1, and while y is not 1,
-      // and while the result is true.
-
-      while((y != nm1) && (!local_functor_isone(y)) && result_candidate_is_prime) // NOLINT(altera-id-dependent-backward-branch)
+      for(auto   j = std::size_t { UINT8_C(0) };
+               ((j < static_cast<std::size_t>(k)) && result_candidate_is_prime); // NOLINT(altera-id-dependent-backward-branch)
+               ++j)
       {
-        ++jdx;
-
-        if(jdx == static_cast<std::size_t>(k))
+        if (y == nm1)
         {
-          // Mark failure if max iterations reached.
+          // This trial passes and the candidate is very probably prime
+          // within the limits of Miller-Rabin.
+
+          break;
+        }
+
+        if(local_functor_isone(y))
+        {
+          // Failure and the candidate isnot prime, but only if this is
+          // not the first step.
+
+          if(j != std::size_t { UINT8_C(0) })
+          {
+            result_candidate_is_prime = false;
+          }
+
+          break;
+        }
+
+        // Compute y = y^2 mod np.
+        {
+          const local_double_width_type y_dbl { static_cast<local_double_width_type>(y) };
+
+          y = static_cast<local_wide_integer_type>((y_dbl * y_dbl) % np_dbl);
+        }
+
+        // If we reach the final iteration without hitting nm1,
+        // then the candidate is not prime.
+
+        if(static_cast<unsigned>(j + std::size_t { UINT8_C(1) }) == k)
+        {
           result_candidate_is_prime = false;
         }
-        else
-        {
-          // Continue with the next value of y.
-
-          // Manually calculate: y-squared-mod-np;
-
-          local_double_width_type yd { y };
-
-          yd *= yd;
-          yd %= np_dbl;
-
-          y = local_wide_integer_type { yd };
-        }
       }
-
-      // Check for (y == 1) after the loop.
-      if(local_functor_isone(y) && (jdx != ::std::size_t { UINT8_C(0) }))
-      {
-        // Mark failure if (y == 1) and (jdx != 0).
-        result_candidate_is_prime = false;
-      }
-
-      ++idx;
     }
-    while((idx < number_of_trials) && result_candidate_is_prime);
 
     return result_candidate_is_prime;
   }
