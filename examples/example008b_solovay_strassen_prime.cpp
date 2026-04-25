@@ -203,7 +203,7 @@ namespace local_example008b_solovay_strassen_prime
         local_solovay_strassen::solovay_strassen
         (
           p0,
-          32,
+          48,
           distribution2,
           generator2
         );
