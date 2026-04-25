@@ -71,12 +71,12 @@ auto jacobi(UnsignedIntegerType a, UnsignedIntegerType n) -> int
 template<typename UnsignedIntegerType,
          typename DistributionType,
          typename GeneratorType>
-auto solovay_strassen(const UnsignedIntegerType& n, const int iterations, DistributionType& distribution, GeneratorType& generator) -> bool;
+auto solovay_strassen(const UnsignedIntegerType& n, const int iterations, DistributionType& distribution, GeneratorType& generator) -> bool; // NOLINT(readability-avoid-const-params-in-decls)
 
 template<typename UnsignedIntegerType,
          typename DistributionType,
          typename GeneratorType>
-auto solovay_strassen(const UnsignedIntegerType& n, const int iterations, DistributionType& distribution, GeneratorType& generator) -> bool
+auto solovay_strassen(const UnsignedIntegerType& n, const int iterations, DistributionType& distribution, GeneratorType& generator) -> bool // NOLINT(readability-avoid-const-params-in-decls)
 {
   // Perform a Solovay-Strassen primality test.
 
