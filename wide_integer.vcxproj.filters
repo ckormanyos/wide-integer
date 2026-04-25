@@ -228,6 +228,9 @@
     <ClCompile Include="examples\example014_pi_spigot_wide.cpp">
       <Filter>Source Files\examples</Filter>
     </ClCompile>
+    <ClCompile Include="examples\example008b_solovay_strassen_prime.cpp">
+      <Filter>Source Files\examples</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include=".github\workflows\wide_integer.yml">
