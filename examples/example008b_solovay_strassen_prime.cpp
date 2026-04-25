@@ -102,7 +102,7 @@ auto solovay_strassen(const UnsignedIntegerType& n, const int iterations, Distri
       local_wide_integer_type { n - unsigned { UINT8_C(1) } }
     };
 
-  local_distribution_type dist { local_wide_integer_type { 2 }, { local_wide_integer_type { n - 1 } } };
+  local_distribution_type dist { params };
 
   for(int i = 0; i < iterations; ++i)
   {
@@ -187,7 +187,7 @@ namespace local_example008b_solovay_strassen_prime
 
     bool result_is_ok { false };
 
-    constexpr int max_trials { 2048 }; // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
+    constexpr int max_trials { 8192 }; // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
 
     int trials { 0 };
 
