@@ -189,7 +189,7 @@ namespace local_example008b_solovay_strassen_prime
 
     int trials { 0 };
 
-    for( ; trials < 2048; ++trials)
+    for( ; trials < max_trials; ++trials)
     {
       // Perform a Solovay-Strassen versus Miller-Rabin primality comparison.
       // Each one should detect prime/non-prime with the same Boolean result
