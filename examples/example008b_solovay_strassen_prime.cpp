@@ -25,7 +25,7 @@ template<typename UnsignedIntegerType>
 auto jacobi(UnsignedIntegerType a, UnsignedIntegerType n) -> int
 {
   // Calculate the integer's Jacobi symbol.
-  if(    (static_cast<unsigned>(n) == 0U)
+  if(   ((static_cast<unsigned>(n) == 0U) && (n== 0U))
      || ((static_cast<unsigned>(n) % 2U) == 0U))
   {
     return 0;
@@ -63,7 +63,9 @@ auto jacobi(UnsignedIntegerType a, UnsignedIntegerType n) -> int
     a %= n;
   }
 
-  return ((n == 1) ? result : 0);
+  const bool n_is_one { ((static_cast<unsigned>(n) == 1) && (n == 1U)) };
+
+  return (n_is_one ? result : 0);
 }
 
 } // namespace detail
@@ -83,9 +85,9 @@ auto solovay_strassen(const UnsignedIntegerType& n, const int iterations, Distri
   // If this ever goes to production, then testing a lot more semi-small
   // primes, as done in the library's Miller-Rabin, would make sense here.
 
-  if((static_cast<unsigned>(n)  < 2U) && (n < 2)) { return false; }
+  if((static_cast<unsigned>(n) <  2U) && (n <  2)) { return false; }
   if((static_cast<unsigned>(n) == 2U) && (n == 2)) { return true; }
-  if((static_cast<unsigned>(n)  % 2U) == 0U) { return false; }
+  if((static_cast<unsigned>(n) %  2U) == 0U) { return false; }
 
   using local_distribution_type = DistributionType;
 
