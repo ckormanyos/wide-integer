@@ -16,10 +16,57 @@
 
 namespace local_solovay_strassen {
 
-// Forward declarations
+namespace detail {
 
-template<typename BigInteger>
-auto jacobi(BigInteger a, BigInteger n) -> int;
+template<typename UnsignedIntegerType>
+auto jacobi(UnsignedIntegerType a, UnsignedIntegerType n) -> int;
+
+template<typename UnsignedIntegerType>
+auto jacobi(UnsignedIntegerType a, UnsignedIntegerType n) -> int
+{
+  // Calculate the integer's Jacobi symbol.
+  if(    (static_cast<unsigned>(n) == 0U)
+     || ((static_cast<unsigned>(n) % 2U) == 0U))
+  {
+    return 0;
+  }
+
+  a %= n;
+
+  int result = 1;
+
+  while(a != 0)
+  {
+    while((static_cast<unsigned>(a) % 2U) == 0U)
+    {
+      a /= 2U;
+
+      UnsignedIntegerType r { n % 8U }; // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
+
+      if(   ((static_cast<unsigned>(r) == 3U) && (r == 3U))  // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
+         || ((static_cast<unsigned>(r) == 5U) && (r == 5U))) // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
+      {
+        result = -result;
+      }
+    }
+
+    std::swap(a, n);
+
+    const unsigned a_mod_4 { static_cast<unsigned>(a % 4U) }; // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
+    const unsigned n_mod_4 { static_cast<unsigned>(n % 4U) }; // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
+
+    if((a_mod_4 == 3U) && (n_mod_4 == 3U)) // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
+    {
+      result = -result;
+    }
+
+    a %= n;
+  }
+
+  return ((n == 1) ? result : 0);
+}
+
+} // namespace detail
 
 template<typename UnsignedIntegerType,
          typename DistributionType,
@@ -66,7 +113,7 @@ auto solovay_strassen(const UnsignedIntegerType& n, const int iterations, Distri
       return false;
     }
 
-    const int jac = jacobi(a, n);
+    const int jac = detail::jacobi(a, n);
 
     if(jac == 0)
     {
@@ -76,7 +123,7 @@ auto solovay_strassen(const UnsignedIntegerType& n, const int iterations, Distri
     local_wide_integer_type exponent { (n - 1) / 2 };
     local_wide_integer_type mod_exp { powm(a, exponent, n) };
 
-    local_wide_integer_type jacobian { (jac == -1) ? n - 1 : jac };
+    local_wide_integer_type jacobian { (jac == -1) ? (n - 1) : jac };
 
     if(mod_exp != (jacobian % n))
     {
@@ -86,46 +133,6 @@ auto solovay_strassen(const UnsignedIntegerType& n, const int iterations, Distri
 
   // The candidate is probably prime.
   return true;
-}
-
-template<typename BigInteger>
-auto jacobi(BigInteger a, BigInteger n) -> int
-{
-  // Calculate the integer's Jacobi symbol.
-  if((n <= 0) || ((n % 2) == 0))
-  {
-    return 0;
-  }
-
-  a %= n;
-
-  int result = 1;
-
-  while(a != 0)
-  {
-    while((static_cast<unsigned>(a) % 2U) == 0U)
-    {
-      a /= 2;
-
-      BigInteger r { n % 8 }; // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
-
-      if(r == 3 || r == 5) // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
-      {
-        result = -result;
-      }
-    }
-
-    std::swap(a, n);
-
-    if(((a % 4) == 3) && ((n % 4) == 3)) // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
-    {
-      result = -result;
-    }
-
-    a %= n;
-  }
-
-  return ((n == 1) ? result : 0);
 }
 
 } // namespace local_solovay_strassen
@@ -140,8 +147,13 @@ namespace local_example008b_solovay_strassen_prime
   using distribution_type = ::math::wide_integer::uniform_int_distribution<wide_integer_type::my_width2, typename wide_integer_type::limb_type>;
   #endif
 
-  using random_engine1_type = std::linear_congruential_engine<std::uint32_t, UINT32_C(48271), UINT32_C(0), UINT32_C(2147483647)>;
-  using random_engine2_type = std::mt19937;
+  using random_engine1_type = std::mt19937;
+  using random_engine2_type = std::linear_congruential_engine<std::uint32_t, UINT32_C(48271), UINT32_C(0), UINT32_C(2147483647)>; // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
+
+  const auto seed_start = ::util::util_pseudorandom_time_point_seed::value<std::uint64_t>();
+
+  random_engine1_type gen1(static_cast<typename random_engine1_type::result_type>(seed_start));
+  random_engine2_type gen2(static_cast<typename random_engine2_type::result_type>(seed_start));
 
   auto example008b_solovay_strassen_prime_run() -> bool;
 
@@ -171,8 +183,6 @@ namespace local_example008b_solovay_strassen_prime
 
     distribution_type distribution2;
 
-    wide_integer_type p0;
-
     bool result_is_ok { false };
 
     constexpr int max_trials { 2048 }; // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
@@ -181,29 +191,33 @@ namespace local_example008b_solovay_strassen_prime
 
     for( ; trials < 2048; ++trials)
     {
-      p0 = distribution1(generator1);
+      // Perform a Solovay-Strassen versus Miller-Rabin primality comparison.
+      // Each one should detect prime/non-prime with the same Boolean result
+      // for a given prime candidate p0.
 
-      const bool solovay_strassen_result =
+      const wide_integer_type p0 { distribution1(generator1) };
+
+      const bool result_solovay_strassen_is_prime =
         local_solovay_strassen::solovay_strassen
         (
           p0,
-          32U,
+          32,
           distribution2,
           generator2
         );
 
-      const bool miller_rabin_ctrl =
+      const bool result_miller_rabin_ctrl_is_prime =
         miller_rabin
         (
           p0,
-          32U,
+          25,
           distribution2,
           generator2
         );
 
-      result_is_ok = (solovay_strassen_result == miller_rabin_ctrl);
+      result_is_ok = (result_solovay_strassen_is_prime == result_miller_rabin_ctrl_is_prime);
 
-      if(solovay_strassen_result)
+      if(result_solovay_strassen_is_prime)
       {
         break;
       }
@@ -221,20 +235,6 @@ auto WIDE_INTEGER_NAMESPACE::math::wide_integer::example008b_solovay_strassen_pr
 auto ::math::wide_integer::example008b_solovay_strassen_prime() -> bool
 #endif
 {
-  #if defined(WIDE_INTEGER_NAMESPACE)
-  using wide_integer_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<static_cast<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t>(UINT32_C(512))>;
-  #else
-  using wide_integer_type = ::math::wide_integer::uintwide_t<static_cast<math::wide_integer::size_t>(UINT32_C(512))>;
-  #endif
-
-  using random_engine1_type = std::mt19937;
-  using random_engine2_type = std::linear_congruential_engine<std::uint32_t, UINT32_C(48271), UINT32_C(0), UINT32_C(2147483647)>; // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
-
-  const auto seed_start = ::util::util_pseudorandom_time_point_seed::value<std::uint64_t>();
-
-  random_engine1_type gen1(static_cast<typename random_engine1_type::result_type>(seed_start));
-  random_engine2_type gen2(static_cast<typename random_engine2_type::result_type>(seed_start));
-
   bool result_is_ok { true };
 
   for(auto   i = static_cast<unsigned>(UINT8_C(0));
