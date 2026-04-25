@@ -5,11 +5,6 @@
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)             //
 ///////////////////////////////////////////////////////////////////
 
-// This Miller-Rabin primality test is loosely based on
-// an adaptation of some code from Boost.Multiprecision.
-// The Boost.Multiprecision code can be found here:
-// https://www.boost.org/doc/libs/1_90_0/libs/multiprecision/doc/html/boost_multiprecision/tut/primetest.html
-
 #include <examples/example_uintwide_t.h>
 #include <math/wide_integer/uintwide_t.h>
 #include <util/utility/util_pseudorandom_time_point_seed.h>
@@ -24,12 +19,17 @@ namespace local_solovay_strassen {
 // Forward declarations
 
 template<typename BigInteger>
-int jacobi(BigInteger a, BigInteger n);
+auto jacobi(BigInteger a, BigInteger n) -> int;
 
 template<typename UnsignedIntegerType,
          typename DistributionType,
          typename GeneratorType>
-bool solovay_strassen(const UnsignedIntegerType& n, const int iterations, DistributionType& distribution, GeneratorType& generator)
+auto solovay_strassen(const UnsignedIntegerType& n, const int iterations, DistributionType& distribution, GeneratorType& generator) -> bool;
+
+template<typename UnsignedIntegerType,
+         typename DistributionType,
+         typename GeneratorType>
+auto solovay_strassen(const UnsignedIntegerType& n, const int iterations, DistributionType& distribution, GeneratorType& generator) -> bool
 {
   // --- Solovay-Strassen Test ---
   if (n < 2) { return false; }
@@ -84,28 +84,28 @@ bool solovay_strassen(const UnsignedIntegerType& n, const int iterations, Distri
   return true;
 }
 
-// --- Jacobi Symbol ---
 template<typename BigInteger>
-int jacobi(BigInteger a, BigInteger n)
+auto jacobi(BigInteger a, BigInteger n) -> int
 {
-  if (n <= 0 || n % 2 == 0)
+  // Calculate the integer's Jacobi symbol.
+  if((n <= 0) || ((n % 2) == 0))
   {
     return 0;
   }
 
-  a = a % n;
+  a %= n;
 
   int result = 1;
 
-  while (a != 0)
+  while(a != 0)
   {
-    while (a % 2 == 0)
+    while((static_cast<unsigned>(a) % 2U) == 0U)
     {
       a /= 2;
 
-      BigInteger r = n % 8;
+      BigInteger r { n % 8 };
 
-      if (r == 3 || r == 5)
+      if(r == 3 || r == 5)
       {
         result = -result;
       }
@@ -113,15 +113,15 @@ int jacobi(BigInteger a, BigInteger n)
 
     std::swap(a, n);
 
-    if (a % 4 == 3 && n % 4 == 3)
+    if(((a % 4) == 3) && ((n % 4) == 3))
     {
       result = -result;
     }
 
-    a = a % n;
+    a %= n;
   }
 
-  return (n == 1) ? result : 0;
+  return ((n == 1) ? result : 0);
 }
 
 } // namespace local_solovay_strassen
@@ -203,10 +203,8 @@ auto ::math::wide_integer::example008b_solovay_strassen_prime() -> bool
 {
   #if defined(WIDE_INTEGER_NAMESPACE)
   using wide_integer_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<static_cast<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t>(UINT32_C(512))>;
-  using distribution_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::uniform_int_distribution<wide_integer_type::my_width2, typename wide_integer_type::limb_type>;
   #else
   using wide_integer_type = ::math::wide_integer::uintwide_t<static_cast<math::wide_integer::size_t>(UINT32_C(512))>;
-  using distribution_type = ::math::wide_integer::uniform_int_distribution<wide_integer_type::my_width2, typename wide_integer_type::limb_type>;
   #endif
 
   using random_engine1_type = std::mt19937;
@@ -226,13 +224,6 @@ auto ::math::wide_integer::example008b_solovay_strassen_prime() -> bool
       "00000000000000000000000000000000000000000000000000"
       "00000000000000000000000000000000000000000000000000"
     );
-
-  constexpr auto dist_max =
-    wide_integer_type
-    {
-        (std::numeric_limits<wide_integer_type>::max)()
-      - static_cast<int>(INT8_C(1))
-    };
 
   bool result_is_ok { true };
 
