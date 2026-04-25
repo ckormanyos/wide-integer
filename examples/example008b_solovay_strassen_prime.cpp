@@ -150,10 +150,10 @@ namespace local_example008b_solovay_strassen_prime
   using random_engine1_type = std::mt19937;
   using random_engine2_type = std::linear_congruential_engine<std::uint32_t, UINT32_C(48271), UINT32_C(0), UINT32_C(2147483647)>; // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
 
-  const auto seed_start = ::util::util_pseudorandom_time_point_seed::value<std::uint64_t>();
+  const auto seed_start = ::util::util_pseudorandom_time_point_seed::value<std::uint64_t>(); // NOLINT(cert-err58-cpp)
 
-  random_engine1_type gen1(static_cast<typename random_engine1_type::result_type>(seed_start));
-  random_engine2_type gen2(static_cast<typename random_engine2_type::result_type>(seed_start));
+  random_engine1_type gen1(static_cast<typename random_engine1_type::result_type>(seed_start)); // NOLINT(cert-err58-cpp,cppcoreguidelines-avoid-non-const-global-variables)
+  random_engine2_type gen2(static_cast<typename random_engine2_type::result_type>(seed_start)); // NOLINT(cert-err58-cpp,cppcoreguidelines-avoid-non-const-global-variables)
 
   auto example008b_solovay_strassen_prime_run() -> bool;
 
