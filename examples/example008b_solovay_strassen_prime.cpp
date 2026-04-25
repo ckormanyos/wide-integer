@@ -280,22 +280,3 @@ auto main() -> int // NOLINT(bugprone-exception-escape)
 }
 
 #endif
-
-#if (BOOST_VERSION < 108000)
-#if ((defined(__clang__) && (__clang_major__ > 9)) && !defined(__APPLE__))
-#pragma GCC diagnostic pop
-#endif
-#endif
-
-#if (defined(__GNUC__) && !defined(__clang__) && (__GNUC__ >= 12))
-#pragma GCC diagnostic pop
-#pragma GCC diagnostic pop
-#endif
-
-#if (BOOST_VERSION < 108000)
-#if defined(__GNUC__)
-#pragma GCC diagnostic pop
-#pragma GCC diagnostic pop
-#pragma GCC diagnostic pop
-#endif
-#endif
