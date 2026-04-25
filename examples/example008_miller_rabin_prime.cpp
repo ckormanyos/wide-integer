@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////
-//  Copyright Christopher Kormanyos 2018 - 2025.                 //
+//  Copyright Christopher Kormanyos 2018 - 2026.                 //
 //  Distributed under the Boost Software License,                //
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt          //
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)             //
@@ -8,7 +8,7 @@
 // This Miller-Rabin primality test is loosely based on
 // an adaptation of some code from Boost.Multiprecision.
 // The Boost.Multiprecision code can be found here:
-// https://www.boost.org/doc/libs/1_88_0/libs/multiprecision/doc/html/boost_multiprecision/tut/primetest.html
+// https://www.boost.org/doc/libs/1_90_0/libs/multiprecision/doc/html/boost_multiprecision/tut/primetest.html
 
 #include <random>
 
@@ -175,15 +175,15 @@ auto ::math::wide_integer::example008_miller_rabin_prime() -> bool
 
   for(auto   i = static_cast<unsigned>(UINT8_C(0));
   #if !defined(UINTWIDE_T_REDUCE_TEST_DEPTH)
-             i < static_cast<unsigned>(UINT8_C(8));
+             i < static_cast<unsigned>(UINT8_C(16));
   #else
-             i < static_cast<unsigned>(UINT8_C(1));
+             i < static_cast<unsigned>(UINT8_C(4));
   #endif
            ++i)
   {
     const auto result_prime_run_is_ok =
       local_example008_miller_rabin_prime::example008_miller_rabin_prime_run();
-  
+
     result_is_ok = (result_prime_run_is_ok && result_is_ok);
   }
 

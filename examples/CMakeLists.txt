@@ -13,6 +13,7 @@ add_library(Examples
   example007_random_generator.cpp
   example008_miller_rabin_prime.cpp
   example008a_miller_rabin_prime.cpp
+  example008b_solovay_strassen_prime.cpp
   example009_timed_mul.cpp
   example009a_timed_mul_4_by_4.cpp
   example009b_timed_mul_8_by_8.cpp
