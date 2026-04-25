@@ -31,10 +31,14 @@ template<typename UnsignedIntegerType,
          typename GeneratorType>
 auto solovay_strassen(const UnsignedIntegerType& n, const int iterations, DistributionType& distribution, GeneratorType& generator) -> bool
 {
-  // --- Solovay-Strassen Test ---
-  if (n < 2) { return false; }
-  if (n == 2) { return true; }
-  if ((n % 2) == 0) { return false; }
+  // Perform a Solovay-Strassen primality test.
+
+  // If this ever goes to production, then testing a lot more semi-small
+  // primes, as done in the library's Miller-Rabin, would make sense here.
+
+  if((static_cast<unsigned>(n)  < 2U) && (n < 2)) { return false; }
+  if((static_cast<unsigned>(n) == 2U) && (n == 2)) { return true; }
+  if((static_cast<unsigned>(n)  % 2U) == 0U) { return false; }
 
   using local_distribution_type = DistributionType;
 
@@ -103,9 +107,9 @@ auto jacobi(BigInteger a, BigInteger n) -> int
     {
       a /= 2;
 
-      BigInteger r { n % 8 };
+      BigInteger r { n % 8 }; // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
 
-      if(r == 3 || r == 5)
+      if(r == 3 || r == 5) // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
       {
         result = -result;
       }
@@ -113,7 +117,7 @@ auto jacobi(BigInteger a, BigInteger n) -> int
 
     std::swap(a, n);
 
-    if(((a % 4) == 3) && ((n % 4) == 3))
+    if(((a % 4) == 3) && ((n % 4) == 3)) // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
     {
       result = -result;
     }
@@ -148,14 +152,30 @@ namespace local_example008b_solovay_strassen_prime
     random_engine1_type generator1(util::util_pseudorandom_time_point_seed::value<typename random_engine1_type::result_type>());
     random_engine2_type generator2(util::util_pseudorandom_time_point_seed::value<typename random_engine2_type::result_type>());
 
-    distribution_type distribution1;
+    // Select prime candidates from a range of 10^150 ... max(uint512_t)-1.
+    constexpr wide_integer_type
+      dist_min
+      (
+        "1"
+        "00000000000000000000000000000000000000000000000000"
+        "00000000000000000000000000000000000000000000000000"
+        "00000000000000000000000000000000000000000000000000"
+      );
+
+    distribution_type
+      distribution1
+      {
+        dist_min,
+        (std::numeric_limits<wide_integer_type>::max)()
+      };
+
     distribution_type distribution2;
 
     wide_integer_type p0;
 
     bool result_is_ok { false };
 
-    constexpr int max_trials { 2048 };
+    constexpr int max_trials { 2048 }; // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
 
     int trials { 0 };
 
@@ -214,16 +234,6 @@ auto ::math::wide_integer::example008b_solovay_strassen_prime() -> bool
 
   random_engine1_type gen1(static_cast<typename random_engine1_type::result_type>(seed_start));
   random_engine2_type gen2(static_cast<typename random_engine2_type::result_type>(seed_start));
-
-  // Select prime candidates from a range of 10^150 ... max(uint512_t)-1.
-  constexpr wide_integer_type
-    dist_min
-    (
-      "1"
-      "00000000000000000000000000000000000000000000000000"
-      "00000000000000000000000000000000000000000000000000"
-      "00000000000000000000000000000000000000000000000000"
-    );
 
   bool result_is_ok { true };
 
