@@ -234,14 +234,7 @@ auto ::math::wide_integer::example008b_solovay_strassen_prime() -> bool
       - static_cast<int>(INT8_C(1))
     };
 
-  distribution_type
-    dist
-    {
-      dist_min,
-      dist_max
-    };
-
-  auto result_is_ok = true;
+  bool result_is_ok { true };
 
   for(auto   i = static_cast<unsigned>(UINT8_C(0));
   #if !defined(UINTWIDE_T_REDUCE_TEST_DEPTH)
