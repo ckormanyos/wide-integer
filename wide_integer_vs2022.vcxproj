@@ -217,6 +217,7 @@
     <ClCompile Include="examples\example006_gcd.cpp" />
     <ClCompile Include="examples\example007_random_generator.cpp" />
     <ClCompile Include="examples\example008a_miller_rabin_prime.cpp" />
+    <ClCompile Include="examples\example008b_solovay_strassen_prime.cpp" />
     <ClCompile Include="examples\example008_miller_rabin_prime.cpp" />
     <ClCompile Include="examples\example009b_timed_mul_8_by_8.cpp" />
     <ClCompile Include="examples\example009_timed_mul.cpp" />

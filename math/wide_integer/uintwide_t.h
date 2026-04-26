@@ -6818,7 +6818,7 @@
         const result_type& p_b = (std::numeric_limits<result_type>::max)()
       ) : my_params(p_a, p_b) { }
 
-    explicit constexpr uniform_int_distribution(const param_type& other_params)
+    explicit constexpr uniform_int_distribution(const param_type& other_params) // NOLINT(modernize-pass-by-value)
       : my_params(other_params) { }
 
     constexpr uniform_int_distribution(const uniform_int_distribution& other) : my_params(other.my_params) { }

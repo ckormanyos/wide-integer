@@ -7,7 +7,7 @@
 
 // cd /mnt/c/Users/ckorm/Documents/Ks/PC_Software/NumericalPrograms/ExtendedNumberTypes/wide_integer
 // clang++ -std=c++20 -g -O2 -Wall -Wextra -fsanitize=fuzzer -I. -I/mnt/c/boost/boost_1_90_0 test/fuzzing/test_fuzzing_prime.cpp -o test_fuzzing_prime
-// ./test_fuzzing_prime -max_total_time=300
+// ./test_fuzzing_prime -max_total_time=300 -seed=$(($(date +%s%N) % 4294967295))
 
 #include <math/wide_integer/uintwide_t.h>
 #include <util/utility/util_pseudorandom_time_point_seed.h>
@@ -54,14 +54,24 @@ auto fuzzing::eval_op(const std::uint8_t* data, std::size_t size) -> bool
 
     using distribution_type = ::math::wide_integer::uniform_int_distribution<local_uint_type::my_width2, typename local_uint_type::limb_type>;
 
-    //random_engine1_type generator1(util::util_pseudorandom_time_point_seed::value<typename random_engine1_type::result_type>());
     random_engine_type
       generator
       {
         util::util_pseudorandom_time_point_seed::value<typename random_engine_type::result_type>()
       };
 
-    distribution_type distribution { };
+    static unsigned seed_prescaler { };
+
+    ++seed_prescaler;
+
+    const auto seed_prescaler_mod1024 = static_cast<::std::uint32_t>(seed_prescaler % static_cast<::std::uint32_t>(UINT16_C(1024)));
+
+    if(seed_prescaler_mod1024 == static_cast<::std::uint32_t>(UINT8_C(0)))
+    {
+      using random_engine_result_type = typename random_engine_type::result_type;
+
+      generator.seed(util::util_pseudorandom_time_point_seed::value<random_engine_result_type>());
+    }
 
     local_uint_type p0 { 0U };
     boost_uint_type pb { 0U };
@@ -84,10 +94,12 @@ auto fuzzing::eval_op(const std::uint8_t* data, std::size_t size) -> bool
       8U
     );
 
+    distribution_type dist2 { local_uint_type { 2U }, p0 - 1U };
+
     // Ensure that both uintwide_t as well as boost obtain
     // the same prime (or non-prime) result.
 
-    const bool miller_rabin_result_local { miller_rabin(p0, 25U, distribution, generator) };
+    const bool miller_rabin_result_local { miller_rabin(p0, 25U, dist2, generator) };
     const bool miller_rabin_result_boost { boost::multiprecision::miller_rabin_test(pb, 25U, generator) };
 
     const bool

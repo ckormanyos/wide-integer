@@ -1,5 +1,5 @@
 ﻿///////////////////////////////////////////////////////////////////
-//  Copyright Christopher Kormanyos 2018 - 2025.                 //
+//  Copyright Christopher Kormanyos 2018 - 2026.                 //
 //  Distributed under the Boost Software License,                //
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt          //
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)             //
@@ -8,7 +8,7 @@
 // This Miller-Rabin primality test is loosely based on
 // an adaptation of some code from Boost.Multiprecision.
 // The Boost.Multiprecision code can be found here:
-// https://www.boost.org/doc/libs/1_88_0/libs/multiprecision/doc/html/boost_multiprecision/tut/primetest.html
+// https://www.boost.org/doc/libs/1_90_0/libs/multiprecision/doc/html/boost_multiprecision/tut/primetest.html
 
 #include <random>
 #include <sstream>
@@ -61,6 +61,9 @@
 #include <examples/example_uintwide_t.h>
 
 namespace local_miller_rabin {
+
+template<typename UnsignedIntegralType>
+auto lexical_cast(const UnsignedIntegralType& u) -> std::string;
 
 template<typename UnsignedIntegralType>
 auto lexical_cast(const UnsignedIntegralType& u) -> std::string
@@ -120,22 +123,15 @@ auto ::math::wide_integer::example008a_miller_rabin_prime() -> bool
       "00000000000000000000000000000000000000000000000000"
     );
 
-  constexpr auto dist_max =
-    local_wide_integer_type
-    {
-        (std::numeric_limits<local_wide_integer_type>::max)()
-      - static_cast<int>(INT8_C(1))
-    };
-
   local_distribution_type
     dist
     {
       dist_min,
-      dist_max
+      (std::numeric_limits<local_wide_integer_type>::max)() - 1
     };
 
-  boost_wide_integer_type p0;
-  boost_wide_integer_type p1;
+  boost_wide_integer_type p0 { };
+  boost_wide_integer_type p1 { };
 
   auto dist_func =
     [&dist, &gen1]() // NOLINT(modernize-use-trailing-return-type)

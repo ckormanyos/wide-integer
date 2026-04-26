@@ -203,6 +203,7 @@ on how to use wide-integer.
   - [example007_random_generator.cpp](./examples/example007_random_generator.cpp) computes some large pseudo-random integers.
   - [example008_miller_rabin_prime.cpp](./examples/example008_miller_rabin_prime.cpp) implements primality testing via Miller-Rabin.
   - [example008a_miller_rabin_prime.cpp](./examples/example008a_miller_rabin_prime.cpp) verifies Boost's interpretation of Miller-Rabin primality testing using `uintwide_t`-based types.
+  - [example008b_solovay_strassen_prime.cpp](./examples/example008b_solovay_strassen_prime.cpp) implements a standalone implementation of Solovay-Strassen primality testing using `uintwide_t`-based types.
   - [example009_timed_mul.cpp](./examples/example009_timed_mul.cpp) measures multiplication timings.
   - [example009a_timed_mul_4_by_4.cpp](./examples/example009a_timed_mul_4_by_4.cpp) also measures multiplication timings for the special case of wide integers having four limbs.
   - [example009b_timed_mul_8_by_8.cpp](./examples/example009b_timed_mul_8_by_8.cpp) measures, yet again, multiplication timings for the special case of wide integers having eight limbs.
@@ -260,56 +261,57 @@ from the *nix command line.
 
 ```sh
 cd wide_integer
-g++                                         \
--finline-functions                          \
--finline-limit=32                           \
--march=native                               \
--mtune=native                               \
--O3                                         \
--Wall                                       \
--Wextra                                     \
--Wpedantic                                  \
--Wconversion                                \
--Wsign-conversion                           \
--Wno-maybe-uninitialized                    \
--Wno-cast-function-type                     \
--std=c++14                                  \
--DWIDE_INTEGER_HAS_LIMB_TYPE_UINT64         \
--I.                                         \
--I../boost-root                             \
--pthread                                    \
--lpthread                                   \
-test/test.cpp                               \
-test/test_uintwide_t_boost_backend.cpp      \
-test/test_uintwide_t_edge_cases.cpp         \
-test/test_uintwide_t_examples.cpp           \
-test/test_uintwide_t_float_convert.cpp      \
-test/test_uintwide_t_int_convert.cpp        \
-test/test_uintwide_t_n_base.cpp             \
-test/test_uintwide_t_n_binary_ops_base.cpp  \
-test/test_uintwide_t_spot_values.cpp        \
-examples/example000_numeric_limits.cpp      \
-examples/example000a_builtin_convert.cpp    \
-examples/example001_mul_div.cpp             \
-examples/example001a_div_mod.cpp            \
-examples/example002_shl_shr.cpp             \
-examples/example003_sqrt.cpp                \
-examples/example003a_cbrt.cpp               \
-examples/example004_rootk_pow.cpp           \
-examples/example005_powm.cpp                \
-examples/example005a_pow_factors_of_p99     \
-examples/example006_gcd.cpp                 \
-examples/example007_random_generator.cpp    \
-examples/example008_miller_rabin_prime.cpp  \
-examples/example008a_miller_rabin_prime.cpp \
-examples/example009_timed_mul.cpp           \
-examples/example009a_timed_mul_4_by_4.cpp   \
-examples/example009b_timed_mul_8_by_8.cpp   \
-examples/example010_uint48_t.cpp            \
-examples/example011_uint24_t.cpp            \
-examples/example012_rsa_crypto.cpp          \
-examples/example013_ecdsa_sign_verify.cpp   \
-examples/example014_pi_spigot_wide.cpp      \
+g++                                            \
+-finline-functions                             \
+-finline-limit=32                              \
+-march=native                                  \
+-mtune=native                                  \
+-O3                                            \
+-Wall                                          \
+-Wextra                                        \
+-Wpedantic                                     \
+-Wconversion                                   \
+-Wsign-conversion                              \
+-Wno-maybe-uninitialized                       \
+-Wno-cast-function-type                        \
+-std=c++14                                     \
+-DWIDE_INTEGER_HAS_LIMB_TYPE_UINT64            \
+-I.                                            \
+-I../boost-root                                \
+-pthread                                       \
+-lpthread                                      \
+test/test.cpp                                  \
+test/test_uintwide_t_boost_backend.cpp         \
+test/test_uintwide_t_edge_cases.cpp            \
+test/test_uintwide_t_examples.cpp              \
+test/test_uintwide_t_float_convert.cpp         \
+test/test_uintwide_t_int_convert.cpp           \
+test/test_uintwide_t_n_base.cpp                \
+test/test_uintwide_t_n_binary_ops_base.cpp     \
+test/test_uintwide_t_spot_values.cpp           \
+examples/example000_numeric_limits.cpp         \
+examples/example000a_builtin_convert.cpp       \
+examples/example001_mul_div.cpp                \
+examples/example001a_div_mod.cpp               \
+examples/example002_shl_shr.cpp                \
+examples/example003_sqrt.cpp                   \
+examples/example003a_cbrt.cpp                  \
+examples/example004_rootk_pow.cpp              \
+examples/example005_powm.cpp                   \
+examples/example005a_pow_factors_of_p99        \
+examples/example006_gcd.cpp                    \
+examples/example007_random_generator.cpp       \
+examples/example008_miller_rabin_prime.cpp     \
+examples/example008a_miller_rabin_prime.cpp    \
+examples/example008b_solovay_strassen_prime    \
+examples/example009_timed_mul.cpp              \
+examples/example009a_timed_mul_4_by_4.cpp      \
+examples/example009b_timed_mul_8_by_8.cpp      \
+examples/example010_uint48_t.cpp               \
+examples/example011_uint24_t.cpp               \
+examples/example012_rsa_crypto.cpp             \
+examples/example013_ecdsa_sign_verify.cpp      \
+examples/example014_pi_spigot_wide.cpp         \
 -o wide_integer.exe
 ```
 

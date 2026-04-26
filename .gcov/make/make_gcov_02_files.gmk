@@ -1,5 +1,5 @@
 ﻿# ------------------------------------------------------------------------------
-#  Copyright Christopher Kormanyos 2022.
+#  Copyright Christopher Kormanyos 2022 - 2026.
 #  Distributed under the Boost Software License,
 #  Version 1.0. (See accompanying file LICENSE_1_0.txt
 #  or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -28,6 +28,7 @@ FILES_PRJ  =   $(PATH_SRC)/test/test                                            
                $(PATH_SRC)/examples/example007_random_generator                 \
                $(PATH_SRC)/examples/example008_miller_rabin_prime               \
                $(PATH_SRC)/examples/example008a_miller_rabin_prime              \
+               $(PATH_SRC)/examples/example008b_solovay_strassen_prime          \
                $(PATH_SRC)/examples/example009_timed_mul                        \
                $(PATH_SRC)/examples/example009a_timed_mul_4_by_4                \
                $(PATH_SRC)/examples/example009b_timed_mul_8_by_8                \
