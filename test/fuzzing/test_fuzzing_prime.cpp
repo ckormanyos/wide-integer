@@ -7,7 +7,9 @@
 
 // cd /mnt/c/Users/ckorm/Documents/Ks/PC_Software/NumericalPrograms/ExtendedNumberTypes/wide_integer
 // clang++ -std=c++20 -g -O2 -Wall -Wextra -fsanitize=fuzzer -I. -I/mnt/c/boost/boost_1_90_0 test/fuzzing/test_fuzzing_prime.cpp -o test_fuzzing_prime
-// ./test_fuzzing_prime -max_total_time=300
+// rnd_seed=-seed=$(($(date +%s%N) % 4294967295))
+// echo seed is $rnd_seed
+// ./test_fuzzing_prime -max_total_time=300 $rnd_seed
 
 #include <math/wide_integer/uintwide_t.h>
 #include <util/utility/util_pseudorandom_time_point_seed.h>
