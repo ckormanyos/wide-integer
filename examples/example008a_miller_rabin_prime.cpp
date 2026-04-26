@@ -63,6 +63,9 @@
 namespace local_miller_rabin {
 
 template<typename UnsignedIntegralType>
+auto lexical_cast(const UnsignedIntegralType& u) -> std::string;
+
+template<typename UnsignedIntegralType>
 auto lexical_cast(const UnsignedIntegralType& u) -> std::string
 {
   std::stringstream ss;
@@ -120,22 +123,15 @@ auto ::math::wide_integer::example008a_miller_rabin_prime() -> bool
       "00000000000000000000000000000000000000000000000000"
     );
 
-  constexpr auto dist_max =
-    local_wide_integer_type
-    {
-        (std::numeric_limits<local_wide_integer_type>::max)()
-      - static_cast<int>(INT8_C(1))
-    };
-
   local_distribution_type
     dist
     {
       dist_min,
-      dist_max
+      (std::numeric_limits<local_wide_integer_type>::max)() - 1
     };
 
-  boost_wide_integer_type p0;
-  boost_wide_integer_type p1;
+  boost_wide_integer_type p0 { };
+  boost_wide_integer_type p1 { };
 
   auto dist_func =
     [&dist, &gen1]() // NOLINT(modernize-use-trailing-return-type)

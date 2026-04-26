@@ -85,9 +85,13 @@ auto solovay_strassen(const UnsignedIntegerType& n, const int iterations, Distri
   // If this ever goes to production, then testing a lot more semi-small
   // primes, as done in the library's Miller-Rabin, would make sense here.
 
-  if((static_cast<unsigned>(n) <  2U) && (n <  2)) { return false; }
-  if((static_cast<unsigned>(n) == 2U) && (n == 2)) { return true; }
-  if((static_cast<unsigned>(n) %  2U) == 0U) { return false; }
+  {
+    const unsigned un { static_cast<unsigned>(n) };
+
+    if((un <  2U) && (n <  2)) { return false; }
+    if((un == 2U) && (n == 2)) { return true; }
+    if((un %  2U) == 0U) { return false; }
+  }
 
   using local_distribution_type = DistributionType;
 
@@ -110,7 +114,7 @@ auto solovay_strassen(const UnsignedIntegerType& n, const int iterations, Distri
 
     local_wide_integer_type g = gcd(a, n);
 
-    if(g > 1)
+    if((static_cast<unsigned>(g) > 1) && (g > 1U))
     {
       return false;
     }
@@ -166,7 +170,7 @@ namespace local_example008b_solovay_strassen_prime
     random_engine1_type generator1(util::util_pseudorandom_time_point_seed::value<typename random_engine1_type::result_type>());
     random_engine2_type generator2(util::util_pseudorandom_time_point_seed::value<typename random_engine2_type::result_type>());
 
-    // Select prime candidates from a range of 10^150 ... max(uint512_t)-1.
+    // Select prime candidates from a range of 10^150 ... max(uint512_t) - 1.
     constexpr wide_integer_type
       dist_min
       (
@@ -180,7 +184,7 @@ namespace local_example008b_solovay_strassen_prime
       distribution1
       {
         dist_min,
-        (std::numeric_limits<wide_integer_type>::max)()
+        (std::numeric_limits<wide_integer_type>::max)() - 1
       };
 
     distribution_type distribution2;
@@ -197,13 +201,21 @@ namespace local_example008b_solovay_strassen_prime
       // Each one should detect prime/non-prime with the same Boolean result
       // for a given prime candidate p0.
 
+      #if defined(WIDE_INTEGER_NAMESPACE)
+      using local_unsigned_fast_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::unsigned_fast_type;
+      #else
+      using local_unsigned_fast_type = ::math::wide_integer::unsigned_fast_type;
+      #endif
+
+      constexpr local_unsigned_fast_type number_of_trials { UINT8_C(56) };
+
       const wide_integer_type p0 { distribution1(generator1) };
 
       const bool result_solovay_strassen_is_prime =
         local_solovay_strassen::solovay_strassen
         (
           p0,
-          48,
+          number_of_trials,
           distribution2,
           generator2
         );
