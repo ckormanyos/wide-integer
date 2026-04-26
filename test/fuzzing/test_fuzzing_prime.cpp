@@ -54,12 +54,24 @@ auto fuzzing::eval_op(const std::uint8_t* data, std::size_t size) -> bool
 
     using distribution_type = ::math::wide_integer::uniform_int_distribution<local_uint_type::my_width2, typename local_uint_type::limb_type>;
 
-    //random_engine1_type generator1(util::util_pseudorandom_time_point_seed::value<typename random_engine1_type::result_type>());
     random_engine_type
       generator
       {
         util::util_pseudorandom_time_point_seed::value<typename random_engine_type::result_type>()
       };
+
+    static unsigned seed_prescaler { };
+
+    ++seed_prescaler;
+
+    const auto seed_prescaler_mod1024 = static_cast<::std::uint32_t>(seed_prescaler % static_cast<::std::uint32_t>(UINT16_C(1024)));
+
+    if(seed_prescaler_mod1024 == static_cast<::std::uint32_t>(UINT8_C(0)))
+    {
+      using random_engine_result_type = typename random_engine_type::result_type;
+
+      generator.seed(util::util_pseudorandom_time_point_seed::value<random_engine_result_type>());
+    }
 
     local_uint_type p0 { 0U };
     boost_uint_type pb { 0U };
