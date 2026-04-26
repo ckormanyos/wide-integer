@@ -53,7 +53,6 @@ namespace local_example008_miller_rabin_prime
     random_engine2_type generator2(util::util_pseudorandom_time_point_seed::value<typename random_engine2_type::result_type>());
 
     distribution_type distribution1;
-    distribution_type distribution2;
 
     wide_integer_type p0;
     wide_integer_type p1;
@@ -61,6 +60,8 @@ namespace local_example008_miller_rabin_prime
     for(;;)
     {
       p0 = distribution1(generator1);
+
+      distribution_type distribution2 { wide_integer_type { 2U }, p0 - 1U };;
 
       const bool miller_rabin_result = miller_rabin(p0,
                                                     25U,
@@ -76,6 +77,8 @@ namespace local_example008_miller_rabin_prime
     for(;;)
     {
       p1 = distribution1(generator1);
+
+      distribution_type distribution2 { wide_integer_type { 2U }, p0 - 1U };;
 
       const bool miller_rabin_result = miller_rabin(p1,
                                                     25U,

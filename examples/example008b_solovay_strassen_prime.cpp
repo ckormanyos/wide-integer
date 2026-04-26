@@ -93,20 +93,7 @@ auto solovay_strassen(const UnsignedIntegerType& n, const int iterations, Distri
     if((un %  2U) == 0U) { return false; }
   }
 
-  using local_distribution_type = DistributionType;
-
   using local_wide_integer_type = UnsignedIntegerType;
-
-  using local_param_type = typename DistributionType::param_type;
-
-  const local_param_type
-    params
-    {
-      local_wide_integer_type { unsigned { UINT8_C(2) } },
-      local_wide_integer_type { n - unsigned { UINT8_C(1) } }
-    };
-
-  local_distribution_type dist { params };
 
   for(int i = 0; i < iterations; ++i)
   {
@@ -126,10 +113,10 @@ auto solovay_strassen(const UnsignedIntegerType& n, const int iterations, Distri
       return false;
     }
 
-    local_wide_integer_type exponent { (n - 1) / 2 };
-    local_wide_integer_type mod_exp { powm(a, exponent, n) };
+    const local_wide_integer_type exponent { (n - 1) / 2 };
+    const local_wide_integer_type mod_exp { powm(a, exponent, n) };
 
-    local_wide_integer_type jacobian { (jac == -1) ? (n - 1) : jac };
+    const local_wide_integer_type jacobian { (jac == -1) ? (n - 1) : jac };
 
     if(mod_exp != (jacobian % n))
     {
@@ -181,13 +168,11 @@ namespace local_example008b_solovay_strassen_prime
       );
 
     distribution_type
-      distribution1
+      dist1
       {
         dist_min,
         (std::numeric_limits<wide_integer_type>::max)() - 1
       };
-
-    distribution_type distribution2;
 
     bool result_is_ok { false };
 
@@ -209,14 +194,16 @@ namespace local_example008b_solovay_strassen_prime
 
       constexpr local_unsigned_fast_type number_of_trials { UINT8_C(56) };
 
-      const wide_integer_type p0 { distribution1(generator1) };
+      const wide_integer_type p0 { dist1(generator1) };
+
+      distribution_type dist2 { wide_integer_type { 2U }, p0 - 1 };
 
       const bool result_solovay_strassen_is_prime =
         local_solovay_strassen::solovay_strassen
         (
           p0,
           number_of_trials,
-          distribution2,
+          dist2,
           generator2
         );
 
@@ -225,7 +212,7 @@ namespace local_example008b_solovay_strassen_prime
         (
           p0,
           25,
-          distribution2,
+          dist2,
           generator2
         );
 
