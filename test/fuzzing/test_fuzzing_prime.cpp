@@ -61,8 +61,6 @@ auto fuzzing::eval_op(const std::uint8_t* data, std::size_t size) -> bool
         util::util_pseudorandom_time_point_seed::value<typename random_engine_type::result_type>()
       };
 
-    distribution_type distribution { };
-
     local_uint_type p0 { 0U };
     boost_uint_type pb { 0U };
 
@@ -84,10 +82,12 @@ auto fuzzing::eval_op(const std::uint8_t* data, std::size_t size) -> bool
       8U
     );
 
+    distribution_type dist2 { local_uint_type { 2U }, p0 - 1U };
+
     // Ensure that both uintwide_t as well as boost obtain
     // the same prime (or non-prime) result.
 
-    const bool miller_rabin_result_local { miller_rabin(p0, 25U, distribution, generator) };
+    const bool miller_rabin_result_local { miller_rabin(p0, 25U, dist2, generator) };
     const bool miller_rabin_result_boost { boost::multiprecision::miller_rabin_test(pb, 25U, generator) };
 
     const bool
