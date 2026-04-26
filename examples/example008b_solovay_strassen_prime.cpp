@@ -25,11 +25,14 @@ template<typename UnsignedIntegerType>
 auto jacobi(UnsignedIntegerType a, UnsignedIntegerType n) -> int
 {
   // Calculate the integer's Jacobi symbol.
+
+  // LCOV_EXCL_START
   if(   ((static_cast<unsigned>(n) == 0U) && (n== 0U))
      || ((static_cast<unsigned>(n) % 2U) == 0U))
   {
     return 0;
   }
+  // LCOV_EXCL_STOP
 
   a %= n;
 
