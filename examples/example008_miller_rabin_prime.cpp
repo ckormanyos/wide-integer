@@ -61,7 +61,7 @@ namespace local_example008_miller_rabin_prime
     {
       p0 = distribution1(generator1);
 
-      distribution_type distribution2 { wide_integer_type { 2U }, p0 - 1U };;
+      distribution_type distribution2 { wide_integer_type { 2U }, p0 - 1U };
 
       const bool miller_rabin_result = miller_rabin(p0,
                                                     25U,
@@ -78,7 +78,7 @@ namespace local_example008_miller_rabin_prime
     {
       p1 = distribution1(generator1);
 
-      distribution_type distribution2 { wide_integer_type { 2U }, p0 - 1U };;
+      distribution_type distribution2 { wide_integer_type { 2U }, p0 - 1U };
 
       const bool miller_rabin_result = miller_rabin(p1,
                                                     25U,
