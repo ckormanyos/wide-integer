@@ -6962,29 +6962,22 @@
     friend constexpr auto operator!=(const uniform_int_distribution& lhs, const uniform_int_distribution& rhs) -> bool { return (lhs.param() != rhs.param()); }
   };
 
-  template<typename DistributionType,
-           typename GeneratorType,
-           const size_t Width2,
+  namespace detail {
+
+  template<const size_t Width2,
            typename LimbType,
            typename AllocatorType,
            const bool IsSigned>
-  auto miller_rabin(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& n, // NOLINT(readability-function-cognitive-complexity)
-                    const unsigned_fast_type                                     number_of_trials,
-                          DistributionType&                                      distribution,
-                          GeneratorType&                                         generator) -> bool
+  auto is_small_prime(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& n) -> bool;
+
+  template<const size_t Width2,
+           typename LimbType,
+           typename AllocatorType,
+           const bool IsSigned>
+  auto is_small_prime(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& np) -> bool
   {
-    // This Miller-Rabin primality test is loosely based on
-    // an adaptation of some code from Boost.Multiprecision.
-    // The Boost.Multiprecision code can be found here:
-    // https://www.boost.org/doc/libs/1_90_0/libs/multiprecision/doc/html/boost_multiprecision/tut/primetest.html
-
-    // Note: Some comments in this subroutine use the Wolfram Language(TM).
-    // These can be exercised at the web links to WolframAlpha(R) provided.
-
     using local_wide_integer_type = uintwide_t<Width2, LimbType, AllocatorType, IsSigned>;
     using local_limb_type         = typename local_wide_integer_type::limb_type;
-
-    const local_wide_integer_type np((!local_wide_integer_type::is_neg(n)) ? n : -n);
 
     {
       const auto n0 = static_cast<local_limb_type>(np);
@@ -7113,6 +7106,40 @@
       }
     }
 
+    return false;
+  }
+
+  } // namespace detail
+
+  template<typename DistributionType,
+           typename GeneratorType,
+           const size_t Width2,
+           typename LimbType,
+           typename AllocatorType,
+           const bool IsSigned>
+  auto miller_rabin(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& n, // NOLINT(readability-function-cognitive-complexity)
+                    const unsigned_fast_type                                     number_of_trials,
+                          DistributionType&                                      distribution,
+                          GeneratorType&                                         generator) -> bool
+  {
+    // This Miller-Rabin primality test is loosely based on
+    // an adaptation of some code from Boost.Multiprecision.
+    // The Boost.Multiprecision code can be found here:
+    // https://www.boost.org/doc/libs/1_90_0/libs/multiprecision/doc/html/boost_multiprecision/tut/primetest.html
+
+    // Note: Some comments in this subroutine use the Wolfram Language(TM).
+    // These can be exercised at the web links to WolframAlpha(R) provided.
+
+    using local_wide_integer_type = uintwide_t<Width2, LimbType, AllocatorType, IsSigned>;
+    using local_limb_type         = typename local_wide_integer_type::limb_type;
+
+    const local_wide_integer_type np((!local_wide_integer_type::is_neg(n)) ? n : -n);
+
+    if(detail::is_small_prime(np))
+    {
+      return true;
+    }
+
     const local_wide_integer_type nm1 { np - static_cast<unsigned>(UINT8_C(1)) };
 
     auto
@@ -7184,7 +7211,7 @@
 
         if(local_functor_isone(y))
         {
-          // Failure and the candidate isnot prime, but only if this is
+          // Failure and the candidate is not prime, but only if this is
           // not the first step.
 
           if(j != std::size_t { UINT8_C(0) })

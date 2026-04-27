@@ -27,8 +27,8 @@ auto jacobi(UnsignedIntegerType a, UnsignedIntegerType n) -> int
   // Calculate the integer's Jacobi symbol.
 
   // LCOV_EXCL_START
-  if(   ((static_cast<unsigned>(n) == 0U) && (n== 0U))
-     || ((static_cast<unsigned>(n) % 2U) == 0U))
+  if(   ((static_cast<std::uint_fast8_t>(n) == 0U) && (n== 0U))
+     || ((static_cast<std::uint_fast8_t>(n) % 2U) == 0U))
   {
     return 0;
   }
@@ -40,14 +40,14 @@ auto jacobi(UnsignedIntegerType a, UnsignedIntegerType n) -> int
 
   while(a != 0)
   {
-    while((static_cast<unsigned>(a) % 2U) == 0U)
+    while((static_cast<std::uint_fast8_t>(a) % 2U) == 0U)
     {
       a /= 2U;
 
       UnsignedIntegerType r { n % 8U }; // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
 
-      if(   ((static_cast<unsigned>(r) == 3U) && (r == 3U))  // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
-         || ((static_cast<unsigned>(r) == 5U) && (r == 5U))) // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
+      if(   ((static_cast<std::uint_fast8_t>(r) == 3U) && (r == 3U))  // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
+         || ((static_cast<std::uint_fast8_t>(r) == 5U) && (r == 5U))) // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
       {
         result = -result;
       }
@@ -55,8 +55,8 @@ auto jacobi(UnsignedIntegerType a, UnsignedIntegerType n) -> int
 
     std::swap(a, n);
 
-    const unsigned a_mod_4 { static_cast<unsigned>(a % 4U) }; // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
-    const unsigned n_mod_4 { static_cast<unsigned>(n % 4U) }; // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
+    const unsigned a_mod_4 { static_cast<std::uint_fast8_t>(a % 4U) }; // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
+    const unsigned n_mod_4 { static_cast<std::uint_fast8_t>(n % 4U) }; // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
 
     if((a_mod_4 == 3U) && (n_mod_4 == 3U)) // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
     {
@@ -66,7 +66,7 @@ auto jacobi(UnsignedIntegerType a, UnsignedIntegerType n) -> int
     a %= n;
   }
 
-  const bool n_is_one { ((static_cast<unsigned>(n) == 1) && (n == 1U)) };
+  const bool n_is_one { ((static_cast<std::uint_fast8_t>(n) == 1U) && (n == 1U)) };
 
   return (n_is_one ? result : 0);
 }
@@ -89,10 +89,10 @@ auto solovay_strassen(const UnsignedIntegerType& n, const int iterations, Distri
   // primes, as done in the library's Miller-Rabin, would make sense here.
 
   {
-    const unsigned un { static_cast<unsigned>(n) };
+    const unsigned un { static_cast<std::uint_fast8_t>(n) };
 
-    if((un <  2U) && (n <  2)) { return false; }
-    if((un == 2U) && (n == 2)) { return true; }
+    if((un <  2U) && (n <  2U)) { return false; }
+    if((un == 2U) && (n == 2U)) { return true; }
     if((un %  2U) == 0U) { return false; }
   }
 
@@ -104,7 +104,7 @@ auto solovay_strassen(const UnsignedIntegerType& n, const int iterations, Distri
 
     local_wide_integer_type g = gcd(a, n);
 
-    if((static_cast<unsigned>(g) > 1) && (g > 1U))
+    if((static_cast<std::uint_fast8_t>(g) > 1U) && (g > 1U))
     {
       return false;
     }
