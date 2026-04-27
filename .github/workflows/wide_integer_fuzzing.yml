@@ -24,7 +24,7 @@ jobs:
       matrix:
         compiler: [ clang++ ]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: '0'
       - name: update-tools
@@ -54,7 +54,7 @@ jobs:
       matrix:
         compiler: [ clang++ ]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: '0'
       - name: update-tools
