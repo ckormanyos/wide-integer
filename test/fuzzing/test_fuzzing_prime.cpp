@@ -99,13 +99,13 @@ auto fuzzing::eval_op(const std::uint8_t* data, std::size_t size) -> bool
     // Ensure that both uintwide_t as well as boost obtain
     // the same prime (or non-prime) result.
 
-    const bool miller_rabin_result_local { miller_rabin(p0, 25U, dist2, generator) };
-    const bool miller_rabin_result_boost { boost::multiprecision::miller_rabin_test(pb, 25U, generator) };
+    const bool miller_rabin_is_prime_local { miller_rabin(p0, 25U, dist2, generator) };
+    const bool miller_rabin_is_prime_boost { boost::multiprecision::miller_rabin_test(pb, 25U, generator) };
 
     const bool
       result_op_is_ok
       {
-        miller_rabin_result_local == miller_rabin_result_boost
+        (miller_rabin_is_prime_local == miller_rabin_is_prime_boost)
       };
 
     result_is_ok = (result_op_is_ok && result_is_ok);
