@@ -95,12 +95,9 @@ auto solovay_strassen(const UnsignedIntegerType& np, const int iterations, Distr
 template<typename UnsignedIntegerType,
          typename DistributionType,
          typename GeneratorType>
-auto solovay_strassen(const UnsignedIntegerType& np, const int iterations, DistributionType& distribution, GeneratorType& generator) -> bool // NOLINT(readability-avoid-const-params-in-decls)
+auto solovay_strassen(const UnsignedIntegerType& np, const int iterations, DistributionType& distribution, GeneratorType& generator) -> bool // NOLINT(readability-avoid-const-params-in-decls,readability-function-cognitive-complexity)
 {
   // Perform a Solovay-Strassen primality test.
-
-  // If this ever goes to production, then testing a lot more semi-small
-  // primes, as done in the library's Miller-Rabin, would make sense here.
 
   using local_wide_integer_type = UnsignedIntegerType;
   using local_limb_type         = typename local_wide_integer_type::limb_type;
