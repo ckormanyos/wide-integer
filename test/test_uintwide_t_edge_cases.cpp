@@ -1130,6 +1130,42 @@ auto test_small_prime_and_non_prime() -> bool
     result_p_is_prime_is_ok = (p_is_prime && result_p_is_prime_is_ok);
   }
 
+  for(auto ip = static_cast<std::size_t>(UINT8_C(3)); ip < local_edge_cases::small_integers.size(); ++ip)
+  {
+    const int
+      small_p_times_p_minus_one
+      {
+          local_edge_cases::small_integers[ip]                               // NOLINT(cppcoreguidelines-pro-bounds-constant-array-index)
+        * local_edge_cases::small_integers[ip - std::size_t { UINT8_C(1) }]  // NOLINT(cppcoreguidelines-pro-bounds-constant-array-index)
+      };
+
+    const auto p_is_prime =
+      miller_rabin
+      (
+        static_cast<local_uintwide_t_small_unsigned_type>(small_p_times_p_minus_one),
+        25U,
+        distribution,
+        local_generator
+      );
+
+    result_p_is_prime_is_ok = ((!p_is_prime) && result_p_is_prime_is_ok);
+  }
+
+  result_is_ok = (result_p_is_prime_is_ok && result_is_ok);
+
+  const auto result_zero_is_prime =
+    miller_rabin
+    (
+      static_cast<local_uintwide_t_small_unsigned_type>(0),
+      25U,
+      distribution,
+      local_generator
+    );
+
+  const auto result_zero_is_not_prime_is_ok = (!result_zero_is_prime);
+
+  result_is_ok = (result_zero_is_not_prime_is_ok && result_is_ok);
+
   const auto result_one_is_prime =
     miller_rabin
     (

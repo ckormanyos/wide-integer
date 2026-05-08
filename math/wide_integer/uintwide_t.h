@@ -308,50 +308,6 @@
     return last; // LCOV_EXCL_LINE
   }
 
-  template<typename ForwardIt, typename T>
-  constexpr auto lower_bound_unsafe(ForwardIt first, ForwardIt last, const T& value) -> ForwardIt
-  {
-    using local_iterator_type = ForwardIt;
-
-    using local_difference_type = typename iterator_detail::iterator_traits<ForwardIt>::difference_type;
-
-    local_difference_type step { };
-
-    auto count = static_cast<local_difference_type>(last - first); // NOLINT(altera-id-dependent-backward-branch)
-
-    local_iterator_type itr { };
-
-    while(count > static_cast<local_difference_type>(INT8_C(0))) // NOLINT(altera-id-dependent-backward-branch)
-    {
-      itr = first;
-
-      step = static_cast<local_difference_type>(count / static_cast<local_difference_type>(INT8_C(2)));
-
-      itr += step;
- 
-      if (*itr < value)
-      {
-        first = ++itr;
-
-        count -= static_cast<local_difference_type>(step + static_cast<local_difference_type>(INT8_C(1)));
-      }
-      else
-      {
-        count = step;
-      }
-    }
-
-    return first;
-  }
-
-  template<class ForwardIt, class T>
-  constexpr auto binary_search_unsafe(ForwardIt first, ForwardIt last, const T& value) -> bool
-  {
-    first = lower_bound_unsafe(first, last, value);
-
-    return ((!(first == last)) && (!(value < *first)));
-  }
-
   namespace distance_detail
   {
     template<class It>
@@ -6962,155 +6918,6 @@
     friend constexpr auto operator!=(const uniform_int_distribution& lhs, const uniform_int_distribution& rhs) -> bool { return (lhs.param() != rhs.param()); }
   };
 
-  namespace detail {
-
-  template<const size_t Width2,
-           typename LimbType,
-           typename AllocatorType,
-           const bool IsSigned>
-  auto is_small_prime(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& n) -> bool;
-
-  template<const size_t Width2,
-           typename LimbType,
-           typename AllocatorType,
-           const bool IsSigned>
-  auto is_small_prime(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& np) -> bool
-  {
-    using local_wide_integer_type = uintwide_t<Width2, LimbType, AllocatorType, IsSigned>;
-    using local_limb_type         = typename local_wide_integer_type::limb_type;
-
-    {
-      const auto n0 = static_cast<local_limb_type>(np);
-
-      const auto n_is_even =
-        (static_cast<local_limb_type>(n0 & static_cast<local_limb_type>(UINT8_C(1))) == static_cast<local_limb_type>(UINT8_C(0)));
-
-      if(n_is_even)
-      {
-        // The prime candidate is not prime because n is even.
-        // Also handle the trivial special case of (n = 2).
-
-        const auto n_is_two =
-          ((n0 == static_cast<local_limb_type>(UINT8_C(2))) && (np == static_cast<local_limb_type>(UINT8_C(2))));
-
-        return n_is_two;
-      }
-
-      if((n0 <= static_cast<local_limb_type>(UINT8_C(227))) && (np <= static_cast<local_limb_type>(UINT8_C(227))))
-      {
-        // This handles the trivial special case of the (non-primality) of 1.
-        const auto n_is_one =
-          ((n0 == static_cast<local_limb_type>(UINT8_C(1))) && (np == static_cast<local_limb_type>(UINT8_C(1))));
-
-        if(n_is_one)
-        {
-          return false;
-        }
-
-        // Exclude pure small primes from 3...227.
-        // Table[Prime[i], {i, 2, 49}] =
-        // {
-        //     3,   5,   7,  11,  13,  17,  19,  23,
-        //    29,  31,  37,  41,  43,  47,  53,  59,
-        //    61,  67,  71,  73,  79,  83,  89,  97,
-        //   101, 103, 107, 109, 113, 127, 131, 137,
-        //   139, 149, 151, 157, 163, 167, 173, 179,
-        //   181, 191, 193, 197, 199, 211, 223, 227
-        // }
-        // See also:
-        // https://www.wolframalpha.com/input/?i=Table%5BPrime%5Bi%5D%2C+%7Bi%2C+2%2C+49%7D%5D
-
-        constexpr detail::array_detail::array<local_limb_type, static_cast<std::size_t>(UINT8_C(48))> small_primes =
-        {
-          static_cast<local_limb_type>(UINT8_C(  3)), static_cast<local_limb_type>(UINT8_C(  5)), static_cast<local_limb_type>(UINT8_C(  7)), static_cast<local_limb_type>(UINT8_C( 11)), static_cast<local_limb_type>(UINT8_C( 13)), static_cast<local_limb_type>(UINT8_C( 17)), static_cast<local_limb_type>(UINT8_C( 19)), static_cast<local_limb_type>(UINT8_C( 23)),
-          static_cast<local_limb_type>(UINT8_C( 29)), static_cast<local_limb_type>(UINT8_C( 31)), static_cast<local_limb_type>(UINT8_C( 37)), static_cast<local_limb_type>(UINT8_C( 41)), static_cast<local_limb_type>(UINT8_C( 43)), static_cast<local_limb_type>(UINT8_C( 47)), static_cast<local_limb_type>(UINT8_C( 53)), static_cast<local_limb_type>(UINT8_C( 59)),
-          static_cast<local_limb_type>(UINT8_C( 61)), static_cast<local_limb_type>(UINT8_C( 67)), static_cast<local_limb_type>(UINT8_C( 71)), static_cast<local_limb_type>(UINT8_C( 73)), static_cast<local_limb_type>(UINT8_C( 79)), static_cast<local_limb_type>(UINT8_C( 83)), static_cast<local_limb_type>(UINT8_C( 89)), static_cast<local_limb_type>(UINT8_C( 97)),
-          static_cast<local_limb_type>(UINT8_C(101)), static_cast<local_limb_type>(UINT8_C(103)), static_cast<local_limb_type>(UINT8_C(107)), static_cast<local_limb_type>(UINT8_C(109)), static_cast<local_limb_type>(UINT8_C(113)), static_cast<local_limb_type>(UINT8_C(127)), static_cast<local_limb_type>(UINT8_C(131)), static_cast<local_limb_type>(UINT8_C(137)),
-          static_cast<local_limb_type>(UINT8_C(139)), static_cast<local_limb_type>(UINT8_C(149)), static_cast<local_limb_type>(UINT8_C(151)), static_cast<local_limb_type>(UINT8_C(157)), static_cast<local_limb_type>(UINT8_C(163)), static_cast<local_limb_type>(UINT8_C(167)), static_cast<local_limb_type>(UINT8_C(173)), static_cast<local_limb_type>(UINT8_C(179)),
-          static_cast<local_limb_type>(UINT8_C(181)), static_cast<local_limb_type>(UINT8_C(191)), static_cast<local_limb_type>(UINT8_C(193)), static_cast<local_limb_type>(UINT8_C(197)), static_cast<local_limb_type>(UINT8_C(199)), static_cast<local_limb_type>(UINT8_C(211)), static_cast<local_limb_type>(UINT8_C(223)), static_cast<local_limb_type>(UINT8_C(227))
-        };
-
-        return detail::binary_search_unsafe(small_primes.cbegin(), small_primes.cend(), n0);
-      }
-    }
-
-    // Check small factors.
-
-    // Exclude small prime factors from { 3 ...  53 }.
-    // Product[Prime[i], {i, 2, 16}] = 16294579238595022365
-    // See also: https://www.wolframalpha.com/input/?i=Product%5BPrime%5Bi%5D%2C+%7Bi%2C+2%2C+16%7D%5D
-    {
-      constexpr std::uint64_t pp0 = UINT64_C(16294579238595022365);
-
-      const auto m0 = static_cast<std::uint64_t>(np % pp0);
-
-      if((m0 == static_cast<std::uint64_t>(UINT8_C(0))) || (detail::integer_gcd_reduce(m0, pp0) != static_cast<std::uint64_t>(UINT8_C(1))))
-      {
-        return false;
-      }
-    }
-
-    // Exclude small prime factors from { 59 ... 101 }.
-    // Product[Prime[i], {i, 17, 26}] = 7145393598349078859
-    // See also: https://www.wolframalpha.com/input/?i=Product%5BPrime%5Bi%5D%2C+%7Bi%2C+17%2C+26%7D%5D
-    {
-      constexpr std::uint64_t pp1 = UINT64_C(7145393598349078859);
-
-      const auto m1 = static_cast<std::uint64_t>(np % pp1);
-
-      if((m1 == static_cast<std::uint64_t>(UINT8_C(0))) || (detail::integer_gcd_reduce(m1, pp1) != static_cast<std::uint64_t>(UINT8_C(1))))
-      {
-        return false;
-      }
-    }
-
-    // Exclude small prime factors from { 103 ... 149 }.
-    // Product[Prime[i], {i, 27, 35}] = 6408001374760705163
-    // See also: https://www.wolframalpha.com/input/?i=Product%5BPrime%5Bi%5D%2C+%7Bi%2C+27%2C+35%7D%5D
-    {
-      constexpr std::uint64_t pp2 = UINT64_C(6408001374760705163);
-
-      const auto m2 = static_cast<std::uint64_t>(np % pp2);
-
-      if((m2 == static_cast<std::uint64_t>(UINT8_C(0))) || (detail::integer_gcd_reduce(m2, pp2) != static_cast<std::uint64_t>(UINT8_C(1))))
-      {
-        return false;
-      }
-    }
-
-    // Exclude small prime factors from { 151 ... 191 }.
-    // Product[Prime[i], {i, 36, 43}] = 690862709424854779
-    // See also: https://www.wolframalpha.com/input/?i=Product%5BPrime%5Bi%5D%2C+%7Bi%2C+36%2C+43%7D%5D
-    {
-      constexpr std::uint64_t pp3 = UINT64_C(690862709424854779);
-
-      const auto m3 = static_cast<std::uint64_t>(np % pp3);
-
-      if((m3 == static_cast<std::uint64_t>(UINT8_C(0))) || (detail::integer_gcd_reduce(m3, pp3) != static_cast<std::uint64_t>(UINT8_C(1))))
-      {
-        return false;
-      }
-    }
-
-    // Exclude small prime factors from { 193 ... 227 }.
-    // Product[Prime[i], {i, 44, 49}] = 80814592450549
-    // See also: https://www.wolframalpha.com/input/?i=Product%5BPrime%5Bi%5D%2C+%7Bi%2C+44%2C+49%7D%5D
-    {
-      constexpr std::uint64_t pp4 = UINT64_C(80814592450549);
-
-      const auto m4 = static_cast<std::uint64_t>(np % pp4);
-
-      if((m4 == static_cast<std::uint64_t>(UINT8_C(0))) || (detail::integer_gcd_reduce(m4, pp4) != static_cast<std::uint64_t>(UINT8_C(1))))
-      {
-        return false;
-      }
-    }
-
-    return false;
-  }
-
-  } // namespace detail
-
   template<typename DistributionType,
            typename GeneratorType,
            const size_t Width2,
@@ -7135,12 +6942,101 @@
 
     const local_wide_integer_type np((!local_wide_integer_type::is_neg(n)) ? n : -n);
 
-    if(detail::is_small_prime(np))
-    {
-      return true;
-    }
+    // Table[Prime[i], {i, 2, 49, 1}] =
+    // {
+    //     3,   5,   7,  11,  13,  17,  19,  23,
+    //    29,  31,  37,  41,  43,  47,  53,  59,
+    //    61,  67,  71,  73,  79,  83,  89,  97,
+    //   101, 103, 107, 109, 113, 127, 131, 137,
+    //   139, 149, 151, 157, 163, 167, 173, 179,
+    //   181, 191, 193, 197, 199, 211, 223, 227
+    // }
+    // See also:
+    // https://www.wolframalpha.com/input/?i=Table%5BPrime%5Bi%5D%2C+%7Bi%2C+2%2C+49%7D%5D
 
-    const local_wide_integer_type nm1 { np - static_cast<unsigned>(UINT8_C(1)) };
+    constexpr detail::array_detail::array<local_limb_type, static_cast<std::size_t>(UINT8_C(48))> small_primes =
+    {
+      static_cast<local_limb_type>(UINT8_C(  3)), static_cast<local_limb_type>(UINT8_C(  5)), static_cast<local_limb_type>(UINT8_C(  7)), static_cast<local_limb_type>(UINT8_C( 11)), static_cast<local_limb_type>(UINT8_C( 13)), static_cast<local_limb_type>(UINT8_C( 17)), static_cast<local_limb_type>(UINT8_C( 19)), static_cast<local_limb_type>(UINT8_C( 23)),
+      static_cast<local_limb_type>(UINT8_C( 29)), static_cast<local_limb_type>(UINT8_C( 31)), static_cast<local_limb_type>(UINT8_C( 37)), static_cast<local_limb_type>(UINT8_C( 41)), static_cast<local_limb_type>(UINT8_C( 43)), static_cast<local_limb_type>(UINT8_C( 47)), static_cast<local_limb_type>(UINT8_C( 53)), static_cast<local_limb_type>(UINT8_C( 59)),
+      static_cast<local_limb_type>(UINT8_C( 61)), static_cast<local_limb_type>(UINT8_C( 67)), static_cast<local_limb_type>(UINT8_C( 71)), static_cast<local_limb_type>(UINT8_C( 73)), static_cast<local_limb_type>(UINT8_C( 79)), static_cast<local_limb_type>(UINT8_C( 83)), static_cast<local_limb_type>(UINT8_C( 89)), static_cast<local_limb_type>(UINT8_C( 97)),
+      static_cast<local_limb_type>(UINT8_C(101)), static_cast<local_limb_type>(UINT8_C(103)), static_cast<local_limb_type>(UINT8_C(107)), static_cast<local_limb_type>(UINT8_C(109)), static_cast<local_limb_type>(UINT8_C(113)), static_cast<local_limb_type>(UINT8_C(127)), static_cast<local_limb_type>(UINT8_C(131)), static_cast<local_limb_type>(UINT8_C(137)),
+      static_cast<local_limb_type>(UINT8_C(139)), static_cast<local_limb_type>(UINT8_C(149)), static_cast<local_limb_type>(UINT8_C(151)), static_cast<local_limb_type>(UINT8_C(157)), static_cast<local_limb_type>(UINT8_C(163)), static_cast<local_limb_type>(UINT8_C(167)), static_cast<local_limb_type>(UINT8_C(173)), static_cast<local_limb_type>(UINT8_C(179)),
+      static_cast<local_limb_type>(UINT8_C(181)), static_cast<local_limb_type>(UINT8_C(191)), static_cast<local_limb_type>(UINT8_C(193)), static_cast<local_limb_type>(UINT8_C(197)), static_cast<local_limb_type>(UINT8_C(199)), static_cast<local_limb_type>(UINT8_C(211)), static_cast<local_limb_type>(UINT8_C(223)), static_cast<local_limb_type>(UINT8_C(227))
+    };
+
+    {
+      // Handle even numbers.
+      const auto n0 = static_cast<local_limb_type>(np);
+
+      const auto n_is_even =
+        (static_cast<local_limb_type>(n0 & static_cast<local_limb_type>(UINT8_C(1))) == static_cast<local_limb_type>(UINT8_C(0)));
+
+      if(n_is_even)
+      {
+        // Handle the trivial special case of 2, which is prime.
+        if((n0 == static_cast<local_limb_type>(UINT8_C(2))) && (np == unsigned { UINT8_C(2) }))
+        {
+          return true;
+        }
+
+        // The prime candidate is not prime because it is either
+        // even and larger than 2 or equal to zero. Herewith, we
+        // handle non-prime even numbers and the non-primality of 0.
+        return false;
+      }
+
+      if((n0 <= small_primes.back()) && (np <= small_primes.back()))
+      {
+        // This handles the trivial special case of the (non-primality) of 1.
+        if(n0 == static_cast<local_limb_type>(UINT8_C(1)))
+        {
+          return false;
+        }
+
+        // Exclude pure small primes from the small_primes table.
+        // We are already restricted to np <= small_primes.back()
+        // via the query above. So it is sufficient to test only
+        // the lowest limb.
+        bool is_small_prime { false };
+
+        for(const auto& small_p : small_primes)
+        {
+          if(static_cast<local_limb_type>(n0 == small_p))
+          {
+            is_small_prime = true;
+
+            break;
+          }
+        }
+
+        if(is_small_prime)
+        {
+          return true;
+        }
+      }
+
+      // Handle numbers divisible by small primes in the small_primes table.
+      bool is_small_prime_divisible { false };
+
+      for(const auto& small_p : small_primes)
+      {
+        // The following test does not include the secondary query
+        // if (np == small_p). This is OK here because exact small
+        // primes have already been filtered out above.
+
+        if(static_cast<local_limb_type>(np % small_p) == static_cast<local_limb_type>(UINT8_C(0)))
+        {
+          is_small_prime_divisible = true;
+
+          break;
+        }
+      }
+
+      if(is_small_prime_divisible)
+      {
+        return false;
+      }
+    }
 
     auto
       local_functor_isone
@@ -7149,20 +7045,24 @@
         {
           return
           (
-               (static_cast<local_limb_type>(t1) == local_limb_type { UINT8_C(1) })
+               (static_cast<local_limb_type>(t1) == static_cast<local_limb_type>(UINT8_C(1)))
             && (t1 == unsigned { UINT8_C(1) })
           );
         }
       };
 
+    const local_wide_integer_type nm1 { np - static_cast<unsigned>(UINT8_C(1)) };
+
     // Since we have already excluded all small factors
-    // up to and including 227, n is greater than 227.
+    // up to and including small_primes.back(), which is 227,
+    // it is known at this point in the subroutine that np
+    // is greater than 227.
 
     {
       // Perform a single Fermat test which will
       // exclude many non-prime candidates.
 
-      const local_wide_integer_type fn { powm(local_wide_integer_type(static_cast<local_limb_type>(228U)), nm1, np) };
+      const local_wide_integer_type fn { powm(local_wide_integer_type(small_primes.back()), nm1, np) };
 
       if(!local_functor_isone(fn))
       {
