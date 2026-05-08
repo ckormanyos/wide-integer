@@ -6973,16 +6973,20 @@
 
       if(n_is_even)
       {
+        // If true:
         // Handle the trivial special case of 2, which is prime.
-        if((n0 == static_cast<local_limb_type>(UINT8_C(2))) && (np == unsigned { UINT8_C(2) }))
-        {
-          return true;
-        }
 
+        // If false:
         // The prime candidate is not prime because it is either
         // even and larger than 2 or equal to zero. Herewith, we
         // handle non-prime even numbers and the non-primality of 0.
-        return false;
+        const bool
+          is_prime_two_or_is_non_prime_even
+          {
+            ((n0 == static_cast<local_limb_type>(UINT8_C(2))) && (np == unsigned { UINT8_C(2) }))
+          };
+
+        return is_prime_two_or_is_non_prime_even;
       }
 
       if((n0 <= small_primes.back()) && (np <= small_primes.back()))
@@ -7072,7 +7076,7 @@
 
     const unsigned k { static_cast<unsigned>(lsb(nm1)) };
 
-    const local_wide_integer_type q { nm1 >> k };
+    const local_wide_integer_type q { nm1 >> k }; // NOLINT(altera-id-dependent-backward-branch)
 
     using local_param_type = typename DistributionType::param_type;
 

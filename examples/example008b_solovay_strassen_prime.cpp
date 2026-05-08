@@ -136,16 +136,20 @@ auto solovay_strassen(const UnsignedIntegerType& np, const int iterations, Distr
 
     if(n_is_even)
     {
-      // Handle the trivial special case of 2, which is prime.
-      if((n0 == static_cast<local_limb_type>(UINT8_C(2))) && (np == unsigned { UINT8_C(2) }))
-      {
-        return true;
-      }
+        // If true:
+        // Handle the trivial special case of 2, which is prime.
 
-      // The prime candidate is not prime because it is either
-      // even and larger than 2 or equal to zero. Herewith, we
-      // handle non-prime even numbers and the non-primality of 0.
-      return false;
+        // If false:
+        // The prime candidate is not prime because it is either
+        // even and larger than 2 or equal to zero. Herewith, we
+        // handle non-prime even numbers and the non-primality of 0.
+        const bool
+          is_prime_two_or_is_non_prime_even
+          {
+            ((n0 == static_cast<local_limb_type>(UINT8_C(2))) && (np == unsigned { UINT8_C(2) }))
+          };
+
+        return is_prime_two_or_is_non_prime_even;
     }
 
     if((n0 <= small_primes.back()) && (np <= small_primes.back()))
@@ -282,11 +286,10 @@ namespace local_example008b_solovay_strassen_prime
 
     bool result_is_ok { false };
 
-    #if !defined(UINTWIDE_T_REDUCE_TEST_DEPTH)
+    // Set the maximum number of trials. But in the loop below,
+    // we will certainly break prior to running so many trials.
+
     constexpr int max_trials { 8192 }; // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
-    #else
-    constexpr int max_trials { 128 }; // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
-    #endif
 
     int trials { 0 };
 
@@ -350,7 +353,7 @@ auto ::math::wide_integer::example008b_solovay_strassen_prime() -> bool
 
   for(auto   i = static_cast<unsigned>(UINT8_C(0));
   #if !defined(UINTWIDE_T_REDUCE_TEST_DEPTH)
-             i < static_cast<unsigned>(UINT8_C(16));
+             i < static_cast<unsigned>(UINT8_C(32));
   #else
              i < static_cast<unsigned>(UINT8_C(4));
   #endif
