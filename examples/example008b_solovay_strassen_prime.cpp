@@ -13,6 +13,7 @@
 #include <iostream>
 #include <random>
 #include <sstream>
+#include <utility>
 
 #if defined(__clang__)
   #if defined __has_feature && __has_feature(thread_sanitizer)
@@ -255,6 +256,51 @@ namespace local_example008b_solovay_strassen_prime
   random_engine1_type gen1(static_cast<typename random_engine1_type::result_type>(seed_start)); // NOLINT(cert-err58-cpp,cppcoreguidelines-avoid-non-const-global-variables)
   random_engine2_type gen2(static_cast<typename random_engine2_type::result_type>(seed_start)); // NOLINT(cert-err58-cpp,cppcoreguidelines-avoid-non-const-global-variables)
 
+  auto example008b_solovay_strassen_prime_edges() -> bool;
+
+  auto example008b_solovay_strassen_prime_edges() -> bool
+  {
+    const std::array<std::pair<wide_integer_type, bool>, std::size_t { UINT8_C(8) }> edge_cases =
+    {
+      std::pair<wide_integer_type, bool> { wide_integer_type { 0 }, false },
+      std::pair<wide_integer_type, bool> { wide_integer_type { 1 }, false },
+      std::pair<wide_integer_type, bool> { wide_integer_type { 2 }, true },
+      std::pair<wide_integer_type, bool> { wide_integer_type { 3 }, true },
+      std::pair<wide_integer_type, bool> { wide_integer_type { 19 }, true },
+      std::pair<wide_integer_type, bool> { wide_integer_type { 223 }, true },
+      std::pair<wide_integer_type, bool> { wide_integer_type { 223 } * 227, false },
+      std::pair<wide_integer_type, bool> { wide_integer_type { std::uint64_t { UINT64_C(6408001374760705163) } }, false },
+    };
+
+    // Use a pseudo-random seed for this test.
+
+    random_engine2_type generator2(util::util_pseudorandom_time_point_seed::value<typename random_engine2_type::result_type>());
+
+    distribution_type dist2 { wide_integer_type { 2U }, (std::numeric_limits<wide_integer_type>::max)() };
+
+    constexpr int number_of_trials { 25 }; // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
+
+    bool result_edge_is_ok { true };
+
+    for(auto& edge_case : edge_cases)
+    {
+      const bool result_solovay_strassen_edge_is_prime =
+        local_solovay_strassen::solovay_strassen
+        (
+          edge_case.first,
+          number_of_trials,
+          dist2,
+          generator2
+        );
+
+      const bool result_solovay_strassen_edge_is_prime_is_ok { (result_solovay_strassen_edge_is_prime == edge_case.second) };
+
+      result_edge_is_ok = (result_solovay_strassen_edge_is_prime_is_ok && result_edge_is_ok);
+    }
+
+    return result_edge_is_ok;
+  }
+
   auto example008b_solovay_strassen_prime_run() -> bool;
 
   auto example008b_solovay_strassen_prime_run() -> bool
@@ -360,6 +406,13 @@ auto ::math::wide_integer::example008b_solovay_strassen_prime() -> bool
       local_example008b_solovay_strassen_prime::example008b_solovay_strassen_prime_run();
 
     result_is_ok = (result_prime_run_is_ok && result_is_ok);
+  }
+
+  {
+    const auto result_prime_edges_is_ok =
+      local_example008b_solovay_strassen_prime::example008b_solovay_strassen_prime_edges();
+
+    result_is_ok = (result_prime_edges_is_ok && result_is_ok);
   }
 
   return result_is_ok;
