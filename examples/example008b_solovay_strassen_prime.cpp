@@ -282,7 +282,7 @@ namespace local_example008b_solovay_strassen_prime
 
     bool result_edge_is_ok { true };
 
-    for(auto& edge_case : edge_cases)
+    for(const auto& edge_case : edge_cases)
     {
       const bool result_solovay_strassen_edge_is_prime =
         local_solovay_strassen::solovay_strassen
