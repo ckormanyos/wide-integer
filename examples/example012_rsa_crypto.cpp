@@ -19,15 +19,15 @@ namespace local_rsa
 
     auto ascii_to_hex(const std::string& input) -> std::string
     {
-      static constexpr char hex[] = "0123456789abcdef";
+      static constexpr char hex[] = "0123456789abcdef"; // NOLINT(cppcoreguidelines-avoid-c-arrays,hicpp-avoid-c-arrays,modernize-avoid-c-arrays)
 
       std::string out;
-      out.reserve(input.size() * 2);
+      out.reserve(input.size() * 2U);
 
       for(const char c : input)
       {
-        out.push_back(hex[static_cast<std::size_t>(c) >> 4]);
-        out.push_back(hex[static_cast<std::size_t>(c) & 0x0F]);
+        out.push_back(hex[static_cast<std::size_t>(c) >> 4U]);
+        out.push_back(hex[static_cast<std::size_t>(c) & 0x0FU]);
       }
 
       return out;
@@ -55,18 +55,18 @@ namespace local_rsa
 
     auto hex_to_ascii(const std::string& hex) -> std::string
     {
-      if(hex.size() % 2 != 0)
+      if((hex.size() % 2U) != 0U)
       {
         return std::string { };
       }
 
       std::string out { };
-      out.reserve(hex.size() / 2);
+      out.reserve(hex.size() / 2U);
 
-      for(std::size_t i = 0; i < hex.size(); i += 2)
+      for(std::size_t i{0}; i < hex.size(); i += 2U)
       {
         const auto high = hex_value(hex[i]);
-        const auto low  = hex_value(hex[i + 1]);
+        const auto low  = hex_value(hex[i + 1U]);
 
         out.push_back(static_cast<char>((static_cast<unsigned>(high) << 4U) | static_cast<unsigned>(low)));
       }
