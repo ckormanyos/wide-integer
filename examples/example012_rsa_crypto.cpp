@@ -1,5 +1,5 @@
 ﻿///////////////////////////////////////////////////////////////////
-//  Copyright Christopher Kormanyos 2021 - 2025.                 //
+//  Copyright Christopher Kormanyos 2021 - 2026.                 //
 //  Distributed under the Boost Software License,                //
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt          //
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)             //
@@ -24,10 +24,10 @@ namespace local_rsa
       std::string out;
       out.reserve(input.size() * 2);
 
-      for(unsigned char c : input)
+      for(const char c : input)
       {
-        out.push_back(hex[c >> 4]);
-        out.push_back(hex[c & 0x0F]);
+        out.push_back(hex[static_cast<std::size_t>(c) >> 4]);
+        out.push_back(hex[static_cast<std::size_t>(c) & 0x0F]);
       }
 
       return out;
@@ -37,17 +37,17 @@ namespace local_rsa
     {
         char c_result { };
 
-        if(c >= '0' && c <= '9')
+        if(c >= '0' && c <= '9')                                 // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
         {
-          c_result = c - '0';
+          c_result = static_cast<char>(c - '0');                 // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
         }
-        else if(c >= 'a' && c <= 'f')
+        else if(c >= 'a' && c <= 'f')                            // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
         {
-          c_result = (c - 'a') + 10;
+          c_result = static_cast<char>((c - 'a') + char { 10 }); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
         }
-        else if(c >= 'A' && c <= 'F')
+        else if(c >= 'A' && c <= 'F')                            // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
         {
-          c_result = (c - 'A') + 10;
+          c_result = static_cast<char>((c - 'A') + char { 10 }); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
         }
 
         return static_cast<unsigned char>(c_result);
@@ -68,7 +68,7 @@ namespace local_rsa
         const auto high = hex_value(hex[i]);
         const auto low  = hex_value(hex[i + 1]);
 
-        out.push_back(static_cast<char>((high << 4) | low));
+        out.push_back(static_cast<char>((static_cast<unsigned>(high) << 4U) | static_cast<unsigned>(low)));
       }
 
       return out;
