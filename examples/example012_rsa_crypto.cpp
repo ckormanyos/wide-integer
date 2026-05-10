@@ -19,15 +19,15 @@ namespace local_rsa
 
     auto ascii_to_hex(const std::string& input) -> std::string
     {
-      static constexpr char hex[] = "0123456789abcdef"; // NOLINT(cppcoreguidelines-avoid-c-arrays,hicpp-avoid-c-arrays,modernize-avoid-c-arrays)
+      constexpr char hex[] = "0123456789abcdef"; // NOLINT(cppcoreguidelines-avoid-c-arrays,hicpp-avoid-c-arrays,modernize-avoid-c-arrays)
 
       std::string out;
       out.reserve(input.size() * 2U);
 
       for(const char c : input)
       {
-        out.push_back(hex[static_cast<std::size_t>(c) >> 4U]);
-        out.push_back(hex[static_cast<std::size_t>(c) & 0x0FU]);
+        out.push_back(hex[static_cast<std::size_t>(c) >> 4U]);   // NOLINT(cppcoreguidelines-pro-bounds-constant-array-index)
+        out.push_back(hex[static_cast<std::size_t>(c) & 0x0FU]); // NOLINT(cppcoreguidelines-pro-bounds-constant-array-index,cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
       }
 
       return out;
@@ -37,15 +37,15 @@ namespace local_rsa
     {
         char c_result { };
 
-        if(c >= '0' && c <= '9')                                 // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
+        if((c >= '0') && (c <= '9'))                             // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
         {
           c_result = static_cast<char>(c - '0');                 // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
         }
-        else if(c >= 'a' && c <= 'f')                            // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
+        else if((c >= 'a') && (c <= 'f'))                        // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
         {
           c_result = static_cast<char>((c - 'a') + char { 10 }); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
         }
-        else if(c >= 'A' && c <= 'F')                            // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
+        else if((c >= 'A') && (c <= 'F'))                        // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
         {
           c_result = static_cast<char>((c - 'A') + char { 10 }); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
         }
@@ -91,8 +91,8 @@ namespace local_rsa
                                                                                   allocator_type>;
     #else
     using my_uintwide_t  = ::math::wide_integer::uintwide_t<static_cast<math::wide_integer::size_t>(bit_count),
-                                                          LimbType,
-                                                          allocator_type>;
+                                                            LimbType,
+                                                            allocator_type>;
     #endif
 
     using limb_type = typename my_uintwide_t::limb_type;
@@ -152,9 +152,13 @@ namespace local_rsa
 
       auto encrypt(const std::string& str_message) -> my_uintwide_t
       {
-        const my_uintwide_t message { ("0x" + detail::ascii_to_hex(str_message)).c_str() };
-
-        return powm(message, public_key.r, public_key.m);
+        return
+          powm
+          (
+            my_uintwide_t { ("0x" + detail::ascii_to_hex(str_message)).c_str() },
+            public_key.r,
+            public_key.m
+          );
       }
 
     private:
@@ -168,7 +172,7 @@ namespace local_rsa
 
       auto decrypt(const my_uintwide_t& cry_in) -> std::string
       {
-        const my_uintwide_t tmp = powm(cry_in, private_key.s, private_key.q * private_key.p);
+        const my_uintwide_t tmp { powm(cry_in, private_key.s, private_key.q * private_key.p) };
 
         std::stringstream strm { };
 
@@ -314,7 +318,7 @@ namespace local_rsa
 
     static auto make_positive(const my_uintwide_t& number, const my_uintwide_t& modulus) -> my_uintwide_t // NOLINT(bugprone-easily-swappable-parameters)
     {
-      my_uintwide_t tmp = number;
+      my_uintwide_t tmp { number };
 
       while(is_neg(tmp)) // NOLINT(altera-id-dependent-backward-branch)
       {
@@ -460,10 +464,10 @@ auto ::math::wide_integer::example012_rsa_crypto() -> bool
   // Select "abc" as the sample string to encrypt.
   const std::string in_str { "Hello wide-integer RSA" };
 
-  const rsa_type::my_uintwide_t cry_out { rsa.encrypt(in_str) };
-  const std::string res_str { rsa.decrypt(cry_out) };
+  const rsa_type::my_uintwide_t cipher_text { rsa.encrypt(in_str) };
+  const std::string str_recover { rsa.decrypt(cipher_text) };
 
-  result_is_ok = ((res_str == in_str) && result_is_ok);
+  result_is_ok = ((str_recover == in_str) && result_is_ok);
 
   return result_is_ok;
 }
