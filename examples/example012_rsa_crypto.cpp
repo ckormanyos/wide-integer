@@ -45,10 +45,16 @@ namespace local_rsa
         {
           c_result = static_cast<char>((c - 'a') + char { 10 }); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
         }
+        // This example is known to use lower-case exclusively
+        // at the calling point of this function. But we can't
+        // really remove the upcoming lines from the subroutine.
+        // So these lines are purposefully excluded from coverage.
+        // LCOV_EXCL_START
         else if((c >= 'A') && (c <= 'F'))                        // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
         {
           c_result = static_cast<char>((c - 'A') + char { 10 }); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
         }
+        // LCOV_EXCL_STOP
 
         return static_cast<unsigned char>(c_result);
     }
@@ -461,13 +467,13 @@ auto ::math::wide_integer::example012_rsa_crypto() -> bool
   result_is_ok = ((n == (p * q)) && result_is_ok);
   result_is_ok = ((n == rsa.get_n()) && result_is_ok);
 
-  // Select "abc" as the sample string to encrypt.
-  const std::string in_str { "Hello wide-integer RSA" };
+  // Select a short, relevant string as the sample message to encrypt.
+  const std::string message_in { "Hello wide-integer RSA" };
 
-  const rsa_type::my_uintwide_t cipher_text { rsa.encrypt(in_str) };
-  const std::string str_recover { rsa.decrypt(cipher_text) };
+  const rsa_type::my_uintwide_t cipher_text { rsa.encrypt(message_in) };
+  const std::string msg_recover { rsa.decrypt(cipher_text) };
 
-  result_is_ok = ((str_recover == in_str) && result_is_ok);
+  result_is_ok = ((msg_recover == message_in) && result_is_ok);
 
   return result_is_ok;
 }
