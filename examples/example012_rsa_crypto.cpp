@@ -5,16 +5,76 @@
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)             //
 ///////////////////////////////////////////////////////////////////
 
-#include <random>
-#include <string>
-
 #include <examples/example_uintwide_t.h>
 #include <math/wide_integer/uintwide_t.h>
 
 #include <util/utility/util_pseudorandom_time_point_seed.h>
 
+#include <random>
+#include <string>
+
 namespace local_rsa
 {
+  namespace detail {
+
+    auto ascii_to_hex(const std::string& input) -> std::string
+    {
+      static constexpr char hex[] = "0123456789abcdef";
+
+      std::string out;
+      out.reserve(input.size() * 2);
+
+      for(unsigned char c : input)
+      {
+        out.push_back(hex[c >> 4]);
+        out.push_back(hex[c & 0x0F]);
+      }
+
+      return out;
+    }
+
+    auto hex_value(char c) -> unsigned char
+    {
+        char c_result { };
+
+        if(c >= '0' && c <= '9')
+        {
+          c_result = c - '0';
+        }
+        else if(c >= 'a' && c <= 'f')
+        {
+          c_result = (c - 'a') + 10;
+        }
+        else if(c >= 'A' && c <= 'F')
+        {
+          c_result = (c - 'A') + 10;
+        }
+
+        return static_cast<unsigned char>(c_result);
+    }
+
+    auto hex_to_ascii(const std::string& hex) -> std::string
+    {
+      if(hex.size() % 2 != 0)
+      {
+        return std::string { };
+      }
+
+      std::string out { };
+      out.reserve(hex.size() / 2);
+
+      for(std::size_t i = 0; i < hex.size(); i += 2)
+      {
+        const auto high = hex_value(hex[i]);
+        const auto low  = hex_value(hex[i + 1]);
+
+        out.push_back(static_cast<char>((high << 4) | low));
+      }
+
+      return out;
+    }
+  } // namespace detail
+
   template<const std::size_t RsaBitCount,
            typename LimbType = std::uint32_t,
            typename AllocatorType = std::allocator<void>>
@@ -35,15 +95,7 @@ namespace local_rsa
                                                           allocator_type>;
     #endif
 
-    using limb_type      = typename my_uintwide_t::limb_type;
-
-    using crypto_char    = my_uintwide_t;
-    using crypto_alloc   = typename std::allocator_traits<allocator_type>::template rebind_alloc<crypto_char>;
-    #if defined(WIDE_INTEGER_NAMESPACE)
-    using crypto_string  = WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::dynamic_array<crypto_char, crypto_alloc>;
-    #else
-    using crypto_string  = ::math::wide_integer::detail::dynamic_array<crypto_char, crypto_alloc>;
-    #endif
+    using limb_type = typename my_uintwide_t::limb_type;
 
     using private_key_type =
       struct
@@ -98,14 +150,11 @@ namespace local_rsa
     public:
       explicit encryptor(const public_key_type& key) : public_key(key) { }
 
-      template<typename InputIterator,
-               typename OutputIterator>
-      auto encrypt(InputIterator in_first, const std::size_t count, OutputIterator out) -> void
+      auto encrypt(const std::string& str_message) -> my_uintwide_t
       {
-        for(auto it = in_first; it != in_first + static_cast<typename std::iterator_traits<InputIterator>::difference_type>(count); ++it) // NOLINT(altera-id-dependent-backward-branch)
-        {
-          *out++ = powm(my_uintwide_t(*it), public_key.r, public_key.m);
-        }
+        const my_uintwide_t message { ("0x" + detail::ascii_to_hex(str_message)).c_str() };
+
+        return powm(message, public_key.r, public_key.m);
       }
 
     private:
@@ -117,18 +166,15 @@ namespace local_rsa
     public:
       explicit decryptor(const private_key_type& key) : private_key(key) { }
 
-      template<typename InputIterator,
-               typename OutputIterator>
-      auto decrypt(InputIterator cry_in, const std::size_t count, OutputIterator cypher_out) -> void
+      auto decrypt(const my_uintwide_t& cry_in) -> std::string
       {
-        InputIterator cry_end(cry_in + static_cast<typename std::iterator_traits<InputIterator>::difference_type>(count));
+        const my_uintwide_t tmp = powm(cry_in, private_key.s, private_key.q * private_key.p);
 
-        for(auto it = cry_in; it !=  cry_end; ++it) // NOLINT(altera-id-dependent-backward-branch)
-        {
-          const my_uintwide_t tmp = powm(*it, private_key.s, private_key.q * private_key.p);
+        std::stringstream strm { };
 
-          *cypher_out++ = static_cast<typename std::iterator_traits<OutputIterator>::value_type>(static_cast<limb_type>(tmp));
-        }
+        strm << std::hex << tmp;
+
+        return detail::hex_to_ascii(strm.str());
       }
 
     private:
@@ -183,27 +229,19 @@ namespace local_rsa
     auto getPublicKey () const -> const public_key_type&  { return public_key; }  // NOLINT(readability-identifier-naming)
     auto getPrivateKey() const -> const private_key_type& { return private_key; } // NOLINT(readability-identifier-naming)
 
-    auto get_p() const -> const crypto_char& { return getPrivateKey().p; }
-    auto get_q() const -> const crypto_char& { return getPrivateKey().q; }
-    auto get_d() const -> const crypto_char& { return getPrivateKey().s; }
-    auto get_n() const -> const crypto_char& { return getPublicKey().m; }
+    auto get_p() const -> const my_uintwide_t& { return getPrivateKey().p; }
+    auto get_q() const -> const my_uintwide_t& { return getPrivateKey().q; }
+    auto get_d() const -> const my_uintwide_t& { return getPrivateKey().s; }
+    auto get_n() const -> const my_uintwide_t& { return getPublicKey().m; }
 
-    auto encrypt(const std::string& str) const -> crypto_string
+    auto encrypt(const std::string& str) const -> my_uintwide_t
     {
-      crypto_string str_out(str.length());
-
-      encryptor(public_key).encrypt(str.cbegin(), str.length(), str_out.begin());
-
-      return str_out;
+      return encryptor(public_key).encrypt(str);
     } // LCOV_EXCL_LINE
 
-    auto decrypt(const crypto_string& str) const -> std::string
+    auto decrypt(const my_uintwide_t& cry_in) const -> std::string
     {
-      std::string res(str.size(), '\0');
-
-      decryptor(private_key).decrypt(str.cbegin(), str.size(), res.begin());
-
-      return res;
+      return decryptor(private_key).decrypt(cry_in);
     }
 
     template<typename RandomEngineType = std::minstd_rand>
@@ -420,19 +458,12 @@ auto ::math::wide_integer::example012_rsa_crypto() -> bool
   result_is_ok = ((n == rsa.get_n()) && result_is_ok);
 
   // Select "abc" as the sample string to encrypt.
-  const std::string in_str("abc");
+  const std::string in_str { "Hello wide-integer RSA" };
 
-  const typename rsa_type::crypto_string out_str = rsa.encrypt(in_str);
-  const std::string                     res_str = rsa.decrypt(out_str);
+  const rsa_type::my_uintwide_t cry_out { rsa.encrypt(in_str) };
+  const std::string res_str { rsa.decrypt(cry_out) };
 
-  const auto res_ch_a_manual = static_cast<char>(static_cast<typename rsa_integral_type::limb_type>(powm(out_str[0U], d, n)));
-  const auto res_ch_b_manual = static_cast<char>(static_cast<typename rsa_integral_type::limb_type>(powm(out_str[1U], d, n)));
-  const auto res_ch_c_manual = static_cast<char>(static_cast<typename rsa_integral_type::limb_type>(powm(out_str[2U], d, n)));
-
-  result_is_ok = ((res_str         == "abc") && result_is_ok);
-  result_is_ok = ((res_ch_a_manual == 'a')   && result_is_ok);
-  result_is_ok = ((res_ch_b_manual == 'b')   && result_is_ok);
-  result_is_ok = ((res_ch_c_manual == 'c')   && result_is_ok);
+  result_is_ok = ((res_str == in_str) && result_is_ok);
 
   return result_is_ok;
 }
