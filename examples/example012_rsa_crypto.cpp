@@ -1,20 +1,86 @@
 ﻿///////////////////////////////////////////////////////////////////
-//  Copyright Christopher Kormanyos 2021 - 2025.                 //
+//  Copyright Christopher Kormanyos 2021 - 2026.                 //
 //  Distributed under the Boost Software License,                //
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt          //
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)             //
 ///////////////////////////////////////////////////////////////////
-
-#include <random>
-#include <string>
 
 #include <examples/example_uintwide_t.h>
 #include <math/wide_integer/uintwide_t.h>
 
 #include <util/utility/util_pseudorandom_time_point_seed.h>
 
+#include <random>
+#include <string>
+
 namespace local_rsa
 {
+  namespace detail {
+
+    auto ascii_to_hex(const std::string& input) -> std::string
+    {
+      constexpr char hex[] = "0123456789abcdef"; // NOLINT(cppcoreguidelines-avoid-c-arrays,hicpp-avoid-c-arrays,modernize-avoid-c-arrays)
+
+      std::string out;
+      out.reserve(input.size() * 2U);
+
+      for(const char c : input)
+      {
+        out.push_back(hex[static_cast<std::size_t>(c) >> 4U]);   // NOLINT(cppcoreguidelines-pro-bounds-constant-array-index)
+        out.push_back(hex[static_cast<std::size_t>(c) & 0x0FU]); // NOLINT(cppcoreguidelines-pro-bounds-constant-array-index,cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
+      }
+
+      return out;
+    }
+
+    auto hex_value(char c) -> unsigned char
+    {
+        char c_result { };
+
+        if((c >= '0') && (c <= '9'))                             // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
+        {
+          c_result = static_cast<char>(c - '0');                 // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
+        }
+        else if((c >= 'a') && (c <= 'f'))                        // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
+        {
+          c_result = static_cast<char>((c - 'a') + char { 10 }); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
+        }
+        // This example is known to use lower-case exclusively
+        // at the calling point of this function. But we can't
+        // really remove the upcoming lines from the subroutine.
+        // So these lines are purposefully excluded from coverage.
+        // LCOV_EXCL_START
+        else if((c >= 'A') && (c <= 'F'))                        // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
+        {
+          c_result = static_cast<char>((c - 'A') + char { 10 }); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
+        }
+        // LCOV_EXCL_STOP
+
+        return static_cast<unsigned char>(c_result);
+    }
+
+    auto hex_to_ascii(const std::string& hex) -> std::string
+    {
+      if((hex.size() % 2U) != 0U)
+      {
+        return std::string { };
+      }
+
+      std::string out { };
+      out.reserve(hex.size() / 2U);
+
+      for(std::size_t i{0}; i < hex.size(); i += 2U)
+      {
+        const auto high = hex_value(hex[i]);
+        const auto low  = hex_value(hex[i + 1U]);
+
+        out.push_back(static_cast<char>((static_cast<unsigned>(high) << 4U) | static_cast<unsigned>(low)));
+      }
+
+      return out;
+    }
+  } // namespace detail
+
   template<const std::size_t RsaBitCount,
            typename LimbType = std::uint32_t,
            typename AllocatorType = std::allocator<void>>
@@ -31,19 +97,11 @@ namespace local_rsa
                                                                                   allocator_type>;
     #else
     using my_uintwide_t  = ::math::wide_integer::uintwide_t<static_cast<math::wide_integer::size_t>(bit_count),
-                                                          LimbType,
-                                                          allocator_type>;
+                                                            LimbType,
+                                                            allocator_type>;
     #endif
 
-    using limb_type      = typename my_uintwide_t::limb_type;
-
-    using crypto_char    = my_uintwide_t;
-    using crypto_alloc   = typename std::allocator_traits<allocator_type>::template rebind_alloc<crypto_char>;
-    #if defined(WIDE_INTEGER_NAMESPACE)
-    using crypto_string  = WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::dynamic_array<crypto_char, crypto_alloc>;
-    #else
-    using crypto_string  = ::math::wide_integer::detail::dynamic_array<crypto_char, crypto_alloc>;
-    #endif
+    using limb_type = typename my_uintwide_t::limb_type;
 
     using private_key_type =
       struct
@@ -98,14 +156,15 @@ namespace local_rsa
     public:
       explicit encryptor(const public_key_type& key) : public_key(key) { }
 
-      template<typename InputIterator,
-               typename OutputIterator>
-      auto encrypt(InputIterator in_first, const std::size_t count, OutputIterator out) -> void
+      auto encrypt(const std::string& str_message) -> my_uintwide_t
       {
-        for(auto it = in_first; it != in_first + static_cast<typename std::iterator_traits<InputIterator>::difference_type>(count); ++it) // NOLINT(altera-id-dependent-backward-branch)
-        {
-          *out++ = powm(my_uintwide_t(*it), public_key.r, public_key.m);
-        }
+        return
+          powm
+          (
+            my_uintwide_t { ("0x" + detail::ascii_to_hex(str_message)).c_str() },
+            public_key.r,
+            public_key.m
+          );
       }
 
     private:
@@ -117,18 +176,15 @@ namespace local_rsa
     public:
       explicit decryptor(const private_key_type& key) : private_key(key) { }
 
-      template<typename InputIterator,
-               typename OutputIterator>
-      auto decrypt(InputIterator cry_in, const std::size_t count, OutputIterator cypher_out) -> void
+      auto decrypt(const my_uintwide_t& cry_in) -> std::string
       {
-        InputIterator cry_end(cry_in + static_cast<typename std::iterator_traits<InputIterator>::difference_type>(count));
+        const my_uintwide_t tmp { powm(cry_in, private_key.s, private_key.q * private_key.p) };
 
-        for(auto it = cry_in; it !=  cry_end; ++it) // NOLINT(altera-id-dependent-backward-branch)
-        {
-          const my_uintwide_t tmp = powm(*it, private_key.s, private_key.q * private_key.p);
+        std::stringstream strm { };
 
-          *cypher_out++ = static_cast<typename std::iterator_traits<OutputIterator>::value_type>(static_cast<limb_type>(tmp));
-        }
+        strm << std::hex << tmp;
+
+        return detail::hex_to_ascii(strm.str());
       }
 
     private:
@@ -183,27 +239,19 @@ namespace local_rsa
     auto getPublicKey () const -> const public_key_type&  { return public_key; }  // NOLINT(readability-identifier-naming)
     auto getPrivateKey() const -> const private_key_type& { return private_key; } // NOLINT(readability-identifier-naming)
 
-    auto get_p() const -> const crypto_char& { return getPrivateKey().p; }
-    auto get_q() const -> const crypto_char& { return getPrivateKey().q; }
-    auto get_d() const -> const crypto_char& { return getPrivateKey().s; }
-    auto get_n() const -> const crypto_char& { return getPublicKey().m; }
+    auto get_p() const -> const my_uintwide_t& { return getPrivateKey().p; }
+    auto get_q() const -> const my_uintwide_t& { return getPrivateKey().q; }
+    auto get_d() const -> const my_uintwide_t& { return getPrivateKey().s; }
+    auto get_n() const -> const my_uintwide_t& { return getPublicKey().m; }
 
-    auto encrypt(const std::string& str) const -> crypto_string
+    auto encrypt(const std::string& str) const -> my_uintwide_t
     {
-      crypto_string str_out(str.length());
-
-      encryptor(public_key).encrypt(str.cbegin(), str.length(), str_out.begin());
-
-      return str_out;
+      return encryptor(public_key).encrypt(str);
     } // LCOV_EXCL_LINE
 
-    auto decrypt(const crypto_string& str) const -> std::string
+    auto decrypt(const my_uintwide_t& cry_in) const -> std::string
     {
-      std::string res(str.size(), '\0');
-
-      decryptor(private_key).decrypt(str.cbegin(), str.size(), res.begin());
-
-      return res;
+      return decryptor(private_key).decrypt(cry_in);
     }
 
     template<typename RandomEngineType = std::minstd_rand>
@@ -276,7 +324,7 @@ namespace local_rsa
 
     static auto make_positive(const my_uintwide_t& number, const my_uintwide_t& modulus) -> my_uintwide_t // NOLINT(bugprone-easily-swappable-parameters)
     {
-      my_uintwide_t tmp = number;
+      my_uintwide_t tmp { number };
 
       while(is_neg(tmp)) // NOLINT(altera-id-dependent-backward-branch)
       {
@@ -419,20 +467,13 @@ auto ::math::wide_integer::example012_rsa_crypto() -> bool
   result_is_ok = ((n == (p * q)) && result_is_ok);
   result_is_ok = ((n == rsa.get_n()) && result_is_ok);
 
-  // Select "abc" as the sample string to encrypt.
-  const std::string in_str("abc");
+  // Select a short, relevant string as the sample message to encrypt.
+  const std::string message_in { "Hello wide-integer RSA" };
 
-  const typename rsa_type::crypto_string out_str = rsa.encrypt(in_str);
-  const std::string                     res_str = rsa.decrypt(out_str);
+  const rsa_type::my_uintwide_t cipher_text { rsa.encrypt(message_in) };
+  const std::string msg_recover { rsa.decrypt(cipher_text) };
 
-  const auto res_ch_a_manual = static_cast<char>(static_cast<typename rsa_integral_type::limb_type>(powm(out_str[0U], d, n)));
-  const auto res_ch_b_manual = static_cast<char>(static_cast<typename rsa_integral_type::limb_type>(powm(out_str[1U], d, n)));
-  const auto res_ch_c_manual = static_cast<char>(static_cast<typename rsa_integral_type::limb_type>(powm(out_str[2U], d, n)));
-
-  result_is_ok = ((res_str         == "abc") && result_is_ok);
-  result_is_ok = ((res_ch_a_manual == 'a')   && result_is_ok);
-  result_is_ok = ((res_ch_b_manual == 'b')   && result_is_ok);
-  result_is_ok = ((res_ch_c_manual == 'c')   && result_is_ok);
+  result_is_ok = ((msg_recover == message_in) && result_is_ok);
 
   return result_is_ok;
 }

@@ -51,7 +51,7 @@ auto jacobi(UnsignedIntegerType a, UnsignedIntegerType n) -> int
 
   a %= n;
 
-  int result = 1;
+  int result { 1 };
 
   while(a != 0)
   {
