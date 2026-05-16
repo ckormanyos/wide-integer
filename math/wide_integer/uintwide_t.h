@@ -5527,18 +5527,6 @@
 
   // Define some convenient unsigned wide integer types.
   using uint64_t    = uintwide_t<static_cast<size_t>(UINT32_C(   64)), std::uint32_t>;
-  #if defined(WIDE_INTEGER_HAS_LIMB_TYPE_UINT64)
-  using uint128_t   = uintwide_t<static_cast<size_t>(UINT32_C(  128)), std::uint64_t>;
-  using uint256_t   = uintwide_t<static_cast<size_t>(UINT32_C(  256)), std::uint64_t>;
-  using uint512_t   = uintwide_t<static_cast<size_t>(UINT32_C(  512)), std::uint64_t>;
-  using uint1024_t  = uintwide_t<static_cast<size_t>(UINT32_C( 1024)), std::uint64_t>;
-  using uint2048_t  = uintwide_t<static_cast<size_t>(UINT32_C( 2048)), std::uint64_t>;
-  using uint4096_t  = uintwide_t<static_cast<size_t>(UINT32_C( 4096)), std::uint64_t>;
-  using uint8192_t  = uintwide_t<static_cast<size_t>(UINT32_C( 8192)), std::uint64_t>;
-  using uint16384_t = uintwide_t<static_cast<size_t>(UINT32_C(16384)), std::uint64_t>;
-  using uint32768_t = uintwide_t<static_cast<size_t>(UINT32_C(32768)), std::uint64_t>;
-  using uint65536_t = uintwide_t<static_cast<size_t>(UINT32_C(65536)), std::uint64_t>;
-  #else
   using uint128_t   = uintwide_t<static_cast<size_t>(UINT32_C(  128)), std::uint32_t>;
   using uint256_t   = uintwide_t<static_cast<size_t>(UINT32_C(  256)), std::uint32_t>;
   using uint512_t   = uintwide_t<static_cast<size_t>(UINT32_C(  512)), std::uint32_t>;
@@ -5549,7 +5537,18 @@
   using uint16384_t = uintwide_t<static_cast<size_t>(UINT32_C(16384)), std::uint32_t>;
   using uint32768_t = uintwide_t<static_cast<size_t>(UINT32_C(32768)), std::uint32_t>;
   using uint65536_t = uintwide_t<static_cast<size_t>(UINT32_C(65536)), std::uint32_t>;
-  #endif
+
+  using uint64_t    = uintwide_t<static_cast<size_t>(UINT32_C(   64)), std::uint32_t>;
+  using uint128_t   = uintwide_t<static_cast<size_t>(UINT32_C(  128)), std::uint32_t>;
+  using uint256_t   = uintwide_t<static_cast<size_t>(UINT32_C(  256)), std::uint32_t>;
+  using uint512_t   = uintwide_t<static_cast<size_t>(UINT32_C(  512)), std::uint32_t>;
+  using uint1024_t  = uintwide_t<static_cast<size_t>(UINT32_C( 1024)), std::uint32_t>;
+  using uint2048_t  = uintwide_t<static_cast<size_t>(UINT32_C( 2048)), std::uint32_t>;
+  using uint4096_t  = uintwide_t<static_cast<size_t>(UINT32_C( 4096)), std::uint32_t>;
+  using uint8192_t  = uintwide_t<static_cast<size_t>(UINT32_C( 8192)), std::uint32_t>;
+  using uint16384_t = uintwide_t<static_cast<size_t>(UINT32_C(16384)), std::uint32_t>;
+  using uint32768_t = uintwide_t<static_cast<size_t>(UINT32_C(32768)), std::uint32_t>;
+  using uint65536_t = uintwide_t<static_cast<size_t>(UINT32_C(65536)), std::uint32_t>;
 
   #if !defined(WIDE_INTEGER_DISABLE_TRIVIAL_COPY_AND_STD_LAYOUT_CHECKS)
   static_assert(std::is_trivially_copyable<uint64_t   >::value, "uintwide_t must be trivially copyable.");
