@@ -9,11 +9,11 @@
   #define UINTWIDE_T_2018_10_02_H
 
   #if defined(_MSC_VER)
-  #define WIDE_INTEGER_MSVC _MSC_VER
+  #define WIDE_INTEGER_MSVC _MSC_VER    // NOLINT(cppcoreguidelines-macro-usage)
   #elif defined(__clang__)
-  #define WIDE_INTEGER_CLANG __clang__
+  #define WIDE_INTEGER_CLANG __clang__  // NOLINT(cppcoreguidelines-macro-usage)
   #elif defined(__GNUC__)
-  #define WIDE_INTEGER_GCC __GNUC__
+  #define WIDE_INTEGER_GCC __GNUC__     // NOLINT(cppcoreguidelines-macro-usage)
   #endif
 
   #if defined(WIDE_INTEGER_MSVC) && defined(WIDE_INTEGER_HAS_LIMB_TYPE_UINT64)
