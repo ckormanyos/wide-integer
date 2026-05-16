@@ -17,6 +17,8 @@ namespace local_rsa
 {
   namespace detail {
 
+    auto ascii_to_hex(const std::string& input) -> std::string;
+
     auto ascii_to_hex(const std::string& input) -> std::string
     {
       constexpr char hex[] = "0123456789abcdef"; // NOLINT(cppcoreguidelines-avoid-c-arrays,hicpp-avoid-c-arrays,modernize-avoid-c-arrays)
@@ -32,6 +34,8 @@ namespace local_rsa
 
       return out;
     }
+
+    auto hex_value(char c) -> unsigned char;
 
     auto hex_value(char c) -> unsigned char
     {
@@ -58,6 +62,8 @@ namespace local_rsa
 
         return static_cast<unsigned char>(c_result);
     }
+
+    auto hex_to_ascii(const std::string& hex) -> std::string;
 
     auto hex_to_ascii(const std::string& hex) -> std::string
     {

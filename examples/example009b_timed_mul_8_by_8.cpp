@@ -41,10 +41,16 @@ namespace local_timed_mul_8_by_8
     *it_out = distribution(rng);
   }
 
-  #if defined(WIDE_INTEGER_NAMESPACE)
-  using big_uint_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<static_cast<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t>(UINT32_C(256))>;
+  #if defined(WIDE_INTEGER_HAS_LIMB_TYPE_UINT64)
+  using local_limb_type = std::uint64_t;
   #else
-  using big_uint_type = ::math::wide_integer::uintwide_t<static_cast<math::wide_integer::size_t>(UINT32_C(256))>;
+  using local_limb_type = std::uint32_t;
+  #endif
+
+  #if defined(WIDE_INTEGER_NAMESPACE)
+  using big_uint_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<static_cast<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t>(UINT32_C(256)), local_limb_type>;
+  #else
+  using big_uint_type = ::math::wide_integer::uintwide_t<static_cast<math::wide_integer::size_t>(UINT32_C(256)), local_limb_type>;
   #endif
 
   auto local_a() -> std::vector<big_uint_type>&;

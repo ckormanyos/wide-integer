@@ -8,6 +8,18 @@
 #ifndef UINTWIDE_T_2018_10_02_H // NOLINT(llvm-header-guard)
   #define UINTWIDE_T_2018_10_02_H
 
+  #if defined(_MSC_VER)
+  #define WIDE_INTEGER_MSVC _MSC_VER
+  #elif defined(__clang__)
+  #define WIDE_INTEGER_CLANG __clang__
+  #elif defined(__GNUC__)
+  #define WIDE_INTEGER_GCC __GNUC__
+  #endif
+
+  #if defined(WIDE_INTEGER_MSVC) && defined(WIDE_INTEGER_HAS_LIMB_TYPE_UINT64)
+  #include <__msvc_int128.hpp>
+  #endif
+
   #if ((__cplusplus < 202002L) || (defined(__GNUC__) && defined(__AVR__)))
   #include <ciso646>
   #else
@@ -47,14 +59,14 @@
   #include <type_traits>
   #include <utility>
 
-  #if (defined(__clang__) && (__clang_major__ <= 9))
+  #if (defined(WIDE_INTEGER_CLANG) && (WIDE_INTEGER_CLANG <= 9))
   #define WIDE_INTEGER_NUM_LIMITS_CLASS_TYPE struct // NOLINT(cppcoreguidelines-macro-usage)
   #else
   #define WIDE_INTEGER_NUM_LIMITS_CLASS_TYPE class  // NOLINT(cppcoreguidelines-macro-usage)
   #endif
 
-  #if (defined(_MSC_VER) && (!defined(__GNUC__) && !defined(__clang__)))
-    #if ((_MSC_VER >= 1900) && (defined(_HAS_CXX20) && (_HAS_CXX20 != 0)))
+  #if (defined(WIDE_INTEGER_MSVC) && (!defined(WIDE_INTEGER_CLANG) && !defined(WIDE_INTEGER_GCC)))
+    #if ((WIDE_INTEGER_MSVC >= 1900) && (defined(_HAS_CXX20) && (_HAS_CXX20 != 0)))
       #define WIDE_INTEGER_NODISCARD [[nodiscard]]     // NOLINT(cppcoreguidelines-macro-usage)
     #else
       #define WIDE_INTEGER_NODISCARD
@@ -1057,13 +1069,17 @@
   template<const size_t BitCount> struct uint_type_helper<BitCount, std::enable_if_t<(BitCount >= static_cast<size_t>(UINT8_C(17))) && (BitCount <= static_cast<size_t>(UINT8_C( 32)))>> { using exact_unsigned_type = std::uint32_t;     using exact_signed_type = std::int32_t;    using fast_unsigned_type = std::uint_fast32_t; using fast_signed_type = std::int_fast32_t; };
   template<const size_t BitCount> struct uint_type_helper<BitCount, std::enable_if_t<(BitCount >= static_cast<size_t>(UINT8_C(33))) && (BitCount <= static_cast<size_t>(UINT8_C( 64)))>> { using exact_unsigned_type = std::uint64_t;     using exact_signed_type = std::int64_t;    using fast_unsigned_type = std::uint_fast64_t; using fast_signed_type = std::int_fast64_t; };
   #if defined(WIDE_INTEGER_HAS_LIMB_TYPE_UINT64)
-  #if (defined(__GNUC__) && !defined(__clang__))
+  #if defined(WIDE_INTEGER_MSVC)
+  template<const size_t BitCount> struct uint_type_helper<BitCount, std::enable_if_t<(BitCount >= static_cast<size_t>(UINT8_C(65))) && (BitCount <= static_cast<size_t>(UINT8_C(128)))>> { using exact_unsigned_type = std::_Unsigned128; using exact_signed_type = std::_Signed128; using fast_unsigned_type = std::_Unsigned128;  using fast_signed_type = std::_Signed128; };
+  #else
+  #if defined(WIDE_INTEGER_GCC)
   #pragma GCC diagnostic push
   #pragma GCC diagnostic ignored "-Wpedantic"
   #endif
-  template<const size_t BitCount> struct uint_type_helper<BitCount, std::enable_if_t<(BitCount >= static_cast<size_t>(UINT8_C(65))) && (BitCount <= static_cast<size_t>(UINT8_C(128)))>> { using exact_unsigned_type = unsigned __int128; using exact_signed_type = signed __int128; using fast_unsigned_type = unsigned __int128;  using fast_signed_type = signed __int128;   };
-  #if (defined(__GNUC__) && !defined(__clang__))
+  template<const size_t BitCount> struct uint_type_helper<BitCount, std::enable_if_t<(BitCount >= static_cast<size_t>(UINT8_C(65))) && (BitCount <= static_cast<size_t>(UINT8_C(128)))>> { using exact_unsigned_type = unsigned __int128; using exact_signed_type = __int128; using fast_unsigned_type = unsigned __int128;  using fast_signed_type = __int128; };
+  #if defined(WIDE_INTEGER_GCC)
   #pragma GCC diagnostic pop
+  #endif
   #endif
   #endif
 
@@ -5510,7 +5526,19 @@
   };
 
   // Define some convenient unsigned wide integer types.
-  using uint64_t    = uintwide_t<static_cast<size_t>(UINT32_C(   64)), std::uint16_t>;
+  using uint64_t    = uintwide_t<static_cast<size_t>(UINT32_C(   64)), std::uint32_t>;
+  #if defined(WIDE_INTEGER_HAS_LIMB_TYPE_UINT64)
+  using uint128_t   = uintwide_t<static_cast<size_t>(UINT32_C(  128)), std::uint64_t>;
+  using uint256_t   = uintwide_t<static_cast<size_t>(UINT32_C(  256)), std::uint64_t>;
+  using uint512_t   = uintwide_t<static_cast<size_t>(UINT32_C(  512)), std::uint64_t>;
+  using uint1024_t  = uintwide_t<static_cast<size_t>(UINT32_C( 1024)), std::uint64_t>;
+  using uint2048_t  = uintwide_t<static_cast<size_t>(UINT32_C( 2048)), std::uint64_t>;
+  using uint4096_t  = uintwide_t<static_cast<size_t>(UINT32_C( 4096)), std::uint64_t>;
+  using uint8192_t  = uintwide_t<static_cast<size_t>(UINT32_C( 8192)), std::uint64_t>;
+  using uint16384_t = uintwide_t<static_cast<size_t>(UINT32_C(16384)), std::uint64_t>;
+  using uint32768_t = uintwide_t<static_cast<size_t>(UINT32_C(32768)), std::uint64_t>;
+  using uint65536_t = uintwide_t<static_cast<size_t>(UINT32_C(65536)), std::uint64_t>;
+  #else
   using uint128_t   = uintwide_t<static_cast<size_t>(UINT32_C(  128)), std::uint32_t>;
   using uint256_t   = uintwide_t<static_cast<size_t>(UINT32_C(  256)), std::uint32_t>;
   using uint512_t   = uintwide_t<static_cast<size_t>(UINT32_C(  512)), std::uint32_t>;
@@ -5521,6 +5549,7 @@
   using uint16384_t = uintwide_t<static_cast<size_t>(UINT32_C(16384)), std::uint32_t>;
   using uint32768_t = uintwide_t<static_cast<size_t>(UINT32_C(32768)), std::uint32_t>;
   using uint65536_t = uintwide_t<static_cast<size_t>(UINT32_C(65536)), std::uint32_t>;
+  #endif
 
   #if !defined(WIDE_INTEGER_DISABLE_TRIVIAL_COPY_AND_STD_LAYOUT_CHECKS)
   static_assert(std::is_trivially_copyable<uint64_t   >::value, "uintwide_t must be trivially copyable.");

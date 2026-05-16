@@ -1,5 +1,5 @@
 ﻿///////////////////////////////////////////////////////////////////////////////
-//  Copyright Christopher Kormanyos 2019 - 2025.
+//  Copyright Christopher Kormanyos 2019 - 2026.
 //  Distributed under the Boost Software License,
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -8,15 +8,14 @@
 #ifndef TEST_UINTWIDE_T_N_BINARY_OPS_TEMPLATE_2019_12_19_H // NOLINT(llvm-header-guard)
   #define TEST_UINTWIDE_T_N_BINARY_OPS_TEMPLATE_2019_12_19_H
 
+  #include <test/test_uintwide_t_n_binary_ops_base.h>
+  #include <util/utility/util_pseudorandom_time_point_seed.h>
+
   #include <algorithm>
   #include <atomic>
   #include <cstddef>
   #include <random>
   #include <vector>
-
-  #include <test/test_uintwide_t_n_binary_ops_base.h>
-
-  #include <util/utility/util_pseudorandom_time_point_seed.h>
 
   #if defined(WIDE_INTEGER_NAMESPACE)
   template<const WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t MyDigits2,
@@ -24,7 +23,11 @@
            typename AllocatorType = void>
   #else
   template<const ::math::wide_integer::size_t MyDigits2,
+           #if defined(WIDE_INTEGER_HAS_LIMB_TYPE_UINT64)
+           typename MyLimbType = std::uint64_t,
+           #else
            typename MyLimbType = std::uint32_t,
+           #endif
            typename AllocatorType = void>
   #endif
   class test_uintwide_t_n_binary_ops_template : public test_uintwide_t_n_binary_ops_base // NOLINT(cppcoreguidelines-special-member-functions,hicpp-special-member-functions)
