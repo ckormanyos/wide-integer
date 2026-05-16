@@ -401,14 +401,13 @@
   }
 
   template <class UnsignedIntegralType>
-  constexpr auto clz_unsafe(UnsignedIntegralType v) noexcept -> std::enable_if_t<(   std::is_integral<UnsignedIntegralType>::value
-                                                                                  && std::is_unsigned<UnsignedIntegralType>::value), unsigned>
+  constexpr auto clz_unsafe(UnsignedIntegralType v) noexcept -> unsigned
   {
     using local_unsigned_integral_type = UnsignedIntegralType;
 
     local_unsigned_integral_type yy_val { local_unsigned_integral_type { UINT8_C(0) } };
 
-    unsigned nn_val { static_cast<unsigned>(std::numeric_limits<local_unsigned_integral_type>::digits) };
+    unsigned nn_val { static_cast<unsigned>(sizeof(local_unsigned_integral_type) * std::size_t { UINT8_C(8) }) };
 
     auto cc_val = // NOLINT(altera-id-dependent-backward-branch)
       static_cast<unsigned>
@@ -439,12 +438,11 @@
   }
 
   template<typename UnsignedIntegralType>
-  constexpr auto ctz_unsafe(const UnsignedIntegralType v) noexcept -> std::enable_if_t<(   std::is_integral<UnsignedIntegralType>::value
-                                                                                        && std::is_unsigned<UnsignedIntegralType>::value), unsigned>
+  constexpr auto ctz_unsafe(const UnsignedIntegralType v) noexcept -> unsigned
   {
     using local_unsigned_integral_type = UnsignedIntegralType;
 
-    constexpr auto local_digits = static_cast<unsigned>(std::numeric_limits<local_unsigned_integral_type>::digits);
+    constexpr auto local_digits = static_cast<unsigned>(sizeof(local_unsigned_integral_type) * std::size_t { UINT8_C(8) });
 
     const auto clz_mask =
       static_cast<local_unsigned_integral_type>
@@ -457,8 +455,7 @@
   }
 
   template<typename UnsignedIntegralType>
-  constexpr auto gcd_unsafe(UnsignedIntegralType u, UnsignedIntegralType v) -> std::enable_if_t<(   std::is_integral<UnsignedIntegralType>::value // NOLINT(altera-id-dependent-backward-branch)
-                                                                                                 && std::is_unsigned<UnsignedIntegralType>::value), UnsignedIntegralType>
+  constexpr auto gcd_unsafe(UnsignedIntegralType u, UnsignedIntegralType v) -> UnsignedIntegralType
   {
     using local_unsigned_integral_type = UnsignedIntegralType;
 
@@ -5527,6 +5524,32 @@
 
   // Define some convenient unsigned wide integer types.
   using uint64_t    = uintwide_t<static_cast<size_t>(UINT32_C(   64)), std::uint32_t>;
+  using  int64_t    = uintwide_t<static_cast<size_t>(UINT32_C(   64)), std::uint16_t, void, true>;
+  #if defined(WIDE_INTEGER_HAS_LIMB_TYPE_UINT64)
+  using uint128_t   = uintwide_t<static_cast<size_t>(UINT32_C(  128)), std::uint64_t>;
+  using uint256_t   = uintwide_t<static_cast<size_t>(UINT32_C(  256)), std::uint64_t>;
+  using uint512_t   = uintwide_t<static_cast<size_t>(UINT32_C(  512)), std::uint64_t>;
+  using uint1024_t  = uintwide_t<static_cast<size_t>(UINT32_C( 1024)), std::uint64_t>;
+  using uint2048_t  = uintwide_t<static_cast<size_t>(UINT32_C( 2048)), std::uint64_t>;
+  using uint4096_t  = uintwide_t<static_cast<size_t>(UINT32_C( 4096)), std::uint64_t>;
+  using uint8192_t  = uintwide_t<static_cast<size_t>(UINT32_C( 8192)), std::uint64_t>;
+  using uint16384_t = uintwide_t<static_cast<size_t>(UINT32_C(16384)), std::uint64_t>;
+  using uint32768_t = uintwide_t<static_cast<size_t>(UINT32_C(32768)), std::uint64_t>;
+  using uint65536_t = uintwide_t<static_cast<size_t>(UINT32_C(65536)), std::uint64_t>;
+
+  using  int128_t   = uintwide_t<static_cast<size_t>(UINT32_C(  128)), std::uint64_t, void, true>;
+  using  int256_t   = uintwide_t<static_cast<size_t>(UINT32_C(  256)), std::uint64_t, void, true>;
+  using  int512_t   = uintwide_t<static_cast<size_t>(UINT32_C(  512)), std::uint64_t, void, true>;
+  using  int1024_t  = uintwide_t<static_cast<size_t>(UINT32_C( 1024)), std::uint64_t, void, true>;
+  using  int2048_t  = uintwide_t<static_cast<size_t>(UINT32_C( 2048)), std::uint64_t, void, true>;
+  using  int4096_t  = uintwide_t<static_cast<size_t>(UINT32_C( 4096)), std::uint64_t, void, true>;
+  using  int8192_t  = uintwide_t<static_cast<size_t>(UINT32_C( 8192)), std::uint64_t, void, true>;
+  using  int16384_t = uintwide_t<static_cast<size_t>(UINT32_C(16384)), std::uint64_t, void, true>;
+  using  int32768_t = uintwide_t<static_cast<size_t>(UINT32_C(32768)), std::uint64_t, void, true>;
+  using  int65536_t = uintwide_t<static_cast<size_t>(UINT32_C(65536)), std::uint64_t, void, true>;
+
+  #else
+
   using uint128_t   = uintwide_t<static_cast<size_t>(UINT32_C(  128)), std::uint32_t>;
   using uint256_t   = uintwide_t<static_cast<size_t>(UINT32_C(  256)), std::uint32_t>;
   using uint512_t   = uintwide_t<static_cast<size_t>(UINT32_C(  512)), std::uint32_t>;
@@ -5538,17 +5561,18 @@
   using uint32768_t = uintwide_t<static_cast<size_t>(UINT32_C(32768)), std::uint32_t>;
   using uint65536_t = uintwide_t<static_cast<size_t>(UINT32_C(65536)), std::uint32_t>;
 
-  using uint64_t    = uintwide_t<static_cast<size_t>(UINT32_C(   64)), std::uint32_t>;
-  using uint128_t   = uintwide_t<static_cast<size_t>(UINT32_C(  128)), std::uint32_t>;
-  using uint256_t   = uintwide_t<static_cast<size_t>(UINT32_C(  256)), std::uint32_t>;
-  using uint512_t   = uintwide_t<static_cast<size_t>(UINT32_C(  512)), std::uint32_t>;
-  using uint1024_t  = uintwide_t<static_cast<size_t>(UINT32_C( 1024)), std::uint32_t>;
-  using uint2048_t  = uintwide_t<static_cast<size_t>(UINT32_C( 2048)), std::uint32_t>;
-  using uint4096_t  = uintwide_t<static_cast<size_t>(UINT32_C( 4096)), std::uint32_t>;
-  using uint8192_t  = uintwide_t<static_cast<size_t>(UINT32_C( 8192)), std::uint32_t>;
-  using uint16384_t = uintwide_t<static_cast<size_t>(UINT32_C(16384)), std::uint32_t>;
-  using uint32768_t = uintwide_t<static_cast<size_t>(UINT32_C(32768)), std::uint32_t>;
-  using uint65536_t = uintwide_t<static_cast<size_t>(UINT32_C(65536)), std::uint32_t>;
+  using  int128_t   = uintwide_t<static_cast<size_t>(UINT32_C(  128)), std::uint32_t, void, true>;
+  using  int256_t   = uintwide_t<static_cast<size_t>(UINT32_C(  256)), std::uint32_t, void, true>;
+  using  int512_t   = uintwide_t<static_cast<size_t>(UINT32_C(  512)), std::uint32_t, void, true>;
+  using  int1024_t  = uintwide_t<static_cast<size_t>(UINT32_C( 1024)), std::uint32_t, void, true>;
+  using  int2048_t  = uintwide_t<static_cast<size_t>(UINT32_C( 2048)), std::uint32_t, void, true>;
+  using  int4096_t  = uintwide_t<static_cast<size_t>(UINT32_C( 4096)), std::uint32_t, void, true>;
+  using  int8192_t  = uintwide_t<static_cast<size_t>(UINT32_C( 8192)), std::uint32_t, void, true>;
+  using  int16384_t = uintwide_t<static_cast<size_t>(UINT32_C(16384)), std::uint32_t, void, true>;
+  using  int32768_t = uintwide_t<static_cast<size_t>(UINT32_C(32768)), std::uint32_t, void, true>;
+  using  int65536_t = uintwide_t<static_cast<size_t>(UINT32_C(65536)), std::uint32_t, void, true>;
+
+  #endif
 
   #if !defined(WIDE_INTEGER_DISABLE_TRIVIAL_COPY_AND_STD_LAYOUT_CHECKS)
   static_assert(std::is_trivially_copyable<uint64_t   >::value, "uintwide_t must be trivially copyable.");
@@ -5575,18 +5599,6 @@
   static_assert(std::is_standard_layout<uint32768_t>::value, "uintwide_t must have standard layout.");
   static_assert(std::is_standard_layout<uint65536_t>::value, "uintwide_t must have standard layout.");
   #endif
-
-  using  int64_t    = uintwide_t<static_cast<size_t>(UINT32_C(   64)), std::uint16_t, void, true>;
-  using  int128_t   = uintwide_t<static_cast<size_t>(UINT32_C(  128)), std::uint32_t, void, true>;
-  using  int256_t   = uintwide_t<static_cast<size_t>(UINT32_C(  256)), std::uint32_t, void, true>;
-  using  int512_t   = uintwide_t<static_cast<size_t>(UINT32_C(  512)), std::uint32_t, void, true>;
-  using  int1024_t  = uintwide_t<static_cast<size_t>(UINT32_C( 1024)), std::uint32_t, void, true>;
-  using  int2048_t  = uintwide_t<static_cast<size_t>(UINT32_C( 2048)), std::uint32_t, void, true>;
-  using  int4096_t  = uintwide_t<static_cast<size_t>(UINT32_C( 4096)), std::uint32_t, void, true>;
-  using  int8192_t  = uintwide_t<static_cast<size_t>(UINT32_C( 8192)), std::uint32_t, void, true>;
-  using  int16384_t = uintwide_t<static_cast<size_t>(UINT32_C(16384)), std::uint32_t, void, true>;
-  using  int32768_t = uintwide_t<static_cast<size_t>(UINT32_C(32768)), std::uint32_t, void, true>;
-  using  int65536_t = uintwide_t<static_cast<size_t>(UINT32_C(65536)), std::uint32_t, void, true>;
 
   #if !defined(WIDE_INTEGER_DISABLE_TRIVIAL_COPY_AND_STD_LAYOUT_CHECKS)
   static_assert(std::is_trivially_copyable<int64_t   >::value, "uintwide_t must be trivially copyable.");
@@ -6461,11 +6473,7 @@
   template<typename UnsignedShortType>
   constexpr auto integer_gcd_reduce(UnsignedShortType u, UnsignedShortType v) -> UnsignedShortType
   {
-    #if (defined(__cpp_lib_gcd_lcm) && (__cpp_lib_gcd_lcm >= 201606L))
-    return std::gcd(u, v);
-    #else
     return detail::gcd_unsafe(u, v);
-    #endif
   }
 
   } // namespace detail
@@ -6539,7 +6547,11 @@
           swap(u, v);
         }
 
-        if(v <= (std::numeric_limits<local_ularge_type>::max)())
+        constexpr unsigned local_ularge_bits { static_cast<unsigned>(sizeof(local_ularge_type) * std::size_t { UINT8_C(8) }) };
+
+        const local_wide_integer_type ularge_type_max { (local_wide_integer_type{1} << local_ularge_bits) - 1U };
+
+        if(v <= ularge_type_max)
         {
           const auto my_v_hi =
             static_cast<local_ushort_type>
@@ -6560,7 +6572,24 @@
           const local_ularge_type v_large = detail::make_large(*v.crepresentation().cbegin(), my_v_hi);
           const local_ularge_type u_large = detail::make_large(*u.crepresentation().cbegin(), my_u_hi);
 
-          u = detail::integer_gcd_reduce(v_large, u_large);
+          const local_ularge_type
+            gcd_reduce_value
+            {
+              detail::integer_gcd_reduce
+              (
+                v_large,
+                u_large
+              )
+            };
+
+          const local_ushort_type u_lo { detail::make_lo<local_ushort_type>(gcd_reduce_value) };
+          const local_ushort_type u_hi { detail::make_hi<local_ushort_type>(gcd_reduce_value) };
+
+          u = local_wide_integer_type { u_hi };
+
+          u <<= static_cast<unsigned>(sizeof(local_ushort_type) * std::size_t { UINT8_C(8) });
+
+          u |= u_lo;
 
           break;
         }
