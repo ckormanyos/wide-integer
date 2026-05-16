@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////
-//  Copyright Christopher Kormanyos 2018 - 2025.                 //
+//  Copyright Christopher Kormanyos 2018 - 2026.                 //
 //  Distributed under the Boost Software License,                //
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt          //
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)             //
@@ -43,10 +43,16 @@ namespace local_timed_mul
     *it_out = distribution(rng);
   }
 
-  #if defined(WIDE_INTEGER_NAMESPACE)
-  using big_uint_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<wide_integer_test9_digits2>;
+  #if defined(WIDE_INTEGER_HAS_LIMB_TYPE_UINT64)
+  using local_limb_type = std::uint64_t;
   #else
-  using big_uint_type = ::math::wide_integer::uintwide_t<wide_integer_test9_digits2>;
+  using local_limb_type = std::uint32_t;
+  #endif
+
+  #if defined(WIDE_INTEGER_NAMESPACE)
+  using big_uint_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<wide_integer_test9_digits2, local_limb_type>;
+  #else
+  using big_uint_type = ::math::wide_integer::uintwide_t<wide_integer_test9_digits2, local_limb_type>;
   #endif
 
   auto local_a() -> std::vector<big_uint_type>&;

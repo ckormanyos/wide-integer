@@ -1,5 +1,5 @@
 ﻿///////////////////////////////////////////////////////////////////////////////
-//  Copyright Christopher Kormanyos 2019 - 2025.
+//  Copyright Christopher Kormanyos 2019 - 2026.
 //  Distributed under the Boost Software License,
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -20,7 +20,11 @@
   #else
   template<const ::math::wide_integer::size_t MyDigits2A,
            const ::math::wide_integer::size_t MyDigits2B,
+           #if defined(WIDE_INTEGER_HAS_LIMB_TYPE_UINT64)
+           typename MyLimbType = std::uint64_t>
+           #else
            typename MyLimbType = std::uint32_t>
+           #endif
   #endif
   class test_uintwide_t_n_binary_ops_mul_n_by_m_template : public test_uintwide_t_n_binary_ops_base // NOLINT(cppcoreguidelines-special-member-functions,hicpp-special-member-functions)
   {
