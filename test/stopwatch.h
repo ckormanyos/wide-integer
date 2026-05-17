@@ -9,21 +9,21 @@
   #define STOPWATCH_2024_03_28_H
 
   #if defined(_MSC_VER)
-  #define STOPWATCH_MSVC    _MSC_VER    // NOLINT(cppcoreguidelines-macro-usage)
+  #define STOPWATCH_MSVC    _MSC_VER          // NOLINT(cppcoreguidelines-macro-usage)
   #elif defined(__clang__)
-  #define STOPWATCH_CLANG   __clang__   // NOLINT(cppcoreguidelines-macro-usage)
+  #define STOPWATCH_CLANG   __clang_major__   // NOLINT(cppcoreguidelines-macro-usage)
   #elif defined(__GNUC__)
-  #define STOPWATCH_GCC     __GNUC__    // NOLINT(cppcoreguidelines-macro-usage)
+  #define STOPWATCH_GCC     __GNUC__          // NOLINT(cppcoreguidelines-macro-usage)
   #endif
 
   #if defined(__CYGWIN__)
-  #define STOPWATCH_CYGWIN  __CYGWIN__  // NOLINT(cppcoreguidelines-macro-usage)
+  #define STOPWATCH_CYGWIN  __CYGWIN__        // NOLINT(cppcoreguidelines-macro-usage)
   #endif
 
   #include <cstdint>
   #include <ctime>
 
-  #if defined(STOPWATCH_MSVC) && !defined(STOPWATCH_GCC)
+  #if (defined(STOPWATCH_MSVC) && !defined(STOPWATCH_GCC))
   #define STOPWATCH_NODISCARD
   #else
   #if (defined(__cplusplus) && (__cplusplus >= 201703L))
