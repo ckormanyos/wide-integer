@@ -1,13 +1,15 @@
 ﻿///////////////////////////////////////////////////////////////////////////////
-//  Copyright Christopher Kormanyos 2019 - 2026.
+//  Copyright Christopher Kormanyos 2019 - 2025.
 //  Distributed under the Boost Software License,
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
 
-#include <boost/version.hpp>
+#include <random>
+#include <string>
+#include <vector>
 
-#include <math/wide_integer/uintwide_t.h>
+#include <boost/version.hpp>
 
 #if !defined(BOOST_VERSION)
 #error BOOST_VERSION is not defined. Ensure that <boost/version.hpp> is properly included.
@@ -22,17 +24,17 @@
 #endif
 
 #if (((BOOST_VERSION == 108000) || (BOOST_VERSION == 108100)) && defined(BOOST_NO_EXCEPTIONS))
-#if defined(WIDE_INTEGER_CLANG)
+#if defined(__clang__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wsometimes-uninitialized"
 #endif
-#if defined(WIDE_INTEGER_MSVC)
+#if defined(_MSC_VER)
 #pragma warning(push)
 #pragma warning(disable : 4701)
 #endif
 #endif
 
-#if defined(WIDE_INTEGER_GCC)
+#if defined(__GNUC__)
 #if (BOOST_VERSION < 108000)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wconversion"
@@ -48,43 +50,35 @@
 #endif
 #endif
 
-#if (defined(WIDE_INTEGER_GCC) && (WIDE_INTEGER_GCC >= 12))
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Warray-bounds"
+#if (defined(__GNUC__) && !defined(__clang__) && (__GNUC__ >= 12))
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wrestrict"
 #endif
 
 #if (BOOST_VERSION < 108000)
-#if ((defined(WIDE_INTEGER_CLANG) && (WIDE_INTEGER_CLANG > 9)) && !defined(WIDE_INTEGER_APPLE))
+#if ((defined(__clang__) && (__clang_major__ > 9)) && !defined(__APPLE__))
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-copy"
 #endif
 #endif
 
+#include <boost/multiprecision/cpp_int.hpp>
+#include <boost/multiprecision/uintwide_t_backend.hpp>
+
+#include <math/wide_integer/uintwide_t.h>
 #include <test/test_uintwide_t.h>
 
 #include <util/utility/util_pseudorandom_time_point_seed.h>
 
-#include <boost/multiprecision/cpp_int.hpp>
-#include <boost/multiprecision/uintwide_t_backend.hpp>
-
-#if (defined(__cpp_lib_to_chars) && (__cpp_lib_to_chars >= 201611L))
-#include <charconv>
-#endif
-#include <random>
-#include <string>
-#include <vector>
-
-#if defined(WIDE_INTEGER_CLANG)
+#if defined(__clang__)
   #if defined __has_feature && __has_feature(thread_sanitizer)
   #define UINTWIDE_T_REDUCE_TEST_DEPTH
   #endif
-#elif defined(WIDE_INTEGER_GCC)
+#elif defined(__GNUC__)
   #if defined(__SANITIZE_THREAD__) || defined(WIDE_INTEGER_HAS_COVERAGE)
   #define UINTWIDE_T_REDUCE_TEST_DEPTH
   #endif
-#elif defined(WIDE_INTEGER_MSVC)
+#elif defined(_MSC_VER)
   #if defined(_DEBUG)
   #define UINTWIDE_T_REDUCE_TEST_DEPTH
   #endif
@@ -1775,14 +1769,14 @@ auto test_various_isolated_edge_cases() -> bool // NOLINT(readability-function-c
 
     const auto& c(a %= b);
 
-    #if (defined(WIDE_INTEGER_CLANG) && (defined(WIDE_INTEGER_CLANG) && (WIDE_INTEGER_CLANG > 6)))
+    #if (defined(__clang__) && (defined(__clang_major__) && (__clang_major__ > 6)))
     #pragma GCC diagnostic push
     #pragma GCC diagnostic ignored "-Wself-assign-overloaded"
     #endif
 
     const auto& d(a %= a); // NOLINT(clang-diagnostic-self-assign-overloaded)
 
-    #if (defined(WIDE_INTEGER_CLANG) && (defined(WIDE_INTEGER_CLANG) && (WIDE_INTEGER_CLANG > 6)))
+    #if (defined(__clang__) && (defined(__clang_major__) && (__clang_major__ > 6)))
     #pragma GCC diagnostic pop
     #endif
 
@@ -2925,17 +2919,16 @@ auto local_inf_ld() -> long double { return std::numeric_limits<long double>::in
 // LCOV_EXCL_STOP
 
 #if (BOOST_VERSION < 108000)
-#if ((defined(WIDE_INTEGER_CLANG) && (WIDE_INTEGER_CLANG > 9)) && !defined(WIDE_INTEGER_APPLE))
+#if ((defined(__clang__) && (__clang_major__ > 9)) && !defined(__APPLE__))
 #pragma GCC diagnostic pop
 #endif
 #endif
 
-#if (defined(WIDE_INTEGER_GCC) && (WIDE_INTEGER_GCC >= 12))
-#pragma GCC diagnostic pop
+#if (defined(__GNUC__) && !defined(__clang__) && (__GNUC__ >= 12))
 #pragma GCC diagnostic pop
 #endif
 
-#if defined(WIDE_INTEGER_GCC)
+#if defined(__GNUC__)
 #if (BOOST_VERSION < 108000)
 #pragma GCC diagnostic pop
 #pragma GCC diagnostic pop
@@ -2947,10 +2940,10 @@ auto local_inf_ld() -> long double { return std::numeric_limits<long double>::in
 #endif
 
 #if (((BOOST_VERSION == 108000) || (BOOST_VERSION == 108100)) && defined(BOOST_NO_EXCEPTIONS))
-#if defined(WIDE_INTEGER_CLANG)
+#if defined(__clang__)
 #pragma GCC diagnostic pop
 #endif
-#if defined(WIDE_INTEGER_MSVC)
+#if defined(_MSC_VER)
 #pragma warning(pop)
 #endif
 #endif

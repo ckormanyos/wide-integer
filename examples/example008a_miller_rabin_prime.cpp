@@ -16,6 +16,8 @@
 
 #include <boost/version.hpp>
 
+#include <math/wide_integer/uintwide_t.h>
+
 #include <util/utility/util_pseudorandom_time_point_seed.h>
 
 #if !defined(BOOST_VERSION)
@@ -31,7 +33,7 @@
 #endif
 
 #if (BOOST_VERSION < 108000)
-#if defined(WIDE_INTEGER_GCC)
+#if (defined(WIDE_INTEGER_GCC) || defined(WIDE_INTEGER_CLANG))
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wconversion"
 #pragma GCC diagnostic push
@@ -214,7 +216,7 @@ auto main() -> int // NOLINT(bugprone-exception-escape)
 #endif
 
 #if (BOOST_VERSION < 108000)
-#if defined(WIDE_INTEGER_GCC)
+#if (defined(WIDE_INTEGER_GCC) || defined(WIDE_INTEGER_CLANG))
 #pragma GCC diagnostic pop
 #pragma GCC diagnostic pop
 #pragma GCC diagnostic pop
