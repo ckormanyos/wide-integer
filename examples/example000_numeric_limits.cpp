@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////
-//  Copyright Christopher Kormanyos 2021 - 2025.                 //
+//  Copyright Christopher Kormanyos 2021 - 2026.                 //
 //  Distributed under the Boost Software License,                //
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt          //
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)             //
@@ -68,12 +68,12 @@ auto ::math::wide_integer::example000_numeric_limits() -> bool
     constexpr int256_t my_max   ("0x7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF");
     constexpr int256_t my_min   ("0x8000000000000000000000000000000000000000000000000000000000000000");
 
-    #if (defined(_MSC_VER) && (_MSC_VER < 1920))
+    #if (defined(WIDE_INTEGER_MSVC) && (WIDE_INTEGER_MSVC < 1920))
     #pragma warning(push)
     #pragma warning(disable : 4307)
     #endif
     constexpr int256_t my_min2  ("-57896044618658097711785492504343953926634992332820282019728792003956564819968");
-    #if (defined(_MSC_VER) && (_MSC_VER < 1920))
+    #if (defined(WIDE_INTEGER_MSVC) && (WIDE_INTEGER_MSVC < 1920))
     #pragma warning(pop)
     #endif
 

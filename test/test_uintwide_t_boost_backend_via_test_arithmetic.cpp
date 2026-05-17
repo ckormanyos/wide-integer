@@ -1,10 +1,12 @@
 ﻿///////////////////////////////////////////////////////////////
-//  Copyright 2022 - 2025 Christopher Kormanyos.
+//  Copyright 2022 - 2026 Christopher Kormanyos.
 //  Distributed under the Boost
 //  Software License, Version 1.0. (See accompanying file
 //  LICENSE_1_0.txt or copy at https://www.boost.org/LICENSE_1_0.txt
 
 #include <boost/version.hpp>
+
+#include <boost/multiprecision/uintwide_t_backend.hpp>
 
 #if !defined(BOOST_VERSION)
 #error BOOST_VERSION is not defined. Ensure that <boost/version.hpp> is properly included.
@@ -19,7 +21,7 @@
 #endif
 
 #if (BOOST_VERSION < 108000)
-#if defined(__GNUC__)
+#if defined(WIDE_INTEGER_GCC)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wconversion"
 #pragma GCC diagnostic push
@@ -29,13 +31,13 @@
 #endif
 #endif
 
-#if (defined(__GNUC__) && !defined(__clang__) && (__GNUC__ >= 12))
+#if (defined(WIDE_INTEGER_GCC) && (WIDE_INTEGER_GCC >= 12))
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wrestrict"
 #endif
 
 #if (BOOST_VERSION < 108000)
-#if ((defined(__clang__) && (__clang_major__ > 9)) && !defined(__APPLE__))
+#if ((defined(WIDE_INTEGER_CLANG) && (WIDE_INTEGER_CLANG > 9)) && !defined(WIDE_INTEGER_APPLE))
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-copy"
 #endif
@@ -45,7 +47,6 @@
 #include <test/test_uintwide_t.h>
 
 #include <boost/multiprecision/cpp_int.hpp>
-#include <boost/multiprecision/uintwide_t_backend.hpp>
 
 // cd /mnt/c/Users/ckorm/Documents/Ks/PC_Software/NumericalPrograms/ExtendedNumberTypes/wide_integer
 // g++ -march=native -mtune=native -O2 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -std=c++20 -I. -I/mnt/c/boost/boost_1_90_0 test/test_uintwide_t_boost_backend_via_test_arithmetic.cpp -o test_uintwide_t_boost_backend_via_test_arithmetic.exe
@@ -70,17 +71,17 @@ auto main() -> int
 }
 
 #if (BOOST_VERSION < 108000)
-#if ((defined(__clang__) && (__clang_major__ > 9)) && !defined(__APPLE__))
+#if ((defined(WIDE_INTEGER_CLANG) && (WIDE_INTEGER_CLANG > 9)) && !defined(WIDE_INTEGER_APPLE))
 #pragma GCC diagnostic pop
 #endif
 #endif
 
-#if (defined(__GNUC__) && !defined(__clang__) && (__GNUC__ >= 12))
+#if (defined(WIDE_INTEGER_GCC) && (WIDE_INTEGER_GCC >= 12))
 #pragma GCC diagnostic pop
 #endif
 
 #if (BOOST_VERSION < 108000)
-#if defined(__GNUC__)
+#if defined(WIDE_INTEGER_GCC)
 #pragma GCC diagnostic pop
 #pragma GCC diagnostic pop
 #pragma GCC diagnostic pop

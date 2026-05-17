@@ -1,11 +1,13 @@
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright Christopher Kormanyos 2019 - 2025.
+//  Copyright Christopher Kormanyos 2019 - 2026.
 //  Distributed under the Boost Software License,
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
 
 #include <boost/version.hpp>
+
+#include <test/test_uintwide_t_n_binary_ops_base.h>
 
 #if !defined(BOOST_VERSION)
 #error BOOST_VERSION is not defined. Ensure that <boost/version.hpp> is properly included.
@@ -20,18 +22,18 @@
 #endif
 
 #if (((BOOST_VERSION == 108000) || (BOOST_VERSION == 108100)) && defined(BOOST_NO_EXCEPTIONS))
-#if defined(__clang__)
+#if defined(WIDE_INTEGER_CLANG)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wsometimes-uninitialized"
 #endif
-#if defined(_MSC_VER)
+#if defined(WIDE_INTEGER_MSVC)
 #pragma warning(push)
 #pragma warning(disable : 4701)
 #endif
 #endif
 
 #if (BOOST_VERSION < 108000)
-#if defined(__GNUC__)
+#if defined(WIDE_INTEGER_GCC)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wconversion"
 #pragma GCC diagnostic push
@@ -41,19 +43,17 @@
 #endif
 #endif
 
-#if (defined(__GNUC__) && !defined(__clang__) && (__GNUC__ >= 12))
+#if (defined(WIDE_INTEGER_GCC) && (WIDE_INTEGER_GCC >= 12))
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wrestrict"
 #endif
 
 #if (BOOST_VERSION < 108000)
-#if ((defined(__clang__) && (__clang_major__ > 9)) && !defined(__APPLE__))
+#if ((defined(WIDE_INTEGER_CLANG) && (WIDE_INTEGER_CLANG > 9)) && !defined(WIDE_INTEGER_APPLE))
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-copy"
 #endif
 #endif
-
-#include <test/test_uintwide_t_n_binary_ops_base.h>
 
 auto test_uintwide_t_n_binary_ops_base::my_rnd() -> std::random_device&
 {
@@ -70,17 +70,17 @@ auto test_uintwide_t_n_binary_ops_base::my_gen() -> test_uintwide_t_n_binary_ops
 }
 
 #if (BOOST_VERSION < 108000)
-#if ((defined(__clang__) && (__clang_major__ > 9)) && !defined(__APPLE__))
+#if ((defined(WIDE_INTEGER_CLANG) && (WIDE_INTEGER_CLANG > 9)) && !defined(WIDE_INTEGER_APPLE))
 #pragma GCC diagnostic pop
 #endif
 #endif
 
-#if (defined(__GNUC__) && !defined(__clang__) && (__GNUC__ >= 12))
+#if (defined(WIDE_INTEGER_GCC) && (WIDE_INTEGER_GCC >= 12))
 #pragma GCC diagnostic pop
 #endif
 
 #if (BOOST_VERSION < 108000)
-#if defined(__GNUC__)
+#if defined(WIDE_INTEGER_GCC)
 #pragma GCC diagnostic pop
 #pragma GCC diagnostic pop
 #pragma GCC diagnostic pop
@@ -88,10 +88,10 @@ auto test_uintwide_t_n_binary_ops_base::my_gen() -> test_uintwide_t_n_binary_ops
 #endif
 
 #if (((BOOST_VERSION == 108000) || (BOOST_VERSION == 108100)) && defined(BOOST_NO_EXCEPTIONS))
-#if defined(__clang__)
+#if defined(WIDE_INTEGER_CLANG)
 #pragma GCC diagnostic pop
 #endif
-#if defined(_MSC_VER)
+#if defined(WIDE_INTEGER_MSVC)
 #pragma warning(pop)
 #endif
 #endif

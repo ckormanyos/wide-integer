@@ -18,6 +18,8 @@
 
   #include <boost/version.hpp>
 
+  #include <math/wide_integer/uintwide_t.h>
+
   #if !defined(BOOST_VERSION)
   #error BOOST_VERSION is not defined. Ensure that <boost/version.hpp> is properly included.
   #endif
@@ -31,7 +33,7 @@
   #endif
 
   #if (BOOST_VERSION < 108000)
-  #if defined(__GNUC__)
+  #if (defined(WIDE_INTEGER_GCC) || defined(WIDE_INTEGER_CLANG))
   #pragma GCC diagnostic push
   #pragma GCC diagnostic ignored "-Wconversion"
   #pragma GCC diagnostic push
@@ -41,13 +43,13 @@
   #endif
   #endif
 
-  #if (defined(__GNUC__) && !defined(__clang__) && (__GNUC__ >= 12))
+  #if (defined(WIDE_INTEGER_GCC) && (WIDE_INTEGER_GCC >= 12))
   #pragma GCC diagnostic push
   #pragma GCC diagnostic ignored "-Wrestrict"
   #endif
 
   #if (BOOST_VERSION < 108000)
-  #if ((defined(__clang__) && (__clang_major__ > 9)) && !defined(__APPLE__))
+  #if ((defined(WIDE_INTEGER_CLANG) && (WIDE_INTEGER_CLANG > 9)) && !defined(WIDE_INTEGER_APPLE))
   #pragma GCC diagnostic push
   #pragma GCC diagnostic ignored "-Wdeprecated-copy"
   #endif
@@ -57,8 +59,6 @@
   #include <boost/config.hpp>
   #endif
   #include <boost/multiprecision/number.hpp>
-
-  #include <math/wide_integer/uintwide_t.h>
 
   #if(__cplusplus >= 201703L)
   namespace boost::multiprecision {
@@ -950,17 +950,17 @@
       static constexpr bool                    has_infinity      = false;
       static constexpr bool                    has_quiet_NaN     = false;
       static constexpr bool                    has_signaling_NaN = false;
-      #ifdef _MSC_VER
+      #ifdef WIDE_INTEGER_MSVC
       #  pragma warning(push)
       #  pragma warning(disable : 4996)
-      #elif (defined(__clang__) && (__clang_major__ >= 17))
+      #elif (defined(WIDE_INTEGER_CLANG) && (WIDE_INTEGER_CLANG >= 17))
       #  pragma clang diagnostic push
       #  pragma clang diagnostic ignored "-Wdeprecated-declarations"
       #endif
       static constexpr std::float_denorm_style has_denorm        = std::denorm_absent;
-      #ifdef _MSC_VER
+      #ifdef WIDE_INTEGER_MSVC
       #pragma warning(pop)
-      #elif (defined(__clang__) && (__clang_major__ >= 17))
+      #elif (defined(WIDE_INTEGER_CLANG) && (WIDE_INTEGER_CLANG >= 17))
       #  pragma clang diagnostic pop
       #endif
       static constexpr bool                    has_denorm_loss   = false;
@@ -1014,17 +1014,17 @@
     template<const WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t MyWidth2, typename MyLimbType, typename MyAllocatorType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr bool                    std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>, ExpressionTemplatesOptions>>::has_infinity;      // NOLINT(readability-redundant-declaration)
     template<const WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t MyWidth2, typename MyLimbType, typename MyAllocatorType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr bool                    std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>, ExpressionTemplatesOptions>>::has_quiet_NaN;     // NOLINT(readability-redundant-declaration)
     template<const WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t MyWidth2, typename MyLimbType, typename MyAllocatorType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr bool                    std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>, ExpressionTemplatesOptions>>::has_signaling_NaN; // NOLINT(readability-redundant-declaration)
-    #ifdef _MSC_VER
+    #ifdef WIDE_INTEGER_MSVC
     #  pragma warning(push)
     #  pragma warning(disable : 4996)
-    #elif (defined(__clang__) && (__clang_major__ >= 17))
+    #elif (defined(WIDE_INTEGER_CLANG) && (WIDE_INTEGER_CLANG >= 17))
     #  pragma clang diagnostic push
     #  pragma clang diagnostic ignored "-Wdeprecated-declarations"
     #endif
     template<const WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t MyWidth2, typename MyLimbType, typename MyAllocatorType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr std::float_denorm_style std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>, ExpressionTemplatesOptions>>::has_denorm;        // NOLINT(readability-redundant-declaration)
-    #ifdef _MSC_VER
+    #ifdef WIDE_INTEGER_MSVC
     #pragma warning(pop)
-    #elif (defined(__clang__) && (__clang_major__ >= 17))
+    #elif (defined(WIDE_INTEGER_CLANG) && (WIDE_INTEGER_CLANG >= 17))
     #  pragma clang diagnostic pop
     #endif
     template<const WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t MyWidth2, typename MyLimbType, typename MyAllocatorType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr bool                    std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>, ExpressionTemplatesOptions>>::has_denorm_loss;   // NOLINT(readability-redundant-declaration)
@@ -1052,17 +1052,17 @@
     template<const ::math::wide_integer::size_t MyWidth2, typename MyLimbType, typename MyAllocatorType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr bool                    std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>, ExpressionTemplatesOptions>>::has_infinity;      // NOLINT(readability-redundant-declaration)
     template<const ::math::wide_integer::size_t MyWidth2, typename MyLimbType, typename MyAllocatorType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr bool                    std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>, ExpressionTemplatesOptions>>::has_quiet_NaN;     // NOLINT(readability-redundant-declaration)
     template<const ::math::wide_integer::size_t MyWidth2, typename MyLimbType, typename MyAllocatorType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr bool                    std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>, ExpressionTemplatesOptions>>::has_signaling_NaN; // NOLINT(readability-redundant-declaration)
-    #ifdef _MSC_VER
+    #ifdef WIDE_INTEGER_MSVC
     #  pragma warning(push)
     #  pragma warning(disable : 4996)
-    #elif (defined(__clang__) && (__clang_major__ >= 17))
+    #elif (defined(WIDE_INTEGER_CLANG) && (WIDE_INTEGER_CLANG >= 17))
     #  pragma clang diagnostic push
     #  pragma clang diagnostic ignored "-Wdeprecated-declarations"
     #endif
     template<const ::math::wide_integer::size_t MyWidth2, typename MyLimbType, typename MyAllocatorType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr std::float_denorm_style std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>, ExpressionTemplatesOptions>>::has_denorm;        // NOLINT(readability-redundant-declaration)
-    #ifdef _MSC_VER
+    #ifdef WIDE_INTEGER_MSVC
     #pragma warning(pop)
-    #elif (defined(__clang__) && (__clang_major__ >= 17))
+    #elif (defined(WIDE_INTEGER_CLANG) && (WIDE_INTEGER_CLANG >= 17))
     #  pragma clang diagnostic pop
     #endif
     template<const ::math::wide_integer::size_t MyWidth2, typename MyLimbType, typename MyAllocatorType, const boost::multiprecision::expression_template_option ExpressionTemplatesOptions> constexpr bool                    std::numeric_limits<boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<MyWidth2, MyLimbType, MyAllocatorType>, ExpressionTemplatesOptions>>::has_denorm_loss;   // NOLINT(readability-redundant-declaration)
@@ -1075,17 +1075,17 @@
   } // namespace std
 
   #if (BOOST_VERSION < 108000)
-  #if ((defined(__clang__) && (__clang_major__ > 9)) && !defined(__APPLE__))
+  #if ((defined(WIDE_INTEGER_CLANG) && (WIDE_INTEGER_CLANG > 9)) && !defined(WIDE_INTEGER_APPLE))
   #pragma GCC diagnostic pop
   #endif
   #endif
 
-  #if (defined(__GNUC__) && !defined(__clang__) && (__GNUC__ >= 12))
+  #if (defined(WIDE_INTEGER_GCC) && (WIDE_INTEGER_GCC >= 12))
   #pragma GCC diagnostic pop
   #endif
 
   #if (BOOST_VERSION < 108000)
-  #if defined(__GNUC__)
+  #if (defined(WIDE_INTEGER_GCC) || defined(WIDE_INTEGER_CLANG))
   #pragma GCC diagnostic pop
   #pragma GCC diagnostic pop
   #pragma GCC diagnostic pop

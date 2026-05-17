@@ -9,18 +9,26 @@
   #define UINTWIDE_T_2018_10_02_H
 
   #if defined(_MSC_VER)
-  #define WIDE_INTEGER_MSVC _MSC_VER    // NOLINT(cppcoreguidelines-macro-usage)
+  #define WIDE_INTEGER_MSVC  _MSC_VER         // NOLINT(cppcoreguidelines-macro-usage)
   #elif defined(__clang__)
-  #define WIDE_INTEGER_CLANG __clang__  // NOLINT(cppcoreguidelines-macro-usage)
+  #define WIDE_INTEGER_CLANG __clang_major__  // NOLINT(cppcoreguidelines-macro-usage)
   #elif defined(__GNUC__)
-  #define WIDE_INTEGER_GCC __GNUC__     // NOLINT(cppcoreguidelines-macro-usage)
+  #define WIDE_INTEGER_GCC   __GNUC__         // NOLINT(cppcoreguidelines-macro-usage)
+  #endif
+
+  #if defined(__APPLE__)
+  #define WIDE_INTEGER_APPLE __APPLE__        // NOLINT(cppcoreguidelines-macro-usage)
+  #endif
+
+  #if defined(__AVR__)
+  #define WIDE_INTEGER_AVR   __AVR__          // NOLINT(cppcoreguidelines-macro-usage)
   #endif
 
   #if defined(WIDE_INTEGER_MSVC) && defined(WIDE_INTEGER_HAS_LIMB_TYPE_UINT64)
   #include <__msvc_int128.hpp>
   #endif
 
-  #if ((__cplusplus < 202002L) || (defined(__GNUC__) && defined(__AVR__)))
+  #if ((__cplusplus < 202002L) || (defined(WIDE_INTEGER_GCC) && defined(WIDE_INTEGER_AVR)))
   #include <ciso646>
   #else
   #include <version>
@@ -264,14 +272,14 @@
     while(first != last)
     {
       using local_destination_value_type = typename iterator_detail::iterator_traits<DestinationIterator>::value_type;
-      #if (defined(__GNUC__) && (__GNUC__ > 9))
+      #if (defined(WIDE_INTEGER_GCC) && (WIDE_INTEGER_GCC > 9))
       #pragma GCC diagnostic ignored "-Wstringop-overflow"
       #pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
       #endif
 
       *dest++ = static_cast<local_destination_value_type>(*first++);
 
-      #if (defined(__GNUC__) && (__GNUC__ > 9))
+      #if (defined(WIDE_INTEGER_GCC) && (WIDE_INTEGER_GCC > 9))
       #pragma GCC diagnostic pop
       #pragma GCC diagnostic pop
       #endif

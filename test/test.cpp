@@ -54,18 +54,18 @@
 #endif
 
 #if (((BOOST_VERSION == 108000) || (BOOST_VERSION == 108100)) && defined(BOOST_NO_EXCEPTIONS))
-#if defined(__clang__)
+#if defined(WIDE_INTEGER_CLANG)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wsometimes-uninitialized"
 #endif
-#if defined(_MSC_VER)
+#if defined(WIDE_INTEGER_MSVC)
 #pragma warning(push)
 #pragma warning(disable : 4701)
 #endif
 #endif
 
 #if (BOOST_VERSION < 107900)
-#if defined(__GNUC__)
+#if defined(WIDE_INTEGER_GCC)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wconversion"
 #pragma GCC diagnostic push
@@ -73,7 +73,7 @@
 #endif
 #endif
 
-#if (defined(__GNUC__) && !defined(__clang__) && (__GNUC__ >= 12))
+#if (defined(WIDE_INTEGER_GCC) && (WIDE_INTEGER_GCC >= 12))
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wrestrict"
 #endif
@@ -88,15 +88,15 @@
 #include <test/test_uintwide_t_n_binary_ops_template.h>
 #include <test/test_uintwide_t_n_binary_ops_template_signed.h>
 
-#if defined(__clang__)
+#if defined(WIDE_INTEGER_CLANG)
   #if defined __has_feature && __has_feature(thread_sanitizer)
   #define UINTWIDE_T_REDUCE_TEST_DEPTH
   #endif
-#elif defined(__GNUC__)
+#elif defined(WIDE_INTEGER_GCC)
   #if defined(__SANITIZE_THREAD__) || defined(WIDE_INTEGER_HAS_COVERAGE)
   #define UINTWIDE_T_REDUCE_TEST_DEPTH
   #endif
-#elif defined(_MSC_VER)
+#elif defined(WIDE_INTEGER_MSVC)
   #if defined(_DEBUG)
   #define UINTWIDE_T_REDUCE_TEST_DEPTH
   #endif
@@ -684,22 +684,22 @@ auto main() -> int // NOLINT(bugprone-exception-escape)
   return result_of_main;
 }
 
-#if (defined(__GNUC__) && !defined(__clang__) && (__GNUC__ >= 12))
+#if (defined(WIDE_INTEGER_GCC) && (WIDE_INTEGER_GCC >= 12))
 #pragma GCC diagnostic pop
 #endif
 
 #if (BOOST_VERSION < 107900)
-#if defined(__GNUC__)
+#if defined(WIDE_INTEGER_GCC)
 #pragma GCC diagnostic pop
 #pragma GCC diagnostic pop
 #endif
 #endif
 
 #if (((BOOST_VERSION == 108000) || (BOOST_VERSION == 108100)) && defined(BOOST_NO_EXCEPTIONS))
-#if defined(__clang__)
+#if defined(WIDE_INTEGER_CLANG)
 #pragma GCC diagnostic pop
 #endif
-#if defined(_MSC_VER)
+#if defined(WIDE_INTEGER_MSVC)
 #pragma warning(pop)
 #endif
 #endif

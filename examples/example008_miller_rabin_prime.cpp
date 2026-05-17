@@ -16,15 +16,15 @@
 #include <math/wide_integer/uintwide_t.h>
 #include <util/utility/util_pseudorandom_time_point_seed.h>
 
-#if defined(__clang__)
+#if defined(WIDE_INTEGER_CLANG)
   #if defined __has_feature && __has_feature(thread_sanitizer)
   #define UINTWIDE_T_REDUCE_TEST_DEPTH
   #endif
-#elif defined(__GNUC__)
+#elif defined(WIDE_INTEGER_GCC)
   #if defined(__SANITIZE_THREAD__) || defined(WIDE_INTEGER_HAS_COVERAGE)
   #define UINTWIDE_T_REDUCE_TEST_DEPTH
   #endif
-#elif defined(_MSC_VER)
+#elif defined(WIDE_INTEGER_MSVC)
   #if defined(_DEBUG)
   #define UINTWIDE_T_REDUCE_TEST_DEPTH
   #endif
