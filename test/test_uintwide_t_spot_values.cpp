@@ -583,7 +583,7 @@ namespace from_issue_145
 
     bool local_result_is_ok = true;
 
-    #if (defined(WIDE_INTEGER_CLANG) && (defined(WIDE_INTEGER_CLANG) && (WIDE_INTEGER_CLANG > 6)))
+    #if (defined(WIDE_INTEGER_CLANG) && (WIDE_INTEGER_CLANG > 6))
     #pragma GCC diagnostic push
     #pragma GCC diagnostic ignored "-Wself-assign-overloaded"
     #endif

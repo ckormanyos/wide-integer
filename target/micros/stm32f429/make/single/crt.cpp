@@ -5,7 +5,7 @@
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
 
-#if defined(WIDE_INTEGER_GCC)
+#if defined(__GNUC__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Warray-bounds"
 #pragma GCC diagnostic push
@@ -284,7 +284,7 @@ const volatile std::array<isr_type, number_of_interrupts> __isr_vector =
   nullptr                    // 0x01FC, dummy
 }};
 
-#if defined(WIDE_INTEGER_GCC)
+#if defined(__GNUC__)
 #pragma GCC diagnostic pop
 #pragma GCC diagnostic pop
 #endif

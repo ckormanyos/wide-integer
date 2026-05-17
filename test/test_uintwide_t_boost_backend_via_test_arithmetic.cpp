@@ -6,6 +6,8 @@
 
 #include <boost/version.hpp>
 
+#include <boost/multiprecision/uintwide_t_backend.hpp>
+
 #if !defined(BOOST_VERSION)
 #error BOOST_VERSION is not defined. Ensure that <boost/version.hpp> is properly included.
 #endif
@@ -45,7 +47,6 @@
 #include <test/test_uintwide_t.h>
 
 #include <boost/multiprecision/cpp_int.hpp>
-#include <boost/multiprecision/uintwide_t_backend.hpp>
 
 // cd /mnt/c/Users/ckorm/Documents/Ks/PC_Software/NumericalPrograms/ExtendedNumberTypes/wide_integer
 // g++ -march=native -mtune=native -O2 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -std=c++20 -I. -I/mnt/c/boost/boost_1_90_0 test/test_uintwide_t_boost_backend_via_test_arithmetic.cpp -o test_uintwide_t_boost_backend_via_test_arithmetic.exe
