@@ -7,7 +7,7 @@
 
 #include <boost/version.hpp>
 
-#include <test/test_uintwide_t.h>
+#include <math/wide_integer/uintwide_t.h>
 
 #if !defined(BOOST_VERSION)
 #error BOOST_VERSION is not defined. Ensure that <boost/version.hpp> is properly included.
@@ -50,6 +50,8 @@
 
 #if (defined(WIDE_INTEGER_GCC) && (WIDE_INTEGER_GCC >= 12))
 #pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Warray-bounds"
+#pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wrestrict"
 #endif
 
@@ -60,11 +62,16 @@
 #endif
 #endif
 
+#include <test/test_uintwide_t.h>
+
 #include <util/utility/util_pseudorandom_time_point_seed.h>
 
 #include <boost/multiprecision/cpp_int.hpp>
 #include <boost/multiprecision/uintwide_t_backend.hpp>
 
+#if (defined(__cpp_lib_to_chars) && (__cpp_lib_to_chars >= 201611L))
+#include <charconv>
+#endif
 #include <random>
 #include <string>
 #include <vector>
@@ -2924,6 +2931,7 @@ auto local_inf_ld() -> long double { return std::numeric_limits<long double>::in
 #endif
 
 #if (defined(WIDE_INTEGER_GCC) && (WIDE_INTEGER_GCC >= 12))
+#pragma GCC diagnostic pop
 #pragma GCC diagnostic pop
 #endif
 
