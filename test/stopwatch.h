@@ -16,7 +16,7 @@
   #define STOPWATCH_GCC     __GNUC__    // NOLINT(cppcoreguidelines-macro-usage)
   #endif
 
-  #if defined(__APPLE__)
+  #if defined(__CYGWIN__)
   #define STOPWATCH_CYGWIN  __CYGWIN__  // NOLINT(cppcoreguidelines-macro-usage)
   #endif
 
