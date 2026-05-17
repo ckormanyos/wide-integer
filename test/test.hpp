@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////
 //  Copyright 2012 John Maddock.
-//  Copyright 2022 - 2025 Christopher Kormanyos.
+//  Copyright 2022 - 2026 Christopher Kormanyos.
 //  Distributed under the Boost
 //  Software License, Version 1.0. (See accompanying file
 //  LICENSE_1_0.txt or copy at https://www.boost.org/LICENSE_1_0.txt
@@ -152,7 +152,7 @@ void report_unexpected_exception(const E& e, int severity, const char* file, int
 }
 
 #ifdef BOOST_HAS_INT128
-#if (defined(__GNUC__) && !defined(__clang__))
+#if defined(WIDE_INTEGER_GCC)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpedantic"
 #endif
@@ -169,7 +169,7 @@ std::ostream& operator<<(std::ostream& os, unsigned __int128 val)
    ss << std::hex << "0x" << static_cast<std::uint64_t>(val >> 64) << static_cast<std::uint64_t>(val);
    return os << ss.str();
 }
-#if (defined(__GNUC__) && !defined(__clang__))
+#if defined(WIDE_INTEGER_GCC)
 #pragma GCC diagnostic pop
 #endif
 #endif

@@ -44,7 +44,7 @@ const char* name_of()
    return typeid(T).name();
 }
 #ifdef BOOST_HAS_INT128
-#if (defined(__GNUC__) && !defined(__clang__))
+#if defined(WIDE_INTEGER_GCC)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpedantic"
 #endif
@@ -58,7 +58,7 @@ const char* name_of<unsigned __int128>()
 {
    return "unsigned __int128";
 }
-#if (defined(__GNUC__) && !defined(__clang__))
+#if defined(WIDE_INTEGER_GCC)
 #pragma GCC diagnostic pop
 #endif
 #endif
@@ -2045,7 +2045,7 @@ struct is_definitely_unsigned_int
     : public std::integral_constant<bool, std::numeric_limits<Num>::is_specialized && !std::numeric_limits<Num>::is_signed>
 {};
 #ifdef BOOST_HAS_INT128
-#if (defined(__GNUC__) && !defined(__clang__))
+#if defined(WIDE_INTEGER_GCC)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpedantic"
 #endif
@@ -2053,7 +2053,7 @@ template <>
 struct is_definitely_unsigned_int<unsigned __int128>
     : public std::true_type
 {};
-#if (defined(__GNUC__) && !defined(__clang__))
+#if defined(WIDE_INTEGER_GCC)
 #pragma GCC diagnostic pop
 #endif
 #endif
@@ -3080,7 +3080,7 @@ void test()
    test_mixed<Real, unsigned long long>(tag);
 #endif
 #if defined(BOOST_HAS_INT128) && !defined(BOOST_NO_CXX17_IF_CONSTEXPR)
-#if (defined(__GNUC__) && !defined(__clang__))
+#if defined(WIDE_INTEGER_GCC)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpedantic"
 #endif
@@ -3089,7 +3089,7 @@ void test()
       test_mixed<Real, __int128>(tag);
       test_mixed<Real, unsigned __int128>(tag);
    }
-#if (defined(__GNUC__) && !defined(__clang__))
+#if defined(WIDE_INTEGER_GCC)
 #pragma GCC diagnostic pop
 #endif
 #endif

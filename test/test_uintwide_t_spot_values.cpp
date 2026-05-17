@@ -1,5 +1,5 @@
 ﻿///////////////////////////////////////////////////////////////////////////////
-//  Copyright Christopher Kormanyos 2019 - 2025.
+//  Copyright Christopher Kormanyos 2019 - 2026.
 //  Distributed under the Boost Software License,
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -583,7 +583,7 @@ namespace from_issue_145
 
     bool local_result_is_ok = true;
 
-    #if (defined(__clang__) && (defined(__clang_major__) && (__clang_major__ > 6)))
+    #if (defined(WIDE_INTEGER_CLANG) && (defined(WIDE_INTEGER_CLANG) && (WIDE_INTEGER_CLANG > 6)))
     #pragma GCC diagnostic push
     #pragma GCC diagnostic ignored "-Wself-assign-overloaded"
     #endif
@@ -606,7 +606,7 @@ namespace from_issue_145
       local_result_is_ok = ((a == 1U) && local_result_is_ok);
     }
 
-    #if (defined(__clang__) && (defined(__clang_major__) && (__clang_major__ > 6)))
+    #if (defined(WIDE_INTEGER_CLANG) && (defined(WIDE_INTEGER_CLANG) && (WIDE_INTEGER_CLANG > 6)))
     #pragma GCC diagnostic pop
     #endif
 

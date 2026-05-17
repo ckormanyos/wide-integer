@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright Christopher Kormanyos 2013 - 2025.
+//  Copyright Christopher Kormanyos 2013 - 2026.
 //  Distributed under the Boost Software License,
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -8,10 +8,22 @@
 #ifndef STOPWATCH_2024_03_28_H // NOLINT(llvm-header-guard)
   #define STOPWATCH_2024_03_28_H
 
+  #if defined(_MSC_VER)
+  #define STOPWATCH_MSVC    _MSC_VER    // NOLINT(cppcoreguidelines-macro-usage)
+  #elif defined(__clang__)
+  #define STOPWATCH_CLANG   __clang__   // NOLINT(cppcoreguidelines-macro-usage)
+  #elif defined(__GNUC__)
+  #define STOPWATCH_GCC     __GNUC__    // NOLINT(cppcoreguidelines-macro-usage)
+  #endif
+
+  #if defined(__APPLE__)
+  #define STOPWATCH_CYGWIN  __CYGWIN__  // NOLINT(cppcoreguidelines-macro-usage)
+  #endif
+
   #include <cstdint>
   #include <ctime>
 
-  #if defined(_MSC_VER) && !defined(__GNUC__)
+  #if defined(STOPWATCH_MSVC) && !defined(STOPWATCH_GCC)
   #define STOPWATCH_NODISCARD
   #else
   #if (defined(__cplusplus) && (__cplusplus >= 201703L))
@@ -79,7 +91,7 @@
     {
       const time_point_type stop { now() };
 
-      #if defined(__CYGWIN__)
+      #if defined(STOPWATCH_CYGWIN)
 
       const time_point_type
         elapsed_ns
