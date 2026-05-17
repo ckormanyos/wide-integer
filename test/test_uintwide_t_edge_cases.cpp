@@ -28,17 +28,17 @@
 #endif
 
 #if (((BOOST_VERSION == 108000) || (BOOST_VERSION == 108100)) && defined(BOOST_NO_EXCEPTIONS))
-#if defined(__clang__)
+#if defined(WIDE_INTEGER_CLANG)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wsometimes-uninitialized"
 #endif
-#if defined(_MSC_VER)
+#if defined(WIDE_INTEGER_MSVC)
 #pragma warning(push)
 #pragma warning(disable : 4701)
 #endif
 #endif
 
-#if defined(__GNUC__)
+#if (defined(WIDE_INTEGER_GCC) || defined(WIDE_INTEGER_CLANG))
 #if (BOOST_VERSION < 108000)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wconversion"
@@ -54,13 +54,13 @@
 #endif
 #endif
 
-#if (defined(__GNUC__) && !defined(__clang__) && (__GNUC__ >= 12))
+#if (defined(WIDE_INTEGER_GCC) && (WIDE_INTEGER_GCC >= 12))
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wrestrict"
 #endif
 
 #if (BOOST_VERSION < 108000)
-#if ((defined(__clang__) && (__clang_major__ > 9)) && !defined(__APPLE__))
+#if ((defined(WIDE_INTEGER_CLANG) && (WIDE_INTEGER_CLANG > 9)) && !defined(WIDE_INTEGER_APPLE))
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-copy"
 #endif
@@ -71,15 +71,15 @@
 
 #include <util/utility/util_pseudorandom_time_point_seed.h>
 
-#if defined(__clang__)
+#if defined(WIDE_INTEGER_CLANG)
   #if defined __has_feature && __has_feature(thread_sanitizer)
   #define UINTWIDE_T_REDUCE_TEST_DEPTH
   #endif
-#elif defined(__GNUC__)
+#elif defined(WIDE_INTEGER_GCC)
   #if defined(__SANITIZE_THREAD__) || defined(WIDE_INTEGER_HAS_COVERAGE)
   #define UINTWIDE_T_REDUCE_TEST_DEPTH
   #endif
-#elif defined(_MSC_VER)
+#elif defined(WIDE_INTEGER_MSVC)
   #if defined(_DEBUG)
   #define UINTWIDE_T_REDUCE_TEST_DEPTH
   #endif
@@ -1770,14 +1770,14 @@ auto test_various_isolated_edge_cases() -> bool // NOLINT(readability-function-c
 
     const auto& c(a %= b);
 
-    #if (defined(__clang__) && (defined(__clang_major__) && (__clang_major__ > 6)))
+    #if (defined(WIDE_INTEGER_CLANG) && (WIDE_INTEGER_CLANG > 6))
     #pragma GCC diagnostic push
     #pragma GCC diagnostic ignored "-Wself-assign-overloaded"
     #endif
 
     const auto& d(a %= a); // NOLINT(clang-diagnostic-self-assign-overloaded)
 
-    #if (defined(__clang__) && (defined(__clang_major__) && (__clang_major__ > 6)))
+    #if (defined(WIDE_INTEGER_CLANG) && (WIDE_INTEGER_CLANG > 6))
     #pragma GCC diagnostic pop
     #endif
 
@@ -2920,16 +2920,16 @@ auto local_inf_ld() -> long double { return std::numeric_limits<long double>::in
 // LCOV_EXCL_STOP
 
 #if (BOOST_VERSION < 108000)
-#if ((defined(__clang__) && (__clang_major__ > 9)) && !defined(__APPLE__))
+#if ((defined(WIDE_INTEGER_CLANG) && (WIDE_INTEGER_CLANG > 9)) && !defined(WIDE_INTEGER_APPLE))
 #pragma GCC diagnostic pop
 #endif
 #endif
 
-#if (defined(__GNUC__) && !defined(__clang__) && (__GNUC__ >= 12))
+#if (defined(WIDE_INTEGER_GCC) && (WIDE_INTEGER_GCC >= 12))
 #pragma GCC diagnostic pop
 #endif
 
-#if defined(__GNUC__)
+#if (defined(WIDE_INTEGER_GCC) || defined(WIDE_INTEGER_CLANG))
 #if (BOOST_VERSION < 108000)
 #pragma GCC diagnostic pop
 #pragma GCC diagnostic pop
@@ -2941,10 +2941,10 @@ auto local_inf_ld() -> long double { return std::numeric_limits<long double>::in
 #endif
 
 #if (((BOOST_VERSION == 108000) || (BOOST_VERSION == 108100)) && defined(BOOST_NO_EXCEPTIONS))
-#if defined(__clang__)
+#if defined(WIDE_INTEGER_CLANG)
 #pragma GCC diagnostic pop
 #endif
-#if defined(_MSC_VER)
+#if defined(WIDE_INTEGER_MSVC)
 #pragma warning(pop)
 #endif
 #endif
