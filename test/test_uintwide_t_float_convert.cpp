@@ -9,6 +9,9 @@
 
 #include <boost/version.hpp>
 
+#include <math/wide_integer/uintwide_t.h>
+#include <test/test_uintwide_t.h>
+
 #include <util/utility/util_pseudorandom_time_point_seed.h>
 
 #if !defined(BOOST_VERSION)
@@ -58,9 +61,6 @@
 #endif
 
 #include <boost/multiprecision/cpp_int.hpp>
-
-#include <math/wide_integer/uintwide_t.h>
-#include <test/test_uintwide_t.h>
 
 #if defined(WIDE_INTEGER_CLANG)
   #if defined __has_feature && __has_feature(thread_sanitizer)

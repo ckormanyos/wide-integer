@@ -7,6 +7,9 @@
 
 #include <boost/version.hpp>
 
+#include <boost/multiprecision/uintwide_t_backend.hpp>
+#include <test/test_uintwide_t.h>
+
 #if !defined(BOOST_VERSION)
 #error BOOST_VERSION is not defined. Ensure that <boost/version.hpp> is properly included.
 #endif
@@ -54,9 +57,6 @@
 #endif
 
 #include <boost/multiprecision/cpp_int.hpp>
-#include <boost/multiprecision/uintwide_t_backend.hpp>
-
-#include <test/test_uintwide_t.h>
 
 using local_uint_type =
   #if defined(WIDE_INTEGER_NAMESPACE)

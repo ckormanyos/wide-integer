@@ -7,6 +7,8 @@
 
 #include <boost/version.hpp>
 
+#include <test/test_uintwide_t_n_binary_ops_base.h>
+
 #if !defined(BOOST_VERSION)
 #error BOOST_VERSION is not defined. Ensure that <boost/version.hpp> is properly included.
 #endif
@@ -52,8 +54,6 @@
 #pragma GCC diagnostic ignored "-Wdeprecated-copy"
 #endif
 #endif
-
-#include <test/test_uintwide_t_n_binary_ops_base.h>
 
 auto test_uintwide_t_n_binary_ops_base::my_rnd() -> std::random_device&
 {
