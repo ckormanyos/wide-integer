@@ -31,7 +31,7 @@
 #endif
 
 #if (BOOST_VERSION < 108000)
-#if defined(WIDE_INTEGER_GCC)
+#if (defined(WIDE_INTEGER_GCC) || defined(WIDE_INTEGER_CLANG))
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wconversion"
 #pragma GCC diagnostic push
@@ -146,7 +146,7 @@ auto ::math::wide_integer::test_uintwide_t_boost_backend() -> bool
 #endif
 
 #if (BOOST_VERSION < 108000)
-#if defined(WIDE_INTEGER_GCC)
+#if (defined(WIDE_INTEGER_GCC) || defined(WIDE_INTEGER_CLANG))
 #pragma GCC diagnostic pop
 #pragma GCC diagnostic pop
 #pragma GCC diagnostic pop
