@@ -149,10 +149,13 @@ using detail::size_t;
 
 // Forward declaration of the uintwide_t template class.
 template<const size_t Width2,
-         typename LimbType      = std::uint32_t,
+         typename LimbType      = uint_defaultlimb_t,
          typename AllocatorType = void,
          const bool IsSigned    = false>
 class uintwide_t;
+
+// Here, uint_defaultlimb_t is either std::uint32_t or std::uint64_t
+// (if WIDE_INTEGER_HAS_LIMB_TYPE_UINT64, see below) is defined.
 
 } // namespace math::wide_integer
 ```
@@ -665,7 +668,7 @@ Otherwise, the header file `<util/utility/util_dynamic_array.h>`
 must be found in the include path.
 
 When working on high-performance systems having `unsigned __int128`
-(an extended-width, yet non-standard data type),
+(an extended-width, yet non-standard data type) or `std::Unsigned128`,
 a 64-bit limb of type `uint64_t` can be used.
 Enable the 64-bit limb type on such systems
 with the compiler switch:
@@ -682,6 +685,8 @@ command line with:
 ```
 
 This macro is disabled by default.
+The template default limb type, `uint_defaultlimb_t` is either `std::uint32_t`
+or `std::uint64_t` if WIDE_INTEGER_HAS_LIMB_TYPE_UINT64 is defined.
 
 The example below, for instance, uses a 64-bit limb type
 on GCC or clang.

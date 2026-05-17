@@ -1,5 +1,5 @@
 ﻿///////////////////////////////////////////////////////////////////////////////
-//  Copyright Christopher Kormanyos 2021 - 2025.
+//  Copyright Christopher Kormanyos 2021 - 2026.
 //  Distributed under the Boost Software License,
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -173,10 +173,10 @@ auto ::math::wide_integer::test_uintwide_t_int_convert() -> bool
 
   using boost_sint_type = boost::multiprecision::number<boost_sint_backend_type, boost::multiprecision::et_on>;
 
-  #if defined(WIDE_INTEGER_HAS_LIMB_TYPE_UINT64)
-  using local_limb_type = std::uint64_t;
+  #if defined(WIDE_INTEGER_NAMESPACE)
+  using local_limb_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::uint_defaultlimb_t;
   #else
-  using local_limb_type = std::uint32_t;
+  using local_limb_type = ::math::wide_integer::uint_defaultlimb_t;
   #endif
 
   #if defined(WIDE_INTEGER_NAMESPACE)

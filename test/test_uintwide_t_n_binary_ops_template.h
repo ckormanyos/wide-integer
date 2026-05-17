@@ -19,15 +19,11 @@
 
   #if defined(WIDE_INTEGER_NAMESPACE)
   template<const WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t MyDigits2,
-           typename MyLimbType = std::uint32_t,
+           typename MyLimbType = WIDE_INTEGER_NAMESPACE::math::wide_integer::uint_defaultlimb_t,
            typename AllocatorType = void>
   #else
   template<const ::math::wide_integer::size_t MyDigits2,
-           #if defined(WIDE_INTEGER_HAS_LIMB_TYPE_UINT64)
-           typename MyLimbType = std::uint64_t,
-           #else
-           typename MyLimbType = std::uint32_t,
-           #endif
+           typename MyLimbType = ::math::wide_integer::uint_defaultlimb_t,
            typename AllocatorType = void>
   #endif
   class test_uintwide_t_n_binary_ops_template : public test_uintwide_t_n_binary_ops_base // NOLINT(cppcoreguidelines-special-member-functions,hicpp-special-member-functions)

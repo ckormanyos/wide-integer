@@ -1017,6 +1017,11 @@
 
   using size_t    = std::uint32_t;
   using ptrdiff_t = std::int32_t;
+  #if defined(WIDE_INTEGER_HAS_LIMB_TYPE_UINT64)
+  using uint_defaultlimb_t = std::uint64_t;
+  #else
+  using uint_defaultlimb_t = std::uint32_t;
+  #endif
 
   static_assert((   (std::numeric_limits<size_t>::digits        >= std::numeric_limits<std::uint16_t>::digits)
                  && (std::numeric_limits<ptrdiff_t>::digits + 1 >= std::numeric_limits<std::uint16_t>::digits)),
@@ -1191,10 +1196,11 @@
   using detail::ptrdiff_t;
   using detail::unsigned_fast_type;
   using detail::signed_fast_type;
+  using detail::uint_defaultlimb_t;
 
   // Forward declaration of the uintwide_t template class.
   template<const size_t Width2,
-           typename LimbType = std::uint32_t,
+           typename LimbType = uint_defaultlimb_t,
            typename AllocatorType = void,
            const bool IsSigned = false>
   class uintwide_t;
@@ -1438,13 +1444,13 @@
                         std::enable_if_t<(IsSignedLeft || IsSignedRight), int>* p_nullparam = nullptr) -> std::pair<uintwide_t<Width2, LimbType, AllocatorType, IsSignedLeft>, uintwide_t<Width2, LimbType, AllocatorType, IsSignedRight>>;
 
   template<const size_t Width2,
-           typename LimbType = std::uint32_t,
+           typename LimbType = uint_defaultlimb_t,
            typename AllocatorType = void,
            const bool IsSigned = false>
   class default_random_engine;
 
   template<const size_t Width2,
-           typename LimbType = std::uint32_t,
+           typename LimbType = uint_defaultlimb_t,
            typename AllocatorType = void,
            const bool IsSigned = false>
   class uniform_int_distribution;
