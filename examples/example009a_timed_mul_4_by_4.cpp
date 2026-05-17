@@ -41,10 +41,10 @@ namespace local_timed_mul_4_by_4
     *it_out = distribution(rng);
   }
 
-  #if defined(WIDE_INTEGER_HAS_LIMB_TYPE_UINT64)
-  using local_limb_type = std::uint64_t;
+  #if defined(WIDE_INTEGER_NAMESPACE)
+  using local_limb_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::uint_defaultlimb_t;
   #else
-  using local_limb_type = std::uint32_t;
+  using local_limb_type = ::math::wide_integer::uint_defaultlimb_t;
   #endif
 
   #if defined(WIDE_INTEGER_NAMESPACE)

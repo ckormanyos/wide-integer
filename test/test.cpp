@@ -522,12 +522,14 @@ auto test_uintwide_t_0065536_alloc() -> bool
   constexpr auto count = static_cast<std::size_t>(1UL << 2U); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
   #endif
 
-  std::cout << "running: test_uintwide_t_0065536_alloc" << std::endl;
-  #if defined(WIDE_INTEGER_HAS_LIMB_TYPE_UINT64)
-  test_uintwide_t_n_binary_ops_template<65536U, std::uint64_t, std::allocator<std::uint32_t>> test_uintwide_t_n_binary_ops_template_instance(count); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
+  #if defined(WIDE_INTEGER_NAMESPACE)
+  using allocator_type_type = std::allocator<WIDE_INTEGER_NAMESPACE::math::wide_integer::uint_defaultlimb_t>;
   #else
-  test_uintwide_t_n_binary_ops_template<65536U, std::uint32_t, std::allocator<std::uint32_t>> test_uintwide_t_n_binary_ops_template_instance(count); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
+  using allocator_type_type = std::allocator<::math::wide_integer::uint_defaultlimb_t>;
   #endif
+
+  std::cout << "running: test_uintwide_t_0065536_alloc" << std::endl;
+  test_uintwide_t_n_binary_ops_template<65536U, std::uint32_t, allocator_type_type> test_uintwide_t_n_binary_ops_template_instance(count); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
   const auto result_is_ok =
     test_uintwide_t_n_binary_ops_template_instance.do_test(test_uintwide_t_n_binary_ops_rounds);
   return result_is_ok;
