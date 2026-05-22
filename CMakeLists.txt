@@ -1,6 +1,6 @@
-project(wide-integer)
-
 cmake_minimum_required(VERSION 3.16.3)
+
+project(wide-integer)
 
 if (${CMAKE_CURRENT_SOURCE_DIR} STREQUAL ${CMAKE_SOURCE_DIR})
   set(WIDE_INTEGER_MASTER_PROJECT ON)
