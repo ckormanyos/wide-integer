@@ -2493,11 +2493,11 @@
     {
       if(this == &other)
       {
-        eval_mul_unary(*this, uintwide_t(other)); // NOLINT(performance-unnecessary-copy-initialization)
+        eval_mul_unary(uintwide_t(other)); // NOLINT(performance-unnecessary-copy-initialization)
       }
       else
       {
-        eval_mul_unary(*this, other);
+        eval_mul_unary(other);
       }
 
       return *this;
@@ -2536,29 +2536,7 @@
       {
         // Unary division function.
 
-        const auto numer_was_neg = is_neg(*this);
-        const auto denom_was_neg = is_neg(other);
-
-        if(numer_was_neg || denom_was_neg)
-        {
-          using local_unsigned_wide_type = uintwide_t<Width2, limb_type, AllocatorType, false>;
-
-          local_unsigned_wide_type a(*this);
-          local_unsigned_wide_type b(other);
-
-          if(numer_was_neg) { a.negate(); }
-          if(denom_was_neg) { b.negate(); }
-
-          a.eval_divide_knuth(b);
-
-          if(numer_was_neg != denom_was_neg) { a.negate(); }
-
-          values = a.values;
-        }
-        else
-        {
-          eval_divide_knuth(other);
-        }
+        eval_div_unary(other);
       }
 
       return *this;
@@ -3766,9 +3744,8 @@
     #endif
 
     template<const size_t OtherWidth2>
-    static constexpr auto eval_mul_unary(      uintwide_t<OtherWidth2, LimbType, AllocatorType, IsSigned>& u,
-                                         const uintwide_t<OtherWidth2, LimbType, AllocatorType, IsSigned>& v,
-                                         std::enable_if_t<((OtherWidth2 / std::numeric_limits<LimbType>::digits) < number_of_limbs_karatsuba_threshold)>* p_nullparam = nullptr) -> void
+    constexpr auto eval_mul_unary(const uintwide_t<OtherWidth2, LimbType, AllocatorType, IsSigned>& other,
+                                  std::enable_if_t<((OtherWidth2 / std::numeric_limits<LimbType>::digits) < number_of_limbs_karatsuba_threshold)>* p_nullparam = nullptr) -> void
     {
       static_cast<void>(p_nullparam == nullptr);
 
@@ -3789,19 +3766,18 @@
       };
 
       eval_multiply_n_by_n_to_lo_part(result.begin(),
-                                      u.values.cbegin(),
-                                      v.values.cbegin(),
+                                      values.cbegin(),
+                                      other.values.cbegin(),
                                       local_other_number_of_limbs);
 
       detail::copy_unsafe(result.cbegin(),
                           detail::advance_and_point(result.cbegin(), local_other_number_of_limbs),
-                          u.values.begin());
+                          values.begin());
     }
 
     template<const size_t OtherWidth2>
-    static constexpr auto eval_mul_unary(      uintwide_t<OtherWidth2, LimbType, AllocatorType, IsSigned>& u,
-                                         const uintwide_t<OtherWidth2, LimbType, AllocatorType, IsSigned>& v,
-                                         std::enable_if_t<((OtherWidth2 / std::numeric_limits<LimbType>::digits) >= number_of_limbs_karatsuba_threshold)>* p_nullparam = nullptr) -> void
+    constexpr auto eval_mul_unary(const uintwide_t<OtherWidth2, LimbType, AllocatorType, IsSigned>& other,
+                                  std::enable_if_t<((OtherWidth2 / std::numeric_limits<LimbType>::digits) >= number_of_limbs_karatsuba_threshold)>* p_nullparam = nullptr) -> void
     {
       static_cast<void>(p_nullparam == nullptr);
 
@@ -3836,14 +3812,80 @@
       storage_array_type t { };
 
       eval_multiply_kara_n_by_n_to_2n(result.begin(),
-                                      u.values.cbegin(),
-                                      v.values.cbegin(),
+                                      values.cbegin(),
+                                      other.values.cbegin(),
                                       local_number_of_limbs,
                                       t.begin());
 
       detail::copy_unsafe(result.cbegin(),
                           result.cbegin() + local_number_of_limbs,
-                          u.values.begin());
+                          values.begin());
+    }
+
+    template<const size_t OtherWidth2>
+    constexpr auto eval_div_unary(const uintwide_t<OtherWidth2, LimbType, AllocatorType, IsSigned>& other,
+                                  std::enable_if_t<((OtherWidth2 / std::numeric_limits<LimbType>::digits) < number_of_limbs_karatsuba_threshold)>* p_nullparam = nullptr) -> void
+    {
+      static_cast<void>(p_nullparam);
+
+      // Unary division function.
+
+      const auto numer_was_neg = is_neg(*this);
+      const auto denom_was_neg = is_neg(other);
+
+      if(numer_was_neg || denom_was_neg)
+      {
+        using local_unsigned_wide_type = uintwide_t<Width2, limb_type, AllocatorType, false>;
+
+        local_unsigned_wide_type a(*this);
+        local_unsigned_wide_type b(other);
+
+        if(numer_was_neg) { a.negate(); }
+        if(denom_was_neg) { b.negate(); }
+
+        a.eval_divide_knuth(b);
+
+        if(numer_was_neg != denom_was_neg) { a.negate(); }
+
+        values = a.values;
+      }
+      else
+      {
+        eval_divide_knuth(other);
+      }
+    }
+
+    template<const size_t OtherWidth2>
+    constexpr auto eval_div_unary(const uintwide_t<OtherWidth2, LimbType, AllocatorType, IsSigned>& other,
+                                  std::enable_if_t<((OtherWidth2 / std::numeric_limits<LimbType>::digits) >= number_of_limbs_karatsuba_threshold)>* p_nullparam = nullptr) -> void
+    {
+      static_cast<void>(p_nullparam);
+
+      // Unary division function.
+
+      const auto numer_was_neg = is_neg(*this);
+      const auto denom_was_neg = is_neg(other);
+
+      if(numer_was_neg || denom_was_neg)
+      {
+        using local_unsigned_wide_type = uintwide_t<Width2, limb_type, AllocatorType, false>;
+
+        local_unsigned_wide_type a(*this);
+        local_unsigned_wide_type b(other);
+
+        if(numer_was_neg) { a.negate(); }
+        if(denom_was_neg) { b.negate(); }
+
+        a.eval_divide_knuth(b);
+
+        if(numer_was_neg != denom_was_neg) { a.negate(); }
+
+        values = a.values;
+      }
+      else
+      {
+        eval_divide_knuth(other);
+      }
     }
 
     template<typename ResultIterator,
