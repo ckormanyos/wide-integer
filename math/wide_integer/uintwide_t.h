@@ -3744,11 +3744,8 @@
     #endif
 
     template<const size_t OtherWidth2>
-    constexpr auto eval_mul_unary(const uintwide_t<OtherWidth2, LimbType, AllocatorType, IsSigned>& other,
-                                  std::enable_if_t<((OtherWidth2 / std::numeric_limits<LimbType>::digits) < number_of_limbs_karatsuba_threshold)>* p_nullparam = nullptr) -> void
+    constexpr auto eval_mul_unary(const uintwide_t<OtherWidth2, LimbType, AllocatorType, IsSigned>& other) -> std::enable_if_t<((OtherWidth2 / std::numeric_limits<LimbType>::digits) < number_of_limbs_karatsuba_threshold), void>
     {
-      static_cast<void>(p_nullparam == nullptr);
-
       // Unary multiplication function using schoolbook multiplication,
       // but we only need to retain the low half of the n*n algorithm.
       // In other words, this is an n*n->n bit multiplication.
@@ -3776,11 +3773,8 @@
     }
 
     template<const size_t OtherWidth2>
-    constexpr auto eval_mul_unary(const uintwide_t<OtherWidth2, LimbType, AllocatorType, IsSigned>& other,
-                                  std::enable_if_t<((OtherWidth2 / std::numeric_limits<LimbType>::digits) >= number_of_limbs_karatsuba_threshold)>* p_nullparam = nullptr) -> void
+    constexpr auto eval_mul_unary(const uintwide_t<OtherWidth2, LimbType, AllocatorType, IsSigned>& other) -> std::enable_if_t<((OtherWidth2 / std::numeric_limits<LimbType>::digits) >= number_of_limbs_karatsuba_threshold), void>
     {
-      static_cast<void>(p_nullparam == nullptr);
-
       // Unary multiplication function using Karatsuba multiplication.
 
       constexpr auto local_number_of_limbs = uintwide_t<OtherWidth2, LimbType, AllocatorType, IsSigned>::number_of_limbs;
@@ -3823,11 +3817,8 @@
     }
 
     template<const size_t OtherWidth2>
-    constexpr auto eval_div_unary(const uintwide_t<OtherWidth2, LimbType, AllocatorType, IsSigned>& other,
-                                  std::enable_if_t<((OtherWidth2 / std::numeric_limits<LimbType>::digits) < number_of_limbs_karatsuba_threshold)>* p_nullparam = nullptr) -> void
+    constexpr auto eval_div_unary(const uintwide_t<OtherWidth2, LimbType, AllocatorType, IsSigned>& other) -> std::enable_if_t<((OtherWidth2 / std::numeric_limits<LimbType>::digits) < number_of_limbs_karatsuba_threshold), void>
     {
-      static_cast<void>(p_nullparam);
-
       // Unary division function.
 
       const auto numer_was_neg = is_neg(*this);
@@ -3856,11 +3847,8 @@
     }
 
     template<const size_t OtherWidth2>
-    constexpr auto eval_div_unary(const uintwide_t<OtherWidth2, LimbType, AllocatorType, IsSigned>& other,
-                                  std::enable_if_t<((OtherWidth2 / std::numeric_limits<LimbType>::digits) >= number_of_limbs_karatsuba_threshold)>* p_nullparam = nullptr) -> void
+    constexpr auto eval_div_unary(const uintwide_t<OtherWidth2, LimbType, AllocatorType, IsSigned>& other) -> std::enable_if_t<((OtherWidth2 / std::numeric_limits<LimbType>::digits) >= number_of_limbs_karatsuba_threshold), void>
     {
-      static_cast<void>(p_nullparam);
-
       // Unary division function.
 
       const auto numer_was_neg = is_neg(*this);
@@ -6771,8 +6759,11 @@
     const auto numer_was_neg = local_unknown_signedness_left_type::is_neg(a);
     const auto denom_was_neg = local_unknown_signedness_right_type::is_neg(b);
 
-          local_unsigned_wide_type ua((!numer_was_neg) ? a : -a);
-    const local_unsigned_wide_type ub((!denom_was_neg) ? b : -b);
+    local_unsigned_wide_type ua(a);
+    local_unsigned_wide_type ub(b);
+
+    if(numer_was_neg) { ua.negate(); }
+    if(denom_was_neg) { ub.negate(); }
 
     local_unsigned_wide_type ur { };
 
