@@ -2551,36 +2551,8 @@
       else
       {
         // Unary modulus function.
-        const auto numer_was_neg = is_neg(*this);
-        const auto denom_was_neg = is_neg(other);
 
-        if(numer_was_neg || denom_was_neg)
-        {
-          using local_unsigned_wide_type = uintwide_t<Width2, limb_type, AllocatorType, false>;
-
-          local_unsigned_wide_type a(*this);
-          local_unsigned_wide_type b(other);
-
-          if(numer_was_neg) { a.negate(); }
-          if(denom_was_neg) { b.negate(); }
-
-          local_unsigned_wide_type remainder_unsigned { };
-
-          a.eval_divide_knuth(b, &remainder_unsigned);
-
-          // The sign of the remainder follows the sign of the denominator.
-          if(numer_was_neg) { remainder_unsigned.negate(); }
-
-          values = remainder_unsigned.values;
-        }
-        else
-        {
-          uintwide_t remainder { };
-
-          eval_divide_knuth(other, &remainder);
-
-          values = remainder.values;
-        }
+        eval_mod_unary(other);
       }
 
       return *this;
@@ -3816,8 +3788,16 @@
                           values.begin());
     }
 
-    template<const size_t OtherWidth2>
-    constexpr auto eval_div_unary(const uintwide_t<OtherWidth2, LimbType, AllocatorType, IsSigned>& other) -> std::enable_if_t<((OtherWidth2 / std::numeric_limits<LimbType>::digits) < number_of_limbs_karatsuba_threshold), void>
+    template<const bool RePhraseIsSigned>
+    constexpr auto eval_div_unary(const uintwide_t<Width2, LimbType, AllocatorType, RePhraseIsSigned>& other) -> std::enable_if_t<(!RePhraseIsSigned), void>
+    {
+      // Unary division function.
+
+      eval_divide_knuth(other);
+    }
+
+    template<const bool RePhraseIsSigned>
+    constexpr auto eval_div_unary(const uintwide_t<Width2, LimbType, AllocatorType, RePhraseIsSigned>& other) -> std::enable_if_t<RePhraseIsSigned, void>
     {
       // Unary division function.
 
@@ -3846,10 +3826,24 @@
       }
     }
 
-    template<const size_t OtherWidth2>
-    constexpr auto eval_div_unary(const uintwide_t<OtherWidth2, LimbType, AllocatorType, IsSigned>& other) -> std::enable_if_t<((OtherWidth2 / std::numeric_limits<LimbType>::digits) >= number_of_limbs_karatsuba_threshold), void>
+    template<const bool RePhraseIsSigned>
+    constexpr auto eval_mod_unary(const uintwide_t<Width2, LimbType, AllocatorType, RePhraseIsSigned>& other) -> std::enable_if_t<(!RePhraseIsSigned), void>
     {
-      // Unary division function.
+      // Unary modulus function.
+
+      using local_unsigned_wide_type = uintwide_t<Width2, LimbType, AllocatorType, RePhraseIsSigned>;
+
+      local_unsigned_wide_type remainder { };
+
+      eval_divide_knuth(other, &remainder);
+
+      values = remainder.values;
+    }
+
+    template<const bool RePhraseIsSigned>
+    constexpr auto eval_mod_unary(const uintwide_t<Width2, LimbType, AllocatorType, RePhraseIsSigned>& other) -> std::enable_if_t<RePhraseIsSigned, void>
+    {
+      // Unary modulus function.
 
       const auto numer_was_neg = is_neg(*this);
       const auto denom_was_neg = is_neg(other);
@@ -3864,15 +3858,22 @@
         if(numer_was_neg) { a.negate(); }
         if(denom_was_neg) { b.negate(); }
 
-        a.eval_divide_knuth(b);
+        local_unsigned_wide_type remainder { };
 
-        if(numer_was_neg != denom_was_neg) { a.negate(); }
+        a.eval_divide_knuth(b, &remainder);
 
-        values = a.values;
+        // The sign of the remainder follows the sign of the denominator.
+        if(numer_was_neg) { remainder.negate(); }
+
+        values = remainder.values;
       }
       else
       {
-        eval_divide_knuth(other);
+        uintwide_t<Width2, LimbType, AllocatorType, RePhraseIsSigned> remainder { };
+
+        eval_divide_knuth(other, &remainder);
+
+        values = remainder.values;
       }
     }
 
@@ -6781,8 +6782,9 @@
 
     if(numer_was_neg == denom_was_neg)
     {
-      result.first  = local_unknown_signedness_left_type(ua);
-      result.second = (!numer_was_neg) ? local_unknown_signedness_right_type(ur) : -local_unknown_signedness_right_type(ur);
+      result = divmod_result_pair_type { ua, ur };
+
+      if(numer_was_neg) { result.second.negate(); }
     }
     else
     {
