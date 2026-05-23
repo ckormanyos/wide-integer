@@ -2493,11 +2493,11 @@
     {
       if(this == &other)
       {
-        eval_mul_unary(*this, uintwide_t(other)); // NOLINT(performance-unnecessary-copy-initialization)
+        eval_mul_unary(uintwide_t(other)); // NOLINT(performance-unnecessary-copy-initialization)
       }
       else
       {
-        eval_mul_unary(*this, other);
+        eval_mul_unary(other);
       }
 
       return *this;
@@ -2536,29 +2536,7 @@
       {
         // Unary division function.
 
-        const auto numer_was_neg = is_neg(*this);
-        const auto denom_was_neg = is_neg(other);
-
-        if(numer_was_neg || denom_was_neg)
-        {
-          using local_unsigned_wide_type = uintwide_t<Width2, limb_type, AllocatorType, false>;
-
-          local_unsigned_wide_type a(*this);
-          local_unsigned_wide_type b(other);
-
-          if(numer_was_neg) { a.negate(); }
-          if(denom_was_neg) { b.negate(); }
-
-          a.eval_divide_knuth(b);
-
-          if(numer_was_neg != denom_was_neg) { a.negate(); }
-
-          values = a.values;
-        }
-        else
-        {
-          eval_divide_knuth(other);
-        }
+        eval_div_unary(other);
       }
 
       return *this;
@@ -2573,36 +2551,8 @@
       else
       {
         // Unary modulus function.
-        const auto numer_was_neg = is_neg(*this);
-        const auto denom_was_neg = is_neg(other);
 
-        if(numer_was_neg || denom_was_neg)
-        {
-          using local_unsigned_wide_type = uintwide_t<Width2, limb_type, AllocatorType, false>;
-
-          local_unsigned_wide_type a(*this);
-          local_unsigned_wide_type b(other);
-
-          if(numer_was_neg) { a.negate(); }
-          if(denom_was_neg) { b.negate(); }
-
-          local_unsigned_wide_type remainder_unsigned { };
-
-          a.eval_divide_knuth(b, &remainder_unsigned);
-
-          // The sign of the remainder follows the sign of the denominator.
-          if(numer_was_neg) { remainder_unsigned.negate(); }
-
-          values = remainder_unsigned.values;
-        }
-        else
-        {
-          uintwide_t remainder { };
-
-          eval_divide_knuth(other, &remainder);
-
-          values = remainder.values;
-        }
+        eval_mod_unary(other);
       }
 
       return *this;
@@ -3766,12 +3716,8 @@
     #endif
 
     template<const size_t OtherWidth2>
-    static constexpr auto eval_mul_unary(      uintwide_t<OtherWidth2, LimbType, AllocatorType, IsSigned>& u,
-                                         const uintwide_t<OtherWidth2, LimbType, AllocatorType, IsSigned>& v,
-                                         std::enable_if_t<((OtherWidth2 / std::numeric_limits<LimbType>::digits) < number_of_limbs_karatsuba_threshold)>* p_nullparam = nullptr) -> void
+    constexpr auto eval_mul_unary(const uintwide_t<OtherWidth2, LimbType, AllocatorType, IsSigned>& other) -> std::enable_if_t<((OtherWidth2 / std::numeric_limits<LimbType>::digits) < number_of_limbs_karatsuba_threshold), void>
     {
-      static_cast<void>(p_nullparam == nullptr);
-
       // Unary multiplication function using schoolbook multiplication,
       // but we only need to retain the low half of the n*n algorithm.
       // In other words, this is an n*n->n bit multiplication.
@@ -3789,22 +3735,18 @@
       };
 
       eval_multiply_n_by_n_to_lo_part(result.begin(),
-                                      u.values.cbegin(),
-                                      v.values.cbegin(),
+                                      values.cbegin(),
+                                      other.values.cbegin(),
                                       local_other_number_of_limbs);
 
       detail::copy_unsafe(result.cbegin(),
                           detail::advance_and_point(result.cbegin(), local_other_number_of_limbs),
-                          u.values.begin());
+                          values.begin());
     }
 
     template<const size_t OtherWidth2>
-    static constexpr auto eval_mul_unary(      uintwide_t<OtherWidth2, LimbType, AllocatorType, IsSigned>& u,
-                                         const uintwide_t<OtherWidth2, LimbType, AllocatorType, IsSigned>& v,
-                                         std::enable_if_t<((OtherWidth2 / std::numeric_limits<LimbType>::digits) >= number_of_limbs_karatsuba_threshold)>* p_nullparam = nullptr) -> void
+    constexpr auto eval_mul_unary(const uintwide_t<OtherWidth2, LimbType, AllocatorType, IsSigned>& other) -> std::enable_if_t<((OtherWidth2 / std::numeric_limits<LimbType>::digits) >= number_of_limbs_karatsuba_threshold), void>
     {
-      static_cast<void>(p_nullparam == nullptr);
-
       // Unary multiplication function using Karatsuba multiplication.
 
       constexpr auto local_number_of_limbs = uintwide_t<OtherWidth2, LimbType, AllocatorType, IsSigned>::number_of_limbs;
@@ -3836,14 +3778,103 @@
       storage_array_type t { };
 
       eval_multiply_kara_n_by_n_to_2n(result.begin(),
-                                      u.values.cbegin(),
-                                      v.values.cbegin(),
+                                      values.cbegin(),
+                                      other.values.cbegin(),
                                       local_number_of_limbs,
                                       t.begin());
 
       detail::copy_unsafe(result.cbegin(),
                           result.cbegin() + local_number_of_limbs,
-                          u.values.begin());
+                          values.begin());
+    }
+
+    template<const bool RePhraseIsSigned>
+    constexpr auto eval_div_unary(const uintwide_t<Width2, LimbType, AllocatorType, RePhraseIsSigned>& other) -> std::enable_if_t<(!RePhraseIsSigned), void>
+    {
+      // Unary division function.
+
+      eval_divide_knuth(other);
+    }
+
+    template<const bool RePhraseIsSigned>
+    constexpr auto eval_div_unary(const uintwide_t<Width2, LimbType, AllocatorType, RePhraseIsSigned>& other) -> std::enable_if_t<RePhraseIsSigned, void>
+    {
+      // Unary division function.
+
+      const auto numer_was_neg = is_neg(*this);
+      const auto denom_was_neg = is_neg(other);
+
+      if(numer_was_neg || denom_was_neg)
+      {
+        using local_unsigned_wide_type = uintwide_t<Width2, limb_type, AllocatorType, false>;
+
+        local_unsigned_wide_type a(*this);
+        local_unsigned_wide_type b(other);
+
+        if(numer_was_neg) { a.negate(); }
+        if(denom_was_neg) { b.negate(); }
+
+        a.eval_divide_knuth(b);
+
+        if(numer_was_neg != denom_was_neg) { a.negate(); }
+
+        values = a.values;
+      }
+      else
+      {
+        eval_divide_knuth(other);
+      }
+    }
+
+    template<const bool RePhraseIsSigned>
+    constexpr auto eval_mod_unary(const uintwide_t<Width2, LimbType, AllocatorType, RePhraseIsSigned>& other) -> std::enable_if_t<(!RePhraseIsSigned), void>
+    {
+      // Unary modulus function.
+
+      using local_unsigned_wide_type = uintwide_t<Width2, LimbType, AllocatorType, RePhraseIsSigned>;
+
+      local_unsigned_wide_type remainder { };
+
+      eval_divide_knuth(other, &remainder);
+
+      values = remainder.values;
+    }
+
+    template<const bool RePhraseIsSigned>
+    constexpr auto eval_mod_unary(const uintwide_t<Width2, LimbType, AllocatorType, RePhraseIsSigned>& other) -> std::enable_if_t<RePhraseIsSigned, void>
+    {
+      // Unary modulus function.
+
+      const auto numer_was_neg = is_neg(*this);
+      const auto denom_was_neg = is_neg(other);
+
+      if(numer_was_neg || denom_was_neg)
+      {
+        using local_unsigned_wide_type = uintwide_t<Width2, limb_type, AllocatorType, false>;
+
+        local_unsigned_wide_type a(*this);
+        local_unsigned_wide_type b(other);
+
+        if(numer_was_neg) { a.negate(); }
+        if(denom_was_neg) { b.negate(); }
+
+        local_unsigned_wide_type remainder { };
+
+        a.eval_divide_knuth(b, &remainder);
+
+        // The sign of the remainder follows the sign of the denominator.
+        if(numer_was_neg) { remainder.negate(); }
+
+        values = remainder.values;
+      }
+      else
+      {
+        uintwide_t<Width2, LimbType, AllocatorType, RePhraseIsSigned> remainder { };
+
+        eval_divide_knuth(other, &remainder);
+
+        values = remainder.values;
+      }
     }
 
     template<typename ResultIterator,
@@ -6729,8 +6760,11 @@
     const auto numer_was_neg = local_unknown_signedness_left_type::is_neg(a);
     const auto denom_was_neg = local_unknown_signedness_right_type::is_neg(b);
 
-          local_unsigned_wide_type ua((!numer_was_neg) ? a : -a);
-    const local_unsigned_wide_type ub((!denom_was_neg) ? b : -b);
+    local_unsigned_wide_type ua(a);
+    local_unsigned_wide_type ub(b);
+
+    if(numer_was_neg) { ua.negate(); }
+    if(denom_was_neg) { ub.negate(); }
 
     local_unsigned_wide_type ur { };
 
@@ -6748,8 +6782,9 @@
 
     if(numer_was_neg == denom_was_neg)
     {
-      result.first  = local_unknown_signedness_left_type(ua);
-      result.second = (!numer_was_neg) ? local_unknown_signedness_right_type(ur) : -local_unknown_signedness_right_type(ur);
+      result = divmod_result_pair_type { ua, ur };
+
+      if(numer_was_neg) { result.second.negate(); }
     }
     else
     {
