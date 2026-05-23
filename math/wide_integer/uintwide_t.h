@@ -2120,7 +2120,7 @@
                                            &&  std::is_unsigned   <UnsignedIntegralType>::value
                                            && (std::numeric_limits<UnsignedIntegralType>::digits > std::numeric_limits<limb_type>::digits))>* p_nullparam = nullptr)
     {
-      static_cast<void>(p_nullparam);
+      static_cast<void>(p_nullparam == nullptr);
 
       auto u_it = values.begin(); // NOLINT(llvm-qualified-auto,readability-qualified-auto)
       auto vr   = v;
@@ -2152,7 +2152,7 @@
                          std::enable_if_t<(   std::is_integral<SignedIntegralType>::value
                                            && std::is_signed  <SignedIntegralType>::value)>* p_nullparam = nullptr)
     {
-      static_cast<void>(p_nullparam);
+      static_cast<void>(p_nullparam == nullptr);
 
       using local_signed_integral_type   = SignedIntegralType;
       using local_unsigned_integral_type =
@@ -2335,7 +2335,7 @@
 
     // Assignment operator from the other signed-ness type.
     template<const bool RePhraseIsSigned>
-    constexpr auto operator=(const uintwide_t<Width2, LimbType, AllocatorType, RePhraseIsSigned>& other) -> std::enable_if_t<(RePhraseIsSigned != IsSigned), uintwide_t&>
+    constexpr auto operator=(const uintwide_t<Width2, LimbType, AllocatorType, RePhraseIsSigned>& other) -> std::enable_if_t<(RePhraseIsSigned != IsSigned), uintwide_t&> // NOLINT(cppcoreguidelines-c-copy-assignment-signature,misc-unconventional-assign-operator)
     {
       values = other.values;
 
@@ -2347,7 +2347,7 @@
 
     // Trivial move assignment operator from the other signed-ness type.
     template<const bool RePhraseIsSigned>
-    constexpr auto operator=(uintwide_t<Width2, LimbType, AllocatorType, RePhraseIsSigned>&& other) -> std::enable_if_t<(IsSigned != RePhraseIsSigned), uintwide_t&>
+    constexpr auto operator=(uintwide_t<Width2, LimbType, AllocatorType, RePhraseIsSigned>&& other) -> std::enable_if_t<(IsSigned != RePhraseIsSigned), uintwide_t&> // NOLINT(cppcoreguidelines-c-copy-assignment-signature,misc-unconventional-assign-operator)
     {
       values = static_cast<representation_type&&>(other.values);
 
