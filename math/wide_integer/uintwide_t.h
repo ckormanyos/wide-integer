@@ -24,6 +24,10 @@
   #define WIDE_INTEGER_AVR   __AVR__          // NOLINT(cppcoreguidelines-macro-usage)
   #endif
 
+  #if defined(WIDE_INTEGER_MSVC)
+  //#define WIDE_INTEGER_HAS_LIMB_TYPE_UINT64
+  #endif
+
   #if defined(WIDE_INTEGER_MSVC) && defined(WIDE_INTEGER_HAS_LIMB_TYPE_UINT64)
   #include <__msvc_int128.hpp>
   #endif
