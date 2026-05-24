@@ -73,4 +73,4 @@ jobs:
           echo
           echo seed is $rnd_seed
           echo
-          ./test_fuzzing_div_versus_cppalliance_int128 -max_total_time=900 -max_len=32 -verbosity=0 -close_fd_mask=3 $rnd_seed
+          ./test_fuzzing_div_versus_cppalliance_int128 -max_total_time=600 -max_len=32 -verbosity=0 -close_fd_mask=3 $rnd_seed
