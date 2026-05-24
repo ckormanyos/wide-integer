@@ -32,10 +32,10 @@ namespace local_timed_mul
 
     #if defined(WIDE_INTEGER_NAMESPACE)
     using distribution_type =
-      WIDE_INTEGER_NAMESPACE::math::wide_integer::uniform_int_distribution<std::numeric_limits<local_uint_type>::digits, typename local_uint_type::limb_type>;
+      WIDE_INTEGER_NAMESPACE::math::wide_integer::uniform_int_distribution<std::numeric_limits<local_uint_type>::digits, typename local_uint_type::limb_type, std::allocator<void>, false>;
     #else
     using distribution_type =
-      ::math::wide_integer::uniform_int_distribution<std::numeric_limits<local_uint_type>::digits, typename local_uint_type::limb_type>;
+      ::math::wide_integer::uniform_int_distribution<std::numeric_limits<local_uint_type>::digits, typename local_uint_type::limb_type, std::allocator<void>, false>;
     #endif
 
     distribution_type distribution;
@@ -50,9 +50,9 @@ namespace local_timed_mul
   #endif
 
   #if defined(WIDE_INTEGER_NAMESPACE)
-  using big_uint_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<wide_integer_test9_digits2, local_limb_type>;
+  using big_uint_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<wide_integer_test9_digits2, local_limb_type, std::allocator<void>, false>;
   #else
-  using big_uint_type = ::math::wide_integer::uintwide_t<wide_integer_test9_digits2, local_limb_type>;
+  using big_uint_type = ::math::wide_integer::uintwide_t<wide_integer_test9_digits2, local_limb_type, std::allocator<void>, false>;
   #endif
 
   auto local_a() -> std::vector<big_uint_type>&;
@@ -93,8 +93,16 @@ auto ::math::wide_integer::example009_timed_mul() -> bool
 
   for(auto i = static_cast<typename std::vector<local_timed_mul::big_uint_type>::size_type>(0U); i < local_timed_mul::local_a().size(); ++i)
   {
-    local_timed_mul::get_random_big_uint(rng, local_timed_mul::local_a().begin() + static_cast<typename std::vector<local_timed_mul::big_uint_type>::difference_type>(i));
-    local_timed_mul::get_random_big_uint(rng, local_timed_mul::local_b().begin() + static_cast<typename std::vector<local_timed_mul::big_uint_type>::difference_type>(i));
+    local_timed_mul::big_uint_type a_tmp { };
+    local_timed_mul::big_uint_type b_tmp { };
+
+    local_timed_mul::get_random_big_uint(rng, &a_tmp);
+    local_timed_mul::get_random_big_uint(rng, &b_tmp);
+
+    if(b_tmp > a_tmp) { std::swap(a_tmp, b_tmp); }
+
+    *(local_timed_mul::local_a().begin() + static_cast<typename std::vector<local_timed_mul::big_uint_type>::difference_type>(i)) = a_tmp;
+    *(local_timed_mul::local_b().begin() + static_cast<typename std::vector<local_timed_mul::big_uint_type>::difference_type>(i)) = b_tmp;
   }
 
   std::uint64_t count = 0U;

@@ -2066,6 +2066,16 @@
         )
       );
 
+    static constexpr size_t number_of_limbs_newton_raphson_threshold =
+      static_cast<size_t>
+      (
+        static_cast<unsigned>
+        (
+            static_cast<unsigned>(UINT8_C(512))
+          + static_cast<unsigned>(UINT8_C(1))
+        )
+      );
+
     // Verify that the Width2 template parameter (mirrored with my_width2):
     //   * Is equal to 2^n times 1...63.
     //   * And that there are at least 16, 24 or 32 binary digits, or more.
@@ -3759,12 +3769,22 @@
                           values.begin());
     }
 
-    template<const bool RePhraseIsSigned>
-    constexpr auto eval_div_unary(const uintwide_t<Width2, LimbType, AllocatorType, RePhraseIsSigned>& other) -> std::enable_if_t<(!RePhraseIsSigned), void>
+    template<const size_t OtherWidth2,
+             const bool RePhraseIsSigned>
+    constexpr auto eval_div_unary(const uintwide_t<OtherWidth2, LimbType, AllocatorType, RePhraseIsSigned>& other) -> std::enable_if_t<((OtherWidth2 / std::numeric_limits<LimbType>::digits) < number_of_limbs_karatsuba_threshold) && (!RePhraseIsSigned), void>
     {
       // Unary division function.
 
       eval_divide_knuth(other);
+    }
+
+    template<const size_t OtherWidth2,
+             const bool RePhraseIsSigned>
+    constexpr auto eval_div_unary(const uintwide_t<OtherWidth2, LimbType, AllocatorType, RePhraseIsSigned>& other) -> std::enable_if_t<((OtherWidth2 / std::numeric_limits<LimbType>::digits) >= number_of_limbs_karatsuba_threshold) && (!RePhraseIsSigned), void>
+    {
+      // Unary division function.
+
+      eval_divide_newton_raphson(other);
     }
 
     template<const bool RePhraseIsSigned>
@@ -5216,6 +5236,384 @@
           (!is_neg(*this)) ? static_cast<limb_type>(UINT8_C(0))
                            : (std::numeric_limits<limb_type>::max)()
         );
+    }
+
+    // Standalone Newton–Raphson divide implementation (private helper).
+    // Replaces the large inline implementation; called by eval_divide_newton_raphson.
+    constexpr auto eval_divide_newton_raphson(const uintwide_t& other, uintwide_t* remainder = nullptr) -> void
+    {
+      // Determine significant limb counts (skip leading zeros).
+      using local_uint_index_type = unsigned_fast_type;
+
+      local_uint_index_type u_offset { };
+      local_uint_index_type v_offset { };
+
+      {
+        auto crit_u = values.crbegin();
+        while(crit_u != values.crend() && (*crit_u == static_cast<limb_type>(UINT8_C(0))))
+        {
+          ++crit_u;
+          ++u_offset;
+        }
+      }
+
+      {
+        auto crit_v = other.values.crbegin();
+        while(crit_v != other.values.crend() && (*crit_v == static_cast<limb_type>(UINT8_C(0))))
+        {
+          ++crit_v;
+          ++v_offset;
+        }
+      }
+
+      const auto numer_is_zero = (u_offset == static_cast<local_uint_index_type>(number_of_limbs));
+      const auto denom_is_zero = (v_offset == static_cast<local_uint_index_type>(number_of_limbs));
+
+      if(denom_is_zero)
+      {
+        static_cast<void>(operator=(limits_helper_max<IsSigned>()));
+
+        if(remainder != nullptr)
+        {
+          detail::fill_unsafe(remainder->values.begin(), remainder->values.end(), static_cast<limb_type>(UINT8_C(0)));
+        }
+
+        return;
+      }
+
+      if(numer_is_zero)
+      {
+        if(remainder != nullptr)
+        {
+          *remainder = uintwide_t(static_cast<std::uint8_t>(UINT8_C(0)));
+        }
+
+        operator=(static_cast<std::uint8_t>(UINT8_C(0)));
+        return;
+      }
+
+      // Compute active limb counts (number of non-zero limbs from LSB up).
+      const auto n_denom = static_cast<local_uint_index_type>(number_of_limbs - v_offset); // denom significant limbs
+      const auto n_numer = static_cast<local_uint_index_type>(number_of_limbs - u_offset); // numer significant limbs
+
+      // Single-limb denominator shortcut.
+      if(static_cast<size_t>(n_denom) == 1U)
+      {
+        const limb_type short_denominator = *detail::advance_and_point(other.values.cbegin(), 0U);
+        eval_divide_by_single_limb(short_denominator, static_cast<unsigned_fast_type>(u_offset), remainder);
+        return;
+      }
+
+      // --- Prepare temporary storage arrays (tight, safe capacities; no std::vector) ---
+      // result_tmp: needs up to prod_len = n_numer + target <= 3 * number_of_limbs -> allocate 3*n + 4
+      // scratch: worst-case requirement ≈ 12 * number_of_limbs + small slack -> allocate 12*n + 16
+      constexpr std::size_t result_tmp_size = static_cast<std::size_t>(number_of_limbs * static_cast<size_t>(3U) + static_cast<size_t>(4U));
+      constexpr std::size_t scratch_size    = static_cast<std::size_t>(number_of_limbs * static_cast<size_t>(12U) + static_cast<size_t>(16U));
+
+      using result_array_type =
+        std::conditional_t<std::is_same<AllocatorType, void>::value,
+                           detail::fixed_static_array<limb_type, result_tmp_size>,
+                           detail::fixed_dynamic_array<limb_type,
+                                                       result_tmp_size,
+                                                       typename std::allocator_traits<std::conditional_t<std::is_same<AllocatorType, void>::value, std::allocator<void>, AllocatorType>>::template rebind_alloc<limb_type>>>;
+
+      using storage_array_type =
+        std::conditional_t<std::is_same<AllocatorType, void>::value,
+                           detail::fixed_static_array<limb_type, scratch_size>,
+                           detail::fixed_dynamic_array<limb_type,
+                                                       scratch_size,
+                                                       typename std::allocator_traits<std::conditional_t<std::is_same<AllocatorType, void>::value, std::allocator<void>, AllocatorType>>::template rebind_alloc<limb_type>>>;
+
+      result_array_type result_tmp { };
+      storage_array_type scratch { };
+
+      // Helper lambdas to operate on limb ranges using existing primitives.
+
+      // multiply_low(dst, a_ptr, a_len, b_ptr, b_len, res_len)
+      auto multiply_low = [&](limb_type* dst, const limb_type* a_ptr, size_t a_len, const limb_type* b_ptr, size_t b_len, size_t res_len) -> void
+      {
+        limb_type* A = scratch.data();
+        limb_type* B = scratch.data() + res_len;
+        detail::fill_unsafe(A, A + res_len, static_cast<limb_type>(UINT8_C(0)));
+        detail::fill_unsafe(B, B + res_len, static_cast<limb_type>(UINT8_C(0)));
+
+        const size_t copy_a = (a_len < res_len) ? a_len : res_len;
+        for(size_t i = 0U; i < copy_a; ++i) { A[i] = a_ptr[i]; }
+        const size_t copy_b = (b_len < res_len) ? b_len : res_len;
+        for(size_t i = 0U; i < copy_b; ++i) { B[i] = b_ptr[i]; }
+
+        eval_multiply_n_by_n_to_lo_part(dst, A, B, static_cast<unsigned_fast_type>(res_len));
+      };
+
+      // multiply_full(dst, a_ptr, a_len, b_ptr, b_len, res_len)
+      auto multiply_full = [&](limb_type* dst, const limb_type* a_ptr, size_t a_len, const limb_type* b_ptr, size_t b_len, size_t res_len) -> void
+      {
+        detail::fill_unsafe(result_tmp.begin(), detail::advance_and_point(result_tmp.begin(), static_cast<size_t>(res_len)), static_cast<limb_type>(UINT8_C(0)));
+
+        for(size_t i = 0U; i < a_len; ++i)
+        {
+          const limb_type ai = a_ptr[i];
+          if(ai == static_cast<limb_type>(UINT8_C(0))) { continue; }
+          auto carry = static_cast<limb_type>(eval_multiply_1d(result_tmp.begin() + i, b_ptr, ai, static_cast<unsigned_fast_type>(b_len)));
+          size_t pos = i + b_len;
+          while(carry != static_cast<limb_type>(UINT8_C(0)) && pos < res_len)
+          {
+            const double_limb_type uv_as_ularge = static_cast<double_limb_type>(static_cast<double_limb_type>(result_tmp[pos]) + carry);
+            result_tmp[pos] = static_cast<limb_type>(uv_as_ularge);
+            carry = static_cast<limb_type>(detail::make_hi<limb_type>(uv_as_ularge));
+            ++pos;
+          }
+        }
+
+        for(size_t i = 0U; i < res_len; ++i) { dst[i] = result_tmp[i]; }
+      };
+
+      // subtract_inplace(dst, a_ptr, a_len, b_ptr, b_len)
+      auto subtract_inplace = [&](limb_type* dst, const limb_type* a_ptr, size_t a_len, const limb_type* b_ptr, size_t b_len) -> bool
+      {
+        const std::size_t count = (a_len > b_len) ? a_len : b_len;
+        detail::fill_unsafe(dst, dst + count, static_cast<limb_type>(UINT8_C(0)));
+        bool has_borrow = false;
+        auto carry_in = has_borrow;
+        for(std::size_t i = 0U; i < count; ++i)
+        {
+          const limb_type ai = (i < a_len) ? a_ptr[i] : static_cast<limb_type>(UINT8_C(0));
+          const limb_type bi = (i < b_len) ? b_ptr[i] : static_cast<limb_type>(UINT8_C(0));
+          const auto uv_as_ularge = static_cast<double_limb_type>(static_cast<double_limb_type>(ai) - static_cast<double_limb_type>(bi) - static_cast<double_limb_type>(carry_in));
+          dst[i] = static_cast<limb_type>(uv_as_ularge);
+          carry_in = (detail::make_hi<limb_type>(uv_as_ularge) != static_cast<limb_type>(UINT8_C(0)));
+        }
+        has_borrow = carry_in;
+        return has_borrow;
+      };
+
+      // compare_limbs
+      auto compare_limbs = [&](const limb_type* a_ptr, const limb_type* b_ptr, size_t len) -> int
+      {
+        for(size_t i = len; i-- > 0; )
+        {
+          const limb_type av = a_ptr[i];
+          const limb_type bv = b_ptr[i];
+          if(av < bv) return -1;
+          if(av > bv) return 1;
+        }
+        return 0;
+      };
+
+      // ----------------------
+      // Newton reciprocal loop
+      // ----------------------
+      const size_t target_precision_limbs = static_cast<size_t>(n_numer + n_denom + 1U);
+      const size_t max_target = static_cast<size_t>(number_of_limbs * static_cast<size_t>(2U));
+      const size_t target = (target_precision_limbs > max_target) ? max_target : target_precision_limbs;
+
+      size_t r_prec = 1U;
+
+      // allocate view pointers inside scratch
+      limb_type* r_ptr    = scratch.data();
+      limb_type* tmp_ptr  = scratch.data() + target + 1U;
+      limb_type* dr_ptr   = tmp_ptr + target + 1U;
+      limb_type* two_ptr  = dr_ptr + target + 1U;
+      limb_type* numer_ptr = two_ptr + target + 1U;
+      limb_type* denom_ptr = numer_ptr + target + 1U;
+
+      // copy denom and numer low limbs
+      for(std::size_t i = 0U; i < static_cast<std::size_t>(n_denom); ++i) { denom_ptr[i] = *detail::advance_and_point(other.values.cbegin(), static_cast<size_t>(i)); }
+      for(std::size_t i = static_cast<std::size_t>(n_denom); i < target; ++i) { denom_ptr[i] = static_cast<limb_type>(UINT8_C(0)); }
+
+      for(std::size_t i = 0U; i < static_cast<std::size_t>(n_numer); ++i) { numer_ptr[i] = *detail::advance_and_point(values.cbegin(), static_cast<size_t>(i)); }
+      for(std::size_t i = static_cast<std::size_t>(n_numer); i < target; ++i) { numer_ptr[i] = static_cast<limb_type>(UINT8_C(0)); }
+
+      // initial r0 using top limbs of denom
+      {
+        const auto denom_msb_index = static_cast<std::size_t>(n_denom - 1U);
+        const limb_type ms_limb = *detail::advance_and_point(other.values.cbegin(), denom_msb_index);
+
+        double_limb_type topval = static_cast<double_limb_type>(ms_limb);
+        if(n_denom >= static_cast<local_uint_index_type>(2U))
+        {
+          const limb_type ms_limb_minus1 = *detail::advance_and_point(other.values.cbegin(), denom_msb_index - 1U);
+          topval = (static_cast<double_limb_type>(ms_limb) << static_cast<unsigned>(std::numeric_limits<limb_type>::digits)) | static_cast<double_limb_type>(ms_limb_minus1);
+        }
+
+        // Compute a tighter safe initial reciprocal estimate.
+        // Use base_half_minus1 = 2^(2*digits - 1) - 1 to avoid shifting
+        // by the full double-limb width (which is UB) and to avoid overflow
+        // when doubling. Then r0 (approx) 2 * floor(base_half_minus1 / topval).
+        const unsigned shift_bits = static_cast<unsigned>(std::numeric_limits<limb_type>::digits * 2U);
+        const double_limb_type base_half = static_cast<double_limb_type>(static_cast<double_limb_type>(UINT8_C(1)) << (shift_bits - 1U)); // 2^(W-1)
+        const double_limb_type base_half_minus1 = base_half - static_cast<double_limb_type>(UINT8_C(1)); // 2^(W-1) - 1
+        double_limb_type r0 = static_cast<double_limb_type>((base_half_minus1 / topval) << static_cast<unsigned>(UINT8_C(1))); // 2 * floor(...)
+
+        r_ptr[0] = static_cast<limb_type>(r0);
+        for(std::size_t i = 1U; i < target; ++i) { r_ptr[i] = static_cast<limb_type>(UINT8_C(0)); }
+      }
+
+      two_ptr[0] = static_cast<limb_type>(UINT8_C(2));
+      for(size_t i = 1U; i < target; ++i) { two_ptr[i] = static_cast<limb_type>(UINT8_C(0)); }
+
+      while(r_prec < target)
+      {
+        const size_t r_next = (r_prec * 2U <= target) ? r_prec * 2U : target;
+
+        multiply_low(dr_ptr, denom_ptr, static_cast<size_t>(n_denom), r_ptr, r_prec, r_next);
+
+        // tmp = 2 - dr (low r_next limbs)
+        {
+          bool borrow = false;
+          for(size_t i = 0U; i < r_next; ++i)
+          {
+            const double_limb_type lhs = static_cast<double_limb_type>((i < 1U) ? two_ptr[i] : static_cast<limb_type>(UINT8_C(0)));
+            const double_limb_type rhs = static_cast<double_limb_type>(dr_ptr[i]);
+            const double_limb_type t = lhs - rhs - static_cast<double_limb_type>(borrow);
+            tmp_ptr[i] = static_cast<limb_type>(t);
+            borrow = (detail::make_hi<limb_type>(t) != static_cast<limb_type>(UINT8_C(0)));
+          }
+        }
+
+        multiply_low(r_ptr, r_ptr, r_prec, tmp_ptr, r_next, r_next);
+
+        for(size_t k = r_next; k < target; ++k) { r_ptr[k] = static_cast<limb_type>(UINT8_C(0)); }
+
+        r_prec = r_next;
+      }
+
+      // Compute product N * R (we need high part starting at index target)
+      const size_t prod_len = static_cast<size_t>(n_numer) + target;
+      detail::fill_unsafe(result_tmp.begin(), detail::advance_and_point(result_tmp.begin(), static_cast<size_t>(prod_len)), static_cast<limb_type>(UINT8_C(0)));
+      multiply_full(result_tmp.data(), numer_ptr, static_cast<size_t>(n_numer), r_ptr, target, prod_len);
+
+      const size_t q_len = static_cast<std::size_t>(number_of_limbs);
+      limb_type* q_ptr = scratch.data() + (target + target + 2U);
+      for(std::size_t i = 0U; i < q_len; ++i) { q_ptr[i] = static_cast<limb_type>(UINT8_C(0)); }
+
+      for(size_t i = 0U; i < prod_len; ++i)
+      {
+        const size_t tgt_index = i;
+        if(tgt_index >= static_cast<std::size_t>(target))
+        {
+          const size_t qindex = tgt_index - static_cast<size_t>(target);
+          if(qindex < q_len)
+          {
+            q_ptr[qindex] = result_tmp[i];
+          }
+        }
+      }
+
+      // Correction loop
+      const size_t dq_len = static_cast<size_t>(n_denom) + q_len;
+      detail::fill_unsafe(result_tmp.begin(), detail::advance_and_point(result_tmp.begin(), static_cast<size_t>(dq_len)), static_cast<limb_type>(UINT8_C(0)));
+      multiply_full(result_tmp.data(), denom_ptr, static_cast<size_t>(n_denom), q_ptr, q_len, dq_len);
+
+      limb_type* numer_ext = scratch.data() + (target + target + 2U) + q_len + 4U;
+      for(size_t i = 0U; i < dq_len; ++i) { numer_ext[i] = (i < static_cast<size_t>(n_numer)) ? numer_ptr[i] : static_cast<limb_type>(UINT8_C(0)); }
+
+      int cmp = compare_limbs(result_tmp.data(), numer_ext, dq_len);
+
+      auto decrement_q_by_one = [&](void) -> void
+      {
+        size_t i = 0U;
+        while(i < q_len)
+        {
+          if(q_ptr[i] != static_cast<limb_type>(UINT8_C(0)))
+          {
+            --q_ptr[i];
+            break;
+          }
+          else
+          {
+            q_ptr[i] = (std::numeric_limits<limb_type>::max)();
+            ++i;
+          }
+        }
+      };
+
+      auto increment_q_by_one = [&](void) -> void
+      {
+        size_t i = 0U;
+        while(i < q_len)
+        {
+          const auto prev = q_ptr[i];
+          q_ptr[i] = static_cast<limb_type>(prev + static_cast<limb_type>(UINT8_C(1)));
+          if(q_ptr[i] != static_cast<limb_type>(UINT8_C(0))) break;
+          ++i;
+        }
+      };
+
+      int safety_cap = 8;
+
+      if(cmp > 0)
+      {
+        while((cmp > 0) && (safety_cap > 0))
+        {
+          decrement_q_by_one();
+          detail::fill_unsafe(result_tmp.begin(), detail::advance_and_point(result_tmp.begin(), static_cast<size_t>(dq_len)), static_cast<limb_type>(UINT8_C(0)));
+          multiply_full(result_tmp.data(), denom_ptr, static_cast<size_t>(n_denom), q_ptr, q_len, dq_len);
+          cmp = compare_limbs(result_tmp.data(), numer_ext, dq_len);
+          --safety_cap;
+        }
+      }
+      else
+      {
+        limb_type* diff_ptr = scratch.data() + 1U;
+        const bool borrow = subtract_inplace(diff_ptr, numer_ext, dq_len, result_tmp.data(), dq_len);
+        if(!borrow)
+        {
+          limb_type* denom_ext = scratch.data() + 2U;
+          for(size_t i = 0U; i < dq_len; ++i) { denom_ext[i] = (i < static_cast<size_t>(n_denom)) ? denom_ptr[i] : static_cast<limb_type>(UINT8_C(0)); }
+
+          int cmp2 = compare_limbs(diff_ptr, denom_ext, dq_len);
+          while((cmp2 >= 0) && (safety_cap > 0))
+          {
+            increment_q_by_one();
+            detail::fill_unsafe(result_tmp.begin(), detail::advance_and_point(result_tmp.begin(), static_cast<size_t>(dq_len)), static_cast<limb_type>(UINT8_C(0)));
+            multiply_full(result_tmp.data(), denom_ptr, static_cast<size_t>(n_denom), q_ptr, q_len, dq_len);
+
+            const bool borrow2 = subtract_inplace(diff_ptr, numer_ext, dq_len, result_tmp.data(), dq_len);
+            if(borrow2) { cmp2 = -1; }
+            else { cmp2 = compare_limbs(diff_ptr, denom_ext, dq_len); }
+
+            --safety_cap;
+          }
+        }
+      }
+
+      // Verify final remainder < d, otherwise fallback
+      detail::fill_unsafe(result_tmp.begin(), detail::advance_and_point(result_tmp.begin(), static_cast<size_t>(dq_len)), static_cast<limb_type>(UINT8_C(0)));
+      multiply_full(result_tmp.data(), denom_ptr, static_cast<size_t>(n_denom), q_ptr, q_len, dq_len);
+
+      limb_type* final_diff = scratch.data() + 3U;
+      const bool borrow_final = subtract_inplace(final_diff, numer_ext, dq_len, result_tmp.data(), dq_len);
+
+      if(borrow_final)
+      {
+        eval_divide_knuth(other, remainder);
+        return;
+      }
+
+      limb_type* denom_ext2 = scratch.data() + 4U;
+      for(size_t i = 0U; i < dq_len; ++i) { denom_ext2[i] = (i < static_cast<size_t>(n_denom)) ? denom_ptr[i] : static_cast<limb_type>(UINT8_C(0)); }
+
+      if(compare_limbs(final_diff, denom_ext2, dq_len) >= 0)
+      {
+        eval_divide_knuth(other, remainder);
+        return;
+      }
+
+      // Write quotient into values
+      for(size_t i = 0U; i < static_cast<size_t>(number_of_limbs); ++i)
+      {
+        values[i] = (i < q_len) ? q_ptr[i] : static_cast<limb_type>(UINT8_C(0));
+      }
+
+      if(remainder != nullptr)
+      {
+        detail::fill_unsafe(remainder->values.begin(), remainder->values.end(), static_cast<limb_type>(UINT8_C(0)));
+        const size_t copy_r = (static_cast<size_t>(remainder->values.size()) < dq_len) ? static_cast<size_t>(remainder->values.size()) : dq_len;
+        for(size_t i = 0U; i < copy_r; ++i) { remainder->values[i] = final_diff[i]; }
+      }
+
+      // Done.
     }
 
     template<typename IntegralType>
