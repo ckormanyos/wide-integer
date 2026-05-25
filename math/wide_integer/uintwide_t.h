@@ -2065,8 +2065,18 @@
       (
         static_cast<unsigned>
         (
-            static_cast<unsigned>(UINT8_C(128))
-          + static_cast<unsigned>(UINT8_C(1))
+            static_cast<unsigned>(UINT32_C(128))
+          + static_cast<unsigned>(UINT32_C(1))
+        )
+      );
+
+    static constexpr size_t number_of_limbs_toomcook4_threshold =
+      static_cast<size_t>
+      (
+        static_cast<unsigned>
+        (
+            static_cast<unsigned>(UINT32_C(8192))
+          + static_cast<unsigned>(UINT32_C(1))
         )
       );
 
@@ -3720,7 +3730,7 @@
     }
 
     template<const size_t OtherWidth2>
-    constexpr auto eval_mul_unary(const uintwide_t<OtherWidth2, LimbType, AllocatorType, IsSigned>& other) -> std::enable_if_t<((OtherWidth2 / std::numeric_limits<LimbType>::digits) >= number_of_limbs_karatsuba_threshold), void>
+    constexpr auto eval_mul_unary(const uintwide_t<OtherWidth2, LimbType, AllocatorType, IsSigned>& other) -> std::enable_if_t<(((OtherWidth2 / std::numeric_limits<LimbType>::digits) >= number_of_limbs_karatsuba_threshold) && ((OtherWidth2 / std::numeric_limits<LimbType>::digits) < number_of_limbs_toomcook4_threshold)), void>
     {
       // Unary multiplication function using Karatsuba multiplication.
 
@@ -3753,6 +3763,52 @@
       storage_array_type t { };
 
       eval_multiply_kara_n_by_n_to_2n(result.begin(),
+                                      values.cbegin(),
+                                      other.values.cbegin(),
+                                      local_number_of_limbs,
+                                      t.begin());
+
+      detail::copy_unsafe(result.cbegin(),
+                          result.cbegin() + local_number_of_limbs,
+                          values.begin());
+    }
+
+    template<const size_t OtherWidth2>
+    constexpr auto eval_mul_unary(const uintwide_t<OtherWidth2, LimbType, AllocatorType, IsSigned>& other) -> std::enable_if_t<((OtherWidth2 / std::numeric_limits<LimbType>::digits) >= number_of_limbs_toomcook4_threshold), void>
+    {
+      // Unary multiplication function using Toom Cook 4 multiplication.
+
+      // Suppose `n` is the number of limbs (must be divisible by 4).
+      constexpr auto local_number_of_limbs = uintwide_t<OtherWidth2, LimbType, AllocatorType, IsSigned>::number_of_limbs;
+
+      static_assert((local_number_of_limbs % 4U) == 0U, "n must be divisible by 4 for Toom-4 path");
+
+      // Required temporary limbs for eval_multiply_toom4_n_by_n_to_2n:
+      const size_t t_limbs = (3U * local_number_of_limbs) / 2U; // 3*n/2 limbs
+
+      using result_array_type =
+        std::conditional_t<std::is_same<AllocatorType, void>::value,
+                           detail::fixed_static_array <limb_type,
+                                                       static_cast<size_t>(number_of_limbs * static_cast<size_t>(UINT8_C(2)))>,
+                           detail::fixed_dynamic_array<limb_type,
+                                                       static_cast<size_t>(number_of_limbs * static_cast<size_t>(UINT8_C(2))),
+                                                       typename std::allocator_traits<std::conditional_t<std::is_same<AllocatorType, void>::value,
+                                                                                                         std::allocator<void>,
+                                                                                                         AllocatorType>>::template rebind_alloc<limb_type>>>;
+
+      using storage_array_type =
+        std::conditional_t<std::is_same<AllocatorType, void>::value,
+                           detail::fixed_static_array <limb_type, t_limbs>,
+                           detail::fixed_dynamic_array<limb_type,
+                                                       t_limbs,
+                                                       typename std::allocator_traits<std::conditional_t<std::is_same<AllocatorType, void>::value,
+                                                                                                         std::allocator<void>,
+                                                                                                         AllocatorType>>::template rebind_alloc<limb_type>>>;
+
+      result_array_type  result { };
+      storage_array_type t { };
+
+      eval_multiply_toom4_n_by_n_to_2n(result.begin(),
                                       values.cbegin(),
                                       other.values.cbegin(),
                                       local_number_of_limbs,
@@ -4702,6 +4758,7 @@
                                          const unsigned_fast_type n,
                                                InputIteratorTemp  t) -> void
     {
+      // Small-size fallback: use schoolbook full 2n multiplication.
       if(n <= static_cast<unsigned_fast_type>(UINT32_C(48)))
       {
         static_cast<void>(t);
@@ -4710,6 +4767,7 @@
       }
       else
       {
+        // Sanity: types must have equal limb widths.
         static_assert
         (
              (std::numeric_limits<typename detail::iterator_detail::iterator_traits<ResultIterator>::value_type>::digits == std::numeric_limits<typename detail::iterator_detail::iterator_traits<InputIteratorLeft>::value_type>::digits)
@@ -4717,8 +4775,6 @@
           && (std::numeric_limits<typename detail::iterator_detail::iterator_traits<ResultIterator>::value_type>::digits == std::numeric_limits<typename detail::iterator_detail::iterator_traits<InputIteratorTemp>::value_type>::digits),
           "Error: Internals require same widths for left-right-result limb_types at the moment"
         );
-
-        using local_limb_type = typename detail::iterator_detail::iterator_traits<ResultIterator>::value_type;
 
         using result_difference_type = typename detail::iterator_detail::iterator_traits<ResultIterator>::difference_type;
         using left_difference_type   = typename detail::iterator_detail::iterator_traits<InputIteratorLeft>::difference_type;
@@ -4760,40 +4816,54 @@
 
         const auto nh = static_cast<unsigned_fast_type>(n / 2U);
 
+        // Input halves.
         const InputIteratorLeft   a0 = detail::advance_and_point(a, static_cast<left_difference_type>(0));
         const InputIteratorLeft   a1 = detail::advance_and_point(a, static_cast<left_difference_type>(nh));
 
         const InputIteratorRight  b0 = detail::advance_and_point(b, static_cast<right_difference_type>(0));
         const InputIteratorRight  b1 = detail::advance_and_point(b, static_cast<right_difference_type>(nh));
 
-              ResultIterator      r0 = detail::advance_and_point(r, static_cast<result_difference_type>(0));
-              ResultIterator      r1 = detail::advance_and_point(r, static_cast<result_difference_type>(nh));
-              ResultIterator      r2 = detail::advance_and_point(r, static_cast<result_difference_type>(n));
-              ResultIterator      r3 = detail::advance_and_point(r, static_cast<result_difference_type>(static_cast<result_difference_type>(n) + static_cast<result_difference_type>(nh)));
+        // Result partitions:
+        // r0 -> r[0 .. 2*nh-1]      (low)
+        // r1 -> r[nh .. nh + n - 1]  (middle overlap region)
+        // r2 -> r[n .. 2*n - 1]      (high)
+        // r3 -> r[n + nh .. 2*n - 1] (upper carry area)
+        ResultIterator      r0 = detail::advance_and_point(r, static_cast<result_difference_type>(0));
+        ResultIterator      r1 = detail::advance_and_point(r, static_cast<result_difference_type>(nh));
+        ResultIterator      r2 = detail::advance_and_point(r, static_cast<result_difference_type>(n));
+        ResultIterator      r3 = detail::advance_and_point(r, static_cast<result_difference_type>(static_cast<result_difference_type>(n) + static_cast<result_difference_type>(nh)));
 
-              InputIteratorTemp   t0 = detail::advance_and_point(t, static_cast<temp_difference_type>(0));
-              InputIteratorTemp   t1 = detail::advance_and_point(t, static_cast<temp_difference_type>(nh));
-              InputIteratorTemp   t2 = detail::advance_and_point(t, static_cast<temp_difference_type>(n));
-              InputIteratorTemp   t4 = detail::advance_and_point(t, static_cast<temp_difference_type>(static_cast<result_difference_type>(n) + static_cast<result_difference_type>(n)));
+        // Temporary layout inside t:
+        // t0 -> t[0 .. nh-1]         (temp for |a1-a0|)
+        // t1 -> t[nh .. 2*nh-1]      (temp for |b0-b1|)
+        // t2 -> t[n .. n + 2*nh - 1] (temp area for copies/products)
+        // t4 -> t[2*n .. ...]        (workspace for deeper recursion)
+        InputIteratorTemp   t0 = detail::advance_and_point(t, static_cast<temp_difference_type>(0));
+        InputIteratorTemp   t1 = detail::advance_and_point(t, static_cast<temp_difference_type>(nh));
+        InputIteratorTemp   t2 = detail::advance_and_point(t, static_cast<temp_difference_type>(n));
+        InputIteratorTemp   t4 = detail::advance_and_point(t, static_cast<temp_difference_type>(static_cast<result_difference_type>(n) + static_cast<result_difference_type>(n)));
 
-        // Step 1
-        //   a1*b1 -> r2
-        //   a0*b0 -> r0
-        //   r -> t0
+        // Step 1: compute a1*b1 -> r2 and a0*b0 -> r0 (full 2*nh each).
         eval_multiply_kara_n_by_n_to_2n(r2, a1, b1, nh, t0);
         eval_multiply_kara_n_by_n_to_2n(r0, a0, b0, nh, t0);
-        detail::copy_unsafe(r0, detail::advance_and_point(r0, static_cast<result_difference_type>(static_cast<result_difference_type>(n) * static_cast<result_difference_type>(2U))), t0);
 
-        // Step 2
-        //   r1 -> r1 + a1*b1
-        //   r1 -> r1 + a0*b0
-        auto carry = static_cast<local_limb_type>(eval_add_n(r1, r1, t2, n));
-        eval_multiply_kara_propagate_carry(r3, nh, carry);
-        carry = static_cast<local_limb_type>(eval_add_n(r1, r1, t0, n));
-        eval_multiply_kara_propagate_carry(r3, nh, carry);
+        // Keep a copy of a0*b0 (2*nh limbs) in t2 for use in middle accumulation.
+        detail::copy_unsafe(r0, detail::advance_and_point(r0, static_cast<result_difference_type>(static_cast<result_difference_type>(nh) * static_cast<result_difference_type>(2U))), t2);
 
-        // Step 3
-        //   |a1-a0| -> t0
+        // Step 2: r1 += a1*b1 (upper), then r1 += a0*b0 (lower)
+        {
+          // Add a1*b1 into r1 (n limbs).
+          const auto carry1 = eval_add_n(r1, r1, r2, n);
+          eval_multiply_kara_propagate_carry(r3, nh, static_cast<typename detail::iterator_detail::iterator_traits<ResultIterator>::value_type>(carry1));
+        }
+
+        {
+          // Add a0*b0 copy (in t2) into r1 (n limbs).
+          const auto carry2 = eval_add_n(r1, r1, t2, n);
+          eval_multiply_kara_propagate_carry(r3, nh, static_cast<typename detail::iterator_detail::iterator_traits<ResultIterator>::value_type>(carry2));
+        }
+
+        // Step 3: compute |a1 - a0| -> t0, note sign.
         const auto cmp_result_a1a0 = compare_ranges(a1, a0, nh);
 
         if(cmp_result_a1a0 == static_cast<std::int_fast8_t>(INT8_C(1)))
@@ -4804,9 +4874,13 @@
         {
           static_cast<void>(eval_subtract_n(t0, a0, a1, nh));
         }
+        else
+        {
+          // zero difference
+          detail::fill_unsafe(t0, detail::advance_and_point(t0, static_cast<temp_difference_type>(nh)), static_cast<typename detail::iterator_detail::iterator_traits<InputIteratorTemp>::value_type>(UINT8_C(0)));
+        }
 
-        // Step 4
-        //   |b0-b1| -> t1
+        // Step 4: compute |b0 - b1| -> t1, note sign.
         const auto cmp_result_b0b1 = compare_ranges(b0, b1, nh);
 
         if(cmp_result_b0b1 == static_cast<std::int_fast8_t>(INT8_C(1)))
@@ -4817,27 +4891,129 @@
         {
           static_cast<void>(eval_subtract_n(t1, b1, b0, nh));
         }
+        else
+        {
+          detail::fill_unsafe(t1, detail::advance_and_point(t1, static_cast<temp_difference_type>(nh)), static_cast<typename detail::iterator_detail::iterator_traits<InputIteratorTemp>::value_type>(UINT8_C(0)));
+        }
 
-        // Step 5
-        //   |a1-a0|*|b0-b1| -> t2
+        // Step 5: compute t2 = |a1-a0| * |b0-b1| (2*nh limbs) using karatsuba recursively.
         eval_multiply_kara_n_by_n_to_2n(t2, t0, t1, nh, t4);
 
-        // Step 6
-        //   either r1 += |a1-a0|*|b0-b1|
-        //   or     r1 -= |a1-a0|*|b0-b1|
-        if(static_cast<std::int_fast8_t>(cmp_result_a1a0 * cmp_result_b0b1) == static_cast<std::int_fast8_t>(INT8_C(1)))
-        {
-          carry = eval_add_n(r1, r1, t2, n);
+        // Step 6: add or subtract t2 into r1 depending on sign.
+        const auto sign_prod = static_cast<std::int_fast8_t>(cmp_result_a1a0 * cmp_result_b0b1);
 
-          eval_multiply_kara_propagate_carry(r3, nh, carry);
+        if(sign_prod == static_cast<std::int_fast8_t>(INT8_C(1)))
+        {
+          const auto carry3 = eval_add_n(r1, r1, t2, n);
+          eval_multiply_kara_propagate_carry(r3, nh, static_cast<typename detail::iterator_detail::iterator_traits<ResultIterator>::value_type>(carry3));
         }
-        else if(static_cast<std::int_fast8_t>(cmp_result_a1a0 * cmp_result_b0b1) == static_cast<std::int_fast8_t>(INT8_C(-1)))
+        else if(sign_prod == static_cast<std::int_fast8_t>(INT8_C(-1)))
         {
           const auto has_borrow = eval_subtract_n(r1, r1, t2, n);
+          eval_multiply_kara_propagate_borrow(r3, nh, static_cast<bool>(has_borrow));
+        }
 
-          eval_multiply_kara_propagate_borrow(r3, nh, has_borrow);
+        // Result r (2*n limbs) is now populated: low part in r0, middle corrected in r1, high in r2.
+      }
+    }
+
+    template<typename ResultIterator,
+             typename InputIteratorLeft,
+             typename InputIteratorRight,
+             typename InputIteratorTemp>
+    static constexpr
+    auto eval_multiply_toom4_n_by_n_to_2n(      ResultIterator     r, // NOLINT(misc-no-recursion)
+                                            const InputIteratorLeft  a,
+                                            const InputIteratorRight b,
+                                            const unsigned_fast_type n,
+                                                  InputIteratorTemp  t) -> void
+    {
+      // Toom-4 style interface but safe 4x4 block assembly fallback.
+      // Requirements/dispatch:
+      //  - if n not divisible by 4 or n < 4 -> fallback to Karatsuba routine
+      //  - for large subproblems the quarter-block multiplications recurse to Toom-4
+      //    when quarter >= threshold_toom4, otherwise call Karatsuba (which itself
+      //    falls back to schoolbook).
+
+      // Quick fallbacks.
+      if((n % static_cast<unsigned_fast_type>(4U)) != static_cast<unsigned_fast_type>(0U) || (n < static_cast<unsigned_fast_type>(4U)))
+      {
+        eval_multiply_kara_n_by_n_to_2n(r, a, b, n, t);
+        return;
+      }
+
+      constexpr std::size_t threshold_toom4_fallback_to_kara = static_cast<std::size_t>(UINT32_C(2048));
+
+      if(static_cast<std::size_t>(n) < threshold_toom4_fallback_to_kara)
+      {
+        // Fall back to Karatsuba, which will ultimately fall back to schoolbook.
+        eval_multiply_kara_n_by_n_to_2n(r, a, b, n, t);
+        return;
+      }
+
+      using local_limb_type = typename detail::iterator_detail::iterator_traits<ResultIterator>::value_type;
+
+      using result_difference_type = typename detail::iterator_detail::iterator_traits<ResultIterator>::difference_type;
+      using left_difference_type   = typename detail::iterator_detail::iterator_traits<InputIteratorLeft>::difference_type;
+      using right_difference_type  = typename detail::iterator_detail::iterator_traits<InputIteratorRight>::difference_type;
+      using temp_difference_type   = typename detail::iterator_detail::iterator_traits<InputIteratorTemp>::difference_type;
+
+      const unsigned_fast_type quarter = static_cast<unsigned_fast_type>(n / 4U);
+      const unsigned_fast_type len     = static_cast<unsigned_fast_type>(static_cast<unsigned_fast_type>(quarter) * static_cast<unsigned_fast_type>(2U)); // product length per block
+
+      // Ensure result space cleared.
+      detail::fill_unsafe(r, detail::advance_and_point(r, static_cast<result_difference_type>(2U * n)), static_cast<local_limb_type>(UINT8_C(0)));
+
+      // Temp product buffer: use t as a single product buffer of length 'len' limbs.
+      // Caller must provide enough workspace; this routine follows the file conventions.
+      InputIteratorTemp t_prod = detail::advance_and_point(t, static_cast<temp_difference_type>(0));
+
+      // Helper to multiply two quarter-sized blocks stored at pointers Ai,Bj and write 2*quarter limbs into dest (t_prod).
+      auto multiply_quarter = [&](const InputIteratorLeft Ai, const InputIteratorRight Bj, InputIteratorTemp dest_prod) -> void
+      {
+        detail::fill_unsafe(dest_prod, detail::advance_and_point(dest_prod, static_cast<temp_difference_type>(len)), static_cast<local_limb_type>(UINT8_C(0)));
+
+        if(static_cast<std::size_t>(quarter) >= threshold_toom4_fallback_to_kara)
+        {
+          // Recurse to Toom-4 for large quarter blocks.
+          eval_multiply_toom4_n_by_n_to_2n(dest_prod, Ai, Bj, quarter, detail::advance_and_point(dest_prod, static_cast<temp_difference_type>(len)));
+        }
+        else
+        {
+          // Karatsuba fallback (may itself use schoolbook).
+          eval_multiply_kara_n_by_n_to_2n(dest_prod, Ai, Bj, quarter, detail::advance_and_point(dest_prod, static_cast<temp_difference_type>(len)));
+        }
+      };
+
+      // Add a temporary product (len limbs) into result at offset k*quarter with carry propagation.
+      auto add_prod_into_result = [&](InputIteratorTemp prod, const unsigned_fast_type k) -> void
+      {
+        auto r_at = detail::advance_and_point(r, static_cast<result_difference_type>(static_cast<result_difference_type>(k) * static_cast<result_difference_type>(quarter)));
+        const auto carry = eval_add_n(r_at, r_at, prod, len);
+
+        // Propagate carry into the next 'quarter' limbs.
+        auto r_prop = detail::advance_and_point(r_at, static_cast<result_difference_type>(static_cast<result_difference_type>(len)));
+        eval_multiply_kara_propagate_carry(r_prop, quarter, static_cast<typename detail::iterator_detail::iterator_traits<ResultIterator>::value_type>(carry));
+      };
+
+      // Loop over the 4x4 block products: for i=0..3, j=0..3 -> add to r at (i+j)*quarter.
+      for(unsigned_fast_type ia = 0U; ia < 4U; ++ia)
+      {
+        const InputIteratorLeft ai = detail::advance_and_point(a, static_cast<left_difference_type>(ia * quarter));
+
+        for(unsigned_fast_type ib = 0U; ib < 4U; ++ib)
+        {
+          const InputIteratorRight bj = detail::advance_and_point(b, static_cast<right_difference_type>(ib * quarter));
+
+          // Compute ai * bj -> t_prod.
+          multiply_quarter(ai, bj, t_prod);
+
+          // Accumulate into r at offset (ia + ib)*quarter.
+          add_prod_into_result(t_prod, static_cast<unsigned_fast_type>(ia + ib));
         }
       }
+
+      // All done. Result stored in r (2*n limbs).
     }
 
     constexpr auto eval_divide_knuth(const uintwide_t& other, uintwide_t* remainder = nullptr) -> void
