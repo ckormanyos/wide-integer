@@ -2060,15 +2060,8 @@
         Width2 / static_cast<size_t>(std::numeric_limits<limb_type>::digits)
       );
 
-    static constexpr size_t number_of_limbs_karatsuba_threshold =
-      static_cast<size_t>
-      (
-        static_cast<unsigned>
-        (
-            static_cast<unsigned>(UINT32_C(128))
-          + static_cast<unsigned>(UINT32_C(1))
-        )
-      );
+    static constexpr size_t number_of_limbs_karatsuba_threshold { static_cast<size_t>(128U) };
+    static constexpr size_t number_of_limbs_schoolbook_fallback { static_cast<size_t>(16U) };
 
     // Verify that the Width2 template parameter (mirrored with my_width2):
     //   * Is equal to 2^n times 1...63.
@@ -4703,7 +4696,7 @@
                                                InputIteratorTemp  t) -> void
     {
       // Small-size fallback: use schoolbook full 2n multiplication.
-      if(n <= static_cast<unsigned_fast_type>(UINT32_C(48)))
+      if(n <= static_cast<unsigned_fast_type>(number_of_limbs_schoolbook_fallback))
       {
         static_cast<void>(t);
 
@@ -4768,7 +4761,7 @@
         const InputIteratorRight  b1 = detail::advance_and_point(b, static_cast<right_difference_type>(nh));
 
         // Result partitions:
-        // r0 -> r[0 .. 2*nh-1]      (low)
+        // r0 -> r[0 .. 2*nh-1]       (low)
         // r1 -> r[nh .. nh + n - 1]  (middle overlap region)
         // r2 -> r[n .. 2*n - 1]      (high)
         // r3 -> r[n + nh .. 2*n - 1] (upper carry area)
