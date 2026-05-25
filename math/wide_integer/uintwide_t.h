@@ -2061,7 +2061,7 @@
       );
 
     static constexpr size_t number_of_limbs_karatsuba_threshold { static_cast<size_t>(128U) };
-    static constexpr size_t number_of_limbs_schoolbook_fallback { static_cast<size_t>(16U) };
+    static constexpr size_t number_of_limbs_schoolbook_fallback { static_cast<size_t>(24U) };
 
     // Verify that the Width2 template parameter (mirrored with my_width2):
     //   * Is equal to 2^n times 1...63.
