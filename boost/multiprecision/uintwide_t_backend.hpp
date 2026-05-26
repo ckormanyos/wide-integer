@@ -72,10 +72,11 @@
   template<
   #if defined(WIDE_INTEGER_NAMESPACE)
            const WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t MyWidth2,
+           typename MyLimbType = WIDE_INTEGER_NAMESPACE::math::wide_integer::uint_defaultlimb_t,
   #else
            const ::math::wide_integer::size_t MyWidth2,
+           typename MyLimbType = ::math::wide_integer::uint_defaultlimb_t,
   #endif
-           typename MyLimbType = std::uint32_t,
            typename MyAllocatorType = void>
   class uintwide_t_backend;
 
