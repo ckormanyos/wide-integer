@@ -1,4 +1,4 @@
-﻿Wide-integer
+﻿wide-integer
 ==================
 
 <p align="center">
@@ -30,7 +30,7 @@
         <img src="https://img.shields.io/badge/try%20it%20on-godbolt-green" /></a>
 </p>
 
-Wide-integer implements a generic C++ template for extended width
+wide-integer implements a generic C++ template for extended width
 unsigned and signed integral types.
 
 This C++ template header-only library implements drop-in big integer types
@@ -43,7 +43,7 @@ The big integer class is called `math::wide_integer::uintwide_t`
 (i.e., `uintwide_t` residing in the `namespace` `math::wide_integer`),
 as shown in greater detail below.
 
-Wide-integer supports both unsigned as well as
+wide-integer supports both unsigned as well as
 signed integral types having width of
 $1 {\ldots} 63 {\times} 2^N$
 while being $16$, $24$, $32$ or larger.
@@ -57,7 +57,7 @@ Types such as `uint80_t` made from five 16-bit limbs,
 or `uint96_t` composed of three 32-bit limbs, or
 other similar types can be readily synthesized with wide-integer.
 
-Wide-integer also features basic realizations of several
+wide-integer also features basic realizations of several
 elementary and number theoretical functions such as root finding,
 random distribution, Miller-Rabin primality testing,
 greatest common denominator (GCD), least common multiplier (LCM),
@@ -160,7 +160,7 @@ class uintwide_t;
 } // namespace math::wide_integer
 ```
 
-`uintwide_t` also has a third optional template paramter that
+`uintwide_t` also has a third optional template parameter that
 is used to set the _allocator_ _type_ employed for internal storage of the
 big integer's data. The default allocator type is `void`
 and `uintwide_t` uses stack allocation with an `std::array`-like internal representation.
@@ -210,7 +210,7 @@ on how to use wide-integer.
   - [example009_timed_mul.cpp](./examples/example009_timed_mul.cpp) measures multiplication timings.
   - [example009a_timed_mul_4_by_4.cpp](./examples/example009a_timed_mul_4_by_4.cpp) also measures multiplication timings for the special case of wide integers having four limbs.
   - [example009b_timed_mul_8_by_8.cpp](./examples/example009b_timed_mul_8_by_8.cpp) measures, yet again, multiplication timings for the special case of wide integers having eight limbs.
-  - [example010_uint48_t.cpp](./examples/example010_uint48_t.cpp) verifies 48-bit integer caluclations.
+  - [example010_uint48_t.cpp](./examples/example010_uint48_t.cpp) verifies 48-bit integer calculations.
   - [example011_uint24_t.cpp](./examples/example011_uint24_t.cpp) performs calculations with 24-bits, which is definitely on the small side of the range of wide-integer.
   - [example012_rsa_crypto.cpp](./examples/example012_rsa_crypto.cpp) performs cryptographic calculations with 2048-bits, exploring a standardized test case.
   - [example013_ecdsa_sign_verify.cpp](./examples/example013_ecdsa_sign_verify.cpp) provides an intuitive view on elliptic-curve algebra, depicting a well-known cryptographic key-gen/sign/verify method.
@@ -356,7 +356,7 @@ Various compilers, operating systems, and C++ standards
 ranging from C++14, 17, 20, 23 are included in CI.
 
 In CI, we use both elevated GCC/clang compiler warnings
-as well as MSVC level 4 warnings active on the correspondoing platforms.
+as well as MSVC level 4 warnings active on the corresponding platforms.
 For additional in-depth syntax checking, clang-tidy is used both in CI
 as well as in offline checks to improve static code quality.
 
@@ -433,7 +433,7 @@ auto main() -> int
 }
 ```
 
-Wide-integer also supports a small selection of number-theoretical
+wide-integer also supports a small selection of number-theoretical
 functions such as least and most significant bit,
 square root, $k^{th}$ root,
 power, power-modulus, greatest common denominator
@@ -624,10 +624,10 @@ I/O streaming can optionally be disabled with the compiler switch:
 The default setting is `WIDE_INTEGER_DISABLE_IOSTREAM` not set
 and I/O streaming operations are enabled.
 
-Conversion to `std::string` is supported with the specialized wide-integer, namespace-specific function
-`to_string`. This analagous to the standard library's `std::to_string` function,
+Conversion to `std::string` is supported with the namespace-specific function `to_string`.
+This is analogous to the standard library's `std::to_string` function,
 but implemented specifically for instances of `uintwide_t`.
-Wide-integer's local, namespace-specific `to_string`
+wide-integer's local, namespace-specific `to_string`
 function (and the inclusion of the necessary `<string>` header)
 are both deactivated with:
 
@@ -864,7 +864,7 @@ negative arguments in number theoretical functions.
 
   - Right shift by `n` bits via `operator>>(n)` performs a so-called _arithmetic_ right shift (ASHR). For signed integers having negative value, right-shift continually fills the sign bit with 1 while shifting right. The result is similar to signed division and closely mimics common compiler behavior for right-shift of negative-valued built-in signed `int`.
   - `sqrt` of `x` negative returns zero.
-  - `cbrt` of `x` nexative integer returns `-cbrt(-x)`.
+  - `cbrt` of `x` negative integer returns `-cbrt(-x)`.
   - $k^{th}$ root of `x` negative returns zero unless the cube root is being computed, in which case `-cbrt(-x)` is returned.
   - GCD and LCM of `a`, `b` signed convert both arguments to positive and negate the result for `a`, `b` having opposite signs.
   - Miller-Rabin primality testing treats negative integers as positive when testing for prime, thus extending the set of primes to negative integers.
