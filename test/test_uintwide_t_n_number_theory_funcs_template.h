@@ -1,5 +1,5 @@
 ﻿///////////////////////////////////////////////////////////////////////////////
-//  Copyright Christopher Kormanyos 2019 - 2025.
+//  Copyright Christopher Kormanyos 2019 - 2026.
 //  Distributed under the Boost Software License,
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -12,10 +12,10 @@
 
   #if defined(WIDE_INTEGER_NAMESPACE)
   template<const WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t MyWidth2,
-           typename MyLimbType = std::uint32_t>
+           typename MyLimbType = WIDE_INTEGER_NAMESPACE::math::wide_integer::uint_defaultlimb_t>
   #else
   template<const ::math::wide_integer::size_t MyWidth2,
-           typename MyLimbType = std::uint32_t>
+           typename MyLimbType = ::math::wide_integer::uint_defaultlimb_t>
   #endif
   class test_uintwide_t_n_number_theory_funcs_template : public test_uintwide_t_n_base
   {

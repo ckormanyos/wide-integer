@@ -1,5 +1,5 @@
 ﻿///////////////////////////////////////////////////////////////////////////////
-//  Copyright Christopher Kormanyos 2021 - 2025.
+//  Copyright Christopher Kormanyos 2021 - 2026.
 //  Distributed under the Boost Software License,
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -20,11 +20,11 @@
 
   #if defined(WIDE_INTEGER_NAMESPACE)
   template<const WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t MyDigits2,
-           typename MyLimbType = std::uint32_t,
+           typename MyLimbType = WIDE_INTEGER_NAMESPACE::math::wide_integer::uint_defaultlimb_t,
            typename AllocatorType = void>
   #else
   template<const ::math::wide_integer::size_t MyDigits2,
-           typename MyLimbType = std::uint32_t,
+           typename MyLimbType = ::math::wide_integer::uint_defaultlimb_t,
            typename AllocatorType = void>
   #endif
   class test_uintwide_t_n_binary_ops_template_signed : public test_uintwide_t_n_binary_ops_base // NOLINT(cppcoreguidelines-special-member-functions,hicpp-special-member-functions)
@@ -117,14 +117,30 @@
 
       std::atomic_flag test_lock = ATOMIC_FLAG_INIT;
 
+      my_gen().seed(util::util_pseudorandom_time_point_seed::value<typename random_generator_type::result_type>());
+      std::uniform_int_distribution<unsigned> dis(0U, 1U);
+
       my_concurrency::parallel_for
       (
         static_cast<std::size_t>(0U),
         size(),
-        [&test_lock, &result_is_ok, this](std::size_t i)
+        [&result_is_ok, this, &dis, &test_lock](std::size_t i)
         {
-          const boost_sint_type c_boost_signed = a_boost_signed[i] + b_boost_signed[i];
-          const local_sint_type c_local_signed = a_local_signed[i] + b_local_signed[i];
+          while(test_lock.test_and_set()) { ; }
+          const bool a_neg { (dis(my_gen()) != 0U) };
+          const bool b_neg { (dis(my_gen()) != 0U) };
+          test_lock.clear();
+
+          boost_sint_type a_boost_tmp = a_boost_signed[i];
+          local_sint_type a_local_tmp = a_local_signed[i];
+          boost_sint_type b_boost_tmp = b_boost_signed[i];
+          local_sint_type b_local_tmp = b_local_signed[i];
+
+          if(a_neg) { a_boost_tmp = -a_boost_tmp; a_local_tmp = -a_local_tmp; }
+          if(b_neg) { b_boost_tmp = -b_boost_tmp; b_local_tmp = -b_local_tmp; }
+
+          const boost_sint_type c_boost_signed = a_boost_tmp + b_boost_tmp;
+          const local_sint_type c_local_signed = a_local_tmp + b_local_tmp;
 
           const std::string str_boost_signed = hexlexical_cast(static_cast<boost_uint_type>(c_boost_signed));
           const std::string str_local_signed = hexlexical_cast(static_cast<local_uint_type>(c_local_signed));
@@ -144,14 +160,31 @@
 
       std::atomic_flag test_lock = ATOMIC_FLAG_INIT;
 
+      my_gen().seed(util::util_pseudorandom_time_point_seed::value<typename random_generator_type::result_type>());
+      std::uniform_int_distribution<unsigned> dis(0U, 1U);
+
       my_concurrency::parallel_for
       (
         static_cast<std::size_t>(0U),
         size(),
-        [&test_lock, &result_is_ok, this](std::size_t i)
+        [&result_is_ok, this, &dis, &test_lock](std::size_t i)
         {
-          const boost_sint_type c_boost_signed = a_boost_signed[i] - b_boost_signed[i];
-          const local_sint_type c_local_signed = a_local_signed[i] - b_local_signed[i];
+          while(test_lock.test_and_set()) { ; }
+          const bool a_neg { (dis(my_gen()) != 0U) };
+          const bool b_neg { (dis(my_gen()) != 0U) };
+          test_lock.clear();
+
+          boost_sint_type a_boost_tmp = a_boost_signed[i];
+          local_sint_type a_local_tmp = a_local_signed[i];
+          boost_sint_type b_boost_tmp = b_boost_signed[i];
+          local_sint_type b_local_tmp = b_local_signed[i];
+
+          if(a_neg) { a_boost_tmp = -a_boost_tmp; a_local_tmp = -a_local_tmp; }
+          if(b_neg) { b_boost_tmp = -b_boost_tmp; b_local_tmp = -b_local_tmp; }
+
+          const boost_sint_type c_boost_signed = a_boost_tmp - b_boost_tmp;
+          const local_sint_type c_local_signed = a_local_tmp - b_local_tmp;
+
 
           const std::string str_boost_signed = hexlexical_cast(static_cast<boost_uint_type>(c_boost_signed));
           const std::string str_local_signed = hexlexical_cast(static_cast<local_uint_type>(c_local_signed));
@@ -171,14 +204,30 @@
 
       std::atomic_flag test_lock = ATOMIC_FLAG_INIT;
 
+      my_gen().seed(util::util_pseudorandom_time_point_seed::value<typename random_generator_type::result_type>());
+      std::uniform_int_distribution<unsigned> dis(0U, 1U);
+
       my_concurrency::parallel_for
       (
         static_cast<std::size_t>(0U),
         size(),
-        [&test_lock, &result_is_ok, this](std::size_t i)
+        [&result_is_ok, this, &dis, &test_lock](std::size_t i)
         {
-          const boost_sint_type c_boost_signed = a_boost_signed[i] * b_boost_signed[i];
-          const local_sint_type c_local_signed = a_local_signed[i] * b_local_signed[i];
+          while(test_lock.test_and_set()) { ; }
+          const bool a_neg { (dis(my_gen()) != 0U) };
+          const bool b_neg { (dis(my_gen()) != 0U) };
+          test_lock.clear();
+
+          boost_sint_type a_boost_tmp = a_boost_signed[i];
+          local_sint_type a_local_tmp = a_local_signed[i];
+          boost_sint_type b_boost_tmp = b_boost_signed[i];
+          local_sint_type b_local_tmp = b_local_signed[i];
+
+          if(a_neg) { a_boost_tmp = -a_boost_tmp; a_local_tmp = -a_local_tmp; }
+          if(b_neg) { b_boost_tmp = -b_boost_tmp; b_local_tmp = -b_local_tmp; }
+
+          const boost_sint_type c_boost_signed = a_boost_tmp * b_boost_tmp;
+          const local_sint_type c_local_signed = a_local_tmp * b_local_tmp;
 
           const std::string str_boost_signed = hexlexical_cast(static_cast<boost_uint_type>(c_boost_signed));
           const std::string str_local_signed = hexlexical_cast(static_cast<local_uint_type>(c_local_signed));
@@ -198,14 +247,30 @@
 
       std::atomic_flag test_lock = ATOMIC_FLAG_INIT;
 
+      my_gen().seed(util::util_pseudorandom_time_point_seed::value<typename random_generator_type::result_type>());
+      std::uniform_int_distribution<unsigned> dis(0U, 1U);
+
       my_concurrency::parallel_for
       (
         static_cast<std::size_t>(0U),
         size(),
-        [&test_lock, &result_is_ok, this](std::size_t i)
+        [&result_is_ok, this, &dis, &test_lock](std::size_t i)
         {
-          const boost_sint_type c_boost_signed = a_boost_signed[i] / b_boost_signed[i];
-          const local_sint_type c_local_signed = a_local_signed[i] / b_local_signed[i];
+          while(test_lock.test_and_set()) { ; }
+          const bool a_neg { (dis(my_gen()) != 0U) };
+          const bool b_neg { (dis(my_gen()) != 0U) };
+          test_lock.clear();
+
+          boost_sint_type a_boost_tmp = a_boost_signed[i];
+          local_sint_type a_local_tmp = a_local_signed[i];
+          boost_sint_type b_boost_tmp = b_boost_signed[i];
+          local_sint_type b_local_tmp = b_local_signed[i];
+
+          if(a_neg) { a_boost_tmp = -a_boost_tmp; a_local_tmp = -a_local_tmp; }
+          if(b_neg) { b_boost_tmp = -b_boost_tmp; b_local_tmp = -b_local_tmp; }
+
+          const boost_sint_type c_boost_signed = a_boost_tmp / b_boost_tmp;
+          const local_sint_type c_local_signed = a_local_tmp / b_local_tmp;
 
           const std::string str_boost_signed = hexlexical_cast(static_cast<boost_uint_type>(c_boost_signed));
           const std::string str_local_signed = hexlexical_cast(static_cast<local_uint_type>(c_local_signed));
@@ -225,14 +290,30 @@
 
       std::atomic_flag test_lock = ATOMIC_FLAG_INIT;
 
+      my_gen().seed(util::util_pseudorandom_time_point_seed::value<typename random_generator_type::result_type>());
+      std::uniform_int_distribution<unsigned> dis(0U, 1U);
+
       my_concurrency::parallel_for
       (
         static_cast<std::size_t>(0U),
         size(),
-        [&test_lock, &result_is_ok, this](std::size_t i)
+        [&result_is_ok, this, &dis, &test_lock](std::size_t i)
         {
-          const boost_sint_type c_boost_signed = a_boost_signed[i] % b_boost_signed[i];
-          const local_sint_type c_local_signed = a_local_signed[i] % b_local_signed[i];
+          while(test_lock.test_and_set()) { ; }
+          const bool a_neg { (dis(my_gen()) != 0U) };
+          const bool b_neg { (dis(my_gen()) != 0U) };
+          test_lock.clear();
+
+          boost_sint_type a_boost_tmp = a_boost_signed[i];
+          local_sint_type a_local_tmp = a_local_signed[i];
+          boost_sint_type b_boost_tmp = b_boost_signed[i];
+          local_sint_type b_local_tmp = b_local_signed[i];
+
+          if(a_neg) { a_boost_tmp = -a_boost_tmp; a_local_tmp = -a_local_tmp; }
+          if(b_neg) { b_boost_tmp = -b_boost_tmp; b_local_tmp = -b_local_tmp; }
+
+          const boost_sint_type c_boost_signed = a_boost_tmp % b_boost_tmp;
+          const local_sint_type c_local_signed = a_local_tmp % b_local_tmp;
 
           const std::string str_boost_signed = hexlexical_cast(static_cast<boost_uint_type>(c_boost_signed));
           const std::string str_local_signed = hexlexical_cast(static_cast<local_uint_type>(c_local_signed));

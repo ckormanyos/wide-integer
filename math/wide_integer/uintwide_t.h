@@ -2060,15 +2060,8 @@
         Width2 / static_cast<size_t>(std::numeric_limits<limb_type>::digits)
       );
 
-    static constexpr size_t number_of_limbs_karatsuba_threshold =
-      static_cast<size_t>
-      (
-        static_cast<unsigned>
-        (
-            static_cast<unsigned>(UINT8_C(128))
-          + static_cast<unsigned>(UINT8_C(1))
-        )
-      );
+    static constexpr size_t number_of_limbs_karatsuba_threshold { static_cast<size_t>(128U) };
+    static constexpr size_t number_of_limbs_schoolbook_fallback { static_cast<size_t>(24U) };
 
     // Verify that the Width2 template parameter (mirrored with my_width2):
     //   * Is equal to 2^n times 1...63.
@@ -4702,7 +4695,8 @@
                                          const unsigned_fast_type n,
                                                InputIteratorTemp  t) -> void
     {
-      if(n <= static_cast<unsigned_fast_type>(UINT32_C(48)))
+      // Small-size fallback: use schoolbook full 2n multiplication.
+      if(n <= static_cast<unsigned_fast_type>(number_of_limbs_schoolbook_fallback))
       {
         static_cast<void>(t);
 
@@ -4710,6 +4704,7 @@
       }
       else
       {
+        // Sanity: types must have equal limb widths.
         static_assert
         (
              (std::numeric_limits<typename detail::iterator_detail::iterator_traits<ResultIterator>::value_type>::digits == std::numeric_limits<typename detail::iterator_detail::iterator_traits<InputIteratorLeft>::value_type>::digits)
@@ -4717,8 +4712,6 @@
           && (std::numeric_limits<typename detail::iterator_detail::iterator_traits<ResultIterator>::value_type>::digits == std::numeric_limits<typename detail::iterator_detail::iterator_traits<InputIteratorTemp>::value_type>::digits),
           "Error: Internals require same widths for left-right-result limb_types at the moment"
         );
-
-        using local_limb_type = typename detail::iterator_detail::iterator_traits<ResultIterator>::value_type;
 
         using result_difference_type = typename detail::iterator_detail::iterator_traits<ResultIterator>::difference_type;
         using left_difference_type   = typename detail::iterator_detail::iterator_traits<InputIteratorLeft>::difference_type;
@@ -4760,40 +4753,54 @@
 
         const auto nh = static_cast<unsigned_fast_type>(n / 2U);
 
+        // Input halves.
         const InputIteratorLeft   a0 = detail::advance_and_point(a, static_cast<left_difference_type>(0));
         const InputIteratorLeft   a1 = detail::advance_and_point(a, static_cast<left_difference_type>(nh));
 
         const InputIteratorRight  b0 = detail::advance_and_point(b, static_cast<right_difference_type>(0));
         const InputIteratorRight  b1 = detail::advance_and_point(b, static_cast<right_difference_type>(nh));
 
-              ResultIterator      r0 = detail::advance_and_point(r, static_cast<result_difference_type>(0));
-              ResultIterator      r1 = detail::advance_and_point(r, static_cast<result_difference_type>(nh));
-              ResultIterator      r2 = detail::advance_and_point(r, static_cast<result_difference_type>(n));
-              ResultIterator      r3 = detail::advance_and_point(r, static_cast<result_difference_type>(static_cast<result_difference_type>(n) + static_cast<result_difference_type>(nh)));
+        // Result partitions:
+        // r0 -> r[0 .. 2*nh-1]       (low)
+        // r1 -> r[nh .. nh + n - 1]  (middle overlap region)
+        // r2 -> r[n .. 2*n - 1]      (high)
+        // r3 -> r[n + nh .. 2*n - 1] (upper carry area)
+        ResultIterator      r0 = detail::advance_and_point(r, static_cast<result_difference_type>(0));
+        ResultIterator      r1 = detail::advance_and_point(r, static_cast<result_difference_type>(nh));
+        ResultIterator      r2 = detail::advance_and_point(r, static_cast<result_difference_type>(n));
+        ResultIterator      r3 = detail::advance_and_point(r, static_cast<result_difference_type>(static_cast<result_difference_type>(n) + static_cast<result_difference_type>(nh)));
 
-              InputIteratorTemp   t0 = detail::advance_and_point(t, static_cast<temp_difference_type>(0));
-              InputIteratorTemp   t1 = detail::advance_and_point(t, static_cast<temp_difference_type>(nh));
-              InputIteratorTemp   t2 = detail::advance_and_point(t, static_cast<temp_difference_type>(n));
-              InputIteratorTemp   t4 = detail::advance_and_point(t, static_cast<temp_difference_type>(static_cast<result_difference_type>(n) + static_cast<result_difference_type>(n)));
+        // Temporary layout inside t:
+        // t0 -> t[0 .. nh-1]         (temp for |a1-a0|)
+        // t1 -> t[nh .. 2*nh-1]      (temp for |b0-b1|)
+        // t2 -> t[n .. n + 2*nh - 1] (temp area for copies/products)
+        // t4 -> t[2*n .. ...]        (workspace for deeper recursion)
+        InputIteratorTemp   t0 = detail::advance_and_point(t, static_cast<temp_difference_type>(0));
+        InputIteratorTemp   t1 = detail::advance_and_point(t, static_cast<temp_difference_type>(nh));
+        InputIteratorTemp   t2 = detail::advance_and_point(t, static_cast<temp_difference_type>(n));
+        InputIteratorTemp   t4 = detail::advance_and_point(t, static_cast<temp_difference_type>(static_cast<result_difference_type>(n) + static_cast<result_difference_type>(n)));
 
-        // Step 1
-        //   a1*b1 -> r2
-        //   a0*b0 -> r0
-        //   r -> t0
+        // Step 1: compute a1*b1 -> r2 and a0*b0 -> r0 (full 2*nh each).
         eval_multiply_kara_n_by_n_to_2n(r2, a1, b1, nh, t0);
         eval_multiply_kara_n_by_n_to_2n(r0, a0, b0, nh, t0);
-        detail::copy_unsafe(r0, detail::advance_and_point(r0, static_cast<result_difference_type>(static_cast<result_difference_type>(n) * static_cast<result_difference_type>(2U))), t0);
 
-        // Step 2
-        //   r1 -> r1 + a1*b1
-        //   r1 -> r1 + a0*b0
-        auto carry = static_cast<local_limb_type>(eval_add_n(r1, r1, t2, n));
-        eval_multiply_kara_propagate_carry(r3, nh, carry);
-        carry = static_cast<local_limb_type>(eval_add_n(r1, r1, t0, n));
-        eval_multiply_kara_propagate_carry(r3, nh, carry);
+        // Keep a copy of a0*b0 (2*nh limbs) in t2 for use in middle accumulation.
+        detail::copy_unsafe(r0, detail::advance_and_point(r0, static_cast<result_difference_type>(static_cast<result_difference_type>(nh) * static_cast<result_difference_type>(2U))), t2);
 
-        // Step 3
-        //   |a1-a0| -> t0
+        // Step 2: r1 += a1*b1 (upper), then r1 += a0*b0 (lower)
+        {
+          // Add a1*b1 into r1 (n limbs).
+          const auto carry1 = eval_add_n(r1, r1, r2, n);
+          eval_multiply_kara_propagate_carry(r3, nh, static_cast<typename detail::iterator_detail::iterator_traits<ResultIterator>::value_type>(carry1));
+        }
+
+        {
+          // Add a0*b0 copy (in t2) into r1 (n limbs).
+          const auto carry2 = eval_add_n(r1, r1, t2, n);
+          eval_multiply_kara_propagate_carry(r3, nh, static_cast<typename detail::iterator_detail::iterator_traits<ResultIterator>::value_type>(carry2));
+        }
+
+        // Step 3: compute |a1 - a0| -> t0, note sign.
         const auto cmp_result_a1a0 = compare_ranges(a1, a0, nh);
 
         if(cmp_result_a1a0 == static_cast<std::int_fast8_t>(INT8_C(1)))
@@ -4804,9 +4811,13 @@
         {
           static_cast<void>(eval_subtract_n(t0, a0, a1, nh));
         }
+        else
+        {
+          // Handle zero difference, TODO test case(s).
+          detail::fill_unsafe(t0, detail::advance_and_point(t0, static_cast<temp_difference_type>(nh)), static_cast<typename detail::iterator_detail::iterator_traits<InputIteratorTemp>::value_type>(UINT8_C(0)));
+        }
 
-        // Step 4
-        //   |b0-b1| -> t1
+        // Step 4: compute |b0 - b1| -> t1, note sign.
         const auto cmp_result_b0b1 = compare_ranges(b0, b1, nh);
 
         if(cmp_result_b0b1 == static_cast<std::int_fast8_t>(INT8_C(1)))
@@ -4817,26 +4828,30 @@
         {
           static_cast<void>(eval_subtract_n(t1, b1, b0, nh));
         }
+        else
+        {
+          // Handle zero difference, TODO test case(s).
+          detail::fill_unsafe(t1, detail::advance_and_point(t1, static_cast<temp_difference_type>(nh)), static_cast<typename detail::iterator_detail::iterator_traits<InputIteratorTemp>::value_type>(UINT8_C(0)));
+        }
 
-        // Step 5
-        //   |a1-a0|*|b0-b1| -> t2
+        // Step 5: compute t2 = |a1-a0| * |b0-b1| (2*nh limbs) using karatsuba recursively.
         eval_multiply_kara_n_by_n_to_2n(t2, t0, t1, nh, t4);
 
-        // Step 6
-        //   either r1 += |a1-a0|*|b0-b1|
-        //   or     r1 -= |a1-a0|*|b0-b1|
-        if(static_cast<std::int_fast8_t>(cmp_result_a1a0 * cmp_result_b0b1) == static_cast<std::int_fast8_t>(INT8_C(1)))
-        {
-          carry = eval_add_n(r1, r1, t2, n);
+        // Step 6: add or subtract t2 into r1 depending on sign.
+        const auto sign_prod = static_cast<std::int_fast8_t>(cmp_result_a1a0 * cmp_result_b0b1);
 
-          eval_multiply_kara_propagate_carry(r3, nh, carry);
+        if(sign_prod == static_cast<std::int_fast8_t>(INT8_C(1)))
+        {
+          const auto carry3 = eval_add_n(r1, r1, t2, n);
+          eval_multiply_kara_propagate_carry(r3, nh, static_cast<typename detail::iterator_detail::iterator_traits<ResultIterator>::value_type>(carry3));
         }
-        else if(static_cast<std::int_fast8_t>(cmp_result_a1a0 * cmp_result_b0b1) == static_cast<std::int_fast8_t>(INT8_C(-1)))
+        else if(sign_prod == static_cast<std::int_fast8_t>(INT8_C(-1)))
         {
           const auto has_borrow = eval_subtract_n(r1, r1, t2, n);
-
-          eval_multiply_kara_propagate_borrow(r3, nh, has_borrow);
+          eval_multiply_kara_propagate_borrow(r3, nh, static_cast<bool>(has_borrow));
         }
+
+        // Result r (2*n limbs) is now populated: low part in r0, middle corrected in r1, high in r2.
       }
     }
 
