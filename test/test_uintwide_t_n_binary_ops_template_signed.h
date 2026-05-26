@@ -118,7 +118,7 @@
       std::atomic_flag test_lock = ATOMIC_FLAG_INIT;
 
       my_gen().seed(util::util_pseudorandom_time_point_seed::value<typename random_generator_type::result_type>());
-      std::uniform_int_distribution dis(0U, 1U);
+      std::uniform_int_distribution<unsigned> dis(0U, 1U);
 
       my_concurrency::parallel_for
       (
@@ -161,7 +161,7 @@
       std::atomic_flag test_lock = ATOMIC_FLAG_INIT;
 
       my_gen().seed(util::util_pseudorandom_time_point_seed::value<typename random_generator_type::result_type>());
-      std::uniform_int_distribution dis(0U, 1U);
+      std::uniform_int_distribution<unsigned> dis(0U, 1U);
 
       my_concurrency::parallel_for
       (
@@ -205,7 +205,7 @@
       std::atomic_flag test_lock = ATOMIC_FLAG_INIT;
 
       my_gen().seed(util::util_pseudorandom_time_point_seed::value<typename random_generator_type::result_type>());
-      std::uniform_int_distribution dis(0U, 1U);
+      std::uniform_int_distribution<unsigned> dis(0U, 1U);
 
       my_concurrency::parallel_for
       (
@@ -248,7 +248,7 @@
       std::atomic_flag test_lock = ATOMIC_FLAG_INIT;
 
       my_gen().seed(util::util_pseudorandom_time_point_seed::value<typename random_generator_type::result_type>());
-      std::uniform_int_distribution dis(0U, 1U);
+      std::uniform_int_distribution<unsigned> dis(0U, 1U);
 
       my_concurrency::parallel_for
       (
@@ -291,7 +291,7 @@
       std::atomic_flag test_lock = ATOMIC_FLAG_INIT;
 
       my_gen().seed(util::util_pseudorandom_time_point_seed::value<typename random_generator_type::result_type>());
-      std::uniform_int_distribution dis(0U, 1U);
+      std::uniform_int_distribution<unsigned> dis(0U, 1U);
 
       my_concurrency::parallel_for
       (
