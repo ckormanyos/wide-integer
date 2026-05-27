@@ -4813,7 +4813,7 @@
         }
         else
         {
-          // Handle zero difference, TODO test case(s).
+          // Handle zero difference.
           detail::fill_unsafe(t0, detail::advance_and_point(t0, static_cast<temp_difference_type>(nh)), static_cast<typename detail::iterator_detail::iterator_traits<InputIteratorTemp>::value_type>(UINT8_C(0)));
         }
 
@@ -4830,7 +4830,7 @@
         }
         else
         {
-          // Handle zero difference, TODO test case(s).
+          // Handle zero difference.
           detail::fill_unsafe(t1, detail::advance_and_point(t1, static_cast<temp_difference_type>(nh)), static_cast<typename detail::iterator_detail::iterator_traits<InputIteratorTemp>::value_type>(UINT8_C(0)));
         }
 

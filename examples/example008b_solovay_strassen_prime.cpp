@@ -33,6 +33,8 @@ namespace local_solovay_strassen {
 
 namespace detail {
 
+constexpr int number_of_trials { 56 };
+
 template<typename UnsignedIntegerType>
 auto jacobi(UnsignedIntegerType a, UnsignedIntegerType n) -> int;
 
@@ -87,6 +89,8 @@ auto jacobi(UnsignedIntegerType a, UnsignedIntegerType n) -> int
 }
 
 } // namespace detail
+
+using detail::number_of_trials;
 
 template<typename UnsignedIntegerType,
          typename DistributionType,
@@ -278,8 +282,6 @@ namespace local_example008b_solovay_strassen_prime
 
     distribution_type dist2 { wide_integer_type { 2U }, (std::numeric_limits<wide_integer_type>::max)() };
 
-    constexpr int number_of_trials { 25 }; // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
-
     bool result_edge_is_ok { true };
 
     for(const auto& edge_case : edge_cases)
@@ -288,7 +290,7 @@ namespace local_example008b_solovay_strassen_prime
         local_solovay_strassen::solovay_strassen
         (
           edge_case.first,
-          number_of_trials,
+          local_solovay_strassen::number_of_trials,
           dist2,
           generator2
         );
@@ -348,8 +350,6 @@ namespace local_example008b_solovay_strassen_prime
       using local_unsigned_fast_type = ::math::wide_integer::unsigned_fast_type;
       #endif
 
-      constexpr local_unsigned_fast_type number_of_trials { UINT8_C(56) };
-
       const wide_integer_type p0 { dist1(generator1) };
 
       distribution_type dist2 { wide_integer_type { 2U }, p0 - 1 };
@@ -358,7 +358,7 @@ namespace local_example008b_solovay_strassen_prime
         local_solovay_strassen::solovay_strassen
         (
           p0,
-          number_of_trials,
+          local_solovay_strassen::number_of_trials,
           dist2,
           generator2
         );
