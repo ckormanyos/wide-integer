@@ -344,12 +344,6 @@ namespace local_example008b_solovay_strassen_prime
       // Each one should detect prime/non-prime with the same Boolean result
       // for a given prime candidate p0.
 
-      #if defined(WIDE_INTEGER_NAMESPACE)
-      using local_unsigned_fast_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::unsigned_fast_type;
-      #else
-      using local_unsigned_fast_type = ::math::wide_integer::unsigned_fast_type;
-      #endif
-
       const wide_integer_type p0 { dist1(generator1) };
 
       distribution_type dist2 { wide_integer_type { 2U }, p0 - 1 };

@@ -2854,12 +2854,12 @@ namespace karatsuba_squaring
       #if defined(WIDE_INTEGER_NAMESPACE)
       using local_limb_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::uint_defaultlimb_t;
       using local_size_t = WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t;
+      using wi_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<static_cast<local_size_t>(65536U), local_limb_type, std::allocator<local_limb_type>>;
       #else
       using local_limb_type = ::math::wide_integer::uint_defaultlimb_t;
       using local_size_t = ::math::wide_integer::size_t;
+      using wi_type = ::math::wide_integer::uintwide_t<static_cast<local_size_t>(65536U), local_limb_type, std::allocator<local_limb_type>>;
       #endif
-
-      using wi_type = math::wide_integer::uintwide_t<static_cast<local_size_t>(65536U), local_limb_type, std::allocator<local_limb_type>>;
 
       wi_type a_wi { };
       wi_type b_wi { };
