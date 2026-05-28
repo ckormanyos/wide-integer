@@ -2841,6 +2841,86 @@ namespace from_pr_454
   }
 } // namespace from_pr_454
 
+namespace karatsuba_squaring
+{
+  namespace detail
+  {
+    auto test_one_large(char chr_hex_digit) -> bool;
+
+    auto test_one_large(char chr_hex_digit) -> bool
+    {
+      std::string str_hex_digits(static_cast<std::size_t>(512U * 16U), chr_hex_digit); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
+
+      #if defined(WIDE_INTEGER_NAMESPACE)
+      using local_limb_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::uint_defaultlimb_t;
+      using local_size_t = WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t;
+      using wi_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<static_cast<local_size_t>(UINT32_C(65536)), local_limb_type, std::allocator<local_limb_type>>;
+      #else
+      using local_limb_type = ::math::wide_integer::uint_defaultlimb_t;
+      using local_size_t = ::math::wide_integer::size_t;
+      using wi_type = ::math::wide_integer::uintwide_t<static_cast<local_size_t>(UINT32_C(65536)), local_limb_type, std::allocator<local_limb_type>>;
+      #endif
+
+      wi_type a_wi { std::string("0x" + str_hex_digits).c_str() };
+      wi_type b_wi { std::string("0x" + str_hex_digits).c_str() };
+
+      const wi_type c_wi { a_wi * b_wi };
+
+      const boost::multiprecision::cpp_int a_cp { "0x" + str_hex_digits };
+      const boost::multiprecision::cpp_int b_cp { "0x" + str_hex_digits };
+
+      const boost::multiprecision::cpp_int c_cp { a_cp * b_cp };
+
+      std::stringstream strm_wi { };
+      std::stringstream strm_cp { };
+
+      strm_wi << std::hex << c_wi;
+      strm_cp << std::hex << c_cp;
+
+      const std::string str_wi { strm_wi.str() };
+      const std::string str_cp { strm_cp.str() };
+
+      const bool result_is_ok { (str_wi == str_cp) };
+
+      return result_is_ok;
+    }
+
+    auto test_hex_chars_all() -> bool;
+
+    auto test_hex_chars_all() -> bool
+    {
+      const bool
+        result_is_ok
+        {
+             test_one_large('1')
+          && test_one_large('2')
+          && test_one_large('3')
+          && test_one_large('4')
+          && test_one_large('5')
+          && test_one_large('6')
+          && test_one_large('7')
+          && test_one_large('8')
+          && test_one_large('9')
+          && test_one_large('a')
+          && test_one_large('b')
+          && test_one_large('c')
+          && test_one_large('d')
+          && test_one_large('e')
+          && test_one_large('f')
+        };
+
+      return result_is_ok;
+    }
+  } // namespace detail
+
+  auto test_kara_squaring() -> bool;
+
+  auto test_kara_squaring() -> bool // LCOV_EXCL_LINE
+  {
+    return detail::test_hex_chars_all();
+  }
+} // namespace karatsuba_squaring
+
 } // namespace test_uintwide_t_edge
 
 // LCOV_EXCL_START
@@ -2870,6 +2950,7 @@ auto ::math::wide_integer::test_uintwide_t_edge_cases() -> bool
   result_is_ok = (test_uintwide_t_edge::test_export_bits                             () && result_is_ok);
   result_is_ok = (test_uintwide_t_edge::test_edge_uintwide_t_backend                 () && result_is_ok);
   result_is_ok = (test_uintwide_t_edge::from_pr_454::test_proj_specific_containers   () && result_is_ok);
+  result_is_ok = (test_uintwide_t_edge::karatsuba_squaring::test_kara_squaring       () && result_is_ok);
 
   return result_is_ok;
 }
