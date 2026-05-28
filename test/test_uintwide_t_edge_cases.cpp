@@ -2915,7 +2915,7 @@ namespace karatsuba_squaring
 
   auto test_kara_squaring() -> bool;
 
-  auto test_kara_squaring() -> bool
+  auto test_kara_squaring() -> bool // LCOV_EXCL_LINE
   {
     return detail::test_hex_chars_all();
   }
