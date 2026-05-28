@@ -2845,27 +2845,24 @@ namespace karatsuba_squaring
 {
   namespace detail
   {
-    auto test_one_large(const char chr_hex_digit) -> bool;
+    auto test_one_large(char chr_hex_digit) -> bool;
 
-    auto test_one_large(const char chr_hex_digit) -> bool
+    auto test_one_large(char chr_hex_digit) -> bool
     {
-      std::string str_hex_digits(std::size_t { 512U * 16U }, chr_hex_digit);
+      std::string str_hex_digits(static_cast<std::size_t>(512U * 16U), chr_hex_digit); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
 
       #if defined(WIDE_INTEGER_NAMESPACE)
       using local_limb_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::uint_defaultlimb_t;
       using local_size_t = WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t;
-      using wi_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<static_cast<local_size_t>(65536U), local_limb_type, std::allocator<local_limb_type>>;
+      using wi_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<static_cast<local_size_t>(UINT32_C(65536)), local_limb_type, std::allocator<local_limb_type>>;
       #else
       using local_limb_type = ::math::wide_integer::uint_defaultlimb_t;
       using local_size_t = ::math::wide_integer::size_t;
-      using wi_type = ::math::wide_integer::uintwide_t<static_cast<local_size_t>(65536U), local_limb_type, std::allocator<local_limb_type>>;
+      using wi_type = ::math::wide_integer::uintwide_t<static_cast<local_size_t>(UINT32_C(65536)), local_limb_type, std::allocator<local_limb_type>>;
       #endif
 
-      wi_type a_wi { };
-      wi_type b_wi { };
-
-      static_cast<void>(from_chars(str_hex_digits.data(), str_hex_digits.data() + str_hex_digits.size(), a_wi, 16));
-      static_cast<void>(from_chars(str_hex_digits.data(), str_hex_digits.data() + str_hex_digits.size(), b_wi, 16));
+      wi_type a_wi { std::string("0x" + str_hex_digits).c_str() };
+      wi_type b_wi { std::string("0x" + str_hex_digits).c_str() };
 
       const wi_type c_wi { a_wi * b_wi };
 
