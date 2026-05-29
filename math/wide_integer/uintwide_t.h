@@ -812,19 +812,22 @@
     // Move assignment operator.
     constexpr auto operator=(dynamic_array&& other) noexcept -> dynamic_array&
     {
-      if(!empty())
+      if(this != &other)
       {
-        using local_allocator_traits_type = std::allocator_traits<allocator_type>;
+        if(!empty())
+        {
+          using local_allocator_traits_type = std::allocator_traits<allocator_type>;
 
-        // Deallocate the range of *this.
-        local_allocator_traits_type::deallocate(my_alloc, elems, elem_count);
+          // Deallocate the range of *this.
+          local_allocator_traits_type::deallocate(my_alloc, elems, elem_count);
+        }
+
+        elem_count = other.elem_count;
+        elems      = other.elems;
+
+        other.elem_count = static_cast<size_type>(UINT8_C(0));
+        other.elems      = nullptr;
       }
-
-      elem_count = other.elem_count;
-      elems      = other.elems;
-
-      other.elem_count = static_cast<size_type>(UINT8_C(0));
-      other.elems      = nullptr;
 
       return *this;
     }
