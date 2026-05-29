@@ -55,13 +55,15 @@
 auto main() -> int
 {
   #if defined(WIDE_INTEGER_NAMESPACE)
+  using local_limb_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::uint_defaultlimb_t;
   using local_size_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t;
   #else
+  using local_limb_type = ::math::wide_integer::uint_defaultlimb_t;
   using local_size_type = ::math::wide_integer::size_t;
   #endif
 
   using local_big_uint_backend_type =
-    ::boost::multiprecision::uintwide_t_backend<local_size_type { UINT32_C(1024) }, std::uint32_t, std::allocator<void>>;
+    ::boost::multiprecision::uintwide_t_backend<local_size_type { UINT32_C(1024) }, local_limb_type, std::allocator<local_limb_type>>;
 
   using local_big_uint_type = ::boost::multiprecision::number<local_big_uint_backend_type, boost::multiprecision::et_off>;
 

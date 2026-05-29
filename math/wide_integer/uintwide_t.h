@@ -682,6 +682,8 @@
     using const_reverse_iterator =       ::math::wide_integer::detail::iterator_detail::reverse_iterator<const value_type*>;
     #endif
 
+    static_assert(std::is_integral<value_type>::value, "Error: the value_type of dynamic_array must be a built-in integral");
+
     // Constructors.
     constexpr dynamic_array() = delete;
 
@@ -710,18 +712,18 @@
     constexpr dynamic_array(const dynamic_array& other)
       : elem_count(other.size())
     {
-      allocator_type my_alloc;
-
       if(elem_count > static_cast<size_type>(UINT8_C(0)))
       {
-        elems = std::allocator_traits<allocator_type>::allocate(my_alloc, elem_count);
-      }
+        allocator_type my_alloc;
 
-      #if defined(WIDE_INTEGER_NAMESPACE)
-      WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::copy_unsafe(other.elems, other.elems + elem_count, elems);
-      #else
-      ::math::wide_integer::detail::copy_unsafe(other.elems, other.elems + elem_count, elems);
-      #endif
+        elems = std::allocator_traits<allocator_type>::allocate(my_alloc, elem_count);
+
+        #if defined(WIDE_INTEGER_NAMESPACE)
+        WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::copy_unsafe(other.elems, other.elems + elem_count, elems);
+        #else
+        ::math::wide_integer::detail::copy_unsafe(other.elems, other.elems + elem_count, elems);
+        #endif
+      }
     }
 
     template<typename input_iterator>
@@ -730,37 +732,36 @@
                             const allocator_type& alloc_in = allocator_type())
       : elem_count(static_cast<size_type>(last - first))
     {
-      allocator_type my_alloc(alloc_in);
-
       if(elem_count > static_cast<size_type>(UINT8_C(0)))
       {
+        allocator_type my_alloc(alloc_in);
+
         elems = std::allocator_traits<allocator_type>::allocate(my_alloc, elem_count);
+
+        #if defined(WIDE_INTEGER_NAMESPACE)
+        WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::copy_unsafe(first, last, elems);
+        #else
+        ::math::wide_integer::detail::copy_unsafe(first, last, elems);
+        #endif
       }
-
-      #if defined(WIDE_INTEGER_NAMESPACE)
-      WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::copy_unsafe(first, last, elems);
-      #else
-      ::math::wide_integer::detail::copy_unsafe(first, last, elems);
-      #endif
-
     }
 
     constexpr dynamic_array(std::initializer_list<value_type> lst,
                             const allocator_type& alloc_in = allocator_type())
       : elem_count(lst.size())
     {
-      allocator_type my_alloc(alloc_in);
-
       if(elem_count > static_cast<size_type>(UINT8_C(0)))
       {
-        elems = std::allocator_traits<allocator_type>::allocate(my_alloc, elem_count);
-      }
+        allocator_type my_alloc(alloc_in);
 
-      #if defined(WIDE_INTEGER_NAMESPACE)
-      WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::copy_unsafe(lst.begin(), lst.end(), elems);
-      #else
-      ::math::wide_integer::detail::copy_unsafe(lst.begin(), lst.end(), elems);
-      #endif
+        elems = std::allocator_traits<allocator_type>::allocate(my_alloc, elem_count);
+
+        #if defined(WIDE_INTEGER_NAMESPACE)
+        WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::copy_unsafe(lst.begin(), lst.end(), elems);
+        #else
+        ::math::wide_integer::detail::copy_unsafe(lst.begin(), lst.end(), elems);
+        #endif
+      }
     }
 
     // Move constructor.
@@ -779,19 +780,13 @@
       {
         using local_allocator_traits_type = std::allocator_traits<allocator_type>;
 
-        allocator_type my_alloc;
+        allocator_type my_alloc { };
 
-        auto p = begin(); // NOLINT(llvm-qualified-auto,readability-qualified-auto)
-
-        while(p != end())
-        {
-          local_allocator_traits_type::destroy(my_alloc, p);
-
-          ++p;
-        }
-
-        // Destroy the elements and deallocate the range.
+        // Deallocate the range of *this.
         local_allocator_traits_type::deallocate(my_alloc, elems, elem_count);
+
+        elem_count = static_cast<size_type>(UINT8_C(0));
+        elems      = nullptr;
       }
     }
 
@@ -825,13 +820,21 @@
     // Move assignment operator.
     constexpr auto operator=(dynamic_array&& other) noexcept -> dynamic_array&
     {
-      #if defined(WIDE_INTEGER_NAMESPACE)
-      WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::swap_unsafe(elem_count, other.elem_count);
-      WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::swap_unsafe(elems,      other.elems);
-      #else
-      ::math::wide_integer::detail::swap_unsafe(elem_count, other.elem_count);
-      ::math::wide_integer::detail::swap_unsafe(elems,      other.elems);
-      #endif
+      if(!empty())
+      {
+        using local_allocator_traits_type = std::allocator_traits<allocator_type>;
+
+        allocator_type my_alloc { };
+
+        // Deallocate the range of *this.
+        local_allocator_traits_type::deallocate(my_alloc, elems, elem_count);
+      }
+
+      elem_count = other.elem_count;
+      elems      = other.elems;
+
+      other.elem_count = static_cast<size_type>(UINT8_C(0));
+      other.elems      = nullptr;
 
       return *this;
     }
@@ -1611,35 +1614,26 @@
     explicit constexpr fixed_dynamic_array(const typename base_class_type::size_type       size_in  = MySize,
                                            const typename base_class_type::value_type&     value_in = typename base_class_type::value_type(),
                                            const typename base_class_type::allocator_type& alloc_in = typename base_class_type::allocator_type())
-      : base_class_type(MySize, typename base_class_type::value_type(), alloc_in)
+      : base_class_type(MySize, value_in, alloc_in)
     {
-      detail::fill_unsafe(base_class_type::begin(),
-                          base_class_type::begin() + (detail::min_unsafe)(MySize, static_cast<typename base_class_type::size_type>(size_in)),
-                          value_in);
+      static_cast<void>(size_in);
     }
 
-    constexpr fixed_dynamic_array(const fixed_dynamic_array& other_array) = default;
+    constexpr fixed_dynamic_array(const fixed_dynamic_array&) = default;
 
-    constexpr fixed_dynamic_array(fixed_dynamic_array&& other_array) noexcept = default;
+    constexpr fixed_dynamic_array(fixed_dynamic_array&&) noexcept = default;
 
     constexpr fixed_dynamic_array(std::initializer_list<typename base_class_type::value_type> lst)
-      : base_class_type(MySize)
-    {
-      detail::copy_unsafe(lst.begin(),
-                          lst.begin() + (detail::min_unsafe)(static_cast<typename base_class_type::size_type>(lst.size()), MySize),
-                          base_class_type::begin());
-    }
+      : base_class_type(lst.begin(),
+                        lst.begin() + (detail::min_unsafe)(static_cast<typename base_class_type::size_type>(lst.size()), MySize)) { }
 
-    constexpr auto operator=(const fixed_dynamic_array& other_array) -> fixed_dynamic_array& = default;
+    //constexpt
+    ~fixed_dynamic_array() override = default;
 
-    constexpr auto operator=(fixed_dynamic_array&& other_array) noexcept -> fixed_dynamic_array& = default;
+    constexpr auto operator=(const fixed_dynamic_array&) -> fixed_dynamic_array& = default;
+
+    constexpr auto operator=(fixed_dynamic_array&&) noexcept -> fixed_dynamic_array& = default;
   };
-
-  struct allocator_dummy_unsafe
-  {
-    constexpr allocator_dummy_unsafe() = default;
-  };
-
 
   template<typename MyType,
            const size_t MySize>
@@ -1647,6 +1641,11 @@
   {
   private:
     using base_class_type = detail::array_detail::array<MyType, static_cast<std::size_t>(MySize)>;
+
+    struct allocator_dummy_unsafe
+    {
+      constexpr allocator_dummy_unsafe() = default;
+    };
 
   public:
     using size_type      = size_t;
@@ -5531,55 +5530,29 @@
 
   // Define some convenient unsigned wide integer types.
   using uint64_t    = uintwide_t<static_cast<size_t>(UINT32_C(   64)), std::uint32_t>;
-  using  int64_t    = uintwide_t<static_cast<size_t>(UINT32_C(   64)), std::uint16_t, void, true>;
-  #if defined(WIDE_INTEGER_HAS_LIMB_TYPE_UINT64)
-  using uint128_t   = uintwide_t<static_cast<size_t>(UINT32_C(  128)), std::uint64_t>;
-  using uint256_t   = uintwide_t<static_cast<size_t>(UINT32_C(  256)), std::uint64_t>;
-  using uint512_t   = uintwide_t<static_cast<size_t>(UINT32_C(  512)), std::uint64_t>;
-  using uint1024_t  = uintwide_t<static_cast<size_t>(UINT32_C( 1024)), std::uint64_t>;
-  using uint2048_t  = uintwide_t<static_cast<size_t>(UINT32_C( 2048)), std::uint64_t>;
-  using uint4096_t  = uintwide_t<static_cast<size_t>(UINT32_C( 4096)), std::uint64_t>;
-  using uint8192_t  = uintwide_t<static_cast<size_t>(UINT32_C( 8192)), std::uint64_t>;
-  using uint16384_t = uintwide_t<static_cast<size_t>(UINT32_C(16384)), std::uint64_t>;
-  using uint32768_t = uintwide_t<static_cast<size_t>(UINT32_C(32768)), std::uint64_t>;
-  using uint65536_t = uintwide_t<static_cast<size_t>(UINT32_C(65536)), std::uint64_t>;
+  using  int64_t    = uintwide_t<static_cast<size_t>(UINT32_C(   64)), std::uint32_t, void, true>;
 
-  using  int128_t   = uintwide_t<static_cast<size_t>(UINT32_C(  128)), std::uint64_t, void, true>;
-  using  int256_t   = uintwide_t<static_cast<size_t>(UINT32_C(  256)), std::uint64_t, void, true>;
-  using  int512_t   = uintwide_t<static_cast<size_t>(UINT32_C(  512)), std::uint64_t, void, true>;
-  using  int1024_t  = uintwide_t<static_cast<size_t>(UINT32_C( 1024)), std::uint64_t, void, true>;
-  using  int2048_t  = uintwide_t<static_cast<size_t>(UINT32_C( 2048)), std::uint64_t, void, true>;
-  using  int4096_t  = uintwide_t<static_cast<size_t>(UINT32_C( 4096)), std::uint64_t, void, true>;
-  using  int8192_t  = uintwide_t<static_cast<size_t>(UINT32_C( 8192)), std::uint64_t, void, true>;
-  using  int16384_t = uintwide_t<static_cast<size_t>(UINT32_C(16384)), std::uint64_t, void, true>;
-  using  int32768_t = uintwide_t<static_cast<size_t>(UINT32_C(32768)), std::uint64_t, void, true>;
-  using  int65536_t = uintwide_t<static_cast<size_t>(UINT32_C(65536)), std::uint64_t, void, true>;
+  using uint128_t   = uintwide_t<static_cast<size_t>(UINT32_C(  128)), uint_defaultlimb_t>;
+  using uint256_t   = uintwide_t<static_cast<size_t>(UINT32_C(  256)), uint_defaultlimb_t>;
+  using uint512_t   = uintwide_t<static_cast<size_t>(UINT32_C(  512)), uint_defaultlimb_t>;
+  using uint1024_t  = uintwide_t<static_cast<size_t>(UINT32_C( 1024)), uint_defaultlimb_t>;
+  using uint2048_t  = uintwide_t<static_cast<size_t>(UINT32_C( 2048)), uint_defaultlimb_t>;
+  using uint4096_t  = uintwide_t<static_cast<size_t>(UINT32_C( 4096)), uint_defaultlimb_t>;
+  using uint8192_t  = uintwide_t<static_cast<size_t>(UINT32_C( 8192)), uint_defaultlimb_t>;
+  using uint16384_t = uintwide_t<static_cast<size_t>(UINT32_C(16384)), uint_defaultlimb_t>;
+  using uint32768_t = uintwide_t<static_cast<size_t>(UINT32_C(32768)), uint_defaultlimb_t>;
+  using uint65536_t = uintwide_t<static_cast<size_t>(UINT32_C(65536)), uint_defaultlimb_t>;
 
-  #else
-
-  using uint128_t   = uintwide_t<static_cast<size_t>(UINT32_C(  128)), std::uint32_t>;
-  using uint256_t   = uintwide_t<static_cast<size_t>(UINT32_C(  256)), std::uint32_t>;
-  using uint512_t   = uintwide_t<static_cast<size_t>(UINT32_C(  512)), std::uint32_t>;
-  using uint1024_t  = uintwide_t<static_cast<size_t>(UINT32_C( 1024)), std::uint32_t>;
-  using uint2048_t  = uintwide_t<static_cast<size_t>(UINT32_C( 2048)), std::uint32_t>;
-  using uint4096_t  = uintwide_t<static_cast<size_t>(UINT32_C( 4096)), std::uint32_t>;
-  using uint8192_t  = uintwide_t<static_cast<size_t>(UINT32_C( 8192)), std::uint32_t>;
-  using uint16384_t = uintwide_t<static_cast<size_t>(UINT32_C(16384)), std::uint32_t>;
-  using uint32768_t = uintwide_t<static_cast<size_t>(UINT32_C(32768)), std::uint32_t>;
-  using uint65536_t = uintwide_t<static_cast<size_t>(UINT32_C(65536)), std::uint32_t>;
-
-  using  int128_t   = uintwide_t<static_cast<size_t>(UINT32_C(  128)), std::uint32_t, void, true>;
-  using  int256_t   = uintwide_t<static_cast<size_t>(UINT32_C(  256)), std::uint32_t, void, true>;
-  using  int512_t   = uintwide_t<static_cast<size_t>(UINT32_C(  512)), std::uint32_t, void, true>;
-  using  int1024_t  = uintwide_t<static_cast<size_t>(UINT32_C( 1024)), std::uint32_t, void, true>;
-  using  int2048_t  = uintwide_t<static_cast<size_t>(UINT32_C( 2048)), std::uint32_t, void, true>;
-  using  int4096_t  = uintwide_t<static_cast<size_t>(UINT32_C( 4096)), std::uint32_t, void, true>;
-  using  int8192_t  = uintwide_t<static_cast<size_t>(UINT32_C( 8192)), std::uint32_t, void, true>;
-  using  int16384_t = uintwide_t<static_cast<size_t>(UINT32_C(16384)), std::uint32_t, void, true>;
-  using  int32768_t = uintwide_t<static_cast<size_t>(UINT32_C(32768)), std::uint32_t, void, true>;
-  using  int65536_t = uintwide_t<static_cast<size_t>(UINT32_C(65536)), std::uint32_t, void, true>;
-
-  #endif
+  using  int128_t   = uintwide_t<static_cast<size_t>(UINT32_C(  128)), uint_defaultlimb_t, void, true>;
+  using  int256_t   = uintwide_t<static_cast<size_t>(UINT32_C(  256)), uint_defaultlimb_t, void, true>;
+  using  int512_t   = uintwide_t<static_cast<size_t>(UINT32_C(  512)), uint_defaultlimb_t, void, true>;
+  using  int1024_t  = uintwide_t<static_cast<size_t>(UINT32_C( 1024)), uint_defaultlimb_t, void, true>;
+  using  int2048_t  = uintwide_t<static_cast<size_t>(UINT32_C( 2048)), uint_defaultlimb_t, void, true>;
+  using  int4096_t  = uintwide_t<static_cast<size_t>(UINT32_C( 4096)), uint_defaultlimb_t, void, true>;
+  using  int8192_t  = uintwide_t<static_cast<size_t>(UINT32_C( 8192)), uint_defaultlimb_t, void, true>;
+  using  int16384_t = uintwide_t<static_cast<size_t>(UINT32_C(16384)), uint_defaultlimb_t, void, true>;
+  using  int32768_t = uintwide_t<static_cast<size_t>(UINT32_C(32768)), uint_defaultlimb_t, void, true>;
+  using  int65536_t = uintwide_t<static_cast<size_t>(UINT32_C(65536)), uint_defaultlimb_t, void, true>;
 
   #if !defined(WIDE_INTEGER_DISABLE_TRIVIAL_COPY_AND_STD_LAYOUT_CHECKS)
   static_assert(std::is_trivially_copyable<uint64_t   >::value, "uintwide_t must be trivially copyable.");

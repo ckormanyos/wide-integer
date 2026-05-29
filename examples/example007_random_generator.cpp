@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////
-//  Copyright Christopher Kormanyos 2018 - 2025.                 //
+//  Copyright Christopher Kormanyos 2018 - 2026.                 //
 //  Distributed under the Boost Software License,                //
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt          //
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)             //
@@ -34,10 +34,16 @@ namespace local_random
                                                             UINT64_C(6364136223846793005)>;
 
     #if defined(WIDE_INTEGER_NAMESPACE)
-    using wide_integer_type  = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<static_cast<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t>(UINT32_C(256)), std::uint32_t, AllocatorType>;
+    using local_limb_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::uint_defaultlimb_t;
+    #else
+    using local_limb_type = ::math::wide_integer::uint_defaultlimb_t;
+    #endif
+
+    #if defined(WIDE_INTEGER_NAMESPACE)
+    using wide_integer_type  = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<static_cast<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t>(UINT32_C(256)), local_limb_type, AllocatorType>;
     using distribution_type  = WIDE_INTEGER_NAMESPACE::math::wide_integer::uniform_int_distribution<wide_integer_type::my_width2, typename wide_integer_type::limb_type>;
     #else
-    using wide_integer_type  = ::math::wide_integer::uintwide_t<static_cast<math::wide_integer::size_t>(UINT32_C(256)), std::uint32_t, AllocatorType>;
+    using wide_integer_type  = ::math::wide_integer::uintwide_t<static_cast<::math::wide_integer::size_t>(UINT32_C(256)), local_limb_type, AllocatorType>;
     using distribution_type  = ::math::wide_integer::uniform_int_distribution<wide_integer_type::my_width2, typename wide_integer_type::limb_type>;
     #endif
 

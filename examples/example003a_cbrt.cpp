@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////
-//  Copyright Christopher Kormanyos 2018 - 2025.                 //
+//  Copyright Christopher Kormanyos 2018 - 2026.                 //
 //  Distributed under the Boost Software License,                //
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt          //
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)             //
@@ -17,9 +17,11 @@ auto ::math::wide_integer::example003a_cbrt() -> bool
 #endif
 {
   #if defined(WIDE_INTEGER_NAMESPACE)
-  using uint11264_t = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<static_cast<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t>(UINT32_C(11264)), std::uint32_t, std::allocator<std::uint32_t>>;
+  using local_limb_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::uint_defaultlimb_t;
+  using uint11264_t = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<static_cast<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t>(UINT32_C(11264)), local_limb_type, std::allocator<local_limb_type>>;
   #else
-  using uint11264_t = ::math::wide_integer::uintwide_t<static_cast<math::wide_integer::size_t>(UINT32_C(11264)), std::uint32_t, std::allocator<std::uint32_t>>;
+  using local_limb_type = ::math::wide_integer::uint_defaultlimb_t;
+  using uint11264_t = ::math::wide_integer::uintwide_t<static_cast<::math::wide_integer::size_t>(UINT32_C(11264)), local_limb_type, std::allocator<local_limb_type>>;
   #endif
 
   // Create the string '1' + 3,333 times '0', which is
