@@ -784,6 +784,9 @@
 
         // Deallocate the range of *this.
         local_allocator_traits_type::deallocate(my_alloc, elems, elem_count);
+
+        elem_count = static_cast<size_type>(UINT8_C(0));
+        elems      = nullptr;
       }
     }
 
@@ -1616,21 +1619,20 @@
       static_cast<void>(size_in);
     }
 
-    constexpr fixed_dynamic_array(const fixed_dynamic_array& other_array) = default;
+    constexpr fixed_dynamic_array(const fixed_dynamic_array&) = default;
 
-    constexpr fixed_dynamic_array(fixed_dynamic_array&& other_array) noexcept = default;
+    constexpr fixed_dynamic_array(fixed_dynamic_array&&) noexcept = default;
 
     constexpr fixed_dynamic_array(std::initializer_list<typename base_class_type::value_type> lst)
-      : base_class_type(MySize)
-    {
-      detail::copy_unsafe(lst.begin(),
-                          lst.begin() + (detail::min_unsafe)(static_cast<typename base_class_type::size_type>(lst.size()), MySize),
-                          base_class_type::begin());
-    }
+      : base_class_type(lst.begin(),
+                        lst.begin() + (detail::min_unsafe)(static_cast<typename base_class_type::size_type>(lst.size()), MySize)) { }
 
-    constexpr auto operator=(const fixed_dynamic_array& other_array) -> fixed_dynamic_array& = default;
+    //constexpt
+    ~fixed_dynamic_array() override = default;
 
-    constexpr auto operator=(fixed_dynamic_array&& other_array) noexcept -> fixed_dynamic_array& = default;
+    constexpr auto operator=(const fixed_dynamic_array&) -> fixed_dynamic_array& = default;
+
+    constexpr auto operator=(fixed_dynamic_array&&) noexcept -> fixed_dynamic_array& = default;
   };
 
   template<typename MyType,
