@@ -5977,7 +5977,7 @@
 
     const bool hi_dword_is_nonzero { (hi_dword != std::uint32_t { UINT8_C(0) }) };
 
-    return (hi_dword_is_nonzero) ? static_cast<unsigned_fast_type>(msb_helper(hi_dword) + thirty_two) : msb_helper(static_cast<std::uint32_t>(u));
+    return (hi_dword_is_nonzero ? static_cast<unsigned_fast_type>(msb_helper(hi_dword) + thirty_two) : msb_helper(static_cast<std::uint32_t>(u)));
   }
 
   template<>
