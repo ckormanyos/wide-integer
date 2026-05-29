@@ -33,7 +33,7 @@ namespace local_solovay_strassen {
 
 namespace detail {
 
-constexpr int number_of_trials { 56 };
+constexpr int number_of_trials { INT8_C(56) };
 
 template<typename UnsignedIntegerType>
 auto jacobi(UnsignedIntegerType a, UnsignedIntegerType n) -> int;
@@ -138,20 +138,20 @@ auto solovay_strassen(const UnsignedIntegerType& np, const int iterations, Distr
 
     if(n_is_even)
     {
-        // If true:
-        // Handle the trivial special case of 2, which is prime.
+      // If true:
+      // Handle the trivial special case of 2, which is prime.
 
-        // If false:
-        // The prime candidate is not prime because it is either
-        // even and larger than 2 or equal to zero. Herewith, we
-        // handle non-prime even numbers and the non-primality of 0.
-        const bool
-          is_prime_two_or_is_non_prime_even
-          {
-            ((n0 == static_cast<local_limb_type>(UINT8_C(2))) && (np == unsigned { UINT8_C(2) }))
-          };
+      // If false:
+      // The prime candidate is not prime because it is either
+      // even and larger than 2 or equal to zero. Herewith, we
+      // handle non-prime even numbers and the non-primality of 0.
+      const bool
+        is_prime_two_or_is_non_prime_even
+        {
+          ((n0 == static_cast<local_limb_type>(UINT8_C(2))) && (np == unsigned { UINT8_C(2) }))
+        };
 
-        return is_prime_two_or_is_non_prime_even;
+      return is_prime_two_or_is_non_prime_even;
     }
 
     if((n0 <= small_primes.back()) && (np <= small_primes.back()))
