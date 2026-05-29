@@ -682,6 +682,8 @@
     using const_reverse_iterator =       ::math::wide_integer::detail::iterator_detail::reverse_iterator<const value_type*>;
     #endif
 
+    static_assert(std::is_integral<value_type>::value, "Error: the value_type of dynamic_array must be a built-in integral");
+
     // Constructors.
     constexpr dynamic_array() = delete;
 
@@ -780,7 +782,7 @@
 
         allocator_type my_alloc { };
 
-        // Deallocate the range.
+        // Deallocate the range of *this.
         local_allocator_traits_type::deallocate(my_alloc, elems, elem_count);
       }
     }
@@ -815,12 +817,15 @@
     // Move assignment operator.
     constexpr auto operator=(dynamic_array&& other) noexcept -> dynamic_array&
     {
-      using local_allocator_traits_type = std::allocator_traits<allocator_type>;
+      if(!empty())
+      {
+        using local_allocator_traits_type = std::allocator_traits<allocator_type>;
 
-      allocator_type my_alloc { };
+        allocator_type my_alloc { };
 
-      // Deallocate the range of *this.
-      local_allocator_traits_type::deallocate(my_alloc, elems, elem_count);
+        // Deallocate the range of *this.
+        local_allocator_traits_type::deallocate(my_alloc, elems, elem_count);
+      }
 
       elem_count = other.elem_count;
       elems      = other.elems;
@@ -5523,55 +5528,29 @@
 
   // Define some convenient unsigned wide integer types.
   using uint64_t    = uintwide_t<static_cast<size_t>(UINT32_C(   64)), std::uint32_t>;
-  using  int64_t    = uintwide_t<static_cast<size_t>(UINT32_C(   64)), std::uint16_t, void, true>;
-  #if defined(WIDE_INTEGER_HAS_LIMB_TYPE_UINT64)
-  using uint128_t   = uintwide_t<static_cast<size_t>(UINT32_C(  128)), std::uint64_t>;
-  using uint256_t   = uintwide_t<static_cast<size_t>(UINT32_C(  256)), std::uint64_t>;
-  using uint512_t   = uintwide_t<static_cast<size_t>(UINT32_C(  512)), std::uint64_t>;
-  using uint1024_t  = uintwide_t<static_cast<size_t>(UINT32_C( 1024)), std::uint64_t>;
-  using uint2048_t  = uintwide_t<static_cast<size_t>(UINT32_C( 2048)), std::uint64_t>;
-  using uint4096_t  = uintwide_t<static_cast<size_t>(UINT32_C( 4096)), std::uint64_t>;
-  using uint8192_t  = uintwide_t<static_cast<size_t>(UINT32_C( 8192)), std::uint64_t>;
-  using uint16384_t = uintwide_t<static_cast<size_t>(UINT32_C(16384)), std::uint64_t>;
-  using uint32768_t = uintwide_t<static_cast<size_t>(UINT32_C(32768)), std::uint64_t>;
-  using uint65536_t = uintwide_t<static_cast<size_t>(UINT32_C(65536)), std::uint64_t>;
+  using  int64_t    = uintwide_t<static_cast<size_t>(UINT32_C(   64)), std::uint32_t, void, true>;
 
-  using  int128_t   = uintwide_t<static_cast<size_t>(UINT32_C(  128)), std::uint64_t, void, true>;
-  using  int256_t   = uintwide_t<static_cast<size_t>(UINT32_C(  256)), std::uint64_t, void, true>;
-  using  int512_t   = uintwide_t<static_cast<size_t>(UINT32_C(  512)), std::uint64_t, void, true>;
-  using  int1024_t  = uintwide_t<static_cast<size_t>(UINT32_C( 1024)), std::uint64_t, void, true>;
-  using  int2048_t  = uintwide_t<static_cast<size_t>(UINT32_C( 2048)), std::uint64_t, void, true>;
-  using  int4096_t  = uintwide_t<static_cast<size_t>(UINT32_C( 4096)), std::uint64_t, void, true>;
-  using  int8192_t  = uintwide_t<static_cast<size_t>(UINT32_C( 8192)), std::uint64_t, void, true>;
-  using  int16384_t = uintwide_t<static_cast<size_t>(UINT32_C(16384)), std::uint64_t, void, true>;
-  using  int32768_t = uintwide_t<static_cast<size_t>(UINT32_C(32768)), std::uint64_t, void, true>;
-  using  int65536_t = uintwide_t<static_cast<size_t>(UINT32_C(65536)), std::uint64_t, void, true>;
+  using uint128_t   = uintwide_t<static_cast<size_t>(UINT32_C(  128)), uint_defaultlimb_t>;
+  using uint256_t   = uintwide_t<static_cast<size_t>(UINT32_C(  256)), uint_defaultlimb_t>;
+  using uint512_t   = uintwide_t<static_cast<size_t>(UINT32_C(  512)), uint_defaultlimb_t>;
+  using uint1024_t  = uintwide_t<static_cast<size_t>(UINT32_C( 1024)), uint_defaultlimb_t>;
+  using uint2048_t  = uintwide_t<static_cast<size_t>(UINT32_C( 2048)), uint_defaultlimb_t>;
+  using uint4096_t  = uintwide_t<static_cast<size_t>(UINT32_C( 4096)), uint_defaultlimb_t>;
+  using uint8192_t  = uintwide_t<static_cast<size_t>(UINT32_C( 8192)), uint_defaultlimb_t>;
+  using uint16384_t = uintwide_t<static_cast<size_t>(UINT32_C(16384)), uint_defaultlimb_t>;
+  using uint32768_t = uintwide_t<static_cast<size_t>(UINT32_C(32768)), uint_defaultlimb_t>;
+  using uint65536_t = uintwide_t<static_cast<size_t>(UINT32_C(65536)), uint_defaultlimb_t>;
 
-  #else
-
-  using uint128_t   = uintwide_t<static_cast<size_t>(UINT32_C(  128)), std::uint32_t>;
-  using uint256_t   = uintwide_t<static_cast<size_t>(UINT32_C(  256)), std::uint32_t>;
-  using uint512_t   = uintwide_t<static_cast<size_t>(UINT32_C(  512)), std::uint32_t>;
-  using uint1024_t  = uintwide_t<static_cast<size_t>(UINT32_C( 1024)), std::uint32_t>;
-  using uint2048_t  = uintwide_t<static_cast<size_t>(UINT32_C( 2048)), std::uint32_t>;
-  using uint4096_t  = uintwide_t<static_cast<size_t>(UINT32_C( 4096)), std::uint32_t>;
-  using uint8192_t  = uintwide_t<static_cast<size_t>(UINT32_C( 8192)), std::uint32_t>;
-  using uint16384_t = uintwide_t<static_cast<size_t>(UINT32_C(16384)), std::uint32_t>;
-  using uint32768_t = uintwide_t<static_cast<size_t>(UINT32_C(32768)), std::uint32_t>;
-  using uint65536_t = uintwide_t<static_cast<size_t>(UINT32_C(65536)), std::uint32_t>;
-
-  using  int128_t   = uintwide_t<static_cast<size_t>(UINT32_C(  128)), std::uint32_t, void, true>;
-  using  int256_t   = uintwide_t<static_cast<size_t>(UINT32_C(  256)), std::uint32_t, void, true>;
-  using  int512_t   = uintwide_t<static_cast<size_t>(UINT32_C(  512)), std::uint32_t, void, true>;
-  using  int1024_t  = uintwide_t<static_cast<size_t>(UINT32_C( 1024)), std::uint32_t, void, true>;
-  using  int2048_t  = uintwide_t<static_cast<size_t>(UINT32_C( 2048)), std::uint32_t, void, true>;
-  using  int4096_t  = uintwide_t<static_cast<size_t>(UINT32_C( 4096)), std::uint32_t, void, true>;
-  using  int8192_t  = uintwide_t<static_cast<size_t>(UINT32_C( 8192)), std::uint32_t, void, true>;
-  using  int16384_t = uintwide_t<static_cast<size_t>(UINT32_C(16384)), std::uint32_t, void, true>;
-  using  int32768_t = uintwide_t<static_cast<size_t>(UINT32_C(32768)), std::uint32_t, void, true>;
-  using  int65536_t = uintwide_t<static_cast<size_t>(UINT32_C(65536)), std::uint32_t, void, true>;
-
-  #endif
+  using  int128_t   = uintwide_t<static_cast<size_t>(UINT32_C(  128)), uint_defaultlimb_t, void, true>;
+  using  int256_t   = uintwide_t<static_cast<size_t>(UINT32_C(  256)), uint_defaultlimb_t, void, true>;
+  using  int512_t   = uintwide_t<static_cast<size_t>(UINT32_C(  512)), uint_defaultlimb_t, void, true>;
+  using  int1024_t  = uintwide_t<static_cast<size_t>(UINT32_C( 1024)), uint_defaultlimb_t, void, true>;
+  using  int2048_t  = uintwide_t<static_cast<size_t>(UINT32_C( 2048)), uint_defaultlimb_t, void, true>;
+  using  int4096_t  = uintwide_t<static_cast<size_t>(UINT32_C( 4096)), uint_defaultlimb_t, void, true>;
+  using  int8192_t  = uintwide_t<static_cast<size_t>(UINT32_C( 8192)), uint_defaultlimb_t, void, true>;
+  using  int16384_t = uintwide_t<static_cast<size_t>(UINT32_C(16384)), uint_defaultlimb_t, void, true>;
+  using  int32768_t = uintwide_t<static_cast<size_t>(UINT32_C(32768)), uint_defaultlimb_t, void, true>;
+  using  int65536_t = uintwide_t<static_cast<size_t>(UINT32_C(65536)), uint_defaultlimb_t, void, true>;
 
   #if !defined(WIDE_INTEGER_DISABLE_TRIVIAL_COPY_AND_STD_LAYOUT_CHECKS)
   static_assert(std::is_trivially_copyable<uint64_t   >::value, "uintwide_t must be trivially copyable.");
