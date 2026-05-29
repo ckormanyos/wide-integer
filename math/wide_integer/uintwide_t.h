@@ -710,18 +710,18 @@
     constexpr dynamic_array(const dynamic_array& other)
       : elem_count(other.size())
     {
-      allocator_type my_alloc;
-
       if(elem_count > static_cast<size_type>(UINT8_C(0)))
       {
-        elems = std::allocator_traits<allocator_type>::allocate(my_alloc, elem_count);
-      }
+        allocator_type my_alloc;
 
-      #if defined(WIDE_INTEGER_NAMESPACE)
-      WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::copy_unsafe(other.elems, other.elems + elem_count, elems);
-      #else
-      ::math::wide_integer::detail::copy_unsafe(other.elems, other.elems + elem_count, elems);
-      #endif
+        elems = std::allocator_traits<allocator_type>::allocate(my_alloc, elem_count);
+
+        #if defined(WIDE_INTEGER_NAMESPACE)
+        WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::copy_unsafe(other.elems, other.elems + elem_count, elems);
+        #else
+        ::math::wide_integer::detail::copy_unsafe(other.elems, other.elems + elem_count, elems);
+        #endif
+      }
     }
 
     template<typename input_iterator>
@@ -730,37 +730,36 @@
                             const allocator_type& alloc_in = allocator_type())
       : elem_count(static_cast<size_type>(last - first))
     {
-      allocator_type my_alloc(alloc_in);
-
       if(elem_count > static_cast<size_type>(UINT8_C(0)))
       {
+        allocator_type my_alloc(alloc_in);
+
         elems = std::allocator_traits<allocator_type>::allocate(my_alloc, elem_count);
+
+        #if defined(WIDE_INTEGER_NAMESPACE)
+        WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::copy_unsafe(first, last, elems);
+        #else
+        ::math::wide_integer::detail::copy_unsafe(first, last, elems);
+        #endif
       }
-
-      #if defined(WIDE_INTEGER_NAMESPACE)
-      WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::copy_unsafe(first, last, elems);
-      #else
-      ::math::wide_integer::detail::copy_unsafe(first, last, elems);
-      #endif
-
     }
 
     constexpr dynamic_array(std::initializer_list<value_type> lst,
                             const allocator_type& alloc_in = allocator_type())
       : elem_count(lst.size())
     {
-      allocator_type my_alloc(alloc_in);
-
       if(elem_count > static_cast<size_type>(UINT8_C(0)))
       {
-        elems = std::allocator_traits<allocator_type>::allocate(my_alloc, elem_count);
-      }
+        allocator_type my_alloc(alloc_in);
 
-      #if defined(WIDE_INTEGER_NAMESPACE)
-      WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::copy_unsafe(lst.begin(), lst.end(), elems);
-      #else
-      ::math::wide_integer::detail::copy_unsafe(lst.begin(), lst.end(), elems);
-      #endif
+        elems = std::allocator_traits<allocator_type>::allocate(my_alloc, elem_count);
+
+        #if defined(WIDE_INTEGER_NAMESPACE)
+        WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::copy_unsafe(lst.begin(), lst.end(), elems);
+        #else
+        ::math::wide_integer::detail::copy_unsafe(lst.begin(), lst.end(), elems);
+        #endif
+      }
     }
 
     // Move constructor.
@@ -779,18 +778,9 @@
       {
         using local_allocator_traits_type = std::allocator_traits<allocator_type>;
 
-        allocator_type my_alloc;
+        allocator_type my_alloc { };
 
-        auto p = begin(); // NOLINT(llvm-qualified-auto,readability-qualified-auto)
-
-        while(p != end())
-        {
-          local_allocator_traits_type::destroy(my_alloc, p);
-
-          ++p;
-        }
-
-        // Destroy the elements and deallocate the range.
+        // Deallocate the range.
         local_allocator_traits_type::deallocate(my_alloc, elems, elem_count);
       }
     }
@@ -825,13 +815,18 @@
     // Move assignment operator.
     constexpr auto operator=(dynamic_array&& other) noexcept -> dynamic_array&
     {
-      #if defined(WIDE_INTEGER_NAMESPACE)
-      WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::swap_unsafe(elem_count, other.elem_count);
-      WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::swap_unsafe(elems,      other.elems);
-      #else
-      ::math::wide_integer::detail::swap_unsafe(elem_count, other.elem_count);
-      ::math::wide_integer::detail::swap_unsafe(elems,      other.elems);
-      #endif
+      using local_allocator_traits_type = std::allocator_traits<allocator_type>;
+
+      allocator_type my_alloc { };
+
+      // Deallocate the range of *this.
+      local_allocator_traits_type::deallocate(my_alloc, elems, elem_count);
+
+      elem_count = other.elem_count;
+      elems      = other.elems;
+
+      other.elem_count = static_cast<size_type>(UINT8_C(0));
+      other.elems      = nullptr;
 
       return *this;
     }
@@ -1611,11 +1606,9 @@
     explicit constexpr fixed_dynamic_array(const typename base_class_type::size_type       size_in  = MySize,
                                            const typename base_class_type::value_type&     value_in = typename base_class_type::value_type(),
                                            const typename base_class_type::allocator_type& alloc_in = typename base_class_type::allocator_type())
-      : base_class_type(MySize, typename base_class_type::value_type(), alloc_in)
+      : base_class_type(MySize, value_in, alloc_in)
     {
-      detail::fill_unsafe(base_class_type::begin(),
-                          base_class_type::begin() + (detail::min_unsafe)(MySize, static_cast<typename base_class_type::size_type>(size_in)),
-                          value_in);
+      static_cast<void>(size_in);
     }
 
     constexpr fixed_dynamic_array(const fixed_dynamic_array& other_array) = default;
@@ -1635,18 +1628,17 @@
     constexpr auto operator=(fixed_dynamic_array&& other_array) noexcept -> fixed_dynamic_array& = default;
   };
 
-  struct allocator_dummy_unsafe
-  {
-    constexpr allocator_dummy_unsafe() = default;
-  };
-
-
   template<typename MyType,
            const size_t MySize>
   class fixed_static_array final : public detail::array_detail::array<MyType, static_cast<std::size_t>(MySize)>
   {
   private:
     using base_class_type = detail::array_detail::array<MyType, static_cast<std::size_t>(MySize)>;
+
+    struct allocator_dummy_unsafe
+    {
+      constexpr allocator_dummy_unsafe() = default;
+    };
 
   public:
     using size_type      = size_t;

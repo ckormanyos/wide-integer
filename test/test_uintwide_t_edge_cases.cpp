@@ -215,6 +215,7 @@ auto eng_flt() -> eng_flt_type& { static eng_flt_type instance { }; return insta
 
 auto zero_as_limb               () -> const typename local_uintwide_t_small_unsigned_type::limb_type&;
 auto zero_as_small_unsigned_type() -> const local_uintwide_t_small_unsigned_type&;
+auto one_as_unsigned            () -> unsigned;
 auto one_as_small_unsigned_type () -> const local_uintwide_t_small_unsigned_type&;
 auto m_one_as_small_signed_type () -> const local_uintwide_t_small_signed_type&;
 
@@ -2748,17 +2749,17 @@ namespace from_pr_454
       // Test container comparisons.
 
       #if defined(WIDE_INTEGER_NAMESPACE)
-      using local_dynamic_array_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::dynamic_array<local_uintwide_t_small_unsigned_type>;
+      using local_dynamic_array_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::dynamic_array<unsigned>;
       #else
-      using local_dynamic_array_type = ::math::wide_integer::detail::dynamic_array<local_uintwide_t_small_unsigned_type>;
+      using local_dynamic_array_type = ::math::wide_integer::detail::dynamic_array<unsigned>;
       #endif
 
-      using ctrl_container_type = std::vector<local_uintwide_t_small_unsigned_type>;
+      using ctrl_container_type = std::vector<unsigned>;
 
-      const local_uintwide_t_small_unsigned_type local_one  (one_as_small_unsigned_type());
-      const local_uintwide_t_small_unsigned_type local_two  (local_one   + local_one);
-      const local_uintwide_t_small_unsigned_type local_three(local_two   + local_one);
-      const local_uintwide_t_small_unsigned_type local_four (local_three + local_one);
+      const unsigned local_one  (one_as_unsigned());
+      const unsigned local_two  (local_one   + local_one);
+      const unsigned local_three(local_two   + local_one);
+      const unsigned local_four (local_three + local_one);
 
       local_dynamic_array_type lhs_orig { local_one, local_two, local_three };
       local_dynamic_array_type rhs_same { local_one, local_two, local_three };
@@ -2981,6 +2982,7 @@ auto test_uintwide_t_edge::zero_as_small_unsigned_type() -> const test_uintwide_
 extern const test_uintwide_t_edge::local_uintwide_t_small_unsigned_type local_one_plus_as_small_signed_type;  // NOLINT(cppcoreguidelines-avoid-non-const-global-variables,cert-err58-cpp,)
 extern const test_uintwide_t_edge::local_uintwide_t_small_signed_type   local_one_minus_as_small_signed_type; // NOLINT(cppcoreguidelines-avoid-non-const-global-variables,cert-err58-cpp,)
 
+auto test_uintwide_t_edge::one_as_unsigned           () -> unsigned                                                          { return unsigned { UINT8_C(1) }; }
 auto test_uintwide_t_edge::one_as_small_unsigned_type() -> const test_uintwide_t_edge::local_uintwide_t_small_unsigned_type& { return local_one_plus_as_small_signed_type; }
 auto test_uintwide_t_edge::m_one_as_small_signed_type() -> const test_uintwide_t_edge::local_uintwide_t_small_signed_type&   { return local_one_minus_as_small_signed_type; }
 
