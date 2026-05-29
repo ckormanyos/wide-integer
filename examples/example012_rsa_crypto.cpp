@@ -242,20 +242,20 @@ namespace local_rsa
       return *this;
     }
 
-    auto getPublicKey () const -> const public_key_type&  { return public_key; }  // NOLINT(readability-identifier-naming)
-    auto getPrivateKey() const -> const private_key_type& { return private_key; } // NOLINT(readability-identifier-naming)
+    WIDE_INTEGER_NODISCARD auto getPublicKey () const -> const public_key_type&  { return public_key; }  // NOLINT(readability-identifier-naming)
+    WIDE_INTEGER_NODISCARD auto getPrivateKey() const -> const private_key_type& { return private_key; } // NOLINT(readability-identifier-naming)
 
-    auto get_p() const -> const my_uintwide_t& { return getPrivateKey().p; }
-    auto get_q() const -> const my_uintwide_t& { return getPrivateKey().q; }
-    auto get_d() const -> const my_uintwide_t& { return getPrivateKey().s; }
-    auto get_n() const -> const my_uintwide_t& { return getPublicKey().m; }
+    WIDE_INTEGER_NODISCARD auto get_p() const -> const my_uintwide_t& { return getPrivateKey().p; }
+    WIDE_INTEGER_NODISCARD auto get_q() const -> const my_uintwide_t& { return getPrivateKey().q; }
+    WIDE_INTEGER_NODISCARD auto get_d() const -> const my_uintwide_t& { return getPrivateKey().s; }
+    WIDE_INTEGER_NODISCARD auto get_n() const -> const my_uintwide_t& { return getPublicKey().m; }
 
-    auto encrypt(const std::string& str) const -> my_uintwide_t
+    WIDE_INTEGER_NODISCARD auto encrypt(const std::string& str) const -> my_uintwide_t
     {
       return encryptor(public_key).encrypt(str);
     } // LCOV_EXCL_LINE
 
-    auto decrypt(const my_uintwide_t& cry_in) const -> std::string
+    WIDE_INTEGER_NODISCARD auto decrypt(const my_uintwide_t& cry_in) const -> std::string
     {
       return decryptor(private_key).decrypt(cry_in);
     }
