@@ -903,46 +903,40 @@
 
     friend constexpr auto operator==(const dynamic_array& lhs, const dynamic_array& rhs) -> bool
     {
-      return
-      (
-           (lhs.size() == rhs.size())
-        && (
-                lhs.empty()
-             #if defined(WIDE_INTEGER_NAMESPACE)
-             || WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::equal_unsafe(lhs.cbegin(), lhs.cend(), rhs.cbegin())
-             #else
-             || ::math::wide_integer::detail::equal_unsafe(lhs.cbegin(), lhs.cend(), rhs.cbegin())
-             #endif
-           )
-      );
+      bool left_and_right_are_equal { };
+
+      if(lhs.size() == rhs.size())
+      {
+        #if defined(WIDE_INTEGER_NAMESPACE)
+        left_and_right_are_equal = WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::equal_unsafe(lhs.cbegin(), lhs.cend(), rhs.cbegin());
+        #else
+        left_and_right_are_equal = ::math::wide_integer::detail::equal_unsafe(lhs.cbegin(), lhs.cend(), rhs.cbegin());
+        #endif
+      }
+
+      return left_and_right_are_equal;
     }
 
     friend constexpr auto operator<(const dynamic_array& lhs, const dynamic_array& rhs) -> bool
     {
-      bool b_result { };
+      #if defined(WIDE_INTEGER_NAMESPACE)
+      const typename dynamic_array::size_type count { WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::min_unsafe(lhs.size(), rhs.size()) };
+      #else
+      const typename dynamic_array::size_type count { ::math::wide_integer::detail::min_unsafe(lhs.size(), rhs.size()) };
+      #endif
 
-      if(lhs.empty())
-      {
-        b_result = (!rhs.empty());
-      }
-      else
-      {
-        // Note: Use lexicographical_compare here. If the dynamic arrays
-        // have unequal sizes, then simply ignore the size differences.
-
-        b_result =
-          #if defined(WIDE_INTEGER_NAMESPACE)
-          WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::lexicographical_compare_unsafe
-          #else
-          ::math::wide_integer::detail::lexicographical_compare_unsafe
-          #endif
-          (
-            lhs.cbegin(),
-            lhs.cend(),
-            rhs.cbegin(),
-            rhs.cend()
-          );
-      }
+      const bool b_result =
+        #if defined(WIDE_INTEGER_NAMESPACE)
+        WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::lexicographical_compare_unsafe
+        #else
+        ::math::wide_integer::detail::lexicographical_compare_unsafe
+        #endif
+        (
+          lhs.cbegin(),
+          lhs.cbegin() + count,
+          rhs.cbegin(),
+          rhs.cbegin() + count
+        );
 
       return b_result;
     }
