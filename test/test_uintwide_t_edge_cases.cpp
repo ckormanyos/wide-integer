@@ -2801,7 +2801,7 @@ namespace from_pr_454
             (static_cast<std::size_t>(lhs_default_size.size()) == my_container_size)
         &&  (lhs_default_size < rhs_same)
         && ((lhs_default_size < rhs_same) == (ctrl_container_type { } < ctrl_rhs_same))
-        && ((lhs_default_size == local_dynamic_array_type(my_container_size)) == (ctrl_container_type { } == ctrl_rhs_default_size))
+        && ((lhs_default_size == local_dynamic_array_type(my_container_size)) == (ctrl_container_type { } == ctrl_rhs_default_size)) // NOLINT(readability-container-size-empty)
       );
 
       result_is_ok = (result_default_is_ok && result_is_ok);
