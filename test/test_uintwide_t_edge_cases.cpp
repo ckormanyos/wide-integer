@@ -2776,9 +2776,9 @@ namespace from_pr_454
       ctrl_container_type ctrl_rhs_less { }; std::copy(rhs_less.cbegin(), rhs_less.cend(), ctrl_rhs_less.begin());
       ctrl_container_type ctrl_rhs_grtr { }; std::copy(rhs_grtr.cbegin(), rhs_grtr.cend(), ctrl_rhs_grtr.begin());
 
-      local_dynamic_array_type lhs_default_size { };
+      local_dynamic_array_type lhs_default { };
 
-      ctrl_container_type ctrl_rhs_default_size { };
+      ctrl_container_type ctrl_rhs_default { };
 
       bool result_compare_is_ok { };
 
@@ -2798,10 +2798,10 @@ namespace from_pr_454
 
       const bool result_default_is_ok =
       (
-            (static_cast<std::size_t>(lhs_default_size.size()) == my_container_size)
-        &&  (lhs_default_size < rhs_same)
-        && ((lhs_default_size < rhs_same) == (ctrl_container_type { } < ctrl_rhs_same))
-        && ((lhs_default_size == local_dynamic_array_type(my_container_size)) == (ctrl_container_type { } == ctrl_rhs_default_size)) // NOLINT(readability-container-size-empty)
+            (static_cast<std::size_t>(lhs_default.size()) == my_container_size)
+        &&  (lhs_default < rhs_same)
+        && ((lhs_default < rhs_same) == (ctrl_container_type { } < ctrl_rhs_same))
+        && ((lhs_default == local_dynamic_array_type(my_container_size)) == (ctrl_container_type { } == ctrl_rhs_default)) // NOLINT(readability-container-size-empty)
       );
 
       result_is_ok = (result_default_is_ok && result_is_ok);

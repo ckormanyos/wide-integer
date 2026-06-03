@@ -675,11 +675,11 @@
     using size_type              =       SizeType;
     using difference_type        =       DiffType;
     #if defined(WIDE_INTEGER_NAMESPACE)
-    using reverse_iterator       =       WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::iterator_detail::reverse_iterator<      value_type*>;
-    using const_reverse_iterator =       WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::iterator_detail::reverse_iterator<const value_type*>;
+    using reverse_iterator       =       WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::iterator_detail::reverse_iterator<iterator>;
+    using const_reverse_iterator =       WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::iterator_detail::reverse_iterator<const_iterator>;
     #else
-    using reverse_iterator       =       ::math::wide_integer::detail::iterator_detail::reverse_iterator<      value_type*>;
-    using const_reverse_iterator =       ::math::wide_integer::detail::iterator_detail::reverse_iterator<const value_type*>;
+    using reverse_iterator       =       ::math::wide_integer::detail::iterator_detail::reverse_iterator<iterator>;
+    using const_reverse_iterator =       ::math::wide_integer::detail::iterator_detail::reverse_iterator<const_iterator>;
     #endif
 
   public:
@@ -1611,13 +1611,8 @@
     using typename base_class_type::const_pointer;
     using typename base_class_type::size_type;
     using typename base_class_type::difference_type;
-    #if defined(WIDE_INTEGER_NAMESPACE)
     using typename base_class_type::reverse_iterator;
     using typename base_class_type::const_reverse_iterator;
-    #else
-    using typename base_class_type::reverse_iterator;
-    using typename base_class_type::const_reverse_iterator;
-    #endif
 
     static constexpr auto static_size() -> size_type { return MySize; }
 
