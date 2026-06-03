@@ -1600,22 +1600,22 @@
 
   public:
     // Type definitions.
-    using allocator_type                 = base_class_type::allocator_type;
-    using value_type                     = base_class_type::value_type;
-    using reference                      = base_class_type::reference;
-    using const_reference                = base_class_type::const_reference;
-    using iterator                       = base_class_type::iterator;
-    using const_iterator                 = base_class_type::const_iterator;
-    using pointer                        = base_class_type::pointer;
-    using const_pointer                  = base_class_type::const_pointer;
-    using size_type                      = base_class_type::size_type;
-    using difference_type                = base_class_type::difference_type;
+    using typename base_class_type::allocator_type;
+    using typename base_class_type::value_type;
+    using typename base_class_type::reference;
+    using typename base_class_type::const_reference;
+    using typename base_class_type::iterator;
+    using typename base_class_type::const_iterator;
+    using typename base_class_type::pointer;
+    using typename base_class_type::const_pointer;
+    using typename base_class_type::size_type;
+    using typename base_class_type::difference_type;
     #if defined(WIDE_INTEGER_NAMESPACE)
-    using reverse_iterator               = base_class_type::reverse_iterator;
-    using const_reverse_iterator         = base_class_type::const_reverse_iterator;
+    using typename base_class_type::reverse_iterator;
+    using typename base_class_type::const_reverse_iterator;
     #else
-    using reverse_iterator               = base_class_type::reverse_iterator;
-    using const_reverse_iterator         = base_class_type::const_reverse_iterator;
+    using typename base_class_type::reverse_iterator;
+    using typename base_class_type::const_reverse_iterator;
     #endif
 
     static constexpr auto static_size() -> size_type { return MySize; }
