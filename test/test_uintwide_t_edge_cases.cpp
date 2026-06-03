@@ -5,6 +5,7 @@
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
 
+#include <array>
 #include <charconv>
 #include <random>
 #include <string>
@@ -2749,12 +2750,16 @@ namespace from_pr_454
       // Test container comparisons.
 
       #if defined(WIDE_INTEGER_NAMESPACE)
-      using local_dynamic_array_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::dynamic_array<unsigned>;
+      using local_dynamic_array_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::fixed_dynamic_array<unsigned, WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t { UINT8_C(3) }>;
+      using WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::tuple_size;
       #else
-      using local_dynamic_array_type = ::math::wide_integer::detail::dynamic_array<unsigned>;
+      using local_dynamic_array_type = ::math::wide_integer::detail::fixed_dynamic_array<unsigned, ::math::wide_integer::size_t { UINT8_C(3) }>;
+      using ::math::wide_integer::detail::tuple_size;
       #endif
 
-      using ctrl_container_type = std::vector<unsigned>;
+      constexpr std::size_t my_container_size { static_cast<std::size_t>(tuple_size<local_dynamic_array_type>::value) };
+
+      using ctrl_container_type = std::array<unsigned, my_container_size>;
 
       const unsigned local_one  (one_as_unsigned());
       const unsigned local_two  (local_one   + local_one);
@@ -2766,14 +2771,14 @@ namespace from_pr_454
       local_dynamic_array_type rhs_less { local_one, local_two, local_two };
       local_dynamic_array_type rhs_grtr { local_one, local_two, local_four };
 
-      ctrl_container_type ctrl_lhs_orig(lhs_orig.cbegin(), lhs_orig.cend());
-      ctrl_container_type ctrl_rhs_same(rhs_same.cbegin(), rhs_same.cend());
-      ctrl_container_type ctrl_rhs_less(rhs_less.cbegin(), rhs_less.cend());
-      ctrl_container_type ctrl_rhs_grtr(rhs_grtr.cbegin(), rhs_grtr.cend());
+      ctrl_container_type ctrl_lhs_orig { }; std::copy(lhs_orig.cbegin(), lhs_orig.cend(), ctrl_lhs_orig.begin());
+      ctrl_container_type ctrl_rhs_same { }; std::copy(rhs_same.cbegin(), rhs_same.cend(), ctrl_rhs_same.begin());
+      ctrl_container_type ctrl_rhs_less { }; std::copy(rhs_less.cbegin(), rhs_less.cend(), ctrl_rhs_less.begin());
+      ctrl_container_type ctrl_rhs_grtr { }; std::copy(rhs_grtr.cbegin(), rhs_grtr.cend(), ctrl_rhs_grtr.begin());
 
-      local_dynamic_array_type lhs_zero_size(std::size_t { UINT8_C(0) });
+      local_dynamic_array_type lhs_default_size { };
 
-      ctrl_container_type ctrl_rhs_zero_size(std::size_t { UINT8_C(0) });
+      ctrl_container_type ctrl_rhs_default_size { };
 
       bool result_compare_is_ok { };
 
@@ -2791,20 +2796,20 @@ namespace from_pr_454
 
       result_compare_is_ok = ((lhs_orig == rhs_same) == (ctrl_lhs_orig == ctrl_rhs_same)); result_is_ok = (result_compare_is_ok && result_is_ok);
 
-      const bool result_zero_is_ok =
+      const bool result_default_is_ok =
       (
-            (lhs_zero_size.size() == std::size_t { UINT8_C(0) })
-        &&  (lhs_zero_size < rhs_same)
-        && ((lhs_zero_size < rhs_same) == (ctrl_container_type(std::size_t { UINT8_C(0) }) < ctrl_rhs_same))
-        && ((lhs_zero_size == local_dynamic_array_type(std::size_t { UINT8_C(0) })) == (ctrl_container_type(std::size_t { UINT8_C(0) }) == ctrl_rhs_zero_size))
+            (static_cast<std::size_t>(lhs_default_size.size()) == my_container_size)
+        &&  (lhs_default_size < rhs_same)
+        && ((lhs_default_size < rhs_same) == (ctrl_container_type { } < ctrl_rhs_same))
+        && ((lhs_default_size == local_dynamic_array_type(my_container_size)) == (ctrl_container_type { } == ctrl_rhs_default_size))
       );
 
-      result_is_ok = (result_zero_is_ok && result_is_ok);
+      result_is_ok = (result_default_is_ok && result_is_ok);
 
       {
         local_dynamic_array_type rhs_shrt { local_one, local_two };
 
-        ctrl_container_type ctrl_rhs_shrt(rhs_shrt.cbegin(), rhs_shrt.cend());
+        ctrl_container_type ctrl_rhs_shrt { }; std::copy(rhs_shrt.cbegin(), rhs_shrt.cend(), ctrl_rhs_shrt.begin());
 
         #if defined(WIDE_INTEGER_NAMESPACE)
         using WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::lexicographical_compare_unsafe;
@@ -2834,7 +2839,9 @@ namespace from_pr_454
           )
         };
 
-        const bool result_lex_compare_is_ok = (result_b0 == result_b1); result_is_ok = (result_lex_compare_is_ok && result_is_ok);
+        const bool result_lex_compare_is_ok = (result_b0 == result_b1);
+
+        result_is_ok = (result_lex_compare_is_ok && result_is_ok);
       }
     }
 
