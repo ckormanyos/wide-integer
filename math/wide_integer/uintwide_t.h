@@ -504,7 +504,7 @@
 
   namespace array_detail {
 
-  template<typename T, ::std::size_t N>
+  template<typename T, const ::std::size_t N>
   class array
   {
   public:
@@ -605,26 +605,25 @@
     friend constexpr auto operator> (const array& left, const array& right) -> bool { return (right < left); }
     friend constexpr auto operator>=(const array& left, const array& right) -> bool { return (!(left < right)); }
     friend constexpr auto operator<=(const array& left, const array& right) -> bool { return (!(right < left)); }
-  };
 
-  template<typename T, size_t N >
-  constexpr auto swap(array<T, N>& x, array<T, N>& y) noexcept -> void
-  {
-    swap_ranges_unsafe(x.begin(), x.end(), y.begin());
-  }
+    friend constexpr auto swap(array& x, array& y) noexcept -> void
+    {
+      swap_ranges_unsafe(x.begin(), x.end(), y.begin());
+    }
+  };
 
   template<typename T>
   class tuple_size;
 
-  template<typename T, typename ::std::size_t N>
+  template<typename T, typename const ::std::size_t N>
   class tuple_size<array<T, N>> : public std::integral_constant<std::size_t, N> { };
 
   template<const ::std::size_t N, typename T>
   class tuple_element;
 
   template<const ::std::size_t I,
-            typename T,
-            const ::std::size_t N>
+           typename T,
+           const ::std::size_t N>
   class tuple_element<I, array<T, N> >
   {
     static_assert(I < N, "Sorry, tuple_element index is out of bounds.");
@@ -1650,10 +1649,10 @@
 
   template<typename ValueType,
            const size_t MySize>
-  class fixed_static_array final : public detail::array_detail::array<ValueType, MySize>
+  class fixed_static_array final : public detail::array_detail::array<ValueType, static_cast<::std::size_t>(MySize)>
   {
   private:
-    using base_class_type = detail::array_detail::array<ValueType, MySize>;
+    using base_class_type = detail::array_detail::array<ValueType, static_cast<::std::size_t>(MySize)>;
 
     struct allocator_dummy_unsafe
     {
