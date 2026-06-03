@@ -685,6 +685,9 @@
   public:
     static_assert(std::is_integral<value_type>::value, "Error: the value_type of dynamic_array must be a built-in integral");
 
+    // Deleted default constructor.
+    constexpr dynamic_array() = delete;
+
     // Destructor.
     virtual ~dynamic_array()
     {
@@ -764,8 +767,6 @@
 
   protected:
     // Constructors.
-    constexpr dynamic_array() = delete;
-
     explicit constexpr dynamic_array(size_type count_in,
                                      const_reference value_in = value_type(),
                                      const allocator_type& alloc_in = allocator_type())
