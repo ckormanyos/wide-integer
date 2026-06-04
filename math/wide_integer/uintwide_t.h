@@ -840,7 +840,7 @@
       if(!empty())
       {
         // The destructors of the elements are called (in unspecified order) ...
-        for(auto itr { begin() }; itr != end(); ++itr)
+        for(auto* itr { begin() }; itr != end(); ++itr)
         {
           itr->~value_type();
         }
@@ -1742,9 +1742,6 @@
 
     constexpr auto operator=(const fixed_static_array& other_array) -> fixed_static_array& = default;
     constexpr auto operator=(fixed_static_array&& other_array) noexcept -> fixed_static_array& = default;
-
-    //constexpr auto operator[](const size_type i)       -> typename base_class_type::reference       { return base_class_type::operator[](static_cast<typename base_class_type::size_type>(i)); }
-    //constexpr auto operator[](const size_type i) const -> typename base_class_type::const_reference { return base_class_type::operator[](static_cast<typename base_class_type::size_type>(i)); }
   };
 
   template<typename ValueType,
