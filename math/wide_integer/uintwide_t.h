@@ -839,16 +839,16 @@
     {
       if(!empty())
       {
-        // The destructors of the elements are called (in unspecified order) ...
-        for(auto* itr { begin() }; itr != end(); ++itr)
+        // The destructors of the elements are called (in unspecified order)
+        // and the dynamically allocated storage (if any) is deallocated.
+
+        for(auto* itr { begin() }; itr != end(); ++itr) // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
         {
           itr->~value_type();
         }
 
         using local_allocator_traits_type = std::allocator_traits<allocator_type>;
 
-        // ... and the dynamically allocated storage (if any) is deallocated.
-        // Deallocate the range of *this.
         local_allocator_traits_type::deallocate(my_alloc, elems, elem_count);
 
         elem_count = static_cast<size_type>(UINT8_C(0));
