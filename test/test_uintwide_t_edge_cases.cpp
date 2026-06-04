@@ -2750,14 +2750,42 @@ namespace from_pr_454
       // Test container comparisons.
 
       #if defined(WIDE_INTEGER_NAMESPACE)
-      using local_dynamic_array_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::fixed_dynamic_array<unsigned, WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t { UINT8_C(3) }>;
+      using local_dynamic_array_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::dynamic_array<unsigned>;
+      #else
+      using local_dynamic_array_type = ::math::wide_integer::detail::dynamic_array<unsigned>;
+      #endif
+
+      const local_dynamic_array_type
+        dyn_array_one
+        (
+          static_cast<typename local_dynamic_array_type::size_type>(one_as_unsigned()),
+          typename local_dynamic_array_type::value_type { one_as_unsigned() }
+        );
+
+      const local_dynamic_array_type lhs_empty { };
+      const local_dynamic_array_type rhs_empty { };
+
+      const bool result_empties_are_equal { (lhs_empty == rhs_empty) };
+      const bool result_empty_left_is_less { (lhs_empty < dyn_array_one) };
+      const bool result_empty_not_equal_one { (lhs_empty != dyn_array_one) };
+
+      result_is_ok = (result_empties_are_equal && result_is_ok);
+      result_is_ok = (result_empty_left_is_less && result_is_ok);
+      result_is_ok = (result_empty_not_equal_one && result_is_ok);
+    }
+
+    {
+      // Test container comparisons.
+
+      #if defined(WIDE_INTEGER_NAMESPACE)
+      using local_fixed_dynamic_array_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::fixed_dynamic_array<unsigned, WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t { UINT8_C(3) }>;
       using WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::tuple_size;
       #else
-      using local_dynamic_array_type = ::math::wide_integer::detail::fixed_dynamic_array<unsigned, ::math::wide_integer::size_t { UINT8_C(3) }>;
+      using local_fixed_dynamic_array_type = ::math::wide_integer::detail::fixed_dynamic_array<unsigned, ::math::wide_integer::size_t { UINT8_C(3) }>;
       using ::math::wide_integer::detail::tuple_size;
       #endif
 
-      constexpr std::size_t my_container_size { static_cast<std::size_t>(tuple_size<local_dynamic_array_type>::value) };
+      constexpr std::size_t my_container_size { static_cast<std::size_t>(tuple_size<local_fixed_dynamic_array_type>::value) };
 
       using ctrl_container_type = std::array<unsigned, my_container_size>;
 
@@ -2766,17 +2794,17 @@ namespace from_pr_454
       const unsigned local_three(local_two   + local_one);
       const unsigned local_four (local_three + local_one);
 
-      local_dynamic_array_type lhs_orig { local_one, local_two, local_three };
-      local_dynamic_array_type rhs_same { local_one, local_two, local_three };
-      local_dynamic_array_type rhs_less { local_one, local_two, local_two };
-      local_dynamic_array_type rhs_grtr { local_one, local_two, local_four };
+      local_fixed_dynamic_array_type lhs_orig { local_one, local_two, local_three };
+      local_fixed_dynamic_array_type rhs_same { local_one, local_two, local_three };
+      local_fixed_dynamic_array_type rhs_less { local_one, local_two, local_two };
+      local_fixed_dynamic_array_type rhs_grtr { local_one, local_two, local_four };
 
       ctrl_container_type ctrl_lhs_orig { }; std::copy(lhs_orig.cbegin(), lhs_orig.cend(), ctrl_lhs_orig.begin());
       ctrl_container_type ctrl_rhs_same { }; std::copy(rhs_same.cbegin(), rhs_same.cend(), ctrl_rhs_same.begin());
       ctrl_container_type ctrl_rhs_less { }; std::copy(rhs_less.cbegin(), rhs_less.cend(), ctrl_rhs_less.begin());
       ctrl_container_type ctrl_rhs_grtr { }; std::copy(rhs_grtr.cbegin(), rhs_grtr.cend(), ctrl_rhs_grtr.begin());
 
-      local_dynamic_array_type lhs_default { };
+      local_fixed_dynamic_array_type lhs_default { };
 
       ctrl_container_type ctrl_rhs_default { };
 
@@ -2801,13 +2829,13 @@ namespace from_pr_454
             (static_cast<std::size_t>(lhs_default.size()) == my_container_size)
         &&  (lhs_default < rhs_same)
         && ((lhs_default < rhs_same) == (ctrl_container_type { } < ctrl_rhs_same))
-        && ((lhs_default == local_dynamic_array_type(my_container_size)) == (ctrl_container_type { } == ctrl_rhs_default)) // NOLINT(readability-container-size-empty)
+        && ((lhs_default == local_fixed_dynamic_array_type(my_container_size)) == (ctrl_container_type { } == ctrl_rhs_default)) // NOLINT(readability-container-size-empty)
       );
 
       result_is_ok = (result_default_is_ok && result_is_ok);
 
       {
-        local_dynamic_array_type rhs_shrt { local_one, local_two };
+        local_fixed_dynamic_array_type rhs_shrt { local_one, local_two };
 
         ctrl_container_type ctrl_rhs_shrt { }; std::copy(rhs_shrt.cbegin(), rhs_shrt.cend(), ctrl_rhs_shrt.begin());
 
