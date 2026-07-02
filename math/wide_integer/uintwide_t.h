@@ -7424,25 +7424,11 @@
                                                                                        std::allocator<void>,
                                                                                        AllocatorType>>::template rebind_alloc<typename local_wide_integer_type::limb_type>>>;
 
-    using local_size_type = typename string_storage_dec_type::size_type;
-
     string_storage_dec_type str_temp { }; // LCOV_EXCL_LINE
 
-    const auto base_rep     = static_cast<std::uint_fast8_t>(UINT8_C(10));
-    const auto show_base    = false;
-    const auto show_pos     = false;
-    const auto is_uppercase = false;
+    const auto wr_string_is_ok = x.wr_string(str_temp.begin(), static_cast<std::uint_fast8_t>(UINT8_C(10)), false, false, false);
 
-    const auto wr_string_is_ok = x.wr_string(str_temp.begin(), base_rep, show_base, show_pos, is_uppercase);
-
-    std::string str_result { };
-
-    if(wr_string_is_ok)
-    {
-      str_result = std::string(str_temp.data());
-    }
-
-    return str_result;
+    return ((wr_string_is_ok) ? std::string(str_temp.data()) : std::string { });
   }
   #endif
 
