@@ -2897,7 +2897,11 @@
 
         str_temp[static_cast<typename string_storage_oct_type::size_type>(str_temp.size() - static_cast<size_t>(UINT8_C(1)))] = '\0';
 
-        detail::strcpy_unsafe(str_result, str_temp.data() + pos);
+        const auto str_length { detail::strlen_unsafe(str_temp.data() + pos) };
+
+        detail::copy_unsafe(str_temp.data() + pos, str_temp.data() + pos + str_length, str_result);
+
+        *(str_result + str_length) = '\0';
       }
       else if(base_rep == static_cast<std::uint_fast8_t>(UINT8_C(10)))
       {
@@ -2993,7 +2997,11 @@
 
         str_temp[static_cast<typename string_storage_dec_type::size_type>(str_temp.size() - size_t { UINT8_C(1) })] = '\0';
 
-        detail::strcpy_unsafe(str_result, str_temp.data() + pos);
+        const auto str_length { detail::strlen_unsafe(str_temp.data() + pos) };
+
+        detail::copy_unsafe(str_temp.data() + pos, str_temp.data() + pos + str_length, str_result);
+
+        *(str_result + str_length) = '\0';
       }
       else if(base_rep == static_cast<std::uint_fast8_t>(UINT8_C(16)))
       {
@@ -3075,7 +3083,11 @@
 
         str_temp[static_cast<typename string_storage_hex_type::size_type>(str_temp.size() - static_cast<size_t>(UINT8_C(1)))] = '\0';
 
-        detail::strcpy_unsafe(str_result, str_temp.data() + pos);
+        const auto str_length { detail::strlen_unsafe(str_temp.data() + pos) };
+
+        detail::copy_unsafe(str_temp.data() + pos, str_temp.data() + pos + str_length, str_result);
+
+        *(str_result + str_length) = '\0';
       }
       else
       {
@@ -3297,10 +3309,6 @@
 
       return result;
     }
-
-    static constexpr auto my_fill_char() -> char { return '.'; }
-
-    static constexpr auto is_not_fill_char(char c) -> bool { return (c != my_fill_char()); }
 
     // Define the maximum buffer sizes for extracting
     // octal, decimal and hexadecimal string representations.
@@ -7266,26 +7274,11 @@
 
       string_storage_oct_type str_temp { };
 
-      str_temp.fill(local_wide_integer_type::my_fill_char());
-
       const auto wr_string_is_ok = x.wr_string(str_temp.begin(), base_rep, show_base, show_pos, is_uppercase);
 
-      auto rit_trim = detail::find_if_unsafe(str_temp.crbegin(),
-                                             str_temp.crend(),
-                                             local_wide_integer_type::is_not_fill_char);
-
-      const auto wr_string_and_trim_is_ok =
-      (
-        (rit_trim != str_temp.crend()) && wr_string_is_ok
-      );
-
-      if(wr_string_and_trim_is_ok)
+      if(wr_string_is_ok)
       {
-        const auto chars_retrieved =
-          static_cast<local_size_type>
-          (
-            str_temp.size() - static_cast<local_size_type>(detail::distance_unsafe(str_temp.crbegin(), rit_trim))
-          );
+        const auto chars_retrieved = static_cast<local_size_type>(detail::strlen_unsafe(str_temp.data()));
 
         const auto chars_to_get = static_cast<local_size_type>(detail::distance_unsafe(first, last));
 
@@ -7313,26 +7306,11 @@
 
       string_storage_hex_type str_temp { };
 
-      str_temp.fill(local_wide_integer_type::my_fill_char());
-
       const auto wr_string_is_ok = x.wr_string(str_temp.begin(), base_rep, show_base, show_pos, is_uppercase);
 
-      auto rit_trim = detail::find_if_unsafe(str_temp.crbegin(),
-                                             str_temp.crend(),
-                                             local_wide_integer_type::is_not_fill_char);
-
-      const auto wr_string_and_trim_is_ok =
-      (
-        (rit_trim != str_temp.crend()) && wr_string_is_ok
-      );
-
-      if(wr_string_and_trim_is_ok)
+      if(wr_string_is_ok)
       {
-        const auto chars_retrieved =
-          static_cast<local_size_type>
-          (
-            str_temp.size() - static_cast<local_size_type>(detail::distance_unsafe(str_temp.crbegin(), rit_trim))
-          );
+        const auto chars_retrieved = static_cast<local_size_type>(detail::strlen_unsafe(str_temp.data()));
 
         const auto chars_to_get = static_cast<local_size_type>(detail::distance_unsafe(first, last));
 
@@ -7360,26 +7338,11 @@
 
       string_storage_dec_type str_temp { };
 
-      str_temp.fill(local_wide_integer_type::my_fill_char());
-
       const auto wr_string_is_ok = x.wr_string(str_temp.begin(), base_rep, show_base, show_pos, is_uppercase);
 
-      auto rit_trim = detail::find_if_unsafe(str_temp.crbegin(),
-                                             str_temp.crend(),
-                                             local_wide_integer_type::is_not_fill_char);
-
-      const auto wr_string_and_trim_is_ok =
-      (
-        (rit_trim != str_temp.crend()) &&  wr_string_is_ok
-      );
-
-      if(wr_string_and_trim_is_ok)
+      if(wr_string_is_ok)
       {
-        const auto chars_retrieved =
-          static_cast<local_size_type>
-          (
-            str_temp.size() - static_cast<local_size_type>(detail::distance_unsafe(str_temp.crbegin(), rit_trim))
-          );
+        const auto chars_retrieved = static_cast<local_size_type>(detail::strlen_unsafe(str_temp.data()));
 
         const auto chars_to_get = static_cast<local_size_type>(detail::distance_unsafe(first, last));
 
@@ -7461,45 +7424,11 @@
                                                                                        std::allocator<void>,
                                                                                        AllocatorType>>::template rebind_alloc<typename local_wide_integer_type::limb_type>>>;
 
-    using local_size_type = typename string_storage_dec_type::size_type;
-
     string_storage_dec_type str_temp { }; // LCOV_EXCL_LINE
 
-    str_temp.fill(local_wide_integer_type::my_fill_char());
+    const auto wr_string_is_ok = x.wr_string(str_temp.begin(), static_cast<std::uint_fast8_t>(UINT8_C(10)), false, false, false);
 
-    const auto base_rep     = static_cast<std::uint_fast8_t>(UINT8_C(10));
-    const auto show_base    = false;
-    const auto show_pos     = false;
-    const auto is_uppercase = false;
-
-    const auto wr_string_is_ok = x.wr_string(str_temp.begin(), base_rep, show_base, show_pos, is_uppercase);
-
-    auto rit_trim = detail::find_if_unsafe(str_temp.crbegin(),
-                                           str_temp.crend(),
-                                           local_wide_integer_type::is_not_fill_char);
-
-    const auto wr_string_and_trim_is_ok =
-    (
-      (rit_trim != str_temp.crend()) && wr_string_is_ok
-    );
-
-    std::string str_result { };
-
-    if(wr_string_and_trim_is_ok)
-    {
-      const auto str_result_size =
-        static_cast<local_size_type>
-        (
-            str_temp.size()
-          - static_cast<local_size_type>(detail::distance_unsafe(str_temp.crbegin(), rit_trim))
-        );
-
-      detail::fill_unsafe(str_temp.begin() + str_result_size, str_temp.end(), '\0');
-
-      str_result = std::string(str_temp.data());
-    }
-
-    return str_result;
+    return ((wr_string_is_ok) ? std::string(str_temp.data()) : std::string { });
   }
   #endif
 

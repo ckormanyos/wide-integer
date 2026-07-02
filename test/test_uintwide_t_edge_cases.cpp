@@ -1907,6 +1907,49 @@ auto test_to_and_from_chars_and_to_string() -> bool // NOLINT(readability-functi
     const auto result_dec_as_chars = to_chars(arr_dec.data(), arr_dec.data() + arr_dec.size(), u_gen, 10);
     const auto result_hex_as_chars = to_chars(arr_hex.data(), arr_hex.data() + arr_hex.size(), u_gen, 16);
 
+    {
+      // See also https://github.com/ckormanyos/wide-integer/issues/512
+      std::stringstream strm { };
+
+      strm << std::oct << u_gen;
+
+      std::string str_u_gen(arr_oct.data(), result_oct_as_chars.ptr);
+
+      const bool result_stream_and_to_chars_is_ok { (str_u_gen == strm.str()) };
+
+      result_is_ok = (result_stream_and_to_chars_is_ok && result_is_ok);
+    }
+
+    {
+      // See also https://github.com/ckormanyos/wide-integer/issues/512
+      std::stringstream strm { };
+
+      strm << u_gen;
+
+      std::string str_u_gen(arr_dec.data(), result_dec_as_chars.ptr);
+
+      const bool result_stream_and_to_chars_is_ok { (str_u_gen == strm.str()) };
+
+      result_is_ok = (result_stream_and_to_chars_is_ok && result_is_ok);
+
+      const bool result_to_chars_and_to_string_is_ok { str_u_gen == to_string(u_gen) };
+
+      result_is_ok = (result_to_chars_and_to_string_is_ok && result_is_ok);
+    }
+
+    {
+      // See also https://github.com/ckormanyos/wide-integer/issues/512
+      std::stringstream strm { };
+
+      strm << std::hex << u_gen;
+
+      std::string str_u_gen(arr_hex.data(), result_hex_as_chars.ptr);
+
+      const bool result_stream_and_to_chars_is_ok { (str_u_gen == strm.str()) };
+
+      result_is_ok = (result_stream_and_to_chars_is_ok && result_is_ok);
+    }
+
     auto result_oct_as_str = std::string(arr_oct.data());
          result_oct_as_str.insert(result_oct_as_str.begin(), static_cast<std::string::size_type>(UINT8_C(1)), '0');
 
