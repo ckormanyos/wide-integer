@@ -3310,10 +3310,6 @@
       return result;
     }
 
-    static constexpr auto my_fill_char() -> char { return '.'; }
-
-    static constexpr auto is_not_fill_char(char c) -> bool { return (c != my_fill_char()); }
-
     // Define the maximum buffer sizes for extracting
     // octal, decimal and hexadecimal string representations.
     static constexpr auto wr_string_max_buffer_size_oct() -> size_t
@@ -7342,8 +7338,6 @@
 
       string_storage_dec_type str_temp { };
 
-      str_temp.fill(local_wide_integer_type::my_fill_char());
-
       const auto wr_string_is_ok = x.wr_string(str_temp.begin(), base_rep, show_base, show_pos, is_uppercase);
 
       if(wr_string_is_ok)
@@ -7434,8 +7428,6 @@
 
     string_storage_dec_type str_temp { }; // LCOV_EXCL_LINE
 
-    str_temp.fill(local_wide_integer_type::my_fill_char());
-
     const auto base_rep     = static_cast<std::uint_fast8_t>(UINT8_C(10));
     const auto show_base    = false;
     const auto show_pos     = false;
@@ -7443,28 +7435,10 @@
 
     const auto wr_string_is_ok = x.wr_string(str_temp.begin(), base_rep, show_base, show_pos, is_uppercase);
 
-    auto rit_trim = detail::find_if_unsafe(str_temp.crbegin(),
-                                           str_temp.crend(),
-                                           local_wide_integer_type::is_not_fill_char);
-
-    const auto wr_string_and_trim_is_ok =
-    (
-      (rit_trim != str_temp.crend()) && wr_string_is_ok
-    );
-
     std::string str_result { };
 
-    if(wr_string_and_trim_is_ok)
+    if(wr_string_is_ok)
     {
-      const auto str_result_size =
-        static_cast<local_size_type>
-        (
-            str_temp.size()
-          - static_cast<local_size_type>(detail::distance_unsafe(str_temp.crbegin(), rit_trim))
-        );
-
-      detail::fill_unsafe(str_temp.begin() + str_result_size, str_temp.end(), '\0');
-
       str_result = std::string(str_temp.data());
     }
 

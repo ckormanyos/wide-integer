@@ -1924,22 +1924,26 @@ auto test_to_and_from_chars_and_to_string() -> bool // NOLINT(readability-functi
       // See also https://github.com/ckormanyos/wide-integer/issues/512
       std::stringstream strm { };
 
-      strm << std::hex << u_gen;
+      strm << u_gen;
 
-      std::string str_u_gen(arr_hex.data(), result_hex_as_chars.ptr);
+      std::string str_u_gen(arr_dec.data(), result_dec_as_chars.ptr);
 
       const bool result_stream_and_to_chars_is_ok { (str_u_gen == strm.str()) };
 
       result_is_ok = (result_stream_and_to_chars_is_ok && result_is_ok);
+
+      const bool result_to_chars_and_to_string_is_ok { str_u_gen == to_string(u_gen) };
+
+      result_is_ok = (result_to_chars_and_to_string_is_ok && result_is_ok);
     }
 
     {
       // See also https://github.com/ckormanyos/wide-integer/issues/512
       std::stringstream strm { };
 
-      strm << u_gen;
+      strm << std::hex << u_gen;
 
-      std::string str_u_gen(arr_dec.data(), result_dec_as_chars.ptr);
+      std::string str_u_gen(arr_hex.data(), result_hex_as_chars.ptr);
 
       const bool result_stream_and_to_chars_is_ok { (str_u_gen == strm.str()) };
 
