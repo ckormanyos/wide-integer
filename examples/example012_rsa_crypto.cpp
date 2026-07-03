@@ -88,8 +88,12 @@ namespace local_rsa
   } // namespace detail
 
   template<const std::size_t RsaBitCount,
-           typename LimbType = std::uint32_t,
-           typename AllocatorType = std::allocator<void>>
+  #if defined(WIDE_INTEGER_NAMESPACE)
+           typename LimbType = WIDE_INTEGER_NAMESPACE::math::wide_integer::uint_defaultlimb_t,
+  #else
+           typename LimbType = ::math::wide_integer::uint_defaultlimb_t,
+  #endif
+           typename AllocatorType = std::allocator<LimbType>>
   class rsa_base
   {
   public:
@@ -342,7 +346,11 @@ namespace local_rsa
   };
 
   template<const std::size_t RsaBitCount,
-           typename LimbType = std::uint32_t>
+  #if defined(WIDE_INTEGER_NAMESPACE)
+           typename LimbType = WIDE_INTEGER_NAMESPACE::math::wide_integer::uint_defaultlimb_t>
+  #else
+           typename LimbType = ::math::wide_integer::uint_defaultlimb_t>
+  #endif
   class rsa_fips : public rsa_base<RsaBitCount, LimbType>
   {
   private:
@@ -384,7 +392,11 @@ namespace local_rsa
   };
 
   template<const std::size_t RsaBitCount,
-           typename LimbType = std::uint32_t>
+  #if defined(WIDE_INTEGER_NAMESPACE)
+           typename LimbType = WIDE_INTEGER_NAMESPACE::math::wide_integer::uint_defaultlimb_t>
+  #else
+           typename LimbType = ::math::wide_integer::uint_defaultlimb_t>
+  #endif
   class rsa_traditional : public rsa_base<RsaBitCount, LimbType>
   {
   private:

@@ -2824,7 +2824,7 @@
 
         using string_storage_oct_type =
           std::conditional_t
-            <my_width2 <= static_cast<size_t>(UINT32_C(2048)),
+            <my_width2 <= static_cast<size_t>(UINT32_C(512)),
              detail::fixed_static_array <char,
                                          wr_string_max_buffer_size_oct()>,
              detail::fixed_dynamic_array<char,
@@ -2916,7 +2916,7 @@
 
         using string_storage_dec_type =
           std::conditional_t
-            <my_width2 <= static_cast<size_t>(UINT32_C(2048)),
+            <my_width2 <= static_cast<size_t>(UINT32_C(512)),
              detail::fixed_static_array <char,
                                          wr_string_max_buffer_size_dec()>,
              detail::fixed_dynamic_array<char,
@@ -3009,7 +3009,7 @@
 
         using string_storage_hex_type =
           std::conditional_t
-            <my_width2 <= static_cast<size_t>(UINT32_C(2048)),
+            <my_width2 <= static_cast<size_t>(UINT32_C(512)),
              detail::fixed_static_array <char,
                                          wr_string_max_buffer_size_hex()>,
              detail::fixed_dynamic_array<char,
@@ -5757,7 +5757,7 @@
     {
       using string_storage_oct_type =
         std::conditional_t
-          <local_wide_integer_type::my_width2 <= static_cast<size_t>(UINT32_C(2048)),
+          <local_wide_integer_type::my_width2 <= static_cast<size_t>(UINT32_C(512)),
             detail::fixed_static_array <char,
                                         local_wide_integer_type::wr_string_max_buffer_size_oct()>,
             detail::fixed_dynamic_array<char,
@@ -5766,8 +5766,10 @@
                                                                                          std::allocator<void>,
                                                                                          AllocatorType>>::template rebind_alloc<typename local_wide_integer_type::limb_type>>>;
 
-      // TBD: There is redundant storage of this kind both here
+      // There is redundant storage of this kind both here
       // in this subroutine as well as in the wr_string method.
+      // This is on purpose for convenience but might be
+      // changed in the future.
       string_storage_oct_type str_result { }; // LCOV_EXCL_LINE
 
       str_result.fill('\0');
@@ -5780,7 +5782,7 @@
     {
       using string_storage_dec_type =
         std::conditional_t
-          <local_wide_integer_type::my_width2 <= static_cast<size_t>(UINT32_C(2048)),
+          <local_wide_integer_type::my_width2 <= static_cast<size_t>(UINT32_C(512)),
             detail::fixed_static_array <char,
                                         local_wide_integer_type::wr_string_max_buffer_size_dec()>,
             detail::fixed_dynamic_array<char,
@@ -5789,8 +5791,10 @@
                                                                                           std::allocator<void>,
                                                                                           AllocatorType>>::template rebind_alloc<typename local_wide_integer_type::limb_type>>>;
 
-      // TBD: There is redundant storage of this kind both here
+      // There is redundant storage of this kind both here
       // in this subroutine as well as in the wr_string method.
+      // This is on purpose for convenience but might be
+      // changed in the future.
       string_storage_dec_type str_result { };
 
       str_result.fill('\0');
@@ -5803,7 +5807,7 @@
     {
       using string_storage_hex_type =
         std::conditional_t
-          <local_wide_integer_type::my_width2 <= static_cast<size_t>(UINT32_C(2048)),
+          <local_wide_integer_type::my_width2 <= static_cast<size_t>(UINT32_C(512)),
             detail::fixed_static_array <char,
                                         local_wide_integer_type::wr_string_max_buffer_size_hex()>,
             detail::fixed_dynamic_array<char,
@@ -7261,7 +7265,7 @@
     {
       using string_storage_oct_type =
         std::conditional_t
-          <local_wide_integer_type::my_width2 <= static_cast<size_t>(UINT32_C(2048)),
+          <local_wide_integer_type::my_width2 <= static_cast<size_t>(UINT32_C(512)),
             detail::fixed_static_array <char,
                                         local_wide_integer_type::wr_string_max_buffer_size_oct()>,
             detail::fixed_dynamic_array<char,
@@ -7270,14 +7274,14 @@
                                                                                          std::allocator<void>,
                                                                                          AllocatorType>>::template rebind_alloc<typename local_wide_integer_type::limb_type>>>;
 
-      using local_size_type = typename string_storage_oct_type::size_type;
-
       string_storage_oct_type str_temp { };
 
       const auto wr_string_is_ok = x.wr_string(str_temp.begin(), base_rep, show_base, show_pos, is_uppercase);
 
       if(wr_string_is_ok)
       {
+        using local_size_type = typename string_storage_oct_type::size_type;
+
         const auto chars_retrieved = static_cast<local_size_type>(detail::strlen_unsafe(str_temp.data()));
 
         const auto chars_to_get = static_cast<local_size_type>(detail::distance_unsafe(first, last));
@@ -7286,14 +7290,17 @@
                                          str_temp.cbegin() + (detail::min_unsafe)(chars_retrieved, chars_to_get),
                                          first);
 
-        result.ec = std::errc();
+        if(chars_retrieved <= chars_to_get)
+        {
+          result.ec = std::errc();
+        }
       }
     }
     else if(base_rep == static_cast<std::uint_fast8_t>(UINT8_C(16)))
     {
       using string_storage_hex_type =
         std::conditional_t
-          <local_wide_integer_type::my_width2 <= static_cast<size_t>(UINT32_C(2048)),
+          <local_wide_integer_type::my_width2 <= static_cast<size_t>(UINT32_C(512)),
             detail::fixed_static_array <char,
                                         local_wide_integer_type::wr_string_max_buffer_size_hex()>,
             detail::fixed_dynamic_array<char,
@@ -7302,14 +7309,14 @@
                                                                                          std::allocator<void>,
                                                                                          AllocatorType>>::template rebind_alloc<typename local_wide_integer_type::limb_type>>>;
 
-      using local_size_type = typename string_storage_hex_type::size_type;
-
       string_storage_hex_type str_temp { };
 
       const auto wr_string_is_ok = x.wr_string(str_temp.begin(), base_rep, show_base, show_pos, is_uppercase);
 
       if(wr_string_is_ok)
       {
+        using local_size_type = typename string_storage_hex_type::size_type;
+
         const auto chars_retrieved = static_cast<local_size_type>(detail::strlen_unsafe(str_temp.data()));
 
         const auto chars_to_get = static_cast<local_size_type>(detail::distance_unsafe(first, last));
@@ -7318,14 +7325,17 @@
                                          str_temp.cbegin() + (detail::min_unsafe)(chars_retrieved, chars_to_get),
                                          first);
 
-        result.ec = std::errc();
+        if(chars_retrieved <= chars_to_get)
+        {
+          result.ec = std::errc();
+        }
       }
     }
     else
     {
       using string_storage_dec_type =
         std::conditional_t
-          <local_wide_integer_type::my_width2 <= static_cast<size_t>(UINT32_C(2048)),
+          <local_wide_integer_type::my_width2 <= static_cast<size_t>(UINT32_C(512)),
             detail::fixed_static_array <char,
                                         local_wide_integer_type::wr_string_max_buffer_size_dec()>,
             detail::fixed_dynamic_array<char,
@@ -7334,14 +7344,14 @@
                                                                                          std::allocator<void>,
                                                                                          AllocatorType>>::template rebind_alloc<typename local_wide_integer_type::limb_type>>>;
 
-      using local_size_type = typename string_storage_dec_type::size_type;
-
       string_storage_dec_type str_temp { };
 
       const auto wr_string_is_ok = x.wr_string(str_temp.begin(), base_rep, show_base, show_pos, is_uppercase);
 
       if(wr_string_is_ok)
       {
+        using local_size_type = typename string_storage_dec_type::size_type;
+
         const auto chars_retrieved = static_cast<local_size_type>(detail::strlen_unsafe(str_temp.data()));
 
         const auto chars_to_get = static_cast<local_size_type>(detail::distance_unsafe(first, last));
@@ -7350,7 +7360,10 @@
                                          str_temp.cbegin() + (detail::min_unsafe)(chars_retrieved, chars_to_get),
                                          first);
 
-        result.ec = std::errc();
+        if(chars_retrieved <= chars_to_get)
+        {
+          result.ec = std::errc();
+        }
       }
     }
 
@@ -7415,7 +7428,7 @@
 
     using string_storage_dec_type =
       std::conditional_t
-        <local_wide_integer_type::my_width2 <= static_cast<size_t>(UINT32_C(2048)),
+        <local_wide_integer_type::my_width2 <= static_cast<size_t>(UINT32_C(512)),
           detail::fixed_static_array <char,
                                       local_wide_integer_type::wr_string_max_buffer_size_dec()>,
           detail::fixed_dynamic_array<char,
