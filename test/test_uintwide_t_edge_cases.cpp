@@ -1903,6 +1903,18 @@ auto test_to_and_from_chars_and_to_string() -> bool // NOLINT(readability-functi
 
     using std::to_chars;
 
+    const auto result_oct_as_chars_value_too_large = to_chars(arr_oct.data(), arr_oct.data() + std::size_t { UINT8_C(2) }, u_gen,  8);
+    const auto result_dec_as_chars_value_too_large = to_chars(arr_dec.data(), arr_dec.data() + std::size_t { UINT8_C(2) }, u_gen, 10);
+    const auto result_hex_as_chars_value_too_large = to_chars(arr_hex.data(), arr_hex.data() + std::size_t { UINT8_C(2) }, u_gen, 16);
+
+    const bool result_oct_as_chars_value_too_large_is_ok { (result_oct_as_chars_value_too_large.ec == std::errc::value_too_large) };
+    const bool result_dec_as_chars_value_too_large_is_ok { (result_dec_as_chars_value_too_large.ec == std::errc::value_too_large) };
+    const bool result_hex_as_chars_value_too_large_is_ok { (result_hex_as_chars_value_too_large.ec == std::errc::value_too_large) };
+
+    result_is_ok = (result_oct_as_chars_value_too_large_is_ok && result_is_ok);
+    result_is_ok = (result_dec_as_chars_value_too_large_is_ok && result_is_ok);
+    result_is_ok = (result_hex_as_chars_value_too_large_is_ok && result_is_ok);
+
     const auto result_oct_as_chars = to_chars(arr_oct.data(), arr_oct.data() + arr_oct.size(), u_gen,  8);
     const auto result_dec_as_chars = to_chars(arr_dec.data(), arr_dec.data() + arr_dec.size(), u_gen, 10);
     const auto result_hex_as_chars = to_chars(arr_hex.data(), arr_hex.data() + arr_hex.size(), u_gen, 16);
@@ -1915,7 +1927,7 @@ auto test_to_and_from_chars_and_to_string() -> bool // NOLINT(readability-functi
 
       std::string str_u_gen(arr_oct.data(), result_oct_as_chars.ptr);
 
-      const bool result_stream_and_to_chars_is_ok { (str_u_gen == strm.str()) };
+      const bool result_stream_and_to_chars_is_ok { (str_u_gen == strm.str()) && (result_oct_as_chars.ec == std::errc()) };
 
       result_is_ok = (result_stream_and_to_chars_is_ok && result_is_ok);
     }
@@ -1932,7 +1944,7 @@ auto test_to_and_from_chars_and_to_string() -> bool // NOLINT(readability-functi
 
       result_is_ok = (result_stream_and_to_chars_is_ok && result_is_ok);
 
-      const bool result_to_chars_and_to_string_is_ok { str_u_gen == to_string(u_gen) };
+      const bool result_to_chars_and_to_string_is_ok { (str_u_gen == to_string(u_gen)) && (result_dec_as_chars.ec == std::errc()) };
 
       result_is_ok = (result_to_chars_and_to_string_is_ok && result_is_ok);
     }
@@ -1945,7 +1957,7 @@ auto test_to_and_from_chars_and_to_string() -> bool // NOLINT(readability-functi
 
       std::string str_u_gen(arr_hex.data(), result_hex_as_chars.ptr);
 
-      const bool result_stream_and_to_chars_is_ok { (str_u_gen == strm.str()) };
+      const bool result_stream_and_to_chars_is_ok { (str_u_gen == strm.str()) && (result_hex_as_chars.ec == std::errc()) };
 
       result_is_ok = (result_stream_and_to_chars_is_ok && result_is_ok);
     }
