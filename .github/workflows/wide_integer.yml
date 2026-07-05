@@ -619,7 +619,7 @@ jobs:
       - name: run-test-on-target
         run: |
           sleep 2
-          PATH="${{ runner.workspace }}/wide-integer/emu_env/arm-gnu-toolchain-13.3.rel1-x86_64-arm-none-eabi/bin:$PATH"
+          PATH="${{ runner.workspace }}/wide-integer/emu_env/arm-gnu-toolchain-14.3.rel1-x86_64-arm-none-eabi/bin:$PATH"
           echo 'Run test on target'
           echo
           arm-none-eabi-gdb ./bin/${{ matrix.example }}.elf -x ./target/build/test_examples_emulator.gdb > ./${{ matrix.example }}.txt
