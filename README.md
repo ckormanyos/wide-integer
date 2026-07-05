@@ -136,7 +136,9 @@ an alias. The first template parameter `512U` sets the binary width
 sets the internal _limb_ _type_. The limb type must be unsigned and one of
 `std::uint8_t`, `std::uint16_t`, `std::uint32_t` or on some systems
 `std::uint64_t`. If the second template parameter `LimbType` is left blank,
-the default limb type is thirty-two bits in width and unsigned.
+the default limb type (i.e., `uint_defaultlimb_t`) is either
+`std::uint32_t` or `std::uint64_t`, with $64$-bit limbs if
+`WIDE_INTEGER_HAS_LIMB_TYPE_UINT64` is defined (see also the relevant docs below).
 
 The complete template signature of the `uintwide_t` class is shown below.
 
