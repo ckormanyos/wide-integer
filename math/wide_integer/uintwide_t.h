@@ -1509,7 +1509,7 @@
            typename LimbType,
            typename AllocatorType,
            const bool IsSigned>
-  auto to_string(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& x, const int base = 10) -> std::string;
+  auto to_string(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& x, int base = static_cast<int>(INT8_C(10))) -> std::string;
   #endif
 
   template<typename ForwardIterator,
@@ -7422,13 +7422,13 @@
            typename LimbType,
            typename AllocatorType,
            const bool IsSigned>
-  auto to_string(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& x, const int base) -> std::string
+  auto to_string(const uintwide_t<Width2, LimbType, AllocatorType, IsSigned>& x, int base) -> std::string
   {
     using local_wide_integer_type = uintwide_t<Width2, LimbType, AllocatorType, IsSigned>;
 
     std::string str_result { };
 
-    if(base == 8)
+    if(base == static_cast<int>(INT8_C(8)))
     {
       using string_storage_oct_type =
         std::conditional_t
@@ -7446,7 +7446,7 @@
 
       if(wr_string_is_ok) { str_result = std::string(str_temp.data()); }
     }
-    else if(base == 16)
+    else if(base == static_cast<int>(INT8_C(16)))
     {
       using string_storage_hex_type =
         std::conditional_t
