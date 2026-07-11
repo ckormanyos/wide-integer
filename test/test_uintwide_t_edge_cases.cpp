@@ -1930,6 +1930,10 @@ auto test_to_and_from_chars_and_to_string() -> bool // NOLINT(readability-functi
       const bool result_stream_and_to_chars_is_ok { (str_u_gen == strm.str()) && (result_oct_as_chars.ec == std::errc()) };
 
       result_is_ok = (result_stream_and_to_chars_is_ok && result_is_ok);
+
+      const bool result_to_chars_and_to_string_is_ok { (str_u_gen == to_string(u_gen, 8)) && (result_dec_as_chars.ec == std::errc()) };
+
+      result_is_ok = (result_to_chars_and_to_string_is_ok && result_is_ok);
     }
 
     {
@@ -1960,6 +1964,10 @@ auto test_to_and_from_chars_and_to_string() -> bool // NOLINT(readability-functi
       const bool result_stream_and_to_chars_is_ok { (str_u_gen == strm.str()) && (result_hex_as_chars.ec == std::errc()) };
 
       result_is_ok = (result_stream_and_to_chars_is_ok && result_is_ok);
+
+      const bool result_to_chars_and_to_string_is_ok { (str_u_gen == to_string(u_gen, 16)) && (result_dec_as_chars.ec == std::errc()) };
+
+      result_is_ok = (result_to_chars_and_to_string_is_ok && result_is_ok);
     }
 
     auto result_oct_as_str = std::string(arr_oct.data());
