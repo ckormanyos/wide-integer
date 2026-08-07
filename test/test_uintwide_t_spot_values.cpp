@@ -115,7 +115,7 @@ namespace from_issue_342
       const local_uint128_t a = 11;
       const local_uint128_t b =  3;
 
-      const auto r_pp = divmod(+a, +b);
+      const auto r_pp = div_rem_to_neg_inf(+a, +b);
 
       const auto result_pp_is_ok = ((r_pp.first == +3) && (r_pp.second == +2));
 
@@ -126,7 +126,7 @@ namespace from_issue_342
       const local_uint128_t a = 12;
       const local_uint128_t b =  3;
 
-      const auto r_pp = divmod(+a, +b);
+      const auto r_pp = div_rem_to_neg_inf(+a, +b);
 
       const auto result_divmod_is_ok = ((r_pp.first == +4) && (r_pp.second == 0));
 
@@ -154,10 +154,10 @@ namespace from_issue_342
       const local_int128_t a = 17;
       const local_int128_t b =  4;
 
-      const auto r_pp = divmod(+a, +b);
-      const auto r_pm = divmod(+a, -b);
-      const auto r_mp = divmod(-a, +b);
-      const auto r_mm = divmod(-a, -b);
+      const auto r_pp = div_rem_to_neg_inf(+a, +b);
+      const auto r_pm = div_rem_to_neg_inf(+a, -b);
+      const auto r_mp = div_rem_to_neg_inf(-a, +b);
+      const auto r_mm = div_rem_to_neg_inf(-a, -b);
 
       const auto result_pp_is_ok = ((r_pp.first == +4) && (r_pp.second == +1));
       const auto result_pm_is_ok = ((r_pm.first == -5) && (r_pm.second == -3));
@@ -179,10 +179,10 @@ namespace from_issue_342
       const local_int128_t a = 12;
       const local_int128_t b =  3;
 
-      const auto r_pp = divmod(+a, +b);
-      const auto r_pm = divmod(+a, -b);
-      const auto r_mp = divmod(-a, +b);
-      const auto r_mm = divmod(-a, -b);
+      const auto r_pp = div_rem_to_neg_inf(+a, +b);
+      const auto r_pm = div_rem_to_neg_inf(+a, -b);
+      const auto r_mp = div_rem_to_neg_inf(-a, +b);
+      const auto r_mm = div_rem_to_neg_inf(-a, -b);
 
       const auto result_pp_is_ok = ((r_pp.first == +4) && (r_pp.second == 0));
       const auto result_pm_is_ok = ((r_pm.first == -4) && (r_pm.second == 0));
@@ -204,10 +204,10 @@ namespace from_issue_342
       const local_int128_t a =  32;
       const local_int128_t b = 115;
 
-      const auto r_pp = divmod(+a, +b);
-      const auto r_pm = divmod(+a, -b);
-      const auto r_mp = divmod(-a, +b);
-      const auto r_mm = divmod(-a, -b);
+      const auto r_pp = div_rem_to_neg_inf(+a, +b);
+      const auto r_pm = div_rem_to_neg_inf(+a, -b);
+      const auto r_mp = div_rem_to_neg_inf(-a, +b);
+      const auto r_mm = div_rem_to_neg_inf(-a, -b);
 
       const auto result_pp_is_ok = ((r_pp.first == +0) && (r_pp.second == +32));
       const auto result_pm_is_ok = ((r_pm.first == -1) && (r_pm.second == -83));

@@ -44,6 +44,9 @@ auto jacobi(UnsignedIntegerType a, UnsignedIntegerType n) -> int
   // Calculate the integer's Jacobi symbol.
 
   // LCOV_EXCL_START
+    // Is the prime candidate equal to zero or an even integer?
+    // If so, then it is not prime (false).
+
   if(   ((static_cast<std::uint_fast8_t>(n) == 0U) && (n== 0U))
      || ((static_cast<std::uint_fast8_t>(n) % 2U) == 0U))
   {
@@ -61,7 +64,7 @@ auto jacobi(UnsignedIntegerType a, UnsignedIntegerType n) -> int
     {
       a /= 2U;
 
-      UnsignedIntegerType r { n % 8U }; // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
+      const ::std::uint_fast8_t r { static_cast<std::uint_fast8_t>(n % 8U) }; // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
 
       if(   ((static_cast<std::uint_fast8_t>(r) == 3U) && (r == 3U))  // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
          || ((static_cast<std::uint_fast8_t>(r) == 5U) && (r == 5U))) // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
@@ -70,7 +73,7 @@ auto jacobi(UnsignedIntegerType a, UnsignedIntegerType n) -> int
       }
     }
 
-    std::swap(a, n);
+    ::std::swap(a, n);
 
     const unsigned a_mod_4 { static_cast<std::uint_fast8_t>(a % 4U) }; // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
     const unsigned n_mod_4 { static_cast<std::uint_fast8_t>(n % 4U) }; // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)

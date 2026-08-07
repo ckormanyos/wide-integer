@@ -456,13 +456,13 @@ namespace example013_ecdsa
 
       while(r != 0U) // NOLINT(altera-id-dependent-backward-branch)
       {
-        const auto quotient = divmod(old_r, r).first;
+        const auto quotient = div_rem_to_neg_inf(old_r, r).first;
 
         const auto tmp_r = r; r = old_r - (quotient * r); old_r = tmp_r;
         const auto tmp_s = s; s = old_s - (quotient * s); old_s = tmp_s;
       }
 
-      return divmod(old_s, p).second;
+      return div_rem_to_neg_inf(old_s, p).second;
     }
 
     // Functions that work on curve points
@@ -488,7 +488,7 @@ namespace example013_ecdsa
           -  quadruple_sint_type(curve_b())
         );
 
-      const auto divmod_result = divmod(num, quadruple_sint_type(curve_p())).second;
+      const auto divmod_result = div_rem_to_neg_inf(num, quadruple_sint_type(curve_p())).second;
 
       return (divmod_result == 0);
     }
@@ -505,7 +505,7 @@ namespace example013_ecdsa
           : point_type
             {
                point.my_x,
-              -divmod(point.my_y, curve_p()).second
+              -div_rem_to_neg_inf(point.my_y, curve_p()).second
             }
       };
     }
@@ -564,8 +564,8 @@ namespace example013_ecdsa
       return
       point_type
       (
-        double_sint_type(divmod(x3, duodectuple_sint_type(curve_p())).second),
-        double_sint_type(divmod(y3, duodectuple_sint_type(curve_p())).second)
+        double_sint_type(div_rem_to_neg_inf(x3, duodectuple_sint_type(curve_p())).second),
+        double_sint_type(div_rem_to_neg_inf(y3, duodectuple_sint_type(curve_p())).second)
       );
     }
 
@@ -725,7 +725,7 @@ namespace example013_ecdsa
 
         const point_type pt(scalar_mult(k, point_type(curve_gx(), curve_gy())));
 
-        r = divmod(pt.my_x, curve_n()).second;
+        r = div_rem_to_neg_inf(pt.my_x, curve_n()).second;
 
         const sexatuple_sint_type
           num
@@ -734,7 +734,7 @@ namespace example013_ecdsa
             * sexatuple_sint_type(inverse_mod(k, curve_n()))
           };
 
-        s = double_sint_type { divmod(num, n).second };
+        s = double_sint_type { div_rem_to_neg_inf(num, n).second };
       }
 
       return
@@ -756,8 +756,8 @@ namespace example013_ecdsa
 
       const auto z = hash_message(msg_first, msg_last);
 
-      const double_sint_type u1(divmod(sexatuple_sint_type(z)         * w, n).second);
-      const double_sint_type u2(divmod(sexatuple_sint_type(sig.first) * w, n).second);
+      const double_sint_type u1(div_rem_to_neg_inf(sexatuple_sint_type(z)         * w, n).second);
+      const double_sint_type u2(div_rem_to_neg_inf(sexatuple_sint_type(sig.first) * w, n).second);
 
       const auto pt =
         point_add
@@ -768,7 +768,7 @@ namespace example013_ecdsa
 
       return
       (
-        divmod(double_sint_type(sig.first), curve_n()).second == divmod(pt.my_x, curve_n()).second
+        div_rem_to_neg_inf(double_sint_type(sig.first), curve_n()).second == div_rem_to_neg_inf(pt.my_x, curve_n()).second
       );
     }
   };

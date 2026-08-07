@@ -1446,6 +1446,22 @@
                         const uintwide_t<Width2, LimbType, AllocatorType, IsSignedRight>& b) -> std::enable_if_t<(IsSignedLeft || IsSignedRight), std::pair<uintwide_t<Width2, LimbType, AllocatorType, IsSignedLeft>, uintwide_t<Width2, LimbType, AllocatorType, IsSignedRight>>>;
 
   template<const size_t Width2,
+           typename LimbType,
+           typename AllocatorType,
+           const bool IsSignedLeft,
+           const bool IsSignedRight>
+  constexpr auto div_rem_to_neg_inf(const uintwide_t<Width2, LimbType, AllocatorType, IsSignedLeft >& a,
+                                    const uintwide_t<Width2, LimbType, AllocatorType, IsSignedRight>& b) -> std::enable_if_t<((!IsSignedLeft) && (!IsSignedRight)), std::pair<uintwide_t<Width2, LimbType, AllocatorType, IsSignedLeft>, uintwide_t<Width2, LimbType, AllocatorType, IsSignedRight>>>;
+
+  template<const size_t Width2,
+           typename LimbType,
+           typename AllocatorType,
+           const bool IsSignedLeft,
+           const bool IsSignedRight>
+  constexpr auto div_rem_to_neg_inf(const uintwide_t<Width2, LimbType, AllocatorType, IsSignedLeft >& a,
+                                    const uintwide_t<Width2, LimbType, AllocatorType, IsSignedRight>& b) -> std::enable_if_t<(IsSignedLeft || IsSignedRight), std::pair<uintwide_t<Width2, LimbType, AllocatorType, IsSignedLeft>, uintwide_t<Width2, LimbType, AllocatorType, IsSignedRight>>>;
+
+  template<const size_t Width2,
            typename LimbType = uint_defaultlimb_t,
            typename AllocatorType = void,
            const bool IsSigned = false>
@@ -6794,6 +6810,28 @@
     }
 
     return result;
+  }
+
+  template<const size_t Width2,
+           typename LimbType,
+           typename AllocatorType,
+           const bool IsSignedLeft,
+           const bool IsSignedRight>
+  constexpr auto div_rem_to_neg_inf(const uintwide_t<Width2, LimbType, AllocatorType, IsSignedLeft >& a,
+                                    const uintwide_t<Width2, LimbType, AllocatorType, IsSignedRight>& b) -> std::enable_if_t<((!IsSignedLeft) && (!IsSignedRight)), std::pair<uintwide_t<Width2, LimbType, AllocatorType, IsSignedLeft>, uintwide_t<Width2, LimbType, AllocatorType, IsSignedRight>>>
+  {
+    return divmod(a, b);
+  }
+
+  template<const size_t Width2,
+           typename LimbType,
+           typename AllocatorType,
+           const bool IsSignedLeft,
+           const bool IsSignedRight>
+  constexpr auto div_rem_to_neg_inf(const uintwide_t<Width2, LimbType, AllocatorType, IsSignedLeft >& a,
+                                    const uintwide_t<Width2, LimbType, AllocatorType, IsSignedRight>& b) -> std::enable_if_t<(IsSignedLeft || IsSignedRight), std::pair<uintwide_t<Width2, LimbType, AllocatorType, IsSignedLeft>, uintwide_t<Width2, LimbType, AllocatorType, IsSignedRight>>>
+  {
+    return divmod(a, b);
   }
 
   template<const size_t Width2,
