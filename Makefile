@@ -71,8 +71,6 @@ FILES_SRC    := test/test.cpp                                           \
 
 CPPFLAGS     := -std=$(STD)                                         \
                 -finline-functions                                  \
-                -march=native                                       \
-                -mtune=native                                       \
                 -O3                                                 \
                 -Werror                                             \
                 -Wall                                               \

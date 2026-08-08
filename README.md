@@ -271,8 +271,6 @@ cd wide_integer
 g++                                            \
 -finline-functions                             \
 -finline-limit=32                              \
--march=native                                  \
--mtune=native                                  \
 -O3                                            \
 -Wall                                          \
 -Wextra                                        \
