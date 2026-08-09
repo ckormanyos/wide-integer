@@ -49,7 +49,7 @@
 #include <boost/multiprecision/cpp_int.hpp>
 
 // cd /mnt/c/Users/ckorm/Documents/Ks/PC_Software/NumericalPrograms/ExtendedNumberTypes/wide_integer
-// g++ -march=native -mtune=native -O2 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -std=c++20 -I. -I/mnt/c/boost/boost_1_90_0 test/test_uintwide_t_boost_backend_via_test_arithmetic.cpp -o test_uintwide_t_boost_backend_via_test_arithmetic.exe
+// g++ -O2 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -std=c++20 -I. -I/mnt/c/boost/boost_1_90_0 test/test_uintwide_t_boost_backend_via_test_arithmetic.cpp -o test_uintwide_t_boost_backend_via_test_arithmetic.exe
 // ./test_uintwide_t_boost_backend_via_test_arithmetic.exe
 
 auto main() -> int

@@ -30,9 +30,7 @@ ifneq ($(MY_ALL_COV),)
 ALL_COV             := $(MY_ALL_COV)
 endif
 
-CXXFLAGS     = -march=native                                                   \
-               -mtune=native                                                   \
-               -O2                                                             \
+CXXFLAGS     = -O2                                                             \
                -Wall                                                           \
                -Wextra                                                         \
                -Wconversion                                                    \

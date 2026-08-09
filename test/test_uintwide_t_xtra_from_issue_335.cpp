@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright Christopher Kormanyos 2022 - 2025.
+//  Copyright Christopher Kormanyos 2022 - 2026.
 //  Distributed under the Boost Software License,
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -14,7 +14,7 @@
 #endif
 
 // cd /mnt/c/Users/User/Documents/Ks/PC_Software/NumericalPrograms/ExtendedNumberTypes/wide_integer
-// g++-10 -finline-functions -m64 -O3 -Werror -Wall -Wextra -Wconversion -Wsign-conversion -Wshadow -Wundef -Wunused-parameter -Wuninitialized -Wunreachable-code -Winit-self -Wzero-as-null-pointer-constant -std=c++20 -DWIDE_INTEGER_DISABLE_PRIVATE_CLASS_DATA_MEMBERS -DWIDE_INTEGER_NAMESPACE=ckormanyos -I. test/test_uintwide_t_xtra_from_issue_335.cpp -o test_uintwide_t_xtra_from_issue_335.exe
+// g++-13 -finline-functions -O3 -Werror -Wall -Wextra -Wconversion -Wsign-conversion -Wshadow -Wundef -Wunused-parameter -Wuninitialized -Wunreachable-code -Winit-self -Wzero-as-null-pointer-constant -std=c++20 -DWIDE_INTEGER_DISABLE_PRIVATE_CLASS_DATA_MEMBERS -DWIDE_INTEGER_NAMESPACE=ckormanyos -I. test/test_uintwide_t_xtra_from_issue_335.cpp -o test_uintwide_t_xtra_from_issue_335.exe
 
 #include <math/wide_integer/uintwide_t.h>
 
