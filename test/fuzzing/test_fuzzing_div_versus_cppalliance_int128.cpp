@@ -104,7 +104,7 @@ int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size)
     const std::uint64_t b_hi64 { *reinterpret_cast<const std::uint64_t*>(tmp_data.data() + std::size_t { UINT8_C(24) }) };
 
     // Import data into the uint values.
-    using local_uint_type = ::boost::int128::uint128_t;
+    using local_uint_type = ::boost::int128::uint128;
 
     #if defined(WIDE_INTEGER_NAMESPACE)
     using cntrl_uint_type = ::WIDE_INTEGER_NAMESPACE::math::wide_integer::uint128_t;
