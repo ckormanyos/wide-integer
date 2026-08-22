@@ -115,14 +115,15 @@ auto ::math::wide_integer::example008a_miller_rabin_prime() -> bool
   random_engine1_type gen1(static_cast<typename random_engine1_type::result_type>(seed_start));
   random_engine2_type gen2(static_cast<typename random_engine2_type::result_type>(seed_start));
 
-  // Select prime candidates from a range of 10^150 ... max(uint512_t)-1.
+  // Select prime candidates from high in the value range of the type.
   constexpr local_wide_integer_type
     dist_min
     (
-      "1"
-      "00000000000000000000000000000000000000000000000000"
-      "00000000000000000000000000000000000000000000000000"
-      "00000000000000000000000000000000000000000000000000"
+      "0x"
+      "E0000000'00000000'00000000'00000000'"
+      "00000000'00000000'00000000'00000000'"
+      "00000000'00000000'00000000'00000000'"
+      "00000000'00000000'00000000'00000001"
     );
 
   local_distribution_type
