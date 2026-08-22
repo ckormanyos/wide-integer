@@ -13,7 +13,7 @@ namespace local_gcd
   auto example006_gcd_part_01() -> bool;
   auto example006_gcd_part_02() -> bool;
 
-  auto example006_gcd_part_01() -> bool
+  auto example006_gcd_part_01() -> bool // LCOV_EXCL_LINE
   {
     #if defined(WIDE_INTEGER_NAMESPACE)
     using local_wide_integer_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::uint256_t;
@@ -63,7 +63,7 @@ namespace local_gcd
       result_is_ok = (result_gcd_is_ok && result_is_ok);
     }
 
-    return result_is_ok;
+    return result_is_ok; // LCOV_EXCL_LINE
   }
 
   auto example006_gcd_part_02() -> bool
