@@ -16,47 +16,49 @@ else
 fi
 
 echo "compiling test/fuzzing/test_fuzzing_add.cpp"   && clang++ -std=c++20 -g -O2 -Wall -Wextra -fsanitize=fuzzer -I. -I$MY_BOOST -DWIDE_INTEGER_HAS_LIMB_TYPE_UINT64 test/fuzzing/test_fuzzing_add.cpp   -o test_fuzzing_add
+rnd_seed0=-seed=$(($(date +%s%N) % 4294967295))
 echo "compiling test/fuzzing/test_fuzzing_sub.cpp"   && clang++ -std=c++20 -g -O2 -Wall -Wextra -fsanitize=fuzzer -I. -I$MY_BOOST -DWIDE_INTEGER_HAS_LIMB_TYPE_UINT64 test/fuzzing/test_fuzzing_sub.cpp   -o test_fuzzing_sub
+rnd_seed1=-seed=$(($(date +%s%N) % 4294967295))
 echo "compiling test/fuzzing/test_fuzzing_mul.cpp"   && clang++ -std=c++20 -g -O2 -Wall -Wextra -fsanitize=fuzzer -I. -I$MY_BOOST -DWIDE_INTEGER_HAS_LIMB_TYPE_UINT64 test/fuzzing/test_fuzzing_mul.cpp   -o test_fuzzing_mul
+rnd_seed2=-seed=$(($(date +%s%N) % 4294967295))
 echo "compiling test/fuzzing/test_fuzzing_div.cpp"   && clang++ -std=c++20 -g -O2 -Wall -Wextra -fsanitize=fuzzer -I. -I$MY_BOOST -DWIDE_INTEGER_HAS_LIMB_TYPE_UINT64 test/fuzzing/test_fuzzing_div.cpp   -o test_fuzzing_div
+rnd_seed3=-seed=$(($(date +%s%N) % 4294967295))
 echo "compiling test/fuzzing/test_fuzzing_sdiv.cpp"  && clang++ -std=c++20 -g -O2 -Wall -Wextra -fsanitize=fuzzer -I. -I$MY_BOOST -DWIDE_INTEGER_HAS_LIMB_TYPE_UINT64 test/fuzzing/test_fuzzing_sdiv.cpp  -o test_fuzzing_sdiv
+rnd_seed4=-seed=$(($(date +%s%N) % 4294967295))
 echo "compiling test/fuzzing/test_fuzzing_sqrt.cpp"  && clang++ -std=c++20 -g -O2 -Wall -Wextra -fsanitize=fuzzer -I. -I$MY_BOOST -DWIDE_INTEGER_HAS_LIMB_TYPE_UINT64 test/fuzzing/test_fuzzing_sqrt.cpp  -o test_fuzzing_sqrt
+rnd_seed5=-seed=$(($(date +%s%N) % 4294967295))
 echo "compiling test/fuzzing/test_fuzzing_powm.cpp"  && clang++ -std=c++20 -g -O2 -Wall -Wextra -fsanitize=fuzzer -I. -I$MY_BOOST -DWIDE_INTEGER_HAS_LIMB_TYPE_UINT64 test/fuzzing/test_fuzzing_powm.cpp  -o test_fuzzing_powm
+rnd_seed6=-seed=$(($(date +%s%N) % 4294967295))
 echo "compiling test/fuzzing/test_fuzzing_prime.cpp" && clang++ -std=c++20 -g -O2 -Wall -Wextra -fsanitize=fuzzer -I. -I$MY_BOOST -DWIDE_INTEGER_HAS_LIMB_TYPE_UINT64 test/fuzzing/test_fuzzing_prime.cpp -o test_fuzzing_prime
+rnd_seed7=-seed=$(($(date +%s%N) % 4294967295))
 
 
 ls -la test_fuzzing_add test_fuzzing_sub test_fuzzing_mul test_fuzzing_div test_fuzzing_sdiv test_fuzzing_sqrt test_fuzzing_powm test_fuzzing_prime
 exit_compile=$?
 
-rnd_seed=-seed=$(($(date +%s%N) % 4294967295))
-
-echo
-echo seed is $rnd_seed
-echo
-
 # Start each executable in the background and save their process IDs
-./test_fuzzing_add -max_total_time=600 -max_len=66 -verbosity=0 -close_fd_mask=3 $rnd_seed &
+./test_fuzzing_add -max_total_time=600 -max_len=66 -verbosity=0 -close_fd_mask=3 $rnd_seed0 &
 pid_add=$!
 
-./test_fuzzing_sub -max_total_time=600 -max_len=66 -verbosity=0 -close_fd_mask=3 $rnd_seed &
+./test_fuzzing_sub -max_total_time=600 -max_len=66 -verbosity=0 -close_fd_mask=3 $rnd_seed1 &
 pid_sub=$!
 
-./test_fuzzing_mul -max_total_time=600 -max_len=66 -verbosity=0 -close_fd_mask=3 $rnd_seed &
+./test_fuzzing_mul -max_total_time=600 -max_len=66 -verbosity=0 -close_fd_mask=3 $rnd_seed2 &
 pid_mul=$!
 
-./test_fuzzing_div -max_total_time=600 -max_len=66 -verbosity=0 -close_fd_mask=3 $rnd_seed &
+./test_fuzzing_div -max_total_time=600 -max_len=66 -verbosity=0 -close_fd_mask=3 $rnd_seed3 &
 pid_div=$!
 
-./test_fuzzing_sdiv -max_total_time=600 -max_len=66 -verbosity=0 -close_fd_mask=3 $rnd_seed &
+./test_fuzzing_sdiv -max_total_time=600 -max_len=66 -verbosity=0 -close_fd_mask=3 $rnd_seed4 &
 pid_sdiv=$!
 
-./test_fuzzing_sqrt -max_total_time=600 -max_len=34 -verbosity=0 -close_fd_mask=3 $rnd_seed &
+./test_fuzzing_sqrt -max_total_time=600 -max_len=34 -verbosity=0 -close_fd_mask=3 $rnd_seed5 &
 pid_sqrt=$!
 
-./test_fuzzing_powm -max_total_time=600 -max_len=98 -verbosity=0 -close_fd_mask=3 $rnd_seed &
+./test_fuzzing_powm -max_total_time=600 -max_len=98 -verbosity=0 -close_fd_mask=3 $rnd_seed6 &
 pid_powm=$!
 
-./test_fuzzing_prime -max_total_time=600 -max_len=34 -verbosity=0 -close_fd_mask=3 $rnd_seed &
+./test_fuzzing_prime -max_total_time=600 -max_len=34 -verbosity=0 -close_fd_mask=3 $rnd_seed7 &
 pid_prime=$!
 
 

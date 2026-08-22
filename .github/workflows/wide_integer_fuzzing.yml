@@ -24,7 +24,7 @@ jobs:
       matrix:
         compiler: [ clang++ ]
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           fetch-depth: '0'
       - name: update-tools
@@ -42,7 +42,7 @@ jobs:
         run: |
           grep BOOST_VERSION ../boost-root/boost/version.hpp
           ${{ matrix.compiler }} -v
-          echo "run fuzzing test"
+          echo "execute run_fuzzing.sh"
           ./run_fuzzing.sh
   clang-fuzzing-versus-cppalliance-int128:
     runs-on: ubuntu-latest
@@ -54,7 +54,7 @@ jobs:
       matrix:
         compiler: [ clang++ ]
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           fetch-depth: '0'
       - name: update-tools

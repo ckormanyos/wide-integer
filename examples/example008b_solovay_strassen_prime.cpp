@@ -248,11 +248,11 @@ auto solovay_strassen(const UnsignedIntegerType& np, const int iterations, Distr
 namespace local_example008b_solovay_strassen_prime
 {
   #if defined(WIDE_INTEGER_NAMESPACE)
-  using wide_integer_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<static_cast<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t>(UINT32_C(512))>;
-  using distribution_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::uniform_int_distribution<wide_integer_type::my_width2, typename wide_integer_type::limb_type>;
+  using local_wide_integer_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::uintwide_t<static_cast<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t>(UINT32_C(512))>;
+  using distribution_type = WIDE_INTEGER_NAMESPACE::math::wide_integer::uniform_int_distribution<local_wide_integer_type::my_width2, typename local_wide_integer_type::limb_type>;
   #else
-  using wide_integer_type = ::math::wide_integer::uintwide_t<static_cast<math::wide_integer::size_t>(UINT32_C(512))>;
-  using distribution_type = ::math::wide_integer::uniform_int_distribution<wide_integer_type::my_width2, typename wide_integer_type::limb_type>;
+  using local_wide_integer_type = ::math::wide_integer::uintwide_t<static_cast<math::wide_integer::size_t>(UINT32_C(512))>;
+  using distribution_type = ::math::wide_integer::uniform_int_distribution<local_wide_integer_type::my_width2, typename local_wide_integer_type::limb_type>;
   #endif
 
   using random_engine1_type = std::mt19937;
@@ -267,23 +267,23 @@ namespace local_example008b_solovay_strassen_prime
 
   auto example008b_solovay_strassen_prime_edges() -> bool
   {
-    const std::array<std::pair<wide_integer_type, bool>, std::size_t { UINT8_C(8) }> edge_cases =
+    const std::array<std::pair<local_wide_integer_type, bool>, std::size_t { UINT8_C(8) }> edge_cases =
     {
-      std::pair<wide_integer_type, bool> { wide_integer_type { 0 }, false },
-      std::pair<wide_integer_type, bool> { wide_integer_type { 1 }, false },
-      std::pair<wide_integer_type, bool> { wide_integer_type { 2 }, true },
-      std::pair<wide_integer_type, bool> { wide_integer_type { 3 }, true },
-      std::pair<wide_integer_type, bool> { wide_integer_type { 19 }, true },
-      std::pair<wide_integer_type, bool> { wide_integer_type { 223 }, true },
-      std::pair<wide_integer_type, bool> { wide_integer_type { 223 } * 227, false },
-      std::pair<wide_integer_type, bool> { wide_integer_type { std::uint64_t { UINT64_C(6408001374760705163) } }, false },
+      std::pair<local_wide_integer_type, bool> { local_wide_integer_type { 0 }, false },
+      std::pair<local_wide_integer_type, bool> { local_wide_integer_type { 1 }, false },
+      std::pair<local_wide_integer_type, bool> { local_wide_integer_type { 2 }, true },
+      std::pair<local_wide_integer_type, bool> { local_wide_integer_type { 3 }, true },
+      std::pair<local_wide_integer_type, bool> { local_wide_integer_type { 19 }, true },
+      std::pair<local_wide_integer_type, bool> { local_wide_integer_type { 223 }, true },
+      std::pair<local_wide_integer_type, bool> { local_wide_integer_type { 223 } * 227, false },
+      std::pair<local_wide_integer_type, bool> { local_wide_integer_type { std::uint64_t { UINT64_C(6408001374760705163) } }, false },
     };
 
     // Use a pseudo-random seed for this test.
 
     random_engine2_type generator2(util::util_pseudorandom_time_point_seed::value<typename random_engine2_type::result_type>());
 
-    distribution_type dist2 { wide_integer_type { 2U }, (std::numeric_limits<wide_integer_type>::max)() };
+    distribution_type dist2 { local_wide_integer_type { 2U }, (std::numeric_limits<local_wide_integer_type>::max)() };
 
     bool result_edge_is_ok { true };
 
@@ -315,21 +315,22 @@ namespace local_example008b_solovay_strassen_prime
     random_engine1_type generator1(util::util_pseudorandom_time_point_seed::value<typename random_engine1_type::result_type>());
     random_engine2_type generator2(util::util_pseudorandom_time_point_seed::value<typename random_engine2_type::result_type>());
 
-    // Select prime candidates from a range of 10^150 ... max(uint512_t) - 1.
-    constexpr wide_integer_type
+    // Select prime candidates from high in the value range of the type.
+    constexpr local_wide_integer_type
       dist_min
       (
-        "1"
-        "00000000000000000000000000000000000000000000000000"
-        "00000000000000000000000000000000000000000000000000"
-        "00000000000000000000000000000000000000000000000000"
+        "0x"
+        "E0000000'00000000'00000000'00000000'"
+        "00000000'00000000'00000000'00000000'"
+        "00000000'00000000'00000000'00000000'"
+        "00000000'00000000'00000000'00000001"
       );
 
     distribution_type
       dist1
       {
         dist_min,
-        (std::numeric_limits<wide_integer_type>::max)() - 1
+        (std::numeric_limits<local_wide_integer_type>::max)() - 1
       };
 
     bool result_is_ok { false };
@@ -347,9 +348,9 @@ namespace local_example008b_solovay_strassen_prime
       // Each one should detect prime/non-prime with the same Boolean result
       // for a given prime candidate p0.
 
-      const wide_integer_type p0 { dist1(generator1) };
+      const local_wide_integer_type p0 { dist1(generator1) };
 
-      distribution_type dist2 { wide_integer_type { 2U }, p0 - 1 };
+      distribution_type dist2 { local_wide_integer_type { 2U }, p0 - 1 };
 
       const bool result_solovay_strassen_is_prime =
         local_solovay_strassen::solovay_strassen

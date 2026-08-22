@@ -24,7 +24,7 @@ jobs:
         standard: [ c++14 ]
         compiler: [ g++ ]
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           fetch-depth: '0'
       - name: update-tools
@@ -54,7 +54,7 @@ jobs:
           echo "return to wide-integer root directory"
           cd ../..
       - name: upload-codecov
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v7
         with:
           plugin: gcov
           file: ${{ runner.workspace }}/wide-integer/.gcov/make/coverage.info
