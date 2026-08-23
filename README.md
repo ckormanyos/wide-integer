@@ -5,7 +5,7 @@
     <a href="https://github.com/ckormanyos/wide-integer/actions">
         <img src="https://github.com/ckormanyos/wide-integer/actions/workflows/wide_integer.yml/badge.svg" alt="Build Status"></a>
     <a href="https://github.com/ckormanyos/wide-integer/actions">
-        <img src="https://github.com/ckormanyos/wide-integer/actions/workflows/wide_integer_fuzzing.yml/badge.svg" alt="Build Status"></a>
+        <img src="https://github.com/ckormanyos/wide-integer/actions/workflows/wide_integer_fuzzing.yml/badge.svg" alt="fuzzing"></a>
     <a href="https://github.com/ckormanyos/wide-integer/issues?q=is%3Aissue+is%3Aopen+sort%3Aupdated-desc">
         <img src="https://custom-icon-badges.herokuapp.com/github/issues-raw/ckormanyos/wide-integer?logo=github" alt="Issues" /></a>
     <a href="https://github.com/ckormanyos/wide-integer/actions?query=workflow%3ACodeQL">
@@ -196,6 +196,12 @@ Various interesting and algorithmically challenging
 It is hoped that the examples provide inspiration and guidance
 on how to use wide-integer.
 
+<p align="center">
+    <a href="https://godbolt.org/z/74a5zcjcY" alt="godbolt">
+        <img src="https://img.shields.io/badge/try%20it%20on-godbolt-green" /></a>
+</p>
+
+
   - [example000_numeric_limits.cpp](./examples/example000_numeric_limits.cpp) verifies parts of the specializations of `std::numeric_limits` for (unsigned) `uint256_t`and (signed) `int256_t`.
   - [example000a_builtin_convert.cpp](./examples/example000a_builtin_convert.cpp) exercises some conversions to/from built-in types/`uintwide_t`.
   - [example001_mul_div.cpp](./examples/example001_mul_div.cpp) performs multiplication and division.
@@ -224,7 +230,12 @@ on how to use wide-integer.
 
 ### Build Status
 
-[![Build Status](https://github.com/ckormanyos/wide-integer/actions/workflows/wide_integer.yml/badge.svg)](https://github.com/ckormanyos/wide-integer/actions)
+<p align="center">
+    <a href="https://github.com/ckormanyos/wide-integer/actions">
+        <img src="https://github.com/ckormanyos/wide-integer/actions/workflows/wide_integer.yml/badge.svg" alt="Build Status"></a>
+    <a href="https://github.com/ckormanyos/wide-integer/actions">
+        <img src="https://github.com/ckormanyos/wide-integer/actions/workflows/wide_integer_fuzzing.yml/badge.svg" alt="fuzzing"></a>
+</p>
 
 The recent status of building and executing the tests and examples
 in Continuous Integration (CI) is always shown in the Build Status banner.
