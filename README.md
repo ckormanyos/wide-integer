@@ -5,7 +5,7 @@
     <a href="https://github.com/ckormanyos/wide-integer/actions">
         <img src="https://github.com/ckormanyos/wide-integer/actions/workflows/wide_integer.yml/badge.svg" alt="Build Status"></a>
     <a href="https://github.com/ckormanyos/wide-integer/actions">
-        <img src="https://github.com/ckormanyos/wide-integer/actions/workflows/wide_integer_fuzzing.yml/badge.svg" alt="Build Status"></a>
+        <img src="https://github.com/ckormanyos/wide-integer/actions/workflows/wide_integer_fuzzing.yml/badge.svg" alt="fuzzing"></a>
     <a href="https://github.com/ckormanyos/wide-integer/issues?q=is%3Aissue+is%3Aopen+sort%3Aupdated-desc">
         <img src="https://custom-icon-badges.herokuapp.com/github/issues-raw/ckormanyos/wide-integer?logo=github" alt="Issues" /></a>
     <a href="https://github.com/ckormanyos/wide-integer/actions?query=workflow%3ACodeQL">
@@ -191,6 +191,11 @@ and the integer type will be unsigned.
 
 ## Examples
 
+<p align="center">
+    <a href="https://godbolt.org/z/74a5zcjcY" alt="godbolt">
+        <img src="https://img.shields.io/badge/try%20it%20on-godbolt-green" /></a>
+</p>
+
 Various interesting and algorithmically challenging
 [examples](./examples) have been implemented.
 It is hoped that the examples provide inspiration and guidance
@@ -224,7 +229,12 @@ on how to use wide-integer.
 
 ### Build Status
 
-[![Build Status](https://github.com/ckormanyos/wide-integer/actions/workflows/wide_integer.yml/badge.svg)](https://github.com/ckormanyos/wide-integer/actions)
+<p align="center">
+    <a href="https://github.com/ckormanyos/wide-integer/actions">
+        <img src="https://github.com/ckormanyos/wide-integer/actions/workflows/wide_integer.yml/badge.svg" alt="Build Status"></a>
+    <a href="https://github.com/ckormanyos/wide-integer/actions">
+        <img src="https://github.com/ckormanyos/wide-integer/actions/workflows/wide_integer_fuzzing.yml/badge.svg" alt="fuzzing"></a>
+</p>
 
 The recent status of building and executing the tests and examples
 in Continuous Integration (CI) is always shown in the Build Status banner.
