@@ -191,16 +191,15 @@ and the integer type will be unsigned.
 
 ## Examples
 
-Various interesting and algorithmically challenging
-[examples](./examples) have been implemented.
-It is hoped that the examples provide inspiration and guidance
-on how to use wide-integer.
-
 <p align="center">
     <a href="https://godbolt.org/z/74a5zcjcY" alt="godbolt">
         <img src="https://img.shields.io/badge/try%20it%20on-godbolt-green" /></a>
 </p>
 
+Various interesting and algorithmically challenging
+[examples](./examples) have been implemented.
+It is hoped that the examples provide inspiration and guidance
+on how to use wide-integer.
 
   - [example000_numeric_limits.cpp](./examples/example000_numeric_limits.cpp) verifies parts of the specializations of `std::numeric_limits` for (unsigned) `uint256_t`and (signed) `int256_t`.
   - [example000a_builtin_convert.cpp](./examples/example000a_builtin_convert.cpp) exercises some conversions to/from built-in types/`uintwide_t`.
