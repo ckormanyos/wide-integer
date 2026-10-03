@@ -747,7 +747,8 @@
       }
     }
 
-    template<typename InputIterator>
+    template<typename InputIterator,
+             typename = std::enable_if_t<!std::is_integral<InputIterator>::value>>
     constexpr dynamic_array(InputIterator first,
                             InputIterator last,
                             const allocator_type& alloc_in = allocator_type())
@@ -808,7 +809,7 @@
       {
         using allocator_traits_type = std::allocator_traits<allocator_type>;
 
-        if constexpr (allocator_traits_type::propagate_on_container_copy_assignment::value)
+        if(allocator_traits_type::propagate_on_container_copy_assignment::value)
         {
           dynamic_array temp(other, other.my_alloc);
           release_storage();
@@ -835,15 +836,10 @@
       {
         using allocator_traits_type = std::allocator_traits<allocator_type>;
 
-        if constexpr (allocator_traits_type::propagate_on_container_move_assignment::value)
+        if(allocator_traits_type::propagate_on_container_move_assignment::value)
         {
           release_storage();
-          my_alloc = std::move(other.my_alloc);
-          take_storage(other);
-        }
-        else if constexpr (allocator_traits_type::is_always_equal::value)
-        {
-          release_storage();
+          my_alloc = other.my_alloc;
           take_storage(other);
         }
         else if(my_alloc == other.my_alloc)
@@ -913,11 +909,11 @@
       #endif
     }
 
-    constexpr auto swap(dynamic_array& other) noexcept(std::allocator_traits<allocator_type>::propagate_on_container_swap::value || std::allocator_traits<allocator_type>::is_always_equal::value) -> void
+    constexpr auto swap(dynamic_array& other) -> void
     {
       if(this != &other)
       {
-        if constexpr (std::allocator_traits<allocator_type>::propagate_on_container_swap::value)
+        if(std::allocator_traits<allocator_type>::propagate_on_container_swap::value)
         {
           using std::swap;
           swap(my_alloc, other.my_alloc);
