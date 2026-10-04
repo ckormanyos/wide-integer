@@ -878,7 +878,7 @@
       #endif
     }
 
-    constexpr auto swap(dynamic_array& other) -> void // NOLINT(cppcoreguidelines-noexcept-move-operations,hicpp-noexcept-move,performance-noexcept-move-constructor)
+    constexpr auto swap(dynamic_array& other) -> void // NOLINT(cppcoreguidelines-noexcept-swap,performance-noexcept-swap)
     {
       if(this != &other)
       {
