@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////
-//  Copyright Christopher Kormanyos 2023 - 2025.
+//  Copyright Christopher Kormanyos 2023- 2026.
 //  Distributed under the Boost Software License,
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -10,10 +10,9 @@
 
   #include <algorithm>
   #include <array>
+  #include <chrono>
   #include <cstddef>
   #include <cstdint>
-  #include <ctime>
-  #include <iomanip>
   #include <limits>
   #include <sstream>
   #include <string>
@@ -26,52 +25,29 @@
     template<typename IntegralType>
     static auto value() -> IntegralType
     {
-      const std::uint64_t t_now { now() };
+      using seed_buffer_type = std::array<std::uint8_t, static_cast<std::size_t>(UINT8_C(64))>;
 
-      std::stringstream strm { };
+      seed_buffer_type seed_buffer { };
+      seed_buffer.fill(static_cast<std::uint8_t>(UINT8_C(0)));
 
-      using strtime_uint8_array_type = std::array<std::uint8_t, static_cast<std::size_t>(UINT8_C(16))>;
+      const auto time_since_epoch_count = std::chrono::high_resolution_clock::now().time_since_epoch().count();
 
-      strtime_uint8_array_type buf_u8 { }; buf_u8.fill(static_cast<std::uint8_t>(UINT8_C(0)));
+      std::stringstream strm;
+      strm << time_since_epoch_count;
 
-      // Get the string representation of the time point.
-      strm << std::setw(std::tuple_size<strtime_uint8_array_type>::value) << std::hex << std::uppercase << std::setfill('0') << t_now;
+      const auto seed_text = strm.str();
+      const auto seed_text_length = (std::min)(seed_text.size(), seed_buffer.size());
 
-      const std::string str_tm { strm.str() };
-
-      std::copy(str_tm.cbegin(), str_tm.cend(), buf_u8.begin());
+      std::copy_n(seed_text.cbegin(), seed_text_length, seed_buffer.begin());
 
       using local_integral_type = IntegralType;
 
-      return static_cast<local_integral_type>(crc_crc64(buf_u8.data(), buf_u8.size()));
+      return static_cast<local_integral_type>(crc_crc64(seed_buffer.data(), seed_text_length));
     }
 
     static constexpr auto test() noexcept -> bool;
 
   private:
-    static auto now() -> std::uint64_t
-    {
-      #if defined(__CYGWIN__)
-
-      return static_cast<std::uint64_t>(std::clock());
-
-      #else
-
-      // Get the time (t_now).
-      timespec ts { };
-
-      static_cast<void>(timespec_get(&ts, TIME_UTC));
-
-      return
-        static_cast<std::uint64_t>
-        (
-            static_cast<std::uint64_t>(static_cast<std::uint64_t>(ts.tv_sec) * UINT64_C(1000000000))
-          + static_cast<std::uint64_t>(ts.tv_nsec)
-        );
-
-      #endif
-    }
-
     template<const std::size_t NumberOfBits,
              typename UnsignedIntegralType>
     static constexpr auto crc_bitwise_template(const std::uint8_t*        message,
@@ -154,17 +130,15 @@
 
   constexpr auto util_pseudorandom_time_point_seed::test() noexcept -> bool
   {
-    using crc64_test_data_array_type = std::array<std::uint8_t, std::size_t { UINT8_C(9) }>;
-
-    constexpr crc64_test_data_array_type crc64_test_data =
-    {{
+    constexpr std::uint8_t crc64_test_data[static_cast<std::size_t>(UINT8_C(9))] = // NOLINT(cppcoreguidelines-avoid-c-arrays,hicpp-avoid-c-arrays,modernize-avoid-c-arrays)
+    {
       0x31U, 0x32U, 0x33U, 0x34U, 0x35U, 0x36U, 0x37U, 0x38U, 0x39U
-    }};
+    };
 
     constexpr auto crc64_test_result =  crc_bitwise_template<static_cast<std::size_t>(UINT8_C(64)), std::uint64_t>
     (
-      &crc64_test_data[std::size_t { UINT8_C(0) }],
-      std::tuple_size<crc64_test_data_array_type>::value,
+      crc64_test_data, // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay)
+      sizeof(crc64_test_data),
       static_cast<std::uint64_t>(UINT64_C(0x42F0E1EBA9EA3693)),
       static_cast<std::uint64_t>(UINT64_C(0x0000000000000000)),
       static_cast<std::uint64_t>(UINT64_C(0x0000000000000000))
