@@ -814,7 +814,7 @@
     }
 
     // Move assignment operator.
-    constexpr auto operator=(dynamic_array&& other) -> dynamic_array& // NOLINT(hicpp-named-parameter,readability-named-parameter)
+    constexpr auto operator=(dynamic_array&& other) -> dynamic_array& // NOLINT(cppcoreguidelines-noexcept-move-operations,hicpp-noexcept-move,performance-noexcept-move-constructor)
     {
       if(this != &other)
       {
@@ -878,7 +878,7 @@
       #endif
     }
 
-    constexpr auto swap(dynamic_array& other) -> void
+    constexpr auto swap(dynamic_array& other) -> void // NOLINT(cppcoreguidelines-noexcept-move-operations,hicpp-noexcept-move,performance-noexcept-move-constructor)
     {
       if(this != &other)
       {
@@ -1678,7 +1678,7 @@
 
     constexpr auto operator=(const fixed_dynamic_array&) -> fixed_dynamic_array& = default;
 
-    constexpr auto operator=(fixed_dynamic_array&& other) -> fixed_dynamic_array& // NOLINT(hicpp-noexcept-move,performance-noexcept-move-constructor)
+    constexpr auto operator=(fixed_dynamic_array&& other) -> fixed_dynamic_array& // NOLINT(hicpp-noexcept-move,performance-noexcept-move-constructor,cppcoreguidelines-noexcept-move-operations)
     {
       base_class_type::operator=(static_cast<base_class_type&&>(other));
 
