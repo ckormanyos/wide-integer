@@ -888,7 +888,7 @@
     }
 
   private:
-    constexpr auto copy_assign(const dynamic_array& other, std::true_type) -> void
+    constexpr auto copy_assign(const dynamic_array& other, std::true_type) -> void // NOLINT(hicpp-named-parameter,readability-named-parameter)
     {
       dynamic_array temp(other, other.my_alloc);
       release_storage();
@@ -896,20 +896,20 @@
       take_storage(temp);
     }
 
-    constexpr auto copy_assign(const dynamic_array& other, std::false_type) -> void
+    constexpr auto copy_assign(const dynamic_array& other, std::false_type) -> void // NOLINT(hicpp-named-parameter,readability-named-parameter)
     {
       dynamic_array temp(other, my_alloc);
       swap_storage(temp);
     }
 
-    constexpr auto move_assign(dynamic_array& other, std::true_type) -> void
+    constexpr auto move_assign(dynamic_array& other, std::true_type) -> void // NOLINT(hicpp-named-parameter,readability-named-parameter)
     {
       release_storage();
       my_alloc = other.my_alloc;
       take_storage(other);
     }
 
-    constexpr auto move_assign(dynamic_array& other, std::false_type) -> void
+    constexpr auto move_assign(dynamic_array& other, std::false_type) -> void // NOLINT(hicpp-named-parameter,readability-named-parameter)
     {
       if(my_alloc == other.my_alloc)
       {
@@ -928,7 +928,7 @@
       swap(my_alloc, other.my_alloc);
     }
 
-    constexpr auto swap_allocators(dynamic_array&, std::false_type) -> void { }
+    constexpr auto swap_allocators(dynamic_array&, std::false_type) -> void { } // NOLINT(hicpp-named-parameter,readability-named-parameter)
 
     constexpr auto release_storage() -> void
     {
@@ -1678,7 +1678,7 @@
 
     constexpr auto operator=(const fixed_dynamic_array&) -> fixed_dynamic_array& = default;
 
-    constexpr auto operator=(fixed_dynamic_array&& other) -> fixed_dynamic_array&
+    constexpr auto operator=(fixed_dynamic_array&& other) -> fixed_dynamic_array& // NOLINT(hicpp-noexcept-move,performance-noexcept-move-constructor)
     {
       base_class_type::operator=(static_cast<base_class_type&&>(other));
 
