@@ -814,7 +814,7 @@
     }
 
     // Move assignment operator.
-    constexpr auto operator=(dynamic_array&& other) -> dynamic_array& // NOLINT(cppcoreguidelines-noexcept-move-operations,hicpp-noexcept-move,performance-noexcept-move-constructor)
+    constexpr auto operator=(dynamic_array&& other) noexcept -> dynamic_array&
     {
       if(this != &other)
       {
@@ -878,7 +878,7 @@
       #endif
     }
 
-    constexpr auto swap(dynamic_array& other) -> void // NOLINT(cppcoreguidelines-noexcept-swap,performance-noexcept-swap)
+    constexpr auto swap(dynamic_array& other) noexcept -> void
     {
       if(this != &other)
       {
@@ -922,13 +922,13 @@
       }
     }
 
-    constexpr auto swap_allocators(dynamic_array& other, std::true_type) -> void// NOLINT(hicpp-named-parameter,readability-named-parameter)
+    constexpr auto swap_allocators(dynamic_array& other, std::true_type) -> void // NOLINT(hicpp-named-parameter,readability-named-parameter)
     {
       using std::swap;
       swap(my_alloc, other.my_alloc);
     }
 
-    constexpr auto swap_allocators(dynamic_array&, std::false_type) -> void { } // NOLINT(hicpp-named-parameter,readability-named-parameter)
+    constexpr auto swap_allocators(dynamic_array&, std::false_type) const -> void { } // NOLINT(hicpp-named-parameter,readability-named-parameter)
 
     constexpr auto release_storage() -> void
     {
@@ -999,7 +999,7 @@
     friend constexpr auto operator>=(const dynamic_array& lhs, const dynamic_array& rhs) -> bool { return (!(lhs < rhs)); }
     friend constexpr auto operator<=(const dynamic_array& lhs, const dynamic_array& rhs) -> bool { return (!(rhs < lhs)); }
 
-    friend constexpr auto swap(dynamic_array& x, dynamic_array& y) noexcept(noexcept(x.swap(y))) -> void { x.swap(y); }
+    friend constexpr auto swap(dynamic_array& x, dynamic_array& y) noexcept -> void { x.swap(y); }
   };
 
   } // namespace util
@@ -1678,7 +1678,7 @@
 
     constexpr auto operator=(const fixed_dynamic_array&) -> fixed_dynamic_array& = default;
 
-    constexpr auto operator=(fixed_dynamic_array&& other) -> fixed_dynamic_array& // NOLINT(hicpp-noexcept-move,performance-noexcept-move-constructor,cppcoreguidelines-noexcept-move-operations)
+    constexpr auto operator=(fixed_dynamic_array&& other) noexcept -> fixed_dynamic_array&
     {
       base_class_type::operator=(static_cast<base_class_type&&>(other));
 
