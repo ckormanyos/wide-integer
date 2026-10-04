@@ -814,7 +814,7 @@
     }
 
     // Move assignment operator.
-    constexpr auto operator=(dynamic_array&& other) -> dynamic_array&
+    constexpr auto operator=(dynamic_array&& other) -> dynamic_array& // NOLINT(hicpp-named-parameter,readability-named-parameter)
     {
       if(this != &other)
       {
@@ -922,7 +922,7 @@
       }
     }
 
-    constexpr auto swap_allocators(dynamic_array& other, std::true_type) -> void
+    constexpr auto swap_allocators(dynamic_array& other, std::true_type) -> void// NOLINT(hicpp-named-parameter,readability-named-parameter)
     {
       using std::swap;
       swap(my_alloc, other.my_alloc);
