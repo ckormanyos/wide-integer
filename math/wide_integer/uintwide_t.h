@@ -693,8 +693,7 @@
     using const_reverse_iterator =       ::math::wide_integer::detail::iterator_detail::reverse_iterator<const_iterator>;
     #endif
 
-    static_assert(std::is_integral<value_type>::value, "Error: the value_type of dynamic_array must be a built-in integral");
-    static_assert(std::is_pod<value_type>::value, "Error: the value_type of dynamic_array must be POD");
+    static_assert((std::is_standard_layout<value_type>::value && std::is_trivial<value_type>::value), "Error: the value_type of dynamic_array must be POD");
 
     // Constructors.
     explicit constexpr dynamic_array(size_type count_in = size_type(),
@@ -808,22 +807,7 @@
       if(this != &other)
       {
         using allocator_traits_type = std::allocator_traits<allocator_type>;
-
-        if(allocator_traits_type::propagate_on_container_copy_assignment::value)
-        {
-          dynamic_array temp(other, other.my_alloc);
-          release_storage();
-          my_alloc = other.my_alloc;
-          elems = temp.elems;
-          elem_count = temp.elem_count;
-          temp.elems = nullptr;
-          temp.elem_count = static_cast<size_type>(UINT8_C(0));
-        }
-        else
-        {
-          dynamic_array temp(other, my_alloc);
-          swap_storage(temp);
-        }
+        copy_assign(other, typename allocator_traits_type::propagate_on_container_copy_assignment());
       }
 
       return *this;
@@ -835,22 +819,7 @@
       if(this != &other)
       {
         using allocator_traits_type = std::allocator_traits<allocator_type>;
-
-        if(allocator_traits_type::propagate_on_container_move_assignment::value)
-        {
-          release_storage();
-          my_alloc = other.my_alloc;
-          take_storage(other);
-        }
-        else if(my_alloc == other.my_alloc)
-        {
-          release_storage();
-          take_storage(other);
-        }
-        else
-        {
-          *this = static_cast<const dynamic_array&>(other);
-        }
+        move_assign(other, typename allocator_traits_type::propagate_on_container_move_assignment());
       }
 
       return *this;
@@ -913,17 +882,54 @@
     {
       if(this != &other)
       {
-        if(std::allocator_traits<allocator_type>::propagate_on_container_swap::value)
-        {
-          using std::swap;
-          swap(my_alloc, other.my_alloc);
-        }
-
+        swap_allocators(other, typename std::allocator_traits<allocator_type>::propagate_on_container_swap());
         swap_storage(other);
       }
     }
 
   private:
+    constexpr auto copy_assign(const dynamic_array& other, std::true_type) -> void
+    {
+      dynamic_array temp(other, other.my_alloc);
+      release_storage();
+      my_alloc = other.my_alloc;
+      take_storage(temp);
+    }
+
+    constexpr auto copy_assign(const dynamic_array& other, std::false_type) -> void
+    {
+      dynamic_array temp(other, my_alloc);
+      swap_storage(temp);
+    }
+
+    constexpr auto move_assign(dynamic_array& other, std::true_type) -> void
+    {
+      release_storage();
+      my_alloc = other.my_alloc;
+      take_storage(other);
+    }
+
+    constexpr auto move_assign(dynamic_array& other, std::false_type) -> void
+    {
+      if(my_alloc == other.my_alloc)
+      {
+        release_storage();
+        take_storage(other);
+      }
+      else
+      {
+        *this = static_cast<const dynamic_array&>(other);
+      }
+    }
+
+    constexpr auto swap_allocators(dynamic_array& other, std::true_type) -> void
+    {
+      using std::swap;
+      swap(my_alloc, other.my_alloc);
+    }
+
+    constexpr auto swap_allocators(dynamic_array&, std::false_type) -> void { }
+
     constexpr auto release_storage() -> void
     {
       if(elems != nullptr)
@@ -1651,23 +1657,28 @@
     constexpr fixed_dynamic_array(std::initializer_list<value_type> lst, const allocator_type& alloc_in  = allocator_type())
       : base_class_type(static_size(), size_type(), alloc_in)
     {
-      #if defined(WIDE_INTEGER_NAMESPACE)
-      WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::copy_unsafe
-      #else
-      ::math::wide_integer::detail::copy_unsafe
-      #endif
-      (
-        lst.begin(),
-        lst.begin() + (detail::min_unsafe)(static_cast<size_type>(lst.size()), static_size()),
-        base_class_type::data()
-      );
+      if(lst.size() > static_cast<size_type>(UINT8_C(0)))
+      {
+        const auto init_count = (lst.size() < static_size()) ? static_cast<size_type>(lst.size()) : static_size();
+
+        #if defined(WIDE_INTEGER_NAMESPACE)
+        WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::copy_unsafe
+        #else
+        ::math::wide_integer::detail::copy_unsafe
+        #endif
+        (
+          lst.begin(),
+          lst.begin() + init_count,
+          base_class_type::data()
+        );
+      }
     }
 
     ~fixed_dynamic_array() override = default;
 
     constexpr auto operator=(const fixed_dynamic_array&) -> fixed_dynamic_array& = default;
 
-    constexpr auto operator=(fixed_dynamic_array&& other) noexcept -> fixed_dynamic_array&
+    constexpr auto operator=(fixed_dynamic_array&& other) -> fixed_dynamic_array&
     {
       base_class_type::operator=(static_cast<base_class_type&&>(other));
 
@@ -2287,11 +2298,7 @@
     #endif
 
     // Copy constructor.
-    #if !defined(WIDE_INTEGER_DISABLE_TRIVIAL_COPY_AND_STD_LAYOUT_CHECKS)
     constexpr uintwide_t(const uintwide_t& other) = default;
-    #else
-    constexpr uintwide_t(const uintwide_t& other) : values(other.values) { }
-    #endif
 
     // Copy-like constructor from the other signed-ness type.
     template<const bool RePhraseIsSigned,
@@ -5610,7 +5617,6 @@
   using  int32768_t = uintwide_t<static_cast<size_t>(UINT32_C(32768)), uint_defaultlimb_t, void, true>;
   using  int65536_t = uintwide_t<static_cast<size_t>(UINT32_C(65536)), uint_defaultlimb_t, void, true>;
 
-  #if !defined(WIDE_INTEGER_DISABLE_TRIVIAL_COPY_AND_STD_LAYOUT_CHECKS)
   static_assert(std::is_trivially_copyable<uint64_t   >::value, "uintwide_t must be trivially copyable.");
   static_assert(std::is_trivially_copyable<uint128_t  >::value, "uintwide_t must be trivially copyable.");
   static_assert(std::is_trivially_copyable<uint256_t  >::value, "uintwide_t must be trivially copyable.");
@@ -5634,9 +5640,7 @@
   static_assert(std::is_standard_layout<uint16384_t>::value, "uintwide_t must have standard layout.");
   static_assert(std::is_standard_layout<uint32768_t>::value, "uintwide_t must have standard layout.");
   static_assert(std::is_standard_layout<uint65536_t>::value, "uintwide_t must have standard layout.");
-  #endif
 
-  #if !defined(WIDE_INTEGER_DISABLE_TRIVIAL_COPY_AND_STD_LAYOUT_CHECKS)
   static_assert(std::is_trivially_copyable<int64_t   >::value, "uintwide_t must be trivially copyable.");
   static_assert(std::is_trivially_copyable<int128_t  >::value, "uintwide_t must be trivially copyable.");
   static_assert(std::is_trivially_copyable<int256_t  >::value, "uintwide_t must be trivially copyable.");
@@ -5660,7 +5664,6 @@
   static_assert(std::is_standard_layout<int16384_t>::value, "uintwide_t must have standard layout.");
   static_assert(std::is_standard_layout<int32768_t>::value, "uintwide_t must have standard layout.");
   static_assert(std::is_standard_layout<int65536_t>::value, "uintwide_t must have standard layout.");
-  #endif
 
   // Insert a base class for numeric_limits<> support.
   // This class inherits from std::numeric_limits<unsigned int>
