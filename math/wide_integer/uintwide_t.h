@@ -7182,7 +7182,7 @@
     auto
       local_functor_isone
       {
-        [](const local_wide_integer_type& t1)
+        [](const local_wide_integer_type& t1) // NOLINT(modernize-use-trailing-return-type)
         {
           return
           (
@@ -7300,7 +7300,7 @@
     const auto show_pos     = false;
     const auto is_uppercase = false;
 
-    std::to_chars_result result { last, std::errc::value_too_large };
+    std::to_chars_result result { last, std::errc::value_too_large }; // NOLINT(modernize-use-designated-initializers)
 
     if(base_rep == static_cast<std::uint_fast8_t>(UINT8_C(8)))
     {
@@ -7446,7 +7446,7 @@
     {
       result =
         std::from_chars_result
-        {
+        { // NOLINT(modernize-use-designated-initializers)
           last,
           std::errc::result_out_of_range
         };
