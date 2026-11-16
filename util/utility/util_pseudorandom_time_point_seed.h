@@ -14,7 +14,6 @@
   #include <cstddef>
   #include <cstdint>
   #include <limits>
-  #include <sstream>
   #include <string>
 
   namespace util {
@@ -32,17 +31,16 @@
 
       const auto time_since_epoch_count = std::chrono::high_resolution_clock::now().time_since_epoch().count();
 
-      std::stringstream strm;
-      strm << time_since_epoch_count;
-
-      const auto seed_text = strm.str();
+      const auto seed_text = std::to_string(time_since_epoch_count);
       const auto seed_text_length = (std::min)(seed_text.size(), seed_buffer.size());
 
       std::copy_n(seed_text.cbegin(), seed_text_length, seed_buffer.begin());
 
       using local_integral_type = IntegralType;
 
-      return static_cast<local_integral_type>(crc_crc64(seed_buffer.data(), seed_text_length));
+      const auto crc_result = crc_crc64(seed_buffer.data(), seed_text_length);
+
+      return static_cast<local_integral_type>(crc_result);
     }
 
     static constexpr auto test() noexcept -> bool;
