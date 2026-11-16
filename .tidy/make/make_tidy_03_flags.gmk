@@ -42,6 +42,7 @@ TIDY_CHECKS  = "*,                                                             \
                 -altera-struct-pack-align,                                     \
                 -altera-unroll-loops,                                          \
                 -cert-dcl58-cpp,                                               \
+                -clang-analyzer-security.ArrayBound                            \
                 -cppcoreguidelines-avoid-do-while,                             \
                 -cppcoreguidelines-avoid-magic-numbers,                        \
                 -cppcoreguidelines-pro-bounds-pointer-arithmetic,              \

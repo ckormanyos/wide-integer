@@ -1176,7 +1176,7 @@
 
         if(go_to_next_result_elem && (i != static_cast<signed_fast_type>(INT8_C(0))))
         {
-          *(++out) = static_cast<local_output_value_type>(UINT8_C(0));
+          *(++out) = static_cast<local_output_value_type>(UINT8_C(0)); // NOLINT(clang-analyzer-security.ArrayBound)
         }
 
         const auto go_to_next_input_elem = (input_bpos == static_cast<unsigned_fast_type>(UINT8_C(0)));

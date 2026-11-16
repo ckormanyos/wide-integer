@@ -140,7 +140,7 @@
       (
         static_cast<std::size_t>(0U),
         count,
-        [&u_local, &u_boost, &distribution, &rnd_lock](std::size_t i)
+        [&u_local, &u_boost, &distribution, &rnd_lock](std::size_t i) // NOLINT(modernize-use-trailing-return-type)
         {
           while(rnd_lock.test_and_set()) { ; }
           const other_local_uint_type a = distribution(my_random_generator());

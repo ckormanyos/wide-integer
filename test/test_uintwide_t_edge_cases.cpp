@@ -1183,7 +1183,7 @@ auto test_small_prime_and_non_prime() -> bool
   result_is_ok = (result_one_is_not_prime_is_ok && result_is_ok);
 
   const auto not_prime_checker =
-    [&distribution, &local_generator](const std::size_t first, const std::size_t last_inclusive)
+    [&distribution, &local_generator](const std::size_t first, const std::size_t last_inclusive) // NOLINT(modernize-use-trailing-return-type)
     {
       auto result_small_n_is_not_prime_is_ok = true;
 
@@ -2342,7 +2342,7 @@ auto test_import_bits() -> bool // NOLINT(readability-function-cognitive-complex
 
         if(msv_first)
         {
-          std::reverse(bits.begin(), bits.end());
+          std::reverse(bits.begin(), bits.end()); // NOLINT(boost-use-ranges,modernize-use-ranges)
         }
 
         local_uintwide_t_small_unsigned_type val_uintwide_t { };
@@ -2900,7 +2900,7 @@ namespace from_pr_454
       {
         local_fixed_dynamic_array_type rhs_shrt { local_one, local_two };
 
-        ctrl_container_type ctrl_rhs_shrt { }; std::copy(rhs_shrt.cbegin(), rhs_shrt.cend(), ctrl_rhs_shrt.begin());
+        ctrl_container_type ctrl_rhs_shrt { }; std::copy(rhs_shrt.cbegin(), rhs_shrt.cend(), ctrl_rhs_shrt.begin()); // NOLINT(boost-use-ranges,modernize-use-ranges)
 
         #if defined(WIDE_INTEGER_NAMESPACE)
         using WIDE_INTEGER_NAMESPACE::math::wide_integer::detail::lexicographical_compare_unsafe;

@@ -549,7 +549,7 @@ namespace example013_ecdsa
       const auto x3 =
         duodectuple_sint_type
         (
-          duodectuple_sint_type(m) * duodectuple_sint_type(m) - duodectuple_sint_type(x1 + x2)
+          (duodectuple_sint_type(m) * duodectuple_sint_type(m)) - duodectuple_sint_type(x1 + x2)
         );
 
       auto y3 =
