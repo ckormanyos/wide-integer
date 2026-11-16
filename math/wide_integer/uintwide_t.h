@@ -692,7 +692,7 @@
     #if(__cplusplus > 202302L)
     static_assert(std::is_trivially_default_constructible_v<value_type> && std::is_trivially_copyable_v<value_type>, "Error: the value_type of dynamic_array must be POD");
     #else
-    static_assert(std::is_trivial_v<value_type> && std::is_standard_layout_v<value_type>, "Error: the value_type of dynamic_array must be POD");
+    static_assert(std::is_trivial<value_type>::value && std::is_standard_layout<value_type>::value, "Error: the value_type of dynamic_array must be POD");
     #endif
 
     // Constructors.
