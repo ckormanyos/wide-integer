@@ -7437,7 +7437,7 @@
     {
       result =
         std::from_chars_result
-        {
+        { // NOLINT(modernize-use-designated-initializers)
           last,
           std::errc()
         };

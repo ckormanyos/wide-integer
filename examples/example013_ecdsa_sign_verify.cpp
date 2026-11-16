@@ -555,7 +555,7 @@ namespace example013_ecdsa
       auto y3 =
         duodectuple_sint_type
         (
-          duodectuple_sint_type(y1) + duodectuple_sint_type(m) * (x3 - duodectuple_sint_type(x1))
+          duodectuple_sint_type(y1) + (duodectuple_sint_type(m) * (x3 - duodectuple_sint_type(x1)))
         );
 
       // Negate y3 for the modulus operation below.
@@ -686,7 +686,7 @@ namespace example013_ecdsa
       const auto hash_result = hash_object.hash(message.data(), message.size());
 
       const auto z =
-        [&hash_result]()
+        [&hash_result]() // NOLINT(modernize-use-trailing-return-type)
         {
           auto u = uint_type { };
 

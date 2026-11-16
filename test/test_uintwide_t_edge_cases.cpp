@@ -1306,7 +1306,7 @@ auto test_some_gcd_and_equal_left_right() -> bool
   }
 
   const auto gcd64_equal_checker =
-    [](const std::size_t first, const std::size_t last_inclusive, const std::uint64_t right) // NOLINT(bugprone-easily-swappable-parameters)
+    [](const std::size_t first, const std::size_t last_inclusive, const std::uint64_t right) // NOLINT(bugprone-easily-swappable-parameters,modernize-use-trailing-return-type)
     {
       #if defined(WIDE_INTEGER_NAMESPACE)
       using WIDE_INTEGER_NAMESPACE::math::wide_integer::gcd;
@@ -1526,7 +1526,7 @@ auto test_various_isolated_edge_cases() -> bool // NOLINT(readability-function-c
     auto
       load_uint64_t
       {
-        [](const std::uint8_t* p_first)
+        [](const std::uint8_t* p_first) // NOLINT(modernize-use-trailing-return-type)
         {
           return
               std::uint64_t { *(p_first + std::size_t { UINT8_C(0) }) } << unsigned { UINT8_C(0) }   // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
@@ -1582,13 +1582,13 @@ auto test_various_isolated_edge_cases() -> bool // NOLINT(readability-function-c
 
     result_is_ok = (rep_as_max_is_ok && result_is_ok);
 
-    std::fill(rep.begin(), rep.end(), static_cast<local_value_type>(UINT8_C(0)));
+    std::fill(rep.begin(), rep.end(), static_cast<local_value_type>(UINT8_C(0))); // NOLINT(boost-use-ranges,modernize-use-ranges)
 
     const auto rep_as_zero_is_ok = (local_uintwide_t_small_unsigned_type(rep) == 0);
 
     result_is_ok = (rep_as_zero_is_ok && result_is_ok);
 
-    std::fill(rep.begin(), rep.end(), (std::numeric_limits<local_value_type>::max)());
+    std::fill(rep.begin(), rep.end(), (std::numeric_limits<local_value_type>::max)()); // NOLINT(boost-use-ranges,modernize-use-ranges)
 
     const auto rep_as_max2_is_ok =
       (local_uintwide_t_small_unsigned_type(rep) == (std::numeric_limits<local_uintwide_t_small_unsigned_type>::max)());
@@ -2290,7 +2290,7 @@ auto test_import_bits() -> bool // NOLINT(readability-function-cognitive-complex
 
       if(msv_first)
       {
-        std::reverse(bits.begin(), bits.end());
+        std::reverse(bits.begin(), bits.end()); // NOLINT(boost-use-ranges,modernize-use-ranges)
       }
 
       local_uintwide_t_small_unsigned_type val_uintwide_t { };
@@ -2862,10 +2862,10 @@ namespace from_pr_454
       local_fixed_dynamic_array_type rhs_less { local_one, local_two, local_two };
       local_fixed_dynamic_array_type rhs_grtr { local_one, local_two, local_four };
 
-      ctrl_container_type ctrl_lhs_orig { }; std::copy(lhs_orig.cbegin(), lhs_orig.cend(), ctrl_lhs_orig.begin());
-      ctrl_container_type ctrl_rhs_same { }; std::copy(rhs_same.cbegin(), rhs_same.cend(), ctrl_rhs_same.begin());
-      ctrl_container_type ctrl_rhs_less { }; std::copy(rhs_less.cbegin(), rhs_less.cend(), ctrl_rhs_less.begin());
-      ctrl_container_type ctrl_rhs_grtr { }; std::copy(rhs_grtr.cbegin(), rhs_grtr.cend(), ctrl_rhs_grtr.begin());
+      ctrl_container_type ctrl_lhs_orig { }; std::copy(lhs_orig.cbegin(), lhs_orig.cend(), ctrl_lhs_orig.begin()); // NOLINT(boost-use-ranges,modernize-use-ranges)
+      ctrl_container_type ctrl_rhs_same { }; std::copy(rhs_same.cbegin(), rhs_same.cend(), ctrl_rhs_same.begin()); // NOLINT(boost-use-ranges,modernize-use-ranges)
+      ctrl_container_type ctrl_rhs_less { }; std::copy(rhs_less.cbegin(), rhs_less.cend(), ctrl_rhs_less.begin()); // NOLINT(boost-use-ranges,modernize-use-ranges)
+      ctrl_container_type ctrl_rhs_grtr { }; std::copy(rhs_grtr.cbegin(), rhs_grtr.cend(), ctrl_rhs_grtr.begin()); // NOLINT(boost-use-ranges,modernize-use-ranges)
 
       local_fixed_dynamic_array_type lhs_default { };
 

@@ -104,7 +104,7 @@ namespace example014_pi_spigot
       // The input memory used for internal calculation details
       // is managed by the pi_spigot class itself.
 
-      std::fill(my_pi_in.begin(),
+      std::fill(my_pi_in.begin(), // NOLINT(boost-use-ranges,modernize-use-ranges)
                 my_pi_in.end(),
                 static_cast<typename input_container_type::value_type>(UINT8_C(0)));
 
@@ -302,7 +302,7 @@ auto ::math::wide_integer::example014_pi_spigot_wide() -> bool
     std::equal(pi_out.cbegin(),
                pi_out.cend(),
                example014_pi_spigot::pi_control_string().cbegin(),
-               [](const std::uint8_t& by, const char& c)
+               [](const std::uint8_t& by, const char& c) // NOLINT(modernize-use-trailing-return-type)
                {
                  const auto by_val_to_check =
                    static_cast<std::uint8_t>
