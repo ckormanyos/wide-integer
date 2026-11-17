@@ -86,6 +86,8 @@
   #endif
 #endif
 
+auto local_zero_f () -> float;
+
 auto local_inf_f () -> float;
 auto local_inf_d () -> double;
 auto local_inf_ld() -> long double;
@@ -1630,6 +1632,14 @@ auto test_various_isolated_edge_cases() -> bool // NOLINT(readability-function-c
           }
         };
 
+      const auto zero_f = ::local_zero_f() * dis(my_eng_flt);
+
+      local_uintwide_t_small_unsigned_type u_zero_f(zero_f);
+
+      const auto result_zero_is_ok = ((u_zero_f  == 0) && cbrt(u_zero_f) == 0);
+
+      result_is_ok = (result_zero_is_ok && result_is_ok);
+
       const auto inf_f  = ::local_inf_f () * dis(my_eng_flt);
       const auto inf_d  = ::local_inf_d () * static_cast<double>(dis(my_eng_flt));
       const auto inf_ld = ::local_inf_ld() * static_cast<long double>(dis(my_eng_flt));
@@ -3093,6 +3103,8 @@ const test_uintwide_t_edge::local_uintwide_t_small_signed_type local_one_minus_a
 {
   static_cast<std::make_signed_t<typename test_uintwide_t_edge::local_uintwide_t_small_signed_type::limb_type>>(INT8_C(-1))
 };
+
+auto local_zero_f () -> float       { return 0.0F; }
 
 auto local_inf_f () -> float       { return std::numeric_limits<float>::infinity(); }
 auto local_inf_d () -> double      { return std::numeric_limits<double>::infinity(); }

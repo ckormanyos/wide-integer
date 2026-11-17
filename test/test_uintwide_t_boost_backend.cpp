@@ -58,6 +58,8 @@
 
 #include <boost/multiprecision/cpp_int.hpp>
 
+auto local_zero_u() -> unsigned;
+
 using local_uint_type =
   #if defined(WIDE_INTEGER_NAMESPACE)
   boost::multiprecision::number<boost::multiprecision::uintwide_t_backend<static_cast<WIDE_INTEGER_NAMESPACE::math::wide_integer::size_t>(UINT32_C(1024))>,
@@ -121,6 +123,18 @@ auto ::math::wide_integer::test_uintwide_t_boost_backend() -> bool
     result_is_ok = ((u == local_uint_type("87097824890894800794165901619444858655697206439408401342159325362433799963465833258779670963327549206446903807622196074763642894114359201905739606775078813946074899053317297580134329929871847646073758894343134833829668015151562808541626917661957374931734536035195944960000000000000000000000000000000000000000000000")) && result_is_ok);
   }
 
+  // Test simple assignment from integer.
+  {
+    local_uint_type u = local_zero_u() + 1U;
+    result_is_ok = ((u == 1U) && result_is_ok);
+
+    u = local_zero_u() + 2U;
+    result_is_ok = ((u == 2U) && result_is_ok);
+
+    u = local_zero_u() + 3U;
+    result_is_ok = ((u == 3U) && result_is_ok);
+  }
+
   // Test a very simple constexpr example.
   {
     constexpr local_uint_type cu { "123" };
@@ -134,6 +148,8 @@ auto ::math::wide_integer::test_uintwide_t_boost_backend() -> bool
 
   return result_is_ok;
 }
+
+auto local_zero_u() -> unsigned { return 0U; }
 
 #if (BOOST_VERSION < 108000)
 #if ((defined(WIDE_INTEGER_CLANG) && (WIDE_INTEGER_CLANG > 9)) && !defined(WIDE_INTEGER_APPLE))

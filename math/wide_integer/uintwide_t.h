@@ -1992,7 +1992,7 @@
       static_assert(std::numeric_limits<native_float_type>::digits <= std::numeric_limits<unsigned long long>::digits, // NOLINT(google-runtime-int)
                     "Error: The width of the mantissa does not fit in unsigned long long");
 
-      const auto ff =
+      const auto ff = // LCOV_EXCL_LINE
         static_cast<native_float_type>
         (
           (f < static_cast<native_float_type>(0.0F)) ? static_cast<native_float_type>(-f) : f
