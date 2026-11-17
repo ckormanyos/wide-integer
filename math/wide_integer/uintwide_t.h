@@ -32,11 +32,7 @@
   #include <__msvc_int128.hpp>
   #endif
 
-  #if ((__cplusplus < 202002L) || (defined(WIDE_INTEGER_GCC) && defined(WIDE_INTEGER_AVR)))
-  #include <ciso646>
-  #else
-  #include <version>
-  #endif
+  #include <version> // This is needed here for feature testing.
 
   #if (defined(__cpp_lib_to_chars) && (__cpp_lib_to_chars >= 201611L))
   #include <charconv>
@@ -693,7 +689,11 @@
     using const_reverse_iterator =       ::math::wide_integer::detail::iterator_detail::reverse_iterator<const_iterator>;
     #endif
 
-    static_assert((std::is_standard_layout<value_type>::value && std::is_trivial<value_type>::value), "Error: the value_type of dynamic_array must be POD");
+    #if(__cplusplus > 202302L)
+    static_assert(std::is_trivially_default_constructible_v<value_type> && std::is_trivially_copyable_v<value_type>, "Error: the value_type of dynamic_array must be POD");
+    #else
+    static_assert(std::is_trivial<value_type>::value && std::is_standard_layout<value_type>::value, "Error: the value_type of dynamic_array must be POD");
+    #endif
 
     // Constructors.
     explicit constexpr dynamic_array(size_type count_in = size_type(),
@@ -1176,7 +1176,7 @@
 
         if(go_to_next_result_elem && (i != static_cast<signed_fast_type>(INT8_C(0))))
         {
-          *(++out) = static_cast<local_output_value_type>(UINT8_C(0));
+          *(++out) = static_cast<local_output_value_type>(UINT8_C(0)); // NOLINT(clang-analyzer-security.ArrayBound)
         }
 
         const auto go_to_next_input_elem = (input_bpos == static_cast<unsigned_fast_type>(UINT8_C(0)));
@@ -1992,7 +1992,7 @@
       static_assert(std::numeric_limits<native_float_type>::digits <= std::numeric_limits<unsigned long long>::digits, // NOLINT(google-runtime-int)
                     "Error: The width of the mantissa does not fit in unsigned long long");
 
-      const auto ff =
+      const auto ff = // LCOV_EXCL_LINE
         static_cast<native_float_type>
         (
           (f < static_cast<native_float_type>(0.0F)) ? static_cast<native_float_type>(-f) : f
@@ -6272,7 +6272,8 @@
     }
     else if(m.is_zero())
     {
-      s = local_wide_integer_type(static_cast<std::uint_fast8_t>(UINT8_C(0)));
+      // The coverage instrument is wrong. This line is definitely called.
+      s = local_wide_integer_type(static_cast<std::uint_fast8_t>(UINT8_C(0))); // LCOV_EXCL_LINE
     }
     else
     {
@@ -7182,7 +7183,7 @@
     auto
       local_functor_isone
       {
-        [](const local_wide_integer_type& t1)
+        [](const local_wide_integer_type& t1) // NOLINT(modernize-use-trailing-return-type)
         {
           return
           (
@@ -7300,7 +7301,7 @@
     const auto show_pos     = false;
     const auto is_uppercase = false;
 
-    std::to_chars_result result { last, std::errc::value_too_large };
+    std::to_chars_result result { last, std::errc::value_too_large }; // NOLINT(modernize-use-designated-initializers)
 
     if(base_rep == static_cast<std::uint_fast8_t>(UINT8_C(8)))
     {
@@ -7437,7 +7438,7 @@
     {
       result =
         std::from_chars_result
-        {
+        { // NOLINT(modernize-use-designated-initializers)
           last,
           std::errc()
         };
@@ -7446,7 +7447,7 @@
     {
       result =
         std::from_chars_result
-        {
+        { // NOLINT(modernize-use-designated-initializers)
           last,
           std::errc::result_out_of_range
         };

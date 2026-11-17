@@ -5,9 +5,9 @@
 #  or copy at http://www.boost.org/LICENSE_1_0.txt)
 # ------------------------------------------------------------------------------
 
-BOOST_ROOT_FOR_TIDY = /mnt/c/boost/boost_1_78_0
+BOOST_ROOT_FOR_TIDY = /mnt/c/boost/boost_1_90_0
 CC                  = clang++
-STD                 = c++14
+STD                 = c++20
 
 ifneq ($(MY_BOOST_ROOT),)
 BOOST_ROOT_FOR_TIDY := $(MY_BOOST_ROOT)
@@ -39,21 +39,31 @@ C_INCLUDES  :=$(addprefix -I,$(C_INCLUDES))
 
 
 TIDY_CHECKS  = "*,                                                             \
-                -cert-dcl58-cpp,                                               \
-                -cppcoreguidelines-rvalue-reference-param-not-moved,           \
-                -cppcoreguidelines-avoid-do-while,                             \
-                -modernize-type-traits,                                        \
-                -modernize-use-constraints,                                    \
-                -misc-header-include-cycle,                                    \
-                -misc-include-cleaner,                                         \
-                -misc-const-correctness,                                       \
-                -performance-avoid-endl,                                       \
-                -readability-identifier-length,                                \
-                -readability-redundant-casting,                                \
                 -altera-struct-pack-align,                                     \
                 -altera-unroll-loops,                                          \
+                -cert-dcl58-cpp,                                               \
+                -clang-analyzer-security.ArrayBound,                           \
+                -cppcoreguidelines-avoid-do-while,                             \
+                -cppcoreguidelines-avoid-magic-numbers,                        \
+                -cppcoreguidelines-pro-bounds-pointer-arithmetic,              \
+                -cppcoreguidelines-rvalue-reference-param-not-moved,           \
                 -fuchsia-*,                                                    \
-                -llvmlibc-*"
+                -llvmlibc-*,                                                   \
+                -misc-const-correctness,                                       \
+                -misc-header-include-cycle,                                    \
+                -misc-include-cleaner,                                         \
+                -misc-use-anonymous-namespace,                                 \
+                -misc-use-internal-linkage,                                    \
+                -modernize-type-traits,                                        \
+                -modernize-use-constraints,                                    \
+                -performance-avoid-endl,                                       \
+                -portability-simd-intrinsics,                                  \
+                -readability-avoid-const-params-in-decls,                      \
+                -readability-avoid-nested-conditional-operator,                \
+                -readability-identifier-length,                                \
+                -readability-redundant-casting,                                \
+                -readability-redundant-inline-specifier,                       \
+                -readability-use-concise-preprocessor-directives"
 
 TIDY_FLAGS   = --extra-arg-before=--driver-mode=g++                            \
                --header-filter=uintwide_t                                      \

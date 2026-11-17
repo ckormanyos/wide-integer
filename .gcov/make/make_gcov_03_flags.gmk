@@ -7,7 +7,7 @@
 
 BOOST_ROOT_FOR_GCOV = /mnt/c/boost/boost_1_90_0
 CC                  = g++
-STD                 = c++14
+STD                 = c++20
 ALL_COV             = 0
 
 ifneq ($(MY_BOOST_ROOT),)
@@ -72,7 +72,7 @@ endif
 LCOV_BRANCH  =
 
 ifneq ($(ALL_COV),0)
-LCOV_BRANCH := --rc lcov_branch_coverage=1
+LCOV_BRANCH := --branch_coverage
 endif
 
 LCOV_REMOVES = '/usr/*'                                                       \
