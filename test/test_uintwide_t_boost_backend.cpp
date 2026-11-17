@@ -149,7 +149,8 @@ auto ::math::wide_integer::test_uintwide_t_boost_backend() -> bool
   return result_is_ok;
 }
 
-auto local_zero_u() -> unsigned { return 0U; }
+// The coverage instrument is wrong. This subroutine is definitely called.
+auto local_zero_u() -> unsigned { return 0U; } // LCOV_EXCL_LINE
 
 #if (BOOST_VERSION < 108000)
 #if ((defined(WIDE_INTEGER_CLANG) && (WIDE_INTEGER_CLANG > 9)) && !defined(WIDE_INTEGER_APPLE))

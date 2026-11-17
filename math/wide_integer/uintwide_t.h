@@ -6272,7 +6272,8 @@
     }
     else if(m.is_zero())
     {
-      s = local_wide_integer_type(static_cast<std::uint_fast8_t>(UINT8_C(0)));
+      // The coverage instrument is wrong. This line is definitely called.
+      s = local_wide_integer_type(static_cast<std::uint_fast8_t>(UINT8_C(0))); // LCOV_EXCL_LINE
     }
     else
     {
