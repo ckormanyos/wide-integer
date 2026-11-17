@@ -1,5 +1,5 @@
 ﻿# ------------------------------------------------------------------------------
-#  Copyright Christopher Kormanyos 2022 - 2025.
+#  Copyright Christopher Kormanyos 2022 - 2026.
 #  Distributed under the Boost Software License,
 #  Version 1.0. (See accompanying file LICENSE_1_0.txt
 #  or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -64,11 +64,11 @@ gcov: $(PATH_BIN)/wide_integer.exe
 	@$(GCOV) $(GCOV_FLAGS) $(addsuffix .cpp,$(FILES_PRJ))
 	@$(GNUECHO)
 	@$(GNUECHO) +++ running lcov
-	@$(LCOV) $(LCOV_BRANCH) -c --directory obj --output-file coverage_unfiltered.info
-	@$(LCOV) $(LCOV_BRANCH) --remove coverage_unfiltered.info $(LCOV_REMOVES) --output-file coverage.info
+	@$(LCOV) $(LCOV_BRANCH) --ignore-errors inconsistent,inconsistent -c --directory obj --output-file coverage_unfiltered.info
+	@$(LCOV) $(LCOV_BRANCH) --ignore-errors unused,inconsistent,inconsistent --remove coverage_unfiltered.info $(LCOV_REMOVES) --output-file coverage.info
 	@$(GNUECHO)
 	@$(GNUECHO) +++ running genhtml
-	@$(GENHTML) coverage.info $(LCOV_BRANCH) --demangle-cpp --output-directory $(PATH_BIN)/report
+	@$(GENHTML) coverage.info $(LCOV_BRANCH) --ignore-errors inconsistent,inconsistent --demangle-cpp --output-directory $(PATH_BIN)/report
 	@$(GNUECHO)
 
 # ------------------------------------------------------------------------------
